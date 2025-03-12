@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { config } from "@/config/wagmi";
 import { WagmiProvider } from "wagmi";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HyperLiquidProvider } from "@/context/HyperLiquid";
 import Header from "@/components/Header";
 import ReactQueryProvider from "@/ReactQueryProvider";
@@ -22,8 +21,6 @@ export const metadata: Metadata = {
   title: "Nexon",
   description: "Best place to Trade",
 };
-
-const queryClient = new QueryClient()
 
 export default function RootLayout({
   children,

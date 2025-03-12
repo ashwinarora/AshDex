@@ -8,7 +8,6 @@ import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent';
 import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants';
 import { getUniverseIndex, splitSignature } from '@/utils/utils';
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
-import { useEffect } from 'react';
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
 
 interface LimitOrderProps { 
@@ -54,10 +53,10 @@ const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
 
-  useEffect(() => {
-    console.log('Current Fee Approval:', currentFeeApproval);
-    console.log("AgentWallet", agentWallet?.address)
-  }, [currentFeeApproval]);
+  // useEffect(() => {
+  //   console.log('Current Fee Approval:', currentFeeApproval);
+  //   console.log("AgentWallet", agentWallet?.address)
+  // }, [currentFeeApproval]);
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0;

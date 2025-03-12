@@ -21,7 +21,7 @@ const OrderBook = ({selectedAsset}: IOrderBookProps) => {
     return () => {
       sdk.subscriptions.unsubscribeFromL2Book(selectedAsset);
     }
-  }, [selectedAsset, isSdkConnected]);
+  }, [selectedAsset, isSdkConnected, sdk]);
 
   const processOrders = (
     orders: WsLevel[],

@@ -1,6 +1,7 @@
 "use client"
 import { toHumanNumber, truncateAddress } from '@/utils/utils';
 import Link from 'next/link';
+import Image from 'next/image';
 import React, { useState, FC } from 'react';
 import { useAccount, useBalance, useConnect } from 'wagmi';
 
@@ -116,7 +117,7 @@ const Header: FC = () => {
                   handleCloseModal()
                 }}
               >
-                <img src="https://images.ctfassets.net/clixtyxoaeas/1ezuBGezqfIeifWdVtwU4c/d970d4cdf13b163efddddd5709164d2e/MetaMask-icon-Fox.svg" alt="Metamask" className="inline-block w-6 h-6 mr-2" />
+                <Image src="https://images.ctfassets.net/clixtyxoaeas/1ezuBGezqfIeifWdVtwU4c/d970d4cdf13b163efddddd5709164d2e/MetaMask-icon-Fox.svg" alt="Metamask" width={24} height={24} className="inline-block w-6 h-6 mr-2" />
                 Metamask
               </li>
               <li className="p-3 bg-gray-900 hover:bg-gray-800 rounded cursor-pointer">
