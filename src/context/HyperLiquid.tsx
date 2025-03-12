@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex, PrivateKeyAccount } from 'viem';
@@ -85,21 +85,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, [address]);
 
-  useEffect(() => {
-    initSdk();
-  }, [isConnected, isSdkScriptLoaded, privateKey, chain]);
-
-  useEffect(() => {
-    if (!sdk) return;
-    sdk.subscriptions.subscribeToAllMids((data: any) => {
-      setAllMids(data);
-    });
-    return () => {
-      sdk.subscriptions.unsubscribeFromAllMids();
-    };
-  }, [sdk]);
-
-  const initSdk = async () => {
+  const initSdk = useCallback(async () => {
     if (!isSdkScriptLoaded) return;
     if (!isConnected) return;
     if (!privateKey) return;
@@ -115,7 +101,21 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     setSdk(sdkInstance);
     setIsSdkConnected(true);
     console.log("Hyperliquid SDK initialized:", sdkInstance);
-  }
+  }, [])
+
+  useEffect(() => {
+    initSdk();
+  }, [initSdk, isConnected, isSdkScriptLoaded, privateKey, chain]);
+
+  useEffect(() => {
+    if (!sdk) return;
+    sdk.subscriptions.subscribeToAllMids((data: any) => {
+      setAllMids(data);
+    });
+    return () => {
+      sdk.subscriptions.unsubscribeFromAllMids();
+    };
+  }, [sdk]);
 
   return (
     <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, initSdk, allMids, agentWallet, hyperliquidAxios, universe }}>

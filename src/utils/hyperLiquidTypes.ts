@@ -93,7 +93,7 @@ export interface WsLiquidation {
 }
 
 export interface WsNonUserCancel {
-  coin: String;
+  coin: string;
   oid: number;
 }
 

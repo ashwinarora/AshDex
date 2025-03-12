@@ -64,7 +64,7 @@ const Vaults = () => {
         { headerName: "Actions", field: "actions", cellRenderer: ActionRenderer },
     ];
 
-    function StatusRenderer(params: any) {
+    function StatusRenderer(params: {value: string}) {
         return <span className="px-2 py-1 ml-4 bg-green-600 text-white rounded">{params.value}</span>;
     }
 

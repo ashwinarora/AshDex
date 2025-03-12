@@ -2,9 +2,7 @@
 import { InputHTMLAttributes } from "react";
 import { cn } from "@/utils/utils";
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {}
-
-export const Input: React.FC<InputProps> = ({ className, ...props }) => {
+export const Input: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
   return (
     <input
       className={cn(
