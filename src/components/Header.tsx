@@ -1,7 +1,8 @@
-'use client'
-import React, { useState, FC, useEffect } from 'react';
+"use client"
+import React, { useState, FC, useEffect } from 'react';        
+import { toHumanNumber, truncateAddress } from '@/utils/utils';
+import Link from 'next/link';
 import { useAccount, useBalance, useConnect } from 'wagmi';
-import { toHumanNumber, truncateAddress } from '../utils/utils';
 import nexonlogo from "@/assets/images/logo.svg";
 import bridgingbtnlogo from "@/assets/images/bridge_icon.svg";
 import moonicon from "@/assets/images/dark_mode.svg";
@@ -174,7 +175,7 @@ const Header: FC = () => {
                   handleCloseModal()
                 }}
               >
-                <Image src="https://images.ctfassets.net/clixtyxoaeas/1ezuBGezqfIeifWdVtwU4c/d970d4cdf13b163efddddd5709164d2e/MetaMask-icon-Fox.svg" alt="Metamask" className="inline-block w-6 h-6 mr-2" />
+                <Image src="https://images.ctfassets.net/clixtyxoaeas/1ezuBGezqfIeifWdVtwU4c/d970d4cdf13b163efddddd5709164d2e/MetaMask-icon-Fox.svg" alt="Metamask" width={24} height={24} className="inline-block w-6 h-6 mr-2" />
                 Metamask
               </li>
               <li className="p-3 bg-gray-900 hover:bg-gray-800 rounded cursor-pointer">

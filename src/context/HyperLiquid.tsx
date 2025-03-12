@@ -12,7 +12,6 @@ import { mainnetAxios, testnetAxios } from '@/config/axios';
 interface HyperLiquidContextProps {
   sdk: any;
   isSdkConnected: boolean;
-  initSdk: () => void;
   allMids: PriceMap;
   agentWallet: PrivateKeyAccount | undefined;
   hyperliquidAxios: AxiosInstance;
@@ -85,31 +84,30 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, [address]);
 
-  const initSdk = useCallback(async () => {
-    if (!isSdkScriptLoaded) return;
-    if (!isConnected) return;
-    if (!privateKey) return;
-    if (!chain) return;
-    if (!(window as any).HyperliquidSDK) return;
-    const sdkInstance = new (window as any).HyperliquidSDK.Hyperliquid({
-      testnet: chain?.testnet,
-      enableWs: true,
-      privateKey: privateKey,
-      walletAddress: address,
-    });
-    await sdkInstance.connect();
-    setSdk(sdkInstance);
-    setIsSdkConnected(true);
-    console.log("Hyperliquid SDK initialized:", sdkInstance);
-  }, [])
-
   useEffect(() => {
+    const initSdk = async () => {
+      if (!isSdkScriptLoaded) return;
+      if (!isConnected) return;
+      if (!privateKey) return;
+      if (!chain) return;
+      if (!(window as any).HyperliquidSDK) return;
+      const sdkInstance = new (window as any).HyperliquidSDK.Hyperliquid({
+        testnet: chain?.testnet,
+        enableWs: true,
+        privateKey: privateKey,
+        walletAddress: address,
+      });
+      await sdkInstance.connect();
+      setSdk(sdkInstance);
+      setIsSdkConnected(true);
+      console.log("Hyperliquid SDK initialized:", sdkInstance);
+    }
     initSdk();
-  }, [initSdk, isConnected, isSdkScriptLoaded, privateKey, chain]);
+  }, [isConnected, isSdkScriptLoaded, privateKey, chain, address]);
 
   useEffect(() => {
     if (!sdk) return;
-    sdk.subscriptions.subscribeToAllMids((data: any) => {
+    sdk.subscriptions.subscribeToAllMids((data: PriceMap) => {
       setAllMids(data);
     });
     return () => {
@@ -118,7 +116,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   }, [sdk]);
 
   return (
-    <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, initSdk, allMids, agentWallet, hyperliquidAxios, universe }}>
+    <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, allMids, agentWallet, hyperliquidAxios, universe }}>
       {children}
     </HyperLiquidContext.Provider>
   );
