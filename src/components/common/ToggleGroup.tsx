@@ -1,4 +1,5 @@
-import { cn } from "../../utils/utils";
+"use client"
+import { cn } from "@/utils/utils";
 import { ReactNode } from "react";
 
 interface ToggleGroupProps {

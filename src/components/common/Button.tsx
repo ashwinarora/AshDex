@@ -1,5 +1,5 @@
-
-import { cn } from "../../utils/utils";
+"use client"
+import { cn } from "@/utils/utils";
 import { ButtonHTMLAttributes } from "react";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {

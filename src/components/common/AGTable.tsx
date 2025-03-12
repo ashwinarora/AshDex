@@ -1,3 +1,4 @@
+"use client"
 import { useMemo } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { AgChartsCommunityModule } from "ag-charts-community";

@@ -1,5 +1,6 @@
 "use client"
 import { toHumanNumber, truncateAddress } from '@/utils/utils';
+import Link from 'next/link';
 import React, { useState, FC } from 'react';
 import { useAccount, useBalance, useConnect } from 'wagmi';
 
@@ -28,9 +29,9 @@ const Header: FC = () => {
     <>
       <header className="flex items-center justify-between px-4 py-2">
         <div className="flex items-center justify-center space-x-4">
-          <h1 className="px-3 py-2 text-white text-xl rounded-md hover:bg-gray-900 font-semibold">
+          <Link href="/" className="px-3 py-2 text-white text-xl rounded-md hover:bg-gray-900 font-semibold">
             Nexon
-          </h1>
+          </Link>
           <nav className="flex items-center space-x-4 ">
             <a href="#" className="hover:text-blue-500">
               Futures
@@ -47,9 +48,9 @@ const Header: FC = () => {
             <a href="#" className="hover:text-blue-500">
               Stake
             </a>
-            {/* <Link to="/vaults" className="hover:text-blue-500"> */}
+            <Link href="/vaults" className="hover:text-blue-500">
               Vaults
-            {/* </Link> */}
+            </Link>
             <button className="flex items-center gap-x-1.5 hover:text-blue-500">
               More
               {/* <FaChevronDown /> */}
