@@ -1,5 +1,3 @@
-// components/Modal.tsx
-import Image from "next/image";
 import { useEffect } from "react";
 
 interface ModalProps {

@@ -17,12 +17,7 @@ const ConnectWalletModal: React.FC<{
     setIsModalOpen(false);
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      handleCloseModal();
-    }
-  };
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const connectWallet = (wallet: any) => {
     const connector = connectors.find((c) => c.id === wallet.id);
     if (connector) {
