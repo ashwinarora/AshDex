@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, FC, useEffect } from 'react';        
+import React, { useState, FC, useEffect } from 'react';
 import { toHumanNumber, truncateAddress } from '@/utils/utils';
 import { useAccount, useBalance, useConnect } from 'wagmi';
 import nexonlogo from "@/assets/images/logo.svg";
@@ -8,6 +8,8 @@ import moonicon from "@/assets/images/dark_mode.svg";
 import walleticon from "@/assets/images/wallet_icon.svg";
 import menuline from "@/assets/images/menu_icon.svg";
 import menuClose from "@/assets/images/close_icon.svg";
+import helpicon from "@/assets/images/help_icon.svg";
+import bellicon from "@/assets/images/bell_icon.svg";
 import Image from 'next/image';
 
 const Header: FC = () => {
@@ -44,7 +46,7 @@ const Header: FC = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  
+
   return (
     <>
       <header style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }} className="flex border-b items-center bg-[#1c0c30] justify-between md:px-10 md:py-5 px-0 py-1">
@@ -84,14 +86,14 @@ const Header: FC = () => {
             <span className="font-bold text-sm text-[#FFFFFF] hidden md:block">Bridge</span>
           </button>
           <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            <Image src={moonicon} alt="moonicon" className="w-4 h-4 mr-2" />
+            <Image src={moonicon} alt="moonicon" className="w-5 h-5 mr-1" />
           </button>
           <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            {/* <FaRegCircleQuestion className='text-lg' /> */}
+            <Image src={helpicon} alt="helpicon" className="w-5 h-5 mr-1" />
           </button>
           <button className="relative p-1 hover:text-blue-400 text-gray-400">
-            {/* <FaRegBell className='text-lg' /> */}
-            {notificationCount > 0 && (<span className="absolute -top-1 -right-1 flex items-center justify-center w-[18px] h-[17px] 
+            <Image src={bellicon} alt="bellicon" className="w-5 h-5 mr-2" />
+            {notificationCount > 0 && (<span className="absolute -top-1 right-1 flex items-center justify-center w-[18px] h-[17px] 
                 bg-[#5F46F9] text-[#FFFFFF] text-[11px] font-['Proxima Nova'] font-normal leading-[140%] 
                 rounded-[12px]">
               {notificationCount}

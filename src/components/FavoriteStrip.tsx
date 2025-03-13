@@ -1,4 +1,6 @@
 'use client'
+import Image from 'next/image';
+import starticon from "@/assets/images/star_icon.svg";
 
 const FavoriteStrip = () => {
   const baseFavorites = [
@@ -32,7 +34,7 @@ const FavoriteStrip = () => {
                 key={index}
                 className="flex items-center gap-2 text-sm"
               >
-                {/* <FaStar className="text-yellow-500" /> */}
+                <Image src={starticon} alt="staricon" className="w-4 h-4" />
                 <span className="font-medium text-sm text-[#E8E0F1]">{favorite?.name}</span>
                 <span
                   className={`text-[12px] text-gray-400`}
@@ -42,7 +44,7 @@ const FavoriteStrip = () => {
               </li>
             ))}
           </ul>
-        </div>        
+        </div>
 
         {/* Right Side Controls */}
         <div className="flex flex-row items-center space-x-3">

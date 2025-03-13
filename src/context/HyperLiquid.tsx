@@ -53,7 +53,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   })
 
   const hyperliquidAxios = useMemo(() => {
-    if(chain?.testnet) {
+    if (chain?.testnet) {
       return testnetAxios
     }
     return mainnetAxios

@@ -7,12 +7,12 @@ interface ISelectorProps {
   setSelectedAsset: (asset: string) => void,
 }
 
-const Selector = ({selectedAsset, setSelectedAsset}: ISelectorProps) => {
+const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { allMids } = useContext(HyperLiquidContext);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Filter assets based on the search term
   const assetEntries = useMemo(() => (
     Object.entries(allMids).filter(([key]) =>

@@ -1,12 +1,10 @@
 "use client"
-
 import { useState } from "react";
+
 import Chart from "./Chart"
 import OrderBook from "./OrderBook"
 import Selector from "./Selector"
 import PlaceOrder from "./PlaceOrder/PlaceOrder";
-import Footer from "../Footer";
-
 
 const Trading = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>("BTC-PERP");
@@ -19,7 +17,7 @@ const Trading = () => {
             <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
           </div>
           <div className="border p-4 row-span-2">
-          <PlaceOrder selectedAsset={selectedAsset} />
+            <PlaceOrder selectedAsset={selectedAsset} />
           </div>
           <div className="border p-4">
             <OrderBook selectedAsset={selectedAsset} />
@@ -27,9 +25,7 @@ const Trading = () => {
           <div className="border p-4">
             <Chart selectedAsset={selectedAsset} />
           </div>
-        </div>
-        <div className="py-8 px-4 md:px-9 lg:px-14 col-span-full">
-          <Footer />
+          <div className="border p-4 col-span-full">Footer Data</div>
         </div>
       </div>
 

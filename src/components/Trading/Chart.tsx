@@ -52,23 +52,23 @@ const Chart = ({ selectedAsset }: IChartProps) => {
   }, [chartRef, candles, isLoading]);
 
   return (<>
-      <div className="interval-selector mb-4">
-        <label htmlFor="interval" className="text-white mr-2">Select Interval: </label>
-        <select
-          id="interval"
-          value={selectedInterval}
-          onChange={(e) => setSelectedInterval(e.target.value as typeof CHART_INTERVALS[number])}
-          className="bg-gray-800 text-white border border-gray-700 rounded p-2"
-        >
-          {CHART_INTERVALS.map((interval) => (
-        <option key={interval} value={interval}>
-          {interval}
-        </option>
-          ))}
-        </select>
-      </div>
-      <div ref={chartRef} className='h-full ' />
-    </>
+    <div className="interval-selector mb-4">
+      <label htmlFor="interval" className="text-white mr-2">Select Interval: </label>
+      <select
+        id="interval"
+        value={selectedInterval}
+        onChange={(e) => setSelectedInterval(e.target.value as typeof CHART_INTERVALS[number])}
+        className="bg-gray-800 text-white border border-gray-700 rounded p-2"
+      >
+        {CHART_INTERVALS.map((interval) => (
+          <option key={interval} value={interval}>
+            {interval}
+          </option>
+        ))}
+      </select>
+    </div>
+    <div ref={chartRef} className='h-full ' />
+  </>
   )
 }
 

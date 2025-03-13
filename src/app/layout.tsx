@@ -1,10 +1,11 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
 import { HyperLiquidProvider } from '@/context/HyperLiquid'
 import Header from '@/components/Header'
-import '@/styles/table.css'
 import { Provider } from './provider'
+import Footer from '@/components/Footer'
+import './globals.css'
+import '@/styles/table.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -29,12 +30,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          <Provider>
-            <HyperLiquidProvider>
-              <Header />
-              {children}
-            </HyperLiquidProvider>
-          </Provider>
+        <Provider>
+          <HyperLiquidProvider>
+            <Header />
+            {children}
+            <div className="py-8 px-4 md:px-9 lg:px-14 col-span-full">
+              <Footer />
+            </div>
+          </HyperLiquidProvider>
+        </Provider>
       </body>
     </html>
   )

@@ -30,10 +30,10 @@ const Footer: FC = () => {
 
                 <div className="flex space-x-2 mt-4 md:mt-0">
                     <button className="p-3 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer">
-                        <Image src={linkicon} alt="linkicon" className="w-[13px] h-[13px] md:w-[14px] md:h-[14px]" />
+                        <Image src={forwardicon} alt="forwardicon" className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]" />
                     </button>
                     <button className="p-3 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer">
-                        <Image src={forwardicon} alt="forwardicon" className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]" />
+                        <Image src={linkicon} alt="linkicon" className="w-[13px] h-[13px] md:w-[14px] md:h-[14px]" />
                     </button>
                     <button className="p-3 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer">
                         <Image src={roboticon} alt="roboticon" className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]" />
