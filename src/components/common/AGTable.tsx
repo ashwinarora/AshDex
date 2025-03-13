@@ -8,8 +8,8 @@ import { SparklinesModule } from "ag-grid-enterprise";
 ModuleRegistry.registerModules([AllCommunityModule, SparklinesModule.with(AgChartsCommunityModule),]);
 
 interface AGTableProps {
-    rowData: any[];
-    columnDefs: any[];
+    rowData: object[];
+    columnDefs: object[];
     className?: string;
     pagination?: boolean;
     paginationPageSize?: number;

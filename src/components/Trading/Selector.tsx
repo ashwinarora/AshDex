@@ -1,18 +1,18 @@
 "use client"
-import { useEffect, useMemo, useRef, useState } from "react";
-import { useHyperLiquid } from "../../context/HyperLiquid"
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
+import { HyperLiquidContext } from "../../context/HyperLiquid"
 
 interface ISelectorProps {
   selectedAsset: string,
   setSelectedAsset: (asset: string) => void,
 }
 
-const Selector = ({selectedAsset, setSelectedAsset}: ISelectorProps) => {
-  const { allMids } = useHyperLiquid();
+const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
+  const { allMids } = useContext(HyperLiquidContext);
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Filter assets based on the search term
   const assetEntries = useMemo(() => (
     Object.entries(allMids).filter(([key]) =>

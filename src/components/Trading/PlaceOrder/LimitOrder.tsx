@@ -1,6 +1,5 @@
 "use client"
-import React, { useMemo, useState } from 'react';
-import { useHyperLiquid } from '@/context/HyperLiquid';
+import React, { useContext, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, useConnect, useSignTypedData } from 'wagmi';
 import { IExtraAgent } from '@/utils/hyperLiquidTypes';
@@ -9,13 +8,14 @@ import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants';
 import { getUniverseIndex, splitSignature } from '@/utils/utils';
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
+import { HyperLiquidContext } from '@/context/HyperLiquid';
 
-interface LimitOrderProps { 
+interface LimitOrderProps {
   selectedAsset: string;
 }
 
-const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps) => {
-  const { agentWallet, hyperliquidAxios, universe } = useHyperLiquid();
+const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProps) => {
+  const { agentWallet, hyperliquidAxios, universe } = useContext(HyperLiquidContext);
   const { connect, connectors } = useConnect();
   const { signTypedDataAsync } = useSignTypedData();
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount();
@@ -132,7 +132,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps
         </button>
       )
     }
-    if(currentFeeApproval === 0 ) {
+    if (currentFeeApproval === 0) {
       return (
         <button
           type="button"
@@ -180,10 +180,10 @@ const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps
         type="button"
         className="tradeButton"
         onClick={() => {
-          if(!agentWallet) return;
-          if(!universe) return;
-          if(!currentFeeApproval) return;
-          placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios,  {
+          if (!agentWallet) return;
+          if (!universe) return;
+          if (!currentFeeApproval) return;
+          placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
             type: "limit",
             assetIndex: getUniverseIndex(universe, selectedAsset),
             isBuy: isBuy,
@@ -209,8 +209,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps
       <div className="flex border-b border-gray-300 mb-4">
         <button
           className={`flex-1 text-center py-2 font-medium transition-colors ${isBuy
-              ? 'text-blue-500 border-b-2 border-blue-500'
-              : 'text-gray-300 hover:text-blue-500'
+            ? 'text-blue-500 border-b-2 border-blue-500'
+            : 'text-gray-300 hover:text-blue-500'
             }`}
           onClick={() => setIsBuy(true)}
         >
@@ -218,8 +218,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps
         </button>
         <button
           className={`flex-1 text-center py-2 font-medium transition-colors ${!isBuy
-              ? 'text-blue-500 border-b-2 border-blue-500'
-              : 'text-gray-300 hover:text-blue-500'
+            ? 'text-blue-500 border-b-2 border-blue-500'
+            : 'text-gray-300 hover:text-blue-500'
             }`}
           onClick={() => setIsBuy(false)}
         >

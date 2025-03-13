@@ -1,5 +1,5 @@
 "use client"
-import React, { createContext, useContext, useState, ReactNode, useEffect, useMemo } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useMemo } from 'react';
 import { useAccount } from 'wagmi';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex, PrivateKeyAccount } from 'viem';
@@ -10,6 +10,7 @@ import { AGENT_PRIVATE_KEY } from '@/utils/constants';
 import { mainnetAxios, testnetAxios } from '@/config/axios';
 
 interface HyperLiquidContextProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any;
   isSdkConnected: boolean;
   allMids: PriceMap;
@@ -18,7 +19,16 @@ interface HyperLiquidContextProps {
   universe: MetaData[] | undefined;
 }
 
-const HyperLiquidContext = createContext<HyperLiquidContextProps | undefined>(undefined);
+const initialValue = {
+  sdk: null,
+  isSdkConnected: false,
+  allMids: {},
+  agentWallet: undefined,
+  hyperliquidAxios: mainnetAxios,
+  universe: undefined
+}
+
+export const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue);
 
 export interface PriceMap {
   [key: string]: number;
@@ -27,6 +37,7 @@ export interface PriceMap {
 export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const { address, isConnected, chain } = useAccount();
   const [agentWallet, setAgentWallet] = useState<PrivateKeyAccount>();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sdk, setSdk] = useState<any>();
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false);
   const [isSdkConnected, setIsSdkConnected] = useState(false);
@@ -42,7 +53,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   })
 
   const hyperliquidAxios = useMemo(() => {
-    if(chain?.testnet) {
+    if (chain?.testnet) {
       return testnetAxios
     }
     return mainnetAxios
@@ -90,7 +101,9 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       if (!isConnected) return;
       if (!privateKey) return;
       if (!chain) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       if (!(window as any).HyperliquidSDK) return;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const sdkInstance = new (window as any).HyperliquidSDK.Hyperliquid({
         testnet: chain?.testnet,
         enableWs: true,
@@ -115,18 +128,9 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     };
   }, [sdk]);
 
-
   return (
     <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, allMids, agentWallet, hyperliquidAxios, universe }}>
       {children}
     </HyperLiquidContext.Provider>
   );
-};
-
-export const useHyperLiquid = (): HyperLiquidContextProps => {
-  const context = useContext(HyperLiquidContext);
-  if (!context) {
-    throw new Error('useHyperLiquid must be used within a HyperLiquidProvider');
-  }
-  return context;
 };

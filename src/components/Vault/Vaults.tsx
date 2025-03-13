@@ -3,12 +3,12 @@ import { useState } from "react";
 import { Grid, List } from "lucide-react";
 import type { ColDef } from "ag-grid-community";
 
-import { Button } from "../../components/common/Button";
-import { Input } from "../../components/common/Input";
-import AGTable from "../../components/common/AGTable";
-import Dropdown from "../../components/common/Dropdown";
-import { ToggleGroup, ToggleGroupItem } from "../../components/common/ToggleGroup";
-import { Card } from "../../components/common/Card";
+import { Button } from "../common/Button";
+import { Input } from "../common/Input";
+import AGTable from "../common/AGTable";
+import Dropdown from "../common/Dropdown";
+import { ToggleGroup, ToggleGroupItem } from "../common/ToggleGroup";
+import { Card } from "../common/Card";
 import BoardViewVaults from "./BoardViewVaults";
 
 const Vaults = () => {
@@ -64,7 +64,7 @@ const Vaults = () => {
         { headerName: "Actions", field: "actions", cellRenderer: ActionRenderer },
     ];
 
-    function StatusRenderer(params: any) {
+    function StatusRenderer(params: {value: string}) {
         return <span className="px-2 py-1 ml-4 bg-green-600 text-white rounded">{params.value}</span>;
     }
 

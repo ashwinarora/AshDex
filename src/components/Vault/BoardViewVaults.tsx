@@ -1,8 +1,8 @@
 "use client"
 import { useState } from "react";
-import { Button } from "../../components/common/Button";
-import SparklineChart from "../../components/common/SparklineChart";
-import Pagination from "../../components/common/Pagination";
+import { Button } from "../common/Button";
+import SparklineChart from "../common/SparklineChart";
+import Pagination from "../common/Pagination";
 
 const vaults = Array.from({ length: 15 }, (_, i) => ({
     id: i + 1,

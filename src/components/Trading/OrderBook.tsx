@@ -1,21 +1,21 @@
 "use client"
 
-import { useEffect, useMemo, useState } from 'react';
-import { useHyperLiquid } from '../../context/HyperLiquid';
+import { useContext, useEffect, useMemo, useState } from 'react';
+import { HyperLiquidContext } from '../../context/HyperLiquid';
 import type { WsBook, WsLevel } from '../../utils/hyperLiquidTypes';
 
 interface IOrderBookProps {
   selectedAsset: string;
 }
 
-const OrderBook = ({selectedAsset}: IOrderBookProps) => {
-  const { sdk, isSdkConnected } = useHyperLiquid();
+const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
+  const { sdk, isSdkConnected } = useContext(HyperLiquidContext)
   const [l2Book, setL2Book] = useState<WsBook>();
 
   useEffect(() => {
-    if(!isSdkConnected) return;
-    if(!selectedAsset.length) return;
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook ) => {
+    if (!isSdkConnected) return;
+    if (!selectedAsset.length) return;
+    sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook) => {
       setL2Book(data);
     });
     return () => {
@@ -38,17 +38,17 @@ const OrderBook = ({selectedAsset}: IOrderBookProps) => {
   }
 
   const [rawBuys, rawSells] = l2Book?.levels ?? [[], []];
-  
+
   const sells = useMemo(
     () => processOrders(rawSells.slice(0, 10)),
     [rawSells]
   );
-  
+
   const buys = useMemo(
     () => processOrders(rawBuys.slice(0, 10)),
     [rawBuys]
   );
-  
+
 
   const bestAsk = sells.length > 0 ? sells[0].px : 0;
   const bestBid = buys.length > 0 ? buys[0].px : 0;
