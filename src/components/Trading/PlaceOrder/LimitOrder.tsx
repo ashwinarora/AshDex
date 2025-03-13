@@ -1,6 +1,5 @@
 "use client"
-import React, { useMemo, useState } from 'react';
-import { useHyperLiquid } from '@/context/HyperLiquid';
+import React, { useContext, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, useConnect, useSignTypedData } from 'wagmi';
 import { IExtraAgent } from '@/utils/hyperLiquidTypes';
@@ -9,13 +8,14 @@ import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants';
 import { getUniverseIndex, splitSignature } from '@/utils/utils';
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
+import { HyperLiquidContext } from '@/context/HyperLiquid';
 
 interface LimitOrderProps { 
   selectedAsset: string;
 }
 
 const LimitOrder: React.FC<LimitOrderProps> = ({selectedAsset} : LimitOrderProps) => {
-  const { agentWallet, hyperliquidAxios, universe } = useHyperLiquid();
+  const { agentWallet, hyperliquidAxios, universe } = useContext(HyperLiquidContext);
   const { connect, connectors } = useConnect();
   const { signTypedDataAsync } = useSignTypedData();
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount();

@@ -5,7 +5,7 @@ import Chart from "./Chart"
 import OrderBook from "./OrderBook"
 import Selector from "./Selector"
 import PlaceOrder from "./PlaceOrder/PlaceOrder";
-import Footer from "../../components/Footer";
+import Footer from "../Footer";
 
 
 const Trading = () => {

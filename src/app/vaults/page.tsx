@@ -1,6 +1,6 @@
-import Vaults from "@/pages/Vault/Vaults";
+import Vaults from "@/components/Vault/Vaults";
 
-export default function Home() {
+export default function Vault() {
   return (
     <Vaults />
   );

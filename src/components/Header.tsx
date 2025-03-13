@@ -1,7 +1,6 @@
 "use client"
 import React, { useState, FC, useEffect } from 'react';        
 import { toHumanNumber, truncateAddress } from '@/utils/utils';
-import Link from 'next/link';
 import { useAccount, useBalance, useConnect } from 'wagmi';
 import nexonlogo from "@/assets/images/logo.svg";
 import bridgingbtnlogo from "@/assets/images/bridge_icon.svg";
