@@ -7,15 +7,14 @@ module.exports = {
         extend: {
             colors: {
                 aggrid: {
-                    tulsi: "red",
-                    background: "#1F2937",
-                    header: "#1F2937",
-                    text: "#E5E7EB",
-                    border: "#374151",
-                    hover: "#374151",
-                    headertext: "#ced1d7",
-                    pagination: "#1F2937",
-                    "pagination-text": "#ffffff",
+                    background: "var(--tw-color-aggrid-background)",
+                    header: "var(--tw-color-aggrid-header)",
+                    text: "var(--tw-color-aggrid-text)",
+                    border: "var(--tw-color-aggrid-border)",
+                    hover: "var(--tw-color-aggrid-hover)",
+                    headertext: "var(--tw-color-aggrid-headertext)",
+                    pagination: "var(--tw-color-aggrid-pagination)",
+                    paginationtext: "var(--tw-color-aggrid-paginationtext)",
                 },
             },
         },

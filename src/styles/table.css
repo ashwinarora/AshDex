@@ -1,7 +1,7 @@
 /* AG Grid Dark Theme Customizations */
 .custom-ag-grid {
   width: 100%;
-  color: #E5E7EB;
+  color: var(--tw-color-aggrid-text);
   border-radius: 8px;
   height: 100%;
   overflow-x: auto;
@@ -14,17 +14,17 @@
 .custom-ag-grid .ag-cell,
 .custom-ag-grid .ag-root-wrapper {
   border: none !important;
-  background-color: #1F2937 !important;
+  background-color: var(--tw-color-aggrid-background) !important;
   padding: 0px 0px 0px 0.4rem;
 }
 
 .custom-ag-grid .ag-header {
-  background-color: #1F2937 !important;
+  background-color: var(--tw-color-aggrid-header) !important;
   height: 50px !important;
 }
 
 .custom-ag-grid .ag-header-cell {
-  color: #ced1d7 !important;
+  color: var(--tw-color-aggrid-headertext) !important;
   font-size: 1rem;
 }
 
@@ -34,12 +34,12 @@
 }
 
 .custom-ag-grid .ag-header-cell .ag-icon {
-  color: #ced1d7 !important;
+  color: var(--tw-color-aggrid-headertext) !important;
 }
 
 .custom-ag-grid .ag-row {
-  background-color: #1F2937 !important;
-  color: #e5e7eb !important;
+  background-color: var(--tw-color-aggrid-background) !important;
+  color: var(--tw-color-aggrid-text) !important;
   display: flex;
   align-items: center;
   height: 50px !important;
@@ -50,12 +50,12 @@
 }
 
 .custom-ag-grid .ag-row-hover {
-  background-color: #374151 !important;
+  background-color: var(--tw-color-aggrid-hover) !important;
 }
 
 .custom-ag-grid .ag-paging-panel {
-  background-color: #1F2937 !important;
-  color: #ffffff !important;
+  background-color: var(--tw-color-aggrid-pagination) !important;
+  color: var(--tw-color-aggrid-paginationtext) !important;
   padding: 2rem 0px 1rem;
 }
 
