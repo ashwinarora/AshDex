@@ -271,3 +271,13 @@ export interface IPosition {
   position: IPositionData;
   type: string;
 }
+
+export type Order = {
+  coin: string;
+  side: 'buy' | 'sell';
+  limitPx: number;
+  sz: number;
+  oid: number;
+  timestamp: number;
+  origSz: number;
+};

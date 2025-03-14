@@ -3,6 +3,7 @@
 import { useState } from "react"
 import Balances from "./Balances"
 import Positions from "./Positions"
+import OpenOrders from "./OpenOrders"
 
 const tabs = ['Balance', 'Positions', 'Open Orders'] as const
 
@@ -31,7 +32,7 @@ const UserData = () => {
       <div className="mt-4">
         {activeTab === 0 && <div><Balances /></div>}
         {activeTab === 1 && <div><Positions /></div>}
-        {activeTab === 2 && <div>Open Orders Content</div>}
+        {activeTab === 2 && <div><OpenOrders /></div>}
       </div>
     </div>
   )
