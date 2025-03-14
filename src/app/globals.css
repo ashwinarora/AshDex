@@ -6,6 +6,14 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --tw-color-aggrid-background: #1F2937;
+  --tw-color-aggrid-header: #1F2937;
+  --tw-color-aggrid-text: #E5E7EB;
+  --tw-color-aggrid-border: #374151;
+  --tw-color-aggrid-hover: #374151;
+  --tw-color-aggrid-headertext: #ced1d7;
+  --tw-color-aggrid-pagination: #1F2937;
+  --tw-color-aggrid-paginationtext: #ffffff;
 }
 
 @theme inline {

@@ -154,7 +154,7 @@ const Header: FC = () => {
         <div className="left-0 top-0 w-full h-full bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
-              {/* <FaRegCircleQuestion className='text-lg text-[#8B8BA0]' /> */}
+              <Image src={helpicon} alt="helpicon" className="w-5 h-5" />
             </button>
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
               <Image
