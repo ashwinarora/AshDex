@@ -1,17 +1,32 @@
-import { http, createConfig } from 'wagmi'
-import { arbitrum, arbitrumSepolia } from 'wagmi/chains'
-import { metaMask, walletConnect } from 'wagmi/connectors'
-const projectId = '3fbb6bba6f1de962d911bb5b5c9dba88';
+import { http, createConfig } from "wagmi";
+import { mainnet, optimism, base } from "wagmi/chains";
+import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
 
+const phantomWalletConnector = injected({
+  target: "phantom",
+});
+
+const trustWalletConnector = injected({
+  target: "trustWallet",
+});
+console.log(
+  "process.env.NEXT_PUBLIC_WALLET_CONNECT_ID",
+  process.env.NEXT_PUBLIC_WALLET_CONNECT_ID
+);
 export const config = createConfig({
-  chains: [arbitrum, arbitrumSepolia],
-  ssr: true,
+  chains: [mainnet, optimism, base],
   connectors: [
+    phantomWalletConnector,
+    trustWalletConnector,
+    walletConnect({
+      projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? "",
+    }),
     metaMask(),
-    walletConnect({ projectId }),
+    safe(),
   ],
   transports: {
-    [arbitrum.id]: http(),
-    [arbitrumSepolia.id]: http(),
+    [mainnet.id]: http(),
+    [optimism.id]: http(),
+    [base.id]: http(),
   },
-})
+});
