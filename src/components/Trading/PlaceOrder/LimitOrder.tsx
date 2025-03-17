@@ -1,5 +1,5 @@
 "use client"
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, useConnect, useSignTypedData } from 'wagmi';
 import { IExtraAgent } from '@/utils/hyperLiquidTypes';
@@ -9,13 +9,14 @@ import { getUniverseIndex, splitSignature } from '@/utils/utils';
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
 import { useHyperLiquid } from '@/context/HyperLiquid';
+import { SquareDashedKanban } from 'lucide-react';
 
 interface LimitOrderProps {
   selectedAsset: string;
 }
 
 const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProps) => {
-  const { agentWallet, hyperliquidAxios, universe } = useHyperLiquid();
+  const { agentWallet, hyperliquidAxios, universe, clearingHouseState, sdk } = useHyperLiquid();
   const { connect, connectors } = useConnect();
   const { signTypedDataAsync } = useSignTypedData();
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount();
@@ -23,6 +24,16 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   const [limitPrice, setLimitPrice] = useState<number>(0);
   const [amount, setAmount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
+  const [usdPercent, setUsdPercent] = useState<number>(0);
+  const [isCross, setIsCross] = useState<boolean>(true);
+  const [leverage, setLeverage] = useState<number>(1);
+  
+  const maxLeverage = useMemo(() => {
+    if(!universe) return 1;
+    const assetIndex = getUniverseIndex(universe, selectedAsset);
+    return universe?.[assetIndex]?.maxLeverage || 1;
+  }, [universe, selectedAsset])
+
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
@@ -53,11 +64,6 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
 
-  // useEffect(() => {
-  //   console.log('Current Fee Approval:', currentFeeApproval);
-  //   console.log("AgentWallet", agentWallet?.address)
-  // }, [currentFeeApproval]);
-
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0;
     setLimitPrice(newLimitPrice);
@@ -65,16 +71,28 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!clearingHouseState) return;
     const newAmount = parseFloat(e.target.value) || 0;
     setAmount(newAmount);
     setTotal(limitPrice * newAmount);
+    setUsdPercent(newAmount * limitPrice / clearingHouseState?.withdrawable * 100);
   };
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!clearingHouseState) return;
     const newTotal = parseFloat(e.target.value) || 0;
     setTotal(newTotal);
     setAmount(limitPrice > 0 ? newTotal / limitPrice : 0);
+    setUsdPercent(newTotal / clearingHouseState?.withdrawable * 100);
   };
+
+  const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if(!clearingHouseState) return;
+    const newUsdPercent = parseFloat(e.target.value) || 0;
+    setUsdPercent(newUsdPercent);
+    setAmount(newUsdPercent * clearingHouseState?.withdrawable / 100 / limitPrice);
+    setTotal(newUsdPercent * clearingHouseState?.withdrawable / 100);
+  }
 
   const buildButton = () => {
     if (!isWalletConnected) {
@@ -179,11 +197,13 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
       <button
         type="button"
         className="tradeButton"
-        onClick={() => {
+        onClick={async () => {
           if (!agentWallet) return;
           if (!universe) return;
           if (!currentFeeApproval) return;
-          placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
+          const res = await sdk.exchange.updateLeverage(selectedAsset, isCross? "cross" : "isolated", leverage);
+          console.log(res);
+          await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
             type: "limit",
             assetIndex: getUniverseIndex(universe, selectedAsset),
             isBuy: isBuy,
@@ -241,7 +261,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
-              USDT
+              USD
             </span>
           </div>
         </div>
@@ -277,15 +297,23 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
               className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
             />
             <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
-              USDT
+              USD
             </span>
           </div>
         </div>
 
         <div>
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-gray-300">Minimum 5 USDT</span>
-            <span className="text-gray-500">0 %</span>
+            <span className="text-gray-300">Balance = {clearingHouseState?.withdrawable}</span>
+            <span className="text-gray-300">Minimum 10 USDT</span>
+            <span>
+              <input
+                type="text"
+                value={usdPercent}
+                onChange={handleUsdPercentChange}
+                className="w-12 text-center border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-500"
+              /> {" %"}
+            </span>
           </div>
           <input
             type="range"
@@ -294,6 +322,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             step={1}
             defaultValue={0}
             className="w-full cursor-pointer"
+            value={usdPercent}
+            onChange={handleUsdPercentChange}
           />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>0%</span>
@@ -302,6 +332,46 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             <span>75%</span>
             <span>100%</span>
           </div>
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between text-sm mb-2">
+            <span className="text-gray-300">Max Leverage = {maxLeverage}x</span>
+            <span>
+              <input
+                type="text"
+                value={leverage}
+                onChange={(e) => setLeverage(parseInt(e.target.value))}
+                className="w-12 text-center border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-1 focus:ring-blue-500 text-gray-500"
+              />{" x"}
+            </span>
+          </div>
+          <input
+            type="range"
+            min={1}
+            max={maxLeverage}
+            step={1}
+            defaultValue={0}
+            className="w-full cursor-pointer"
+            value={leverage}
+            onChange={(e) => setLeverage(parseInt(e.target.value))}
+          />
+        </div>
+
+        <div>
+            <div>
+            <label className="block text-sm font-medium text-gray-300 mb-1">
+              Margin Type
+            </label>
+            <select
+              value={isCross ? "cross" : "isolated"}
+              onChange={(e) => setIsCross(e.target.value === "cross")}
+              className="w-full border border-gray-700 bg-gray-800 text-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+            >
+              <option value="cross" className="bg-gray-800 text-gray-300">Cross</option>
+              <option value="isolated" className="bg-gray-800 text-gray-300">Isolated</option>
+            </select>
+            </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-4">

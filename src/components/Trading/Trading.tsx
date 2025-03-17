@@ -13,7 +13,7 @@ const Trading = () => {
   return (
     <>
       <div>
-        <div className="grid grid-cols-[2fr_6fr_3fr] grid-rows-[1fr_6fr_0fr] gap-0  mt-2 h-screen">
+        <div className="grid grid-cols-[2fr_6fr_3fr] grid-rows-[1fr_6fr_3fr] gap-0  mt-2 ">
           <div className="border p-4 col-span-2">
             <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
           </div>

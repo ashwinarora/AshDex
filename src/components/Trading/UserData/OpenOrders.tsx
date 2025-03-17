@@ -6,7 +6,7 @@ import { useAccount } from "wagmi";
 const OpenOrders = () => {
   const { address } = useAccount();
   const { sdk } = useHyperLiquid();
-  const { data: openOrders, isLoading } = useQuery({
+  const { data: openOrders, isLoading, refetch: refetchOpenOrders } = useQuery({
     queryKey: ["openOrders", address],
     queryFn: async () => {
       const response = await sdk.info.getUserOpenOrders(address);
@@ -20,7 +20,9 @@ const OpenOrders = () => {
   };
 
   const handleCancelAllOrders = async () => {
-    // await sdk.orders.cancelAllOrders();
+    const res = await sdk.custom.cancelAllOrders();
+    console.log(res);
+    await refetchOpenOrders()
   };
 
   if (isLoading) {
