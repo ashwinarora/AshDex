@@ -69,10 +69,12 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return mainnetAxios
   }, [chain])
 
+
   // effect to load the Hyperliquid SDK
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "https://unpkg.com/hyperliquid/dist/browser.global.js";
+    // script.src = "https://unpkg.com/hyperliquid/dist/browser.global.js";
+    script.src = "/lib/hyperliquidSdk.js";
     script.async = true;
 
     script.onload = async () => {
