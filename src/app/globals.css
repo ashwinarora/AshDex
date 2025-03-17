@@ -1,7 +1,4 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 
 :root {
   --background: #0a0a0a;
@@ -37,6 +34,14 @@ body {
   overflow: hidden;
   position: relative;
   white-space: nowrap;
+}
+
+.db {
+  @apply border border-red-500;
+}
+
+.tradeButton {
+  @apply w-full cursor-pointer bg-blue-500 text-white rounded-md py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1;
 }
 
 .marquee-content {

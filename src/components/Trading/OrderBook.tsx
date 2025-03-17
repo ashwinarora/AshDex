@@ -1,7 +1,7 @@
 "use client"
 
-import { useContext, useEffect, useMemo, useState } from 'react';
-import { HyperLiquidContext } from '../../context/HyperLiquid';
+import { useEffect, useMemo, useState } from 'react';
+import { useHyperLiquid } from '../../context/HyperLiquid';
 import type { WsBook, WsLevel } from '../../utils/hyperLiquidTypes';
 
 interface IOrderBookProps {
@@ -9,7 +9,7 @@ interface IOrderBookProps {
 }
 
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
-  const { sdk, isSdkConnected } = useContext(HyperLiquidContext)
+  const { sdk, isSdkConnected } = useHyperLiquid()
   const [l2Book, setL2Book] = useState<WsBook>();
 
   useEffect(() => {

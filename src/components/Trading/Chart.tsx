@@ -1,17 +1,17 @@
 "use client"
 import { CandlestickSeries, createChart } from 'lightweight-charts';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CHART_INTERVALS } from '../../utils/constants';
 import type { Candle } from '../../utils/hyperLiquidTypes';
-import { HyperLiquidContext } from '@/context/HyperLiquid';
+import { useHyperLiquid } from '@/context/HyperLiquid';
 
 interface IChartProps {
   selectedAsset: string;
 }
 
 const Chart = ({ selectedAsset }: IChartProps) => {
-  const { sdk, isSdkConnected } = useContext(HyperLiquidContext)
+  const { sdk, isSdkConnected } = useHyperLiquid()
   const [selectedInterval, setSelectedInterval] = useState<typeof CHART_INTERVALS[number]>("1m");
   const chartRef = useRef(null);
   const { data: candles, isLoading } = useQuery({
