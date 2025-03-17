@@ -15,7 +15,7 @@ const OpenOrders = () => {
     enabled: !!address && !!sdk,
   });
 
-  const handleCancelOrder = async (orderId: number) => {
+  const handleCancelOrder = async () => {
     // await sdk.orders.cancelOrder(orderId);
   };
 
@@ -58,7 +58,7 @@ const OpenOrders = () => {
               <td className="py-2 px-4 border-b border-gray-700">{new Date(order.timestamp).toLocaleString()}</td>
               <td className="py-2 px-4 border-b border-gray-700">{order.origSz}</td>
               <td className="py-2 px-4 border-b border-gray-700">
-                <button onClick={() => handleCancelOrder(order.oid)} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
+                <button onClick={() => handleCancelOrder()} className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded">
                   Cancel
                 </button>
               </td>
