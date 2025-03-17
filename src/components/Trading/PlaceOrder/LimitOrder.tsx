@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAccount, useConnect, useSignTypedData } from 'wagmi';
 import { IExtraAgent } from '@/utils/hyperLiquidTypes';
@@ -9,7 +9,6 @@ import { getUniverseIndex, splitSignature } from '@/utils/utils';
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
 import { useHyperLiquid } from '@/context/HyperLiquid';
-import { SquareDashedKanban } from 'lucide-react';
 
 interface LimitOrderProps {
   selectedAsset: string;
