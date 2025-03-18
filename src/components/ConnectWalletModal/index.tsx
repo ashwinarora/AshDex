@@ -4,7 +4,8 @@ import Image, { StaticImageData } from "next/image";
 import { useConnect } from "wagmi";
 import { WALLETS } from "@/utils/constants";
 import Modal from "../common/Modal";
-import WalletDisplay from "./WalletDisplay";
+import { WalletDisplay } from "./WalletDisplay";
+import WalletRules from "./WalletRules";
 import nexticon from "@/assets/images/next_icon.svg";
 import menuClose from "@/assets/images/close_icon.svg";
 
@@ -22,9 +23,20 @@ const ConnectWalletModal: React.FC<{
   const [selectedConnector, setSelectedConnector] = useState<
     WalletConnectProvider | null | undefined
   >(null);
+  const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(
+    null
+  );
+  const [hasAgreedToRules, setHasAgreedToRules] = useState(false);
+
+  const handleAgreeToRules = () => {
+    setHasAgreedToRules(true);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedConnector(null);
+    setIsWalletConnected(null);
+    setHasAgreedToRules(false);
   };
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
@@ -37,11 +49,16 @@ const ConnectWalletModal: React.FC<{
       try {
         const walletConnector = WALLETS.find((c) => c.id === wallet.id);
         setSelectedConnector(walletConnector);
-        await connectAsync({ connector });
+        const result = await connectAsync({ connector });
+        if (result) {
+          console.log(`Wallet connected successfully: ${result}`);
+          setIsWalletConnected(true);
+        }
       } catch (error) {
-        console.error("Error connecting wallet:", error);
+        console.error("Error connecting wallet 123:", error);
+        setIsWalletConnected(false);
       } finally {
-        handleCloseModal();
+        // handleCloseModal();
       }
     }
   };
@@ -54,7 +71,11 @@ const ConnectWalletModal: React.FC<{
       >
         {/* Full-Width Header */}
         <div className="flex items-center justify-between mb-4 w-full">
-          <h2 className="text-xl text-[#FFFFFF] font-medium">Connect Wallet</h2>
+          <h2 className="text-xl text-[#FFFFFF] font-medium">
+            {isWalletConnected && !hasAgreedToRules
+              ? "Rules"
+              : "Connect Wallet"}
+          </h2>
           <button
             onClick={handleCloseModal}
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
@@ -67,16 +88,28 @@ const ConnectWalletModal: React.FC<{
           </button>
         </div>
 
+        {/* Show Wallet Rules if Wallet is Connected */}
+        {isWalletConnected && !hasAgreedToRules && (
+          <WalletRules
+            onAgree={handleAgreeToRules}
+            onClose={handleCloseModal}
+          />
+        )}
+
         {/* Content Section: Left (Wallet List) & Right (QR Code) */}
         <div className="flex gap-6">
-          {selectedConnector && (
+          {selectedConnector && (!isWalletConnected || hasAgreedToRules) && (
             <WalletDisplay
               onBack={() => {
+                setIsWalletConnected(null);
                 setSelectedConnector(null);
                 reset();
               }}
+              onClose={handleCloseModal}
               name={selectedConnector.name}
               icon={selectedConnector.icon}
+              isWalletConnected={isWalletConnected}
+              hasAgreedToRules={hasAgreedToRules}
             />
           )}
           {!selectedConnector && (
@@ -97,7 +130,7 @@ const ConnectWalletModal: React.FC<{
                           alt={wallet?.name}
                           width={100}
                           height={100}
-                          className="w-9 h-9 mr-3"
+                          className="w-9 h-9 mr-3 rounded-md"
                         />
                       )}
                       <span className="text-[#FFFFFF] font-medium text-base">

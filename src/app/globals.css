@@ -32,6 +32,21 @@ body {
   backdrop-filter: blur(40px);
 }
 
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1c1725;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #8a8ba1; 
+  border-radius: 10px;
+}
+
 .marquee {
   width: 100%;
   overflow: hidden;

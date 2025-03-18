@@ -9,10 +9,7 @@ const phantomWalletConnector = injected({
 const trustWalletConnector = injected({
   target: "trustWallet",
 });
-console.log(
-  "process.env.NEXT_PUBLIC_WALLET_CONNECT_ID",
-  process.env.NEXT_PUBLIC_WALLET_CONNECT_ID
-);
+
 export const config = createConfig({
   chains: [mainnet, optimism, base],
   connectors: [
