@@ -32,7 +32,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
               Wallet connected!
             </p>
             <p className="text-[#FFFFFF] w-[70%] opacity-70 font-light mt-2 text-sm">
-              You're ready to deposit, trade, and manage your assets.
+              You&apos;re ready to deposit, trade, and manage your assets.
             </p>
           </div>
         ) : (
@@ -79,7 +79,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
           className="w-full py-3 mt-5 font-bold text-md rounded-xl text-white bg-[#5F46F9] cursor-pointer"
           onClick={onClose}
         >
-          Let’s Go!
+          Let&apos;s Go!
         </button>
       ) : (
         <button
