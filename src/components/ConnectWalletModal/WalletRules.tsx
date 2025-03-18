@@ -13,7 +13,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onAgree, onClose }) => {
       {/* Scrollable Content */}
       <div className="max-h-60 overflow-y-auto text-sm text-[#E8E0F1] space-y-4 pr-2">
         {WALLET_RULES?.split("\n").map((line, index) => (
-          <p key={index}>{line}</p>
+          <div key={index}>{line}</div>
         ))}
       </div>
 

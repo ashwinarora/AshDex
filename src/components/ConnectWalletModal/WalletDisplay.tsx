@@ -28,12 +28,12 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
         {hasAgreedToRules ? (
           <div className="py-4 mt-10 mb-12 text-center w-full flex flex-col items-center justify-center rounded-xl">
             <Image src={verifiedicon} alt={name} width={100} height={100} />
-            <p className="text-[#FFFFFF] font-medium mt-4 text-lg">
+            <div className="text-[#FFFFFF] font-medium mt-4 text-lg">
               Wallet connected!
-            </p>
-            <p className="text-[#FFFFFF] w-[70%] opacity-70 font-light mt-2 text-sm">
+            </div>
+            <div className="text-[#FFFFFF] w-[70%] opacity-70 font-light mt-2 text-sm">
               You&apos;re ready to deposit, trade, and manage your assets.
-            </p>
+            </div>
           </div>
         ) : (
           <>
@@ -51,23 +51,23 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
                   isWalletConnected === false ? "grayscale" : ""
                 }`}
               />
-              <p className="text-[#E8E0F1] font-medium mt-4 text-md">
+              <div className="text-[#E8E0F1] font-medium mt-4 text-md">
                 {name} {name === "Trust Wallet" ? "" : "Wallet"}
-              </p>
+              </div>
             </button>
             <div className="flex py-4 justify-center items-center border-t border-[#33293B] gap-2">
               {isWalletConnected === null && (
                 <>
                   <Loader2 className="w-5 h-5 animate-spin text-[#E8E0F1]" />
-                  <p className="text-[#E8E0F1] text-sm">
+                  <div className="text-[#E8E0F1] text-sm">
                     Waiting for connection...
-                  </p>
+                  </div>
                 </>
               )}
               {isWalletConnected === false && (
                 <>
                   <AlertCircle className="w-5 h-5 text-red-500" />
-                  <p className="text-[#E2464A] text-sm">Connection failed</p>
+                  <div className="text-[#E2464A] text-sm">Connection failed</div>
                 </>
               )}
             </div>
