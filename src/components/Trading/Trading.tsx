@@ -1,9 +1,9 @@
-"use client"
+"use client";
 import { useState } from "react";
 
-import Chart from "./Chart"
-import OrderBook from "./OrderBook"
-import Selector from "./Selector"
+import Chart from "./Chart";
+import OrderBook from "./OrderBook";
+import Selector from "./Selector";
 import PlaceOrder from "./PlaceOrder/PlaceOrder";
 
 const Trading = () => {
@@ -14,7 +14,10 @@ const Trading = () => {
       <div>
         <div className="grid grid-cols-[2fr_6fr_3fr] grid-rows-[1fr_6fr_0fr] gap-0  mt-2 h-screen">
           <div className="border p-4 col-span-2">
-            <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+            <Selector
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+            />
           </div>
           <div className="border p-4 row-span-2">
             <PlaceOrder selectedAsset={selectedAsset} />
@@ -28,9 +31,8 @@ const Trading = () => {
           <div className="border p-4 col-span-full">Footer Data</div>
         </div>
       </div>
-
     </>
-  )
-}
+  );
+};
 
-export default Trading
+export default Trading;
