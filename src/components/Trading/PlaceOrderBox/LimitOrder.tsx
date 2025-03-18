@@ -397,12 +397,6 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           </label>
         </div>
 
-        <div className="text-sm text-gray-300 space-y-1">
-          <div>Available --- USDT</div>
-          <div>Max. Buy --- BTC</div>
-          <div>Fee --- USDT</div>
-        </div>
-
         {buildButton()}
       </div>
     </div>

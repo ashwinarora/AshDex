@@ -58,8 +58,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
           }`}
         >
-          Stop Limit
-          {/* <FaChevronDown /> */}
+          Advanced
         </button>
       </div>
 
