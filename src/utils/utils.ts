@@ -65,6 +65,14 @@ export function splitSignature(signature: Hex) {
 export function cn(...classes: (string | undefined | boolean)[]) {
   return classes.filter(Boolean).join(" ");
 }
+
 export const getUniverseIndex = (universe: MetaData[], asset: string): number => {
   return universe.findIndex((item) => item.name === asset);
 };
+
+export const getCoinName = (asset: string): string => {
+  if (asset.endsWith("-PERP")) {
+    return asset.slice(0, -5);
+  }
+  return asset;
+}

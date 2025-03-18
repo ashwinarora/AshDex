@@ -1,6 +1,7 @@
 "use client"
 import { useState } from 'react';
 import LimitOrder from './LimitOrder';
+import MarketOrder from './MarketOrder';
 
 /** Define the possible tab options */
 type OrderTab = 'LIMIT' | 'MARKET' | 'STOP_LIMIT';
@@ -17,7 +18,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'LIMIT':
         return <LimitOrder selectedAsset={selectedAsset} />;
       case 'MARKET':
-        return <MarketComponent />;
+        return <MarketOrder selectedAsset={selectedAsset} />;
       case 'STOP_LIMIT':
         return <StopLimitComponent />;
       default:
@@ -67,13 +68,6 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   );
 };
 
-
-const MarketComponent: React.FC = () => (
-  <div className="p-4 border border-gray-700 rounded-md bg-gray-800">
-    <h2 className="font-semibold text-lg">Market Order</h2>
-    <p className="text-gray-300">Content for Market order goes here.</p>
-  </div>
-);
 
 const StopLimitComponent: React.FC = () => (
   <div className="p-4 border border-gray-700 rounded-md bg-gray-800">

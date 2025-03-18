@@ -25,6 +25,9 @@ export const BUILDER_ADDRESS = "0x1710022f671b4032d6c7262107ba231f41f84ce8"; // 
 
 export const HLP_VAULT_TESTNET = "0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0"; // https://app.hyperliquid-testnet.xyz/vaults/0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0
 
+export const MAX_DECIMALS_PERP = 6  // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
+export const MAX_DECIMALS_SPOT = 8
+
 export const CHART_INTERVALS = [
   "1m",
   "3m",

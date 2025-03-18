@@ -8,7 +8,7 @@ type LimitOrder = {
   type: "limit",
   assetIndex: number,
   isBuy: boolean,
-  price: number,
+  price: string,
   size: number,
   reduceOnly: boolean,
   tif: "Alo" | "Ioc" | "Gtc",
