@@ -1,5 +1,5 @@
 import { http, createConfig } from "wagmi";
-import { mainnet, optimism, base } from "wagmi/chains";
+import { arbitrum, arbitrumSepolia } from "wagmi/chains";
 import { injected, metaMask, safe, walletConnect } from "wagmi/connectors";
 
 const phantomWalletConnector = injected({
@@ -11,7 +11,7 @@ const trustWalletConnector = injected({
 });
 
 export const config = createConfig({
-  chains: [mainnet, optimism, base],
+  chains: [arbitrum, arbitrumSepolia],
   connectors: [
     phantomWalletConnector,
     trustWalletConnector,
@@ -22,8 +22,7 @@ export const config = createConfig({
     safe(),
   ],
   transports: {
-    [mainnet.id]: http(),
-    [optimism.id]: http(),
-    [base.id]: http(),
+    [arbitrum.id]: http(),
+    [arbitrumSepolia.id]: http(),
   },
 });
