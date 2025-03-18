@@ -1,6 +1,6 @@
 "use client"
-import { useContext, useEffect, useMemo, useRef, useState } from "react";
-import { HyperLiquidContext } from "../../context/HyperLiquid"
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useHyperLiquid } from "../../context/HyperLiquid"
 
 interface ISelectorProps {
   selectedAsset: string,
@@ -8,7 +8,7 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids } = useContext(HyperLiquidContext);
+  const { allMids } = useHyperLiquid();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);

@@ -1,11 +1,11 @@
 "use client"
-import React, { createContext, useState, ReactNode, useEffect, useMemo } from 'react';
+import React, { createContext, useState, ReactNode, useEffect, useMemo, useContext } from 'react';
 import { useAccount } from 'wagmi';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex, PrivateKeyAccount } from 'viem';
 import type { AxiosInstance } from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { MetaData } from '@/utils/hyperLiquidTypes';
+import { IClearingHouseState, MetaData } from '@/utils/hyperLiquidTypes';
 import { AGENT_PRIVATE_KEY } from '@/utils/constants';
 import { mainnetAxios, testnetAxios } from '@/config/axios';
 
@@ -17,6 +17,7 @@ interface HyperLiquidContextProps {
   agentWallet: PrivateKeyAccount | undefined;
   hyperliquidAxios: AxiosInstance;
   universe: MetaData[] | undefined;
+  clearingHouseState: IClearingHouseState | undefined;
 }
 
 const initialValue = {
@@ -25,10 +26,11 @@ const initialValue = {
   allMids: {},
   agentWallet: undefined,
   hyperliquidAxios: mainnetAxios,
-  universe: undefined
+  universe: undefined,
+  clearingHouseState: undefined
 }
 
-export const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue);
+const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue);
 
 export interface PriceMap {
   [key: string]: number;
@@ -43,6 +45,14 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isSdkConnected, setIsSdkConnected] = useState(false);
   const [privateKey, setPrivateKey] = useState<string>();
   const [allMids, setAllMids] = useState<PriceMap>({});
+  const { data: clearingHouseState} = useQuery({
+    queryKey: ['clearingHouseState', address, chain?.id],
+    queryFn: async () => {
+      const res = await sdk.info.perpetuals.getClearinghouseState(address);
+      return res as IClearingHouseState;
+    },
+    enabled: !!sdk || !!isSdkConnected
+  })
   const { data: universe } = useQuery({
     queryKey: ['universe', chain?.id],
     queryFn: async () => {
@@ -59,10 +69,12 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return mainnetAxios
   }, [chain])
 
+
   // effect to load the Hyperliquid SDK
   useEffect(() => {
     const script = document.createElement("script");
-    script.src = "https://unpkg.com/hyperliquid/dist/browser.global.js";
+    // script.src = "https://unpkg.com/hyperliquid/dist/browser.global.js";
+    script.src = "/lib/hyperliquidSdk.js";
     script.async = true;
 
     script.onload = async () => {
@@ -129,8 +141,17 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   }, [sdk]);
 
   return (
-    <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, allMids, agentWallet, hyperliquidAxios, universe }}>
+    <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, allMids, agentWallet, hyperliquidAxios, universe, clearingHouseState }}>
       {children}
     </HyperLiquidContext.Provider>
   );
+};
+
+
+export const useHyperLiquid = (): HyperLiquidContextProps => {
+  const context = useContext(HyperLiquidContext);
+  if (!context) {
+    throw new Error('useHyperLiquid must be used within a HyperLiquidProvider');
+  }
+  return context;
 };

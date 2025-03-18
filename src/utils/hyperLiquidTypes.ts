@@ -228,3 +228,56 @@ export type PlaceOrderAction = {
     f: number;
   };
 };
+
+export interface MarginSummary {
+  accountValue: number;
+  totalNtlPos: number;
+  totalRawUsd: number;
+  totalMarginUsed: number;
+}
+
+export interface IClearingHouseState {
+  marginSummary: MarginSummary;
+  crossMarginSummary: MarginSummary;
+  crossMaintenanceMarginUsed: number;
+  withdrawable: number;
+  assetPositions: Array<IPosition>;
+  time: number;
+}
+
+export interface IPositionData {
+  coin: string;
+  cumFunding: {
+    allTime: string;
+    sinceChange: string;
+    sinceOpen: string;
+  };
+  entryPx: string;
+  leverage: {
+    rawUsd: string;
+    type: string;
+    value: number;
+  };
+  liquidationPx: string;
+  marginUsed: string;
+  maxLeverage: number;
+  positionValue: string;
+  returnOnEquity: string;
+  szi: string;
+  unrealizedPnl: string;
+}
+
+export interface IPosition {
+  position: IPositionData;
+  type: string;
+}
+
+export type Order = {
+  coin: string;
+  side: 'buy' | 'sell';
+  limitPx: number;
+  sz: number;
+  oid: number;
+  timestamp: number;
+  origSz: number;
+};
