@@ -5,7 +5,7 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex, PrivateKeyAccount } from 'viem';
 import type { AxiosInstance } from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { IClearingHouseState, MetaData } from '@/utils/hyperLiquidTypes';
+import { IClearingHouseState, MetaData, WsFill, WsUserFills } from '@/utils/hyperLiquidTypes';
 import { AGENT_PRIVATE_KEY } from '@/utils/constants';
 import { mainnetAxios, testnetAxios } from '@/config/axios';
 
@@ -45,7 +45,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isSdkConnected, setIsSdkConnected] = useState(false);
   const [privateKey, setPrivateKey] = useState<string>();
   const [allMids, setAllMids] = useState<PriceMap>({});
-  const { data: clearingHouseState} = useQuery({
+  const { data: clearingHouseState, refetch: refetchClearingHouseState} = useQuery({
     queryKey: ['clearingHouseState', address, chain?.id],
     queryFn: async () => {
       const res = await sdk.info.perpetuals.getClearinghouseState(address);
@@ -53,6 +53,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     },
     enabled: !!sdk || !!isSdkConnected
   })
+  
   const { data: universe } = useQuery({
     queryKey: ['universe', chain?.id],
     queryFn: async () => {
@@ -137,6 +138,18 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
     return () => {
       sdk.subscriptions.unsubscribeFromAllMids();
+    };
+  }, [sdk]);
+
+  useEffect(() => {
+    if (!sdk) return;
+    console.log("Subscribing to fills");
+    sdk.subscriptions.subscribeToUserFills(address, (data: WsUserFills) => {
+      console.log("User Fills Update",data)
+      refetchClearingHouseState();
+    });
+    return () => {
+      sdk.subscriptions.unsubscribeFromUserFills();
     };
   }, [sdk]);
 

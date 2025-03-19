@@ -2,7 +2,7 @@
 
 import { useHyperLiquid } from "@/context/HyperLiquid";
 import { getCoinName } from "@/utils/utils";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 interface AmountInputProps {
   selectedAsset: string;
@@ -11,18 +11,35 @@ interface AmountInputProps {
   total: number;
   setTotal: React.Dispatch<React.SetStateAction<number>>;
   limitPrice: number;
+  isReduceOnly: boolean;
+  isBuy: boolean;
 }
 
-const AmountInput = ({ selectedAsset, amount, setAmount, total, setTotal, limitPrice }: AmountInputProps) => {
+const AmountInput = ({ selectedAsset, amount, setAmount, total, setTotal, limitPrice, isReduceOnly, isBuy }: AmountInputProps) => {
   const { clearingHouseState } = useHyperLiquid();
   const [usdPercent, setUsdPercent] = useState(0);
+
+  const maxAllowedUsd = useMemo(() => {
+    if(!clearingHouseState) return 0;
+    if(!isReduceOnly) return clearingHouseState.withdrawable;
+    const existingPosition = clearingHouseState.assetPositions.find((pos) => {
+      return pos.position.coin === selectedAsset;
+    })
+    if(!existingPosition) return clearingHouseState.withdrawable;
+    if(existingPosition.position.szi > 0 && isBuy) return 0;
+    if(existingPosition.position.szi < 0 && !isBuy) return 0;
+    console.log("existingPosition", existingPosition);
+    const priceQuotient = limitPrice / existingPosition.position.entryPx;
+    const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient;
+    return maxAllowedUsd;
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice]);
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return;
     const newAmount = parseFloat(e.target.value) || 0;
     setAmount(newAmount);
     setTotal(limitPrice * newAmount);
-    setUsdPercent((newAmount * limitPrice) / clearingHouseState?.withdrawable * 100);
+    setUsdPercent((newAmount * limitPrice) / maxAllowedUsd * 100);
   };
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,15 +47,15 @@ const AmountInput = ({ selectedAsset, amount, setAmount, total, setTotal, limitP
     const newTotal = parseFloat(e.target.value) || 0;
     setTotal(newTotal);
     setAmount(limitPrice > 0 ? newTotal / limitPrice : 0);
-    setUsdPercent((newTotal / clearingHouseState?.withdrawable) * 100);
+    setUsdPercent((newTotal / maxAllowedUsd) * 100);
   };
 
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return;
     const newUsdPercent = parseFloat(e.target.value) || 0;
     setUsdPercent(newUsdPercent);
-    setAmount((newUsdPercent * clearingHouseState?.withdrawable) / 100 / limitPrice);
-    setTotal((newUsdPercent * clearingHouseState?.withdrawable) / 100);
+    setAmount((newUsdPercent * maxAllowedUsd) / 100 / limitPrice);
+    setTotal((newUsdPercent * maxAllowedUsd) / 100);
   };
 
   return (

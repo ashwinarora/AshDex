@@ -248,23 +248,23 @@ export interface IClearingHouseState {
 export interface IPositionData {
   coin: string;
   cumFunding: {
-    allTime: string;
-    sinceChange: string;
-    sinceOpen: string;
+    allTime: number;
+    sinceChange: number;
+    sinceOpen: number;
   };
-  entryPx: string;
+  entryPx: number;
   leverage: {
-    rawUsd: string;
-    type: string;
+    rawUsd: number;
+    type: number;
     value: number;
   };
-  liquidationPx: string;
-  marginUsed: string;
+  liquidationPx: number;
+  marginUsed: number;
   maxLeverage: number;
-  positionValue: string;
-  returnOnEquity: string;
-  szi: string;
-  unrealizedPnl: string;
+  positionValue: number;
+  returnOnEquity: number;
+  szi: number;
+  unrealizedPnl: number;
 }
 
 export interface IPosition {

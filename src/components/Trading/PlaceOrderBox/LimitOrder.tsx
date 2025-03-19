@@ -17,6 +17,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   const [isCross, setIsCross] = useState<boolean>(true);
   const [leverage, setLeverage] = useState<number>(1);
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false);
+  const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false);
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0;
@@ -53,6 +54,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           total={total}
           setTotal={setTotal}
           limitPrice={limitPrice}
+          isReduceOnly={isReduceOnly}
+          isBuy={isBuy}
         />
         <LeverageMargin
           selectedAsset={selectedAsset}
@@ -63,7 +66,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         />
 
         <div className="flex flex-wrap items-center gap-4">
-            <label className="inline-flex items-center text-sm text-gray-300">
+          <label className="inline-flex items-center text-sm text-gray-300">
             <input
               type="checkbox"
               className="form-checkbox h-4 w-4 text-blue-500"
@@ -71,11 +74,13 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
               onChange={() => setIsPostOnly(!isPostOnly)}
             />
             <span className="ml-2">Post-Only</span>
-            </label>
+          </label>
           <label className="inline-flex items-center text-sm text-gray-300">
             <input
               type="checkbox"
               className="form-checkbox h-4 w-4 text-blue-500"
+              checked={isReduceOnly}
+              onChange={() => setIsReduceOnly(!isReduceOnly)}
             />
             <span className="ml-2">Reduce Only</span>
           </label>

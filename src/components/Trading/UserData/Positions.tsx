@@ -24,7 +24,7 @@ const Positions = () => {
             const position = pos.position
             return (
               <tr key={index}>
-                <td className="py-2 px-4 border-b border-gray-700">{position.coin}</td>
+                <td className={`py-2 px-4 border-b border-gray-700 ${position.szi > 0 ? 'text-green-500' : 'text-red-500'}`}>{position.coin}</td>
                 <td className="py-2 px-4 border-b border-gray-700">{position.szi}</td>
                 <td className="py-2 px-4 border-b border-gray-700">{position.positionValue}</td>
                 <td className="py-2 px-4 border-b border-gray-700">{position.entryPx}</td>
