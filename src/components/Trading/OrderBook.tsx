@@ -62,15 +62,15 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           <p className="text-sm font-bold text-[#FFFFFF]">Order Book</p>
 
           <div className="flex items-center">
-            <Image src={ThreeDot} alt="" className="w-5 h-5" />
+            <Image src={ThreeDot} alt="" width={20} height={20} className="w-5 h-5" />
           </div>
         </div>
       </div>
       <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
         <div className="flex items-center">
-          <Image src={Filter1} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter2} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter3} alt="" className="w-5 h-5 mx-1" />
+          <Image src={Filter1} alt="" width={20} height={20} className="w-5 h-5 mx-1" />
+          <Image src={Filter2} alt="" width={20} height={20} className="w-5 h-5 mx-1" />
+          <Image src={Filter3} alt="" width={20} height={20} className="w-5 h-5 mx-1" />
         </div>
         <div>
           <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">

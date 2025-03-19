@@ -91,9 +91,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="2xl:relative absolute -top-1 -left-1"
             alt="starticon"
             width={18}
+            style={{height: 'auto', width: 'auto'}}
             height={18}
           />
-          <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} height={32} />
+          <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} style={{height: 'auto', width: 'auto'}} height={32} />
           <button
             type="button"
             onClick={() => setIsOpen(prev => !prev)}
@@ -144,6 +145,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <button onClick={() => setIsSettingsOpen(prev => !prev)} className="mx-2 cursor-pointer">
             <Image
               src={settingicon}
+              style={{height: 'auto', width: 'auto'}}
               alt="Settings"
               className="2xl:w-[20px] 2xl:h-[20px] max-[1025px]:w-8 max-[1025px]:h-8 w-6 h-6"
               width={24}

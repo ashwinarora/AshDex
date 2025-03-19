@@ -35,6 +35,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
   const [amount, setAmount] = useState<number>(0);
   const [total, setTotal] = useState<number>(0);
   const [leverage, setLeverage] = useState(50);
+  const [amountValue, setAmountValue] = useState(300);
   const [takeShowInputs, setTakeShowInputs] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
@@ -216,8 +217,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
   };
 
   return (
-    <div className="w-full p-4 text-white rounded-lg">
-      <div className="flex border-b border-gray-600 mb-4">
+    <div className="w-full py-4 text-white rounded-lg">
+      <div className="flex border-b border-gray-600 mb-4 px-4">
         <button
           className={`flex-1 text-center py-2 font-medium transition-colors ${
             isBuy ? "text-white border-b-4 border-[#5F46F9]" : "text-gray-300"
@@ -236,7 +237,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
         </button>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 px-4">
         <label className="block text-sm font-medium text-gray-400">
           Limit Price
         </label>
@@ -246,7 +247,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
         </div>
       </div>
 
-      <div className="mb-4 border-gray-600 border-t border-b py-3">
+      <div className="mb-4 border-gray-600 border-t border-b py-3 px-4">
         <label className="block text-sm font-medium text-gray-400">
           Amount
         </label>
@@ -254,7 +255,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
           <input
             type="number"
             className="bg-transparent w-full outline-none"
-            value="300"
+            value={amountValue}
+            onChange={(e) => setAmountValue(Number(e.target.value))}
           />
           <div className="flex w-auto items-center gap-1 text-sm">
             <select className="w-full py-2 px-2 rounded text-[#8B8BA0] border-2 border-[#FFFFFF0F]">
@@ -264,7 +266,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
           </div>
         </div>
       </div>
-      <div className="flex w-full">
+      <div className="flex w-full px-4">
         <div className="w-5/6">
           <input
             type="range"
@@ -287,7 +289,13 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
               WebkitAppearance: "none",
             }}
           />
-          <Image src={Slider1} alt="" className="w-full mt-1" />
+          <Image
+            src={Slider1}
+            alt=""
+            width={20}
+            height={20}
+            className="w-full mt-1"
+          />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>0%</span>
             <span>25%</span>
@@ -307,7 +315,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
         </div>
       </div>
 
-      <div className="my-4">
+      <div className="my-4 px-4">
         <label className="block text-sm font-medium text-gray-400">
           Leverage
         </label>
@@ -334,7 +342,13 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
                 WebkitAppearance: "none",
               }}
             />
-            <Image src={Slider1} alt="" className="w-full mt-1" />
+            <Image
+              src={Slider1}
+              alt=""
+              width={20}
+              height={20}
+              className="w-full mt-1"
+            />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>0%</span>
               <span>25%</span>
@@ -360,17 +374,17 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
           </div>
         </div>
       </div>
-
-      <div className="flex w-full justify-between items-center mb-4  border border-white/10 bg-white/10 rounded-md px-4 py-2">
-        <p className="text-[#8B8BA0]">Margin Mode</p>
-        <select className="bg-transparent text-white outline-none">
-          <option value="STOP_LIMIT">Cross</option>
-          <option value="LIMIT">Limit</option>
-          <option value="MARKET">Market</option>
-        </select>
+      <div className="px-4">
+        <div className="flex w-full justify-between items-center mb-4 px-4 border border-white/10 bg-white/10 rounded-md  py-2">
+          <p className="text-[#8B8BA0]">Margin Mode</p>
+          <select className="bg-transparent text-white outline-none">
+            <option value="STOP_LIMIT">Cross</option>
+            <option value="LIMIT">Limit</option>
+            <option value="MARKET">Market</option>
+          </select>
+        </div>
       </div>
-
-      <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-gray-600 pb-3">
+      <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-gray-600 pb-3 px-4">
         <CheckBox
           label="Take Profit / Stop Loss"
           onChange={(checked) => setTakeShowInputs(checked)}
@@ -383,7 +397,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
       </div>
 
       {takeShowInputs && (
-        <div className="mt-3 gap-3">
+        <div className="mt-3 gap-3 px-4">
           <div>
             <input
               type="number"
@@ -408,27 +422,29 @@ const LimitOrder: React.FC<LimitOrderProps> = ({
           </div>
         </div>
       )}
-      <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-gray-600 py-3">
+      <div className="grid grid-cols-2 gap-3 text-sm px-4 text-gray-400 border-b border-gray-600 py-3">
         <CheckBox label="Post-Only" />
         <CheckBox label="Post-Only" />
       </div>
-
-      <button
-        className={`py-2 rounded-2xl w-full mt-4 ${
-          isDisabled
-            ? "bg-[#0F081680] cursor-not-allowed"
-            : "bg-[#5F46F9] hover:bg-purple-600 text-white"
-        }`}
-        disabled={isDisabled}
-      >
-        {isBuy ? "Buy" : "Sell"}
-      </button>
-
-      <div className="text-sm text-gray-400 flex justify-between mt-4">
-        <span>Available</span> <span>-- USD</span>
+      <div className="px-4">
+        <button
+          className={`py-2 rounded-2xl w-full mt-4  ${
+            isDisabled
+              ? "bg-[#0F081680] cursor-not-allowed"
+              : "bg-[#5F46F9] hover:bg-purple-600 text-white"
+          }`}
+          disabled={isDisabled}
+        >
+          {isBuy ? "Buy" : "Sell"}
+        </button>
       </div>
-      <div className="text-sm text-gray-400 flex justify-between">
-        <span>Max Buy</span> <span>1.38474 BTC</span>
+      <div className="px-4">
+        <div className="text-sm text-gray-400 flex justify-between mt-4 ">
+          <span>Available</span> <span>-- USD</span>
+        </div>
+        <div className="text-sm text-gray-400 flex justify-between">
+          <span>Max Buy</span> <span>1.38474 BTC</span>
+        </div>
       </div>
     </div>
   );
