@@ -1,81 +1,79 @@
-"use client";
+'use client'
 
-import { useContext, useEffect, useMemo, useState } from "react";
-import { HyperLiquidContext } from "../../context/HyperLiquid";
-import type { WsBook, WsLevel } from "../../utils/hyperLiquidTypes";
-import ThreeDot from "../../assets/images/ThreeDot.svg";
-import Filter1 from "../../assets/images/Filter1.svg";
-import Filter2 from "../../assets/images/Filter2.svg";
-import Filter3 from "../../assets/images/Filter3.svg";
-import Image from "next/image";
+import { useEffect, useMemo, useState } from 'react'
+import Image from 'next/image'
+import { useHyperLiquid } from '../../context/HyperLiquid'
+import type { WsBook, WsLevel } from '../../utils/hyperLiquidTypes'
+import ThreeDot from '../../assets/images/ThreeDot.svg'
+import Filter1 from '../../assets/images/Filter1.svg'
+import Filter2 from '../../assets/images/Filter2.svg'
+import Filter3 from '../../assets/images/Filter3.svg'
 
 interface IOrderBookProps {
-  selectedAsset: string;
+  selectedAsset: string
 }
 
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
-  const [l2Book, setL2Book] = useState<WsBook>();
+  const [l2Book, setL2Book] = useState<WsBook>()
 
   useEffect(() => {
-    if (!isSdkConnected) return;
-    if (!selectedAsset.length) return;
+    if (!isSdkConnected) return
+    if (!selectedAsset.length) return
     sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook) => {
-      setL2Book(data);
-    });
+      setL2Book(data)
+    })
     return () => {
-      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset);
-    };
-  }, [selectedAsset, isSdkConnected, sdk]);
+      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset)
+    }
+  }, [selectedAsset, isSdkConnected, sdk])
 
   const processOrders = (orders: WsLevel[]) => {
-    let runningTotal = 0;
-    const processed = orders.map((order) => {
-      runningTotal += Number(order.sz);
+    let runningTotal = 0
+    const processed = orders.map(order => {
+      runningTotal += Number(order.sz)
       return {
         ...order,
-        cumulative: runningTotal,
-      };
-    });
-    return processed;
-  };
+        cumulative: runningTotal
+      }
+    })
+    return processed
+  }
 
-  const [rawBuys, rawSells] = l2Book?.levels ?? [[], []];
+  const [rawBuys, rawSells] = l2Book?.levels ?? [[], []]
 
-  const sells = useMemo(() => processOrders(rawSells.slice(0, 10)), [rawSells]);
+  const sells = useMemo(() => processOrders(rawSells.slice(0, 10)), [rawSells])
 
-  const buys = useMemo(() => processOrders(rawBuys.slice(0, 10)), [rawBuys]);
+  const buys = useMemo(() => processOrders(rawBuys.slice(0, 10)), [rawBuys])
 
-  const bestAsk = sells.length > 0 ? sells[0].px : 0;
-  const bestBid = buys.length > 0 ? buys[0].px : 0;
-  const spread = bestAsk && bestBid ? Number(bestAsk) - Number(bestBid) : 0;
-  const spreadPercent = bestAsk ? (spread / Number(bestAsk)) * 100 : 0;
+  const bestAsk = sells.length > 0 ? sells[0].px : 0
+  const bestBid = buys.length > 0 ? buys[0].px : 0
+  const spread = bestAsk && bestBid ? Number(bestAsk) - Number(bestBid) : 0
+  const spreadPercent = bestAsk ? (spread / Number(bestAsk)) * 100 : 0
 
-  const maxSellCumulative =
-    sells.length > 0 ? sells[sells.length - 1].cumulative : 0;
-  const maxBuyCumulative =
-    buys.length > 0 ? buys[buys.length - 1].cumulative : 0;
-  const maxCumulative = Math.max(maxSellCumulative, maxBuyCumulative);
+  const maxSellCumulative = sells.length > 0 ? sells[sells.length - 1].cumulative : 0
+  const maxBuyCumulative = buys.length > 0 ? buys[buys.length - 1].cumulative : 0
+  const maxCumulative = Math.max(maxSellCumulative, maxBuyCumulative)
 
   return (
     <div className="w-full text-gray-200 font-mono text-sm">
       <div>
-        <div className="flex justify-between">
-          <h1 className="text-lg font-bold text-white">Order Book</h1>
+        <div className="flex p-4 justify-between">
+          <p className="text-sm font-bold text-[#FFFFFF]">Order Book</p>
 
           <div className="flex items-center">
             <Image src={ThreeDot} alt="" className="w-5 h-5" />
           </div>
         </div>
       </div>
-      <div className="flex justify-between text-gray-300 py-1 px-2 border-t border-gray-700 my-1">
+      <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
         <div className="flex items-center">
           <Image src={Filter1} alt="" className="w-5 h-5 mx-1" />
           <Image src={Filter2} alt="" className="w-5 h-5 mx-1" />
           <Image src={Filter3} alt="" className="w-5 h-5 mx-1" />
         </div>
         <div>
-          <select className="text-[#8B8BA0] p-2 rounded-lg">
+          <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">
             <option value="0.01">0.01</option>
             <option value="0.1">0.1</option>
             <option value="1">1</option>
@@ -84,31 +82,32 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           </select>
         </div>
       </div>
-      <div className="flex justify-between text-gray-300 py-1 px-2 border-t border-b border-gray-700 my-1">
-        <span>Price (USDS)</span>
-        <span>AmOUNT (BTC)</span>
-        <span>Total</span>
+      <div className="flex opacity-60 justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
+        <span className="text-xs font-medium">Price (USDS)</span>
+        <span className="text-xs font-medium">Amount (BTC)</span>
+        <span className="text-xs font-medium">Total</span>
       </div>
+
       <div className="flex flex-col space-y-1">
         {sells
           .map((order, index) => {
-            const percentage = maxCumulative
-              ? (order.cumulative / maxCumulative) * 100
-              : 0;
+            const percentage = maxCumulative ? (order.cumulative / maxCumulative) * 100 : 0
 
             return (
               <div
                 key={`sell-${index}`}
-                className="relative flex justify-between py-0 px-2"
+                className="relative flex justify-between py-1 px-4"
                 style={{
-                  background: `linear-gradient(to right, rgba(239,68,68,0.2) ${percentage}%, transparent ${percentage}%)`,
+                  background: `linear-gradient(to right, rgba(239,68,68,0.2) ${percentage}%, transparent ${percentage}%)`
                 }}
               >
-                <span className="text-red-500">{order.px}</span>
-                <span>{order.sz}</span>
-                <span>{order.cumulative.toFixed(2)}</span>
+                <span className="text-[#E2464A] font-medium text-xs">{order.px}</span>
+                <span className="text-[#FFFFFF] text-xs font-normal opacity-90">{order.sz}</span>
+                <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
+                  {order.cumulative.toFixed(2)}
+                </span>
               </div>
-            );
+            )
           })
           .reverse()}
 
@@ -119,27 +118,27 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
         </div>
 
         {buys.slice(0, 10).map((order, index) => {
-          const percentage = maxCumulative
-            ? (order.cumulative / maxCumulative) * 100
-            : 0;
+          const percentage = maxCumulative ? (order.cumulative / maxCumulative) * 100 : 0
 
           return (
             <div
               key={`buy-${index}`}
-              className="relative flex justify-between py-0 px-2"
+              className="relative flex justify-between py-1 px-4"
               style={{
-                background: `linear-gradient(to right, rgba(34,197,94,0.2) ${percentage}%, transparent ${percentage}%)`,
+                background: `linear-gradient(to right, rgba(34,197,94,0.2) ${percentage}%, transparent ${percentage}%)`
               }}
             >
-              <span className="text-green-500">{order.px}</span>
-              <span>{order.sz}</span>
-              <span>{order.cumulative.toFixed(2)}</span>
+              <span className="text-[#2FA766] font-medium text-xs">{order.px}</span>
+              <span className="text-[#FFFFFF] text-xs font-normal opacity-90">{order.sz}</span>
+              <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
+                {order.cumulative.toFixed(2)}
+              </span>
             </div>
-          );
+          )
         })}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default OrderBook;
+export default OrderBook

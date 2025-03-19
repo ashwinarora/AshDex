@@ -183,7 +183,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full right-0 mt-2 w-[250px] bg-[#0F0816] border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-[#0F0816] border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
                 >
                   {/* Wallet Address & Copy */}
                   <div className="flex items-start text-[#E8E0F1]">
