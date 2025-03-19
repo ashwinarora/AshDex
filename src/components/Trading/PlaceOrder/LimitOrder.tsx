@@ -1,80 +1,77 @@
-"use client"
-import React, { useMemo, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { useAccount, useConnect, useSignTypedData } from 'wagmi';
-import { IExtraAgent } from '@/utils/hyperLiquidTypes';
-import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent';
-import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants';
-import { getUniverseIndex, splitSignature } from '@/utils/utils';
-import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee';
-import { placeOrder } from '@/utils/hyperliquid/PlaceOrder';
-import { useHyperLiquid } from '@/context/HyperLiquid';
+'use client'
+import React, { useMemo, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { useAccount, useConnect, useSignTypedData } from 'wagmi'
+import { IExtraAgent } from '@/utils/hyperLiquidTypes'
+import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
+import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants'
+import { getUniverseIndex, splitSignature } from '@/utils/utils'
+import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
+import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { useHyperLiquid } from '@/context/HyperLiquid'
 
 interface LimitOrderProps {
-  selectedAsset: string;
+  selectedAsset: string
 }
 
 const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProps) => {
-  const { agentWallet, hyperliquidAxios, universe } = useHyperLiquid();
-  const { connect, connectors } = useConnect();
-  const { signTypedDataAsync } = useSignTypedData();
-  const { address, isConnected: isWalletConnected, chainId, chain } = useAccount();
-  const [isBuy, setIsBuy] = useState<boolean>(true);
-  const [limitPrice, setLimitPrice] = useState<number>(0);
-  const [amount, setAmount] = useState<number>(0);
-  const [total, setTotal] = useState<number>(0);
+  const { agentWallet, hyperliquidAxios, universe } = useHyperLiquid()
+  const { connect, connectors } = useConnect()
+  const { signTypedDataAsync } = useSignTypedData()
+  const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
+  const [isBuy, setIsBuy] = useState<boolean>(true)
+  const [limitPrice, setLimitPrice] = useState<number>(0)
+  const [amount, setAmount] = useState<number>(0)
+  const [total, setTotal] = useState<number>(0)
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {
-        type: "extraAgents",
+        type: 'extraAgents',
         user: address
-      });
-      return response.data as IExtraAgent[];
+      })
+      return response.data as IExtraAgent[]
     },
     enabled: isWalletConnected && !!hyperliquidAxios
   })
 
   const isAgentApproved = useMemo(() => {
-    if (!extraAgents) return false;
-    return extraAgents.some(agent => agent.address.toLowerCase() === agentWallet?.address.toLowerCase())
+    if (!extraAgents) return false
+    return extraAgents.some(
+      agent => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
+    )
   }, [extraAgents, agentWallet])
 
   const { data: currentFeeApproval, refetch: refetchCurrentFeeApproval } = useQuery({
     queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {
-        type: "maxBuilderFee",
+        type: 'maxBuilderFee',
         user: address,
         builder: BUILDER_ADDRESS
       })
-      return response.data as number;
+      return response.data as number
     },
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
 
-  // useEffect(() => {
-  //   console.log('Current Fee Approval:', currentFeeApproval);
-  //   console.log("AgentWallet", agentWallet?.address)
-  // }, [currentFeeApproval]);
-
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLimitPrice = parseFloat(e.target.value) || 0;
-    setLimitPrice(newLimitPrice);
-    setTotal(newLimitPrice * amount);
-  };
+    const newLimitPrice = parseFloat(e.target.value) || 0
+    setLimitPrice(newLimitPrice)
+    setTotal(newLimitPrice * amount)
+  }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newAmount = parseFloat(e.target.value) || 0;
-    setAmount(newAmount);
-    setTotal(limitPrice * newAmount);
-  };
+    const newAmount = parseFloat(e.target.value) || 0
+    setAmount(newAmount)
+    setTotal(limitPrice * newAmount)
+  }
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newTotal = parseFloat(e.target.value) || 0;
-    setTotal(newTotal);
-    setAmount(limitPrice > 0 ? newTotal / limitPrice : 0);
-  };
+    const newTotal = parseFloat(e.target.value) || 0
+    setTotal(newTotal)
+    setAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+  }
 
   const buildButton = () => {
     if (!isWalletConnected) {
@@ -96,7 +93,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           type="button"
           className="tradeButton"
           onClick={async () => {
-            if (!chainId) return;
+            if (!chainId) return
             try {
               const payload = getApproveAgentPayload({
                 agentAddress: agentWallet?.address || '',
@@ -104,10 +101,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
                 chainId: chainId,
                 isTestnet: chain?.testnet || false,
                 nonce: Date.now()
-              });
-              console.log(payload);
-              const sign = await signTypedDataAsync(payload);
-              console.log("sigining");
+              })
+              const sign = await signTypedDataAsync(payload)
               const body = {
                 action: {
                   type: payload.message.type,
@@ -115,16 +110,15 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
                   agentName: payload.message.agentName,
                   nonce: payload.message.nonce,
                   signatureChainId: payload.message.signatureChainId,
-                  hyperliquidChain: payload.message.hyperliquidChain,
+                  hyperliquidChain: payload.message.hyperliquidChain
                 },
                 nonce: payload.message.nonce,
-                signature: splitSignature(sign),
-              };
-              const res = await hyperliquidAxios.post("/exchange", body);
-              console.log(res);
-              await refetchExtraAgents();
+                signature: splitSignature(sign)
+              }
+              const res = await hyperliquidAxios.post('/exchange', body)
+              await refetchExtraAgents()
             } catch (error) {
-              console.error("Error approving agent:", error);
+              console.error('Error approving agent:', error)
             }
           }}
         >
@@ -138,18 +132,16 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           type="button"
           className="tradeButton"
           onClick={async () => {
-            if (!chainId) return;
+            if (!chainId) return
             try {
               const payload = getApproveBuilderFeePayload({
                 chainId: chainId,
                 isTestnet: chain?.testnet || false,
                 builder: BUILDER_ADDRESS,
                 nonce: Date.now(),
-                feePercentage: "0.1%"
-              });
-              console.log(payload);
-              const sign = await signTypedDataAsync(payload);
-              console.log("sigining");
+                feePercentage: '0.1%'
+              })
+              const sign = await signTypedDataAsync(payload)
               const body = {
                 action: {
                   type: payload.message.type,
@@ -157,16 +149,15 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
                   maxFeeRate: payload.message.maxFeeRate,
                   nonce: payload.message.nonce,
                   signatureChainId: payload.message.signatureChainId,
-                  hyperliquidChain: payload.message.hyperliquidChain,
+                  hyperliquidChain: payload.message.hyperliquidChain
                 },
                 nonce: payload.message.nonce,
-                signature: splitSignature(sign),
-              };
-              const res = await hyperliquidAxios.post("/exchange", body);
-              console.log(res);
-              await refetchCurrentFeeApproval();
+                signature: splitSignature(sign)
+              }
+              const res = await hyperliquidAxios.post('/exchange', body)
+              await refetchCurrentFeeApproval()
             } catch (error) {
-              console.error("Error approving agent:", error);
+              console.error('Error approving agent:', error)
             }
           }}
         >
@@ -180,18 +171,18 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         type="button"
         className="tradeButton"
         onClick={() => {
-          if (!agentWallet) return;
-          if (!universe) return;
-          if (!currentFeeApproval) return;
+          if (!agentWallet) return
+          if (!universe) return
+          if (!currentFeeApproval) return
           placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-            type: "limit",
+            type: 'limit',
             assetIndex: getUniverseIndex(universe, selectedAsset),
             isBuy: isBuy,
             price: limitPrice,
             size: amount,
             reduceOnly: false,
-            tif: "Gtc",
-            grouping: "na",
+            tif: 'Gtc',
+            grouping: 'na',
             builder: {
               address: BUILDER_ADDRESS,
               fee: currentFeeApproval
@@ -208,19 +199,19 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
     <div className="w-full h-auto p-4">
       <div className="flex border-b border-gray-300 mb-4">
         <button
-          className={`flex-1 text-center py-2 font-medium transition-colors ${isBuy
-            ? 'text-blue-500 border-b-2 border-blue-500'
-            : 'text-gray-300 hover:text-blue-500'
-            }`}
+          className={`flex-1 text-center py-2 font-medium transition-colors ${
+            isBuy ? 'text-blue-500 border-b-2 border-blue-500' : 'text-gray-300 hover:text-blue-500'
+          }`}
           onClick={() => setIsBuy(true)}
         >
           BUY
         </button>
         <button
-          className={`flex-1 text-center py-2 font-medium transition-colors ${!isBuy
-            ? 'text-blue-500 border-b-2 border-blue-500'
-            : 'text-gray-300 hover:text-blue-500'
-            }`}
+          className={`flex-1 text-center py-2 font-medium transition-colors ${
+            !isBuy
+              ? 'text-blue-500 border-b-2 border-blue-500'
+              : 'text-gray-300 hover:text-blue-500'
+          }`}
           onClick={() => setIsBuy(false)}
         >
           SELL
@@ -229,9 +220,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Limit price
-          </label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
           <div className="relative">
             <input
               type="text"
@@ -247,9 +236,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            Amount
-          </label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
           <div className="relative">
             <input
               type="text"
@@ -265,9 +252,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">
-            TOTAL
-          </label>
+          <label className="block text-sm font-medium text-gray-300 mb-1">TOTAL</label>
           <div className="relative">
             <input
               type="text"
@@ -306,24 +291,15 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
 
         <div className="flex flex-wrap items-center gap-4">
           <label className="inline-flex items-center text-sm text-gray-300">
-            <input
-              type="checkbox"
-              className="form-checkbox h-4 w-4 text-blue-500"
-            />
+            <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
             <span className="ml-2">Post-Only</span>
           </label>
           <label className="inline-flex items-center text-sm text-gray-300">
-            <input
-              type="checkbox"
-              className="form-checkbox h-4 w-4 text-blue-500"
-            />
+            <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
             <span className="ml-2">Reduce Only</span>
           </label>
           <label className="inline-flex items-center text-sm text-gray-300">
-            <input
-              type="checkbox"
-              className="form-checkbox h-4 w-4 text-blue-500"
-            />
+            <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
             <span className="ml-2">Set TP for all</span>
           </label>
         </div>
@@ -337,7 +313,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         {buildButton()}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default LimitOrder;
+export default LimitOrder

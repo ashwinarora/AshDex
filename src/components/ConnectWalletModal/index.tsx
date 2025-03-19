@@ -49,7 +49,6 @@ const ConnectWalletModal: React.FC<{
         setSelectedConnector(walletConnector)
         const result = await connectAsync({ connector })
         if (result) {
-          console.log(`Wallet connected successfully: ${result}`)
           setIsWalletConnected(true)
         }
       } catch (error) {
