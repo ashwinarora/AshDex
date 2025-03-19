@@ -14,11 +14,11 @@ const Trading = () => {
   return (
     <div className="h-full bg-[#0d021f] text-white p-4">
       {/* Top Bar for Asset Selector */}
-      <div className="flex mx-10 justify-between items-center mb-4 relative z-50">
+      <div className="flex max-[770px]:mx-1 mx-10 justify-between items-center mb-4 relative z-50">
         <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
       </div>
       {/* Main Trading Layout */}
-      <div className="flex flex-wrap mx-10  xl:grid xl:grid-cols-[2fr_5fr_3fr] xl:grid-rows-[6fr_2fr] gap-4">
+      <div className="flex flex-wrap max-[770px]:mx-1 mx-10  xl:grid xl:grid-cols-[2fr_5fr_3fr] xl:grid-rows-[6fr_2fr] gap-4">
         <div
           className="rounded-xl shadow-md border-2 border-white/10 backdrop-blur-[40px] w-full xl:w-auto"
           style={{

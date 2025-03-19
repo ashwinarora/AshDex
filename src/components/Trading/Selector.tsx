@@ -77,16 +77,22 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full  my-0 rounded-2xl flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px]"
+      className="relative w-full  my-0 rounded-2xl max-[770px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px]"
       style={{
         background:
           'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
       }}
     >
       {/* Left Side */}
-      <div className="flex w-[30%]">
-        <div className="flex items-center p-4 gap-x-4 border-r-1 border-white/10">
-          <Image src={starticon} alt="starticon" width={18} height={18} />
+      <div className="flex max-[770px]:border-b max-[770px]:border-white/10">
+        <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-4 border-r-1 border-white/10">
+          <Image
+            src={starticon}
+            className="2xl:relative absolute -top-1 -left-1"
+            alt="starticon"
+            width={18}
+            height={18}
+          />
           <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} height={32} />
           <button
             type="button"
@@ -110,7 +116,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </button>
         </div>
-        <div className="flex flex-col items-center p-4 px-8 border-r border-white/10">
+        <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-8 max-[576px]:border-r-0 border-r border-white/10">
           <span className="text-xl font-normal text-[#E2464A]">
             {selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
           </span>
@@ -120,10 +126,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       </div>
 
-      <div className="flex items-center px-6 py-3 w-full justify-between">
-        <div className="flex gap-6 text-white text-sm">
+      <div className="flex items-center relative max-[770px]:px-3 px-6 py-3 max-[770px]:w-full w-[79%] justify-between">
+        <div className="flex flex-wrap gap-2 2xl:gap-6 text-white text-sm">
           {marketData?.map((item, index) => (
-            <div key={index} className="flex border-r-1 px-4 border-white/10 flex-col">
+            <div
+              key={index}
+              className="flex max-[770px]:pb-2 flex-wrap border-r-1 px-4 border-white/10 flex-col"
+            >
               <span className="opacity-60 font-medium text-xs text-[#E8E0F1] ">{item.label}</span>
               <span className={`font-medium mt-1 text-sm ${item.color || 'text-[#FFFFFF]'}`}>
                 {item.value}
@@ -131,31 +140,43 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             </div>
           ))}
         </div>
-        <div ref={settingsRef} className="relative">
+        <div ref={settingsRef} className="relative block max-[770px]:hidden">
           <button onClick={() => setIsSettingsOpen(prev => !prev)} className="mx-2 cursor-pointer">
-            <Image src={settingicon} alt="Settings" width={24} height={24} />
+            <Image
+              src={settingicon}
+              alt="Settings"
+              className="2xl:w-[20px] 2xl:h-[20px] w-8 h-8"
+              width={24}
+              height={24}
+            />
           </button>
-          {/* Settings Dropdown */}
-          {isSettingsOpen && (
-            <div className="absolute -right-4 border-2 border-white/10 top-7 mt-2 w-48 bg-[#0F0816] rounded-2xl shadow-lg">
-              <ul className="p-2 text-white">
-                {settingsOptions?.map((option, index) => (
-                  <li
-                    key={index}
-                    className="flex items-center p-2 font-medium text-base cursor-pointer hover:bg-[#322944] rounded"
-                  >
-                    <input type="checkbox" className="mr-2" defaultChecked={option.checked} />
-                    <span>{option.label}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
+        <button
+          onClick={() => setIsSettingsOpen(prev => !prev)}
+          className="mx-2 max-[770px]:block hidden absolute -top-15 right-0 cursor-pointer"
+        >
+          <Image src={settingicon} alt="Settings" className="w-5 h-5" width={24} height={24} />
+        </button>
       </div>
+      {/* Settings Dropdown */}
+      {isSettingsOpen && (
+        <div className="absolute -right-3 border-2 border-white/10 top-12 mt-2 w-48 bg-[#0F0816] rounded-2xl shadow-lg">
+          <ul className="p-2 text-white">
+            {settingsOptions?.map((option, index) => (
+              <li
+                key={index}
+                className="flex items-center p-2 font-medium text-base cursor-pointer hover:bg-[#322944] rounded"
+              >
+                <input type="checkbox" className="mr-2" defaultChecked={option.checked} />
+                <span>{option.label}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute left-0 top-[60px] mt-2 w-[13%] bg-[#2d1b55] rounded shadow-lg overflow-hidden">
+        <div className="absolute left-0 top-20 2xl:top-[60px] mt-2 2xl:w-[13%] w-[20%] bg-[#2d1b55] rounded shadow-lg overflow-hidden">
           <input
             type="text"
             placeholder="Search assets..."
