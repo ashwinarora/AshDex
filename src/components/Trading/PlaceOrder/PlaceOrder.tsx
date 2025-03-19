@@ -26,7 +26,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   };
 
   return (
-    <div className="w-full text-white p-2 bg-opacity-30 backdrop-blur-md rounded-xl">
+    <div>
       <div className="flex items-center justify-evenly space-x-2 p-2 rounded-xl">
         <button
           onClick={() => setActiveTab("LIMIT")}
@@ -50,23 +50,18 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           Market
         </button>
 
-        <button
-          onClick={() => setActiveTab("STOP_LIMIT")}
-          className={`w-full  py-2 rounded inline-flex items-center justify-center gap-x-2 transition-colors duration-200 ${
-            activeTab === "STOP_LIMIT"
-              ? "bg-blue-600 text-white"
-              : " text-[#8B8BA0]"
-          }`}
-        >
-          Advanced
-        </button>
+        <select className="py-2 rounded text-[#8B8BA0] bg-transparent outline-none ring-0 focus:ring-0 focus:outline-none">
+          <option value="STOP_LIMIT">Advanced</option>
+          <option value="LIMIT">Limit</option>
+          <option value="MARKET">Market</option>
+        </select>
       </div>
 
       <div className="">{renderTabContent()}</div>
     </div>
   );
 };
-
+// ETH
 const MarketComponent: React.FC = () => (
   <div className="p-4 border border-gray-700 rounded-md bg-gray-800">
     <h2 className="font-semibold text-lg">Market Order</h2>

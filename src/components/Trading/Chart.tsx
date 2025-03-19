@@ -67,7 +67,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         ))}
       </select>
     </div>
-    <div ref={chartRef} className='h-full ' />
+    <div ref={chartRef} className='h-[90vh] ' />
   </>
   )
 }
