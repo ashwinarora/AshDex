@@ -99,7 +99,7 @@ export interface WsNonUserCancel {
 
 export interface WsOrder {
   order: WsBasicOrder;
-  status: string; // Possible values: open, filled, canceled, triggered, rejected, marginCanceled
+  status: "open" | "filled" | "canceled" | "triggered" | "rejected" | "marginCanceled";
   statusTimestamp: number;
 }
 

@@ -9,7 +9,7 @@ type LimitOrder = {
   assetIndex: number,
   isBuy: boolean,
   price: string,
-  size: number,
+  size: string,
   reduceOnly: boolean,
   tif: "Alo" | "Ioc" | "Gtc",
   grouping: "na" | "normalTpsl" | "positionTpsl",

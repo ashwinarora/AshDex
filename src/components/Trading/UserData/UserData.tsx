@@ -30,9 +30,9 @@ const UserData = () => {
       </div>
 
       <div className="mt-4">
-        {activeTab === 0 && <div><Balances /></div>}
-        {activeTab === 1 && <div><Positions /></div>}
-        {activeTab === 2 && <div><OpenOrders /></div>}
+        <div className={activeTab === 0 ? '' : 'hidden'}><Balances /></div>
+        <div className={activeTab === 1 ? '' : 'hidden'}><Positions /></div>
+        <div className={activeTab === 2 ? '' : 'hidden'}><OpenOrders /></div>
       </div>
     </div>
   )
