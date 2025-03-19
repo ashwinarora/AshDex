@@ -9,6 +9,8 @@ import { getUniverseIndex, splitSignature } from '@/utils/utils'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import Coin from "@/assets/images/bitcoin-btc-logo.svg";
+import Image from "next/image";
 
 interface LimitOrderProps {
   selectedAsset: string
@@ -24,7 +26,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   const [amount, setAmount] = useState<number>(0)
   const [total, setTotal] = useState<number>(0)
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
-    queryKey: ['extraAgents'],
+    queryKey: ["extraAgents"],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {
         type: 'extraAgents',
@@ -32,8 +34,8 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
       })
       return response.data as IExtraAgent[]
     },
-    enabled: isWalletConnected && !!hyperliquidAxios
-  })
+    enabled: isWalletConnected && !!hyperliquidAxios,
+  });
 
   const isAgentApproved = useMemo(() => {
     if (!extraAgents) return false
@@ -80,12 +82,12 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           type="button"
           className="tradeButton"
           onClick={() => {
-            connect({ connector: connectors[0] })
+            connect({ connector: connectors[0] });
           }}
         >
           Connect Wallet
         </button>
-      )
+      );
     }
     if (!isAgentApproved) {
       return (
@@ -96,7 +98,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             if (!chainId) return
             try {
               const payload = getApproveAgentPayload({
-                agentAddress: agentWallet?.address || '',
+                agentAddress: agentWallet?.address || "",
                 agentName: AGENT_NAME,
                 chainId: chainId,
                 isTestnet: chain?.testnet || false,
@@ -124,7 +126,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         >
           Approve Agent
         </button>
-      )
+      );
     }
     if (currentFeeApproval === 0) {
       return (
@@ -163,7 +165,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
         >
           Approve Fee
         </button>
-      )
+      );
     }
 
     return (
@@ -185,15 +187,15 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             grouping: 'na',
             builder: {
               address: BUILDER_ADDRESS,
-              fee: currentFeeApproval
-            }
-          })
+              fee: currentFeeApproval,
+            },
+          });
         }}
       >
-        {isBuy ? 'Buy' : 'Sell'}
+        {isBuy ? "Buy" : "Sell"}
       </button>
-    )
-  }
+    );
+  };
 
   return (
     <div className="w-full h-auto p-4">
@@ -220,66 +222,38 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="0.0000"
-              value={limitPrice}
-              onChange={handleLimitPriceChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
-              USDT
-            </span>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Limit price
+          </label>
+          <div className="relative flex justify-between">
+            <div className="text-2xl font-medium">$95,000.00</div>
+            <div className="text-sm font-medium">USD</div>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-1">
+            Amount
+          </label>
+          <div className="relative flex justify-between">
+            <div className="text-2xl font-medium">$95,000.00</div>
+            <div className="text-sm font-medium flex items-center">
+              <Image src={Coin} alt="Bitcoin Logo" width={16} height={16} />
+              <span className="ml-1">BTC</span>
+            </div>
           </div>
         </div>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="0.0000"
-              value={amount}
-              onChange={handleAmountChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
-              BTC
-            </span>
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">TOTAL</label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="0.0000"
-              value={total}
-              onChange={handleTotalChange}
-              className="w-full border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
-            />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
-              USDT
-            </span>
-          </div>
-        </div>
-
-        <div>
+        <div className="w-[70%]">
           <div className="flex items-center justify-between text-sm mb-2">
-            <span className="text-gray-300">Minimum 5 USDT</span>
-            <span className="text-gray-500">0 %</span>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              defaultValue={0}
+              className="w-full cursor-pointer"
+            />
           </div>
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            defaultValue={0}
-            className="w-full cursor-pointer"
-          />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>0%</span>
             <span>25%</span>
@@ -289,28 +263,62 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="grid grid-cols-2 gap-4 items-center border-b border-b-gray-300">
+          <label className="inline-flex items-center text-sm text-gray-300">
+          <input
+              type="checkbox"
+              className="form-checkbox h-4 w-4 text-blue-500"
+            />
+            <span className="ml-2">Take Profit / Stop loss</span>
+          </label>
           <label className="inline-flex items-center text-sm text-gray-300">
             <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
             <span className="ml-2">Post-Only</span>
           </label>
           <label className="inline-flex items-center text-sm text-gray-300">
-            <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
+          <input
+              type="checkbox"
+              className="form-checkbox h-4 w-4 text-blue-500"
+            />
             <span className="ml-2">Reduce Only</span>
           </label>
+        </div>
+        <div className="grid grid-cols-2 gap-4 items-center border-b border-b-gray-300">
           <label className="inline-flex items-center text-sm text-gray-300">
-            <input type="checkbox" className="form-checkbox h-4 w-4 text-blue-500" />
-            <span className="ml-2">Set TP for all</span>
+            <input
+              type="checkbox"
+              className="form-checkbox h-4 w-4 text-blue-500"
+            />
+            <span className="ml-2">Take Profit / Stop loss</span>
           </label>
         </div>
-
-        <div className="text-sm text-gray-300 space-y-1">
-          <div>Available --- USDT</div>
-          <div>Max. Buy --- BTC</div>
-          <div>Fee --- USDT</div>
+        <div className="grid grid-cols-2 gap-4 items-center border-b border-b-gray-300">
+          <label className="inline-flex items-center text-sm text-gray-300">
+            <input
+              type="checkbox"
+              className="form-checkbox h-4 w-4 text-blue-500"
+            />
+            <span className="ml-2">Take Profit / Stop loss</span>
+          </label>
+          <label className="inline-flex items-center text-sm text-gray-300">
+            <input
+              type="checkbox"
+              className="form-checkbox h-4 w-4 text-blue-500"
+            />
+            <span className="ml-2">Post-Only</span>
+          </label>
+        </div>
+        <button className="bg-[#5F46F9] hover:bg-blue-600 text-white py-2 rounded-2xl w-full">Buy</button>
+        <div className="text-sm text-gray-300 space-y-1 flex justify-between">
+          <div>Available</div>
+          <div>USD</div>
+        </div>
+        <div className="text-sm text-gray-300 space-y-1 flex justify-between">
+          <div>Max Buy</div>
+          <div>1,232 BTC</div>
         </div>
 
-        {buildButton()}
+        {/* {buildButton()} */}
       </div>
     </div>
   )

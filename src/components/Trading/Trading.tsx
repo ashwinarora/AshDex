@@ -6,6 +6,7 @@ import OrderBook from "./OrderBook";
 import Selector from "./Selector";
 import PlaceOrder from "./PlaceOrder/PlaceOrder";
 import UserData from "./UserData/UserData";
+import Table from "./Table";
 
 const Trading = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>("BTC-PERP");
@@ -16,8 +17,11 @@ const Trading = () => {
         <div className="grid grid-cols-[2fr_6fr_3fr] grid-rows-[1fr_6fr_0fr] gap-0  mt-2 h-screen">
           <div className="border p-4 col-span-2">
             <Selector
+             
               selectedAsset={selectedAsset}
+             
               setSelectedAsset={setSelectedAsset}
+           
             />
           </div>
           <div className="border p-4 row-span-2">
@@ -30,7 +34,9 @@ const Trading = () => {
             <Chart selectedAsset={selectedAsset} />
           </div>
           <div className="border p-4 col-span-full">
+            <Table />
             <UserData />
+
           </div>
         </div>
       </div>
