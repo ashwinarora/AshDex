@@ -52,7 +52,7 @@ const OpenOrders = () => {
     return () => {
       sdk.subscriptions.unsubscribeFromOrderUpdates();
     };
-  }, [sdk]);
+  }, [sdk, address]);
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -5,7 +5,7 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
 import type { Hex, PrivateKeyAccount } from 'viem';
 import type { AxiosInstance } from 'axios';
 import { useQuery } from '@tanstack/react-query';
-import { IClearingHouseState, MetaData, WsFill, WsUserFills } from '@/utils/hyperLiquidTypes';
+import { IClearingHouseState, MetaData, WsUserFills } from '@/utils/hyperLiquidTypes';
 import { AGENT_PRIVATE_KEY } from '@/utils/constants';
 import { mainnetAxios, testnetAxios } from '@/config/axios';
 
@@ -151,7 +151,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return () => {
       sdk.subscriptions.unsubscribeFromUserFills();
     };
-  }, [sdk]);
+  }, [sdk, address, refetchClearingHouseState]);
 
   return (
     <HyperLiquidContext.Provider value={{ sdk, isSdkConnected, allMids, agentWallet, hyperliquidAxios, universe, clearingHouseState }}>
