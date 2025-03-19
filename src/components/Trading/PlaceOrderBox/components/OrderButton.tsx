@@ -18,9 +18,10 @@ interface OrderButtonProps {
   limitPrice: number;
   leverage: number;
   isCross: boolean;
+  isPostOnly: boolean;
 }
 
-const OrderButton = ({ selectedAsset, isBuy, amount, limitPrice, leverage, isCross}: OrderButtonProps) => {
+const OrderButton = ({ selectedAsset, isBuy, amount, limitPrice, leverage, isCross, isPostOnly}: OrderButtonProps) => {
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount();
   const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid();
   const { connect, connectors } = useConnect();
@@ -164,15 +165,17 @@ const OrderButton = ({ selectedAsset, isBuy, amount, limitPrice, leverage, isCro
         const res = await sdk.exchange.updateLeverage(selectedAsset, isCross ? "cross" : "isolated", leverage);
         console.log(res);
         const assetIndex = getUniverseIndex(universe, selectedAsset);
-        const decimals = MAX_DECIMALS_PERP -  universe[assetIndex].szDecimals - 1;
+        const szDecimals = universe[assetIndex].szDecimals;
+        const decimals = MAX_DECIMALS_PERP -  szDecimals - 1;
+        const tif = isPostOnly ? "Alo" : "Gtc";
         await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
           type: "limit",
           assetIndex: assetIndex,
           isBuy: isBuy,
           price: limitPrice.toFixed(decimals),
-          size: amount,
+          size: amount.toFixed(szDecimals),
           reduceOnly: false,
-          tif: "Gtc",
+          tif: tif,
           grouping: "na",
           builder: {
             address: BUILDER_ADDRESS,
