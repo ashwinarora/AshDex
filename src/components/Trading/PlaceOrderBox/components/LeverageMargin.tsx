@@ -1,0 +1,101 @@
+'use client'
+import { useHyperLiquid } from '@/context/HyperLiquid'
+import { getUniverseIndex } from '@/utils/utils'
+import Image from 'next/image'
+import { useMemo } from 'react'
+import Slider1 from '@/assets/images/slider_value.svg'
+
+interface LeverageMarginProps {
+  selectedAsset: string
+  leverage: number
+  setLeverage: React.Dispatch<React.SetStateAction<number>>
+  isCross: boolean
+  setIsCross: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+const LeverageMargin = ({
+  selectedAsset,
+  leverage,
+  setLeverage,
+  isCross,
+  setIsCross
+}: LeverageMarginProps) => {
+  const { universe } = useHyperLiquid()
+
+  const maxLeverage = useMemo(() => {
+    if (!universe) return 1
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    return universe?.[assetIndex]?.maxLeverage || 1
+  }, [universe, selectedAsset])
+
+  return (
+    <div>
+      <div className="my-4 px-4">
+        <label className="block text-sm font-medium text-gray-400">Leverage</label>
+        <div className="flex justify-between items-center">
+          <div className="w-4/6">
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={leverage}
+              onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
+              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none appearance-none"
+              style={{
+                background:
+                  'linear-gradient(to right, #702DF5 0%, #702DF5 ' +
+                  leverage +
+                  '%, #2A1B3D ' +
+                  leverage +
+                  '%, #2A1B3D 100%)'
+              }}
+            />
+            <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0%</span>
+              <span>25%</span>
+              <span>50%</span>
+              <span>75%</span>
+              <span>100%</span>
+            </div>
+          </div>
+          <div className="flex items-center pl-4 space-x-3">
+            <button
+              onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
+              className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
+            >
+              -
+            </button>
+            <span className="text-xl font-medium">{maxLeverage}x</span>
+            <button
+              onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
+              className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
+            >
+              +
+            </button>
+          </div>
+        </div>
+      </div>
+      <div className="px-4 border-b border-[#FFFFFF0F]">
+        <div className="flex w-full justify-between items-center mb-4 px-4 border border-white/10 bg-white/10 rounded-md  py-2">
+          <p className="text-[#8B8BA0]">Margin Mode</p>
+          <select
+            value={isCross ? 'cross' : 'isolated'}
+            className="bg-transparent text-white outline-none"
+            onChange={(e) => setIsCross(e.target.value === 'cross')}
+          >
+            <option value="cross" className="bg-gray-800 text-gray-300">
+              Cross
+            </option>
+            <option value="isolated" className="bg-gray-800 text-gray-300">
+              Isolated
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default LeverageMargin

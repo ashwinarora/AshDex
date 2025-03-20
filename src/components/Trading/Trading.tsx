@@ -1,38 +1,55 @@
-"use client"
-import { useState } from "react";
+'use client'
+import { useState } from 'react'
 
-import Chart from "./Chart"
-import OrderBook from "./OrderBook"
-import Selector from "./Selector"
-import PlaceOrder from "./PlaceOrder/PlaceOrder";
-import UserData from "./UserData/UserData";
+import Chart from './Chart'
+import OrderBook from './OrderBook'
+import Selector from './Selector'
+import PlaceOrder from './PlaceOrderBox'
+import UserData from './UserData/UserData'
 
 const Trading = () => {
-  const [selectedAsset, setSelectedAsset] = useState<string>("BTC-PERP");
+  const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
 
   return (
-    <>
-      <div>
-        <div className="grid grid-cols-[2fr_6fr_3fr] grid-rows-[1fr_6fr_0fr] gap-0  mt-2 h-screen">
-          <div className="border p-4 col-span-2">
-            <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-          </div>
-          <div className="border p-4 row-span-2">
-            <PlaceOrder selectedAsset={selectedAsset} />
-          </div>
-          <div className="border p-4">
-            <OrderBook selectedAsset={selectedAsset} />
-          </div>
-          <div className="border p-4">
-            <Chart selectedAsset={selectedAsset} />
-          </div>
-          <div className="border p-4 col-span-full">
-            <UserData />
-          </div>
+    <div className="h-full bg-[#0d021f] text-white p-4">
+      {/* Top Bar for Asset Selector */}
+      <div className="flex max-[770px]:mx-1 mx-10 justify-between items-center mb-4 relative">
+        <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+      </div>
+      {/* Main Trading Layout */}
+      <div className="flex flex-wrap max-[770px]:mx-1 mx-10  xl:grid xl:grid-cols-[2fr_5fr_3fr] xl:grid-rows-[6fr_2fr] gap-4">
+        <div
+          className="rounded-xl shadow-md border-2 border-white/10 backdrop-blur-[40px] w-full xl:w-auto"
+          style={{
+            background:
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
+          }}
+        >
+          <OrderBook selectedAsset={selectedAsset} />
+        </div>
+        <div className="bg-[#1A0B35] p-4 rounded-xl shadow-md w-full xl:w-auto">
+          <Chart selectedAsset={selectedAsset} />
+        </div>
+        <div
+          className="rounded-xl shadow-md border-2 border-white/10 backdrop-blur-[40px] w-full xl:w-auto"
+          style={{
+            background:
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
+          }}
+        >
+          <PlaceOrder selectedAsset={selectedAsset} />
+        </div>
+        <div
+          style={{
+            background:
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
+          }}
+          className="bg-[#1A0B35] border-2 border-white/10 backdrop-blur-[40px] rounded-xl shadow-md w-full xl:col-span-3"
+        >
+          <UserData />
         </div>
       </div>
-
-    </>
+    </div>
   )
 }
 

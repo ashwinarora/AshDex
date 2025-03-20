@@ -1,4 +1,4 @@
-import { useHyperLiquid } from "@/context/HyperLiquid"
+import { useHyperLiquid } from '@/context/HyperLiquid'
 
 const Balances = () => {
   const { clearingHouseState } = useHyperLiquid()
@@ -15,13 +15,21 @@ const Balances = () => {
         </thead>
         <tbody>
           <tr className="hover:bg-gray-700">
-            <td className="py-2 px-4 border-b border-gray-600 text-left">{clearingHouseState?.marginSummary.accountValue}</td>
-            <td className="py-2 px-4 border-b border-gray-600 text-left">{clearingHouseState?.withdrawable}</td>
             <td className="py-2 px-4 border-b border-gray-600 text-left">
-              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Send</button>
+              {clearingHouseState?.marginSummary.accountValue}
             </td>
             <td className="py-2 px-4 border-b border-gray-600 text-left">
-              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">Transfer</button>
+              {clearingHouseState?.withdrawable}
+            </td>
+            <td className="py-2 px-4 border-b border-gray-600 text-left">
+              <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
+                Send
+              </button>
+            </td>
+            <td className="py-2 px-4 border-b border-gray-600 text-left">
+              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+                Transfer
+              </button>
             </td>
           </tr>
         </tbody>

@@ -1,15 +1,15 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --tw-color-aggrid-background: #1F2937;
-  --tw-color-aggrid-header: #1F2937;
-  --tw-color-aggrid-text: #E5E7EB;
+  --tw-color-aggrid-background: #1f2937;
+  --tw-color-aggrid-header: #1f2937;
+  --tw-color-aggrid-text: #e5e7eb;
   --tw-color-aggrid-border: #374151;
   --tw-color-aggrid-hover: #374151;
   --tw-color-aggrid-headertext: #ced1d7;
-  --tw-color-aggrid-pagination: #1F2937;
+  --tw-color-aggrid-pagination: #1f2937;
   --tw-color-aggrid-paginationtext: #ffffff;
 }
 
@@ -23,10 +23,13 @@
 body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
-  background: #0F0816 linear-gradient(179.1deg,
-      rgba(255, 255, 255, 0.05) -10.66%,
-      rgba(153, 153, 153, 0.05) 67.22%);
+  background: #0f0816
+    linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%);
   backdrop-filter: blur(40px);
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 ::-webkit-scrollbar {
@@ -40,7 +43,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8a8ba1; 
+  background: #8a8ba1;
   border-radius: 10px;
 }
 
@@ -53,10 +56,6 @@ body {
 
 .db {
   @apply border border-red-500;
-}
-
-.tradeButton {
-  @apply w-full cursor-pointer bg-blue-500 text-white rounded-md py-2 mt-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1;
 }
 
 .marquee-content {

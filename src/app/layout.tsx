@@ -34,7 +34,7 @@ export default function RootLayout({
           <HyperLiquidProvider>
             <Header />
             {children}
-            <div className="py-8 px-4 md:px-9 lg:px-14 mt-52">
+            <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
               <Footer />
             </div>
           </HyperLiquidProvider>
