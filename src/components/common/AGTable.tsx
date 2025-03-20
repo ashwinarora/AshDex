@@ -31,7 +31,7 @@ const AGTable: React.FC<AGTableProps> = ({
   }, [])
   return (
     <div className={`custom-ag-grid ${className} rounded-lg`}>
-      <div style={{ minWidth: '600px' }}>
+      <div className="min-w-[600px]">
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}

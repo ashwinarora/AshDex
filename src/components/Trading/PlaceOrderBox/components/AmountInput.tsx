@@ -111,18 +111,9 @@ const AmountInput = ({
             step={1}
             value={usdPercent}
             onChange={handleUsdPercentChange}
-            className="w-full cursor-pointer appearance-none"
+            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none appearance-none"
             style={{
-              background:
-                'linear-gradient(to right, #702DF5 0%, #702DF5 ' +
-                total +
-                '%, #2A1B3D ' +
-                total +
-                '%, #2A1B3D 100%)',
-              height: '8px',
-              borderRadius: '10px',
-              outline: 'none',
-              WebkitAppearance: 'none'
+              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${total}%, #2A1B3D ${total}%, #2A1B3D 100%)`
             }}
           />
           <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />

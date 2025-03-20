@@ -53,9 +53,21 @@ const Positions = () => {
                 className="pt-3 pb-1 px-3 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
-                  <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                  <Image
+                    src={shortingicon}
+                    alt="Sort"
+                    height={16}
+                    width={16}
+                    className="w-3 h-3 cursor-pointer"
+                  />
                   <span>{col.label}</span>
-                  <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                  <Image
+                    src={infoicon}
+                    alt="Info"
+                    height={16}
+                    width={16}
+                    className="w-4 h-4 cursor-pointer"
+                  />
                 </div>
               </th>
             ))}
@@ -64,9 +76,21 @@ const Positions = () => {
             </th>
             <th className="pt-3 pb-1 px-3 text-left text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
-                <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                <Image
+                  src={shortingicon}
+                  alt="Sort"
+                  height={16}
+                  width={16}
+                  className="w-3 h-3 cursor-pointer"
+                />
                 <span>{'TP/SL for position'}</span>
-                <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                <Image
+                  src={infoicon}
+                  alt="Info"
+                  height={16}
+                  width={16}
+                  className="w-4 h-4 cursor-pointer"
+                />
               </div>
             </th>
           </tr>

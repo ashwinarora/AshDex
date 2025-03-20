@@ -88,17 +88,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-4 border-r-1 border-white/10">
           <Image
             src={starticon}
-            className="2xl:relative absolute -top-1 -left-1"
+            className="2xl:relative absolute -top-1 -left-1 h-5 w-5"
             alt="starticon"
             width={18}
-            style={{ height: 'auto', width: 'auto' }}
             height={18}
           />
           <Image
             src={bitcoinlogo}
             alt="Bitcoin Logo"
             width={32}
-            style={{ height: 'auto', width: 'auto' }}
             height={32}
           />
           <button
@@ -154,7 +152,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           >
             <Image
               src={settingicon}
-              style={{ height: 'auto', width: 'auto' }}
               alt="Settings"
               className="2xl:w-[20px] 2xl:h-[20px] max-[1025px]:w-8 max-[1025px]:h-8 w-6 h-6"
               width={24}

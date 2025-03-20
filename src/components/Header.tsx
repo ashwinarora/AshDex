@@ -126,7 +126,6 @@ const Header: FC = () => {
               width={20}
               src={bridgingbtnlogo}
               alt="bridgingbtnlogo"
-              style={{ height: 'auto', width: 'auto' }}
               className="w-5 h-5 2xl:mr-2"
             />
             <span className="font-bold text-sm text-[#FFFFFF] hidden 2xl:block">Bridge</span>
@@ -135,7 +134,6 @@ const Header: FC = () => {
             <Image
               height={20}
               width={20}
-              style={{ height: 'auto', width: 'auto' }}
               src={moonicon}
               alt="moonicon"
               className="w-5 h-5 mr-1"
@@ -145,7 +143,6 @@ const Header: FC = () => {
             <Image
               height={20}
               width={20}
-              style={{ height: 'auto', width: 'auto' }}
               src={helpicon}
               alt="helpicon"
               className="w-5 h-5 mr-1"
@@ -155,7 +152,6 @@ const Header: FC = () => {
             <Image
               src={bellicon}
               alt="bellicon"
-              style={{ height: 'auto', width: 'auto' }}
               height={20}
               width={20}
               className="w-5 h-5 mr:2"
