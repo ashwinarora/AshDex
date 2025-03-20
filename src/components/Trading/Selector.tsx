@@ -77,7 +77,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className="relative w-full  my-0 rounded-2xl max-[770px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px]"
+      className={`relative w-full my-0 rounded-2xl max-[770px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${isOpen ? 'z-50' : ''}`}
       style={{
         background:
           'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
