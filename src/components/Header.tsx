@@ -37,8 +37,7 @@ const Header: FC = () => {
   }
 
   const handleCopy = () => {
-    const textToCopy = `${truncateAddress(address!)}`
-    navigator.clipboard.writeText(textToCopy)
+    if (address) navigator.clipboard.writeText(address)
   }
 
   useEffect(() => {
@@ -126,31 +125,13 @@ const Header: FC = () => {
             <span className="font-bold text-sm text-[#FFFFFF] hidden 2xl:block">Bridge</span>
           </button>
           <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            <Image
-              height={20}
-              width={20}
-              src={moonicon}
-              alt="moonicon"
-              className="w-5 h-5 mr-1"
-            />
+            <Image height={20} width={20} src={moonicon} alt="moonicon" className="w-5 h-5 mr-1" />
           </button>
           <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            <Image
-              height={20}
-              width={20}
-              src={helpicon}
-              alt="helpicon"
-              className="w-5 h-5 mr-1"
-            />
+            <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5 mr-1" />
           </button>
           <button className="relative p-1 hover:text-blue-400 text-gray-400">
-            <Image
-              src={bellicon}
-              alt="bellicon"
-              height={20}
-              width={20}
-              className="w-5 h-5 mr:2"
-            />
+            <Image src={bellicon} alt="bellicon" height={20} width={20} className="w-5 h-5 mr:2" />
             {notificationCount > 0 && (
               <span
                 className="absolute -top-1 right-0 2xl:-right-0 flex items-center justify-center w-[18px] h-[17px] 
