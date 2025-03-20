@@ -37,12 +37,7 @@ const Header: FC = () => {
   }
 
   const handleCopy = () => {
-    const textToCopy = `${truncateAddress(address!)} - ${toHumanNumber(
-      balanceData?.value,
-      balanceData?.decimals,
-      4
-    )} ${balanceData?.symbol}`
-
+    const textToCopy = `${truncateAddress(address!)}`
     navigator.clipboard.writeText(textToCopy)
   }
 

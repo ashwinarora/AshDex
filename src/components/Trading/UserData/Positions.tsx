@@ -7,22 +7,6 @@ import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 
-const staticPositions = Array(20).fill({
-  coin: 'BTC/USD',
-  leverage: '20x',
-  entryPx: '50,000 USD',
-  markPx: '52,000 USD',
-  fundingPnl: '+15.23 USD',
-  size: '1 BTC',
-  unrealizedPnl: '+1,200 USD',
-  liquidationPx: '45,000 USD',
-  marginUsed: '5,000 USD',
-  status: 'Open',
-  market: '19,000.00',
-  limit: '0.005',
-  tpsl: '20,000.00/18,000.00'
-})
-
 const columns = [
   { key: 'coin', label: 'Position' },
   { key: 'entryPx', label: 'Entry Price' },
@@ -40,7 +24,7 @@ const Positions = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
 
-  const totalPages = Math.ceil(staticPositions.length / pageSize)
+  const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / pageSize)
 
   return (
     <div className="overflow-x-auto w-full px-3">

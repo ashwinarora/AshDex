@@ -7,8 +7,8 @@ import OpenOrders from './OpenOrders'
 
 const tabs = [
   'Balances',
-  'Positions(5)',
-  'Open Orders(102)',
+  'Positions',
+  'Open Orders',
   'TWAP',
   'Trade History',
   'Orders History',
