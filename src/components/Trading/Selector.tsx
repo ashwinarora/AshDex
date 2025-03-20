@@ -91,13 +91,19 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="2xl:relative absolute -top-1 -left-1"
             alt="starticon"
             width={18}
-            style={{height: 'auto', width: 'auto'}}
+            style={{ height: 'auto', width: 'auto' }}
             height={18}
           />
-          <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} style={{height: 'auto', width: 'auto'}} height={32} />
+          <Image
+            src={bitcoinlogo}
+            alt="Bitcoin Logo"
+            width={32}
+            style={{ height: 'auto', width: 'auto' }}
+            height={32}
+          />
           <button
             type="button"
-            onClick={() => setIsOpen(prev => !prev)}
+            onClick={() => setIsOpen((prev) => !prev)}
             className="text-lg text-white flex items-center gap-x-2 focus:outline-none cursor-pointer"
           >
             <div className="flex flex-col">
@@ -142,10 +148,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           ))}
         </div>
         <div ref={settingsRef} className="relative block max-[770px]:hidden">
-          <button onClick={() => setIsSettingsOpen(prev => !prev)} className="mx-2 cursor-pointer">
+          <button
+            onClick={() => setIsSettingsOpen((prev) => !prev)}
+            className="mx-2 cursor-pointer"
+          >
             <Image
               src={settingicon}
-              style={{height: 'auto', width: 'auto'}}
+              style={{ height: 'auto', width: 'auto' }}
               alt="Settings"
               className="2xl:w-[20px] 2xl:h-[20px] max-[1025px]:w-8 max-[1025px]:h-8 w-6 h-6"
               width={24}
@@ -154,7 +163,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </button>
         </div>
         <button
-          onClick={() => setIsSettingsOpen(prev => !prev)}
+          onClick={() => setIsSettingsOpen((prev) => !prev)}
           className="mx-2 max-[770px]:block hidden absolute -top-15 right-0 cursor-pointer"
         >
           <Image src={settingicon} alt="Settings" className="w-5 h-5" width={24} height={24} />
@@ -183,7 +192,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             type="text"
             placeholder="Search assets..."
             value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full p-2 bg-[#3a255f] text-white placeholder-gray-400 rounded-t focus:outline-none"
           />
           <ul className="max-h-60 overflow-auto">

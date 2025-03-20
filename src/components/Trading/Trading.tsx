@@ -41,7 +41,7 @@ const Trading = () => {
           <PlaceOrder selectedAsset={selectedAsset} />
         </div>
         <div
-           style={{
+          style={{
             background:
               'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
           }}

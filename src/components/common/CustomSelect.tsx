@@ -7,7 +7,11 @@ const currencyOptions = [
     label: 'Bitcoin',
     img: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=024'
   },
-  { value: 'USDT', label: 'Tether', img: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=024' }
+  {
+    value: 'USDT',
+    label: 'Tether',
+    img: 'https://cryptologos.cc/logos/tether-usdt-logo.png?v=024'
+  }
 ]
 
 interface CustomSelectProps {
@@ -43,7 +47,7 @@ const CustomSelect = ({ onSelect }: CustomSelectProps) => {
       </button>
 
       <div className="absolute w-full bg-[#1E1E2E] border border-[#FFFFFF0F] rounded mt-2">
-        {currencyOptions.map(option => (
+        {currencyOptions.map((option) => (
           <button
             key={option.value}
             className="flex items-center w-full py-2 px-3 hover:bg-[#2E2E3E] text-white"

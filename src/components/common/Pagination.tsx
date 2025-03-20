@@ -1,12 +1,12 @@
-"use client";
-import React from "react";
+'use client'
+import React from 'react'
 
 interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  onPageChange: (page: number) => void;
-  pageSize: number;
-  onPageSizeChange: (size: number) => void;
+  currentPage: number
+  totalPages: number
+  onPageChange: (page: number) => void
+  pageSize: number
+  onPageSizeChange: (size: number) => void
 }
 
 const Pagination: React.FC<PaginationProps> = ({
@@ -14,7 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   pageSize,
-  onPageSizeChange,
+  onPageSizeChange
 }) => {
   return (
     <div className="flex flex-col mx-2 md:flex-row justify-between items-center mt-5 space-y-3 md:space-y-0">
@@ -26,7 +26,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="px-3 bg-[#1A0B35] text-white border-1 border-white/10 backdrop-blur-[40px] py-1 rounded-lg disabled:opacity-50"
           style={{
             background:
-              "linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)",
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
           }}
         >
           &lt;
@@ -38,15 +38,15 @@ const Pagination: React.FC<PaginationProps> = ({
             onClick={() => onPageChange(i + 1)}
             className={`px-3 py-1 rounded-lg transition-all duration-200 ${
               currentPage === i + 1
-                ? "bg-white text-black"
-                : "bg-[#1A0B35] border-1 border-white/10 text-white"
+                ? 'bg-white text-black'
+                : 'bg-[#1A0B35] border-1 border-white/10 text-white'
             }`}
             style={
               currentPage === i + 1
                 ? {} // Remove background gradient when active
                 : {
                     background:
-                      "linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)",
+                      'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
                   }
             }
           >
@@ -59,7 +59,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="px-3 bg-[#1A0B35] border-1 text-white border-white/10 backdrop-blur-[40px] py-1 rounded-lg disabled:opacity-50"
           style={{
             background:
-              "linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)",
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
           }}
         >
           &gt;
@@ -74,7 +74,7 @@ const Pagination: React.FC<PaginationProps> = ({
           className="px-2 py-2 bg-[#1A0B35] border-1 border-white/10 backdrop-blur-[40px] text-white rounded-lg"
           style={{
             background:
-              "linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)",
+              'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
           }}
         >
           <option value={5}>5</option>
@@ -84,7 +84,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </select>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Pagination;
+export default Pagination

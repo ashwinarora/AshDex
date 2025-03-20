@@ -1,12 +1,12 @@
-"use client"
-import { SignTypedDataVariables } from "wagmi/query";
+'use client'
+import { SignTypedDataVariables } from 'wagmi/query'
 
 interface IApproveBuilderFeeData {
-  chainId: number;
-  isTestnet: boolean;
-  nonce: number;
-  builder: string;
-  feePercentage: string;
+  chainId: number
+  isTestnet: boolean
+  nonce: number
+  builder: string
+  feePercentage: string
 }
 
 export const getApproveBuilderFeePayload = ({
@@ -14,59 +14,59 @@ export const getApproveBuilderFeePayload = ({
   isTestnet,
   nonce,
   builder,
-  feePercentage,
+  feePercentage
 }: IApproveBuilderFeeData): SignTypedDataVariables => {
   return {
-    "domain": {
-      "name": "HyperliquidSignTransaction",
-      "version": "1",
-      "chainId": chainId,
-      "verifyingContract": "0x0000000000000000000000000000000000000000"
+    domain: {
+      name: 'HyperliquidSignTransaction',
+      version: '1',
+      chainId: chainId,
+      verifyingContract: '0x0000000000000000000000000000000000000000'
     },
-    "message": {
-      "type": "approveBuilderFee",
-      "hyperliquidChain": isTestnet ? "Testnet" : "Mainnet",
-      "signatureChainId": "0x" + chainId.toString(16),
-      "maxFeeRate": feePercentage,
-      "builder": builder,
-      "nonce": nonce,
+    message: {
+      type: 'approveBuilderFee',
+      hyperliquidChain: isTestnet ? 'Testnet' : 'Mainnet',
+      signatureChainId: '0x' + chainId.toString(16),
+      maxFeeRate: feePercentage,
+      builder: builder,
+      nonce: nonce
     },
-    "primaryType": "HyperliquidTransaction:ApproveBuilderFee",
-    "types": {
-      "EIP712Domain": [
+    primaryType: 'HyperliquidTransaction:ApproveBuilderFee',
+    types: {
+      EIP712Domain: [
         {
-          "name": "name",
-          "type": "string"
+          name: 'name',
+          type: 'string'
         },
         {
-          "name": "version",
-          "type": "string"
+          name: 'version',
+          type: 'string'
         },
         {
-          "name": "chainId",
-          "type": "uint256"
+          name: 'chainId',
+          type: 'uint256'
         },
         {
-          "name": "verifyingContract",
-          "type": "address"
+          name: 'verifyingContract',
+          type: 'address'
         }
       ],
-      "HyperliquidTransaction:ApproveBuilderFee": [
+      'HyperliquidTransaction:ApproveBuilderFee': [
         {
-          "name": "hyperliquidChain",
-          "type": "string"
+          name: 'hyperliquidChain',
+          type: 'string'
         },
         {
-          "name": "maxFeeRate",
-          "type": "string"
+          name: 'maxFeeRate',
+          type: 'string'
         },
         {
-          "name": "builder",
-          "type": "address"
+          name: 'builder',
+          type: 'address'
         },
         {
-          "name": "nonce",
-          "type": "uint64"
+          name: 'nonce',
+          type: 'uint64'
         }
       ]
     }

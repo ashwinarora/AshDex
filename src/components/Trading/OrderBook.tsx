@@ -30,7 +30,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
 
   const processOrders = (orders: WsLevel[]) => {
     let runningTotal = 0
-    const processed = orders.map(order => {
+    const processed = orders.map((order) => {
       runningTotal += Number(order.sz)
       return {
         ...order,

@@ -1,52 +1,51 @@
-
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useState } from 'react'
+import Image from 'next/image'
 // import { useHyperLiquid } from '@/context/HyperLiquid'
-import Pagination from "../../common/Pagination"; 
-import editicon from "@/assets/images/edit_icon.svg";
-import infoicon from "@/assets/images/info_icon.svg";
-import shortingicon from "@/assets/images/shorting_icon.svg";
-import bitcoinicon from "@/assets/images/bitcoin_logo.svg";
+import Pagination from '../../common/Pagination'
+import editicon from '@/assets/images/edit_icon.svg'
+import infoicon from '@/assets/images/info_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
+import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 
 const staticPositions = Array(20).fill({
-  coin: "BTC/USD",
-  leverage: "20x",
-  entryPx: "50,000 USD",
-  markPx: "52,000 USD",
-  fundingPnl: "+15.23 USD",
-  size: "1 BTC",
-  unrealizedPnl: "+1,200 USD",
-  liquidationPx: "45,000 USD",
-  marginUsed: "5,000 USD",
-  status: "Open",
-  market: "19,000.00",
-  limit: "0.005",
-  tpsl: "20,000.00/18,000.00",
-});
+  coin: 'BTC/USD',
+  leverage: '20x',
+  entryPx: '50,000 USD',
+  markPx: '52,000 USD',
+  fundingPnl: '+15.23 USD',
+  size: '1 BTC',
+  unrealizedPnl: '+1,200 USD',
+  liquidationPx: '45,000 USD',
+  marginUsed: '5,000 USD',
+  status: 'Open',
+  market: '19,000.00',
+  limit: '0.005',
+  tpsl: '20,000.00/18,000.00'
+})
 
 const columns = [
-  { key: "coin", label: "Position" },
-  { key: "entryPx", label: "Entry Price" },
-  { key: "markPx", label: "Mark Price" },
-  { key: "fundingPnl", label: "Funding P&L" },
-  { key: "size", label: "Size" },
-  { key: "unrealizedPnl", label: "Unrealized PnL" },
-  { key: "liquidationPx", label: "Liq. Price" },
-  { key: "marginUsed", label: "Margin" },
-  { key: "status", label: "Status" },
-];
+  { key: 'coin', label: 'Position' },
+  { key: 'entryPx', label: 'Entry Price' },
+  { key: 'markPx', label: 'Mark Price' },
+  { key: 'fundingPnl', label: 'Funding P&L' },
+  { key: 'size', label: 'Size' },
+  { key: 'unrealizedPnl', label: 'Unrealized PnL' },
+  { key: 'liquidationPx', label: 'Liq. Price' },
+  { key: 'marginUsed', label: 'Margin' },
+  { key: 'status', label: 'Status' }
+]
 
 const Positions = () => {
   // const { clearingHouseState } = useHyperLiquid()
-   const [currentPage, setCurrentPage] = useState(1);
-   const [pageSize, setPageSize] = useState(5);
- 
-   const totalPages = Math.ceil(staticPositions.length / pageSize);
- 
-   const paginatedPositions = staticPositions?.slice(
-     (currentPage - 1) * pageSize,
-     currentPage * pageSize
-   );
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+
+  const totalPages = Math.ceil(staticPositions.length / pageSize)
+
+  const paginatedPositions = staticPositions?.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  )
 
   return (
     <div className="overflow-x-auto w-full px-3">
@@ -59,17 +58,9 @@ const Positions = () => {
                 className="pt-3 pb-1 px-3 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
-                  <Image
-                    src={shortingicon}
-                    alt="Sort"
-                    className="w-3 h-3 cursor-pointer"
-                  />
+                  <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
                   <span>{col.label}</span>
-                  <Image
-                    src={infoicon}
-                    alt="Info"
-                    className="w-4 h-4 cursor-pointer"
-                  />
+                  <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
                 </div>
               </th>
             ))}
@@ -78,17 +69,9 @@ const Positions = () => {
             </th>
             <th className="pt-3 pb-1 px-3 text-left text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
-                <Image
-                  src={shortingicon}
-                  alt="Sort"
-                  className="w-3 h-3 cursor-pointer"
-                />
-                <span>{"TP/SL for position"}</span>
-                <Image
-                  src={infoicon}
-                  alt="Info"
-                  className="w-4 h-4 cursor-pointer"
-                />
+                <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                <span>{'TP/SL for position'}</span>
+                <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
               </div>
             </th>
           </tr>
@@ -100,15 +83,11 @@ const Positions = () => {
                 <div className="flex items-center gap-1">
                   <span
                     className={`w-[4px] h-[36px] rounded-sm ${
-                      position?.tpsl === "" ? "bg-[#E2464A]" : "bg-[#2FA766]"
+                      position?.tpsl === '' ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
                     }`}
                   ></span>
-                  <Image
-                    src={bitcoinicon}
-                    alt="Bitcoin"
-                    className="w-6 h-6 mx-1 cursor-pointer"
-                  />
-                  {position.coin}{" "}
+                  <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+                  {position.coin}{' '}
                   <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
                     {position.leverage}
                   </span>
@@ -153,17 +132,11 @@ const Positions = () => {
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm ">
                 {position.tpsl ? (
                   <div className="flex items-center gap-2">
-                    <span className="w-17 break-words overflow-hidden">
-                      {position.tpsl}
-                    </span>
-                    <Image
-                      src={editicon}
-                      alt="Edit"
-                      className="w-4 h-4 cursor-pointer"
-                    />
+                    <span className="w-17 break-words overflow-hidden">{position.tpsl}</span>
+                    <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
                   </div>
                 ) : (
-                  "-/-"
+                  '-/-'
                 )}
               </td>
             </tr>
@@ -179,7 +152,7 @@ const Positions = () => {
         onPageSizeChange={setPageSize}
       />
     </div>
-  );
-};
+  )
+}
 
-export default Positions;
+export default Positions

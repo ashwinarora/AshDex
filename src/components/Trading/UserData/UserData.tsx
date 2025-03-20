@@ -1,11 +1,19 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Balances from "./Balances"
-import Positions from "./Positions"
-import OpenOrders from "./OpenOrders"
+import { useState } from 'react'
+import Balances from './Balances'
+import Positions from './Positions'
+import OpenOrders from './OpenOrders'
 
-const tabs = ['Balances', 'Positions(5)', 'Open Orders(102)', 'TWAP', 'Trade History', 'Orders History', 'Funding History'] as const
+const tabs = [
+  'Balances',
+  'Positions(5)',
+  'Open Orders(102)',
+  'TWAP',
+  'Trade History',
+  'Orders History',
+  'Funding History'
+] as const
 
 const UserData = () => {
   const [activeTab, setActiveTab] = useState(1)
@@ -31,9 +39,21 @@ const UserData = () => {
       </div>
 
       <div className="mt-3 mb-6 w-full">
-        {activeTab === 0 && <div><Balances /></div>}
-        {activeTab === 1 && <div><Positions /></div>}
-        {activeTab === 2 && <div><OpenOrders /></div>}
+        {activeTab === 0 && (
+          <div>
+            <Balances />
+          </div>
+        )}
+        {activeTab === 1 && (
+          <div>
+            <Positions />
+          </div>
+        )}
+        {activeTab === 2 && (
+          <div>
+            <OpenOrders />
+          </div>
+        )}
       </div>
     </div>
   )

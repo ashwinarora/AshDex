@@ -44,7 +44,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   const isAgentApproved = useMemo(() => {
     if (!extraAgents) return false
     return extraAgents.some(
-      agent => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
+      (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
     )
   }, [extraAgents, agentWallet])
 
@@ -321,7 +321,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
                 max={100}
                 step={1}
                 value={leverage}
-                onChange={e => setLeverage(parseInt(e.target.value, 10))}
+                onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
                 className="w-full cursor-pointer appearance-none"
                 style={{
                   background:
@@ -347,14 +347,14 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             </div>
             <div className="flex items-center pl-4 space-x-3">
               <button
-                onClick={() => setLeverage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
                 className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
               >
                 -
               </button>
               <span className="text-xl font-medium">{leverage}x</span>
               <button
-                onClick={() => setLeverage(prev => Math.max(prev - 1, 1))}
+                onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
                 className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
               >
                 +
@@ -377,7 +377,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           <div className="gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
             <CheckBox
               label="Take Profit / Stop Loss"
-              onChange={checked => setTakeShowInputs(checked)}
+              onChange={(checked) => setTakeShowInputs(checked)}
             />
             <div className="mt-3 gap-3 px-4">
               <div>
@@ -412,7 +412,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
             <CheckBox
               label="Take Profit / Stop Loss"
-              onChange={checked => setTakeShowInputs(checked)}
+              onChange={(checked) => setTakeShowInputs(checked)}
             />
             <CheckBox label="Post-Only" />
             <CheckBox label="Reduce Only" />

@@ -1,25 +1,25 @@
-import { useEffect } from "react";
+import { useEffect } from 'react'
 
 interface ModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  children: React.ReactNode;
+  isOpen: boolean
+  onClose: () => void
+  children: React.ReactNode
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = "hidden"; // Disable scrolling
+      document.body.style.overflow = 'hidden' // Disable scrolling
     } else {
-      document.body.style.overflow = ""; // Re-enable scrolling
+      document.body.style.overflow = '' // Re-enable scrolling
     }
 
     return () => {
-      document.body.style.overflow = ""; // Cleanup on unmount
-    };
-  }, [isOpen]);
+      document.body.style.overflow = '' // Cleanup on unmount
+    }
+  }, [isOpen])
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   return (
     <div
@@ -30,7 +30,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
         {children}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Modal;
+export default Modal

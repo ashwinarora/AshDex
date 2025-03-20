@@ -38,14 +38,14 @@ const ConnectWalletModal: React.FC<{
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
-    const connector = connectors?.find(c => c.id === wallet.id)
+    const connector = connectors?.find((c) => c.id === wallet.id)
     if (!connector) {
       console.error('Connector not found for wallet:', wallet.id)
       return
     }
     if (wallet.id) {
       try {
-        const walletConnector = WALLETS.find(c => c.id === wallet.id)
+        const walletConnector = WALLETS.find((c) => c.id === wallet.id)
         setSelectedConnector(walletConnector)
         const result = await connectAsync({ connector })
         if (result) {
@@ -64,7 +64,7 @@ const ConnectWalletModal: React.FC<{
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full border-[2px] bg-[#0F0816] max-w-md p-6 rounded-2xl shadow-lg"
-        onClick={e => e.stopPropagation()}
+        onClick={(e) => e.stopPropagation()}
       >
         {/* Full-Width Header */}
         <div className="flex items-center justify-between mb-4 w-full">
