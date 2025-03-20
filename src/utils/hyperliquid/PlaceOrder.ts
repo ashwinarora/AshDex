@@ -5,14 +5,14 @@ import { Hex, keccak256, PrivateKeyAccount, toBytes } from 'viem'
 import { splitSignature } from '../utils'
 
 type LimitOrder = {
-  type: "limit",
-  assetIndex: number,
-  isBuy: boolean,
-  price: string,
-  size: string,
-  reduceOnly: boolean,
-  tif: "Alo" | "Ioc" | "Gtc",
-  grouping: "na" | "normalTpsl" | "positionTpsl",
+  type: 'limit'
+  assetIndex: number
+  isBuy: boolean
+  price: string
+  size: string
+  reduceOnly: boolean
+  tif: 'Alo' | 'Ioc' | 'Gtc'
+  grouping: 'na' | 'normalTpsl' | 'positionTpsl'
   cloid?: string
   builder?: {
     address: string

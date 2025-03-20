@@ -42,11 +42,6 @@ const Positions = () => {
 
   const totalPages = Math.ceil(staticPositions.length / pageSize)
 
-  const paginatedPositions = staticPositions?.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  )
-
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full text-white">
@@ -82,7 +77,7 @@ const Positions = () => {
               <td className="py-4 text-[#FFFFFF] opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <span
-                  // fix later
+                    // fix later
                     className={`w-[4px] h-[36px] rounded-sm ${
                       index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
                     }`}

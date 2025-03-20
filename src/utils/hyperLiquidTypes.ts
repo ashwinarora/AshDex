@@ -102,9 +102,9 @@ export interface WsNonUserCancel {
 }
 
 export interface WsOrder {
-  order: WsBasicOrder;
-  status: "open" | "filled" | "canceled" | "triggered" | "rejected" | "marginCanceled";
-  statusTimestamp: number;
+  order: WsBasicOrder
+  status: 'open' | 'filled' | 'canceled' | 'triggered' | 'rejected' | 'marginCanceled'
+  statusTimestamp: number
 }
 
 export interface WsBasicOrder {
@@ -253,23 +253,23 @@ export interface IClearingHouseState {
 export interface IPositionData {
   coin: string
   cumFunding: {
-    allTime: number;
-    sinceChange: number;
-    sinceOpen: number;
-  };
-  entryPx: number;
+    allTime: number
+    sinceChange: number
+    sinceOpen: number
+  }
+  entryPx: number
   leverage: {
-    rawUsd: number;
-    type: number;
-    value: number;
-  };
-  liquidationPx: number;
-  marginUsed: number;
-  maxLeverage: number;
-  positionValue: number;
-  returnOnEquity: number;
-  szi: number;
-  unrealizedPnl: number;
+    rawUsd: number
+    type: number
+    value: number
+  }
+  liquidationPx: number
+  marginUsed: number
+  maxLeverage: number
+  positionValue: number
+  returnOnEquity: number
+  szi: number
+  unrealizedPnl: number
 }
 
 export interface IPosition {

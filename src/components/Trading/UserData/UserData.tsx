@@ -39,9 +39,15 @@ const UserData = () => {
       </div>
 
       <div className="mt-3 mb-6 w-full">
-        <div className={activeTab === 0 ? '' : 'hidden'}><Balances /></div>
-        <div className={activeTab === 1 ? '' : 'hidden'}><Positions /></div>
-        <div className={activeTab === 2 ? '' : 'hidden'}><OpenOrders /></div>
+        <div className={activeTab === 0 ? '' : 'hidden'}>
+          <Balances />
+        </div>
+        <div className={activeTab === 1 ? '' : 'hidden'}>
+          <Positions />
+        </div>
+        <div className={activeTab === 2 ? '' : 'hidden'}>
+          <OpenOrders />
+        </div>
       </div>
     </div>
   )

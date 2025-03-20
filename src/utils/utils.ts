@@ -60,12 +60,12 @@ export function cn(...classes: (string | undefined | boolean)[]) {
 }
 
 export const getUniverseIndex = (universe: MetaData[], asset: string): number => {
-  return universe.findIndex((item) => item.name === asset);
-};
+  return universe.findIndex((item) => item.name === asset)
+}
 
 export const getCoinName = (asset: string): string => {
-  if (asset.endsWith("-PERP")) {
-    return asset.slice(0, -5);
+  if (asset.endsWith('-PERP')) {
+    return asset.slice(0, -5)
   }
-  return asset;
+  return asset
 }

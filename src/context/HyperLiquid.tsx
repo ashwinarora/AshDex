@@ -1,13 +1,13 @@
-"use client"
-import React, { createContext, useState, ReactNode, useEffect, useMemo, useContext } from 'react';
-import { useAccount } from 'wagmi';
-import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import type { Hex, PrivateKeyAccount } from 'viem';
-import type { AxiosInstance } from 'axios';
-import { useQuery } from '@tanstack/react-query';
-import { IClearingHouseState, MetaData, WsUserFills } from '@/utils/hyperLiquidTypes';
-import { AGENT_PRIVATE_KEY } from '@/utils/constants';
-import { mainnetAxios, testnetAxios } from '@/config/axios';
+'use client'
+import React, { createContext, useState, ReactNode, useEffect, useMemo, useContext } from 'react'
+import { useAccount } from 'wagmi'
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
+import type { Hex, PrivateKeyAccount } from 'viem'
+import type { AxiosInstance } from 'axios'
+import { useQuery } from '@tanstack/react-query'
+import { IClearingHouseState, MetaData, WsUserFills } from '@/utils/hyperLiquidTypes'
+import { AGENT_PRIVATE_KEY } from '@/utils/constants'
+import { mainnetAxios, testnetAxios } from '@/config/axios'
 
 interface HyperLiquidContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,12 +40,12 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const { address, isConnected, chain } = useAccount()
   const [agentWallet, setAgentWallet] = useState<PrivateKeyAccount>()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [sdk, setSdk] = useState<any>();
-  const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false);
-  const [isSdkConnected, setIsSdkConnected] = useState(false);
-  const [privateKey, setPrivateKey] = useState<string>();
-  const [allMids, setAllMids] = useState<PriceMap>({});
-  const { data: clearingHouseState, refetch: refetchClearingHouseState} = useQuery({
+  const [sdk, setSdk] = useState<any>()
+  const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
+  const [isSdkConnected, setIsSdkConnected] = useState(false)
+  const [privateKey, setPrivateKey] = useState<string>()
+  const [allMids, setAllMids] = useState<PriceMap>({})
+  const { data: clearingHouseState, refetch: refetchClearingHouseState } = useQuery({
     queryKey: ['clearingHouseState', address, chain?.id],
     queryFn: async () => {
       const res = await sdk.info.perpetuals.getClearinghouseState(address)
@@ -53,7 +53,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     },
     enabled: !!sdk || !!isSdkConnected
   })
-  
+
   const { data: universe } = useQuery({
     queryKey: ['universe', chain?.id],
     queryFn: async () => {
@@ -140,16 +140,16 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   }, [sdk])
 
   useEffect(() => {
-    if (!sdk) return;
-    console.log("Subscribing to fills");
+    if (!sdk) return
+    console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToUserFills(address, (data: WsUserFills) => {
-      console.log("User Fills Update",data)
-      refetchClearingHouseState();
-    });
+      console.log('User Fills Update', data)
+      refetchClearingHouseState()
+    })
     return () => {
-      sdk.subscriptions.unsubscribeFromUserFills();
-    };
-  }, [sdk, address, refetchClearingHouseState]);
+      sdk.subscriptions.unsubscribeFromUserFills()
+    }
+  }, [sdk, address, refetchClearingHouseState])
 
   return (
     <HyperLiquidContext.Provider
