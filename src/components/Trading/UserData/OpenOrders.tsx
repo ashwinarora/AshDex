@@ -1,7 +1,8 @@
-import { useHyperLiquid } from '@/context/HyperLiquid'
-import { Order } from '@/utils/hyperLiquidTypes'
-import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useHyperLiquid } from "@/context/HyperLiquid";
+import { Order, WsOrder } from "@/utils/hyperLiquidTypes";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
+import { useAccount } from "wagmi";
 
 const OpenOrders = () => {
   const { address } = useAccount()
@@ -15,13 +16,43 @@ const OpenOrders = () => {
     enabled: !!address && !!sdk
   })
 
-  const handleCancelOrder = async () => {
-    // await sdk.orders.cancelOrder(orderId);
-  }
+  const [orders, setOrders] = useState<Order[]>([]);
 
-  const handleCancelAllOrders = async () => {
-    // await sdk.orders.cancelAllOrders();
-  }
+  useEffect(() => {
+    if (openOrders) {
+      setOrders(openOrders);
+    }
+  }, [openOrders]);
+
+  useEffect(() => {
+    if (!sdk) return;
+    sdk.subscriptions.subscribeToOrderUpdates(address, (data: WsOrder[]) => {
+      console.log("Order updates", data);
+      setOrders((prevOrders) => {
+        const newOrders = [...prevOrders];
+        data.forEach((order) => {
+          const index = newOrders.findIndex((o) => o.oid === order.order.oid);
+          if(order.status !== 'open') {
+            newOrders.splice(index, 1);
+            return;
+          }
+          newOrders[index] = {
+            coin: order.order.coin,
+            limitPx: Number(order.order.limitPx),
+            oid: order.order.oid,
+            origSz: Number(order.order.origSz),
+            side: order.order.side === 'b' ? 'buy' : 'sell',
+            sz: Number(order.order.sz),
+            timestamp: order.statusTimestamp,
+          }
+        });
+        return newOrders
+      })
+    });
+    return () => {
+      sdk.subscriptions.unsubscribeFromOrderUpdates();
+    };
+  }, [sdk, address]);
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -42,8 +73,11 @@ const OpenOrders = () => {
             <th className="py-2 px-4 border-b border-gray-700">Original Size</th>
             <th className="py-2 px-4 border-b border-gray-700">
               <button
-                onClick={handleCancelAllOrders}
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                onClick={async () => {
+                  const res = await sdk.custom.cancelAllOrders();
+                  console.log(res);
+                }}
               >
                 Cancel All
               </button>
@@ -51,7 +85,7 @@ const OpenOrders = () => {
           </tr>
         </thead>
         <tbody>
-          {openOrders?.map((order) => (
+          {orders?.map((order) => (
             <tr key={order.oid}>
               <td className="py-2 px-4 border-b border-gray-700">{order.coin}</td>
               <td
@@ -67,9 +101,11 @@ const OpenOrders = () => {
               </td>
               <td className="py-2 px-4 border-b border-gray-700">{order.origSz}</td>
               <td className="py-2 px-4 border-b border-gray-700">
-                <button
-                  onClick={() => handleCancelOrder()}
-                  className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                  onClick={async () => {
+                    const res = await sdk.exchange.cancelOrder();
+                    console.log(res);
+                  }}
                 >
                   Cancel
                 </button>
@@ -78,8 +114,8 @@ const OpenOrders = () => {
           ))}
         </tbody>
       </table>
-    </div>
-  )
+    </div >
+  );
 }
 
 export default OpenOrders

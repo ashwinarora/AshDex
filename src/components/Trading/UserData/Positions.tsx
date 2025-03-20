@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
-// import { useHyperLiquid } from '@/context/HyperLiquid'
 import Pagination from '../../common/Pagination'
 import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
+import { useHyperLiquid } from '@/context/HyperLiquid'
 
 const staticPositions = Array(20).fill({
   coin: 'BTC/USD',
@@ -36,7 +36,7 @@ const columns = [
 ]
 
 const Positions = () => {
-  // const { clearingHouseState } = useHyperLiquid()
+  const { clearingHouseState } = useHyperLiquid()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
 
@@ -77,62 +77,63 @@ const Positions = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedPositions?.map((position, index) => (
+          {clearingHouseState?.assetPositions?.map((position, index) => (
             <tr key={index} className=" border-b border-white/10">
               <td className="py-4 text-[#FFFFFF] opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <span
+                  // fix later
                     className={`w-[4px] h-[36px] rounded-sm ${
-                      position?.tpsl === '' ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
+                      index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
                     }`}
                   ></span>
                   <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
-                  {position.coin}{' '}
+                  {position.position.coin}{' '}
                   <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
-                    {position.leverage}
+                    {position.position.leverage.value}
                   </span>
                 </div>
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                {position.entryPx}
+                {position.position.entryPx}
               </td>
               <td className="py-4 opacity-80  text-[#FFFFFF] font-normal text-sm">
-                {position.markPx}
+                {position.position.entryPx}
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                {position.fundingPnl}
+                {position.position.cumFunding.allTime}
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                {position.size}
+                {position.position.szi}
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                {position.unrealizedPnl}
+                {position.position.unrealizedPnl}
               </td>
               <td className="py-4 opacity-80 text-[#E2464A] font-normal text-sm">
-                {position.liquidationPx}
+                {position.position.liquidationPx}
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                {position.marginUsed}
+                {position.position.liquidationPx}
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] ">
                 <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
-                  {position.status}
+                  Open
                 </span>
               </td>
               <td className="py-4 opacity-80 text-[#7D67FF] text-sm">
                 <span className="px-3 font-medium py-2 mr-2">Market</span>
                 <span className="px-3 font-medium py-2">Limit</span>
                 <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
-                  {position.market}
+                  dummy
                 </span>
                 <span className="px-3 text-sm py-2 bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
-                  {position.limit}
+                  dummy
                 </span>
               </td>
               <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm ">
-                {position.tpsl ? (
+                {true ? (
                   <div className="flex items-center gap-2">
-                    <span className="w-17 break-words overflow-hidden">{position.tpsl}</span>
+                    <span className="w-17 break-words overflow-hidden">Dummy</span>
                     <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
                   </div>
                 ) : (

@@ -1,12 +1,11 @@
 'use client'
 import { useState } from 'react'
 
-import Chart from './Chart'
-import OrderBook from './OrderBook'
-import Selector from './Selector'
-import PlaceOrder from './PlaceOrder/PlaceOrder'
-import UserData from './UserData/UserData'
-// import Table from './Table'
+import Chart from "./Chart"
+import OrderBook from "./OrderBook"
+import Selector from "./Selector"
+import PlaceOrder from "./PlaceOrderBox";
+import UserData from "./UserData/UserData";
 
 const Trading = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
