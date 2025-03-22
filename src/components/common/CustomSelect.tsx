@@ -76,7 +76,7 @@ const CustomSelect = () => {
 
   const handleNativeSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const selectedValue = e.target.value
-    const option = options.find(opt => opt.value === selectedValue) || null
+    const option = options.find((opt) => opt.value === selectedValue) || null
     setSelectedOption(option)
   }
 
@@ -106,7 +106,7 @@ const CustomSelect = () => {
             onChange={handleNativeSelectChange}
             aria-label="Select cryptocurrency"
           >
-            {options.map(option => (
+            {options.map((option) => (
               <option
                 key={option.id}
                 value={option.value}
@@ -158,7 +158,7 @@ const CustomSelect = () => {
               className="absolute z-10 w-full mt-1 bg-black border border-gray-700 rounded-lg shadow-lg max-h-60 overflow-auto"
               role="listbox"
             >
-              {options.map(option => (
+              {options.map((option) => (
                 <li
                   key={option.id}
                   role="option"

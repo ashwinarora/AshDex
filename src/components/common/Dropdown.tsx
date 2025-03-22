@@ -16,7 +16,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, classN
     <div className="relative">
       {/* Dropdown Trigger Button */}
       <button
-        className={`bg-gray-700 text-white px-4 py-2 rounded-lg flex items-center justify-between w-24 ${className}`}
+        className={`px-4 py-2 rounded-lg flex items-center justify-between w-20 cursor-pointer`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {selected} <ChevronDown size={18} className="ml-2" />
@@ -24,11 +24,13 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, classN
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className="absolute mt-1 w-24 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+        <div
+          className={`absolute mt-1 w-20 border border-gray-600 rounded-lg shadow-lg z-10 ${className}`}
+        >
           {options.map((option) => (
             <button
               key={option}
-              className="block w-full text-left px-4 py-2 text-black hover:bg-gray-200"
+              className={`block w-full text-left px-4 py-1 ${className}`}
               onClick={() => {
                 onSelect(option)
                 setIsOpen(false)

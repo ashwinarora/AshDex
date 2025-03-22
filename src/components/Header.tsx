@@ -113,7 +113,7 @@ const Header: FC = () => {
           </nav>
         </div>
 
-        <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
+        <div className="flex items-center space-x-3 2xl:space-x-4 min-md:justify-end">
           <button className="2xl:px-[20px] ml-2 px-[10px] py-[10px] flex items-center bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
             <Image
               height={20}
