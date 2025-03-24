@@ -1,9 +1,12 @@
 'use client'
-import { CandlestickSeries, createChart, Time } from 'lightweight-charts'
+import { CandlestickSeries, createChart, Time, CandlestickData } from 'lightweight-charts'
 import { useEffect, useRef, useState } from 'react'
+import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { useQuery } from '@tanstack/react-query'
 import { CHART_INTERVALS } from '../../utils/constants'
 import type { Candle } from '../../utils/hyperLiquidTypes'
+import { useHyperLiquid } from '@/context/HyperLiquid'
 import ChartTabs from '../common/ChartTabs'
 import IntervalSelector from '../common/IntervalSelector'
 import unionicon from '@/assets/images/union_icon.svg'
@@ -18,26 +21,67 @@ import union18icon from '@/assets/images/union18_icon.svg'
 import union19icon from '@/assets/images/union19_icon.svg'
 import union20icon from '@/assets/images/union20_icon.svg'
 import union21icon from '@/assets/images/union21_icon.svg'
-import { CHART_DATA } from '@/utils/chartData'
 interface IChartProps {
   selectedAsset: string
 }
 const tabs = ['Price', 'Depth', 'Info'] as string[]
-const staticCandleData = {
-  time: Math.floor(Date.now() / 1000),
-  open: 15400.12,
-  high: 15550.45,
-  low: 15380.34,
-  close: 15520.78
-}
+
 const Chart = ({ selectedAsset }: IChartProps) => {
+  const { sdk, isSdkConnected } = useHyperLiquid()
   const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('1m')
   const chartRef = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState(0)
-  console.log('selectedAsset', selectedAsset)
+  const [candlestickData, setCandlestickData] = useState<Candle[]>([])
+  const { data: initialCandles, isLoading } = useQuery<Candle[]>({
+    queryKey: ['candles', selectedAsset, selectedInterval],
+    queryFn: async () => {
+      const response = await sdk.info.getCandleSnapshot(
+        selectedAsset,
+        selectedInterval,
+        0,
+        Date.now()
+      )
+      return response
+    },
+    enabled: isSdkConnected && selectedAsset?.length > 0
+  })
+
   useEffect(() => {
-    if (!chartRef.current) return
+    if (initialCandles) {
+      setCandlestickData(initialCandles)
+    }
+  }, [initialCandles])
+
+  useEffect(() => {
+    if (!isSdkConnected || !selectedAsset || !selectedInterval) return
+    let unsubscribe: (() => void) | null = null
+    const subscribeToCandles = async () => {
+      try {
+        unsubscribe = await sdk?.subscriptions?.subscribeToCandle(
+          selectedAsset,
+          selectedInterval,
+          (newCandles: Candle | Candle[]) => {
+            setCandlestickData((prevData) => {
+              const newData = Array.isArray(newCandles) ? newCandles : [newCandles]
+              return [...prevData, ...newData].slice(-100)
+            })
+          }
+        )
+      } catch (error) {
+        console.error('Error subscribing to candle updates:', error)
+      }
+    }
+    subscribeToCandles()
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
+    }
+  }, [isSdkConnected, selectedAsset, selectedInterval])
+
+  useEffect(() => {
+    if (activeTab !== 0 || isLoading || !candlestickData.length || !chartRef.current) return
 
     const chartOptions = {
       layout: {
@@ -54,6 +98,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         mode: 0
       }
     }
+
     const chart = createChart(chartRef.current, chartOptions)
     const candlestickSeries = chart.addSeries(CandlestickSeries, {
       upColor: '#26A69A',
@@ -63,47 +108,59 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       wickUpColor: '#26A69A',
       wickDownColor: '#EF5350'
     })
-    candlestickSeries.setData(
-      CHART_DATA.map((candle: Candle) => {
-        return {
-          time: Math.floor(candle.t / 1000) as Time,
-          open: candle.o,
-          high: candle.h,
-          low: candle.l,
-          close: candle.c
-        }
-      })
+
+    const validCandlestickData = candlestickData || []
+
+    const formattedData = validCandlestickData
+      ?.map((candle: Candle) => ({
+        time: Math.floor(candle?.T / 1000) as Time,
+        open: candle?.o,
+        high: candle?.h,
+        low: candle?.l,
+        close: candle?.c
+      }))
+      ?.sort((a, b) => (a?.time as number) - (b?.time as number))
+
+    const uniqueData = formattedData?.filter(
+      (candle, index, self) => index === 0 || candle?.time !== self[index - 1]?.time
     )
 
-    chart.timeScale().fitContent()
-    // Handle Tooltip Position
+    candlestickSeries.setData(uniqueData)
+
+    chart.timeScale().applyOptions({
+      timeVisible: true,
+      secondsVisible: false,
+      borderColor: '#444'
+    })
+    // chart.timeScale().fitContent()
+
     chart.subscribeCrosshairMove((param) => {
       if (!tooltipRef.current) return
-      if (!param || !param.point) {
+      const hoveredPoint = param?.point
+      const seriesData = param?.seriesData?.get(candlestickSeries) as CandlestickData | undefined
+
+      if (!hoveredPoint || !seriesData) {
         tooltipRef.current.style.display = 'none'
         return
       }
-      const isMobile = window.innerWidth <= 770
       tooltipRef.current.style.display = 'block'
-      if (isMobile) {
-        tooltipRef.current.style.left = '1rem'
-        tooltipRef.current.style.top = '13rem'
-      } else {
-        tooltipRef.current.style.left = '4rem'
-        tooltipRef.current.style.top = '7.4rem'
-      }
+
+      const isMobile = window.innerWidth <= 770
+      tooltipRef.current.style.left = isMobile ? '1rem' : '3.5rem'
+      tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
+
       tooltipRef.current.innerHTML = `
-      <div class="text-[#E8E0F1] font-normal text-xs flex max-[770px]:gap-[10px] gap-[16px] max-[770px]:flex-col">
-        <strong>${new Date(staticCandleData.time * 1000).toLocaleDateString()}</strong>
-       <span>Open: <span class="text-[#FFFFFF]">${staticCandleData.open.toFixed(2)}</span></span>
-       <span>High: <span class="text-[#FFFFFF]"> ${staticCandleData.high.toFixed(2)}</span></span>
-        <span>Low: <span class="text-[#FFFFFF]">${staticCandleData.low.toFixed(2)}</span></span>
-        <span>Close: <span class="text-[#FFFFFF]">${staticCandleData.close.toFixed(2)}<span></span>
-      </div>
-    `
+        <div class="text-[#E8E0F1] font-normal text-xs flex max-[770px]:gap-[10px] gap-[16px] max-[770px]:flex-col">
+      <strong>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</strong>
+          <span>Open: <span class="text-[#FFFFFF]">${seriesData?.open?.toFixed(2)}</span></span>
+          <span>High: <span class="text-[#FFFFFF]">${seriesData?.high?.toFixed(2)}</span></span>
+          <span>Low: <span class="text-[#FFFFFF]">${seriesData?.low?.toFixed(2)}</span></span>
+          <span>Close: <span class="text-[#FFFFFF]">${seriesData?.close?.toFixed(2)}<span></span>
+        </div>
+      `
     })
     return () => chart.remove()
-  }, [])
+  }, [candlestickData, activeTab])
 
   const sidebarIcons = [
     unionicon,
@@ -143,7 +200,11 @@ const Chart = ({ selectedAsset }: IChartProps) => {
             </button>
           ))}
         </div>
-        {activeTab === 0 && (
+        {activeTab === 0 && isLoading ? (
+          <div className="flex justify-center items-center w-full h-[90vh] max-[770px]:h-[52vh]">
+            <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
+          </div>
+        ) : (
           <div
             ref={chartRef}
             className="h-[90vh] w-full max-[770px]:h-[52vh] max-[1024px]:h-[100vh] mb-3 flex-1"

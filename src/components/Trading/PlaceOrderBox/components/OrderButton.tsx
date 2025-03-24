@@ -1,5 +1,7 @@
 'use client'
-
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useAccount, useConnect, useSignTypedData } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { AGENT_NAME, BUILDER_ADDRESS, MAX_DECIMALS_PERP } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
@@ -7,9 +9,7 @@ import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderF
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
 import { getUniverseIndex, splitSignature } from '@/utils/utils'
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { useAccount, useConnect, useSignTypedData } from 'wagmi'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 
 interface OrderButtonProps {
   selectedAsset: string
@@ -30,11 +30,11 @@ const OrderButton = ({
   isCross,
   isPostOnly
 }: OrderButtonProps) => {
+  const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid()
   const { connect, connectors } = useConnect()
   const { signTypedDataAsync } = useSignTypedData()
-
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
@@ -66,6 +66,9 @@ const OrderButton = ({
     },
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
+
+  // We handle the render logic after hooks are all set up
+  if (!isRendered) return null
 
   if (!isWalletConnected) {
     return (

@@ -113,7 +113,7 @@ const Header: FC = () => {
           </nav>
         </div>
 
-        <div className="flex items-center space-x-3 2xl:space-x-4 min-md:justify-end">
+        <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
           <button className="2xl:px-[20px] ml-2 px-[10px] py-[10px] flex items-center bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
             <Image
               height={20}
@@ -145,11 +145,10 @@ const Header: FC = () => {
 
           {isConnected && isRendered ? (
             <div className="relative 2xl:w-[45%] xl:w-2/3 w-1/6 ">
-              {/* Wallet Button */}
               <button
                 ref={buttonRef}
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex w-full relative hover:bg-[#322944] items-center p-[10px] bg-[#1C0C30] cursor-pointer rounded-lg overflow-hidden"
+                className="flex w-auto relative hover:bg-[#322944] items-center p-[10px] bg-[#1C0C30] cursor-pointer rounded-lg overflow-hidden"
               >
                 <Image
                   height={20}
@@ -158,12 +157,14 @@ const Header: FC = () => {
                   alt="BalanceIcon"
                   className="w-[22px] h-[22px] mr-2"
                 />
-                <span className="text-sm font-medium truncate text-[#E8E0F1]">
+                <span className="text-sm max-[770px]:hidden flex font-medium truncate text-[#E8E0F1]">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="border-l border-gray-600 h-4 mx-2"></span>
-                <span className="font-medium truncate">{truncateAddress(address!)}</span>
+                <span className="border-l max-[770px]:hidden flex border-gray-600 h-4 mx-2"></span>
+                <span className="font-medium max-[770px]:hidden flex truncate">
+                  {truncateAddress(address!)}
+                </span>
                 <Image
                   height={20}
                   width={20}
@@ -173,13 +174,11 @@ const Header: FC = () => {
                 />
               </button>
 
-              {/* Dropdown Menu */}
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
                   className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-[#0F0816] border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
                 >
-                  {/* Wallet Address & Copy */}
                   <div className="flex items-start text-[#E8E0F1]">
                     <Image
                       src={balanceicon}
@@ -190,7 +189,6 @@ const Header: FC = () => {
                     />
                     <div className="flex flex-col">
                       <span className="truncate">{truncateAddress(address!)}</span>
-                      {/* Balance */}
                       <div className="text-sm text-[#E8E0F1]">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                         {balanceData?.symbol}
@@ -200,7 +198,6 @@ const Header: FC = () => {
                       <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
                     </button>
                   </div>
-                  {/* Switch Wallet */}
                   <button className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer">
                     <Image
                       height={20}
@@ -212,7 +209,6 @@ const Header: FC = () => {
                     Switch Wallet
                   </button>
 
-                  {/* Disconnect */}
                   <button
                     onClick={() => disconnect()}
                     className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-[#322944] cursor-pointer"
@@ -255,7 +251,7 @@ const Header: FC = () => {
 
       {/* Sidebar Menu */}
       {isOpen && (
-        <div className="left-0 top-0 w-full h-full bg-[#1a1027] px-3 py-4 shadow-lg">
+        <div className="absolute z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
               <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />
