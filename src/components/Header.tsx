@@ -3,7 +3,6 @@ import React, { useState, FC, useEffect, useRef } from 'react'
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { toHumanNumber, truncateAddress } from '@/utils/utils'
-import ConnectWalletModal from './ConnectWalletModal'
 import nexonlogo from '@/assets/images/logo.svg'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 import moonicon from '@/assets/images/dark_mode.svg'
@@ -18,23 +17,20 @@ import copyicon from '@/assets/images/copy_icon.svg'
 import switchicon from '@/assets/images/switch_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
+import { useWalletModal } from '@/context/WalletModalContext'
 
 const Header: FC = () => {
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const { isRendered } = useComponentRendered()
   const { data: balanceData } = useBalance({ address })
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const { toggleConnectWalletModal } = useWalletModal()
   const [isOpen, setIsOpen] = useState(false)
   const [activeMenu, setActiveMenu] = useState<string>('Futures')
   const [notificationCount] = useState(5)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
-
-  const handleConnectWallet = () => {
-    setIsModalOpen(true)
-  }
 
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
@@ -227,7 +223,7 @@ const Header: FC = () => {
             </div>
           ) : (
             <button
-              onClick={handleConnectWallet}
+              onClick={toggleConnectWalletModal}
               className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
             >
               <Image height={20} width={20} src={walleticon} alt="walleticon" className="w-5 h-5" />
@@ -300,8 +296,6 @@ const Header: FC = () => {
           </nav>
         </div>
       )}
-
-      <ConnectWalletModal isModalOpen={isModalOpen} setIsModalOpen={setIsModalOpen} />
     </>
   )
 }

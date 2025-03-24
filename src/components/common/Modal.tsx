@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface ModalProps {
   isOpen: boolean
@@ -7,11 +7,14 @@ interface ModalProps {
 }
 
 const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
+  const [topPosition, setTopPosition] = useState(0)
+
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden' // Disable scrolling
+      document.body.style.overflow = 'hidden'
+      setTopPosition(window.scrollY)
     } else {
-      document.body.style.overflow = '' // Re-enable scrolling
+      document.body.style.overflow = ''
     }
 
     return () => {
@@ -23,12 +26,11 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   return (
     <div
-      className="fixed inset-0 z-10 flex items-center justify-center bg-[#0F081680] backdrop-blur-[40px] h-screen w-screen"
+      className={`absolute left-0 right-0 z-50 flex items-center justify-center bg-[#0F081680] bg-opacity-70 backdrop-blur-[40px] h-screen`}
+      style={{ top: topPosition + 'px' }}
       onClick={onClose}
     >
-      <div className="absolute inset-0 p-6 flex flex-col items-center justify-center">
-        {children}
-      </div>
+      <div className="w-full h-full flex items-center justify-center">{children}</div>
     </div>
   )
 }

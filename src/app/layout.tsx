@@ -6,6 +6,8 @@ import { Provider } from './provider'
 import Footer from '@/components/Footer'
 import './globals.css'
 import '@/styles/table.css'
+import { WalletModalProvider } from '@/context/WalletModalContext'
+import ConnectWalletModal from '@/components/ConnectWalletModal'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -32,11 +34,14 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <Provider>
           <HyperLiquidProvider>
-            <Header />
-            {children}
-            <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
-              <Footer />
-            </div>
+            <WalletModalProvider>
+              <ConnectWalletModal />
+              <Header />
+              {children}
+              <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
+                <Footer />
+              </div>
+            </WalletModalProvider>
           </HyperLiquidProvider>
         </Provider>
       </body>

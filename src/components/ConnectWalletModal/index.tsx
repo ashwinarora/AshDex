@@ -8,6 +8,7 @@ import { WalletDisplay } from './WalletDisplay'
 import WalletRules from './WalletRules'
 import nexticon from '@/assets/images/next_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
+import { useWalletModal } from '@/context/WalletModalContext'
 
 interface WalletConnectProvider {
   id: string
@@ -15,10 +16,8 @@ interface WalletConnectProvider {
   icon: StaticImageData | string
 }
 
-const ConnectWalletModal: React.FC<{
-  isModalOpen: boolean
-  setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>
-}> = ({ isModalOpen, setIsModalOpen }) => {
+const ConnectWalletModal: React.FC = () => {
+  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const [selectedConnector, setSelectedConnector] = useState<
     WalletConnectProvider | null | undefined
@@ -31,7 +30,7 @@ const ConnectWalletModal: React.FC<{
   }
 
   const handleCloseModal = () => {
-    setIsModalOpen(false)
+    toggleConnectWalletModal()
     setSelectedConnector(null)
     setIsWalletConnected(null)
     setHasAgreedToRules(false)
@@ -54,8 +53,6 @@ const ConnectWalletModal: React.FC<{
       } catch (error) {
         console.error('Error connecting wallet 123:', error)
         setIsWalletConnected(false)
-      } finally {
-        // handleCloseModal();
       }
     }
   }

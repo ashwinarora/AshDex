@@ -86,7 +86,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       }}
     >
       {/* Left Side */}
-      <div className="flex max-[770px]:border-b max-[770px]:border-white/10">
+      <div className="flex max-[770px]:border-b max-[770px]:border-white/10 max-[770px]:w-full w-[18%] w-md-[18%] ">
         <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-4 border-r-1 border-white/10">
           <Image
             src={starticon}
@@ -128,37 +128,35 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       </div>
 
-      <div className="flex items-center relative max-[770px]:px-3 px-6 py-3 max-[770px]:w-full w-[79%] justify-between">
-        <div className="flex flex-wrap gap-2 2xl:gap-6 text-white text-sm">
+      <div className="flex items-center relative max-[770px]:w-full w-[85%] justify-between">
+        <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-[770px]:divide-y divide-white/10 divide">
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-[770px]:pb-2 flex-wrap border-r-1 px-4 border-white/10 flex-col"
+              className={`flex max-[770px]:pb-2 py-3 flex-wrap flex-1 max-[770px]:px-2 px-4 flex-col justify-center
+         space-y-2 relative `}
             >
-              <span className="opacity-60 font-medium text-xs text-[#E8E0F1] ">{item.label}</span>
-              <span className={`font-medium mt-1 text-sm ${item.color || 'text-[#FFFFFF]'}`}>
-                {item.value}
-              </span>
+              <div className="flex flex-col space-y-1">
+                <div className="opacity-60 font-medium text-xs text-[#E8E0F1]">{item.label}</div>
+                <div className={`font-medium md:text-sm text-xs ${item.color || 'text-[#FFFFFF]'}`}>
+                  {item.value}
+                </div>
+              </div>
             </div>
           ))}
         </div>
-        <div ref={settingsRef} className="relative block max-[770px]:hidden">
+
+        <div ref={settingsRef} className="relative block max-[770px]:hidden pr-4">
           <button
             onClick={() => setIsSettingsOpen((prev) => !prev)}
             className="mx-2 cursor-pointer"
           >
-            <Image
-              src={settingicon}
-              alt="Settings"
-              className="2xl:w-[20px] 2xl:h-[20px] max-[1025px]:w-8 max-[1025px]:h-8 w-6 h-6"
-              width={24}
-              height={24}
-            />
+            <Image src={settingicon} alt="Settings" className="w-6 h-6" width={24} height={24} />
           </button>
         </div>
         <button
           onClick={() => setIsSettingsOpen((prev) => !prev)}
-          className="mx-2 max-[770px]:block hidden absolute -top-15 right-0 cursor-pointer"
+          className="mx-2 max-[770px]:block hidden absolute -top-9.5 right-0 cursor-pointer"
         >
           <Image src={settingicon} alt="Settings" className="w-5 h-5" width={24} height={24} />
         </button>

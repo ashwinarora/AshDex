@@ -11,7 +11,7 @@ const trustWalletConnector = injected({
 })
 
 export const config = createConfig({
-  chains: [arbitrum, arbitrumSepolia],
+  chains: [arbitrumSepolia, arbitrum],
   connectors: [
     phantomWalletConnector,
     trustWalletConnector,

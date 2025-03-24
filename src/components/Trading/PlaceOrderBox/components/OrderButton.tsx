@@ -1,8 +1,6 @@
 'use client'
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { useAccount, useConnect, useSignTypedData } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useWalletModal } from '@/context/WalletModalContext'
 import { AGENT_NAME, BUILDER_ADDRESS, MAX_DECIMALS_PERP } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
@@ -10,6 +8,9 @@ import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
 import { getUniverseIndex, splitSignature } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
+import { useQuery } from '@tanstack/react-query'
+import { useMemo } from 'react'
+import { useAccount, useSignTypedData } from 'wagmi'
 
 interface OrderButtonProps {
   selectedAsset: string
@@ -33,7 +34,8 @@ const OrderButton = ({
   const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid()
-  const { connect, connectors } = useConnect()
+  const { toggleConnectWalletModal } = useWalletModal()
+
   const { signTypedDataAsync } = useSignTypedData()
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
     queryKey: ['extraAgents'],
@@ -78,7 +80,7 @@ const OrderButton = ({
           'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
         }
         onClick={() => {
-          connect({ connector: connectors[0] })
+          toggleConnectWalletModal()
         }}
       >
         Connect Wallet

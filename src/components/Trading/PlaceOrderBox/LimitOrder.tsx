@@ -63,7 +63,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           isCross={isCross}
           setIsCross={setIsCross}
         />
-        <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
+        <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-4 px-4">
           <CheckBox label="Take Profit / Stop Loss" />
           <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />

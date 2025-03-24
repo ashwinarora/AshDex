@@ -1,32 +1,50 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import infoicon from '@/assets/images/info_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
+import Image from 'next/image'
 
 const Balances = () => {
   const { clearingHouseState } = useHyperLiquid()
+  const columns = [
+    { key: 'totalBalance', label: 'Total Balance' },
+    { key: 'withdrawableBalance', label: 'Withdrawable Balance' },
+    { key: 'send', label: 'Send' },
+    { key: 'transfer', label: 'Transfer' }
+  ]
+
   return (
-    <div className="p-4 bg-gray-900 text-white">
-      <table className="min-w-full bg-gray-800 shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-gray-700">
+    <div className="overflow-x-auto w-full px-3">
+      <table className="w-full text-white">
+        <thead>
           <tr>
-            <th className="py-2 px-4 border-b border-gray-600 text-left">Total Balance</th>
-            <th className="py-2 px-4 border-b border-gray-600 text-left">Withdrawable Balance</th>
-            <th className="py-2 px-4 border-b border-gray-600 text-left">Send</th>
-            <th className="py-2 px-4 border-b border-gray-600 text-left">Transfer</th>
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
+              >
+                <div className="flex justify-start items-center gap-1">
+                  <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                  <span>{col.label}</span>
+                  <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                </div>
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          <tr className="hover:bg-gray-700">
-            <td className="py-2 px-4 border-b border-gray-600 text-left">
+          <tr>
+            <td className="py-2 px-7 border-b border-gray-600 text-left">
               {clearingHouseState?.marginSummary.accountValue}
             </td>
-            <td className="py-2 px-4 border-b border-gray-600 text-left">
+            <td className="py-2 px-7 border-b border-gray-600 text-left">
               {clearingHouseState?.withdrawable}
             </td>
-            <td className="py-2 px-4 border-b border-gray-600 text-left">
+            <td className="py-2 px-7 border-b border-gray-600 text-left">
               <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">
                 Send
               </button>
             </td>
-            <td className="py-2 px-4 border-b border-gray-600 text-left">
+            <td className="py-2 px-7 border-b border-gray-600 text-left">
               <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
                 Transfer
               </button>
