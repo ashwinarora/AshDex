@@ -4,12 +4,13 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import { AGENT_NAME, BUILDER_ADDRESS, MAX_DECIMALS_PERP } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
-import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
 import { getUniverseIndex, splitSignature } from '@/utils/utils'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 import { useAccount, useConnect, useSignTypedData } from 'wagmi'
+import { TPSLType } from './TPSL'
 
 interface OrderButtonProps {
   selectedAsset: string
@@ -19,6 +20,7 @@ interface OrderButtonProps {
   leverage: number
   isCross: boolean
   isPostOnly: boolean
+  tpsl: TPSLType
 }
 
 const OrderButton = ({
@@ -28,7 +30,8 @@ const OrderButton = ({
   limitPrice,
   leverage,
   isCross,
-  isPostOnly
+  isPostOnly,
+  tpsl
 }: OrderButtonProps) => {
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid()
@@ -184,20 +187,61 @@ const OrderButton = ({
         const szDecimals = universe[assetIndex].szDecimals
         const decimals = MAX_DECIMALS_PERP - szDecimals - 1
         const tif = isPostOnly ? 'Alo' : 'Gtc'
-        await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-          type: 'limit',
+        const orders: OrderData[] = [{
           assetIndex: assetIndex,
           isBuy: isBuy,
           price: limitPrice.toFixed(decimals),
           size: amount.toFixed(szDecimals),
           reduceOnly: false,
-          tif: tif,
-          grouping: 'na',
+          orderType: {
+            limit: {
+              tif: tif
+            }
+          }
+        }]
+        if(tpsl.isTpsl) {
+          if(tpsl.stopLoss > 0) {
+            orders.push({
+              assetIndex: assetIndex,
+              isBuy: !isBuy,
+              price: tpsl.stopLoss.toFixed(decimals),
+              size: amount.toFixed(szDecimals),
+              reduceOnly: true,
+              orderType: {
+                trigger: {
+                  isMarket: true,
+                  triggerPx: tpsl.stopLoss.toFixed(decimals),
+                  tpsl: "sl"
+                }
+              }
+            })
+          }
+          if(tpsl.takeProfit > 0) {
+            orders.push({
+              assetIndex: assetIndex,
+              isBuy: !isBuy,
+              price: tpsl.takeProfit.toFixed(decimals),
+              size: amount.toFixed(szDecimals),
+              reduceOnly: true,
+              orderType: {
+                trigger: {
+                  isMarket: true,
+                  triggerPx: tpsl.takeProfit.toFixed(decimals),
+                  tpsl: 'tp'
+                }
+              }
+            })
+          }
+        }
+        const placeOrderRes = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
+          orders: orders,
+          grouping: tpsl.isTpsl ? 'normalTpsl' : 'na',
           builder: {
             address: BUILDER_ADDRESS,
             fee: currentFeeApproval
           }
         })
+        console.log(placeOrderRes)
       }}
     >
       {isBuy ? 'Buy' : 'Sell'}
