@@ -192,20 +192,22 @@ const OrderButton = ({
         const szDecimals = universe[assetIndex].szDecimals
         const decimals = MAX_DECIMALS_PERP - szDecimals - 1
         const tif = isPostOnly ? 'Alo' : 'Gtc'
-        const orders: OrderData[] = [{
-          assetIndex: assetIndex,
-          isBuy: isBuy,
-          price: limitPrice.toFixed(decimals),
-          size: amount.toFixed(szDecimals),
-          reduceOnly: false,
-          orderType: {
-            limit: {
-              tif: tif
+        const orders: OrderData[] = [
+          {
+            assetIndex: assetIndex,
+            isBuy: isBuy,
+            price: limitPrice.toFixed(decimals),
+            size: amount.toFixed(szDecimals),
+            reduceOnly: false,
+            orderType: {
+              limit: {
+                tif: tif
+              }
             }
           }
-        }]
-        if(tpsl?.isTpsl) {
-          if(tpsl.stopLoss > 0) {
+        ]
+        if (tpsl?.isTpsl) {
+          if (tpsl.stopLoss > 0) {
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
@@ -216,12 +218,12 @@ const OrderButton = ({
                 trigger: {
                   isMarket: true,
                   triggerPx: tpsl.stopLoss.toFixed(decimals),
-                  tpsl: "sl"
+                  tpsl: 'sl'
                 }
               }
             })
           }
-          if(tpsl.takeProfit > 0) {
+          if (tpsl.takeProfit > 0) {
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
@@ -238,14 +240,19 @@ const OrderButton = ({
             })
           }
         }
-        const placeOrderRes = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-          orders: orders,
-          grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-          builder: {
-            address: BUILDER_ADDRESS,
-            fee: currentFeeApproval
+        const placeOrderRes = await placeOrder(
+          agentWallet,
+          chain?.testnet || false,
+          hyperliquidAxios,
+          {
+            orders: orders,
+            grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
+            builder: {
+              address: BUILDER_ADDRESS,
+              fee: currentFeeApproval
+            }
           }
-        })
+        )
         console.log(placeOrderRes)
       }}
     >
