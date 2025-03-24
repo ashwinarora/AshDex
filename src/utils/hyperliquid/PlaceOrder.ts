@@ -4,23 +4,38 @@ import { AxiosInstance } from 'axios'
 import { Hex, keccak256, PrivateKeyAccount, toBytes } from 'viem'
 import { splitSignature } from '../utils'
 
-type LimitOrder = {
-  type: 'limit'
-  assetIndex: number
-  isBuy: boolean
-  price: string
-  size: string
-  reduceOnly: boolean
-  tif: 'Alo' | 'Ioc' | 'Gtc'
+type orderData = {
+  orders: OrderData[]
   grouping: 'na' | 'normalTpsl' | 'positionTpsl'
-  cloid?: string
   builder?: {
     address: string
     fee: number
   }
 }
 
-type orderData = LimitOrder
+export type OrderData = {
+  assetIndex: number
+  isBuy: boolean
+  price: string
+  size: string
+  reduceOnly: boolean
+  orderType: LimitOrder | TriggerOrder
+  cloid?: string
+}
+
+type LimitOrder = {
+  limit: {
+    tif: 'Alo' | 'Ioc' | 'Gtc'
+  }
+}
+
+type TriggerOrder = {
+  trigger: {
+    isMarket: boolean,
+    triggerPx: string,
+    tpsl: "tp" | "sl"
+  }
+}
 
 const phantomDomain = {
   name: 'Exchange',
@@ -42,7 +57,6 @@ export const placeOrder = async (
   hyperliquidAxios: AxiosInstance,
   orderData: orderData
 ) => {
-  // const action = { "type": "order", "orders": [{ "a": 0, "b": true, "p": "180", "s": "15", "r": false, "t": { "limit": { "tif": "Gtc" } }, "c": "0x1234567890abcdef1234567890abcdef" }], "grouping": "na" }
   const action = getAction(orderData)
   const nonce = Date.now()
   const hash = actionHash(action, null, nonce) as Hex
@@ -59,7 +73,8 @@ export const placeOrder = async (
   const res = await hyperliquidAxios.post('/exchange', {
     action,
     nonce,
-    signature: splitSig
+    signature: splitSig,
+    isFrontend: true
   })
   return res
 }
@@ -67,25 +82,21 @@ export const placeOrder = async (
 const getAction = (orderData: orderData) => {
   return {
     type: 'order',
-    orders: [
-      {
-        a: orderData.assetIndex,
-        b: orderData.isBuy,
-        p: orderData.price.toString(),
-        s: orderData.size.toString(),
-        r: orderData.reduceOnly,
-        t: {
-          limit: {
-            tif: orderData.tif
-          }
-        }
+    orders: orderData.orders.map((order) => {
+      return {
+        a: order.assetIndex,
+        b: order.isBuy,
+        p: order.price,
+        s: order.size,
+        r: order.reduceOnly,
+        t: order.orderType,
+        ...(order.cloid !== undefined && { c: order.cloid })
       }
-    ],
+    }),
     grouping: orderData.grouping,
     ...(orderData.builder !== undefined && {
       builder: { b: orderData.builder.address, f: orderData.builder.fee }
     }),
-    ...(orderData.cloid !== undefined && { cloid: orderData.cloid })
   }
 }
 

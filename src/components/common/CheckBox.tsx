@@ -3,7 +3,7 @@ import CheckIcon from '@/assets/images/check_icon.svg'
 import Image from 'next/image'
 interface CheckBoxProps {
   label: string
-  setIsChecked?: React.Dispatch<React.SetStateAction<boolean>>
+  setIsChecked?: (isChecked: boolean) => void
   isChecked?: boolean
 }
 
