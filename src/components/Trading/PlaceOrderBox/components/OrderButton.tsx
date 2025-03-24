@@ -20,7 +20,7 @@ interface OrderButtonProps {
   leverage: number
   isCross: boolean
   isPostOnly: boolean
-  tpsl: TPSLType
+  tpsl?: TPSLType
 }
 
 const OrderButton = ({
@@ -199,7 +199,7 @@ const OrderButton = ({
             }
           }
         }]
-        if(tpsl.isTpsl) {
+        if(tpsl?.isTpsl) {
           if(tpsl.stopLoss > 0) {
             orders.push({
               assetIndex: assetIndex,
@@ -235,7 +235,7 @@ const OrderButton = ({
         }
         const placeOrderRes = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
           orders: orders,
-          grouping: tpsl.isTpsl ? 'normalTpsl' : 'na',
+          grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
           builder: {
             address: BUILDER_ADDRESS,
             fee: currentFeeApproval
