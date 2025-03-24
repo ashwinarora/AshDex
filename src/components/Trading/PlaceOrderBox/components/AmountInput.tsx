@@ -111,7 +111,7 @@ const AmountInput = ({
             step={1}
             value={usdPercent}
             onChange={handleUsdPercentChange}
-            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none appearance-none"
+            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
             style={{
               background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${total}%, #2A1B3D ${total}%, #2A1B3D 100%)`
             }}
