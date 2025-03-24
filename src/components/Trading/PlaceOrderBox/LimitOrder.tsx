@@ -5,6 +5,7 @@ import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
 import CheckBox from '@/components/common/CheckBox'
+import TPSL, { TPSLType } from './components/TPSL'
 
 interface LimitOrderProps {
   selectedAsset: string
@@ -19,7 +20,12 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
-
+  const [tpsl, setTpsl] = useState<TPSLType>({
+    isTpsl: false,
+    takeProfit: 0,
+    stopLoss: 0,
+  })
+  
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0
     setLimitPrice(newLimitPrice)
@@ -64,7 +70,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           setIsCross={setIsCross}
         />
         <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
-          <CheckBox label="Take Profit / Stop Loss" />
+          <TPSL  tpsl={tpsl} setTpsl={setTpsl} />
           <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
         </div>
@@ -77,6 +83,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             leverage={leverage}
             isCross={isCross}
             isPostOnly={isPostOnly}
+            tpsl={tpsl}
           />
         </div>
       </div>
