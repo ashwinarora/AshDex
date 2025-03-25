@@ -9,6 +9,7 @@ import type { Candle } from '../../utils/hyperLiquidTypes'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import ChartTabs from '../common/ChartTabs'
 import IntervalSelector from '../common/IntervalSelector'
+import InfoTab from '../common/InfoTab'
 import unionicon from '@/assets/images/union_icon.svg'
 import union11icon from '@/assets/images/union11_icon.svg'
 import union12icon from '@/assets/images/union12_icon.svg'
@@ -21,6 +22,7 @@ import union18icon from '@/assets/images/union18_icon.svg'
 import union19icon from '@/assets/images/union19_icon.svg'
 import union20icon from '@/assets/images/union20_icon.svg'
 import union21icon from '@/assets/images/union21_icon.svg'
+
 interface IChartProps {
   selectedAsset: string
 }
@@ -180,42 +182,46 @@ const Chart = ({ selectedAsset }: IChartProps) => {
   return (
     <div className="relative">
       <ChartTabs tabs={tabs as string[]} activeTab={activeTab} setActiveTab={setActiveTab} />
-      <IntervalSelector
-        selectedInterval={selectedInterval}
-        setSelectedInterval={setSelectedInterval}
-        intervals={Array.from(CHART_INTERVALS)}
-      />
-      <div className="flex max-[770px]:block">
-        <div className="w-auto max-[770px]:w-full max-[770px]:py-3 max-[770px]:px-4 px-3 py-6 flex flex-col max-[770px]:flex-row max-[770px]:gap-4 max-[1025px]:gap-7 gap-10 items-center max-[770px]:justify-between min-[770px]:border-r-2 max-[770px]:border-b border-white/10">
-          {sidebarIcons?.map((icon, index) => (
-            <button
-              key={index}
-              className="hover:opacity-100 opacity-70 transition-opacity cursor-pointer"
-            >
-              <Image
-                src={icon}
-                alt={`icon-${index}`}
-                className="max-sm:w-[16px] max-sm:h-[16px] w-[19px] h-[19px]"
-              />
-            </button>
-          ))}
-        </div>
-        {activeTab === 0 && isLoading ? (
-          <div className="flex justify-center items-center w-full h-[90vh] max-[770px]:h-[52vh]">
-            <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
-          </div>
-        ) : (
-          <div
-            ref={chartRef}
-            className="h-[90vh] w-full max-[770px]:h-[52vh] max-[1024px]:h-[100vh] mb-3 flex-1"
+      {activeTab === 0 ? (
+        <>
+          <IntervalSelector
+            selectedInterval={selectedInterval}
+            setSelectedInterval={setSelectedInterval}
+            intervals={Array.from(CHART_INTERVALS)}
           />
-        )}
-      </div>
-      {/* Tooltip */}
-      <div
-        ref={tooltipRef}
-        className="absolute z-50 bg-[#33293B] max-[770px]:p-3 p-[14px] rounded-lg shadow-md hidden"
-      />
+          <div className="flex max-[770px]:block">
+            <div className="w-auto max-[770px]:w-full max-[770px]:py-3 max-[770px]:px-4 px-3 py-6 flex flex-col max-[770px]:flex-row max-[770px]:gap-4 max-[1025px]:gap-7 gap-10 items-center max-[770px]:justify-between min-[770px]:border-r-2 max-[770px]:border-b border-white/10">
+              {sidebarIcons?.map((icon, index) => (
+                <button
+                  key={index}
+                  className="hover:opacity-100 opacity-70 transition-opacity cursor-pointer"
+                >
+                  <Image
+                    src={icon}
+                    alt={`icon-${index}`}
+                    className="max-sm:w-[16px] max-sm:h-[16px] w-[19px] h-[19px]"
+                  />
+                </button>
+              ))}
+            </div>
+            {isLoading ? (
+              <div className="flex justify-center items-center w-full h-[90vh] max-[770px]:h-[52vh]">
+                <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
+              </div>
+            ) : (
+              <div
+                ref={chartRef}
+                className="h-[90vh] w-full max-[770px]:h-[52vh] max-[1024px]:h-[100vh] mb-3 flex-1"
+              />
+            )}
+          </div>
+          <div
+            ref={tooltipRef}
+            className="absolute z-50 bg-[#33293B] max-[770px]:p-3 p-[14px] rounded-lg shadow-md hidden"
+          />
+        </>
+      ) : null}
+      {activeTab === 2 && <InfoTab />}
     </div>
   )
 }

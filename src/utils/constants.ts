@@ -82,3 +82,17 @@ Donec ultricies enim sed magna efficitur posuere. Praesent rhoncus velit odio, a
 
 Praesent rhoncus velit odio, a pellentesque massa porta ac. Donec porttitor ex sit amet urna porta ultrices. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat elit sed augue porttitor, vel consequat diam bibendum. Nullam rhoncus eros nec ante aliquet, nec euismod libero molestie. Duis tortor tortor, viverra nec ante in, malesuada luctus massa. Donec rhoncus ex non consectetur congue. Duis lorem dui, tincidunt id mauris sit amet, venenatis laoreet eros. Praesent convallis metus sed leo condimentum pharetra. Donec ultricies enim sed magna efficitur posuere. Praesent rhoncus velit odio, a pellentesque massa porta ac. Donec porttitor ex sit amet urna porta ultrices.
 `
+
+export const INFOTAB_DESC = `
+Bitcoin (BTC) is a peer-to-peer cryptocurrency that aims to function as a means of exchange that is independent of any central authority. BTC can be transferred electronically in a secure, verifiable, and immutable way.
+
+Launched in 2009, BTC is the first virtual currency to solve the double-spending issue by timestamping transactions before broadcasting them to all of the nodes in the Bitcoin network. The Bitcoin Protocol offered a solution to the Byzantine Generals' Problem with a blockchain network structure, a notion first created by Stuart Haber and W. Scott Stornetta in 1991.
+
+Bitcoin’s whitepaper was published pseudonymously in 2008 by an individual, or a group, with the pseudonym “Satoshi Nakamoto”, whose underlying identity has still not been verified.
+
+The Bitcoin protocol uses an SHA-256d-based Proof-of-Work (PoW) algorithm to reach network consensus. Its network has a target block time of 10 minutes and a maximum supply of 21 million tokens, with a decaying token emission rate. To prevent fluctuation of the block time, the network's block difficulty is re-adjusted through an algorithm based on the past 2016 block times.
+
+With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported both the Lightning Network, a second-layer infrastructure for payment channels, and Segregated Witness, a soft-fork to increase the number of transactions on a block, as solutions to network scalability.
+
+With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported both the Lightning Network, a second-layer infrastructure for payment channels, and Segregated Witness, a soft-fork to increase the number of transactions on a block, as solutions to network scalability.
+`
