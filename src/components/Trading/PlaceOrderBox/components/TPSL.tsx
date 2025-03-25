@@ -1,18 +1,17 @@
-import CheckBox from "@/components/common/CheckBox"
+import CheckBox from '@/components/common/CheckBox'
 
 interface TPSLProps {
-  tpsl: TPSLType,
-  setTpsl: (tpsl: TPSLType) => void,
+  tpsl: TPSLType
+  setTpsl: (tpsl: TPSLType) => void
 }
 
 export type TPSLType = {
-  isTpsl: boolean,
-  takeProfit: number,
-  stopLoss: number,
+  isTpsl: boolean
+  takeProfit: number
+  stopLoss: number
 }
 
 const TPSL = ({ tpsl, setTpsl }: TPSLProps) => {
-
   const setIsTpsl = (isTpsl: boolean) => {
     setTpsl({ ...tpsl, isTpsl })
   }

@@ -70,7 +70,7 @@ const AmountInput = ({
 
   return (
     <>
-      <div className="px-4 border-b border-[#FFFFFF0F] pb-3">
+      <div className="px-4 border-b border-[#FFFFFF0F]">
         <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
         <div className="relative">
           <input
@@ -86,7 +86,7 @@ const AmountInput = ({
         </div>
       </div>
 
-      <div className="px-4 border-b border-[#FFFFFF0F] pb-3">
+      <div className="px-4 border-b border-[#FFFFFF0F]">
         <label className="block text-sm font-medium text-gray-300 mb-1">TOTAL</label>
         <div className="relative">
           <input
@@ -101,7 +101,7 @@ const AmountInput = ({
           </span>
         </div>
       </div>
-      <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-3">
+      <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
         <div className="w-5/6">
           <label className="block text-sm font-medium text-gray-400">Balance</label>
           <input

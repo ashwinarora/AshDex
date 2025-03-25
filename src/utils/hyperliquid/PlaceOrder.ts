@@ -31,9 +31,9 @@ type LimitOrder = {
 
 type TriggerOrder = {
   trigger: {
-    isMarket: boolean,
-    triggerPx: string,
-    tpsl: "tp" | "sl"
+    isMarket: boolean
+    triggerPx: string
+    tpsl: 'tp' | 'sl'
   }
 }
 
@@ -96,7 +96,7 @@ const getAction = (orderData: orderData) => {
     grouping: orderData.grouping,
     ...(orderData.builder !== undefined && {
       builder: { b: orderData.builder.address, f: orderData.builder.fee }
-    }),
+    })
   }
 }
 

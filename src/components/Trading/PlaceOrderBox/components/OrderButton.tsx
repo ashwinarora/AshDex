@@ -1,15 +1,16 @@
 'use client'
-
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useWalletModal } from '@/context/WalletModalContext'
 import { AGENT_NAME, BUILDER_ADDRESS, MAX_DECIMALS_PERP } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
 import { getUniverseIndex, splitSignature } from '@/utils/utils'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
-import { useAccount, useConnect, useSignTypedData } from 'wagmi'
+import { useAccount, useSignTypedData } from 'wagmi'
 import { TPSLType } from './TPSL'
 
 interface OrderButtonProps {
@@ -33,11 +34,12 @@ const OrderButton = ({
   isPostOnly,
   tpsl
 }: OrderButtonProps) => {
+  const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid()
-  const { connect, connectors } = useConnect()
-  const { signTypedDataAsync } = useSignTypedData()
+  const { toggleConnectWalletModal } = useWalletModal()
 
+  const { signTypedDataAsync } = useSignTypedData()
   const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
@@ -70,6 +72,9 @@ const OrderButton = ({
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
 
+  // We handle the render logic after hooks are all set up
+  if (!isRendered) return null
+
   if (!isWalletConnected) {
     return (
       <button
@@ -78,7 +83,7 @@ const OrderButton = ({
           'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
         }
         onClick={() => {
-          connect({ connector: connectors[0] })
+          toggleConnectWalletModal()
         }}
       >
         Connect Wallet
@@ -187,20 +192,22 @@ const OrderButton = ({
         const szDecimals = universe[assetIndex].szDecimals
         const decimals = MAX_DECIMALS_PERP - szDecimals - 1
         const tif = isPostOnly ? 'Alo' : 'Gtc'
-        const orders: OrderData[] = [{
-          assetIndex: assetIndex,
-          isBuy: isBuy,
-          price: limitPrice.toFixed(decimals),
-          size: amount.toFixed(szDecimals),
-          reduceOnly: false,
-          orderType: {
-            limit: {
-              tif: tif
+        const orders: OrderData[] = [
+          {
+            assetIndex: assetIndex,
+            isBuy: isBuy,
+            price: limitPrice.toFixed(decimals),
+            size: amount.toFixed(szDecimals),
+            reduceOnly: false,
+            orderType: {
+              limit: {
+                tif: tif
+              }
             }
           }
-        }]
-        if(tpsl?.isTpsl) {
-          if(tpsl.stopLoss > 0) {
+        ]
+        if (tpsl?.isTpsl) {
+          if (tpsl.stopLoss > 0) {
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
@@ -211,12 +218,12 @@ const OrderButton = ({
                 trigger: {
                   isMarket: true,
                   triggerPx: tpsl.stopLoss.toFixed(decimals),
-                  tpsl: "sl"
+                  tpsl: 'sl'
                 }
               }
             })
           }
-          if(tpsl.takeProfit > 0) {
+          if (tpsl.takeProfit > 0) {
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
@@ -233,14 +240,19 @@ const OrderButton = ({
             })
           }
         }
-        const placeOrderRes = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-          orders: orders,
-          grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-          builder: {
-            address: BUILDER_ADDRESS,
-            fee: currentFeeApproval
+        const placeOrderRes = await placeOrder(
+          agentWallet,
+          chain?.testnet || false,
+          hyperliquidAxios,
+          {
+            orders: orders,
+            grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
+            builder: {
+              address: BUILDER_ADDRESS,
+              fee: currentFeeApproval
+            }
           }
-        })
+        )
         console.log(placeOrderRes)
       }}
     >

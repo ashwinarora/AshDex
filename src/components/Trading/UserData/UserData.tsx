@@ -4,19 +4,23 @@ import { useState } from 'react'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
-
-const tabs = [
-  'Balances',
-  'Positions',
-  'Open Orders',
-  'TWAP',
-  'Trade History',
-  'Orders History',
-  'Funding History'
-] as const
+import { useHyperLiquid } from '@/context/HyperLiquid'
 
 const UserData = () => {
   const [activeTab, setActiveTab] = useState(1)
+  const { clearingHouseState } = useHyperLiquid()
+  const [openOrdersCount, setOpenOrdersCount] = useState(0)
+
+  const positionsCount = clearingHouseState?.assetPositions?.length || 0
+  const tabs = [
+    'Balances',
+    `Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`,
+    `Open Orders ${openOrdersCount > 0 ? ' (' + openOrdersCount + ')' : ''}`,
+    'TWAP',
+    'Trade History',
+    'Orders History',
+    'Funding History'
+  ] as const
 
   return (
     <div className="w-full">
@@ -46,7 +50,7 @@ const UserData = () => {
           <Positions />
         </div>
         <div className={activeTab === 2 ? '' : 'hidden'}>
-          <OpenOrders />
+          <OpenOrders setOpenOrdersCount={setOpenOrdersCount} />
         </div>
       </div>
     </div>

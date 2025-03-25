@@ -4,6 +4,7 @@ import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useMemo } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
+import CustomSelector from '../CustomSelector'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -30,7 +31,7 @@ const LeverageMargin = ({
 
   return (
     <div>
-      <div className="my-4 px-4">
+      <div className="mb-4 px-4">
         <label className="block text-sm font-medium text-gray-400">Leverage</label>
         <div className="flex justify-between items-center">
           <div className="w-4/6">
@@ -78,20 +79,16 @@ const LeverageMargin = ({
         </div>
       </div>
       <div className="px-4 border-b border-[#FFFFFF0F]">
-        <div className="flex w-full justify-between items-center mb-4 px-4 border border-white/10 bg-white/10 rounded-md  py-2">
+        <div className="flex w-full justify-between items-center mb-4 px-4 border border-white/10 bg-white/10 rounded-md py-2">
           <p className="text-[#8B8BA0]">Margin Mode</p>
-          <select
-            value={isCross ? 'cross' : 'isolated'}
-            className="bg-transparent text-white outline-none"
-            onChange={(e) => setIsCross(e.target.value === 'cross')}
-          >
-            <option value="cross" className="bg-gray-800 text-gray-300">
-              Cross
-            </option>
-            <option value="isolated" className="bg-gray-800 text-gray-300">
-              Isolated
-            </option>
-          </select>
+          <CustomSelector
+            options={[
+              { value: 'cross', label: 'Cross' },
+              { value: 'isolated', label: 'Isolated' }
+            ]}
+            selectedValue={isCross ? 'cross' : 'isolated'}
+            onChange={(value) => setIsCross(value === 'cross')}
+          />
         </div>
       </div>
     </div>

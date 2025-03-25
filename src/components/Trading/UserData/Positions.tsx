@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import Pagination from '../../common/Pagination'
 import editicon from '@/assets/images/edit_icon.svg'
@@ -26,15 +26,22 @@ const Positions = () => {
 
   const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / pageSize)
 
+  const paginatedPositions = useMemo(() => {
+    return clearingHouseState?.assetPositions?.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
+    )
+  }, [clearingHouseState?.assetPositions, currentPage, pageSize])
+
   return (
-    <div className="overflow-x-auto w-full px-3">
+    <div className="overflow-x-auto w-full">
       <table className="w-full text-white">
         <thead>
           <tr>
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="pt-3 pb-1 px-3 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image
@@ -55,10 +62,10 @@ const Positions = () => {
                 </div>
               </th>
             ))}
-            <th className="pt-3 pb-1 px-3 text-left text-sm font-normal text-[#7D67FF]">
+            <th className="pt-3 pb-1 px-7 text-left text-sm font-normal text-[#7D67FF]">
               Close all positions
             </th>
-            <th className="pt-3 pb-1 px-3 text-left text-sm font-normal text-[#8B8BA0]">
+            <th className="pt-3 pb-1 pl-2 pr-10 text-left text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
                 <Image
                   src={shortingicon}
@@ -80,9 +87,9 @@ const Positions = () => {
           </tr>
         </thead>
         <tbody>
-          {clearingHouseState?.assetPositions?.map((position, index) => (
+          {paginatedPositions?.map((position, index) => (
             <tr key={index} className=" border-b border-white/10">
-              <td className="py-4 text-[#FFFFFF] opacity-80 font-normal text-sm ">
+              <td className="py-4 px-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <span
                     // fix later
@@ -97,33 +104,33 @@ const Positions = () => {
                   </span>
                 </div>
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.entryPx}
               </td>
-              <td className="py-4 opacity-80  text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
                 {position.position.entryPx}
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.cumFunding.allTime}
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.szi}
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.unrealizedPnl}
               </td>
-              <td className="py-4 opacity-80 text-[#E2464A] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#E2464A] font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] ">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] ">
                 <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
                   Open
                 </span>
               </td>
-              <td className="py-4 opacity-80 text-[#7D67FF] text-sm">
+              <td className="py-4 opacity-80 text-[#7D67FF] text-sm px-7">
                 <span className="px-3 font-medium py-2 mr-2">Market</span>
                 <span className="px-3 font-medium py-2">Limit</span>
                 <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
@@ -133,7 +140,7 @@ const Positions = () => {
                   dummy
                 </span>
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm ">
+              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm px-7">
                 {true ? (
                   <div className="flex items-center gap-2">
                     <span className="w-17 break-words overflow-hidden">Dummy</span>
@@ -147,14 +154,15 @@ const Positions = () => {
           ))}
         </tbody>
       </table>
-      {/* Pagination Component */}
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        pageSize={pageSize}
-        onPageSizeChange={setPageSize}
-      />
+      {clearingHouseState?.assetPositions && clearingHouseState?.assetPositions?.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
+      )}
     </div>
   )
 }
