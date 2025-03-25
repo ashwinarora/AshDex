@@ -1,10 +1,24 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { Order, WsOrder } from '@/utils/hyperLiquidTypes'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import infoicon from '@/assets/images/info_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
+import Image from 'next/image'
+import { useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
+import Pagination from '@/components/common/Pagination'
 
-const OpenOrders = () => {
+const columns = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'side', label: 'Side' },
+  { key: 'limitPrice', label: 'Limit Price' },
+  { key: 'size', label: 'Size' },
+  { key: 'orderID', label: 'Order ID' },
+  { key: 'timestamp	', label: 'Timestamp' },
+  { key: 'originalsize', label: 'Original Size' }
+]
+
+const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number) => void }) => {
   const { address } = useAccount()
   const { sdk } = useHyperLiquid()
   const { data: openOrders, isLoading } = useQuery({
@@ -17,12 +31,21 @@ const OpenOrders = () => {
   })
 
   const [orders, setOrders] = useState<Order[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(5)
+
+  const totalPages = Math.ceil(orders.length / pageSize)
+
+  const paginatedOrders = useMemo(() => {
+    return orders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }, [orders, currentPage, pageSize])
 
   useEffect(() => {
     if (openOrders) {
       setOrders(openOrders)
+      setOpenOrdersCount(openOrders.length)
     }
-  }, [openOrders])
+  }, [openOrders, setOpenOrdersCount])
 
   useEffect(() => {
     if (!sdk) return
@@ -46,37 +69,43 @@ const OpenOrders = () => {
             timestamp: order.statusTimestamp
           }
         })
+        setOpenOrdersCount(newOrders.length)
         return newOrders
       })
     })
     return () => {
       sdk.subscriptions.unsubscribeFromOrderUpdates()
     }
-  }, [sdk, address])
+  }, [sdk, address, setOpenOrdersCount])
 
   if (isLoading) {
     return <div>Loading...</div>
   }
 
   return (
-    <div className="p-4 bg-gray-900 text-white">
-      <h2 className="text-xl font-bold mb-4">Open Orders</h2>
-      <table className="min-w-full bg-gray-800 text-left">
+    <div className="overflow-x-auto w-full">
+      <table className="w-full text-white">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b border-gray-700">Coin</th>
-            <th className="py-2 px-4 border-b border-gray-700">Side</th>
-            <th className="py-2 px-4 border-b border-gray-700">Limit Price</th>
-            <th className="py-2 px-4 border-b border-gray-700">Size</th>
-            <th className="py-2 px-4 border-b border-gray-700">Order ID</th>
-            <th className="py-2 px-4 border-b border-gray-700">Timestamp</th>
-            <th className="py-2 px-4 border-b border-gray-700">Original Size</th>
-            <th className="py-2 px-4 border-b border-gray-700">
+            {columns.map((col) => (
+              <th
+                key={col.key}
+                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
+              >
+                <div className="flex justify-start items-center gap-1">
+                  <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                  <span>{col.label}</span>
+                  <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                </div>
+              </th>
+            ))}
+            <th className="px-7">
               <button
-                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
                 onClick={async () => {
-                  const res = await sdk.custom.cancelAllOrders()
-                  console.log(res)
+                  await sdk.custom.cancelAllOrders()
+                  setOrders([])
+                  setOpenOrdersCount(0)
                 }}
               >
                 Cancel All
@@ -85,22 +114,22 @@ const OpenOrders = () => {
           </tr>
         </thead>
         <tbody>
-          {orders?.map((order) => (
+          {paginatedOrders?.map((order) => (
             <tr key={order.oid}>
-              <td className="py-2 px-4 border-b border-gray-700">{order.coin}</td>
+              <td className="py-2 px-7 border-b border-gray-700">{order.coin}</td>
               <td
-                className={`py-2 px-4 border-b border-gray-700 ${order.side === 'buy' ? 'text-green-500' : 'text-red-500'}`}
+                className={`py-2 px-7 border-b border-gray-700 ${order.side === 'buy' ? 'text-green-500' : 'text-red-500'}`}
               >
                 {order.side}
               </td>
-              <td className="py-2 px-4 border-b border-gray-700">{order.limitPx}</td>
-              <td className="py-2 px-4 border-b border-gray-700">{order.sz}</td>
-              <td className="py-2 px-4 border-b border-gray-700">{order.oid}</td>
-              <td className="py-2 px-4 border-b border-gray-700">
+              <td className="py-2 px-7 border-b border-gray-700">{order.limitPx}</td>
+              <td className="py-2 px-7 border-b border-gray-700">{order.sz}</td>
+              <td className="py-2 px-7 border-b border-gray-700">{order.oid}</td>
+              <td className="py-2 px-7 border-b border-gray-700">
                 {new Date(order.timestamp).toLocaleString()}
               </td>
-              <td className="py-2 px-4 border-b border-gray-700">{order.origSz}</td>
-              <td className="py-2 px-4 border-b border-gray-700">
+              <td className="py-2 px-7 border-b border-gray-700">{order.origSz}</td>
+              <td className="py-2 px-7 border-b border-gray-700">
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                   onClick={async () => {
@@ -115,6 +144,16 @@ const OpenOrders = () => {
           ))}
         </tbody>
       </table>
+
+      {orders?.length > 0 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          pageSize={pageSize}
+          onPageSizeChange={setPageSize}
+        />
+      )}
     </div>
   )
 }
