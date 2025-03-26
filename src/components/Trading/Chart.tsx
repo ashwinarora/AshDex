@@ -30,7 +30,7 @@ const tabs = ['Price', 'Depth', 'Info'] as string[]
 
 const Chart = ({ selectedAsset }: IChartProps) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
-  const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('1m')
+  const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('5m')
   const chartRef = useRef(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState(0)
@@ -80,7 +80,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         unsubscribe()
       }
     }
-  }, [isSdkConnected, selectedAsset, selectedInterval])
+  }, [isSdkConnected, selectedAsset, selectedInterval, sdk?.subscriptions])
 
   useEffect(() => {
     if (activeTab !== 0 || isLoading || !candlestickData.length || !chartRef.current) return
@@ -162,7 +162,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       `
     })
     return () => chart.remove()
-  }, [candlestickData, activeTab])
+  }, [candlestickData, activeTab,isLoading])
 
   const sidebarIcons = [
     unionicon,
@@ -221,7 +221,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
           />
         </>
       ) : null}
-      {activeTab === 2 && <InfoTab />}
+      {activeTab === 2 && <InfoTab selectedAsset={selectedAsset} />}
     </div>
   )
 }
