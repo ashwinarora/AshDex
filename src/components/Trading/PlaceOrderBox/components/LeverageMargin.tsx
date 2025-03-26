@@ -42,7 +42,7 @@ const LeverageMargin = ({
               step={1}
               value={leverage}
               onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
-              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none appearance-none"
+              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
               style={{
                 background:
                   'linear-gradient(to right, #702DF5 0%, #702DF5 ' +
