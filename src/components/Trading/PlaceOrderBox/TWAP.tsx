@@ -2,17 +2,16 @@ import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 
-interface AdvancedProps {
+interface TWAPProps {
   selectedAsset: string
 }
 
-const Advanced = ({ selectedAsset }: AdvancedProps) => {
+const TWAP = ({ selectedAsset }: TWAPProps) => {
   const { sdk } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [size, setSize] = useState<number>(0)
   const [minutes, setMinutes] = useState<number>(0)
   const [randomize, setRandomize] = useState<boolean>(false)
-
 
   return (
     <div className="p-4 bg-gray-800 text-white">
@@ -62,4 +61,4 @@ const Advanced = ({ selectedAsset }: AdvancedProps) => {
   )
 }
 
-export default Advanced
+export default TWAP
