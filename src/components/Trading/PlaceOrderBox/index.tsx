@@ -2,10 +2,12 @@
 import { useState } from 'react'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
-import Advanced from './Advanced'
+import TWAP from './TWAP'
+import Scale from './Scale'
+import CustomSelector from './CustomSelector'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'ADVANCED'
+type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE'
 
 interface IPlaceOrderProps {
   selectedAsset: string
@@ -20,8 +22,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return <LimitOrder selectedAsset={selectedAsset} />
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} />
-      case 'ADVANCED':
-        return <Advanced selectedAsset={selectedAsset} />
+      case 'TWAP':
+        return <TWAP selectedAsset={selectedAsset} />
+      case 'SCALE':
+        return <Scale selectedAsset={selectedAsset} />
       default:
         return null
     }
@@ -49,12 +53,21 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         </button>
 
         <button
-          onClick={() => setActiveTab('ADVANCED')}
           className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'ADVANCED' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
+            activeTab === 'TWAP' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
           }`}
         >
           Advanced
+          <CustomSelector
+            options={[
+              { value: 'TWAP', label: 'TWAP' },
+              { value: 'SCALE', label: 'SCALE' }
+            ]}
+            selectedValue={''}
+            onChange={(value) => {
+              setActiveTab(value as OrderTab)
+            }}
+          />
         </button>
       </div>
 
@@ -62,6 +75,5 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 
 export default PlaceOrder
