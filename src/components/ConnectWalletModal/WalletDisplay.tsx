@@ -50,7 +50,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
                 }`}
               />
               <div className="text-[#E8E0F1] font-medium mt-4 text-md">
-                {name} {name === 'Trust Wallet' ? '' : 'Wallet'}
+                {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : 'Wallet'}
               </div>
             </button>
             <div className="flex py-4 justify-center items-center border-t border-[#33293B] gap-2">

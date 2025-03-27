@@ -10,9 +10,19 @@ const trustWalletConnector = injected({
   target: 'trustWallet'
 })
 
+const rabbyWalletConnector = injected({
+  target: 'rabby'
+})
+
+const coinbaseWalletConnector = injected({
+  target: 'coinbaseWallet'
+})
+
 export const config = createConfig({
   chains: [arbitrumSepolia, arbitrum],
   connectors: [
+    coinbaseWalletConnector,
+    rabbyWalletConnector,
     phantomWalletConnector,
     trustWalletConnector,
     walletConnect({
