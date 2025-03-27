@@ -91,7 +91,16 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
       totalUSD += 1 // Increment totalUSD for the next iteration
     }
     return Math.min(maxUsd, clearingHouseState.withdrawable)
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, startPrice, endPrice, totalOrders, sizeSkew])
+  }, [
+    isReduceOnly,
+    clearingHouseState,
+    selectedAsset,
+    isBuy,
+    startPrice,
+    endPrice,
+    totalOrders,
+    sizeSkew
+  ])
 
   console.log(maxAllowedUsd)
 
@@ -187,7 +196,9 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
         </label>
         <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
           <div className="w-5/6">
-            <label className="block text-sm font-medium text-gray-400">Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD</label>
+            <label className="block text-sm font-medium text-gray-400">
+              Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD
+            </label>
             <input
               type="range"
               min={0}
