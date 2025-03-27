@@ -35,8 +35,8 @@ const OrderButton = ({
   tpsl
 }: OrderButtonProps) => {
   const { isRendered } = useComponentRendered()
-  const { address, isConnected: isWalletConnected, chainId, chain } = useAccount()
-  const { agentWallet, hyperliquidAxios, universe, sdk } = useHyperLiquid()
+  const { address, isConnected: isWalletConnected, chainId } = useAccount()
+  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet } = useHyperLiquid()
   const { toggleConnectWalletModal } = useWalletModal()
 
   const { signTypedDataAsync } = useSignTypedData()
@@ -104,7 +104,7 @@ const OrderButton = ({
               agentAddress: agentWallet?.address || '',
               agentName: AGENT_NAME,
               chainId: chainId,
-              isTestnet: chain?.testnet || false,
+              isTestnet: isTestnet,
               nonce: Date.now()
             })
             const sign = await signTypedDataAsync(payload)
@@ -143,7 +143,7 @@ const OrderButton = ({
           try {
             const payload = getApproveBuilderFeePayload({
               chainId: chainId,
-              isTestnet: chain?.testnet || false,
+              isTestnet: isTestnet,
               builder: BUILDER_ADDRESS,
               nonce: Date.now(),
               feePercentage: '0.1%'
@@ -240,19 +240,14 @@ const OrderButton = ({
             })
           }
         }
-        const placeOrderRes = await placeOrder(
-          agentWallet,
-          chain?.testnet || false,
-          hyperliquidAxios,
-          {
-            orders: orders,
-            grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-            builder: {
-              address: BUILDER_ADDRESS,
-              fee: currentFeeApproval
-            }
+        const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+          orders: orders,
+          grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
+          builder: {
+            address: BUILDER_ADDRESS,
+            fee: currentFeeApproval
           }
-        )
+        })
         console.log(placeOrderRes)
       }}
     >
