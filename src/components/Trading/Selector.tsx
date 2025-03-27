@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
+import { useTokenDetails } from '@/hooks/useTokenDetails'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
@@ -13,15 +14,14 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids } = useHyperLiquid()
-
+  const { allMids, sdk } = useHyperLiquid()
+  const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
 
-  // Filter assets based on the search term
   const assetEntries = useMemo(
     () =>
       Object.entries(allMids)
@@ -31,26 +31,32 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     [allMids, searchTerm]
   )
 
-  const marketData = [
-    { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
-    { label: '24h High', value: '$99,149.00' },
-    { label: '24h Low', value: '$99,149.00' },
-    { label: '24h Volume (BTC)', value: '17,062.39' },
-    { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
-    { label: 'Market Cap', value: '$928B' },
-    { label: '1h Funding', value: '0.0015%' },
-    { label: 'Next Funding', value: '27:57' }
-  ]
+  const marketData = useMemo(
+    () => [
+      { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
+      { label: '24h High', value: '$99,149.00' },
+      { label: '24h Low', value: '$99,149.00' },
+      { label: '24h Volume (BTC)', value: tokenDetails?.volume ?? '0' },
+      { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
+      { label: 'Market Cap', value: '$928B' },
+      { label: '1h Funding', value: tokenDetails?.funding ?? '0' },
+      { label: 'Next Funding', value: '27:57' }
+    ],
+    [tokenDetails]
+  )
 
-  const settingsOptions = [
-    { label: '24h High', checked: false },
-    { label: '24h Low', checked: true },
-    { label: 'Market Cap', checked: true },
-    { label: 'Funding Rate', checked: true },
-    { label: '24h Trades', checked: true },
-    { label: '1h Funding', checked: true },
-    { label: 'Next Funding', checked: true }
-  ]
+  const settingsOptions = useMemo(
+    () => [
+      { label: '24h High', checked: false },
+      { label: '24h Low', checked: true },
+      { label: 'Market Cap', checked: true },
+      { label: 'Funding Rate', checked: true },
+      { label: '24h Trades', checked: true },
+      { label: '1h Funding', checked: true },
+      { label: 'Next Funding', checked: true }
+    ],
+    []
+  )
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
