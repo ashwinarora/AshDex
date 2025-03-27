@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { INFOTAB_DESC } from './../../utils/constants'
 import exporticon from '@/assets/images/export_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 
@@ -66,15 +65,20 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
   }
 
   const fetchCoinData = useCallback(async () => {
-    if (!allCoins.length) return
+    if (!allCoins.length || !selectedAsset) return
     setLoading(true)
     const baseSymbol = selectedAsset?.split('-')[0]?.toLowerCase()
     const selectedCoin = allCoins?.find((coin) => coin?.symbol?.toLowerCase() === baseSymbol)
+    if (!selectedCoin || !selectedCoin?.id) {
+      console.error('Selected coin not found or ID is undefined')
+      setLoading(false)
+      return
+    }
     try {
       const response = await fetch(`/api/coin/${selectedCoin?.id}`)
       const data = await response.json()
-      setCoinData(data?.marketPairs?.[1] ?? {})
-      setCoinInfo(data?.coinInfo?.[1] ?? {})
+      setCoinData(data?.marketPairs?.[selectedCoin?.id] ?? null)
+      setCoinInfo(data?.coinInfo?.[selectedCoin?.id] ?? null)
     } catch (error) {
       console.error('Error fetching coin data:', error)
     } finally {
@@ -227,7 +231,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
             </div>
             <p className="text-sm text-[#8B8BA0] font-normal">Info</p>
             <div className="h-[57vh] mt-2 xl:h-[50vh] 2xl:h-[60vh] max-[770px]:h-full font-normal overflow-y-auto text-sm text-[#FFFFFF] space-y-4 pr-2">
-              {(coinInfo?.description ?? INFOTAB_DESC)
+              {(coinInfo?.description ?? '')
                 ?.split('\n')
                 .map((line, index) => <div key={index}>{line}</div>)}
             </div>{' '}
