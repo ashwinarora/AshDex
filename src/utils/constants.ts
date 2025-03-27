@@ -1,8 +1,8 @@
 import type { Hex } from 'viem'
 import metamaskicon from '@/assets/images/metamask_icon.svg'
-// import atomicwallet from "@/assets/images/atomicwallet_icon.svg";
 import phantom from '@/assets/images/phantom_icon.svg'
 import trustwallet from '@/assets/images/trustwallet_icon.svg'
+import rabbywallet from '@/assets/images/rabbywallet_icon.svg'
 import walletconnect from '@/assets/images/walletconnect_icon.svg'
 import coinbase from '@/assets/images/coinbase_icon.webp'
 
@@ -58,7 +58,7 @@ export const WALLETS = [
     icon: phantom
   },
   {
-    id: 'coinbase',
+    id: 'coinbaseWallet',
     name: 'Coinbase',
     icon: coinbase
   },
@@ -71,6 +71,11 @@ export const WALLETS = [
     id: 'trustWallet',
     name: 'Trust Wallet',
     icon: trustwallet
+  },
+  {
+    id: 'rabby',
+    name: 'Rabby Wallet',
+    icon: rabbywallet
   },
   { id: 'other', name: 'Other wallets', icon: '' }
 ] as const

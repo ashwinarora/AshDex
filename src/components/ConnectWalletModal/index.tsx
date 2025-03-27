@@ -42,9 +42,9 @@ const ConnectWalletModal: React.FC = () => {
       console.error('Connector not found for wallet:', wallet.id)
       return
     }
-    if (wallet.id) {
+    if (wallet?.id) {
       try {
-        const walletConnector = WALLETS.find((c) => c.id === wallet.id)
+        const walletConnector = WALLETS?.find((c) => c?.id === wallet?.id)
         setSelectedConnector(walletConnector)
         const result = await connectAsync({ connector })
         if (result) {
