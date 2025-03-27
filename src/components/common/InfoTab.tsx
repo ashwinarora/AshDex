@@ -1,133 +1,24 @@
 'use client'
 import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import exporticon from '@/assets/images/export_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { useMemo } from 'react'
-
-interface Coin {
-  symbol: string
-  id: string
-}
-
-interface Token {
-  name: string
-  id: string
-  tokenId: string
-}
+import { useCoinData } from '@/hooks/useCoinData'
+import { useCoins } from '@/hooks/useCoins'
+import { usePerpetualData } from '@/hooks/usePerpetualData'
+import { useTokenDetails } from '@/hooks/useTokenDetails'
 
 interface IInfoTabProps {
   selectedAsset: string
 }
 
-interface CoinData {
-  cmc_rank?: number
-  quote?: {
-    USD?: {
-      market_cap?: number
-      fully_diluted_market_cap?: number
-      market_cap_dominance?: number
-      volume_change_24h?: number
-    }
-  }
-  circulatingSupply?: number
-  maxSupply?: number
-  totalSupply?: number
-  date_added?: string
-  volume?: number
-  urls?: {
-    website?: string[]
-    technical_doc?: string[]
-    explorer?: string[]
-  }
-  description?: string
-  logo?: string
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fetchPerpetualData = async (sdk: any): Promise<Token[]> => {
-  if (!sdk) return []
-  try {
-    const data = await sdk.info.spot.getSpotMetaAndAssetCtxs()
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return data[0]?.tokens?.map(({ name, tokenId }: any) => ({ name, tokenId })) ?? []
-  } catch (error) {
-    console.error('Error fetching perpetual data:', error)
-    return []
-  }
-}
-
-const fetchTokenDetails = async (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sdk: any,
-  tokens: Token[],
-  selectedAsset: string
-): Promise<CoinData | null> => {
-  if (!sdk || !tokens?.length || !selectedAsset) return null
-  const baseSymbol = selectedAsset.split('-')[0].toLowerCase()
-  const matchedToken = tokens?.find((token) => token?.name.toLowerCase() === baseSymbol)
-  if (!matchedToken) return null
-
-  try {
-    const tokenData = await sdk.info.spot.getTokenDetails(matchedToken.tokenId)
-    const volumeData = await sdk.info.perpetuals.getMetaAndAssetCtxs()
-    const universeIndex = volumeData[0]?.universe?.findIndex(
-      (token: { name?: string }) => token?.name?.toLowerCase() === selectedAsset?.toLowerCase()
-    )
-    return {
-      ...tokenData,
-      volume: universeIndex !== -1 ? (volumeData[1]?.[universeIndex]?.dayNtlVlm ?? '-') : '-'
-    }
-  } catch (error) {
-    console.error('Error fetching token details:', error)
-    throw error
-  }
-}
-
-const fetchCoins = async (): Promise<Coin[]> => {
-  const response = await fetch('/api/coins')
-  return response.json()
-}
-
-const fetchCoinData = async (allCoins: Coin[], selectedAsset: string) => {
-  if (!allCoins.length || !selectedAsset) return { coinData: null, coinInfo: null }
-  const baseSymbol = selectedAsset?.split('-')[0].toLowerCase()
-  const selectedCoin = allCoins?.find((coin) => coin?.symbol.toLowerCase() === baseSymbol)
-  if (!selectedCoin?.id) {
-    console.error('Selected coin not found or ID is undefined')
-    return { coinData: null, coinInfo: null }
-  }
-  try {
-    const response = await fetch(`/api/coin/${selectedCoin.id}`)
-    if (!response.ok) throw new Error('Failed to fetch coin data')
-    const data = await response.json()
-    return {
-      coinData: data?.marketPairs?.[selectedCoin?.id] ?? null,
-      coinInfo: data?.coinInfo?.[selectedCoin?.id] ?? null
-    }
-  } catch (error) {
-    console.error('Error fetching coin data:', error)
-    throw error
-  }
-}
-
 const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
-  const { data: allCoins = [] } = useQuery({
-    queryKey: ['allCoins'],
-    queryFn: fetchCoins,
-    staleTime: 1000 * 60 * 5
-  })
-
-  const { data: tokens = [] } = useQuery({
-    queryKey: ['perpetualData', isSdkConnected],
-    queryFn: () => fetchPerpetualData(sdk),
-    enabled: Boolean(sdk && isSdkConnected),
-    staleTime: 1000 * 60 * 5
-  })
-
+  const { data: allCoins = [] } = useCoins()
+  const { data, isLoading } = useCoinData(allCoins, selectedAsset)
+  const { data: tokens = [] } = usePerpetualData(sdk, isSdkConnected)
   const safeTokens = useMemo(
     () =>
       tokens?.map((token) => ({
@@ -136,23 +27,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
       })),
     [tokens]
   )
-
-  const { data: tokenDetails } = useQuery({
-    queryKey: ['tokenDetails', selectedAsset, safeTokens],
-    queryFn: () => fetchTokenDetails(sdk, tokens, selectedAsset),
-    enabled: Boolean(sdk && tokens.length && selectedAsset),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false
-  })
-
-  const { data, isLoading } = useQuery({
-    queryKey: ['coinData', allCoins, selectedAsset],
-    queryFn: () => fetchCoinData(allCoins, selectedAsset),
-    enabled: Boolean(allCoins.length && selectedAsset),
-    staleTime: 1000 * 60 * 5,
-    refetchOnWindowFocus: false
-  })
-
+  const { data: tokenDetails } = useTokenDetails(sdk, safeTokens, selectedAsset)
   const coinData = data?.coinData ?? null
   const coinInfo = data?.coinInfo ?? null
 
