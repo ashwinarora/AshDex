@@ -162,7 +162,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       `
     })
     return () => chart.remove()
-  }, [candlestickData, activeTab,isLoading])
+  }, [candlestickData, activeTab, isLoading])
 
   const sidebarIcons = [
     unionicon,
