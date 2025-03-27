@@ -14,10 +14,11 @@ interface HyperLiquidContextProps {
   sdk: any
   isSdkConnected: boolean
   allMids: PriceMap
-  agentWallet: PrivateKeyAccount | undefined
+  agentWallet?: PrivateKeyAccount
   hyperliquidAxios: AxiosInstance
-  universe: MetaData[] | undefined
-  clearingHouseState: IClearingHouseState | undefined
+  universe?: MetaData[]
+  clearingHouseState?: IClearingHouseState
+  isTestnet: boolean
 }
 
 const initialValue = {
@@ -27,7 +28,8 @@ const initialValue = {
   agentWallet: undefined,
   hyperliquidAxios: mainnetAxios,
   universe: undefined,
-  clearingHouseState: undefined
+  clearingHouseState: undefined,
+  isTestnet: true
 }
 
 const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue)
@@ -37,14 +39,31 @@ export interface PriceMap {
 }
 
 export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { address, isConnected, chain } = useAccount()
-  const [agentWallet, setAgentWallet] = useState<PrivateKeyAccount>()
+  const { address, chain } = useAccount()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sdk, setSdk] = useState<any>()
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
-  const [privateKey, setPrivateKey] = useState<string>()
   const [allMids, setAllMids] = useState<PriceMap>({})
+
+  const privateKey = useMemo(() => {
+    if (!address) return
+    const storageKey = AGENT_PRIVATE_KEY + '_' + address
+    const storedPrivateKey = localStorage.getItem(storageKey)
+    if (storedPrivateKey) {
+      return storedPrivateKey as Hex
+    } else {
+      const newPrivateKey = generatePrivateKey()
+      localStorage.setItem(storageKey, newPrivateKey)
+      return newPrivateKey
+    }
+  }, [address])
+
+  const agentWallet = useMemo(() => {
+    if (!privateKey) return
+    return privateKeyToAccount(privateKey)
+  }, [privateKey])
+
   const { data: clearingHouseState, refetch: refetchClearingHouseState } = useQuery({
     queryKey: ['clearingHouseState', address, chain?.id],
     queryFn: async () => {
@@ -63,12 +82,11 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     enabled: !!sdk || !!isSdkConnected
   })
 
-  const hyperliquidAxios = useMemo(() => {
-    if (chain?.testnet) {
-      return testnetAxios
-    }
-    return mainnetAxios
-  }, [chain])
+  const isTestnet = useMemo(() => {
+    return true // update this code when ready for mainnet
+  }, [])
+
+  const hyperliquidAxios = useMemo(() => (isTestnet ? testnetAxios : mainnetAxios), [isTestnet])
 
   // effect to load the Hyperliquid SDK
   useEffect(() => {
@@ -89,45 +107,34 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     }
   }, [])
 
-  // effect to generate or load the agent wallet
-  useEffect(() => {
-    if (!address) return
-    const storageKey = AGENT_PRIVATE_KEY + '_' + address
-    const storedPrivateKey = localStorage.getItem(storageKey)
-    if (storedPrivateKey) {
-      const wallet = privateKeyToAccount(storedPrivateKey as Hex)
-      setAgentWallet(wallet)
-      setPrivateKey(storedPrivateKey)
-    } else {
-      const newPrivateKey = generatePrivateKey()
-      localStorage.setItem(storageKey, newPrivateKey)
-      const wallet = privateKeyToAccount(newPrivateKey)
-      setAgentWallet(wallet)
-      setPrivateKey(newPrivateKey)
-    }
-  }, [address])
-
   useEffect(() => {
     const initSdk = async () => {
       if (!isSdkScriptLoaded) return
-      if (!isConnected) return
-      if (!privateKey) return
-      if (!chain) return
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (!(window as any).HyperliquidSDK) return
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const sdkInstance = new (window as any).HyperliquidSDK.Hyperliquid({
-        testnet: chain?.testnet,
-        enableWs: true,
-        privateKey: privateKey,
-        walletAddress: address
-      })
+      const windowHyperliquid = (window as any).HyperliquidSDK
+      if (!windowHyperliquid) return
+      const config: {
+        testnet: boolean
+        enableWs: boolean
+        walletAddress?: string
+        privateKey?: string
+      } = {
+        testnet: isTestnet,
+        enableWs: true
+      }
+      if (address) {
+        config.walletAddress = address
+        if (privateKey) {
+          config.privateKey = privateKey
+        }
+      }
+      const sdkInstance = new windowHyperliquid.Hyperliquid(config)
       await sdkInstance.connect()
       setSdk(sdkInstance)
       setIsSdkConnected(true)
     }
     initSdk()
-  }, [isConnected, isSdkScriptLoaded, privateKey, chain, address])
+  }, [isSdkScriptLoaded, privateKey, address, isTestnet])
 
   useEffect(() => {
     if (!sdk) return
@@ -160,7 +167,8 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         agentWallet,
         hyperliquidAxios,
         universe,
-        clearingHouseState
+        clearingHouseState,
+        isTestnet
       }}
     >
       {children}
