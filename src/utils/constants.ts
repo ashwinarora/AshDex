@@ -14,8 +14,6 @@ export const HYPERLIQUID_API_MAINNET = 'https://api.hyperliquid.xyz'
 
 export const HYPERLIQUID_API_TESTNET = 'https://api.hyperliquid-testnet.xyz'
 
-export const COINMARKET_API_KEY = 'REDACTED'
-
 export const COINMARKET_BASE_URL = 'https://pro-api.coinmarketcap.com/v1'
 
 export const USDC_ARBITRUM: Hex = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
