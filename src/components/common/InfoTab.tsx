@@ -17,7 +17,7 @@ interface IInfoTabProps {
 const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
   const { data: allCoins = [] } = useCoins()
-  const { data, isLoading } = useCoinData(allCoins, selectedAsset)
+  const { coinData, coinInfo, isLoading } = useCoinData(allCoins, selectedAsset)
   const { data: tokens = [] } = usePerpetualData(sdk, isSdkConnected)
   const safeTokens = useMemo(
     () =>
@@ -28,47 +28,53 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
     [tokens]
   )
   const { data: tokenDetails } = useTokenDetails(sdk, safeTokens, selectedAsset)
-  const coinData = data?.coinData ?? null
-  const coinInfo = data?.coinInfo ?? null
 
-  const assetData = [
-    { label: 'Rank', value: coinData?.cmc_rank != null ? 'No.' + coinData.cmc_rank : '-' },
-    {
-      label: 'Market Capitalization',
-      value: coinData?.quote?.USD?.market_cap ?? '-',
-      change: ''
-    },
-    {
-      label: 'Fully Diluted Market Cap',
-      value: coinData?.quote?.USD?.fully_diluted_market_cap ?? '-'
-    },
-    {
-      label: 'Market Dominance',
-      value: coinData?.quote?.USD?.market_cap_dominance ?? '-'
-    },
-    { label: 'Volume', value: tokenDetails?.volume ?? '-' },
-    {
-      label: 'Volume/Market Cap',
-      value: coinData?.quote?.USD?.market_cap ?? '-'
-    },
-    {
-      label: 'Circulating Supply',
-      value: tokenDetails?.circulatingSupply ?? '-'
-    },
-    { label: 'Maximum Supply', value: tokenDetails?.maxSupply ?? '-' },
-    { label: 'Total Supply', value: tokenDetails?.totalSupply ?? '-' },
-    {
-      label: 'Issue Date',
-      value: coinData?.date_added ? new Date(coinData.date_added).toISOString().split('T')[0] : '-'
-    }
-  ]
+  const assetData = useMemo(
+    () => [
+      { label: 'Rank', value: coinData?.cmc_rank != null ? 'No.' + coinData.cmc_rank : '-' },
+      {
+        label: 'Market Capitalization',
+        value: coinData?.quote?.USD?.market_cap ?? '-',
+        change: ''
+      },
+      {
+        label: 'Fully Diluted Market Cap',
+        value: coinData?.quote?.USD?.fully_diluted_market_cap ?? '-'
+      },
+      {
+        label: 'Market Dominance',
+        value: coinData?.quote?.USD?.market_cap_dominance ?? '-'
+      },
+      { label: 'Volume', value: tokenDetails?.volume ?? '-' },
+      {
+        label: 'Volume/Market Cap',
+        value: coinData?.quote?.USD?.market_cap ?? '-'
+      },
+      {
+        label: 'Circulating Supply',
+        value: tokenDetails?.circulatingSupply ?? '-'
+      },
+      { label: 'Maximum Supply', value: tokenDetails?.maxSupply ?? '-' },
+      { label: 'Total Supply', value: tokenDetails?.totalSupply ?? '-' },
+      {
+        label: 'Issue Date',
+        value: coinData?.date_added
+          ? new Date(coinData.date_added).toISOString().split('T')[0]
+          : '-'
+      }
+    ],
+    [coinData, tokenDetails]
+  )
 
-  const assetLinks = [
-    { name: 'Official Website', url: coinInfo?.urls?.website?.[0] || '' },
-    { name: 'Whitepaper', url: coinInfo?.urls?.technical_doc?.[0] || '' },
-    { name: 'Block Explorer', url: coinInfo?.urls?.explorer?.[0] || '' },
-    { name: 'Submit Feedback', url: '' }
-  ]
+  const assetLinks = useMemo(
+    () => [
+      { name: 'Official Website', url: coinInfo?.urls?.website?.[0] || '' },
+      { name: 'Whitepaper', url: coinInfo?.urls?.technical_doc?.[0] || '' },
+      { name: 'Block Explorer', url: coinInfo?.urls?.explorer?.[0] || '' },
+      { name: 'Submit Feedback', url: '' }
+    ],
+    [coinInfo]
+  )
 
   return (
     <div

@@ -31,12 +31,16 @@ export const useCoinData = (allCoins: Coin[], selectedAsset: string) => {
       return { coinData: null, coinInfo: null }
     }
   }
-
-  return useQuery({
+  const { data, ...info } = useQuery({
     queryKey: ['coinData', allCoins, selectedAsset],
     queryFn: fetchCoinData,
     enabled: Boolean(allCoins.length && selectedAsset),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false
   })
+  return {
+    coinData: data?.coinData,
+    coinInfo: data?.coinInfo,
+    ...info
+  }
 }
