@@ -8,6 +8,8 @@ import { useAccount } from 'wagmi'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useQuery } from '@tanstack/react-query'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
+import Slider1 from '@/assets/images/slider_value.svg'
+import Image from 'next/image'
 
 interface ScaleProps {
   selectedAsset: string
@@ -57,7 +59,7 @@ function calculateScaleOrders(
 }
 
 const Scale = ({ selectedAsset }: ScaleProps) => {
-  const { universe, agentWallet, hyperliquidAxios } = useHyperLiquid()
+  const { universe, agentWallet, hyperliquidAxios, clearingHouseState } = useHyperLiquid()
   const { address, chain, isConnected: isWalletConnected } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -65,6 +67,33 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
   const [totalOrders, setTotalOrders] = useState<number>()
   const [sizeSkew, setSizeSkew] = useState<number>()
   const [isBuy, setIsBuy] = useState<boolean>(true)
+  const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
+  const [usdPercent, setUsdPercent] = useState(0)
+
+  const maxAllowedUsd = useMemo(() => {
+    if (!clearingHouseState) return 0
+    if (!isReduceOnly) return clearingHouseState.withdrawable
+    const existingPosition = clearingHouseState.assetPositions.find((pos) => {
+      return pos.position.coin === selectedAsset
+    })
+    if (!existingPosition) return clearingHouseState.withdrawable
+    if (existingPosition.position.szi > 0 && isBuy) return 0
+    if (existingPosition.position.szi < 0 && !isBuy) return 0
+    let maxUsd = clearingHouseState.withdrawable
+    let totalUSD = 0
+    while (true) {
+      const orders = calculateScaleOrders(totalUSD, startPrice!, endPrice!, totalOrders!, sizeSkew!)
+      const totalSize = orders.reduce((sum, order) => sum + order.size, 0)
+      if (totalSize >= Math.abs(existingPosition.position.szi)) {
+        break
+      }
+      maxUsd = totalUSD
+      totalUSD += 1 // Increment totalUSD for the next iteration
+    }
+    return Math.min(maxUsd, clearingHouseState.withdrawable)
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, startPrice, endPrice, totalOrders, sizeSkew])
+
+  console.log(maxAllowedUsd)
 
   const { data: extraAgents } = useQuery({
     queryKey: ['extraAgents'],
@@ -130,6 +159,13 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
     console.log(res)
   }
 
+  const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!clearingHouseState) return
+    const newUsdPercent = parseFloat(e.target.value) || 0
+    setUsdPercent(newUsdPercent)
+    setTotalSize((newUsdPercent * maxAllowedUsd) / 100)
+  }
+
   return (
     <div>
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
@@ -149,6 +185,37 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
             className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </label>
+        <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
+          <div className="w-5/6">
+            <label className="block text-sm font-medium text-gray-400">Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD</label>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              step={1}
+              value={usdPercent}
+              onChange={handleUsdPercentChange}
+              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+            />
+            <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+            <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <span>0%</span>
+              <span>25%</span>
+              <span>50%</span>
+              <span>75%</span>
+              <span>100%</span>
+            </div>
+          </div>
+          <div className="relative pl-4">
+            <input
+              type="string"
+              className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2 flex justify-between"
+              value={usdPercent}
+              onChange={handleUsdPercentChange}
+            />
+            <span className="absolute right-2 top-2.5 text-gray-500">%</span>
+          </div>
+        </div>
 
         <label className="mb-2">
           <span className="block mb-1 text-sm font-medium text-gray-200">Start Price</span>
@@ -195,9 +262,19 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
             className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </label>
+        <label className="mb-2 flex items-center">
+          <input
+            type="checkbox"
+            checked={isReduceOnly}
+            onChange={(e) => setIsReduceOnly(e.target.checked)}
+            className="mr-2"
+          />
+          <span className="text-sm font-medium text-gray-200">Reduce Only</span>
+        </label>
 
         <button
           type="submit"
+          disabled={totalSize! > maxAllowedUsd}
           className="mt-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Place Order
