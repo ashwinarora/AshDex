@@ -14,6 +14,8 @@ export const HYPERLIQUID_API_MAINNET = 'https://api.hyperliquid.xyz'
 
 export const HYPERLIQUID_API_TESTNET = 'https://api.hyperliquid-testnet.xyz'
 
+export const COINMARKET_BASE_URL = 'https://pro-api.coinmarketcap.com/v1'
+
 export const USDC_ARBITRUM: Hex = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
 
 export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7'
@@ -43,6 +45,8 @@ export const CHART_INTERVALS = [
   '1w',
   '1M'
 ] as const
+
+export const ORDER_INTERVALS = ['1s', '1m', '5m', '15m', '30m', '1H', '4H', '1D', '1W'] as const
 
 export const AGENT_NAME = 'nexon_agent'
 

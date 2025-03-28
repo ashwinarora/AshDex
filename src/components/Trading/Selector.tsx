@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
+import { useTokenDetails } from '@/hooks/useTokenDetails'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
@@ -13,14 +14,14 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids } = useHyperLiquid()
+  const { allMids, sdk } = useHyperLiquid()
+  const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
 
-  // Filter assets based on the search term
   const assetEntries = useMemo(
     () =>
       Object.entries(allMids)
@@ -30,26 +31,32 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     [allMids, searchTerm]
   )
 
-  const marketData = [
-    { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
-    { label: '24h High', value: '$99,149.00' },
-    { label: '24h Low', value: '$99,149.00' },
-    { label: '24h Volume (BTC)', value: '17,062.39' },
-    { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
-    { label: 'Market Cap', value: '$928B' },
-    { label: '1h Funding', value: '0.0015%' },
-    { label: 'Next Funding', value: '27:57' }
-  ]
+  const marketData = useMemo(
+    () => [
+      { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
+      { label: '24h High', value: '$99,149.00' },
+      { label: '24h Low', value: '$99,149.00' },
+      { label: '24h Volume (BTC)', value: tokenDetails?.volume ?? '0' },
+      { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
+      { label: 'Market Cap', value: '$928B' },
+      { label: '1h Funding', value: tokenDetails?.funding ?? '0' },
+      { label: 'Next Funding', value: '27:57' }
+    ],
+    [tokenDetails]
+  )
 
-  const settingsOptions = [
-    { label: '24h High', checked: false },
-    { label: '24h Low', checked: true },
-    { label: 'Market Cap', checked: true },
-    { label: 'Funding Rate', checked: true },
-    { label: '24h Trades', checked: true },
-    { label: '1h Funding', checked: true },
-    { label: 'Next Funding', checked: true }
-  ]
+  const settingsOptions = useMemo(
+    () => [
+      { label: '24h High', checked: false },
+      { label: '24h Low', checked: true },
+      { label: 'Market Cap', checked: true },
+      { label: 'Funding Rate', checked: true },
+      { label: '24h Trades', checked: true },
+      { label: '1h Funding', checked: true },
+      { label: 'Next Funding', checked: true }
+    ],
+    []
+  )
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -77,7 +84,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full my-0 rounded-2xl max-[770px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${
+      className={`relative w-full my-0 rounded-2xl max-[1100px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${
         isOpen || isSettingsOpen ? 'z-50' : ''
       }`}
       style={{
@@ -86,8 +93,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       }}
     >
       {/* Left Side */}
-      <div className="flex max-[770px]:border-b max-[770px]:border-white/10 max-[770px]:w-full w-[18%] w-md-[18%] ">
-        <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-4 border-r-1 border-white/10">
+      <div className="flex max-[1100px]:border-b max-[1100px]:border-white/10 max-[1100px]:w-full w-[20%]">
+        <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
           <Image
             src={starticon}
             className="2xl:relative absolute -top-1 -left-1 h-5 w-5"
@@ -118,7 +125,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </button>
         </div>
-        <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-8 max-[576px]:border-r-0 border-r border-white/10">
+        <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-5 max-[576px]:border-r-0 border-r border-white/10">
           <span className="text-xl font-normal text-[#E2464A]">
             {selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
           </span>
@@ -128,7 +135,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       </div>
 
-      <div className="flex items-center relative max-[770px]:w-full w-[85%] justify-between">
+      <div className="flex items-center relative max-[1100px]:w-full w-[80%] justify-between">
         <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-[770px]:divide-y divide-white/10 divide">
           {marketData?.map((item, index) => (
             <div
