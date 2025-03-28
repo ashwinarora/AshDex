@@ -52,11 +52,12 @@ const MarketOrder = ({ selectedAsset }: MarketOrderProps) => {
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}
-            limitPrice={allMids[selectedAsset] * 1.1} // 10% higher than the current price
+            limitPrice={allMids[selectedAsset] * 1.1}
             amount={amount}
             leverage={leverage}
             isCross={isCross}
             isPostOnly={isPostOnly}
+            isReduceOnly={isReduceOnly}
           />
         </div>
       </div>
