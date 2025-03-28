@@ -1,15 +1,18 @@
 'use client'
+import { useMemo, useState } from 'react'
+import Image from 'next/image'
+import { useQuery } from '@tanstack/react-query'
+import { useAccount } from 'wagmi'
+import BuyOrSell from './components/BuyOrSell'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
-import { useMemo, useState } from 'react'
-import BuyOrSell from './components/BuyOrSell'
-import { useAccount } from 'wagmi'
 import { BUILDER_ADDRESS } from '@/utils/constants'
-import { useQuery } from '@tanstack/react-query'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
 import Slider1 from '@/assets/images/slider_value.svg'
-import Image from 'next/image'
+import usdcicon from '@/assets/images/usdc_icon.svg'
+import plusicon from '@/assets/images/plus_icon.svg'
+import minusicon from '@/assets/images/minus_icon.svg'
 
 interface ScaleProps {
   selectedAsset: string
@@ -64,7 +67,7 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
-  const [totalOrders, setTotalOrders] = useState<number>()
+  const [totalOrders, setTotalOrders] = useState<number>(10)
   const [sizeSkew, setSizeSkew] = useState<number>()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
@@ -175,30 +178,58 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
     setTotalSize((newUsdPercent * maxAllowedUsd) / 100)
   }
 
+  const handleIncrease = () => setTotalOrders((prev) => prev + 1)
+  const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value ? parseInt(e.target.value, 10) : 0
+    setTotalOrders(isNaN(value) ? 0 : value)
+  }
+
   return (
     <div>
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col w-full max-w-md p-6 mx-auto bg-gray-900 text-white rounded-md shadow-md"
-      >
-        <h2 className="text-2xl font-semibold mb-4">Scale Order</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col w-full rounded-md shadow-md">
+        <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+          <label className="mb-2 ">
+            <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Start Price</span>
+            <div className="flex ">
+              <input
+                type="text"
+                value={startPrice ?? '0'}
+                onChange={(e) =>
+                  setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
+                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+              />
+              <span className="text-white flex items-center text-sm font-medium">
+                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                USDC
+              </span>
+            </div>
+          </label>
+        </div>
+        <div className="border-b  px-4 mb-3 border-[#FFFFFF0F]">
+          <label className="mb-2">
+            <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">End Price</span>
+            <div className="flex ">
+              <input
+                type="text"
+                value={endPrice ?? '0'}
+                onChange={(e) =>
+                  setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
+                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+              />
+              <span className="text-white flex items-center text-sm font-medium">
+                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                USDC
+              </span>
+            </div>
+          </label>
+        </div>
 
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">Total Size</span>
-          <input
-            type="number"
-            value={totalSize ?? ''}
-            onChange={(e) => setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="Enter total size"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
-        <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
+        <div className="flex w-full mb-3 items-end px-4 border-b border-[#FFFFFF0F] pb-4">
           <div className="w-5/6">
-            <label className="block text-sm font-medium text-gray-400">
-              Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD
-            </label>
             <input
               type="range"
               min={0}
@@ -207,6 +238,14 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
               value={usdPercent}
               onChange={handleUsdPercentChange}
               className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+              style={{
+                background:
+                  'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
+                  usdPercent +
+                  '%, #2A1B3D ' +
+                  usdPercent +
+                  '%, #2A1B3D 100%)'
+              }}
             />
             <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -228,40 +267,56 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
           </div>
         </div>
 
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">Start Price</span>
-          <input
-            type="number"
-            value={startPrice ?? ''}
-            onChange={(e) => setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="Enter start price"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
-
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">End Price</span>
-          <input
-            type="number"
-            value={endPrice ?? ''}
-            onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="Enter end price"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
-
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">Total Orders</span>
-          <input
-            type="number"
-            value={totalOrders ?? ''}
-            onChange={(e) =>
-              setTotalOrders(e.target.value ? parseInt(e.target.value, 10) : undefined)
-            }
-            placeholder="Enter total orders"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </label>
+        <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+          <label className="mb-2">
+            <div className="flex mb-1 justify-between">
+              <span className="block  text-sm font-medium text-[#8B8BA0]">Total Size</span>
+              <span className="block text-sm font-medium text-[#8B8BA0]">
+                Balance: {clearingHouseState?.withdrawable.toFixed(2)} USDC
+              </span>
+            </div>
+            <div className="flex ">
+              <input
+                type="text"
+                value={totalSize ?? '0'}
+                onChange={(e) =>
+                  setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
+                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+              />
+              <span className="text-white flex items-center text-sm font-medium">
+                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                USDC
+              </span>
+            </div>
+          </label>
+        </div>
+        <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+          <span className="block mb-3 text-sm font-bold text-[#8B8BA0]">Scale Settings</span>
+          <label className="mb-2">
+            <span className="block mb-2 text-sm font-medium text-[#8B8BA0]">Number of Orders</span>
+            <div className="flex items-center gap-2 mb-3 rounded-lg">
+              <button
+                onClick={handleDecrease}
+                className="rounded-md px-3 py-5 border border-white/10 bg-white/10 cursor-pointer"
+              >
+                <Image src={minusicon} width={20} height={20} className="pr-1" alt="minusicon" />
+              </button>
+              <input
+                type="text"
+                value={totalOrders}
+                onChange={handleChange}
+                className="w-full text-center rounded-md px-3 py-[9px] border-2 border-white/10 bg-white/10 text-base font-medium focus:outline-none"
+              />
+              <button
+                onClick={handleIncrease}
+                className="rounded-md px-3 py-4 border border-white/10 bg-white/10 cursor-pointer"
+              >
+                <Image src={plusicon} width={20} height={20} className="pr-1" alt="plusicon" />
+              </button>
+            </div>
+          </label>
+        </div>
 
         <label className="mb-2">
           <span className="block mb-1 text-sm font-medium text-gray-200">Size Skew</span>
@@ -282,14 +337,20 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
           />
           <span className="text-sm font-medium text-gray-200">Reduce Only</span>
         </label>
-
-        <button
-          type="submit"
-          disabled={totalSize! > maxAllowedUsd}
-          className="mt-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white font-medium focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          Place Order
-        </button>
+        <div className="px-4">
+          <button
+            type="submit"
+            disabled={totalSize! > maxAllowedUsd}
+            className={
+              'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
+            }
+          >
+            Scale Buy ({totalOrders} Orders)
+          </button>
+        </div>
+        <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
+          Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
+        </span>
       </form>
     </div>
   )
