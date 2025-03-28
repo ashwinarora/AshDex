@@ -1,4 +1,8 @@
-import { HYPERLIQUID_API_MAINNET, HYPERLIQUID_API_TESTNET } from '@/utils/constants'
+import {
+  HYPERLIQUID_API_MAINNET,
+  HYPERLIQUID_API_TESTNET,
+  COINMARKET_BASE_URL
+} from '@/utils/constants'
 import axios from 'axios'
 
 export const testnetAxios = axios.create({
@@ -12,5 +16,13 @@ export const mainnetAxios = axios.create({
   baseURL: HYPERLIQUID_API_MAINNET,
   headers: {
     'Content-Type': 'application/json'
+  }
+})
+
+export const coinmarketAxios = axios.create({
+  baseURL: COINMARKET_BASE_URL,
+  headers: {
+    'X-CMC_PRO_API_KEY': process.env.COINMARKET_API_KEY,
+    Accept: 'application/json'
   }
 })
