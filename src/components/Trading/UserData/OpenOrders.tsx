@@ -83,7 +83,7 @@ const OpenOrders = () => {
     return () => {
       sdk.subscriptions.unsubscribeFromUserOrders()
     }
-  }, [sdk, address])
+  }, [sdk, address, queryClient])
 
   if (isLoading) {
     return <div>Loading...</div>
