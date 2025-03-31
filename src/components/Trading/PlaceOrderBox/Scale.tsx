@@ -84,6 +84,8 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
     if (existingPosition.position.szi < 0 && !isBuy) return 0
     let maxUsd = clearingHouseState.withdrawable
     let totalUSD = 0
+    let iterationCount = 0
+    const MAX_ITERATIONS = 10000
     while (true) {
       const orders = calculateScaleOrders(totalUSD, startPrice!, endPrice!, totalOrders!, sizeSkew!)
       const totalSize = orders.reduce((sum, order) => sum + order.size, 0)
