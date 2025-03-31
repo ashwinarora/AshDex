@@ -1,26 +1,39 @@
 'use client'
-
-import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 
 const UserData = () => {
-  const [activeTab, setActiveTab] = useState(1)
+  const pathname = usePathname()
   const { clearingHouseState } = useHyperLiquid()
   const [openOrdersCount, setOpenOrdersCount] = useState(0)
 
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
   const tabs = [
     'Balances',
-    `Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`,
+    ...(pathname !== '/spot'
+      ? [`Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`]
+      : []),
     `Open Orders ${openOrdersCount > 0 ? ' (' + openOrdersCount + ')' : ''}`,
     'TWAP',
     'Trade History',
     'Orders History',
     'Funding History'
   ] as const
+
+  const getDefaultTab = useCallback(() => {
+    if (pathname === '/spot') return 1
+    return 1
+  }, [pathname])
+
+  const [activeTab, setActiveTab] = useState<number>(getDefaultTab)
+
+  useEffect(() => {
+    setActiveTab(getDefaultTab)
+  }, [pathname, getDefaultTab])
 
   return (
     <div className="w-full">
@@ -43,15 +56,11 @@ const UserData = () => {
       </div>
 
       <div className="mt-3 mb-6 w-full">
-        <div className={activeTab === 0 ? '' : 'hidden'}>
-          <Balances />
-        </div>
-        <div className={activeTab === 1 ? '' : 'hidden'}>
-          <Positions />
-        </div>
-        <div className={activeTab === 2 ? '' : 'hidden'}>
+        {activeTab === 0 && <Balances />}
+        {pathname !== '/spot' && activeTab === 1 && <Positions />}
+        {activeTab === (pathname === '/spot' ? 1 : 2) && (
           <OpenOrders setOpenOrdersCount={setOpenOrdersCount} />
-        </div>
+        )}
       </div>
     </div>
   )

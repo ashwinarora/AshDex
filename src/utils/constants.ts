@@ -48,6 +48,31 @@ export const CHART_INTERVALS = [
 
 export const ORDER_INTERVALS = ['1s', '1m', '5m', '15m', '30m', '1H', '4H', '1D', '1W'] as const
 
+export const OPEN_ORDERS_SPOT_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'symbol', label: 'Symbol' },
+  { key: 'type', label: 'Type' },
+  { key: 'side', label: 'Side' },
+  { key: 'price', label: 'Price' },
+  { key: 'amount', label: 'Amount' },
+  { key: 'filled', label: 'Filled' },
+  { key: 'reduceOnly', label: 'Reduce Only' },
+  { key: 'postOnly', label: 'Post Only' },
+  { key: 'triggerConditions', label: 'Trigger Conditions' },
+  { key: 'tp_sl', label: 'TP/SL' },
+  { key: 'action', label: '' }
+] as const
+
+export const OPEN_ORDERS_FEATURE_COLUMNS = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'side', label: 'Side' },
+  { key: 'limitPrice', label: 'Limit Price' },
+  { key: 'size', label: 'Size' },
+  { key: 'orderID', label: 'Order ID' },
+  { key: 'timestamp	', label: 'Timestamp' },
+  { key: 'originalsize', label: 'Original Size' }
+] as const
+
 export const AGENT_NAME = 'nexon_agent'
 
 export const WALLETS = [

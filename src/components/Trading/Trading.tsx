@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-
+import { useAccount } from 'wagmi'
 import Chart from './Chart'
 import OrderBook from './OrderBook'
 import Selector from './Selector'
@@ -8,6 +8,7 @@ import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 
 const Trading = () => {
+  const { isConnected } = useAccount()
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
 
   return (
@@ -17,7 +18,9 @@ const Trading = () => {
         <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
       </div>
       {/* Main Trading Layout */}
-      <div className="flex flex-wrap max-[1315px]:mx-1 mx-10  xl:grid xl:grid-cols-[2fr_5fr_3fr] xl:grid-rows-[3fr_2fr] gap-4">
+      <div
+        className={`flex flex-wrap max-[1315px]:mx-1 mx-10  xl:grid xl:grid-cols-[2fr_5fr_3fr] ${isConnected ? 'xl:grid-rows-[3fr_2fr]' : 'xl:grid-rows-[3fr_1fr]'} gap-4`}
+      >
         <div
           className="rounded-xl shadow-md border-2 border-white/10 backdrop-blur-[40px] w-full xl:w-auto"
           style={{
