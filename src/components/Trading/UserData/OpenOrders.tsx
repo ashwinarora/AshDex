@@ -1,6 +1,6 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { Order, WsOrder } from '@/utils/hyperLiquidTypes'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import Image from 'next/image'
@@ -18,65 +18,72 @@ const columns = [
   { key: 'originalsize', label: 'Original Size' }
 ]
 
-const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number) => void }) => {
+const OpenOrders = () => {
   const { address } = useAccount()
   const { sdk } = useHyperLiquid()
-  const { data: openOrders, isLoading } = useQuery({
+  const queryClient = useQueryClient()
+  const { data: openOrders, isLoading } = useQuery<Order[]>({
     queryKey: ['openOrders', address],
     queryFn: async () => {
       const response = await sdk.info.getUserOpenOrders(address)
-      return response as Order[]
+      return response
     },
-    enabled: !!address && !!sdk
+    enabled: !!address && !!sdk,
+    initialData: []
   })
 
-  const [orders, setOrders] = useState<Order[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
 
-  const totalPages = Math.ceil(orders.length / pageSize)
+  const totalPages = Math.ceil(openOrders.length || 0 / pageSize)
 
   const paginatedOrders = useMemo(() => {
-    return orders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [orders, currentPage, pageSize])
-
-  useEffect(() => {
-    if (openOrders) {
-      setOrders(openOrders)
-      setOpenOrdersCount(openOrders.length)
-    }
-  }, [openOrders, setOpenOrdersCount])
+    return openOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }, [openOrders, currentPage, pageSize])
 
   useEffect(() => {
     if (!sdk) return
+    if (!address) return
     sdk.subscriptions.subscribeToOrderUpdates(address, (data: WsOrder[]) => {
-      console.log('Order updates', data)
-      setOrders((prevOrders) => {
-        const newOrders = [...prevOrders]
+      console.log('User Orders Update', data)
+      queryClient.setQueryData(['openOrders', address], (oldData: Order[]) => {
+        const updatedOrders = [...oldData]
         data.forEach((order) => {
-          const index = newOrders.findIndex((o) => o.oid === order.order.oid)
-          if (order.status !== 'open') {
-            newOrders.splice(index, 1)
-            return
-          }
-          newOrders[index] = {
-            coin: order.order.coin,
-            limitPx: Number(order.order.limitPx),
-            oid: order.order.oid,
-            origSz: Number(order.order.origSz),
-            side: order.order.side === 'b' ? 'buy' : 'sell',
-            sz: Number(order.order.sz),
-            timestamp: order.statusTimestamp
+          const index = updatedOrders.findIndex((o) => o.oid === order.order.oid)
+          if (index !== -1) {
+            if (order.status !== 'open') {
+              updatedOrders.splice(index, 1)
+              return
+            }
+            updatedOrders[index] = {
+              coin: order.order.coin,
+              limitPx: Number(order.order.limitPx),
+              oid: order.order.oid,
+              origSz: Number(order.order.origSz),
+              side: order.order.side === 'buy' ? 'buy' : 'sell',
+              sz: Number(order.order.sz),
+              timestamp: order.statusTimestamp
+            }
+          } else {
+            if(order.status !== 'open') return
+            updatedOrders.push({
+              coin: order.order.coin,
+              limitPx: Number(order.order.limitPx),
+              oid: order.order.oid,
+              origSz: Number(order.order.origSz),
+              side: order.order.side === 'buy' ? 'buy' : 'sell',
+              sz: Number(order.order.sz),
+              timestamp: order.statusTimestamp
+            })
           }
         })
-        setOpenOrdersCount(newOrders.length)
-        return newOrders
+        return updatedOrders
       })
     })
     return () => {
-      sdk.subscriptions.unsubscribeFromOrderUpdates()
+      sdk.subscriptions.unsubscribeFromUserOrders()
     }
-  }, [sdk, address, setOpenOrdersCount])
+  }, [sdk, address])
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -104,8 +111,6 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
                 onClick={async () => {
                   await sdk.custom.cancelAllOrders()
-                  setOrders([])
-                  setOpenOrdersCount(0)
                 }}
               >
                 Cancel All
@@ -133,7 +138,10 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
                 <button
                   className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
                   onClick={async () => {
-                    const res = await sdk.exchange.cancelOrder()
+                    const res = await sdk.exchange.cancelOrder({
+                      coin: order.coin,
+                      o: order.oid
+                    })
                     console.log(res)
                   }}
                 >
@@ -145,7 +153,7 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
         </tbody>
       </table>
 
-      {orders?.length > 0 && (
+      {openOrders.length && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
