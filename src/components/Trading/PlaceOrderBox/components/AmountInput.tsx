@@ -41,7 +41,7 @@ const AmountInput = ({
     if (existingPosition.position.szi < 0 && !isBuy) return 0
     const priceQuotient = limitPrice / existingPosition.position.entryPx
     const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
-    return maxAllowedUsd
+    return Math.min(maxAllowedUsd, clearingHouseState.withdrawable)
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice])
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +103,9 @@ const AmountInput = ({
       </div>
       <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
         <div className="w-5/6">
-          <label className="block text-sm font-medium text-gray-400">Balance</label>
+          <label className="block text-sm font-medium text-gray-400">
+            Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD
+          </label>
           <input
             type="range"
             min={0}
@@ -111,7 +113,7 @@ const AmountInput = ({
             step={1}
             value={usdPercent}
             onChange={handleUsdPercentChange}
-            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none appearance-none"
+            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
             style={{
               background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${total}%, #2A1B3D ${total}%, #2A1B3D 100%)`
             }}

@@ -21,6 +21,7 @@ interface OrderButtonProps {
   leverage: number
   isCross: boolean
   isPostOnly: boolean
+  isReduceOnly: boolean
   tpsl?: TPSLType
 }
 
@@ -32,6 +33,7 @@ const OrderButton = ({
   leverage,
   isCross,
   isPostOnly,
+  isReduceOnly,
   tpsl
 }: OrderButtonProps) => {
   const { isRendered } = useComponentRendered()
@@ -198,7 +200,7 @@ const OrderButton = ({
             isBuy: isBuy,
             price: limitPrice.toFixed(decimals),
             size: amount.toFixed(szDecimals),
-            reduceOnly: false,
+            reduceOnly: isReduceOnly,
             orderType: {
               limit: {
                 tif: tif

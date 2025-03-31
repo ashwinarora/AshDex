@@ -83,6 +83,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
             leverage={leverage}
             isCross={isCross}
             isPostOnly={isPostOnly}
+            isReduceOnly={isReduceOnly}
             tpsl={tpsl}
           />
         </div>

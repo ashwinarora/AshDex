@@ -2,9 +2,12 @@
 import { useState } from 'react'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
+import TWAP from './TWAP'
+import Scale from './Scale'
+import CustomSelector from './CustomSelector'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'STOP_LIMIT'
+type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE'
 
 interface IPlaceOrderProps {
   selectedAsset: string
@@ -19,8 +22,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return <LimitOrder selectedAsset={selectedAsset} />
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} />
-      case 'STOP_LIMIT':
-        return <StopLimitComponent />
+      case 'TWAP':
+        return <TWAP selectedAsset={selectedAsset} />
+      case 'SCALE':
+        return <Scale selectedAsset={selectedAsset} />
       default:
         return null
     }
@@ -28,7 +33,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div>
-      <div className="flex items-center justify-evenly space-x-2 p-2 rounded-xl">
+      <div className="flex border-b border-white/10 pb-3 mb-2.5 items-center justify-evenly space-x-2 p-2 rounded-xl">
         <button
           onClick={() => setActiveTab('LIMIT')}
           className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
@@ -48,12 +53,22 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         </button>
 
         <button
-          onClick={() => setActiveTab('STOP_LIMIT')}
-          className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'STOP_LIMIT' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
+          className={`w-full flex justify-center items-center text-center  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
+            activeTab === 'TWAP' || activeTab === 'SCALE'
+              ? 'bg-[#FFFFFF0F] text-white'
+              : ' text-[#8B8BA0]'
           }`}
         >
-          Advanced
+          <CustomSelector
+            options={[
+              { value: 'TWAP', label: 'TWAP' },
+              { value: 'SCALE', label: 'SCALE' }
+            ]}
+            selectedValue={activeTab}
+            onChange={(value) => {
+              setActiveTab(value as OrderTab)
+            }}
+          />
         </button>
       </div>
 
@@ -61,12 +76,5 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
-const StopLimitComponent: React.FC = () => (
-  <div className="p-4 border border-gray-700 rounded-md bg-gray-800">
-    <h2 className="font-semibold text-lg">Stop Limit Order</h2>
-    <p className="text-gray-300">Content for Stop Limit order goes here.</p>
-  </div>
-)
 
 export default PlaceOrder
