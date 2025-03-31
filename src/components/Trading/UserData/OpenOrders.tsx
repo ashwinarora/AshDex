@@ -65,7 +65,7 @@ const OpenOrders = () => {
               timestamp: order.statusTimestamp
             }
           } else {
-            if(order.status !== 'open') return
+            if (order.status !== 'open') return
             updatedOrders.push({
               coin: order.order.coin,
               limitPx: Number(order.order.limitPx),

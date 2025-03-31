@@ -13,10 +13,10 @@ const UserData = () => {
   const { address } = useAccount()
   const [activeTab, setActiveTab] = useState(1)
   const { clearingHouseState } = useHyperLiquid()
-  const {data: openOrders }  = useQuery<Order[]>({
-   queryKey: ['openOrders', address],
-   enabled: false,
-   initialData: []
+  const { data: openOrders } = useQuery<Order[]>({
+    queryKey: ['openOrders', address],
+    enabled: false,
+    initialData: []
   })
 
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
