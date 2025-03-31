@@ -31,7 +31,7 @@ const tabs = ['Price', 'Depth', 'Info'] as string[]
 const Chart = ({ selectedAsset }: IChartProps) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
   const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('5m')
-  const chartRef = useRef(null)
+  const chartRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
   const [activeTab, setActiveTab] = useState(0)
   const [candlestickData, setCandlestickData] = useState<Candle[]>([])
@@ -86,6 +86,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
     if (activeTab !== 0 || isLoading || !candlestickData.length || !chartRef.current) return
 
     const chartOptions = {
+      width: chartRef.current.clientWidth,
+      height: chartRef.current.clientHeight,
       layout: {
         textColor: '#8B8BA0',
         fontSize: 12,
@@ -161,7 +163,16 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         </div>
       `
     })
-    return () => chart.remove()
+    const handleResize = () => {
+      if (chartRef.current) {
+        chart.resize(chartRef.current.clientWidth, chartRef.current.clientHeight)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => {
+      window.removeEventListener('resize', handleResize)
+      chart.remove()
+    }
   }, [candlestickData, activeTab, isLoading])
 
   const sidebarIcons = [
