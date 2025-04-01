@@ -65,7 +65,7 @@ const LeverageMargin = ({
             >
               -
             </button>
-            <span className="text-xl font-medium">{leverage}x</span>
+            <span className="text-xl font-medium w-[40px] text-center">{leverage}x</span>
             <button
               onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))}
               className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
