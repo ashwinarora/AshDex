@@ -44,17 +44,15 @@ const LeverageMargin = ({
               onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
               className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
               style={{
-                background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${
-                  (leverage / maxLeverage) * 100
-                }%, #2A1B3D ${(leverage / maxLeverage) * 100}%, #2A1B3D 100%)`
+                background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
               }}
             />
             <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>1x</span>
-              <span>{Math.floor(maxLeverage * 0.25)}x</span>
-              <span>{Math.floor(maxLeverage * 0.5)}x</span>
-              <span>{Math.floor(maxLeverage * 0.75)}x</span>
+              <span>{1 + (maxLeverage - 1) * 0.25}x</span>
+              <span>{1 + (maxLeverage - 1) * 0.5}x</span>
+              <span>{1 + (maxLeverage - 1) * 0.75}x</span>
               <span>{maxLeverage}x</span>
             </div>
           </div>
