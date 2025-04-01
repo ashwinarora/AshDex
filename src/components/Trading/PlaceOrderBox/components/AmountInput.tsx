@@ -115,7 +115,7 @@ const AmountInput = ({
             onChange={handleUsdPercentChange}
             className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
             style={{
-              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${total}%, #2A1B3D ${total}%, #2A1B3D 100%)`
+              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
             }}
           />
           <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
