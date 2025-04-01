@@ -10,6 +10,7 @@ const FavoriteStrip = () => {
     { name: 'ADAUSDT', value: '-2.45%' }
   ]
   const favorites = Array.from({ length: 15 }, (_, i) => baseFavorites[i % baseFavorites.length])
+  const duplicatedFavorites = [...favorites, ...favorites]
 
   return (
     <div className="relative w-full overflow-hidden">
@@ -28,7 +29,7 @@ const FavoriteStrip = () => {
         {/* Scrolling Favorites */}
         <div className="marquee">
           <ul className="flex flex-row space-x-8 text-white overflow-hidden marquee-content">
-            {favorites?.map((favorite, index) => (
+            {duplicatedFavorites?.map((favorite, index) => (
               <li key={index} className="flex items-center gap-2 text-sm">
                 <Image src={starticon} alt="staricon" height={20} width={20} className="w-4 h-4" />
                 <span className="font-medium text-sm text-[#E8E0F1]">{favorite?.name}</span>
