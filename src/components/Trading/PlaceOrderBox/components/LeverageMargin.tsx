@@ -31,7 +31,7 @@ const LeverageMargin = ({
 
   // useful when user changes the asset
   useEffect(() => {
-    if(maxLeverage < leverage) {
+    if (maxLeverage < leverage) {
       setLeverage(maxLeverage)
     }
   }, [maxLeverage, setLeverage, leverage])
