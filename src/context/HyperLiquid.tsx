@@ -19,6 +19,7 @@ interface HyperLiquidContextProps {
   universe?: MetaData[]
   clearingHouseState?: IClearingHouseState
   isTestnet: boolean
+  loading: boolean
 }
 
 const initialValue = {
@@ -29,7 +30,8 @@ const initialValue = {
   hyperliquidAxios: mainnetAxios,
   universe: undefined,
   clearingHouseState: undefined,
-  isTestnet: true
+  isTestnet: true,
+  loading: true
 }
 
 const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue)
@@ -45,6 +47,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
   const [allMids, setAllMids] = useState<PriceMap>({})
+  const [loading, setLoading] = useState(true)
 
   const privateKey = useMemo(() => {
     if (!address) return
@@ -140,6 +143,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (!sdk) return
     sdk.subscriptions.subscribeToAllMids((data: PriceMap) => {
       setAllMids(data)
+      setLoading(false)
     })
     return () => {
       sdk.subscriptions.unsubscribeFromAllMids()
@@ -168,7 +172,8 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         hyperliquidAxios,
         universe,
         clearingHouseState,
-        isTestnet
+        isTestnet,
+        loading
       }}
     >
       {children}
