@@ -9,7 +9,6 @@ import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import starticon from '@/assets/images/star_icon.svg'
 import Pagination from '../common/Pagination'
 import SearchIcon from '@/assets/images/search-normal.svg'
-
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { Loader2 } from 'lucide-react'
@@ -19,7 +18,7 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, sdk } = useHyperLiquid()
+  const { allMids, sdk, loading } = useHyperLiquid()
   const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -37,6 +36,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase())),
     [allMids, searchTerm]
   )
+  const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
   const filteredAssets = assetEntries.filter(([key]) =>
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -52,8 +52,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     { name: '24h Volume', showIcon: true },
     { name: 'Market Cap', showIcon: true }
   ]
-
-  const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
   const marketData = useMemo(
     () => [
