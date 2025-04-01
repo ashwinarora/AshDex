@@ -2,7 +2,7 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
 import CustomSelector from '../CustomSelector'
 
@@ -28,6 +28,15 @@ const LeverageMargin = ({
     const assetIndex = getUniverseIndex(universe, selectedAsset)
     return universe?.[assetIndex]?.maxLeverage || 1
   }, [universe, selectedAsset])
+
+  // useful when user changes the asset
+  useEffect(() => {
+    if(maxLeverage < leverage) {
+      setLeverage(maxLeverage)
+    }
+  }, [maxLeverage, setLeverage, leverage])
+
+  console.log(leverage)
 
   return (
     <div>
