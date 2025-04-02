@@ -36,8 +36,6 @@ const LeverageMargin = ({
     }
   }, [maxLeverage, setLeverage, leverage])
 
-  console.log(leverage)
-
   return (
     <div>
       <div className="mb-4 px-4">
@@ -53,8 +51,12 @@ const LeverageMargin = ({
               onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
               className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
               style={{
-                background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
+                background:
+                  maxLeverage > 1
+                    ? `linear-gradient(to right, #702DF5 0%, #702DF5 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
+                    : '#2A1B3D'
               }}
+              disabled={maxLeverage <= 1}
             />
             <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
