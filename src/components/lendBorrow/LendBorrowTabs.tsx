@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from 'react'
 import { createChart, IChartApi, ISeriesApi, AreaData, AreaSeries } from 'lightweight-charts'
 import { ORDER_INTERVALS } from '@/utils/constants'
+import lendBorrowData from '@/utils/lendBorrow.json'
 
 interface ILendBorrowTabsProps {
   tabs: string[]
@@ -20,6 +21,7 @@ const LendBorrowTabs: React.FC<ILendBorrowTabsProps> = ({
   setSelectedInterval,
   intervals
 }) => {
+  const { supplyChartData, borrowChartData } = lendBorrowData?.lendBorrow
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartContainerRef2 = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
@@ -27,31 +29,8 @@ const LendBorrowTabs: React.FC<ILendBorrowTabsProps> = ({
   const seriesRef = useRef<ISeriesApi<'Area'> | null>(null)
   const seriesRef2 = useRef<ISeriesApi<'Area'> | null>(null)
 
-  const chartData: AreaData[] = [
-    { time: '2022-01-17', value: 0 },
-    { time: '2022-01-18', value: 8 },
-    { time: '2022-01-19', value: 10 },
-    { time: '2022-01-20', value: 20 },
-    { time: '2022-01-21', value: 3 },
-    { time: '2022-01-22', value: 43 },
-    { time: '2022-01-23', value: 41 },
-    { time: '2022-01-24', value: 43 },
-    { time: '2022-01-25', value: 56 },
-    { time: '2022-01-26', value: 46 }
-  ]
-
-  const chartData2: AreaData[] = [
-    { time: '2022-01-17', value: 5 },
-    { time: '2022-01-18', value: 12 },
-    { time: '2022-01-19', value: 15 },
-    { time: '2022-01-20', value: 25 },
-    { time: '2022-01-21', value: 7 },
-    { time: '2022-01-22', value: 35 },
-    { time: '2022-01-23', value: 38 },
-    { time: '2022-01-24', value: 50 },
-    { time: '2022-01-25', value: 60 },
-    { time: '2022-01-26', value: 70 }
-  ]
+  const chartData: AreaData[] = supplyChartData || []
+  const chartData2: AreaData[] = borrowChartData || []
 
   useEffect(() => {
     if (activeTab !== 0 || !chartContainerRef.current) return

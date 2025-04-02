@@ -4,37 +4,21 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import TabContent from './TabContent'
 import Loading from '../common/Loading'
+import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
+import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import wethicon from '../../assets/images/weth_icon.svg'
 
+const iconMap: { [key: string]: string } = {
+  wethicon: wethicon,
+  ethicon: ethicon
+}
+
 const WalletActions: React.FC = () => {
+  const { yourSuppliesAndBorrows } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
   const [activeTab, setActiveTab] = useState<'Supply' | 'Borrow'>('Supply')
   const [isLoading, setIsLoading] = useState(false)
-
-  const supplies = [
-    { name: 'WETH', amount: '$100', icon: wethicon },
-    { name: 'EZETH', amount: '$5', icon: ethicon },
-    { name: 'SOLVBTC.M', amount: '$91', icon: wethicon },
-    { name: 'ETH', amount: '$23', icon: ethicon },
-    { name: 'BTC', amount: '$75', icon: wethicon },
-    { name: 'USDT', amount: '$50', icon: ethicon },
-    { name: 'DAI', amount: '$18', icon: wethicon },
-    { name: 'USDC', amount: '$33', icon: ethicon },
-    { name: 'MATIC', amount: '$45', icon: wethicon },
-    { name: 'BNB', amount: '$67', icon: ethicon }
-  ]
-
-  const statusMessages = {
-    Supply: {
-      title: 'Processing your deposit…',
-      subtitle: 'The transaction has been sent to the blockchain. This may take some time.'
-    },
-    Borrow: {
-      title: 'Loan request sent…',
-      subtitle: 'Waiting for network confirmation. Please wait a few seconds.'
-    }
-  }
 
   return (
     <>
@@ -63,8 +47,8 @@ const WalletActions: React.FC = () => {
         </div>
         {isLoading ? (
           <Loading
-            title={statusMessages[activeTab]?.title}
-            subTitle={statusMessages[activeTab]?.subtitle}
+            title={LENDBORROW_LOADING_MESSAGES[activeTab]?.title}
+            subTitle={LENDBORROW_LOADING_MESSAGES[activeTab]?.subtitle}
             className="py-[6.75rem]"
           />
         ) : (
@@ -84,7 +68,7 @@ const WalletActions: React.FC = () => {
             </button>
           </div>
           <div className="space-y-3 max-h-[200px] overflow-y-auto [&::-webkit-scrollbar]:hidden">
-            {supplies?.map((supply, index) => (
+            {yourSuppliesAndBorrows?.map((supply, index) => (
               <div
                 key={index}
                 className="flex pb-2.5 border-b-2 border-[#33293B] items-center text-base font-medium justify-between text-white"
@@ -94,7 +78,7 @@ const WalletActions: React.FC = () => {
                     alt={supply?.icon}
                     height={27}
                     width={27}
-                    src={supply?.icon}
+                    src={iconMap[supply?.icon]}
                     className="text-lg"
                   />
                   <span>{supply?.name}</span>
@@ -115,7 +99,7 @@ const WalletActions: React.FC = () => {
             </button>
           </div>
           <div className="space-y-3 max-h-[200px] overflow-y-scroll [&::-webkit-scrollbar]:hidden">
-            {supplies?.map((supply, index) => (
+            {yourSuppliesAndBorrows?.map((supply, index) => (
               <div
                 key={index}
                 className="flex pb-2.5 border-b-2 border-[#33293B] items-center text-base font-medium justify-between text-white"
@@ -125,7 +109,7 @@ const WalletActions: React.FC = () => {
                     alt={supply?.icon}
                     height={27}
                     width={27}
-                    src={supply?.icon}
+                    src={iconMap[supply?.icon]}
                     className="text-lg"
                   />
                   <span>{supply?.name}</span>

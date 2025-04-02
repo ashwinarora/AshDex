@@ -8,6 +8,7 @@ import { WalletModalProvider } from '@/context/WalletModalContext'
 import ConnectWalletModal from '@/components/ConnectWalletModal'
 import { ToastProvider } from '../context/ToastContext'
 import Toaster from '@/components/common/Toaster'
+import FavoriteStrip from '@/components/FavoriteStrip'
 import './globals.css'
 import '@/styles/table.css'
 
@@ -41,6 +42,7 @@ export default function RootLayout({
                 <Toaster />
                 <ConnectWalletModal />
                 <Header />
+                <FavoriteStrip />
                 {children}
                 <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
                   <Footer />

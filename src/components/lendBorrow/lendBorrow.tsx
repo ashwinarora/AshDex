@@ -2,7 +2,7 @@ import React from 'react'
 import Card from './Card'
 import MarketAsset from './MarketAsset'
 
-const index = () => {
+const LendBorrow = () => {
   return (
     <div className="w-full lg:px-14 md:px-10 px-4 bg-[#0d021f] pt-5">
       <Card />
@@ -11,4 +11,4 @@ const index = () => {
   )
 }
 
-export default index
+export default LendBorrow

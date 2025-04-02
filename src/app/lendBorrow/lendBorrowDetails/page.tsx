@@ -1,63 +1,20 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image'
-import WalletActions from '../../../components/landBorrow/WalletActions'
-import LendBorrowTabs from '../../../components/landBorrow/LendBorrowTabs'
-import { ORDER_INTERVALS } from '@/utils/constants'
+import WalletActions from '../../../components/lendBorrow/WalletActions'
+import LendBorrowTabs from '../../../components/lendBorrow/LendBorrowTabs'
+import { ORDER_INTERVALS, LENDBORROW_TAB } from '@/utils/constants'
+import lendBorrowData from '@/utils/lendBorrow.json'
 import wethicon from '../../../assets/images/weth_icon.svg'
 import exporticon from '../../../assets/images/export_icon.svg'
 import infoicon from '../../../assets/images/info_icon.svg'
 import nexticon from '../../../assets/images/next_icon.svg'
 
-const tabs = ['Supply APR', 'Borrow APR', 'Interest Rate'] as string[]
-
 function LendBorrowDetails() {
+  const { headerAssets, supplyInfo, borrowInfo, eModeInfoDesc, eModeInfo } =
+    lendBorrowData?.lendBorrow
   const [activeTab, setActiveTab] = useState(0)
   const [selectedInterval, setSelectedInterval] = useState<(typeof ORDER_INTERVALS)[number]>('1D')
-
-  const Headerassets = [
-    {
-      title: 'Reserve Size',
-      subtitle: '$87,219.48'
-    },
-    {
-      title: 'Available Liquidity',
-      subtitle: '$37,789.85'
-    },
-    {
-      title: 'Utilization rate',
-      subtitle: '80.00%'
-    },
-    {
-      title: 'Oracle Price',
-      subtitle: '$2,370.00'
-    }
-  ]
-
-  const supplyInfo = [
-    { label: 'Total Supplied', value: '$87.08K', difference: '36.74' },
-    { label: 'Supply APY', value: '0.72%' },
-    { label: 'MAX LTV', value: '80.00%' },
-    { label: 'Liquidation Threshold', value: '82.56%' },
-    { label: 'Liquidation Bonus', value: '5%' }
-  ]
-
-  const borrowInfo = [
-    { label: 'Total Borrowed', value: '$87.08K', difference: '36.74' },
-    { label: 'Borrow APY', value: '0.72%' },
-    { label: 'Liquidation Penalty', value: '5%' }
-  ]
-
-  const eModeInfoDesc = [
-    'E-Mode increases your LTV for a selected category of assets, meaning that when E-Mode is enabled, you will have higher borrowing power over assets of the same E-Mode category which are defined by ZeroLend Governance. You can enter E-Mode from your Dashboard. To learn more about E-Mode and applied restrictions in.'
-  ]
-
-  const eModeInfo = [
-    { label: 'E-Mode Category', value: 'ETH correlated' },
-    { label: 'Max LTV', value: '95.00%' },
-    { label: 'Liquidation Threshold', value: '97.50%' },
-    { label: 'Liquidation Penalty', value: '1.00%' }
-  ]
 
   return (
     <>
@@ -74,7 +31,6 @@ function LendBorrowDetails() {
           <span className="text-white">WETH</span>
         </div>
         <div className="grid md:grid-cols-4 gap-5 mt-6">
-          {/* Left Panel */}
           <div className="md:col-span-3 space-y-6">
             {/* Header */}
             <div className="flex items-center justify-between">
@@ -93,8 +49,8 @@ function LendBorrowDetails() {
                 />
               </div>
               <div className="flex flex-wrap gap-x-3">
-                {Headerassets?.map((asset, index) => {
-                  const isLastItem = index === Headerassets?.length - 1
+                {headerAssets?.map((asset, index) => {
+                  const isLastItem = index === headerAssets?.length - 1
                   return (
                     <div
                       key={index}
@@ -127,7 +83,6 @@ function LendBorrowDetails() {
                 })}
               </div>
             </div>
-
             {/* SupplyInfo */}
             <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
               <h3 className="text-base pt-1 pb-3 px-2 text-white font-bold">
@@ -212,7 +167,7 @@ function LendBorrowDetails() {
             {/* Tab Section */}
             <div className="bg-gradient-to-b pb-10 from-white/5 to-gray-600/5 p-4 rounded-xl">
               <LendBorrowTabs
-                tabs={tabs as string[]}
+                tabs={[...LENDBORROW_TAB]}
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
                 selectedInterval={selectedInterval}
@@ -221,7 +176,6 @@ function LendBorrowDetails() {
               />
             </div>
           </div>
-          {/* Right Panel */}
           <div>
             <WalletActions />
           </div>

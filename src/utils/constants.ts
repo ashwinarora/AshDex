@@ -46,6 +46,28 @@ export const CHART_INTERVALS = [
   '1M'
 ] as const
 
+export const LENDBORROW_TAB = ['Supply APR', 'Borrow APR', 'Interest Rate'] as const
+
+export const LENDBORROW_EDIT_OPTIONS = [
+  { label: 'Assets', checked: false },
+  { label: 'Supplies', checked: true },
+  { label: 'Supply APY', checked: true },
+  { label: 'Borrowed', checked: true },
+  { label: 'Borrow APY', checked: true },
+  { label: 'Available', checked: false }
+]
+
+export const LENDBORROW_LOADING_MESSAGES = {
+  Supply: {
+    title: 'Processing your deposit…',
+    subtitle: 'The transaction has been sent to the blockchain. This may take some time.'
+  },
+  Borrow: {
+    title: 'Loan request sent…',
+    subtitle: 'Waiting for network confirmation. Please wait a few seconds.'
+  }
+} as const
+
 export const ORDER_INTERVALS = ['1s', '1m', '5m', '15m', '30m', '1H', '4H', '1D', '1W'] as const
 
 export const AGENT_NAME = 'nexon_agent'

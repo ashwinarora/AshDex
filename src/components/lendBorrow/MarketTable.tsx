@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import Pagination from '../../common/Pagination'
+import Pagination from '../common/Pagination'
+import lendBorrowData from '@/utils/lendBorrow.json'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
@@ -14,41 +15,29 @@ const columns = [
   { key: 'borrowapy', label: 'Borrow APY' }
 ]
 
-const mockData = Array.from({ length: 20 }, (_, i) => ({
-  position: {
-    coin: `BTC/USDT ${i + 1}`,
-    entryPx: (40000 + i * 100).toFixed(2),
-    markPx: (40500 + i * 100).toFixed(2),
-    cumFunding: { allTime: (i * 0.005).toFixed(5) },
-    szi: (0.1 + i * 0.02).toFixed(2),
-    unrealizedPnl: ((i - 10) * 5).toFixed(2),
-    liquidationPx: (38000 + i * 100).toFixed(2),
-    leverage: { value: i % 2 === 0 ? '10x' : '5x' }
-  }
-}))
-
 const MarketTable = () => {
   const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
-
-  const totalPages = Math.ceil(mockData.length / pageSize)
+  const { tableData } = lendBorrowData?.lendBorrow
+  const totalPages = Math.ceil(tableData?.length / pageSize)
 
   const handleRowClick = (index: number) => {
-    router.push(`/landBorrow/lendBorrowDetails?id=${index}`)
+    router.push(`/lendBorrow/lendBorrowDetails?id=${index}`)
   }
 
   const paginatedPositions = useMemo(() => {
-    return mockData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+    return tableData?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
   }, [currentPage, pageSize])
+
   return (
     <div className="overflow-x-auto w-full">
       <table className="w-full text-white">
         <thead>
           <tr>
-            {columns.map((col) => (
+            {columns?.map((col) => (
               <th
-                key={col.key}
+                key={col?.key}
                 className="pt-3 pb-1 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
@@ -59,7 +48,7 @@ const MarketTable = () => {
                     width={16}
                     className="w-3 h-3 cursor-pointer"
                   />
-                  <span>{col.label}</span>
+                  <span>{col?.label}</span>
                   <Image
                     src={infoicon}
                     alt="Info"
@@ -83,15 +72,15 @@ const MarketTable = () => {
                 <div className="flex items-center gap-1">
                   <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
                   <div className="flex flex-col">
-                    {position.position.coin}{' '}
-                    <span className="text-[#8B8BA0] text-sm">{position.position.coin}</span>
+                    {position?.coin}{' '}
+                    <span className="text-[#8B8BA0] text-sm">{position?.coin}</span>
                   </div>
                 </div>
               </td>
               <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 <div className="flex space-x-2">
                   <div>
-                    <p className="text-base">{position.position.entryPx}</p>
+                    <p className="text-base">{position?.entryPx}</p>
                     <span className="bg-[#4a4a4d] p-0.5 rounded-md">16%</span>
                   </div>
                   <div className="relative group">
@@ -105,12 +94,12 @@ const MarketTable = () => {
                 </div>
               </td>
               <td className="py-4 pr-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
-                {position.position.entryPx}
+                {position?.entryPx}
               </td>
               <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 <div className="flex space-x-2">
                   <div>
-                    <p className="text-base">{position.position.cumFunding.allTime}</p>
+                    <p className="text-base">{position?.cumFunding?.allTime}</p>
                     <span className="bg-[#4a4a4d] p-0.5 rounded-md">16%</span>
                   </div>
                   <div className="relative group">
@@ -125,7 +114,7 @@ const MarketTable = () => {
               </td>
               <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 <span className="relative group">
-                  <span className="">{position.position.szi}</span>
+                  <span className="">{position?.szi}</span>
                   <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 -top-8 bg-[#0F0816] text-white text-xs rounded-xl p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
                     <span>Participating in this ezETH reserve gives annualized rewards.</span>
                   </span>
@@ -135,7 +124,7 @@ const MarketTable = () => {
           ))}
         </tbody>
       </table>
-      {mockData.length > 0 && (
+      {tableData?.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

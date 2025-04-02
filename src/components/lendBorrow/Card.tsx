@@ -1,33 +1,16 @@
 import Image from 'next/image'
 import React from 'react'
-import ChartIcon from '@/assets/images/chart_icon.svg'
 import InfoIcon from '@/assets/images/info_icon.svg'
+import ChartIcon from '@/assets/images/chart_icon.svg'
 import WalletIcon from '@/assets/images/wallet_icon_2.svg'
 import BankIcon from '@/assets/images/mdi_bank.svg'
+import lendBorrowData from '@/utils/lendBorrow.json'
 
-const cardData = [
-  {
-    icon: ChartIcon,
-    title: 'Total Market Size',
-    value: '$242.41 Mn',
-    change: '+ $2.41',
-    changeColor: 'text-[#2FA766]'
-  },
-  {
-    icon: WalletIcon,
-    title: 'Total Available',
-    value: '$83.41 Mn',
-    change: '- $0.41',
-    changeColor: 'text-[#E2464A]'
-  },
-  {
-    icon: BankIcon,
-    title: 'Total Borrowed',
-    value: '$242.41 Mn',
-    change: '+ $0.1',
-    changeColor: 'text-[#2FA766]'
-  }
-]
+const iconMap: { [key: string]: string } = {
+  chart_icon: ChartIcon,
+  wallet_icon_2: WalletIcon,
+  mdi_bank: BankIcon
+}
 
 interface CardItemProps {
   icon: string
@@ -46,7 +29,7 @@ const CardItem: React.FC<CardItemProps> = ({ icon, title, value, change, changeC
     }}
   >
     <div className="rounded-md border border-white/10 bg-[#FFFFFF0F] px-3 py-2.5 flex justify-center">
-      <Image src={icon} alt={title} height={20} width={20} className="w-5 h-5" />
+      <Image src={iconMap[icon]} alt={title} height={20} width={20} className="w-5 h-5" />
     </div>
     <div className="px-2.5">
       <div className="flex items-center gap-1">
@@ -72,7 +55,7 @@ const CardItem: React.FC<CardItemProps> = ({ icon, title, value, change, changeC
 const Card = () => {
   return (
     <div className="grid lg:grid-cols-3 sm:grid-cols-2 gap-3">
-      {cardData.map((card, index) => (
+      {lendBorrowData?.lendBorrow?.cardData?.map((card, index) => (
         <CardItem key={index} {...card} />
       ))}
     </div>

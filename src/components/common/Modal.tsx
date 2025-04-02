@@ -11,26 +11,38 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, children }) => {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden'
+      // Store the current scroll position
       setTopPosition(window.scrollY)
+      // Add a class to the body to prevent scrolling
+      document.body.style.position = 'fixed'
+      document.body.style.top = `-${window.scrollY}px`
+      document.body.style.width = '100%'
     } else {
-      document.body.style.overflow = ''
+      // Restore the scroll position
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
+      window.scrollTo(0, topPosition)
     }
 
     return () => {
-      document.body.style.overflow = '' // Cleanup on unmount
+      // Cleanup on unmount
+      document.body.style.position = ''
+      document.body.style.top = ''
+      document.body.style.width = ''
     }
-  }, [isOpen])
+  }, [isOpen, topPosition])
 
   if (!isOpen) return null
 
   return (
     <div
-      className={`absolute left-0 right-0 z-50 flex items-center justify-center bg-[#0F081680] bg-opacity-70 backdrop-blur-[40px] h-screen`}
-      style={{ top: topPosition + 'px' }}
+      className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F081680] bg-opacity-70 backdrop-blur-[40px]"
       onClick={onClose}
     >
-      <div className="w-full h-full flex items-center justify-center">{children}</div>
+      <div className="w-full h-full flex items-center justify-center overflow-y-auto">
+        {children}
+      </div>
     </div>
   )
 }
