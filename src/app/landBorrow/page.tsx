@@ -1,12 +1,12 @@
 import FavoriteStrip from '@/components/FavoriteStrip'
-import Card from '@/components/landBorrow/Card'
 import React from 'react'
+import Index from '@/components/landBorrow'
 
 const page = () => {
   return (
     <div>
       <FavoriteStrip />
-      <Card />
+      <Index />
     </div>
   )
 }
