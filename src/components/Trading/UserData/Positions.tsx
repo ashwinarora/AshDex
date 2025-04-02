@@ -22,16 +22,12 @@ const columns = [
 const Positions = () => {
   const { clearingHouseState } = useHyperLiquid()
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
 
-  const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / pageSize)
+  const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / 10)
 
   const paginatedPositions = useMemo(() => {
-    return clearingHouseState?.assetPositions?.slice(
-      (currentPage - 1) * pageSize,
-      currentPage * pageSize
-    )
-  }, [clearingHouseState?.assetPositions, currentPage, pageSize])
+    return clearingHouseState?.assetPositions?.slice((currentPage - 1) * 10, currentPage * 10)
+  }, [clearingHouseState?.assetPositions, currentPage])
 
   return (
     <div className="overflow-x-auto w-full">
@@ -159,8 +155,6 @@ const Positions = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
         />
       )}
     </div>
