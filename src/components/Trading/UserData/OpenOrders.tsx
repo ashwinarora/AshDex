@@ -158,8 +158,6 @@ const OpenOrders = () => {
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
         />
       )}
     </div>
