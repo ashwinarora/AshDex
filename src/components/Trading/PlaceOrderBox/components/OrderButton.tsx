@@ -1,12 +1,12 @@
 'use client'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { AGENT_NAME, BUILDER_ADDRESS, MAX_DECIMALS_PERP } from '@/utils/constants'
+import { AGENT_NAME, BUILDER_ADDRESS } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { IExtraAgent } from '@/utils/hyperLiquidTypes'
-import { getUniverseIndex, splitSignature } from '@/utils/utils'
+import { formatPrice, getUniverseIndex, splitSignature } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
@@ -192,13 +192,12 @@ const OrderButton = ({
         console.log(res)
         const assetIndex = getUniverseIndex(universe, selectedAsset)
         const szDecimals = universe[assetIndex].szDecimals
-        const decimals = MAX_DECIMALS_PERP - szDecimals - 1
         const tif = isPostOnly ? 'Alo' : 'Gtc'
         const orders: OrderData[] = [
           {
             assetIndex: assetIndex,
             isBuy: isBuy,
-            price: limitPrice.toFixed(decimals),
+            price: formatPrice(limitPrice, szDecimals),
             size: amount.toFixed(szDecimals),
             reduceOnly: isReduceOnly,
             orderType: {
@@ -213,13 +212,13 @@ const OrderButton = ({
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
-              price: tpsl.stopLoss.toFixed(decimals),
+              price: formatPrice(tpsl.stopLoss, szDecimals),
               size: amount.toFixed(szDecimals),
               reduceOnly: true,
               orderType: {
                 trigger: {
                   isMarket: true,
-                  triggerPx: tpsl.stopLoss.toFixed(decimals),
+                  triggerPx: formatPrice(tpsl.stopLoss, szDecimals),
                   tpsl: 'sl'
                 }
               }
@@ -229,13 +228,13 @@ const OrderButton = ({
             orders.push({
               assetIndex: assetIndex,
               isBuy: !isBuy,
-              price: tpsl.takeProfit.toFixed(decimals),
+              price: formatPrice(tpsl.takeProfit, szDecimals),
               size: amount.toFixed(szDecimals),
               reduceOnly: true,
               orderType: {
                 trigger: {
                   isMarket: true,
-                  triggerPx: tpsl.takeProfit.toFixed(decimals),
+                  triggerPx: formatPrice(tpsl.takeProfit, szDecimals),
                   tpsl: 'tp'
                 }
               }

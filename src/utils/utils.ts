@@ -1,5 +1,6 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
 import { MetaData } from './hyperLiquidTypes'
+import { MAX_DECIMALS_PERP } from './constants'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -68,4 +69,22 @@ export const getCoinName = (asset: string): string => {
     return asset.slice(0, -5)
   }
   return asset
+}
+
+// refer https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
+export const roundToSignificantFigures = (num: number, sigFigs: number = 5): number => {
+  if (num === 0) return 0
+
+  if (Number.isInteger(num)) return num
+
+  const digits = Math.floor(Math.log10(Math.abs(num))) + 1
+  const factor = Math.pow(10, sigFigs - digits)
+  return Math.round(num * factor) / factor
+}
+
+export const formatPrice = (price: number, szDecimals: number): string => {
+  const sigPrice = roundToSignificantFigures(price)
+  const decimals = MAX_DECIMALS_PERP - szDecimals
+  const formattedPrice = sigPrice.toFixed(decimals)
+  return parseFloat(formattedPrice).toString()
 }
