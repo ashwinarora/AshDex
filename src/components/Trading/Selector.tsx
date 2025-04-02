@@ -19,7 +19,7 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, sdk, loading } = useHyperLiquid()
+  const { allMids, sdk } = useHyperLiquid()
   const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -250,7 +250,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               ))}
             </div>
             <div className="overflow-y-auto max-h-96 sm:w-full w-[200%]">
-              {loading ? (
+              {paginatedAssets?.length === 0 ? (
                 <div className="flex justify-center items-center w-full">
                   <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
                 </div>
