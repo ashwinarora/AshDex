@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Pagination from '../../common/Pagination'
 import infoicon from '@/assets/images/info_icon.svg'
@@ -27,10 +28,15 @@ const mockData = Array.from({ length: 20 }, (_, i) => ({
 }))
 
 const MarketTable = () => {
+  const router = useRouter()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
 
   const totalPages = Math.ceil(mockData.length / pageSize)
+
+  const handleRowClick = (index: number) => {
+    router.push(`/landBorrow/lendBorrowDetails?id=${index}`)
+  }
 
   const paginatedPositions = useMemo(() => {
     return mockData.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -68,7 +74,11 @@ const MarketTable = () => {
         </thead>
         <tbody>
           {paginatedPositions?.map((position, index) => (
-            <tr key={index} className=" border-b border-white/10">
+            <tr
+              key={index}
+              className=" border-b border-white/10 cursor-pointer"
+              onClick={() => handleRowClick(index)}
+            >
               <td className="py-4 pr-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />

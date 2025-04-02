@@ -1,22 +1,24 @@
 import React from 'react'
 import Image from 'next/image'
+import { cn } from '@/utils/utils'
 import nexonlogo from '../../assets/images/logo.svg'
 
 interface LoadingProps {
-  activeTab: string
+  title: string
+  subTitle: string
+  className: string
 }
 
-const Loading: React.FC<LoadingProps> = ({ activeTab }) => {
+const Loading: React.FC<LoadingProps> = ({ title, subTitle, className }) => {
   return (
-    <div className="flex justify-center items-center h-screen w-full flex-col">
+    <div className={cn('flex justify-center items-center w-full flex-col', className)}>
       <div className="w-16 h-16">
         <Image src={nexonlogo} alt="Nexon Logo" width={64} height={64} />
       </div>
-      <p className="mt-8 text-white font-medium text-sm text-center">
-        Your {activeTab?.toLowerCase()} order is being processed.
-        <br />
-        Please wait...
-      </p>
+      <div className="w-[60%]">
+        <p className="mt-8 text-white font-medium text-base text-center">{title ?? ''}</p>
+        <p className="mt-2 text-[#8B8BA0] font-medium text-sm text-center">{subTitle ?? ''}</p>
+      </div>
     </div>
   )
 }
