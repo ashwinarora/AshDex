@@ -4,10 +4,11 @@ import { useAccount } from 'wagmi'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import type { Hex, PrivateKeyAccount } from 'viem'
 import type { AxiosInstance } from 'axios'
-import { useQuery } from '@tanstack/react-query'
-import { IClearingHouseState, MetaData, WsUserFills } from '@/utils/hyperLiquidTypes'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { IClearingHouseState, MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AGENT_PRIVATE_KEY } from '@/utils/constants'
 import { mainnetAxios, testnetAxios } from '@/config/axios'
+import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 
 interface HyperLiquidContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,6 +46,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
   const [allMids, setAllMids] = useState<PriceMap>({})
+  const queryClient = useQueryClient()
 
   const privateKey = useMemo(() => {
     if (!address) return
@@ -64,14 +66,15 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return privateKeyToAccount(privateKey)
   }, [privateKey])
 
-  const { data: clearingHouseState, refetch: refetchClearingHouseState } = useQuery({
-    queryKey: ['clearingHouseState', address, chain?.id],
-    queryFn: async () => {
-      const res = await sdk.info.perpetuals.getClearinghouseState(address)
-      return res as IClearingHouseState
-    },
-    enabled: !!sdk || !!isSdkConnected
-  })
+  const { data: clearingHouseState } =
+    useQuery<IClearingHouseState>({
+      queryKey: ['clearingHouseState', address],
+      queryFn: async () => {
+        const res = await sdk.info.perpetuals.getClearinghouseState(address)
+        return res
+      },
+      enabled: !!sdk || !!isSdkConnected
+    })
 
   const { data: universe } = useQuery({
     queryKey: ['universe', chain?.id],
@@ -148,15 +151,16 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   useEffect(() => {
     if (!sdk) return
+    if (!address) return
     console.log('Subscribing to fills')
-    sdk.subscriptions.subscribeToUserFills(address, (data: WsUserFills) => {
-      console.log('User Fills Update', data)
-      refetchClearingHouseState()
+    sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
+      const { clearinghouseState } = data
+      queryClient.setQueryData(['clearingHouseState', address], clearinghouseState)
     })
     return () => {
-      sdk.subscriptions.unsubscribeFromUserFills()
+      sdk.subscriptions.unsubscribeFromWebData2()
     }
-  }, [sdk, address, refetchClearingHouseState])
+  }, [sdk, address, queryClient])
 
   return (
     <HyperLiquidContext.Provider

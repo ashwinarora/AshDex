@@ -1,5 +1,5 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
-import { MetaData } from './hyperLiquidTypes'
+import { MetaData } from './hyperliquid/hyperLiquidTypes'
 import { MAX_DECIMALS_PERP } from './constants'
 
 export const toHumanNumber = (

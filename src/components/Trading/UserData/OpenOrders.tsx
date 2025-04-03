@@ -1,5 +1,5 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { Order, WsOrder } from '@/utils/hyperLiquidTypes'
+import { Order, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
@@ -33,13 +33,12 @@ const OpenOrders = () => {
   })
 
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
 
-  const totalPages = Math.ceil(openOrders.length || 0 / pageSize)
+  const totalPages = Math.ceil(openOrders.length / 10)
 
   const paginatedOrders = useMemo(() => {
-    return openOrders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [openOrders, currentPage, pageSize])
+    return openOrders.slice((currentPage - 1) * 10, currentPage * 10)
+  }, [openOrders, currentPage])
 
   useEffect(() => {
     if (!sdk) return

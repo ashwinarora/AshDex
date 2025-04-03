@@ -7,7 +7,7 @@ import OpenOrders from './OpenOrders'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-import { Order } from '@/utils/hyperLiquidTypes'
+import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 const UserData = () => {
   const { address } = useAccount()
