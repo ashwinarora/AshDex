@@ -8,10 +8,7 @@ import { usePathname } from 'next/navigation'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
 import Pagination from '@/components/common/Pagination'
-import {
-  OPEN_ORDERS_SPOT_COLUMNS,
-  OPEN_ORDERS_FEATURE_COLUMNS
-} from '@/utils/constants'
+import { OPEN_ORDERS_SPOT_COLUMNS, OPEN_ORDERS_FEATURE_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import noordericon from '@/assets/images/noorder_icon.svg'
@@ -69,7 +66,6 @@ const OpenOrders = () => {
   useEffect(() => {
     setColumns(selectedColumns)
   }, [selectedColumns])
-
 
   useEffect(() => {
     if (!sdk) return

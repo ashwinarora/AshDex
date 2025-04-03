@@ -64,9 +64,7 @@ const UserData = () => {
       <div className="mt-3 mb-6 w-full">
         {activeTab === 0 && <Balances />}
         {pathname !== '/spot' && activeTab === 1 && <Positions />}
-        {activeTab === (pathname === '/spot' ? 1 : 2) && (
-          <OpenOrders />
-        )}
+        {activeTab === (pathname === '/spot' ? 1 : 2) && <OpenOrders />}
       </div>
     </div>
   )

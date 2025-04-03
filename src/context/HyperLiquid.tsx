@@ -30,7 +30,7 @@ const initialValue = {
   hyperliquidAxios: mainnetAxios,
   universe: undefined,
   clearingHouseState: undefined,
-  isTestnet: true,
+  isTestnet: true
 }
 
 const HyperLiquidContext = createContext<HyperLiquidContextProps>(initialValue)
@@ -171,7 +171,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         hyperliquidAxios,
         universe,
         clearingHouseState,
-        isTestnet,
+        isTestnet
       }}
     >
       {children}
