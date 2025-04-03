@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
-import type { WsBook, WsLevel } from '../../utils/hyperLiquidTypes'
+import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
 import ThreeDot from '../../assets/images/three_dot.svg'
 import Filter1 from '../../assets/images/filter_1.svg'
 import Filter2 from '../../assets/images/filter_2.svg'
