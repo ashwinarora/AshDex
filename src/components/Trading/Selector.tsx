@@ -18,7 +18,7 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, sdk, loading } = useHyperLiquid()
+  const { allMids, sdk } = useHyperLiquid()
   const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -52,6 +52,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     { name: '24h Volume', showIcon: true },
     { name: 'Market Cap', showIcon: true }
   ]
+
+  const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
   const marketData = useMemo(
     () => [
