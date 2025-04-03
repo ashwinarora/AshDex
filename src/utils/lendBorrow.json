@@ -237,6 +237,33 @@
       { "name": "USDC", "amount": "$33", "icon": "ethicon" },
       { "name": "MATIC", "amount": "$45", "icon": "wethicon" },
       { "name": "BNB", "amount": "$67", "icon": "ethicon" }
+    ],
+    "supplyAndBorrowTabData": [
+      {
+        "tab": "Supply",
+        "apy": "0.72%",
+        "collateralization": "Enabled",
+        "healthFactor": "∞"
+      },
+      {
+        "tab": "Borrow",
+        "apy": "-2.54%",
+        "healthFactor": "∞"
+      }
+    ],
+    "withdrawAndRepayData": [
+      {
+        "tab": "Withdraw",
+        "balance": "0",
+        "limit": "$0",
+        "dailyearnings": "$0"
+      },
+      {
+        "tab": "Repay",
+        "balance": "0",
+        "limit": "$0",
+        "dailyearnings": "$0"
+      }
     ]
   }
 }

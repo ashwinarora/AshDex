@@ -65,6 +65,14 @@ export const LENDBORROW_LOADING_MESSAGES = {
   Borrow: {
     title: 'Loan request sent…',
     subtitle: 'Waiting for network confirmation. Please wait a few seconds.'
+  },
+  Withdraw: {
+    title: 'Processing your withdrawal…',
+    subtitle: 'We have sent the transaction to the blockchain. Please wait for confirmation.'
+  },
+  Repay: {
+    title: 'Processing your repayment…',
+    subtitle: 'The transaction has been sent. This may take some time.'
   }
 } as const
 

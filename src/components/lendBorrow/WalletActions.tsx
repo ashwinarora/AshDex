@@ -4,7 +4,9 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import TabContent from './TabContent'
 import Loading from '../common/Loading'
+import { useWalletModal } from '@/context/WalletModalContext'
 import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
+import WithdrawAndRepayModal from './WithdrawAndRepayModal'
 import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import wethicon from '../../assets/images/weth_icon.svg'
@@ -17,8 +19,15 @@ const iconMap: { [key: string]: string } = {
 const WalletActions: React.FC = () => {
   const { yourSuppliesAndBorrows } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
+  const { toggleConnectWalletModal } = useWalletModal()
   const [activeTab, setActiveTab] = useState<'Supply' | 'Borrow'>('Supply')
   const [isLoading, setIsLoading] = useState(false)
+  const [modalType, setModalType] = useState<'Withdraw' | 'Repay' | null>(null)
+
+  const openModal = (type: 'Withdraw' | 'Repay') => {
+    setModalType(type)
+    toggleConnectWalletModal()
+  }
 
   return (
     <>
@@ -49,7 +58,7 @@ const WalletActions: React.FC = () => {
           <Loading
             title={LENDBORROW_LOADING_MESSAGES[activeTab]?.title}
             subTitle={LENDBORROW_LOADING_MESSAGES[activeTab]?.subtitle}
-            className="py-[6.75rem]"
+            className={`${activeTab === 'Supply' ? 'py-[6.65rem] px-[5rem]' : 'py-[5.5rem] px-[4.5rem]'}`}
           />
         ) : (
           <TabContent
@@ -63,7 +72,10 @@ const WalletActions: React.FC = () => {
         <div className="mt-6 h-[280px] bg-white/10 border-2 border-white/10 p-4 rounded-2xl">
           <div className="flex justify-between items-center text-white mb-3">
             <p className="font-bold text-white text-base">Your Supplies</p>
-            <button className="px-[22px] cursor-pointer py-[10px] bg-[#FFFFFF0F] text-white font-bold rounded-xl text-sm">
+            <button
+              onClick={() => openModal('Withdraw')}
+              className="px-[22px] cursor-pointer py-[10px] bg-[#FFFFFF0F] text-white font-bold rounded-xl text-sm"
+            >
               Withdraw
             </button>
           </div>
@@ -94,7 +106,10 @@ const WalletActions: React.FC = () => {
         <div className="mt-6 h-[280px] bg-white/10 border-2 border-white/10 p-4 rounded-2xl">
           <div className="flex justify-between items-center text-white mb-3">
             <p className="font-bold text-white text-base">Your Borrow</p>
-            <button className="px-[22px] cursor-pointer py-[10px] bg-[#FFFFFF0F] text-white font-bold rounded-xl text-sm">
+            <button
+              onClick={() => openModal('Repay')}
+              className="px-[22px] cursor-pointer py-[10px] bg-[#FFFFFF0F] text-white font-bold rounded-xl text-sm"
+            >
               Repay
             </button>
           </div>
@@ -120,6 +135,7 @@ const WalletActions: React.FC = () => {
           </div>
         </div>
       )}
+      <WithdrawAndRepayModal type={modalType} setModalType={setModalType} />
     </>
   )
 }

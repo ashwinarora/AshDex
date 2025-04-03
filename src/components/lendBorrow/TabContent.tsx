@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useToast } from '@/context/ToastContext'
 import Switch from '../common/Switch'
+import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import wethicon from '../../assets/images/weth_icon.svg'
 
@@ -17,6 +18,7 @@ interface ITabContentProps {
 type TabName = 'Supply' | 'Borrow'
 
 const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIsLoading }) => {
+  const { supplyAndBorrowTabData } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
   const { toggleConnectWalletModal } = useWalletModal()
   const { showToast } = useToast()
@@ -41,22 +43,8 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
     }, 2000)
   }
 
-  const tabData = [
-    {
-      tab: 'Supply',
-      apy: '0.72%',
-      collateralization: 'Enabled',
-      healthFactor: '∞'
-    },
-    {
-      tab: 'Borrow',
-      apy: '-2.54%',
-      healthFactor: '∞'
-    }
-  ]
-
   const activeTabData = useMemo(() => {
-    return tabData?.find((tab) => tab?.tab === activeTab)
+    return supplyAndBorrowTabData?.find((tab) => tab?.tab === activeTab)
   }, [activeTab])
 
   useEffect(() => {
