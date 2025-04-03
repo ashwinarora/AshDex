@@ -1,14 +1,14 @@
-import { useEffect, useMemo, useState } from 'react'
+'use client'
+import { Order, SpotOrder, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
+import { useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { usePathname } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { Order, SpotOrder, WsOrder } from '@/utils/hyperLiquidTypes'
 import Pagination from '@/components/common/Pagination'
 import {
-  ORDER_INTERVALS,
   OPEN_ORDERS_SPOT_COLUMNS,
   OPEN_ORDERS_FEATURE_COLUMNS
 } from '@/utils/constants'
@@ -33,32 +33,32 @@ const spotOrders: SpotOrder[] = Array.from({ length: 10 }, (_, index) => ({
   id: index + 1
 }))
 
-const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number) => void }) => {
+const OpenOrders = () => {
   const { address, isConnected } = useAccount()
-  const { toggleConnectWalletModal } = useWalletModal()
   const { sdk } = useHyperLiquid()
+  const { toggleConnectWalletModal } = useWalletModal()
+  const queryClient = useQueryClient()
   const pathname = usePathname()
-  const { data: openOrders, isLoading } = useQuery({
+  const { data: openOrders, isLoading } = useQuery<Order[]>({
     queryKey: ['openOrders', address],
     queryFn: async () => {
       const response = await sdk.info.getUserOpenOrders(address)
-      return response as Order[]
+      return response
     },
-    enabled: !!address && !!sdk
+    enabled: !!address && !!sdk,
+    initialData: []
   })
-  const [selectedInterval, setSelectedInterval] = useState<(typeof ORDER_INTERVALS)[number]>('1s')
-  const [orders, setOrders] = useState<Order[]>([])
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(5)
 
   const totalPages = Math.ceil(
-    (pathname === '/spot' ? spotOrders?.length : orders?.length) / pageSize
+    (pathname === '/spot' ? spotOrders?.length : openOrders?.length) / pageSize
   )
 
   const paginatedOrders = useMemo(() => {
-    const data = pathname === '/spot' ? spotOrders : orders
+    const data = pathname === '/spot' ? spotOrders : openOrders
     return data?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [orders, spotOrders, currentPage, pageSize, pathname])
+  }, [openOrders, spotOrders, currentPage, pageSize, pathname])
 
   const selectedColumns = useMemo(() => {
     return pathname === '/spot' ? OPEN_ORDERS_SPOT_COLUMNS : OPEN_ORDERS_FEATURE_COLUMNS
@@ -70,42 +70,50 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
     setColumns(selectedColumns)
   }, [selectedColumns])
 
-  useEffect(() => {
-    if (openOrders) {
-      setOrders(openOrders)
-      setOpenOrdersCount(openOrders.length)
-    }
-  }, [openOrders, setOpenOrdersCount])
 
   useEffect(() => {
     if (!sdk) return
+    if (!address) return
     sdk.subscriptions.subscribeToOrderUpdates(address, (data: WsOrder[]) => {
-      setOrders((prevOrders) => {
-        const newOrders = [...prevOrders]
+      console.log('User Orders Update', data)
+      queryClient.setQueryData(['openOrders', address], (oldData: Order[]) => {
+        const updatedOrders = [...oldData]
         data.forEach((order) => {
-          const index = newOrders.findIndex((o) => o.oid === order.order.oid)
-          if (order.status !== 'open') {
-            newOrders.splice(index, 1)
-            return
-          }
-          newOrders[index] = {
-            coin: order.order.coin,
-            limitPx: Number(order.order.limitPx),
-            oid: order.order.oid,
-            origSz: Number(order.order.origSz),
-            side: order.order.side === 'b' ? 'buy' : 'sell',
-            sz: Number(order.order.sz),
-            timestamp: order.statusTimestamp
+          const index = updatedOrders.findIndex((o) => o.oid === order.order.oid)
+          if (index !== -1) {
+            if (order.status !== 'open') {
+              updatedOrders.splice(index, 1)
+              return
+            }
+            updatedOrders[index] = {
+              coin: order.order.coin,
+              limitPx: Number(order.order.limitPx),
+              oid: order.order.oid,
+              origSz: Number(order.order.origSz),
+              side: order.order.side === 'buy' ? 'buy' : 'sell',
+              sz: Number(order.order.sz),
+              timestamp: order.statusTimestamp
+            }
+          } else {
+            if (order.status !== 'open') return
+            updatedOrders.push({
+              coin: order.order.coin,
+              limitPx: Number(order.order.limitPx),
+              oid: order.order.oid,
+              origSz: Number(order.order.origSz),
+              side: order.order.side === 'buy' ? 'buy' : 'sell',
+              sz: Number(order.order.sz),
+              timestamp: order.statusTimestamp
+            })
           }
         })
-        setOpenOrdersCount(newOrders.length)
-        return newOrders
+        return updatedOrders
       })
     })
     return () => {
-      sdk.subscriptions.unsubscribeFromOrderUpdates()
+      sdk.subscriptions.unsubscribeFromUserOrders()
     }
-  }, [sdk, address, setOpenOrdersCount])
+  }, [sdk, address, queryClient])
 
   if (isLoading) {
     return <div>Loading...</div>
@@ -113,21 +121,6 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
 
   return (
     <div className="overflow-x-auto w-full px-3">
-      <div className="flex ml-1 my-2 items-center overflow-hidden gap-2 text-white text-sm">
-        {ORDER_INTERVALS?.map((interval) => (
-          <button
-            key={interval}
-            onClick={() => setSelectedInterval(interval)}
-            className={`px-2 text-sm cursor-pointer py-1 rounded-full transition-all ${
-              selectedInterval === interval
-                ? 'bg-white/10 font-semibold text-white backdrop-blur-lg'
-                : 'text-gray-400 font-medium hover:text-gray-300'
-            }`}
-          >
-            {interval}
-          </button>
-        ))}
-      </div>
       {isConnected ? (
         <>
           {' '}
@@ -156,8 +149,6 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
                       onClick={async () => {
                         await sdk.custom.cancelAllOrders()
-                        setOrders([])
-                        setOpenOrdersCount(0)
                       }}
                     >
                       Cancel All
@@ -266,7 +257,7 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
               })}
             </tbody>
           </table>
-          {(orders?.length > 0 || spotOrders?.length > 0) && (
+          {(openOrders?.length > 0 || spotOrders?.length > 0) && (
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}

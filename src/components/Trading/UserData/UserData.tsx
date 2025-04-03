@@ -5,19 +5,25 @@ import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useQuery } from '@tanstack/react-query'
+import { useAccount } from 'wagmi'
+import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 const UserData = () => {
   const pathname = usePathname()
+  const { address } = useAccount()
   const { clearingHouseState } = useHyperLiquid()
-  const [openOrdersCount, setOpenOrdersCount] = useState(0)
+  const { data: openOrders } = useQuery<Order[]>({
+    queryKey: ['openOrders', address],
+    enabled: false,
+    initialData: []
+  })
 
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
   const tabs = [
     'Balances',
-    ...(pathname !== '/spot'
-      ? [`Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`]
-      : []),
-    `Open Orders ${openOrdersCount > 0 ? ' (' + openOrdersCount + ')' : ''}`,
+    `Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`,
+    `Open Orders (${openOrders.length})`,
     'TWAP',
     'Trade History',
     'Orders History',
@@ -59,7 +65,7 @@ const UserData = () => {
         {activeTab === 0 && <Balances />}
         {pathname !== '/spot' && activeTab === 1 && <Positions />}
         {activeTab === (pathname === '/spot' ? 1 : 2) && (
-          <OpenOrders setOpenOrdersCount={setOpenOrdersCount} />
+          <OpenOrders />
         )}
       </div>
     </div>
