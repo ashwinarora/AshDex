@@ -36,7 +36,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase())),
     [allMids, searchTerm]
   )
-  const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
+
   const filteredAssets = assetEntries.filter(([key]) =>
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
