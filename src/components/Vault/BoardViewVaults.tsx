@@ -18,10 +18,9 @@ const vaults = Array.from({ length: 15 }, (_, i) => ({
 
 const BoardViewVaults = () => {
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(15)
 
-  const totalPages = Math.ceil(vaults?.length / pageSize)
-  const paginatedVaults = vaults?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  const totalPages = Math.ceil(vaults?.length / 10)
+  const paginatedVaults = vaults?.slice((currentPage - 1) * 10, currentPage * 10)
 
   return (
     <div className="min-h-screen text-white">
@@ -90,16 +89,7 @@ const BoardViewVaults = () => {
         ))}
       </div>
 
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={setCurrentPage}
-        pageSize={pageSize}
-        onPageSizeChange={(size) => {
-          setPageSize(size)
-          setCurrentPage(1)
-        }}
-      />
+      <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={setCurrentPage} />
     </div>
   )
 }

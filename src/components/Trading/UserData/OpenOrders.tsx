@@ -32,13 +32,11 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
 
   const [orders, setOrders] = useState<Order[]>([])
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
-
-  const totalPages = Math.ceil(orders.length / pageSize)
+  const totalPages = Math.ceil(orders.length / 10)
 
   const paginatedOrders = useMemo(() => {
-    return orders.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [orders, currentPage, pageSize])
+    return orders.slice((currentPage - 1) * 10, currentPage * 10)
+  }, [orders, currentPage])
 
   useEffect(() => {
     if (openOrders) {
@@ -150,8 +148,6 @@ const OpenOrders = ({ setOpenOrdersCount }: { setOpenOrdersCount: (count: number
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
         />
       )}
     </div>
