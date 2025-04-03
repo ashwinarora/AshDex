@@ -66,15 +66,14 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return privateKeyToAccount(privateKey)
   }, [privateKey])
 
-  const { data: clearingHouseState } =
-    useQuery<IClearingHouseState>({
-      queryKey: ['clearingHouseState', address],
-      queryFn: async () => {
-        const res = await sdk.info.perpetuals.getClearinghouseState(address)
-        return res
-      },
-      enabled: !!sdk || !!isSdkConnected
-    })
+  const { data: clearingHouseState } = useQuery<IClearingHouseState>({
+    queryKey: ['clearingHouseState', address],
+    queryFn: async () => {
+      const res = await sdk.info.perpetuals.getClearinghouseState(address)
+      return res
+    },
+    enabled: !!sdk || !!isSdkConnected
+  })
 
   const { data: universe } = useQuery({
     queryKey: ['universe', chain?.id],

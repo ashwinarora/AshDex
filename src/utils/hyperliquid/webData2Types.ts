@@ -2,7 +2,7 @@
 
 export interface IWebData2 {
   clearinghouseState: ClearinghouseState
-  // leadingVaults: any[] 
+  // leadingVaults: any[]
   totalVaultEquity: number
   // openOrders: any[]
   agentAddress: string
