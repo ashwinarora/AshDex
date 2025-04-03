@@ -1,5 +1,6 @@
 'use client'
 import React, { useState, FC, useEffect, useRef } from 'react'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { toHumanNumber, truncateAddress } from '@/utils/utils'
@@ -18,19 +19,55 @@ import switchicon from '@/assets/images/switch_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
+import Link from 'next/link'
+
+type MenuItem = {
+  name: string
+  path: string
+}
 
 const Header: FC = () => {
+  const router = useRouter()
+  const pathname = usePathname()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const { isRendered } = useComponentRendered()
   const { data: balanceData } = useBalance({ address })
   const { toggleConnectWalletModal } = useWalletModal()
   const [isOpen, setIsOpen] = useState(false)
-  const [activeMenu, setActiveMenu] = useState<string>('Futures')
   const [notificationCount] = useState(5)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+
+  const desktopMenu: MenuItem[] = [
+    { name: 'Futures', path: '/' },
+    { name: 'Spot', path: '/spot' },
+    { name: 'Lend/Borrow', path: '/lendBorrow' },
+    { name: 'Predictions', path: '/predictions' },
+    { name: 'Stake', path: '/stake' },
+    { name: 'Vaults', path: '/vaults' }
+  ]
+
+  const mobileMenu: MenuItem[] = [
+    ...desktopMenu,
+    { name: 'Leaderboards', path: '/leaderboards' },
+    { name: 'Referrals', path: '/referrals' },
+    { name: 'Points', path: '/points' },
+    { name: 'Sub-accounts', path: '/sub-accounts' },
+    { name: 'Stats', path: '/stats' },
+    { name: 'Docs', path: '/docs' },
+    { name: 'Vocabulary for novices', path: '/vocabulary' },
+    { name: 'Settings', path: '/settings' }
+  ]
+
+  const activeMenu = pathname?.startsWith('/lendBorrow')
+    ? 'Lend/Borrow'
+    : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
+
+  const handleMenuClick = (path: string) => {
+    router.push(path)
+  }
 
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
@@ -81,30 +118,25 @@ const Header: FC = () => {
             Nexon
           </h1>
           <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center lg:space-x-1 xl:space-x-5">
-            {['Futures', 'Spot', 'Lend/Borrow', 'Predictions', 'Stake', 'Vaults'].map((menu) => (
-              <a
-                key={menu}
-                href="#"
-                onClick={() => setActiveMenu(menu)}
+            {desktopMenu?.map(({ name, path }) => (
+              <Link
+                key={name}
+                href={path}
+                onClick={() => handleMenuClick(path)}
                 className={`py-[5px] px-[16px] rounded-full transition-all duration-300
                   ${
-                    activeMenu === menu
+                    activeMenu === name
                       ? 'text-[#08030D] bg-[#E8E0F1]'
                       : 'hover:text-[#08030D] hover:bg-[#E8E0F1]'
                   }`}
               >
-                {menu}
-              </a>
+                {name}
+              </Link>
             ))}
 
             {/* More Dropdown */}
-            <button
-              className={`flex items-center gap-x-1.5 transition-all duration-300 
-                ${activeMenu === 'More' ? 'text-blue-500' : 'hover:text-blue-500'}`}
-              onClick={() => setActiveMenu('More')}
-            >
+            <button className={`flex items-center gap-x-1.5 transition-all duration-300 `}>
               More
-              {/* <FaChevronDown /> */}
             </button>
           </nav>
         </div>
@@ -263,35 +295,20 @@ const Header: FC = () => {
             </button>
           </div>
           <nav className="flex flex-start flex-col text-[#8B8BA0] text-sm items-center">
-            {[
-              'Futures',
-              'Spot',
-              'Lend/Borrow',
-              'Predictions',
-              'Stake',
-              'Vaults',
-              'Leaderboards',
-              'Referrals',
-              'Points',
-              'Sub-accounts',
-              'Stats',
-              'Docs',
-              'Vocabulary for novices',
-              'Settings'
-            ].map((menu) => (
-              <a
-                key={menu}
-                href="#"
-                onClick={() => setActiveMenu(menu)}
+            {mobileMenu?.map(({ name, path }) => (
+              <Link
+                key={name}
+                href={path}
+                onClick={() => handleMenuClick(path)}
                 className={`py-[5px] w-full px-[12px] mb-2 rounded-full transition-all duration-300
                   ${
-                    activeMenu === menu
+                    activeMenu === name
                       ? 'text-[#08030D] bg-[#E8E0F1]'
                       : 'hover:text-[#08030D] hover:bg-[#E8E0F1]'
                   }`}
               >
-                {menu}
-              </a>
+                {name}
+              </Link>
             ))}
           </nav>
         </div>
