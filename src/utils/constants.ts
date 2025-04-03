@@ -69,7 +69,7 @@ export const OPEN_ORDERS_FEATURE_COLUMNS = [
   { key: 'limitPrice', label: 'Limit Price' },
   { key: 'size', label: 'Size' },
   { key: 'orderID', label: 'Order ID' },
-  { key: 'timestamp	', label: 'Timestamp' },
+  { key: 'timestamp', label: 'Timestamp' },
   { key: 'originalsize', label: 'Original Size' }
 ] as const
 
