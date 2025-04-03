@@ -43,7 +43,7 @@ const Header: FC = () => {
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
     { name: 'Spot', path: '/spot' },
-    { name: 'Lend/Borrow', path: '/landBorrow' },
+    { name: 'Lend/Borrow', path: '/lendBorrow' },
     { name: 'Predictions', path: '/predictions' },
     { name: 'Stake', path: '/stake' },
     { name: 'Vaults', path: '/vaults' }
@@ -61,7 +61,9 @@ const Header: FC = () => {
     { name: 'Settings', path: '/settings' }
   ]
 
-  const activeMenu = mobileMenu?.find((item) => item?.path === pathname)?.name || 'Futures'
+  const activeMenu = pathname?.startsWith('/lendBorrow')
+    ? 'Lend/Borrow'
+    : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
 
   const handleMenuClick = (path: string) => {
     router.push(path)
