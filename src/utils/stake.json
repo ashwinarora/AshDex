@@ -1,0 +1,19 @@
+{
+  "stakingData": [
+    { "label": "Minimum staking period", "value": "30 days" },
+    { "label": "Maximum staking period", "value": "90 days" }
+  ],
+  "unstakeItems": [
+    { "amount": "1,500.00 HYPE", "arrive": "~7 days" },
+    { "amount": "10,000.00 HYPE", "arrive": "~3 days" },
+    { "amount": "828 HYPE", "arrive": "> 5 min" }
+  ],
+  "RewardHistoryData": [
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
+    { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" }
+  ]
+}
