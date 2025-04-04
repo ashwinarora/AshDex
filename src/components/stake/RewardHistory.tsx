@@ -6,13 +6,12 @@ interface RewardHistoryItem {
   amount: string
 }
 interface RewardHistoryProps {
-  RewardHistoryData: RewardHistoryItem[]
+  rewardHistoryData: RewardHistoryItem[]
 }
-const RewardHistory: React.FC<RewardHistoryProps> = ({ RewardHistoryData }) => {
+const RewardHistory: React.FC<RewardHistoryProps> = ({ rewardHistoryData }) => {
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
 
-  const totalPages = Math.ceil((RewardHistoryData?.length ?? 0) / pageSize)
+  const totalPages = Math.ceil((rewardHistoryData?.length ?? 0) / 10)
 
   const columns = [
     { key: 'time', label: 'Time' },
@@ -20,8 +19,8 @@ const RewardHistory: React.FC<RewardHistoryProps> = ({ RewardHistoryData }) => {
   ]
 
   const paginatedPositions = useMemo(() => {
-    return RewardHistoryData?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [RewardHistoryData, currentPage, pageSize])
+    return rewardHistoryData?.slice((currentPage - 1) * 10, currentPage * 10)
+  }, [rewardHistoryData, currentPage, 10])
 
   return (
     <div className="space-y-4">
@@ -58,13 +57,11 @@ const RewardHistory: React.FC<RewardHistoryProps> = ({ RewardHistoryData }) => {
         </div>
       </div>
 
-      {RewardHistoryData && RewardHistoryData?.length > 0 && (
+      {rewardHistoryData && rewardHistoryData?.length > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
           onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
         />
       )}
     </div>

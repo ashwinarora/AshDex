@@ -16,7 +16,7 @@ const StakeDetails = () => {
   const [isCross, setIsCross] = useState<boolean>(true)
   const [activeTab, setActiveTab] = useState('Unstake Queue')
   const { isConnected: isWalletConnected } = useAccount()
-  const { stakingData, unstakeItems, RewardHistoryData } = stake
+  const { stakingData, unstakeItems, rewardHistoryData, actionHistoryData } = stake
   const tabs = ['Reward History', 'Unstake Queue', 'Actions History']
 
   const RightSideSection = () => {
@@ -218,10 +218,12 @@ const StakeDetails = () => {
 
                   <div className="rounded-md">
                     {activeTab === 'Reward History' && (
-                      <RewardHistory RewardHistoryData={RewardHistoryData} />
+                      <RewardHistory rewardHistoryData={rewardHistoryData} />
                     )}
                     {activeTab === 'Unstake Queue' && <UnstakeQueue unstakeItems={unstakeItems} />}
-                    {activeTab === 'Actions History' && <ActionsHistory />}
+                    {activeTab === 'Actions History' && (
+                      <ActionsHistory actionHistoryData={actionHistoryData} />
+                    )}
                   </div>
                 </div>
               </>

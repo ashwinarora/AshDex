@@ -8,7 +8,7 @@
     { "amount": "10,000.00 HYPE", "arrive": "~3 days" },
     { "amount": "828 HYPE", "arrive": "> 5 min" }
   ],
-  "RewardHistoryData": [
+  "rewardHistoryData": [
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
@@ -333,5 +333,43 @@
     { "time": "2022-01-24", "value": 50 },
     { "time": "2022-01-25", "value": 60 },
     { "time": "2022-01-26", "value": 70 }
+  ],
+  "actionHistoryData": [
+    {
+      "time": "01/04/2025 12:31:52",
+      "action": "Reward",
+      "status": "Success",
+      "amountChange": "+$500"
+    },
+    {
+      "time": "02/04/2025 14:31:52",
+      "action": "Withdraw",
+      "status": "In progress",
+      "amountChange": "-$200"
+    },
+    {
+      "time": "03/04/2025 09:31:52",
+      "action": "Transfer",
+      "status": "Success",
+      "amountChange": "+$150"
+    },
+    {
+      "time": "04/04/2025 11:31:52",
+      "action": "Reward",
+      "status": "Success",
+      "amountChange": "+$1000"
+    },
+    {
+      "time": "05/04/2025 16:31:52",
+      "action": "Withdraw",
+      "status": "In progress",
+      "amountChange": "-$50"
+    },
+    {
+      "time": "06/04/2025 10:31:52",
+      "action": "Reward",
+      "status": "Success",
+      "amountChange": "+$300"
+    }
   ]
 }
