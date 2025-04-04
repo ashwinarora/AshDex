@@ -1,15 +1,22 @@
 'use client'
 
 import { FC } from 'react'
+import Image from 'next/image'
+import { useAccount } from 'wagmi'
+import { usePathname } from 'next/navigation'
+import { useWalletModal } from '@/context/WalletModalContext'
 import nexonLogo from '@/assets/images/logo.svg'
 import solarmoon from '@/assets/images/light_mode.svg'
 import roboticon from '@/assets/images/discord_icon.svg'
 import linkicon from '@/assets/images/telegram_icon.svg'
 import forwardicon from '@/assets/images/twitter_icon.svg'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
-import Image from 'next/image'
 
 const Footer: FC = () => {
+  const pathname = usePathname()
+  const { toggleConnectWalletModal } = useWalletModal()
+  const { isConnected } = useAccount()
+
   return (
     <footer
       className="bg-[#1b1122] border border-[#251A3C] rounded-2xl pt-0 p-5 md:p-8"
@@ -124,9 +131,14 @@ const Footer: FC = () => {
             <span className="ml-2 font-bold text-sm text-[#FFFFFF] hidden md:block">Bridge</span>
           </button>
 
-          <button className="bg-[#5F46F9] font-bold block text-[#FFFFFF] md:hidden text-xs px-[15px] py-[11px] rounded-lg">
-            Connect Wallet
-          </button>
+          {!isConnected ? (
+            <button
+              onClick={toggleConnectWalletModal}
+              className={`bg-[#5F46F9] font-bold block text-[#FFFFFF] ${pathname == '/spot' ? 'md:block' : 'md:hidden'} text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
+            >
+              Connect Wallet
+            </button>
+          ) : null}
         </div>
       </div>
 
@@ -135,7 +147,7 @@ const Footer: FC = () => {
         <div className="text-sm text-[#8B8BA0]">© 2025 Nexon, Inc.</div>
         <div>
           <span className="text-[#8B8BA0] text-sm mr-1">Created in</span>{' '}
-          <span className="text-[#8B8BA0] font-bold text-white">U1CORE</span>
+          <span className="text-[#8B8BA0] font-bold">U1CORE</span>
         </div>
       </div>
     </footer>
