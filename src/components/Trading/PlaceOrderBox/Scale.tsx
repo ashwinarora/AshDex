@@ -141,7 +141,7 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!universe) return
+    if (!universe.length) return
     if (!agentWallet) return
     if (!currentFeeApproval) return
     const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)

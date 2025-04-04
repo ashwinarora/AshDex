@@ -182,7 +182,7 @@ const OrderButton = ({
       }
       onClick={async () => {
         if (!agentWallet) return
-        if (!universe) return
+        if (!universe.length) return
         if (!currentFeeApproval) return
         const res = await sdk.exchange.updateLeverage(
           selectedAsset,

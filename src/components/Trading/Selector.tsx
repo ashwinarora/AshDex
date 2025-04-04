@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
-import { useTokenDetails } from '@/hooks/useTokenDetails'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
@@ -10,6 +9,8 @@ import starticon from '@/assets/images/star_icon.svg'
 import SearchIcon from '@/assets/images/search-normal.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
+import { getUniverseIndex } from '@/utils/utils'
+import ValueIndicator from '../common/ValueIndicator'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -17,14 +18,20 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, sdk } = useHyperLiquid()
-  const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
+  const { allMids, perpAssetContext, universe } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
+
+  const selectedAssetContext = useMemo(() => {
+    if (!universe.length) return
+    if (!perpAssetContext.length) return
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    return perpAssetContext[assetIndex]
+  }, [selectedAsset, perpAssetContext, universe])
 
   // Get and filter asset entries based on searchTerm and "PERP"
   const assetEntries = useMemo(
@@ -51,19 +58,32 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
-  const marketData = useMemo(
-    () => [
-      { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
+  const marketData = useMemo(() => {
+    const calculate24hChange = () => {
+      if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
+      const prevDayPrice = selectedAssetContext?.prevDayPx
+      const change = selectedAssetContext.midPx - prevDayPrice
+      const percentageChange = (change / prevDayPrice) * 100
+      const sign = change >= 0 ? '+' : ''
+      return `${sign}${change.toFixed(2)} (${sign}${percentageChange.toFixed(2)}%)`
+    }
+
+    const changeString = calculate24hChange()
+    return [
+      { label: '24h Change', value: changeString, color: 'text-[#2FA766]' },
       { label: '24h High', value: '$99,149.00' },
       { label: '24h Low', value: '$99,149.00' },
-      { label: '24h Volume (BTC)', value: tokenDetails?.volume ?? '0' },
-      { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
+      { label: '24h Volume (BTC)', value: selectedAssetContext?.dayBaseVlm ?? '0.00' },
+      { label: '24h Volume (USDT)', value: selectedAssetContext?.dayNtlVlm ?? '0.00' },
       { label: 'Market Cap', value: '$928B' },
-      { label: '1h Funding', value: tokenDetails?.funding ?? '0' },
+      {
+        label: '1h Funding',
+        value: selectedAssetContext?.funding ?? '0.00%',
+        color: 'text-[#2FA766]'
+      },
       { label: 'Next Funding', value: '27:57' }
-    ],
-    [tokenDetails]
-  )
+    ]
+  }, [selectedAssetContext])
 
   const settingsOptions = useMemo(
     () => [
@@ -152,12 +172,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </button>
         </div>
         <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-5 max-[576px]:border-r-0 border-r border-white/10 min-w-32">
-          <span className="text-xl font-normal text-[#E2464A]">
-            {selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
-          </span>
-          <span className="text-sm opacity-80 font-medium text-[#FFFFFF]">
-            ${selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
-          </span>
+          <ValueIndicator value={selectedAssetContext?.midPx} className="text-xl font-normal" />
         </div>
       </div>
 
