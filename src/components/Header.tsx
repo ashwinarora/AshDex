@@ -19,6 +19,7 @@ import switchicon from '@/assets/images/switch_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
+import Link from 'next/link'
 
 type MenuItem = {
   name: string
@@ -42,7 +43,7 @@ const Header: FC = () => {
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
     { name: 'Spot', path: '/spot' },
-    { name: 'Lend/Borrow', path: '/lend-borrow' },
+    { name: 'Lend/Borrow', path: '/lendBorrow' },
     { name: 'Predictions', path: '/predictions' },
     { name: 'Stake', path: '/stake' },
     { name: 'Vaults', path: '/vaults' }
@@ -60,7 +61,9 @@ const Header: FC = () => {
     { name: 'Settings', path: '/settings' }
   ]
 
-  const activeMenu = mobileMenu?.find((item) => item?.path === pathname)?.name || 'Futures'
+  const activeMenu = pathname?.startsWith('/lendBorrow')
+    ? 'Lend/Borrow'
+    : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
 
   const handleMenuClick = (path: string) => {
     router.push(path)
@@ -116,9 +119,9 @@ const Header: FC = () => {
           </h1>
           <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center lg:space-x-1 xl:space-x-5">
             {desktopMenu?.map(({ name, path }) => (
-              <a
+              <Link
                 key={name}
-                href="#"
+                href={path}
                 onClick={() => handleMenuClick(path)}
                 className={`py-[5px] px-[16px] rounded-full transition-all duration-300
                   ${
@@ -128,7 +131,7 @@ const Header: FC = () => {
                   }`}
               >
                 {name}
-              </a>
+              </Link>
             ))}
 
             {/* More Dropdown */}
@@ -293,9 +296,9 @@ const Header: FC = () => {
           </div>
           <nav className="flex flex-start flex-col text-[#8B8BA0] text-sm items-center">
             {mobileMenu?.map(({ name, path }) => (
-              <a
+              <Link
                 key={name}
-                href="#"
+                href={path}
                 onClick={() => handleMenuClick(path)}
                 className={`py-[5px] w-full px-[12px] mb-2 rounded-full transition-all duration-300
                   ${
@@ -305,7 +308,7 @@ const Header: FC = () => {
                   }`}
               >
                 {name}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>

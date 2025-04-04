@@ -4,10 +4,13 @@ import { HyperLiquidProvider } from '@/context/HyperLiquid'
 import Header from '@/components/Header'
 import { Provider } from './provider'
 import Footer from '@/components/Footer'
-import './globals.css'
-import '@/styles/table.css'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import ConnectWalletModal from '@/components/ConnectWalletModal'
+import { ToastProvider } from '../context/ToastContext'
+import Toaster from '@/components/common/Toaster'
+import FavoriteStrip from '@/components/FavoriteStrip'
+import './globals.css'
+import '@/styles/table.css'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -35,12 +38,16 @@ export default function RootLayout({
         <Provider>
           <HyperLiquidProvider>
             <WalletModalProvider>
-              <ConnectWalletModal />
-              <Header />
-              {children}
-              <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
-                <Footer />
-              </div>
+              <ToastProvider>
+                <Toaster />
+                <ConnectWalletModal />
+                <Header />
+                <FavoriteStrip />
+                {children}
+                <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
+                  <Footer />
+                </div>
+              </ToastProvider>
             </WalletModalProvider>
           </HyperLiquidProvider>
         </Provider>

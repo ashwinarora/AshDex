@@ -1,0 +1,269 @@
+{
+  "lendBorrow": {
+    "cardData": [
+      {
+        "icon": "chart_icon",
+        "title": "Total Market Size",
+        "value": "$242.41 Mn",
+        "change": "+ $2.41",
+        "changeColor": "text-[#2FA766]"
+      },
+      {
+        "icon": "wallet_icon_2",
+        "title": "Total Available",
+        "value": "$83.41 Mn",
+        "change": "- $0.41",
+        "changeColor": "text-[#E2464A]"
+      },
+      {
+        "icon": "mdi_bank",
+        "title": "Total Borrowed",
+        "value": "$242.41 Mn",
+        "change": "+ $0.1",
+        "changeColor": "text-[#2FA766]"
+      }
+    ],
+    "tableData": [
+      {
+        "coin": "BTC/USDT 1",
+        "entryPx": "40100.00",
+        "markPx": "40600.00",
+        "cumFunding": { "allTime": "0.00500" },
+        "szi": "0.12",
+        "unrealizedPnl": "-45.00",
+        "liquidationPx": "38100.00",
+        "leverage": { "value": "10x" }
+      },
+      {
+        "coin": "BTC/USDT 2",
+        "entryPx": "40200.00",
+        "markPx": "40700.00",
+        "cumFunding": { "allTime": "0.01000" },
+        "szi": "0.14",
+        "unrealizedPnl": "-40.00",
+        "liquidationPx": "38200.00",
+        "leverage": { "value": "5x" }
+      },
+      {
+        "coin": "BTC/USDT 3",
+        "entryPx": "40300.00",
+        "markPx": "40800.00",
+        "cumFunding": { "allTime": "0.01500" },
+        "szi": "0.16",
+        "unrealizedPnl": "-35.00",
+        "liquidationPx": "38300.00",
+        "leverage": { "value": "10x" }
+      },
+      {
+        "coin": "BTC/USDT 4",
+        "entryPx": "40400.00",
+        "markPx": "40900.00",
+        "cumFunding": { "allTime": "0.02000" },
+        "szi": "0.18",
+        "unrealizedPnl": "-30.00",
+        "liquidationPx": "38400.00",
+        "leverage": { "value": "5x" }
+      },
+      {
+        "coin": "BTC/USDT 5",
+        "entryPx": "40500.00",
+        "markPx": "41000.00",
+        "cumFunding": { "allTime": "0.02500" },
+        "szi": "0.20",
+        "unrealizedPnl": "-25.00",
+        "liquidationPx": "38500.00",
+        "leverage": { "value": "10x" }
+      },
+      {
+        "coin": "BTC/USDT 6",
+        "entryPx": "40600.00",
+        "markPx": "41100.00",
+        "cumFunding": { "allTime": "0.03000" },
+        "szi": "0.22",
+        "unrealizedPnl": "-20.00",
+        "liquidationPx": "38600.00",
+        "leverage": { "value": "5x" }
+      },
+      {
+        "coin": "BTC/USDT 7",
+        "entryPx": "40700.00",
+        "markPx": "41200.00",
+        "cumFunding": { "allTime": "0.03500" },
+        "szi": "0.24",
+        "unrealizedPnl": "-15.00",
+        "liquidationPx": "38700.00",
+        "leverage": { "value": "10x" }
+      },
+      {
+        "coin": "BTC/USDT 8",
+        "entryPx": "40800.00",
+        "markPx": "41300.00",
+        "cumFunding": { "allTime": "0.04000" },
+        "szi": "0.26",
+        "unrealizedPnl": "-10.00",
+        "liquidationPx": "38800.00",
+        "leverage": { "value": "5x" }
+      },
+      {
+        "coin": "BTC/USDT 9",
+        "entryPx": "40900.00",
+        "markPx": "41400.00",
+        "cumFunding": { "allTime": "0.04500" },
+        "szi": "0.28",
+        "unrealizedPnl": "-5.00",
+        "liquidationPx": "38900.00",
+        "leverage": { "value": "10x" }
+      },
+      {
+        "coin": "BTC/USDT 10",
+        "entryPx": "41000.00",
+        "markPx": "41500.00",
+        "cumFunding": { "allTime": "0.05000" },
+        "szi": "0.30",
+        "unrealizedPnl": "0.00",
+        "liquidationPx": "39000.00",
+        "leverage": { "value": "5x" }
+      }
+    ],
+    "headerAssets": [
+      {
+        "title": "Reserve Size",
+        "subtitle": "$87,219.48"
+      },
+      {
+        "title": "Available Liquidity",
+        "subtitle": "$37,789.85"
+      },
+      {
+        "title": "Utilization rate",
+        "subtitle": "80.00%"
+      },
+      {
+        "title": "Oracle Price",
+        "subtitle": "$2,370.00"
+      }
+    ],
+    "supplyInfo": [
+      {
+        "label": "Total Supplied",
+        "value": "$87.08K",
+        "difference": "36.74"
+      },
+      {
+        "label": "Supply APY",
+        "value": "0.72%"
+      },
+      {
+        "label": "MAX LTV",
+        "value": "80.00%"
+      },
+      {
+        "label": "Liquidation Threshold",
+        "value": "82.56%"
+      },
+      {
+        "label": "Liquidation Bonus",
+        "value": "5%"
+      }
+    ],
+    "borrowInfo": [
+      {
+        "label": "Total Borrowed",
+        "value": "$87.08K",
+        "difference": "36.74"
+      },
+      {
+        "label": "Borrow APY",
+        "value": "0.72%"
+      },
+      {
+        "label": "Liquidation Penalty",
+        "value": "5%"
+      }
+    ],
+    "eModeInfoDesc": [
+      "E-Mode increases your LTV for a selected category of assets, meaning that when E-Mode is enabled, you will have higher borrowing power over assets of the same E-Mode category which are defined by ZeroLend Governance. You can enter E-Mode from your Dashboard. To learn more about E-Mode and applied restrictions in."
+    ],
+    "eModeInfo": [
+      {
+        "label": "E-Mode Category",
+        "value": "ETH correlated"
+      },
+      {
+        "label": "Max LTV",
+        "value": "95.00%"
+      },
+      {
+        "label": "Liquidation Threshold",
+        "value": "97.50%"
+      },
+      {
+        "label": "Liquidation Penalty",
+        "value": "1.00%"
+      }
+    ],
+    "supplyChartData": [
+      { "time": "2022-01-17", "value": 0 },
+      { "time": "2022-01-18", "value": 8 },
+      { "time": "2022-01-19", "value": 10 },
+      { "time": "2022-01-20", "value": 20 },
+      { "time": "2022-01-21", "value": 3 },
+      { "time": "2022-01-22", "value": 43 },
+      { "time": "2022-01-23", "value": 41 },
+      { "time": "2022-01-24", "value": 43 },
+      { "time": "2022-01-25", "value": 56 },
+      { "time": "2022-01-26", "value": 46 }
+    ],
+    "borrowChartData": [
+      { "time": "2022-01-17", "value": 5 },
+      { "time": "2022-01-18", "value": 12 },
+      { "time": "2022-01-19", "value": 15 },
+      { "time": "2022-01-20", "value": 25 },
+      { "time": "2022-01-21", "value": 7 },
+      { "time": "2022-01-22", "value": 35 },
+      { "time": "2022-01-23", "value": 38 },
+      { "time": "2022-01-24", "value": 50 },
+      { "time": "2022-01-25", "value": 60 },
+      { "time": "2022-01-26", "value": 70 }
+    ],
+    "yourSuppliesAndBorrows": [
+      { "name": "WETH", "amount": "$100", "icon": "wethicon" },
+      { "name": "EZETH", "amount": "$5", "icon": "ethicon" },
+      { "name": "SOLVBTC.M", "amount": "$91", "icon": "wethicon" },
+      { "name": "ETH", "amount": "$23", "icon": "ethicon" },
+      { "name": "BTC", "amount": "$75", "icon": "wethicon" },
+      { "name": "USDT", "amount": "$50", "icon": "ethicon" },
+      { "name": "DAI", "amount": "$18", "icon": "wethicon" },
+      { "name": "USDC", "amount": "$33", "icon": "ethicon" },
+      { "name": "MATIC", "amount": "$45", "icon": "wethicon" },
+      { "name": "BNB", "amount": "$67", "icon": "ethicon" }
+    ],
+    "supplyAndBorrowTabData": [
+      {
+        "tab": "Supply",
+        "apy": "0.72%",
+        "collateralization": "Enabled",
+        "healthFactor": "∞"
+      },
+      {
+        "tab": "Borrow",
+        "apy": "-2.54%",
+        "healthFactor": "∞"
+      }
+    ],
+    "withdrawAndRepayData": [
+      {
+        "tab": "Withdraw",
+        "balance": "0",
+        "limit": "$0",
+        "dailyearnings": "$0"
+      },
+      {
+        "tab": "Repay",
+        "balance": "0",
+        "limit": "$0",
+        "dailyearnings": "$0"
+      }
+    ]
+  }
+}
