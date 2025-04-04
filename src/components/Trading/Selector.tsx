@@ -23,11 +23,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
-  const [selectAsset, setSeletAsset] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
 
-  // Get all asset entries and filter by search term and "PERP" (ignoring keys starting with '@')
+  // Get and filter asset entries based on searchTerm and "PERP"
   const assetEntries = useMemo(
     () =>
       Object.entries(allMids)
@@ -37,7 +36,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     [allMids, searchTerm]
   )
 
-  // In this refactored version, we use the full filtered list of assets.
+  // Use the full filtered list of assets
   const filteredAssets = assetEntries.filter(([key]) =>
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -101,6 +100,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const handleAssetSelect = (assetKey: string) => {
+    setSelectedAsset(assetKey)
+    setIsOpen(false)
+    setSearchTerm('')
+  }
 
   return (
     <div
@@ -249,31 +254,19 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             <div className="overflow-y-auto max-h-96 sm:w-full w-[200%]">
               {filteredAssets.length > 0 ? (
                 filteredAssets.map(([key, value]) => (
-                  <AssetItem
-                    key={key}
-                    assetKey={key}
-                    value={value}
-                    selectedAsset={selectAsset}
-                    setSelectedAsset={setSeletAsset}
-                  />
+                  <div key={key} onClick={() => handleAssetSelect(key)}>
+                    <AssetItem
+                      assetKey={key}
+                      value={value}
+                      selectedAsset={selectedAsset}
+                      setSelectedAsset={() => handleAssetSelect(key)}
+                    />
+                  </div>
                 ))
               ) : (
                 <div className="p-4 text-center text-gray-400">No assets found.</div>
               )}
             </div>
-          </div>
-
-          <div className="m-3 border-t border-[#FFFFFF0F]">
-            <button
-              className="bg-[#5F46F9] w-full rounded-xl py-2 hover:bg-purple-600 mt-3 cursor-pointer"
-              onClick={() => {
-                setSearchTerm('')
-                setIsOpen(false)
-                setSelectedAsset(selectAsset || '')
-              }}
-            >
-              Apply
-            </button>
           </div>
         </div>
       )}
