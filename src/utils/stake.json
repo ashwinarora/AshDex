@@ -15,5 +15,323 @@
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" },
     { "time": "03/03/2025 12:31:52", "amount": "1.28 HYPE" }
+  ],
+  "validatorTableData": [
+    {
+      "validator": "Nexon Node",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "totalStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "3,456,283.42 HYPE",
+      "apy": "2.85%"
+    },
+    {
+      "validator": "Nexon Node",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "totalStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "3,456,283.42 HYPE",
+      "apy": "2.85%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "3,456,283.42 HYPE",
+      "apy": "2.85%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "totalStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%"
+    }
+  ],
+  "myStakingTableData": [
+    {
+      "validator": "Nexon Node",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "yourStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nexon Node",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "yourStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    }
+  ],
+  "allValidatorsTableData": [
+    {
+      "validator": "Nexon Node",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "yourStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nexon Node",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Active",
+      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "infinitefield.xyz",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Offline",
+      "description": "HypurCollective is a cornerstone of the Hyperliquid community, bringing together founders, builders, traders, and power users to drive meaningful impact.",
+      "yourStaked": "5,293,283.11 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "HyperNode",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Offline",
+      "description": "HyperNode has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "3,456,283.42 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    },
+    {
+      "validator": "Nansen x HypurCollective",
+      "totalStaked": "1,498,283.92 HYPE",
+      "status": "Active",
+      "description": "Nansen x HypurCollective has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "yourStaked": "1,498,283.92 HYPE",
+      "apy": "3.11%",
+      "earnedAlltime": "798.24 HYPE",
+      "upTime": "99.97%",
+      "globalApr": "2.94%",
+      "fee": "5.00%"
+    }
+  ],
+  "chartData": [
+    { "time": "2022-01-17", "value": 5 },
+    { "time": "2022-01-18", "value": 12 },
+    { "time": "2022-01-19", "value": 15 },
+    { "time": "2022-01-20", "value": 25 },
+    { "time": "2022-01-21", "value": 7 },
+    { "time": "2022-01-22", "value": 35 },
+    { "time": "2022-01-23", "value": 38 },
+    { "time": "2022-01-24", "value": 50 },
+    { "time": "2022-01-25", "value": 60 },
+    { "time": "2022-01-26", "value": 70 }
   ]
 }

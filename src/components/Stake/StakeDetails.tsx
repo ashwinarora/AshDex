@@ -12,7 +12,7 @@ import UnstakeQueue from './UnstakeQueue'
 import RewardHistory from './RewardHistory'
 import ActionsHistory from './ActionsHistory'
 
-const Index = () => {
+const StakeDetails = () => {
   const [isCross, setIsCross] = useState<boolean>(true)
   const [activeTab, setActiveTab] = useState('Unstake Queue')
   const { isConnected: isWalletConnected } = useAccount()
@@ -241,4 +241,4 @@ const Index = () => {
   )
 }
 
-export default Index
+export default StakeDetails

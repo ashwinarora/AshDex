@@ -135,3 +135,39 @@ With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported
 
 With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported both the Lightning Network, a second-layer infrastructure for payment channels, and Segregated Witness, a soft-fork to increase the number of transactions on a block, as solutions to network scalability.
 `
+
+export const STAKE_TABS = [
+  { id: 'view', name: 'View:' },
+  { id: 'simple', name: 'Simple' },
+  { id: 'advanced', name: 'Advanced' },
+  { id: 'period', name: 'Period:' }
+] as const
+
+export const STAKE_INITIAL_COLUMNS = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'totalStaked', label: 'Total staked' },
+  { key: 'apy', label: 'Est. APY' }
+]
+
+export const STAKE_MYSTAKINGS_COLUMN = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'upTime', label: 'Uptime' },
+  { key: 'globalApr', label: 'Global APR' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'apy', label: 'Est. APY' },
+  { key: 'yourStaked', label: 'Your Staked' },
+  { key: 'earnedAlltime', label: 'Earned, All time' }
+] as const
+
+export const STAKE_ALLVALIDATORS_COLUMN = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'totalStaked', label: 'Total staked' },
+  { key: 'upTime', label: 'Uptime' },
+  { key: 'globalApr', label: 'Global APR' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'apy', label: 'Est. APY' },
+  { key: 'yourStaked', label: 'Your Staked' },
+  { key: 'earnedAlltime', label: 'Earned, All time' }
+] as const
+
+export const STAKE_SHOWINFOICON = ['upTime', 'globalApr', 'fee', 'apy'] as const
