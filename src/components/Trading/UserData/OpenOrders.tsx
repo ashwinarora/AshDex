@@ -107,7 +107,11 @@ const OpenOrders = () => {
       })
     })
     return () => {
-      sdk.subscriptions.unsubscribeFromUserOrders()
+      if (sdk.subscriptions.unsubscribeFromUserOrders) {
+        sdk.subscriptions.unsubscribeFromUserOrders()
+      } else {
+        console.warn('unsubscribeFromUserOrders is not available in the SDK.')
+      }
     }
   }, [sdk, address, queryClient])
 

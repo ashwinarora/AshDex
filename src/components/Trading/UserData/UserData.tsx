@@ -15,7 +15,10 @@ const UserData = () => {
   const { clearingHouseState } = useHyperLiquid()
   const { data: openOrders } = useQuery<Order[]>({
     queryKey: ['openOrders', address],
-    enabled: false,
+    queryFn: async () => {
+      return []
+    },
+    enabled: !!address,
     initialData: []
   })
 
@@ -23,7 +26,7 @@ const UserData = () => {
   const tabs = [
     'Balances',
     `Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`,
-    `Open Orders (${openOrders.length})`,
+    `Open Orders (${openOrders?.length})`,
     'TWAP',
     'Trade History',
     'Orders History',
