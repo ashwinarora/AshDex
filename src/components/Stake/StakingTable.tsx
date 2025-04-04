@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useAccount } from 'wagmi'
 import Pagination from '../common/Pagination'
+import Tooltip from '../common/Tooltip'
 import {
   STAKE_TABS,
   STAKE_MYSTAKINGS_COLUMN,
@@ -10,6 +11,7 @@ import {
   STAKE_SHOWINFOICON,
   STAKE_INITIAL_COLUMNS
 } from '@/utils/constants'
+import { getTooltipContent } from '@/utils/utils'
 import stakesData from '@/utils/stake.json'
 import DropDown from '@/assets/images/tabler_chevron-down.svg'
 import infoicon from '@/assets/images/info_icon.svg'
@@ -27,8 +29,8 @@ function StakingTable() {
   const [activeType, setActiveType] = useState<StakeType>('My Stakings')
   const [columns, setColumns] = useState(STAKE_INITIAL_COLUMNS)
   const [rows, setRows] = useState(validatorTableData)
-
-  const totalPages = Math.ceil((rows?.length ?? 0) / 10)
+  const rowsPerPage = isConnected ? 5 : 10
+  const totalPages = Math.ceil((rows?.length ?? 0) / rowsPerPage)
 
   const handleRowClick = (index: number) => {
     router.push(`/stake/stakeDetails?id=${index}`)
@@ -68,7 +70,6 @@ function StakingTable() {
     setRows(updatedRows)
   }, [isConnected, activeType, activeTab])
 
-  const rowsPerPage = isConnected ? 5 : 10
   const paginatedStaking = useMemo(() => {
     return rows?.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage)
   }, [rows, currentPage])
@@ -112,7 +113,7 @@ function StakingTable() {
         ) : (
           <p className="text-[#FFFFFF] tracking-normal font-semibold text-base">Validators</p>
         )}
-        <div className="flex flex-wrap items-center overflow-hidden gap-x-3 text-white text-sm">
+        <div className="flex flex-wrap items-center gap-x-3 text-white text-sm">
           {STAKE_TABS?.map((item) => (
             <button
               key={item?.id}
@@ -130,10 +131,12 @@ function StakingTable() {
               {item?.name}
             </button>
           ))}
-          <span className="font-semibold border-white/10 bg-white/10 rounded-2xl py-2.5 text-white px-4.5 text-sm flex justify-between items-center">
-            {'All Time'}
-            <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
-          </span>
+          <Tooltip content={getTooltipContent('allTime')}>
+            <button className="cursor-pointer font-semibold border-white/10 bg-white/10 rounded-2xl py-2.5 text-white px-4.5 text-sm flex justify-between items-center">
+              <span>All Time</span>
+              <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
+            </button>
+          </Tooltip>
         </div>
       </div>
       {/* table  */}
@@ -149,7 +152,9 @@ function StakingTable() {
                   <div className="flex justify-start items-center gap-1">
                     <span>{col.label}</span>
                     {STAKE_SHOWINFOICON?.includes(col?.key as SpecialColumnKeys) && (
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Tooltip content={getTooltipContent(col?.key)}>
+                        <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      </Tooltip>
                     )}
                   </div>
                 </th>

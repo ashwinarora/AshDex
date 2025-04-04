@@ -171,3 +171,36 @@ export const STAKE_ALLVALIDATORS_COLUMN = [
 ] as const
 
 export const STAKE_SHOWINFOICON = ['upTime', 'globalApr', 'fee', 'apy'] as const
+
+export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [
+  {
+    key: 'allTime',
+    content:
+      'Estimated annual return with daily auto-compounding based on validator recent performance. Calculated over the selected period (All time), accounting for auto-compounding, validator uptime, fee changes, and fluctuations in global rewards.'
+  },
+  {
+    key: 'avgApy',
+    content:
+      'The Average Annual Percentage Yield (APY)  across all your validators, adjusted for their uptime and fees. Reflects the actual yearly return including auto-compounded rewards.'
+  },
+  {
+    key: 'apy',
+    content:
+      'Estimated annual return with daily auto-compounding, based on validator uptime, fee, and recent global APR'
+  },
+  {
+    key: 'upTime',
+    content:
+      'Validator’s availability over the selected period. Higher uptime = more consistent rewards.'
+  },
+  {
+    key: 'globalApr',
+    content:
+      'Network-wide APR (Annual Percentage Rate) assuming 0% commission and 100% uptime. Used as the base rate for calculating Est. APY.'
+  },
+  {
+    key: 'fee',
+    content:
+      'Percentage of rewards retained by the validator. Lower fees = higher net rewards for you.'
+  }
+] as const

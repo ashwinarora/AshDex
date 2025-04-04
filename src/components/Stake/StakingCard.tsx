@@ -4,6 +4,8 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { createChart, IChartApi, ISeriesApi, AreaData, AreaSeries } from 'lightweight-charts'
 import { useWalletModal } from '@/context/WalletModalContext'
+import Tooltip from '../common/Tooltip'
+import { getTooltipContent } from '@/utils/utils'
 import stakesData from '@/utils/stake.json'
 import walleticon from '@/assets/images/wallet_icon.svg'
 import DropDown from '@/assets/images/tabler_chevron-down.svg'
@@ -78,7 +80,9 @@ const StakingCard = () => {
               <div>
                 <p className="text-sm flex gap-x-[4px] items-center tracking-normal font-medium text-[#8B8BA0]">
                   Avg. APY
-                  <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                  <Tooltip content={getTooltipContent('avgApy')}>
+                    <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                  </Tooltip>
                 </p>
                 <p className="text-xl mt-1 text-[#FFFFFF] font-medium">2.83%</p>
               </div>
