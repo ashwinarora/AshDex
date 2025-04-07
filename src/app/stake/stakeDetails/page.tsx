@@ -1,4 +1,4 @@
-'user client'
+'use client'
 import React from 'react'
 import StakeDetails from '@/components/Stake/StakeDetails'
 function page() {
