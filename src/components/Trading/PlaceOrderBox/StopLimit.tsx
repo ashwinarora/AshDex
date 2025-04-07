@@ -70,7 +70,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
         isBuy={isBuy}
         isCross={isCross}
         isPostOnly={false}
-        isReduceOnly={false}
+        isReduceOnly={isReduceOnly}
         leverage={leverage}
         amount={amount}
         limitPrice={limitPrice}
