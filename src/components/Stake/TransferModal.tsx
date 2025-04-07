@@ -8,12 +8,12 @@ import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 
 function TransferModal() {
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
+  const { isTransferModalOpen, toggleTransferModal } = useWalletModal()
   const handleCloseModal = () => {
-    toggleConnectWalletModal()
+    toggleTransferModal()
   }
   return (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+    <Modal isOpen={isTransferModalOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full border-[2px] bg-[#0F0816] max-w-lg p-6 rounded-2xl shadow-lg"

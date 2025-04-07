@@ -10,7 +10,7 @@ type StakingInfoProps = {
 }
 
 const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { isTransferModalOpen, toggleTransferModal } = useWalletModal()
 
   const handleViewHistory = () => {
     if (setIsViewHistory) {
@@ -43,7 +43,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
           <p className="text-[#8B8BA0] font-medium text-sm">Available Staking Balance</p>
           <p className="text-xl font-medium text-[#FFFFFF]">95,123.24 HYPE</p>
           <button
-            onClick={toggleConnectWalletModal}
+            onClick={toggleTransferModal}
             className="w-full text-sm my-3 bg-[#5F46F9] cursor-pointer text-[#FFFFFF] py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
           >
             Spot{' '}
@@ -75,7 +75,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
           View Actions history
         </button>
       </div>
-      <TransferModal />
+      {isTransferModalOpen && <TransferModal />}
     </>
   )
 }

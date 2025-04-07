@@ -9,7 +9,6 @@ import ViewHistory from '../Stake/ViewHistory'
 function Stakes() {
   const { isConnected } = useAccount()
   const [isViewHistory, setIsViewHistory] = useState(false)
-
   return (
     <div className="bg-[#0d021f] p-4 overflow-x-hidden">
       <div
@@ -19,23 +18,20 @@ function Stakes() {
             : 'flex justify-center items-center'
         }`}
       >
-        {isViewHistory ? (
-          <div className="w-1/2">
+        <div className={`${isConnected && !isViewHistory ? 'lg:col-span-3 w-full' : 'w-1/2'}`}>
+          {isViewHistory ? (
             <ViewHistory setIsViewHistory={setIsViewHistory} />
-          </div>
-        ) : (
-          <>
-            <div className={`${isConnected ? 'lg:col-span-3 w-full' : 'w-1/2'}`}>
+          ) : (
+            <>
               <StakingCard />
               <StakingTable />
-            </div>
-
-            {isConnected && (
-              <div className="lg:col-span-1 w-full">
-                <StakingInfo setIsViewHistory={setIsViewHistory} />
-              </div>
-            )}
-          </>
+            </>
+          )}
+        </div>
+        {isConnected && !isViewHistory && (
+          <div className="lg:col-span-1 w-full">
+            <StakingInfo setIsViewHistory={setIsViewHistory} />
+          </div>
         )}
       </div>
     </div>
