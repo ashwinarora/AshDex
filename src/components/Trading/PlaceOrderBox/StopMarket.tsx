@@ -56,7 +56,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
         isReduceOnly={false}
         leverage={leverage}
         amount={amount}
-        limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9) }
+        limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
         stopOrder={{
           isMarket: false,
           tpsl: 'sl',

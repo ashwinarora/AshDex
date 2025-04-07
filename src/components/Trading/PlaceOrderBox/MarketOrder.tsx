@@ -49,7 +49,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}
-            limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9) }
+            limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
             amount={amount}
             leverage={leverage}
             isCross={isCross}
