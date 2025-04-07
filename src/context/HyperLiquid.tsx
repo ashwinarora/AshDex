@@ -17,8 +17,9 @@ interface HyperLiquidContextProps {
   allMids: PriceMap
   agentWallet?: PrivateKeyAccount
   hyperliquidAxios: AxiosInstance
-  universe?: MetaData[]
+  universe: MetaData[]
   clearingHouseState?: IClearingHouseState
+  perpAssetContext: IWebData2['assetCtxs']
   isTestnet: boolean
 }
 
@@ -28,8 +29,9 @@ const initialValue = {
   allMids: {},
   agentWallet: undefined,
   hyperliquidAxios: mainnetAxios,
-  universe: undefined,
+  universe: [],
   clearingHouseState: undefined,
+  perpAssetContext: [],
   isTestnet: true
 }
 
@@ -46,6 +48,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
   const [allMids, setAllMids] = useState<PriceMap>({})
+  const [perpAssetContext, setPerpAssetContext] = useState<IWebData2['assetCtxs']>([])
   const queryClient = useQueryClient()
 
   const privateKey = useMemo(() => {
@@ -81,7 +84,8 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       const res = await sdk.info.perpetuals.getMeta()
       return res.universe as MetaData[]
     },
-    enabled: !!sdk || !!isSdkConnected
+    enabled: !!sdk || !!isSdkConnected,
+    initialData: []
   })
 
   const isTestnet = useMemo(() => {
@@ -153,8 +157,10 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (!address) return
     console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
-      const { clearinghouseState } = data
+      console.log('webdata2', data)
+      const { clearinghouseState, assetCtxs } = data
       queryClient.setQueryData(['clearingHouseState', address], clearinghouseState)
+      setPerpAssetContext(assetCtxs)
     })
     return () => {
       sdk.subscriptions.unsubscribeFromWebData2()
@@ -171,6 +177,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         hyperliquidAxios,
         universe,
         clearingHouseState,
+        perpAssetContext,
         isTestnet
       }}
     >

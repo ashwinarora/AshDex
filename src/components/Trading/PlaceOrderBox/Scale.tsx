@@ -13,10 +13,7 @@ import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
-
-interface ScaleProps {
-  selectedAsset: string
-}
+import { IPlaceOrderProps } from '.'
 
 interface Order {
   price: number
@@ -61,7 +58,7 @@ function calculateScaleOrders(
   return orders
 }
 
-const Scale = ({ selectedAsset }: ScaleProps) => {
+const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const { universe, agentWallet, hyperliquidAxios, clearingHouseState } = useHyperLiquid()
   const { address, chain, isConnected: isWalletConnected } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
@@ -141,7 +138,7 @@ const Scale = ({ selectedAsset }: ScaleProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!universe) return
+    if (!universe.length) return
     if (!agentWallet) return
     if (!currentFeeApproval) return
     const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)

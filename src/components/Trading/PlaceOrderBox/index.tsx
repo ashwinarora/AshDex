@@ -5,11 +5,13 @@ import MarketOrder from './MarketOrder'
 import TWAP from './TWAP'
 import Scale from './Scale'
 import CustomSelector from './CustomSelector'
+import StopLimit from './StopLimit'
+import StopMarket from './StopMarket'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE'
+type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
 
-interface IPlaceOrderProps {
+export interface IPlaceOrderProps {
   selectedAsset: string
 }
 
@@ -26,6 +28,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return <TWAP selectedAsset={selectedAsset} />
       case 'SCALE':
         return <Scale selectedAsset={selectedAsset} />
+      case 'STOP_LIMIT':
+        return <StopLimit selectedAsset={selectedAsset} />
+      case 'STOP_MARKET':
+        return <StopMarket selectedAsset={selectedAsset} />
       default:
         return null
     }
@@ -62,7 +68,9 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <CustomSelector
             options={[
               { value: 'TWAP', label: 'TWAP' },
-              { value: 'SCALE', label: 'SCALE' }
+              { value: 'SCALE', label: 'SCALE' },
+              { value: 'STOP_LIMIT', label: 'Stop Limit' },
+              { value: 'STOP_MARKET', label: 'Stop Market' }
             ]}
             selectedValue={activeTab}
             onChange={(value) => {

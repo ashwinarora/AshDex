@@ -6,12 +6,9 @@ import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
 import CheckBox from '@/components/common/CheckBox'
 import TPSL, { TPSLType } from './components/TPSL'
+import { IPlaceOrderProps } from '.'
 
-interface LimitOrderProps {
-  selectedAsset: string
-}
-
-const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProps) => {
+const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<number>(0)
   const [amount, setAmount] = useState<number>(0)
