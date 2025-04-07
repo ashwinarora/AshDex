@@ -1,6 +1,6 @@
 'use client'
-
-import { useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useState } from 'react'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
@@ -10,12 +10,15 @@ import { useAccount } from 'wagmi'
 import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 const UserData = () => {
+  const pathname = usePathname()
   const { address } = useAccount()
-  const [activeTab, setActiveTab] = useState(1)
   const { clearingHouseState } = useHyperLiquid()
   const { data: openOrders } = useQuery<Order[]>({
     queryKey: ['openOrders', address],
-    enabled: false,
+    queryFn: async () => {
+      return []
+    },
+    enabled: !!address,
     initialData: []
   })
 
@@ -23,12 +26,23 @@ const UserData = () => {
   const tabs = [
     'Balances',
     `Positions ${positionsCount > 0 ? ' (' + positionsCount + ')' : ''}`,
-    `Open Orders (${openOrders.length})`,
+    `Open Orders (${openOrders?.length})`,
     'TWAP',
     'Trade History',
     'Orders History',
     'Funding History'
   ] as const
+
+  const getDefaultTab = useCallback(() => {
+    if (pathname === '/spot') return 1
+    return 1
+  }, [pathname])
+
+  const [activeTab, setActiveTab] = useState<number>(getDefaultTab)
+
+  useEffect(() => {
+    setActiveTab(getDefaultTab)
+  }, [pathname, getDefaultTab])
 
   return (
     <div className="w-full">
@@ -51,15 +65,9 @@ const UserData = () => {
       </div>
 
       <div className="mt-3 mb-6 w-full">
-        <div className={activeTab === 0 ? '' : 'hidden'}>
-          <Balances />
-        </div>
-        <div className={activeTab === 1 ? '' : 'hidden'}>
-          <Positions />
-        </div>
-        <div className={activeTab === 2 ? '' : 'hidden'}>
-          <OpenOrders />
-        </div>
+        {activeTab === 0 && <Balances />}
+        {pathname !== '/spot' && activeTab === 1 && <Positions />}
+        {activeTab === (pathname === '/spot' ? 1 : 2) && <OpenOrders />}
       </div>
     </div>
   )

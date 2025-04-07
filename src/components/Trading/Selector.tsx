@@ -9,7 +9,6 @@ import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import starticon from '@/assets/images/star_icon.svg'
 import Pagination from '../common/Pagination'
 import SearchIcon from '@/assets/images/search-normal.svg'
-
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { Loader2 } from 'lucide-react'
@@ -37,6 +36,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase())),
     [allMids, searchTerm]
   )
+
   const filteredAssets = assetEntries.filter(([key]) =>
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
