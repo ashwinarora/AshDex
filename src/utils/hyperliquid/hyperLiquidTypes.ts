@@ -286,3 +286,19 @@ export type Order = {
   timestamp: number
   origSz: number
 }
+
+export type SpotOrder = {
+  time: string
+  symbol: string
+  symbolText: string
+  type: string
+  side: string
+  price: string
+  amount: string
+  filled: string
+  reduceOnly: string
+  postOnly: string
+  triggerConditions: string
+  tp_sl: string
+  id: number
+}
