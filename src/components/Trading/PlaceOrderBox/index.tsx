@@ -31,7 +31,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'STOP_LIMIT':
         return <StopLimit selectedAsset={selectedAsset} />
       case 'STOP_MARKET':
-        return <StopMarket />
+        return <StopMarket selectedAsset={selectedAsset} />
       default:
         return null
     }

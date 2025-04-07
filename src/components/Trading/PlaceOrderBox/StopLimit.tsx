@@ -7,7 +7,7 @@ import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
 
 const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
-  const [stopPrice, setStopPrice] = useState('')
+  const [stopPrice, setStopPrice] = useState(0)
   const [limitPrice, setLimitPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
@@ -30,7 +30,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
         <input
           type="number"
           value={stopPrice}
-          onChange={(e) => setStopPrice(e.target.value)}
+          onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
           className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -67,13 +67,18 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
       />
       <OrderButton
         selectedAsset={selectedAsset}
-        isBuy={true}
+        isBuy={isBuy}
         isCross={isCross}
         isPostOnly={false}
         isReduceOnly={false}
         leverage={leverage}
         amount={amount}
         limitPrice={limitPrice}
+        stopOrder={{
+          isMarket: false,
+          tpsl: 'sl',
+          triggerPx: stopPrice
+        }}
       />
     </div>
   )
