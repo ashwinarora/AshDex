@@ -339,37 +339,48 @@
       "time": "01/04/2025 12:31:52",
       "action": "Reward",
       "status": "Success",
-      "amountChange": "+$500"
+      "amountChange": "+$500",
+      "validator": "Nexon Node",
+      "description":"0x000000000056f99d36b6f2e0c51fd41496bbacb8"
+
     },
     {
       "time": "02/04/2025 14:31:52",
       "action": "Withdraw",
       "status": "In progress",
-      "amountChange": "-$200"
+      "amountChange": "-$200",
+      "validator": "Nansen x HypurrCollective",
+      "description":"0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     },
     {
       "time": "03/04/2025 09:31:52",
-      "action": "Transfer",
+      "action": "Spot to Staking Transfer",
       "status": "Success",
-      "amountChange": "+$150"
+      "amountChange": "+$150",
+       "validator": "Nexon Node",
+      "description":"0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     },
     {
       "time": "04/04/2025 11:31:52",
       "action": "Reward",
       "status": "Success",
-      "amountChange": "+$1000"
+      "amountChange": "+$1000",
+      "validator": "-"
     },
     {
       "time": "05/04/2025 16:31:52",
-      "action": "Withdraw",
+      "action": "Spot to Staking Transfer",
       "status": "In progress",
-      "amountChange": "-$50"
+      "amountChange": "-$50",
+       "validator": "-"
     },
     {
       "time": "06/04/2025 10:31:52",
       "action": "Reward",
       "status": "Success",
-      "amountChange": "+$300"
+      "amountChange": "+$300",
+      "validator": "Nexon Node",
+      "description":"0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     }
   ]
 }

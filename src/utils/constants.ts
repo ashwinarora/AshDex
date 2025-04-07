@@ -195,6 +195,14 @@ export const STAKE_ALLVALIDATORS_COLUMN = [
   { key: 'earnedAlltime', label: 'Earned, All time' }
 ] as const
 
+export const STAKE_VIEWHISTORY_COLUMN = [
+  { key: 'time', label: 'Time' },
+  { key: 'action', label: 'Action' },
+  { key: 'validator', label: 'Validator' },
+  { key: 'status', label: 'Status' },
+  { key: 'amountChange', label: 'Amount Change' }
+] as const
+
 export const STAKE_SHOWINFOICON = ['upTime', 'globalApr', 'fee', 'apy'] as const
 
 export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [

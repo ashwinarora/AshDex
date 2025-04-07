@@ -1,6 +1,7 @@
 'use client'
 import Image from 'next/image'
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import LaftArrow from '@/assets/images/arrow_laft.svg'
 import InfoIcon from '@/assets/images/info_icon.svg'
 import VectorIcon from '@/assets/images/vector_icon.svg'
@@ -13,6 +14,7 @@ import RewardHistory from './RewardHistory'
 import ActionsHistory from './ActionsHistory'
 
 const StakeDetails = () => {
+  const router = useRouter()
   const [isCross, setIsCross] = useState<boolean>(true)
   const [activeTab, setActiveTab] = useState('Unstake Queue')
   const { isConnected: isWalletConnected } = useAccount()
@@ -45,15 +47,25 @@ const StakeDetails = () => {
     } else {
       return (
         <>
-          <p className="text-[#8B8BA0] text-base font-medium">My Active Stake</p>
-          <p className="text-2xl font-medium">1,593.32</p>
-          <div className="flex gap-x-2 text-xl font-medium">
-            <button className="bg-[#5F46F9] p-4 rounded-2xl cursor-pointer">Stake Tokens</button>
-            <button className="bg-[#FFFFFF0F] p-4 rounded-2xl cursor-pointer">Unstake</button>
+          <div className="flex flex-col">
+            <span className="text-[#8B8BA0] mb-1 text-base font-medium">My Active Stake</span>
+            <span className="text-2xl font-medium">1,593.32</span>
+          </div>
+          <div className="flex gap-x-2 font-semibold text-base">
+            <button className="bg-[#5F46F9] px-4.5 py-2.5 rounded-xl cursor-pointer">
+              Stake Tokens
+            </button>
+            <button className="bg-[#FFFFFF0F] px-4.5 py-2.5 rounded-xl cursor-pointer">
+              Unstake
+            </button>
           </div>
         </>
       )
     }
+  }
+
+  const handleBackClick = () => {
+    router.push(`/stake`)
   }
 
   return (
@@ -61,7 +73,10 @@ const StakeDetails = () => {
       <div className="bg-[#0d021f] text-white flex justify-center py-10 w-full">
         <div className="flex flex-col md:flex-row justify-center w-full xl:w-3/5 gap-10 lg:px-0 px-4">
           <div className="space-y-4 w-full lg:w-[65%] max-w-[600px]">
-            <div className="flex items-center space-x-2">
+            <div
+              onClick={() => handleBackClick()}
+              className="flex items-center space-x-2 cursor-pointer"
+            >
               <Image src={LaftArrow} alt="Back" />
               <span className="text-base font-medium">Back</span>
             </div>
@@ -139,7 +154,7 @@ const StakeDetails = () => {
                     ]}
                     selectedValue={isCross ? '30d' : '90d'}
                     onChange={(value) => setIsCross(value === '30d')}
-                    className=" border border-[#FFFFFF0F] rounded-md px-2 py-1"
+                    className="border border-[#FFFFFF0F] rounded-md px-2 py-1"
                   />
                 </div>
               </div>
@@ -198,15 +213,15 @@ const StakeDetails = () => {
                 backdrop-blur-[48.3px]"
                 >
                   {/* Tabs */}
-                  <div className="flex justify-between text-gray-400 text-base font-medium mb-4 lg:px-10 px-2">
+                  <div className="flex justify-between text-gray-400 text-[15px] font-medium mb-4 lg:px-10 px-2">
                     {tabs.map((tab) => (
                       <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
-                        className={`px-3 py-2 font-medium rounded-full transition-all duration-300 cursor-pointer ${
+                        className={`px-3.5 py-2 rounded-full transition-all duration-300 cursor-pointer ${
                           activeTab === tab
-                            ? 'bg-[#FFFFFF0F] text-white'
-                            : 'text-gray-400 hover:text-white'
+                            ? 'bg-[#FFFFFF0F] text-white font-semibold'
+                            : 'text-[#8B8BA0] font-medium hover:text-white'
                         }`}
                       >
                         {tab}{' '}

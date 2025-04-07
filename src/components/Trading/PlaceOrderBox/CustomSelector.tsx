@@ -23,12 +23,12 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
         className={`w-full text-white max-px-4 max-py-2 text-sm rounded-md flex justify-between items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {options.find((opt) => opt.value === selectedValue)?.label || 'Select'}
+        {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
         <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
       </button>
 
       {isOpen && (
-        <div className="absolute border-2 border-white/10 bg-[#0F0816] min-w-24 rounded-2xl shadow-lg p-2">
+        <div className="absolute z-50 border-2 border-white/10 bg-[#0F0816] min-w-24 rounded-2xl shadow-lg p-2">
           {options.map((option) => (
             <div
               key={option.value}
