@@ -24,7 +24,7 @@ const LeverageMargin = ({
   const { universe } = useHyperLiquid()
 
   const maxLeverage = useMemo(() => {
-    if (!universe) return 1
+    if (!universe.length) return 1
     const assetIndex = getUniverseIndex(universe, selectedAsset)
     return universe?.[assetIndex]?.maxLeverage || 1
   }, [universe, selectedAsset])

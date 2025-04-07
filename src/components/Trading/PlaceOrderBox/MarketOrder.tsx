@@ -7,12 +7,9 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
 import CheckBox from '@/components/common/CheckBox'
+import { IPlaceOrderProps } from '.'
 
-interface MarketOrderProps {
-  selectedAsset: string
-}
-
-const MarketOrder = ({ selectedAsset }: MarketOrderProps) => {
+const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [amount, setAmount] = useState<number>(0)
@@ -52,7 +49,7 @@ const MarketOrder = ({ selectedAsset }: MarketOrderProps) => {
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}
-            limitPrice={allMids[selectedAsset] * 1.1}
+            limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
             amount={amount}
             leverage={leverage}
             isCross={isCross}

@@ -1,12 +1,9 @@
 import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { IPlaceOrderProps } from '.'
 
-interface TWAPProps {
-  selectedAsset: string
-}
-
-const TWAP = ({ selectedAsset }: TWAPProps) => {
+const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
   const { sdk } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [size, setSize] = useState<number>(0)
