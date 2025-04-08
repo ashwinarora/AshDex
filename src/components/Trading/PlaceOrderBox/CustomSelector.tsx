@@ -20,7 +20,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   return (
     <div className="relative">
       <button
-        className={`w-full text-white max-px-4 max-py-2 text-sm rounded-md flex justify-between items-center ${className}`}
+        className={`w-full text-white px-4 py-2 text-sm rounded-md flex justify-between items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
