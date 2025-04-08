@@ -46,6 +46,8 @@ export const CHART_INTERVALS = [
   '1M'
 ] as const
 
+export const VAULTS_TAB = ['My Vaults', 'New', 'Popular', 'LP', 'Single', 'Stable'] as const
+
 export const LENDBORROW_TAB = ['Supply APR', 'Borrow APR', 'Interest Rate'] as const
 
 export const LENDBORROW_EDIT_OPTIONS = [
