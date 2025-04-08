@@ -216,14 +216,11 @@ const Chart = ({ selectedAsset }: IChartProps) => {
               ))}
             </div>
             {isLoading ? (
-              <div className="flex justify-center items-center w-full h-[90vh] max-[770px]:h-[52vh]">
+              <div className="flex justify-center items-center w-full   ">
                 <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
               </div>
             ) : (
-              <div
-                ref={chartRef}
-                className="h-[90vh] w-full max-[770px]:h-[52vh] max-[1024px]:h-[100vh] mb-3 flex-1"
-              />
+              <div ref={chartRef} className=" w-full    flex-1" />
             )}
           </div>
           <div
