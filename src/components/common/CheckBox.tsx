@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import CheckIcon from '@/assets/images/check_icon.svg'
 import Image from 'next/image'
+import CheckIcon from '@/assets/images/check_icon.svg'
 interface CheckBoxProps {
   label: string
   setIsChecked?: (isChecked: boolean) => void
@@ -30,7 +30,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({ label, setIsChecked, isChecked }) =
           <Image src={CheckIcon} alt="check" width={16} height={16} className="w-3 h-3" />
         )}
       </div>
-      <span className="checkbox-text">{label}</span>
+      <span className="checkbox-text text-[#E8E0F1]">{label}</span>
     </label>
   )
 }

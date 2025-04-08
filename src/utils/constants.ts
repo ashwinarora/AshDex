@@ -160,3 +160,80 @@ With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported
 
 With a block size limit capped at 1 megabyte, the Bitcoin Protocol has supported both the Lightning Network, a second-layer infrastructure for payment channels, and Segregated Witness, a soft-fork to increase the number of transactions on a block, as solutions to network scalability.
 `
+
+export const STAKE_TABS = [
+  { id: 'view', name: 'View:' },
+  { id: 'simple', name: 'Simple' },
+  { id: 'advanced', name: 'Advanced' },
+  { id: 'period', name: 'Period:' }
+] as const
+
+export const STAKE_INITIAL_COLUMNS = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'totalStaked', label: 'Total staked' },
+  { key: 'apy', label: 'Est. APY' }
+]
+
+export const STAKE_MYSTAKINGS_COLUMN = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'upTime', label: 'Uptime' },
+  { key: 'globalApr', label: 'Global APR' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'apy', label: 'Est. APY' },
+  { key: 'yourStaked', label: 'Your Staked' },
+  { key: 'earnedAlltime', label: 'Earned, All time' }
+] as const
+
+export const STAKE_ALLVALIDATORS_COLUMN = [
+  { key: 'validator', label: 'Validator name' },
+  { key: 'totalStaked', label: 'Total staked' },
+  { key: 'upTime', label: 'Uptime' },
+  { key: 'globalApr', label: 'Global APR' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'apy', label: 'Est. APY' },
+  { key: 'yourStaked', label: 'Your Staked' },
+  { key: 'earnedAlltime', label: 'Earned, All time' }
+] as const
+
+export const STAKE_VIEWHISTORY_COLUMN = [
+  { key: 'time', label: 'Time' },
+  { key: 'action', label: 'Action' },
+  { key: 'validator', label: 'Validator' },
+  { key: 'status', label: 'Status' },
+  { key: 'amountChange', label: 'Amount Change' }
+] as const
+
+export const STAKE_SHOWINFOICON = ['upTime', 'globalApr', 'fee', 'apy'] as const
+
+export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [
+  {
+    key: 'allTime',
+    content:
+      'Estimated annual return with daily auto-compounding based on validator recent performance. Calculated over the selected period (All time), accounting for auto-compounding, validator uptime, fee changes, and fluctuations in global rewards.'
+  },
+  {
+    key: 'avgApy',
+    content:
+      'The Average Annual Percentage Yield (APY)  across all your validators, adjusted for their uptime and fees. Reflects the actual yearly return including auto-compounded rewards.'
+  },
+  {
+    key: 'apy',
+    content:
+      'Estimated annual return with daily auto-compounding, based on validator uptime, fee, and recent global APR'
+  },
+  {
+    key: 'upTime',
+    content:
+      'Validator’s availability over the selected period. Higher uptime = more consistent rewards.'
+  },
+  {
+    key: 'globalApr',
+    content:
+      'Network-wide APR (Annual Percentage Rate) assuming 0% commission and 100% uptime. Used as the base rate for calculating Est. APY.'
+  },
+  {
+    key: 'fee',
+    content:
+      'Percentage of rewards retained by the validator. Lower fees = higher net rewards for you.'
+  }
+] as const

@@ -12,7 +12,6 @@ interface PaginationProps {
 const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
   const renderPageNumbers = () => {
     const pages = []
-
     if (totalPages <= 4) {
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i)
@@ -32,7 +31,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         pages.push(totalPages)
       }
     }
-
     return pages.slice(0, 5)
   }
 
@@ -57,7 +55,6 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
         >
           &lt;
         </button>
-
         {renderPageNumbers().map((page, index) => (
           <button
             key={index}

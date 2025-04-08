@@ -63,7 +63,9 @@ const Header: FC = () => {
 
   const activeMenu = pathname?.startsWith('/lendBorrow')
     ? 'Lend/Borrow'
-    : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
+    : pathname?.startsWith('/stake')
+      ? 'Stake'
+      : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
 
   const handleMenuClick = (path: string) => {
     router.push(path)
