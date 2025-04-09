@@ -4,6 +4,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: '#5F46F9',
+        secondary: '#0F0816',
+        brand: '#10B981',
         aggrid: {
           primary: '#5F46F9',
           secondary: '#0F0816',

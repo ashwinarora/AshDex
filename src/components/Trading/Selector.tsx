@@ -1,16 +1,25 @@
 'use client'
-import { useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
+import { useEffect, useMemo, useRef, useState, Fragment } from 'react'
+import Image, { StaticImageData } from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import starticon from '@/assets/images/star_icon.svg'
-import SearchIcon from '@/assets/images/search-normal.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
+import staricon from '@/assets/images/star_icon.svg'
+
+import { useFavorites } from '@/context/FavoritesContext'
+
+// Crypto icons imports
+import btcIcon from '@/assets/images/bitcoin_logo.svg'
+
+// Crypto icon mapping - only include Bitcoin which we know exists
+const CRYPTO_ICONS: Record<string, StaticImageData> = {
+  'BTC-PERP': btcIcon
+}
 
 interface ISelectorProps {
   selectedAsset: string
@@ -23,6 +32,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 8
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
 
@@ -48,13 +59,57 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  const columns = [
-    { name: 'Market', showIcon: false },
-    { name: 'Price', showIcon: true },
-    { name: '24h Change', showIcon: true },
-    { name: '24h Volume', showIcon: true },
-    { name: 'Market Cap', showIcon: true }
-  ]
+  // Calculate paginated items
+  const paginatedAssets = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredAssets.slice(startIndex, startIndex + ITEMS_PER_PAGE)
+  }, [filteredAssets, currentPage, ITEMS_PER_PAGE])
+
+  // Calculate total pages
+  const totalPages = useMemo(
+    () => Math.max(1, Math.ceil(filteredAssets.length / ITEMS_PER_PAGE)),
+    [filteredAssets, ITEMS_PER_PAGE]
+  )
+
+  // Generate page numbers to display
+  const pageNumbers = useMemo(() => {
+    const pages = []
+    const maxButtons = 5
+
+    if (totalPages <= maxButtons) {
+      // Show all pages if there are few
+      for (let i = 1; i <= totalPages; i++) {
+        pages.push(i)
+      }
+    } else {
+      // Show first, last, current, and adjacent pages
+      const startPage = Math.max(1, currentPage - 1)
+      const endPage = Math.min(totalPages, startPage + maxButtons - 1)
+
+      if (startPage > 1) {
+        pages.push(1)
+        if (startPage > 2) pages.push('...')
+      }
+
+      for (let i = startPage; i <= endPage; i++) {
+        pages.push(i)
+      }
+
+      if (endPage < totalPages) {
+        if (endPage < totalPages - 1) pages.push('...')
+        pages.push(totalPages)
+      }
+    }
+
+    return pages
+  }, [currentPage, totalPages])
+
+  // Handle page change
+  const changePage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+    }
+  }
 
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
@@ -97,6 +152,39 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     ],
     []
   )
+  const { isFavorite, toggleFavorite } = useFavorites()
+
+  const isFav = isFavorite(selectedAsset)
+
+  const handleToggleFavorite = (e: React.MouseEvent) => {
+    e.stopPropagation()
+
+    // Ensure we have valid values to save
+    const assetPrice = selectedAssetContext?.midPx
+      ? String(selectedAssetContext.midPx)
+      : String(allMids[selectedAsset] || '0')
+
+    // Get the 24h change value
+    const change24hItem = marketData?.find((item) => item.label === '24h Change')
+    const change24hValue = change24hItem?.value || '0%'
+
+    // Log the values we're saving for debugging
+    console.log('[Favorites] Toggling with values:', {
+      name: selectedAsset,
+      value: assetPrice,
+      index: selectedAsset,
+      price: assetPrice,
+      change24h: change24hValue
+    })
+
+    toggleFavorite({
+      name: selectedAsset,
+      value: assetPrice,
+      index: selectedAsset,
+      price: assetPrice,
+      change24h: change24hValue
+    })
+  }
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -141,13 +229,17 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       {/* Left Side */}
       <div className="flex max-[1100px]:border-b max-[1100px]:border-white/10 max-[1100px]:w-full">
         <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
-          <Image
-            src={starticon}
-            className="2xl:relative absolute -top-1 -left-1 h-5 w-5"
-            alt="starticon"
-            width={18}
-            height={18}
-          />
+          <button
+            onClick={handleToggleFavorite}
+            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer 2xl:relative absolute -top-1 -left-1 h-5 w-5"
+            aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            <Image
+              src={staricon}
+              alt={isFav ? 'Remove from favorites' : 'Add to favorites'}
+              className={`h-5 w-5 ${isFav ? 'opacity-100' : 'opacity-50'}`}
+            />
+          </button>
           <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} height={32} />
           <button
             type="button"
@@ -225,63 +317,228 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       )}
       {isOpen && (
-        <div className="absolute left-0 top-12 2xl:top-[60px] my-2 xl:w-[40%] w-[90%] bg-[#0F0816] rounded-lg shadow-lg overflow-hidden mt-10 -ml-1">
-          <div className="border-2 border-[#FFFFFF0F] bg-[#FFFFFF0F] m-2 px-2 py-1 flex rounded-md">
-            <Image src={SearchIcon} alt="Search" />
-            <input
-              type="text"
-              placeholder="e.g. 'BTC' or 'Bitcoin'"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none"
-            />
+        <div className="absolute left-0 top-12 2xl:top-[60px] z-50 w-[800px] max-w-[95vw] bg-[#0F0816] rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
+          {/* Search Input */}
+          <div className="p-4">
+            <div className="border-2 border-[#FFFFFF15] bg-[#FFFFFF08] rounded-md flex items-center px-4 py-2">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z"
+                  stroke="#8B8BA0"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M21 21L16.65 16.65"
+                  stroke="#8B8BA0"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder='e.g. "BTC" or "Bitcoin"'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm"
+              />
+            </div>
           </div>
 
-          <div className="flex mx-3 border-b border-[#FFFFFF0F] space-x-2">
+          {/* Category Tabs */}
+          <div className="flex px-4 pb-3 space-x-3">
             {tabs.map((tab) => (
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`py-1 px-3 my-2 text-base rounded-2xl transition-all duration-200 cursor-pointer ${
+                className={`py-2 px-5 text-sm rounded-full transition-all duration-200 cursor-pointer ${
                   selectedTab === tab
-                    ? 'text-[#0F0816] bg-[#E8E0F1]'
-                    : 'text-[#E8E0F1] bg-[#FFFFFF0F]'
+                    ? 'text-[#0F0816] bg-white font-medium'
+                    : 'text-white bg-[#FFFFFF15] hover:bg-[#FFFFFF20]'
                 }`}
               >
                 {tab}
               </button>
             ))}
           </div>
+
+          {/* Table Headers */}
           <div className="overflow-auto">
-            <div className="flex text-left bg-[#0F0816] px-4 py-2 text-[#8B8BA0] sticky top-0 text-sm whitespace-nowrap sm:w-full w-[200%]">
-              {columns.map((col, index) => (
-                <div
-                  key={index}
-                  className={`flex items-center ${col.showIcon ? 'w-28' : 'min-w-56'} `}
-                >
-                  {col.showIcon && (
-                    <Image src={shortingicon} alt="Sort" className="w-3 h-3 mx-1.5" />
-                  )}
-                  <p className="text-wrap">{col.name}</p>
-                </div>
-              ))}
+            <div className="flex text-left px-4 py-3 border-t border-b border-[#FFFFFF10] bg-[#0F0816] text-[#8B8BA0] sticky top-0 text-sm font-medium">
+              <div className="w-1/12"></div> {/* Checkbox column */}
+              <div className="w-3/12">Market</div>
+              <div className="w-1/12 text-right">Leverage</div>
+              <div className="w-2/12 text-right">Price</div>
+              <div className="w-2/12 text-right">24h Change</div>
+              <div className="w-2/12 text-right">Volume</div>
+              <div className="w-2/12 text-right pr-4">Market Cap</div>
             </div>
-            <div className="overflow-y-auto max-h-96 sm:w-full w-[200%]">
+
+            {/* Asset List */}
+            <div className="max-h-[400px] gap-2 flex flex-col p-2">
               {filteredAssets.length > 0 ? (
-                filteredAssets.map(([key, value]) => (
-                  <div key={key} onClick={() => handleAssetSelect(key)}>
+                paginatedAssets.map(([key, value]) => {
+                  // Find the asset context for this asset
+                  const assetIndex = universe.findIndex((asset) => asset.name === key)
+                  const assetCtx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
+
+                  // Calculate formatted 24h change
+                  let change24h = '0.00%'
+                  if (assetCtx?.prevDayPx && assetCtx?.midPx) {
+                    const prevDayPrice = assetCtx.prevDayPx
+                    const currentPrice = assetCtx.midPx
+                    const change = currentPrice - prevDayPrice
+                    const percentageChange = (change / prevDayPrice) * 100
+                    const isPositive = percentageChange >= 0
+                    change24h = `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`
+                  }
+
+                  return (
                     <AssetItem
+                      key={key}
                       assetKey={key}
                       value={value}
                       selectedAsset={selectedAsset}
-                      setSelectedAsset={() => handleAssetSelect(key)}
+                      setSelectedAsset={handleAssetSelect}
+                      icons={CRYPTO_ICONS}
+                      isInSelectorDropdown={true}
+                      price={value}
+                      change24h={change24h}
                     />
-                  </div>
-                ))
+                  )
+                })
               ) : (
-                <div className="p-4 text-center text-gray-400">No assets found.</div>
+                <div className="p-6 text-center text-gray-400">No assets found.</div>
               )}
             </div>
+          </div>
+
+          {/* Pagination */}
+          <div className="flex justify-between items-center px-4 py-3 bg-[#0F0816] border-t border-[#FFFFFF10]">
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => changePage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`h-8 w-8 rounded ${currentPage === 1 ? 'bg-[#FFFFFF05] text-gray-500' : 'bg-[#FFFFFF08] text-gray-400 hover:bg-[#FFFFFF15] cursor-pointer'} flex items-center justify-center`}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 12L6 8L10 4"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {pageNumbers.map((page, index) => (
+                <Fragment key={index}>
+                  {page === '...' ? (
+                    <button className="h-8 px-2 rounded bg-[#FFFFFF08] text-gray-300 flex items-center justify-center">
+                      ...
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => page !== '...' && changePage(page as number)}
+                      className={`h-8 w-8 rounded ${
+                        page === currentPage
+                          ? 'bg-[#6366F1] text-white'
+                          : 'bg-[#FFFFFF08] text-gray-300 hover:bg-[#FFFFFF15]'
+                      } flex items-center justify-center font-medium`}
+                    >
+                      {page}
+                    </button>
+                  )}
+                </Fragment>
+              ))}
+
+              <button
+                onClick={() => changePage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`h-8 w-8 rounded ${currentPage === totalPages ? 'bg-[#FFFFFF05] text-gray-500' : 'bg-[#FFFFFF08] text-gray-400 hover:bg-[#FFFFFF15] cursor-pointer'} flex items-center justify-center`}
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M6 4L10 8L6 12"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div className="flex items-center text-gray-400 text-sm">
+              <span>Page</span>
+              <div className="mx-2 bg-[#FFFFFF08] rounded px-3 py-1 flex items-center cursor-pointer">
+                <select
+                  value={currentPage}
+                  onChange={(e) => changePage(Number(e.target.value))}
+                  className="bg-transparent text-white appearance-none outline-none w-8 mr-1"
+                >
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                    <option key={page} value={page}>
+                      {page}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M4 6L8 10L12 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <span>of {totalPages}</span>
+            </div>
+          </div>
+
+          {/* Apply Button */}
+          <div className="p-4 bg-[#0F0816]">
+            <button
+              onClick={() => {
+                // Handle selection confirmation
+                if (selectedAsset) {
+                  setSelectedAsset(selectedAsset)
+                }
+                setIsOpen(false)
+                setSearchTerm('')
+              }}
+              className="w-full py-3 bg-[#6366F1] text-white font-medium text-lg rounded-lg hover:bg-[#5558EA] transition-colors"
+            >
+              Apply
+            </button>
           </div>
         </div>
       )}
