@@ -53,6 +53,7 @@ const placePerpOrder = async ({
   hyperliquidAxios,
   currentFeeApproval
 }: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any
   selectedAsset: string
   isCross: boolean
