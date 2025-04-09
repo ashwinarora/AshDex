@@ -1,14 +1,17 @@
 @import 'tailwindcss';
+@import '../styles/fonts.css';
 
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
+  --color-primary: #5f46f9; /* Primary brand color */
+  --color-secondary: #0f0816; /* Secondary brand color */
+  --color-brand: #10b981; /* Brand accent color */
   --tw-color-aggrid-background: #1f2937;
-  --tw-color-aggrid-header: #1f2937;
+
   --tw-color-aggrid-text: #e5e7eb;
   --tw-color-aggrid-border: #374151;
   --tw-color-aggrid-hover: #374151;
-  --tw-color-aggrid-headertext: #ced1d7;
   --tw-color-aggrid-pagination: #1f2937;
   --tw-color-aggrid-paginationtext: #ffffff;
 }
@@ -18,14 +21,26 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-dm-mono: var(--font-dm-mono);
+}
+/* DM Mono font class */
+.font-dm-mono {
+  font-family: var(--font-dm-mono);
 }
 
 body {
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-  background: #0f0816
-    linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%);
-  backdrop-filter: blur(40px);
+  font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(
+      1100px circle at 30% top,
+      #1e0d31 0%,
+      rgba(30, 13, 49, 0.5) 40%,
+      rgba(30, 13, 49, 0.1) 80%,
+      transparent 100%
+    ),
+    #0f0816;
+
   height: 100%;
   width: 100%;
   margin: 0;
@@ -73,4 +88,35 @@ body {
   gap: 24px;
   animation: scroll 20s linear infinite;
   min-width: 200%;
+}
+
+input {
+  @apply font-dm-mono;
+}
+
+.nexon-card {
+  background: linear-gradient(
+    179.1deg,
+    rgba(255, 255, 255, 0.05) -10.66%,
+    rgba(153, 153, 153, 0.05) 67.22%
+  );
+  @apply border-2 border-white/5 backdrop-blur-2xl rounded-3xl shadow-md w-full;
+  @apply overflow-clip;
+  @apply max-h-min;
+}
+
+.tab-btn {
+  @apply w-full text-white/50 py-2 rounded-full transition-colors duration-200 cursor-pointer;
+}
+
+.tab-btn:hover {
+  @apply text-white;
+}
+
+.tab-btn-active {
+  @apply bg-[#FFFFFF0F] text-white font-semibold;
+}
+
+.tab-btn-disabled {
+  @apply text-[#8B8BA0] cursor-not-allowed;
 }

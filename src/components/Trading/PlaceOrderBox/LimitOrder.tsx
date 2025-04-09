@@ -71,7 +71,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
         </div>
-        <div className="p-4 pb-8">
+        <div className="p-4  ">
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}

@@ -111,26 +111,29 @@ const Header: FC = () => {
   return (
     <>
       <header
-        style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="flex border-b items-center bg-[#1c0c30] justify-between xl:px-5 xl:py-1 2xl:px-10 2xl:py-5 px-0 py-1"
+        className="
+    w-full h-20 sticky top-0 z-50
+      backdrop-blur-xl backdrop-filter
+    sm:px-9 flex border-b border-white/10
+    items-center justify-between
+  "
       >
         <div className="flex items-center justify-center space-x-4">
-          <h1 className="flex items-center mr-6 lg:mr-6 xl:12 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md hover:bg-gray-900 font-semibold">
+          <h1
+            onClick={() => router.push('/')}
+            className="flex items-center mr-6 lg:mr-6 xl:12 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
+          >
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
           </h1>
-          <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center lg:space-x-1 xl:space-x-5">
+          <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
                 href={path}
                 onClick={() => handleMenuClick(path)}
-                className={`py-[5px] px-[16px] rounded-full transition-all duration-300
-                  ${
-                    activeMenu === name
-                      ? 'text-[#08030D] bg-[#E8E0F1]'
-                      : 'hover:text-[#08030D] hover:bg-[#E8E0F1]'
-                  }`}
+                className={`tab-btn px-6
+                  ${activeMenu === name && 'tab-btn-active'}`}
               >
                 {name}
               </Link>
