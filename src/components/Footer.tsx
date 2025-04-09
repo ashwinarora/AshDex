@@ -19,7 +19,7 @@ const Footer: FC = () => {
 
   return (
     <footer
-      className="bg-[#1b1122] border border-[#251A3C] rounded-2xl pt-0 p-5 md:p-8"
+      className=" nexon-card border border-[#251A3C] rounded-2xl pt-0 p-5 md:p-8"
       style={{
         backdropFilter: 'blur(40px)',
         WebkitBackdropFilter: 'blur(40px)'

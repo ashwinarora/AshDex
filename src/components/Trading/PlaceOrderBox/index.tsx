@@ -53,30 +53,24 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div>
-      <div className="flex border-b border-white/10 pb-3 mb-2.5 items-center justify-evenly space-x-2 p-2 rounded-xl">
+      <div className="flex border-b border-white/10 p-3 mb-2.5 items-center justify-evenly space-x-2  ">
         <button
           onClick={() => setActiveTab('LIMIT')}
-          className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'LIMIT' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
-          }`}
+          className={`tab-btn ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
         >
           Limit
         </button>
 
         <button
           onClick={() => setActiveTab('MARKET')}
-          className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'MARKET' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
-          }`}
+          className={`tab-btn ${activeTab === 'MARKET' && 'tab-btn-active'}`}
         >
           Market
         </button>
 
         <button
-          className={`w-full flex justify-center items-center text-center  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'TWAP' || activeTab === 'SCALE'
-              ? 'bg-[#FFFFFF0F] text-white'
-              : ' text-[#8B8BA0]'
+          className={`tab-btn ${
+            activeTab === 'TWAP' || (activeTab === 'SCALE' && 'tab-btn-active')
           }`}
         >
           <CustomSelector

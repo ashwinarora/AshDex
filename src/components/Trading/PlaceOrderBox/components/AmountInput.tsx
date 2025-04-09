@@ -113,9 +113,23 @@ const AmountInput = ({
             step={1}
             value={usdPercent}
             onChange={handleUsdPercentChange}
-            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none
+            [&::-webkit-slider-thumb]:appearance-none
+            [&::-webkit-slider-thumb]:h-4
+            [&::-webkit-slider-thumb]:w-4
+            [&::-webkit-slider-thumb]:rounded-full
+            [&::-webkit-slider-thumb]:bg-white
+            [&::-webkit-slider-thumb]:cursor-pointer
+            [&::-webkit-slider-thumb]:border-none
+            [&::-moz-range-thumb]:appearance-none
+            [&::-moz-range-thumb]:h-4
+            [&::-moz-range-thumb]:w-4
+            [&::-moz-range-thumb]:rounded-full
+            [&::-moz-range-thumb]:bg-white
+            [&::-moz-range-thumb]:cursor-pointer
+            [&::-moz-range-thumb]:border-none"
             style={{
-              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
+              background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
             }}
           />
           <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
