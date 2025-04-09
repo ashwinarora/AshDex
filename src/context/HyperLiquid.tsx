@@ -20,6 +20,7 @@ interface HyperLiquidContextProps {
   universe: MetaData[]
   clearingHouseState?: IClearingHouseState
   perpAssetContext: IWebData2['assetCtxs']
+  spotAssetContext: IWebData2['spotAssetCtxs']
   isTestnet: boolean
 }
 
@@ -32,6 +33,7 @@ const initialValue = {
   universe: [],
   clearingHouseState: undefined,
   perpAssetContext: [],
+  spotAssetContext: [],
   isTestnet: true
 }
 
@@ -42,14 +44,19 @@ export interface PriceMap {
 }
 
 export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { address, chain } = useAccount()
+  const { address } = useAccount()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [sdk, setSdk] = useState<any>()
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
   const [allMids, setAllMids] = useState<PriceMap>({})
   const [perpAssetContext, setPerpAssetContext] = useState<IWebData2['assetCtxs']>([])
+  const [spotAssetContext, setSpotAssetContext] = useState<IWebData2['spotAssetCtxs']>([])
   const queryClient = useQueryClient()
+
+  const isTestnet = useMemo(() => {
+    return true // update this code when ready for mainnet
+  }, [])
 
   const privateKey = useMemo(() => {
     if (!address) return
@@ -79,7 +86,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   })
 
   const { data: universe } = useQuery({
-    queryKey: ['universe', chain?.id],
+    queryKey: ['universe', isTestnet],
     queryFn: async () => {
       const res = await sdk.info.perpetuals.getMeta()
       return res.universe as MetaData[]
@@ -88,9 +95,16 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     initialData: []
   })
 
-  const isTestnet = useMemo(() => {
-    return true // update this code when ready for mainnet
-  }, [])
+  // const { data: spotUniverse } = useQuery({
+  //   queryKey: ['spotUniverse', isTestnet],
+  //   queryFn: async () => {
+  //     const res = await sdk.info.spot.getSpotMeta()
+  //     console.log(res)
+  //     return res.universe as MetaData[]
+  //   },
+  //   enabled: !!sdk || !!isSdkConnected,
+  //   initialData: []
+  // })
 
   const hyperliquidAxios = useMemo(() => (isTestnet ? testnetAxios : mainnetAxios), [isTestnet])
 
@@ -145,6 +159,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   useEffect(() => {
     if (!sdk) return
     sdk.subscriptions.subscribeToAllMids((data: PriceMap) => {
+      // console.log('allMids', data)
       setAllMids(data)
     })
     return () => {
@@ -157,10 +172,10 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (!address) return
     console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
-      console.log('webdata2', data)
-      const { clearinghouseState, assetCtxs } = data
+      const { clearinghouseState, assetCtxs, spotAssetCtxs } = data
       queryClient.setQueryData(['clearingHouseState', address], clearinghouseState)
       setPerpAssetContext(assetCtxs)
+      setSpotAssetContext(spotAssetCtxs)
     })
     return () => {
       sdk.subscriptions.unsubscribeFromWebData2()
@@ -178,6 +193,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         universe,
         clearingHouseState,
         perpAssetContext,
+        spotAssetContext,
         isTestnet
       }}
     >

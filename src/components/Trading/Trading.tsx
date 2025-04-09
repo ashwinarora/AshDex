@@ -6,10 +6,14 @@ import OrderBook from './OrderBook'
 import Selector from './Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
+import { usePathname } from 'next/navigation'
 
 const Trading = () => {
   const { isConnected } = useAccount()
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
+  const pathname = usePathname()
+  const [selectedAsset, setSelectedAsset] = useState<string>(
+    pathname === '/spot' ? 'HYPE-SPOT' : 'BTC-PERP'
+  )
 
   return (
     <div className="h-full bg-[#0d021f] text-white p-4">

@@ -11,6 +11,7 @@ import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
+import { usePathname } from 'next/navigation'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -18,34 +19,34 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, perpAssetContext, universe } = useHyperLiquid()
+  const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
+  const pathname = usePathname()
+  const isSpot = useMemo(() => pathname === '/spot', [pathname])
 
   const selectedAssetContext = useMemo(() => {
-    if (!universe.length) return
-    if (!perpAssetContext.length) return
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    return perpAssetContext[assetIndex]
-  }, [selectedAsset, perpAssetContext, universe])
+    if (isSpot) {
+      const asset = spotAssetContext.find((assets) => assets.coin.includes(selectedAsset))
+      return asset
+    } else {
+      const assetIndex = getUniverseIndex(universe, selectedAsset)
+      return perpAssetContext[assetIndex]
+    }
+  }, [selectedAsset, perpAssetContext, universe, spotAssetContext, isSpot])
 
   // Get and filter asset entries based on searchTerm and "PERP"
-  const assetEntries = useMemo(
+  const filteredAssets = useMemo(
     () =>
       Object.entries(allMids)
         .filter(([key]) => !key.startsWith('@'))
-        .filter(([key]) => key.includes('PERP'))
+        .filter(([key]) => key.includes(isSpot ? 'SPOT' : 'PERP'))
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase())),
     [allMids, searchTerm]
-  )
-
-  // Use the full filtered list of assets
-  const filteredAssets = assetEntries.filter(([key]) =>
-    key.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const columns = [
@@ -76,11 +77,11 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       { label: '24h Volume (BTC)', value: selectedAssetContext?.dayBaseVlm ?? '0.00' },
       { label: '24h Volume (USDT)', value: selectedAssetContext?.dayNtlVlm ?? '0.00' },
       { label: 'Market Cap', value: '$928B' },
-      {
-        label: '1h Funding',
-        value: selectedAssetContext?.funding ?? '0.00%',
-        color: 'text-[#2FA766]'
-      },
+      // {
+      //   label: '1h Funding',
+      //   value: selectedAssetContext?.funding ?? '0.00%',
+      //   color: 'text-[#2FA766]'
+      // },
       { label: 'Next Funding', value: '27:57' }
     ]
   }, [selectedAssetContext])
