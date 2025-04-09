@@ -5,7 +5,7 @@ import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import type { Hex, PrivateKeyAccount } from 'viem'
 import type { AxiosInstance } from 'axios'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { IClearingHouseState, MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { IClearingHouseState, MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AGENT_PRIVATE_KEY } from '@/utils/constants'
 import { mainnetAxios, testnetAxios } from '@/config/axios'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
@@ -21,6 +21,7 @@ interface HyperLiquidContextProps {
   clearingHouseState?: IClearingHouseState
   perpAssetContext: IWebData2['assetCtxs']
   spotAssetContext: IWebData2['spotAssetCtxs']
+  spotMeta: SpotMeta
   isTestnet: boolean
 }
 
@@ -34,6 +35,10 @@ const initialValue = {
   clearingHouseState: undefined,
   perpAssetContext: [],
   spotAssetContext: [],
+  spotMeta: {
+    tokens: [],
+    universe: []
+  },
   isTestnet: true
 }
 
@@ -89,22 +94,26 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     queryKey: ['universe', isTestnet],
     queryFn: async () => {
       const res = await sdk.info.perpetuals.getMeta()
+      console.log('universe', res)
       return res.universe as MetaData[]
     },
     enabled: !!sdk || !!isSdkConnected,
     initialData: []
   })
 
-  // const { data: spotUniverse } = useQuery({
-  //   queryKey: ['spotUniverse', isTestnet],
-  //   queryFn: async () => {
-  //     const res = await sdk.info.spot.getSpotMeta()
-  //     console.log(res)
-  //     return res.universe as MetaData[]
-  //   },
-  //   enabled: !!sdk || !!isSdkConnected,
-  //   initialData: []
-  // })
+  const { data: spotMeta } = useQuery({
+    queryKey: ['spotUniverse', isTestnet],
+    queryFn: async () => {
+      const res = await sdk.info.spot.getSpotMeta()
+      console.log(res)
+      return res as SpotMeta
+    },
+    enabled: !!sdk || !!isSdkConnected,
+    initialData: {
+      tokens: [],
+      universe: []
+    }
+  })
 
   const hyperliquidAxios = useMemo(() => (isTestnet ? testnetAxios : mainnetAxios), [isTestnet])
 
@@ -194,6 +203,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         clearingHouseState,
         perpAssetContext,
         spotAssetContext,
+        spotMeta,
         isTestnet
       }}
     >

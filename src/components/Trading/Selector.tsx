@@ -11,7 +11,7 @@ import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
-import { usePathname } from 'next/navigation'
+import useIsSpot from '@/hooks/useIsSpot'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -26,8 +26,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
-  const pathname = usePathname()
-  const isSpot = useMemo(() => pathname === '/spot', [pathname])
+  const isSpot = useIsSpot()
 
   const selectedAssetContext = useMemo(() => {
     if (isSpot) {

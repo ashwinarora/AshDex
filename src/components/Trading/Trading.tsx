@@ -6,14 +6,12 @@ import OrderBook from './OrderBook'
 import Selector from './Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
-import { usePathname } from 'next/navigation'
+import useIsSpot from '@/hooks/useIsSpot'
 
 const Trading = () => {
   const { isConnected } = useAccount()
-  const pathname = usePathname()
-  const [selectedAsset, setSelectedAsset] = useState<string>(
-    pathname === '/spot' ? 'HYPE-SPOT' : 'BTC-PERP'
-  )
+  const isSpot = useIsSpot()
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE-SPOT' : 'BTC-PERP')
 
   return (
     <div className="h-full bg-[#0d021f] text-white p-4">
