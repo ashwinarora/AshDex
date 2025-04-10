@@ -26,9 +26,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [isConnected, chainId])
 
   return (
-    <WalletModalContext.Provider
-      value={{ isModalOpen, toggleConnectWalletModal }}
-    >
+    <WalletModalContext.Provider value={{ isModalOpen, toggleConnectWalletModal }}>
       {children}
     </WalletModalContext.Provider>
   )

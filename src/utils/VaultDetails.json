@@ -74,5 +74,7 @@
     { "time": "2022-01-25", "value": 60 },
     { "time": "2022-01-26", "value": 70 }
   ],
-  "vaultsDescription":["The protocol vault you are currently using has been officially deprecated, meaning it will no longer accept any new positions or investments. We understand that this may raise some questions, but rest assured that users can still withdraw their funds at any time that suits them. This flexibility allows you to manage your assets according to your needs. Additionally, it's important to note that liquidations will now be handled as an integral part of the HLP (High Liquidity Pool) system. This change is designed to streamline the process and enhance the overall efficiency of fund management within our platform. We appreciate your understanding and encourage you to reach out if you have any further questions regarding these updates."]
+  "vaultsDescription": [
+    "The protocol vault you are currently using has been officially deprecated, meaning it will no longer accept any new positions or investments. We understand that this may raise some questions, but rest assured that users can still withdraw their funds at any time that suits them. This flexibility allows you to manage your assets according to your needs. Additionally, it's important to note that liquidations will now be handled as an integral part of the HLP (High Liquidity Pool) system. This change is designed to streamline the process and enhance the overall efficiency of fund management within our platform. We appreciate your understanding and encourage you to reach out if you have any further questions regarding these updates."
+  ]
 }

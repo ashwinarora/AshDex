@@ -122,5 +122,6 @@ input {
 }
 
 .filter-green {
-  filter: brightness(0) saturate(100%) invert(62%) sepia(89%) saturate(343%) hue-rotate(76deg) brightness(91%) contrast(90%);
+  filter: brightness(0) saturate(100%) invert(62%) sepia(89%) saturate(343%) hue-rotate(76deg)
+    brightness(91%) contrast(90%);
 }
