@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
+import { DM_Mono } from 'next/font/google'
 import { HyperLiquidProvider } from '@/context/HyperLiquid'
 import Header from '@/components/Header'
 import { Provider } from './provider'
@@ -22,6 +23,12 @@ const geistMono = Geist_Mono({
   subsets: ['latin']
 })
 
+const dmMono = DM_Mono({
+  variable: '--font-dm-mono',
+  weight: ['400'],
+  subsets: ['latin']
+})
+
 export const metadata: Metadata = {
   title: 'Nexon',
   description: 'Best place to Trade'
@@ -34,7 +41,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary`}
+      >
         <Provider>
           <HyperLiquidProvider>
             <WalletModalProvider>
@@ -44,7 +53,7 @@ export default function RootLayout({
                 <Header />
                 <FavoriteStrip />
                 {children}
-                <div className="py-8 px-4 md:px-9 bg-[#0d021f] lg:px-14 col-span-full">
+                <div className="py-8 px-4 md:px-9   col-span-full">
                   <Footer />
                 </div>
               </ToastProvider>

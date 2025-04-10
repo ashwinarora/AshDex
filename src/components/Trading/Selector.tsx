@@ -2,32 +2,38 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
-import { useTokenDetails } from '@/hooks/useTokenDetails'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import starticon from '@/assets/images/star_icon.svg'
-import Pagination from '../common/Pagination'
 import SearchIcon from '@/assets/images/search-normal.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
-import { Loader2 } from 'lucide-react'
+import { getUniverseIndex } from '@/utils/utils'
+import ValueIndicator from '../common/ValueIndicator'
+
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, sdk } = useHyperLiquid()
-  const { data: tokenDetails } = useTokenDetails(sdk, [], selectedAsset)
+  const { allMids, perpAssetContext, universe } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
-  const [currentPage, setCurrentPage] = useState(1)
   const [selectedTab, setSelectedTab] = useState('All')
-  const [selectAsset, setSeletAsset] = useState<string | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
+
+  const selectedAssetContext = useMemo(() => {
+    if (!universe.length) return
+    if (!perpAssetContext.length) return
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    return perpAssetContext[assetIndex]
+  }, [selectedAsset, perpAssetContext, universe])
+
+  // Get and filter asset entries based on searchTerm and "PERP"
   const assetEntries = useMemo(
     () =>
       Object.entries(allMids)
@@ -37,13 +43,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     [allMids, searchTerm]
   )
 
+  // Use the full filtered list of assets
   const filteredAssets = assetEntries.filter(([key]) =>
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
-  const totalPages = Math.ceil(filteredAssets.length / 10)
-  const paginatedAssets = useMemo(() => {
-    return filteredAssets?.slice((currentPage - 1) * 10, currentPage * 10)
-  }, [filteredAssets, currentPage])
 
   const columns = [
     { name: 'Market', showIcon: false },
@@ -55,19 +58,32 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
-  const marketData = useMemo(
-    () => [
-      { label: '24h Change', value: '+638 (+0.54%)', color: 'text-[#2FA766]' },
+  const marketData = useMemo(() => {
+    const calculate24hChange = () => {
+      if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
+      const prevDayPrice = selectedAssetContext?.prevDayPx
+      const change = selectedAssetContext.midPx - prevDayPrice
+      const percentageChange = (change / prevDayPrice) * 100
+      const sign = change >= 0 ? '+' : ''
+      return `${sign}${change.toFixed(2)} (${sign}${percentageChange.toFixed(2)}%)`
+    }
+
+    const changeString = calculate24hChange()
+    return [
+      { label: '24h Change', value: changeString, color: 'text-[#2FA766]' },
       { label: '24h High', value: '$99,149.00' },
       { label: '24h Low', value: '$99,149.00' },
-      { label: '24h Volume (BTC)', value: tokenDetails?.volume ?? '0' },
-      { label: '24h Volume (USDT)', value: '1,635,613,349.18' },
+      { label: '24h Volume (BTC)', value: selectedAssetContext?.dayBaseVlm ?? '0.00' },
+      { label: '24h Volume (USDT)', value: selectedAssetContext?.dayNtlVlm ?? '0.00' },
       { label: 'Market Cap', value: '$928B' },
-      { label: '1h Funding', value: tokenDetails?.funding ?? '0' },
+      {
+        label: '1h Funding',
+        value: selectedAssetContext?.funding ?? '0.00%',
+        color: 'text-[#2FA766]'
+      },
       { label: 'Next Funding', value: '27:57' }
-    ],
-    [tokenDetails]
-  )
+    ]
+  }, [selectedAssetContext])
 
   const settingsOptions = useMemo(
     () => [
@@ -105,6 +121,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
 
+  const handleAssetSelect = (assetKey: string) => {
+    setSelectedAsset(assetKey)
+    setIsOpen(false)
+    setSearchTerm('')
+  }
+
   return (
     <div
       ref={containerRef}
@@ -137,7 +159,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 {selectedAsset || 'Select an asset'}
               </span>
               <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium">
-                {'Bitcoin price'}
+                Bitcoin price
               </span>
             </div>
             <Image
@@ -150,12 +172,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </button>
         </div>
         <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-5 max-[576px]:border-r-0 border-r border-white/10 min-w-32">
-          <span className="text-xl font-normal text-[#E2464A]">
-            {selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
-          </span>
-          <span className="text-sm opacity-80 font-medium text-[#FFFFFF]">
-            ${selectedAsset && assetEntries?.find(([key]) => key === selectedAsset)?.[1]}
-          </span>
+          <ValueIndicator value={selectedAssetContext?.midPx} className="text-xl font-normal" />
         </div>
       </div>
 
@@ -164,8 +181,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className={`flex max-[770px]:pb-2 py-3 flex-wrap flex-1 max-[770px]:px-2 px-4 flex-col justify-center
-         space-y-2 relative `}
+              className="flex max-[770px]:pb-2 py-3 flex-wrap flex-1 max-[770px]:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
               <div className="flex flex-col space-y-1">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1]">{item.label}</div>
@@ -226,10 +242,11 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`py-1 px-3 my-2 text-base rounded-2xl transition-all duration-200 cursor-pointer
-            ${
-              selectedTab === tab ? 'text-[#0F0816] bg-[#E8E0F1]' : 'text-[#E8E0F1] bg-[#FFFFFF0F]'
-            }`}
+                className={`py-1 px-3 my-2 text-base rounded-2xl transition-all duration-200 cursor-pointer ${
+                  selectedTab === tab
+                    ? 'text-[#0F0816] bg-[#E8E0F1]'
+                    : 'text-[#E8E0F1] bg-[#FFFFFF0F]'
+                }`}
               >
                 {tab}
               </button>
@@ -250,45 +267,21 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               ))}
             </div>
             <div className="overflow-y-auto max-h-96 sm:w-full w-[200%]">
-              {paginatedAssets?.length === 0 ? (
-                <div className="flex justify-center items-center w-full">
-                  <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
-                </div>
-              ) : paginatedAssets.length > 0 ? (
-                paginatedAssets.map(([key, value]) => (
-                  <AssetItem
-                    key={key}
-                    assetKey={key}
-                    value={value}
-                    selectedAsset={selectAsset}
-                    setSelectedAsset={setSeletAsset}
-                  />
+              {filteredAssets.length > 0 ? (
+                filteredAssets.map(([key, value]) => (
+                  <div key={key} onClick={() => handleAssetSelect(key)}>
+                    <AssetItem
+                      assetKey={key}
+                      value={value}
+                      selectedAsset={selectedAsset}
+                      setSelectedAsset={() => handleAssetSelect(key)}
+                    />
+                  </div>
                 ))
               ) : (
                 <div className="p-4 text-center text-gray-400">No assets found.</div>
               )}
             </div>
-          </div>
-
-          {paginatedAssets.length > 0 && (
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={setCurrentPage}
-            />
-          )}
-
-          <div className="m-3 border-t border-[#FFFFFF0F]">
-            <button
-              className="bg-[#5F46F9] w-full rounded-xl py-2 hover:bg-purple-600 mt-3 cursor-pointer"
-              onClick={() => {
-                setSearchTerm('')
-                setIsOpen(false)
-                setSelectedAsset(selectAsset || '')
-              }}
-            >
-              Apply
-            </button>
           </div>
         </div>
       )}

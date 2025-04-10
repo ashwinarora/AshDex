@@ -6,12 +6,9 @@ import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
 import CheckBox from '@/components/common/CheckBox'
 import TPSL, { TPSLType } from './components/TPSL'
+import { IPlaceOrderProps } from '.'
 
-interface LimitOrderProps {
-  selectedAsset: string
-}
-
-const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProps) => {
+const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<number>(0)
   const [amount, setAmount] = useState<number>(0)
@@ -74,7 +71,7 @@ const LimitOrder: React.FC<LimitOrderProps> = ({ selectedAsset }: LimitOrderProp
           <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
         </div>
-        <div className="p-4 pb-8">
+        <div className="p-4  ">
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}

@@ -5,11 +5,13 @@ import MarketOrder from './MarketOrder'
 import TWAP from './TWAP'
 import Scale from './Scale'
 import CustomSelector from './CustomSelector'
+import StopLimit from './StopLimit'
+import StopMarket from './StopMarket'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE'
+type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
 
-interface IPlaceOrderProps {
+export interface IPlaceOrderProps {
   selectedAsset: string
 }
 
@@ -26,6 +28,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return <TWAP selectedAsset={selectedAsset} />
       case 'SCALE':
         return <Scale selectedAsset={selectedAsset} />
+      case 'STOP_LIMIT':
+        return <StopLimit selectedAsset={selectedAsset} />
+      case 'STOP_MARKET':
+        return <StopMarket selectedAsset={selectedAsset} />
       default:
         return null
     }
@@ -33,36 +39,32 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div>
-      <div className="flex border-b border-white/10 pb-3 mb-2.5 items-center justify-evenly space-x-2 p-2 rounded-xl">
+      <div className="flex border-b border-white/10 p-3 mb-2.5 items-center justify-evenly space-x-2  ">
         <button
           onClick={() => setActiveTab('LIMIT')}
-          className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'LIMIT' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
-          }`}
+          className={`tab-btn ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
         >
           Limit
         </button>
 
         <button
           onClick={() => setActiveTab('MARKET')}
-          className={`w-full  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'MARKET' ? 'bg-[#FFFFFF0F] text-white' : ' text-[#8B8BA0]'
-          }`}
+          className={`tab-btn ${activeTab === 'MARKET' && 'tab-btn-active'}`}
         >
           Market
         </button>
 
         <button
-          className={`w-full flex justify-center items-center text-center  py-2 rounded-full transition-colors duration-200 cursor-pointer ${
-            activeTab === 'TWAP' || activeTab === 'SCALE'
-              ? 'bg-[#FFFFFF0F] text-white'
-              : ' text-[#8B8BA0]'
+          className={`tab-btn ${
+            activeTab === 'TWAP' || (activeTab === 'SCALE' && 'tab-btn-active')
           }`}
         >
           <CustomSelector
             options={[
               { value: 'TWAP', label: 'TWAP' },
-              { value: 'SCALE', label: 'SCALE' }
+              { value: 'SCALE', label: 'SCALE' },
+              { value: 'STOP_LIMIT', label: 'Stop Limit' },
+              { value: 'STOP_MARKET', label: 'Stop Market' }
             ]}
             selectedValue={activeTab}
             onChange={(value) => {

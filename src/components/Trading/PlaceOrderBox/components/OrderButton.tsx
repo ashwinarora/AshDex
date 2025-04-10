@@ -13,7 +13,13 @@ import { useMemo } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { TPSLType } from './TPSL'
 
-interface OrderButtonProps {
+type StopOrder = {
+  isMarket: boolean
+  triggerPx: number
+  tpsl: 'sl' | 'tp'
+}
+
+type OrderButtonProps = {
   selectedAsset: string
   isBuy: boolean
   amount: number
@@ -23,6 +29,7 @@ interface OrderButtonProps {
   isPostOnly: boolean
   isReduceOnly: boolean
   tpsl?: TPSLType
+  stopOrder?: StopOrder
 }
 
 const OrderButton = ({
@@ -34,7 +41,8 @@ const OrderButton = ({
   isCross,
   isPostOnly,
   isReduceOnly,
-  tpsl
+  tpsl,
+  stopOrder
 }: OrderButtonProps) => {
   const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId } = useAccount()
@@ -182,7 +190,7 @@ const OrderButton = ({
       }
       onClick={async () => {
         if (!agentWallet) return
-        if (!universe) return
+        if (!universe.length) return
         if (!currentFeeApproval) return
         const res = await sdk.exchange.updateLeverage(
           selectedAsset,
@@ -193,8 +201,25 @@ const OrderButton = ({
         const assetIndex = getUniverseIndex(universe, selectedAsset)
         const szDecimals = universe[assetIndex].szDecimals
         const tif = isPostOnly ? 'Alo' : 'Gtc'
-        const orders: OrderData[] = [
-          {
+        const orders: OrderData[] = []
+        if (stopOrder) {
+          const { isMarket, triggerPx, tpsl } = stopOrder
+          orders.push({
+            assetIndex: assetIndex,
+            isBuy: isBuy,
+            price: formatPrice(limitPrice, szDecimals),
+            size: amount.toFixed(szDecimals),
+            reduceOnly: isReduceOnly,
+            orderType: {
+              trigger: {
+                isMarket: isMarket,
+                triggerPx: formatPrice(triggerPx, szDecimals),
+                tpsl: tpsl
+              }
+            }
+          })
+        } else {
+          orders.push({
             assetIndex: assetIndex,
             isBuy: isBuy,
             price: formatPrice(limitPrice, szDecimals),
@@ -205,8 +230,8 @@ const OrderButton = ({
                 tif: tif
               }
             }
-          }
-        ]
+          })
+        }
         if (tpsl?.isTpsl) {
           if (tpsl.stopLoss > 0) {
             orders.push({

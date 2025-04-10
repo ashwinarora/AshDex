@@ -1,6 +1,6 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
 import { MetaData } from './hyperliquid/hyperLiquidTypes'
-import { MAX_DECIMALS_PERP } from './constants'
+import { MAX_DECIMALS_PERP, TOOLTIP_CONTENTS } from './constants'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -87,4 +87,9 @@ export const formatPrice = (price: number, szDecimals: number): string => {
   const decimals = MAX_DECIMALS_PERP - szDecimals
   const formattedPrice = sigPrice.toFixed(decimals)
   return parseFloat(formattedPrice).toString()
+}
+
+export const getTooltipContent = (key: string): string => {
+  const tooltipItem = TOOLTIP_CONTENTS?.find((item) => item?.key === key)
+  return tooltipItem ? tooltipItem?.content : ''
 }

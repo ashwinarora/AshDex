@@ -24,7 +24,7 @@ const LeverageMargin = ({
   const { universe } = useHyperLiquid()
 
   const maxLeverage = useMemo(() => {
-    if (!universe) return 1
+    if (!universe.length) return 1
     const assetIndex = getUniverseIndex(universe, selectedAsset)
     return universe?.[assetIndex]?.maxLeverage || 1
   }, [universe, selectedAsset])
@@ -49,11 +49,25 @@ const LeverageMargin = ({
               step={1}
               value={leverage}
               onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
-              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none
+    [&::-webkit-slider-thumb]:appearance-none
+    [&::-webkit-slider-thumb]:h-4
+    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:rounded-full
+    [&::-webkit-slider-thumb]:bg-white
+    [&::-webkit-slider-thumb]:cursor-pointer
+    [&::-webkit-slider-thumb]:border-none
+    [&::-moz-range-thumb]:appearance-none
+    [&::-moz-range-thumb]:h-4
+    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:rounded-full
+    [&::-moz-range-thumb]:bg-white
+    [&::-moz-range-thumb]:cursor-pointer
+    [&::-moz-range-thumb]:border-none"
               style={{
                 background:
                   maxLeverage > 1
-                    ? `linear-gradient(to right, #702DF5 0%, #702DF5 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
+                    ? `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
                     : '#2A1B3D'
               }}
               disabled={maxLeverage <= 1}

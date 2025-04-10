@@ -5,15 +5,20 @@ module.exports = {
     extend: {
       colors: {
         aggrid: {
+          primary: '#5F46F9',
+          secondary: '#0F0816',
+          brand: '#10B981',
           background: 'var(--tw-color-aggrid-background)',
-          header: 'var(--tw-color-aggrid-header)',
-          text: 'var(--tw-color-aggrid-text)',
+
           border: 'var(--tw-color-aggrid-border)',
           hover: 'var(--tw-color-aggrid-hover)',
-          headertext: 'var(--tw-color-aggrid-headertext)',
           pagination: 'var(--tw-color-aggrid-pagination)',
           paginationtext: 'var(--tw-color-aggrid-paginationtext)'
         }
+      },
+      fontFamily: {
+        'dm-mono': ['var(--font-dm-mono)'],
+        proxima: ['Proxima Nova', 'sans-serif']
       }
     }
   },
