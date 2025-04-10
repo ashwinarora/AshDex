@@ -69,10 +69,11 @@ const UserData = () => {
             <button
               key={tab.header}
               onClick={() => setActiveTab(index)}
-              className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${activeTab === index
+              className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
+                activeTab === index
                   ? 'border-[#5F46F9] text-[#FFFFFF] rounded-xs'
                   : 'border-transparent text-[#8B8BA0]'
-                }`}
+              }`}
             >
               {tab.header}
             </button>

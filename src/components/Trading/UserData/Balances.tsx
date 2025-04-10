@@ -8,20 +8,9 @@ const Balances = () => {
   const { clearingHouseState, spotState } = useHyperLiquid()
   const isSpot = useIsSpot()
 
-  const clearingHouseColumns = [
-    'Total Balance',
-    'Withdrawable Balance',
-    'Send',
-    'Transfer'
-  ]
-  
-  const spotColumns = [
-    'Coin',
-    'Tokens',
-    'Total Balance',
-    'Hold',
-    'Entry NTL'
-  ]
+  const clearingHouseColumns = ['Total Balance', 'Withdrawable Balance', 'Send', 'Transfer']
+
+  const spotColumns = ['Coin', 'Tokens', 'Total Balance', 'Hold', 'Entry NTL']
 
   if (isSpot) {
     return (
@@ -66,10 +55,7 @@ const Balances = () => {
         <thead>
           <tr>
             {clearingHouseColumns.map((col) => (
-              <th
-                key={col}
-                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
-              >
+              <th key={col} className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left">
                 <div className="flex justify-start items-center gap-1">
                   <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
                   <span>{col}</span>
