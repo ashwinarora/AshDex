@@ -3,7 +3,6 @@
 import { FC } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
-import { usePathname } from 'next/navigation'
 import { useWalletModal } from '@/context/WalletModalContext'
 import nexonLogo from '@/assets/images/logo.svg'
 import solarmoon from '@/assets/images/light_mode.svg'
