@@ -25,9 +25,10 @@ const CRYPTO_ICONS: Record<string, StaticImageData> = {
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
+  type: 'spot' | 'perp'
 }
 
-const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
+const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => {
   const { allMids, perpAssetContext, universe } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -108,9 +109,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     ],
     []
   )
+
   const { isFavorite, toggleFavorite } = useFavorites()
 
-  const isFav = isFavorite(selectedAsset)
+  const isFav = isFavorite(selectedAsset, type)
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -127,13 +129,16 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         ? change24hItem.value
         : '0.00%'
 
-    toggleFavorite({
-      name: selectedAsset,
-      value: assetPrice,
-      index: selectedAsset,
-      price: assetPrice,
-      change24h: change24hValue
-    })
+    toggleFavorite(
+      {
+        name: selectedAsset,
+        value: assetPrice,
+        index: selectedAsset,
+        price: assetPrice,
+        change24h: change24hValue
+      },
+      type
+    )
   }
 
   useEffect(() => {
@@ -184,7 +189,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer   md:static absolute -top-2 -left-2 h-5 w-5"
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {isFavorite(selectedAsset) ? (
+            {isFavorite(selectedAsset, type) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
               <IconStar size={16} className="mr-1" />
@@ -374,6 +379,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                       isInSelectorDropdown={true}
                       price={value}
                       change24h={change24h}
+                      type={type}
                     />
                   )
                 })

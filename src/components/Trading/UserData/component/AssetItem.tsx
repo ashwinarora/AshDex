@@ -19,6 +19,7 @@ interface AssetItemProps {
   isInSelectorDropdown?: boolean
   price?: string | number
   change24h?: string | number
+  type: 'spot' | 'perp'
 }
 
 const AssetItem: React.FC<AssetItemProps> = ({
@@ -28,7 +29,8 @@ const AssetItem: React.FC<AssetItemProps> = ({
   icons = {},
   isInSelectorDropdown = false,
   price: propPrice,
-  change24h: propChange24h
+  change24h: propChange24h,
+  type
 }) => {
   const { universe, perpAssetContext } = useHyperLiquid()
   const { isFavorite, toggleFavorite } = useFavorites()
@@ -151,18 +153,21 @@ const AssetItem: React.FC<AssetItemProps> = ({
           <button
             onClick={(e) => {
               e.stopPropagation()
-              toggleFavorite({
-                name: assetKey,
-                value: price.toString(),
-                index: assetKey,
-                price: price,
-                change24h: priceChangeData.value
-              })
+              toggleFavorite(
+                {
+                  name: assetKey,
+                  value: price.toString(),
+                  index: assetKey,
+                  price: price,
+                  change24h: priceChangeData.value
+                },
+                type
+              )
             }}
             className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer    h-5 w-5"
-            aria-label={isFavorite(assetKey) ? 'Remove from favorites' : 'Add to favorites'}
+            aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
           >
-            {isFavorite(assetKey) ? (
+            {isFavorite(assetKey, type) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
               <IconStar size={16} className="mr-1" />

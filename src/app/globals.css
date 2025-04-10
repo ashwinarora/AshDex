@@ -4,7 +4,7 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
- 
+
   --tw-color-aggrid-background: #1f2937;
 
   --tw-color-aggrid-text: #e5e7eb;
@@ -107,23 +107,22 @@ input {
 }
 
 .nexon-rounded-sm {
-  @apply  rounded-sm   
+  @apply rounded-sm;
 }
-  
+
 .nexon-rounded-md {
-  @apply rounded-md
+  @apply rounded-md;
 }
 
 .nexon-rounded-lg {
-  @apply rounded-lg
+  @apply rounded-lg;
 }
 
 .nexon-rounded-xl {
-  @apply rounded-xl
+  @apply rounded-xl;
 }
 
-
-.nexon-button{
+.nexon-button {
   @apply bg-white/5 backdrop-blur-2xl  py-2 px-4 text-sm hover:bg-white/20 transition-colors duration-200 cursor-pointer active:scale-95;
   @apply overflow-clip;
   @apply max-h-min;

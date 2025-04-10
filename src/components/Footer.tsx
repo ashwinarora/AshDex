@@ -13,7 +13,6 @@ import forwardicon from '@/assets/images/twitter_icon.svg'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 
 const Footer: FC = () => {
-  const pathname = usePathname()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
 
@@ -134,7 +133,7 @@ const Footer: FC = () => {
           {!isConnected ? (
             <button
               onClick={toggleConnectWalletModal}
-              className={`bg-primary font-bold block text-[#FFFFFF] ${pathname == '/spot' ? 'md:block' : 'md:hidden'} text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
+              className={`bg-primary font-bold block text-[#FFFFFF]   text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
             >
               Connect Wallet
             </button>

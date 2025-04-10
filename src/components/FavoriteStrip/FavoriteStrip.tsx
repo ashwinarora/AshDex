@@ -3,20 +3,17 @@
 import { useFavorites } from '@/context/FavoritesContext'
 import FavoriteItem from './FavoriteItem'
 
-const FavoriteStrip = () => {
+const FavoriteStrip = ({ type }: { type: 'spot' | 'perp' }) => {
   const { favorites } = useFavorites()
 
   // Only generate duplicated favorites if there are actually favorites to show
   const duplicatedFavorites =
-    favorites.length > 0
-      ? [
-          ...Array.from({ length: 15 }, (_, i) => favorites[i % favorites.length]),
-          ...Array.from({ length: 15 }, (_, i) => favorites[i % favorites.length])
-        ]
+    favorites[type].length > 0
+      ? [...Array.from({ length: 15 }, (_, i) => favorites[type][i % favorites[type].length])]
       : []
 
   // If no favorites, show nothing or placeholder
-  if (favorites.length === 0) {
+  if (favorites[type].length === 0) {
     return null // Or return a placeholder/empty state
   }
 

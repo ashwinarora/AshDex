@@ -5,28 +5,53 @@ import { useHyperLiquid } from './HyperLiquid'
 interface FavoriteAsset {
   name: string
   value: string
-  index: string // This is the asset name, e.g., "BTC-PERP"
+  index: string
   price?: string | number
   change24h?: string | number
+  type: 'spot' | 'perp'
+}
+
+interface FavoritesData {
+  spot: FavoriteAsset[]
+  perp: FavoriteAsset[]
 }
 
 interface FavoritesContextType {
-  favorites: FavoriteAsset[]
-  addFavorite: (asset: FavoriteAsset) => void
-  removeFavorite: (assetKey: string) => void
-  isFavorite: (assetKey: string) => boolean
-  toggleFavorite: (asset: FavoriteAsset) => void
+  favorites: FavoritesData
+  addFavorite: (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => void
+  removeFavorite: (assetKey: string, type: 'spot' | 'perp') => void
+  isFavorite: (assetKey: string, type: 'spot' | 'perp') => boolean
+  toggleFavorite: (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => void
 }
 
 const FavoritesContext = createContext<FavoritesContextType | undefined>(undefined)
 
-// Default favorites to add when no favorites exist
-const DEFAULT_FAVORITES: FavoriteAsset[] = [
-  { name: 'BTC-PERP', value: '0', index: 'BTC-PERP' },
-  { name: 'ETH-PERP', value: '0', index: 'ETH-PERP' },
-  { name: 'HYPE-PERP', value: '0', index: 'HYPE-PERP' },
-  { name: 'PURR-PERP', value: '0', index: 'PURR-PERP' }
-]
+// Define default assets for each market type
+const DEFAULT_ASSETS = {
+  perp: ['BTC-PERP', 'ETH-PERP', 'HYPE-PERP', 'PURR-PERP'],
+  spot: ['BTC-SPOT', 'ETH-SPOT', 'HYPE-SPOT', 'PURR-SPOT']
+}
+
+// Create default favorites dynamically
+const createDefaultFavorites = (): FavoritesData => {
+  return {
+    perp: DEFAULT_ASSETS.perp.map((asset) => ({
+      name: asset,
+      value: '0',
+      index: asset,
+      type: 'perp'
+    })),
+    spot: DEFAULT_ASSETS.spot.map((asset) => ({
+      name: asset,
+      value: '0',
+      index: asset,
+      type: 'spot'
+    }))
+  }
+}
+
+// Use the function to get default favorites
+const DEFAULT_FAVORITES: FavoritesData = createDefaultFavorites()
 
 // Helper to format price change with amount and percentage
 const formatPriceChange = (currentPrice: number, prevDayPrice: number): string => {
@@ -47,124 +72,104 @@ const formatPriceChange = (currentPrice: number, prevDayPrice: number): string =
 }
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [favorites, setFavorites] = useState<FavoriteAsset[]>([])
+  const [favorites, setFavorites] = useState<FavoritesData>({ spot: [], perp: [] })
   const { allMids, perpAssetContext, universe } = useHyperLiquid()
-  const isInitialized = useRef(false) // Ref to track initialization
+  const isInitialized = useRef(false)
 
-  // --- Load favorites from localStorage on initial render ---
+  // Load favorites from localStorage on initial render
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const storedFavorites = localStorage.getItem('favorites')
 
-      let initialFavorites: FavoriteAsset[] = []
+      let initialFavorites: FavoritesData = {
+        spot: [],
+        perp: []
+      }
 
       if (storedFavorites) {
         try {
           const parsedFavorites = JSON.parse(storedFavorites)
-          if (Array.isArray(parsedFavorites)) {
-            initialFavorites = parsedFavorites
+          if (parsedFavorites.spot && parsedFavorites.perp) {
+            // If either spot or perp is empty, use the defaults for that type
+            initialFavorites = {
+              spot: parsedFavorites.spot.length ? parsedFavorites.spot : DEFAULT_FAVORITES.spot,
+              perp: parsedFavorites.perp.length ? parsedFavorites.perp : DEFAULT_FAVORITES.perp
+            }
           } else {
-            localStorage.removeItem('favorites')
+            // If the stored data is invalid, use the defaults
+            initialFavorites = DEFAULT_FAVORITES
           }
         } catch (error) {
           console.error('[Favorites] Error parsing from localStorage:', error)
-          localStorage.removeItem('favorites')
+          initialFavorites = DEFAULT_FAVORITES
         }
+      } else {
+        // If no stored favorites, use the defaults
+        initialFavorites = DEFAULT_FAVORITES
       }
 
-      // If no favorites exist or the array is empty, add default favorites
-      if (initialFavorites.length === 0) {
-        initialFavorites = DEFAULT_FAVORITES.map((fav) => {
-          // Try to populate with current price data if available
-          const price = allMids ? String(allMids[fav.index] ?? '0') : '0'
-
-          // Calculate 24h price change if data is available
-          let change24h = '0'
-          if (universe && perpAssetContext) {
-            const assetIndex = universe.findIndex((asset) => asset.name === fav.index)
-            if (assetIndex !== -1 && perpAssetContext[assetIndex]) {
-              const currentPrice = perpAssetContext[assetIndex].midPx
-              const prevDayPrice = perpAssetContext[assetIndex].prevDayPx
-
-              if (prevDayPrice && currentPrice && prevDayPrice > 0) {
-                change24h = formatPriceChange(currentPrice, prevDayPrice)
-              }
-            }
-          }
-
-          return {
-            ...fav,
-            price,
-            change24h
-          }
-        })
-        // Save default favorites to localStorage
-        localStorage.setItem('favorites', JSON.stringify(initialFavorites))
-      }
-
+      // Always save the initial favorites back to localStorage
+      localStorage.setItem('favorites', JSON.stringify(initialFavorites))
       setFavorites(initialFavorites)
       isInitialized.current = true
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // --- Update favorites when perpAssetContext or allMids changes ---
+  // Update favorites when perpAssetContext or allMids changes
   useEffect(() => {
-    // Skip if not initialized or if we don't have the required data
     if (
       !isInitialized.current ||
-      favorites.length === 0 ||
+      (!favorites.perp.length && !favorites.spot.length) ||
       !perpAssetContext ||
-      perpAssetContext.length === 0 ||
       !universe ||
-      universe.length === 0 ||
       !allMids
     ) {
       return
     }
 
-    const updatedFavorites = favorites.map((favorite) => {
-      const assetIndex = universe.findIndex((asset) => asset.name === favorite.index)
+    const updateFavoritesList = (favoritesList: FavoriteAsset[]) => {
+      return favoritesList.map((favorite) => {
+        const assetIndex = universe.findIndex((asset) => asset.name === favorite.index)
 
-      // If we can't find the asset in the universe, return it unchanged
-      if (assetIndex === -1 || !perpAssetContext[assetIndex]) {
-        return favorite
-      }
-
-      // Get current price data
-      const currentPrice = perpAssetContext[assetIndex].midPx
-      const prevDayPrice = perpAssetContext[assetIndex].prevDayPx
-
-      // Update price if available
-      const newPrice = allMids[favorite.index]
-        ? `$${allMids[favorite.index].toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          })}`
-        : favorite.price
-
-      // Update change24h if available
-      let newChange24h = favorite.change24h
-      if (currentPrice && prevDayPrice && prevDayPrice > 0) {
-        newChange24h = formatPriceChange(currentPrice, prevDayPrice)
-      }
-
-      // Only create a new object if something changed
-      if (
-        String(newPrice) !== String(favorite.price) ||
-        String(newChange24h) !== String(favorite.change24h)
-      ) {
-        return {
-          ...favorite,
-          price: newPrice,
-          change24h: newChange24h
+        if (assetIndex === -1 || !perpAssetContext[assetIndex]) {
+          return favorite
         }
-      }
 
-      return favorite
-    })
+        const currentPrice = perpAssetContext[assetIndex].midPx
+        const prevDayPrice = perpAssetContext[assetIndex].prevDayPx
 
-    // Only update state and localStorage if something actually changed
+        const newPrice = allMids[favorite.index]
+          ? `$${allMids[favorite.index].toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}`
+          : favorite.price
+
+        let newChange24h = favorite.change24h
+        if (currentPrice && prevDayPrice && prevDayPrice > 0) {
+          newChange24h = formatPriceChange(currentPrice, prevDayPrice)
+        }
+
+        if (
+          String(newPrice) !== String(favorite.price) ||
+          String(newChange24h) !== String(favorite.change24h)
+        ) {
+          return {
+            ...favorite,
+            price: newPrice,
+            change24h: newChange24h
+          }
+        }
+
+        return favorite
+      })
+    }
+
+    const updatedFavorites = {
+      spot: updateFavoritesList(favorites.spot),
+      perp: updateFavoritesList(favorites.perp)
+    }
+
     const updatedJson = JSON.stringify(updatedFavorites)
     const currentJson = JSON.stringify(favorites)
 
@@ -174,36 +179,44 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     }
   }, [perpAssetContext, allMids, universe, favorites])
 
-  // --- Favorite Management Functions ---
-
-  const addFavorite = (asset: FavoriteAsset) => {
-    if (!isFavorite(asset.index)) {
-      const existingData = favorites.find((f) => f.index === asset.index)
+  const addFavorite = (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
+    if (!isFavorite(asset.index, type)) {
+      const existingData = favorites[type].find((f) => f.index === asset.index)
       const newFavorite: FavoriteAsset = {
         ...asset,
+        type,
         price: asset.price ?? existingData?.price ?? String(allMids[asset.index] ?? '0'),
         change24h: asset.change24h ?? existingData?.change24h ?? '0'
       }
-      setFavorites((prev) => [...prev, newFavorite])
-      localStorage.setItem('favorites', JSON.stringify([...favorites, newFavorite]))
+
+      const updatedFavorites = {
+        ...favorites,
+        [type]: [...favorites[type], newFavorite]
+      }
+
+      setFavorites(updatedFavorites)
+      localStorage.setItem('favorites', JSON.stringify(updatedFavorites))
     }
   }
 
-  const removeFavorite = (assetKey: string) => {
-    const updatedFavorites = favorites.filter((fav) => fav.index !== assetKey)
+  const removeFavorite = (assetKey: string, type: 'spot' | 'perp') => {
+    const updatedFavorites = {
+      ...favorites,
+      [type]: favorites[type].filter((fav) => fav.index !== assetKey)
+    }
     setFavorites(updatedFavorites)
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites))
   }
 
-  const isFavorite = (assetKey: string) => {
-    return favorites.some((fav) => fav.index === assetKey)
+  const isFavorite = (assetKey: string, type: 'spot' | 'perp') => {
+    return favorites[type].some((fav) => fav.index === assetKey)
   }
 
-  const toggleFavorite = (asset: FavoriteAsset) => {
-    if (isFavorite(asset.index)) {
-      removeFavorite(asset.index)
+  const toggleFavorite = (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
+    if (isFavorite(asset.index, type)) {
+      removeFavorite(asset.index, type)
     } else {
-      addFavorite(asset)
+      addFavorite(asset, type)
     }
   }
 
