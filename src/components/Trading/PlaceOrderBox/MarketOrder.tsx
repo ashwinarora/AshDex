@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
@@ -54,16 +53,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             isBuy={isBuy}
           />
         )}
-        {/* <AmountInput
-          selectedAsset={selectedAsset}
-          amount={amount}
-          setAmount={setAmount}
-          total={total}
-          setTotal={setTotal}
-          limitPrice={allMids[selectedAsset]}
-          isReduceOnly={isReduceOnly}
-          isBuy={isBuy}
-        /> */}
         {!isSpot && (
           <LeverageMargin
             selectedAsset={selectedAsset}
