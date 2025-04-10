@@ -70,7 +70,7 @@ const StakeDetails = () => {
 
   return (
     <>
-      <div className="bg-[#0d021f] text-white flex justify-center py-10 w-full">
+      <div className="text-white flex justify-center py-10 w-full">
         <div className="flex flex-col md:flex-row justify-center w-full xl:w-3/5 gap-10 lg:px-0 px-4">
           <div className="space-y-4 w-full lg:w-[65%] max-w-[600px]">
             <div

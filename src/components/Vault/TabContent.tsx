@@ -8,14 +8,19 @@ interface ITabContentProps {
   activeTab: 'Deposit' | 'Withdraw'
   setActiveTab: (tab: 'Deposit' | 'Withdraw') => void
   setIsLoading: (loading: boolean) => void
+  openConfirmingModal: () => void
 }
 
 type TabName = 'Deposit' | 'Withdraw'
 
-const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIsLoading }) => {
+const TabContent: React.FC<ITabContentProps> = ({
+  activeTab,
+  setActiveTab,
+  setIsLoading,
+  openConfirmingModal
+}) => {
   const { isConnected } = useAccount()
   const { toggleConnectWalletModal } = useWalletModal()
-
   const [amount, setAmount] = useState('')
 
   const onTabClick = (tab: 'Deposit' | 'Withdraw') => {
@@ -23,7 +28,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
     setTimeout(() => {
       setActiveTab(tab)
       setIsLoading(false)
-      toggleConnectWalletModal()
+      openConfirmingModal()
     }, 2000)
   }
 

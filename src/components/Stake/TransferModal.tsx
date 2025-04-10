@@ -1,19 +1,23 @@
 import React from 'react'
 import Image from 'next/image'
-import { useWalletModal } from '@/context/WalletModalContext'
 import Modal from '../common/Modal'
 import menuClose from '@/assets/images/close_icon.svg'
 import hyperliquidicon from '@/assets/images/hyperliquid_icon.svg'
 import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 
-function TransferModal() {
-  const { isTransferModalOpen, toggleTransferModal } = useWalletModal()
+type TransferModalProps = {
+  isOpen: boolean
+  onClose: () => void
+}
+
+const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
   const handleCloseModal = () => {
-    toggleTransferModal()
+    onClose()
   }
+
   return (
-    <Modal isOpen={isTransferModalOpen} onClose={handleCloseModal}>
+    <Modal isOpen={isOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full border-[2px] bg-[#0F0816] max-w-lg p-6 rounded-2xl shadow-lg"

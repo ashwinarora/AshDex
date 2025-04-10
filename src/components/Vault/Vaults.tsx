@@ -7,30 +7,34 @@ import { VAULTS_TAB } from '../../utils/constants'
 import ListViewVaults from './ListViewVaults'
 import EnableTrading from './EnableTrading'
 import BoardViewVaults from './BoardViewVaults'
+import { CreateVaultModal } from './CreateVaultModal'
 import chartIcon from '../../assets/images/chart_icon.svg'
 import infoIcon from '../../assets/images/info_icon.svg'
 import walleticon from '@/assets/images/wallet_icon.svg'
 import listicon from '@/assets/images/list_icon.svg'
 import boardicon from '@/assets/images/board_icon.svg'
 import searchnormalicon from '@/assets/images/search-normal.svg'
-import { CreateYaultModal } from './CreateYaultModal'
 
 const Vaults = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list')
+  const [enableModal, setEnableModal] = useState(false)
+  const [createVaultModal, setCreateVaultModal] = useState(false)
+  const [tradingEnabled, setTradingEnabled] = useState(false)
+
   const [selectedTab, setSelectedTab] = useState<(typeof VAULTS_TAB)[number]>('My Vaults')
   const handleEnableTrading = () => {
-    toggleConnectWalletModal()
+    setEnableModal((s) => !s)
   }
 
-  const handleCreateYault = () => {
-    toggleConnectWalletModal()
+  const handleCreateVault = () => {
+    setCreateVaultModal((p) => !p)
   }
 
   return (
     <>
-      <div id="vaults" className="bg-[#0d021f] text-white p-6">
+      <div id="vaults" className="text-white p-6">
         <div className="max-[1450px]:mx-1 mx-10">
           <div className="">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6">
@@ -72,30 +76,33 @@ const Vaults = () => {
               </div>
 
               <div className="flex gap-2">
-                <button
-                  onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
-                  className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
-                >
-                  {!isConnected && (
-                    <Image
-                      height={20}
-                      width={20}
-                      src={walleticon}
-                      alt="walleticon"
-                      className="w-5 h-5 mr-2"
-                    />
-                  )}
-                  <span className="hidden 2xl:block">
-                    {' '}
-                    {isConnected ? 'Enable Trading' : 'Connect Wallet'}
-                  </span>
-                </button>
-                <button
-                  onClick={handleCreateYault}
-                  className="2xl:px-[20px] px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
-                >
-                  <span className="2xl:block">Create Yault</span>
-                </button>
+                {isConnected && tradingEnabled ? (
+                  <button
+                    onClick={handleCreateVault}
+                    className="2xl:px-[20px] px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                  >
+                    <span className="2xl:block">Create Vault</span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
+                    className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                  >
+                    {!isConnected && (
+                      <Image
+                        height={20}
+                        width={20}
+                        src={walleticon}
+                        alt="walleticon"
+                        className="w-5 h-5 mr-2"
+                      />
+                    )}
+                    <span className="hidden 2xl:block">
+                      {' '}
+                      {isConnected ? 'Enable Trading' : 'Connect Wallet'}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -170,8 +177,12 @@ const Vaults = () => {
           </div>
         </div>
       </div>
-      <EnableTrading />
-      <CreateYaultModal />
+      <EnableTrading
+        enableModal={enableModal}
+        setTradingEnabled={setTradingEnabled}
+        handleEnableTrading={handleEnableTrading}
+      />
+      <CreateVaultModal createVaultModal={createVaultModal} handleCreateVault={handleCreateVault} />
     </>
   )
 }

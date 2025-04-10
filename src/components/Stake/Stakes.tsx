@@ -10,7 +10,7 @@ function Stakes() {
   const { isConnected } = useAccount()
   const [isViewHistory, setIsViewHistory] = useState(false)
   return (
-    <div className="bg-[#0d021f] p-4 overflow-x-hidden">
+    <div className="p-4 overflow-x-hidden">
       <div
         className={`w-full my-2 gap-5 max-[1315px]:px-1 ${
           isConnected && !isViewHistory

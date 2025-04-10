@@ -1,7 +1,6 @@
 'use client'
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { useWalletModal } from '@/context/WalletModalContext'
 import Modal from '../common/Modal'
 import Loading from '../common/Loading'
 import usdcicon from '@/assets/images/usdc_icon.svg'
@@ -9,13 +8,18 @@ import depositusdcicon from '@/assets/images/depositusdc_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import DropDown from '@/assets/images/tabler_chevron-down.svg'
 
-function EnableTrading() {
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
+type Props = {
+  enableModal: boolean
+  handleEnableTrading: () => void
+  setTradingEnabled: (value: boolean) => void
+}
+
+function EnableTrading({ enableModal, handleEnableTrading, setTradingEnabled }: Props) {
   const [amount, setAmount] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
 
   const handleCloseModal = () => {
-    toggleConnectWalletModal()
+    handleEnableTrading()
   }
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -25,16 +29,17 @@ function EnableTrading() {
     }
   }
 
-  const onDepositlick = () => {
+  const onDepositClick = () => {
     setIsLoading(true)
     setTimeout(() => {
       setIsLoading(false)
-      toggleConnectWalletModal()
+      setTradingEnabled(true)
+      handleEnableTrading()
     }, 3000)
   }
 
   return (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+    <Modal isOpen={enableModal} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full max-w-md border-[2px] bg-[#0F0816] p-6 rounded-2xl shadow-lg"
@@ -106,7 +111,7 @@ function EnableTrading() {
               </button>
               <button
                 disabled={!amount || parseFloat(amount) === 0}
-                onClick={onDepositlick}
+                onClick={onDepositClick}
                 className={`text-base w-1/2 font-semibold px-6 py-3 rounded-2xl ${
                   !amount || parseFloat(amount) === 0
                     ? 'bg-white/10 text-[#8B8BA0] cursor-not-allowed opacity-70'

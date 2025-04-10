@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { useWalletModal } from '@/context/WalletModalContext'
 import InputFeild from '../common/InputFeild'
 import Image from 'next/image'
 import menuClose from '@/assets/images/close_icon.svg'
 import successicon from '../../assets/images/success_icon.svg'
-import Modal from '../common/Modal' // Adjust the path based on your project structure
-
-export const CreateYaultModal = () => {
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
+import Modal from '../common/Modal'
+type Props = {
+  createVaultModal: boolean
+  handleCreateVault: () => void
+}
+export const CreateVaultModal = ({ createVaultModal, handleCreateVault }: Props) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -39,7 +40,7 @@ export const CreateYaultModal = () => {
   }
 
   const handleCloseModal = () => {
-    toggleConnectWalletModal()
+    handleCreateVault()
     setTouchedFields({})
     setFormData({
       name: '',
@@ -70,7 +71,7 @@ export const CreateYaultModal = () => {
   }, [formData])
 
   return (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+    <Modal isOpen={createVaultModal} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full border-[2px] bg-[#0F0816] max-w-[480px] p-6 rounded-2xl shadow-lg"
@@ -107,7 +108,7 @@ export const CreateYaultModal = () => {
             </div>
             <button
               type="submit"
-              onClick={() => toggleConnectWalletModal()}
+              onClick={() => handleCreateVault()}
               className={`py-3 px-4 text-white font-bold w-full rounded-2xl bg-[#5F46F9] cursor-pointer hover:bg-[#4a37d4]`}
             >
               View Vault

@@ -18,7 +18,7 @@ function LendBorrowDetails() {
 
   return (
     <>
-      <div className="p-6 bg-[#0d021f]">
+      <div className="p-6">
         <div className="flex items-center text-[#8B8BA0] text-sm font-medium px-2 gap-x-2.5">
           <span>Market</span>
           <span>

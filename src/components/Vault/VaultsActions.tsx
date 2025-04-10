@@ -8,6 +8,11 @@ import VaultConfirmingTransaction from './VaultConfirmingTransaction'
 function VaultsActions() {
   const [activeTab, setActiveTab] = useState<'Deposit' | 'Withdraw'>('Deposit')
   const [isLoading, setIsLoading] = useState(false)
+  const [isConfirmingOpen, setIsConfirmingOpen] = useState(false)
+
+  const openConfirmingModal = () => {
+    setIsConfirmingOpen((p) => !p)
+  }
   return (
     <>
       <div className="bg-gradient-to-b from-white/5 to-gray-500/5 rounded-xl border-2 border-white/10 backdrop-blur-[40px]">
@@ -44,10 +49,16 @@ function VaultsActions() {
             setActiveTab={setActiveTab}
             activeTab={activeTab}
             setIsLoading={setIsLoading}
+            openConfirmingModal={openConfirmingModal}
           />
         )}
       </div>
-      <VaultConfirmingTransaction activeTab={activeTab} setActiveTab={setActiveTab} />
+      <VaultConfirmingTransaction
+        isConfirmingOpen={isConfirmingOpen}
+        openConfirmingModal={openConfirmingModal}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+      />
     </>
   )
 }

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import { useWalletModal } from '@/context/WalletModalContext'
 import Modal from '../common/Modal'
 import VaultSuccessHistory from './VaultSuccessHistory'
 import menuClose from '@/assets/images/close_icon.svg'
@@ -10,23 +9,28 @@ import successicon from '@/assets/images/success_icon.svg'
 interface VaultConfirmingTransactionProps {
   activeTab: 'Deposit' | 'Withdraw'
   setActiveTab: (tab: 'Deposit' | 'Withdraw') => void
+  isConfirmingOpen: boolean
+  openConfirmingModal: () => void
 }
 
-const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({ activeTab }) => {
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
+const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
+  activeTab,
+  isConfirmingOpen,
+  openConfirmingModal
+}) => {
   const [step, setStep] = useState(1)
   const [showSuccess, setShowSuccess] = useState(false)
   const [isFinalSuccess, setIsFinalSuccess] = useState(false)
 
   const handleCloseModal = () => {
-    toggleConnectWalletModal()
+    openConfirmingModal()
   }
 
   useEffect(() => {
     let timer1: NodeJS.Timeout
     let timer2: NodeJS.Timeout
     let timer3: NodeJS.Timeout
-    if (isModalOpen) {
+    if (isConfirmingOpen) {
       setShowSuccess(false)
       setStep(1)
       timer1 = setTimeout(() => {
@@ -45,10 +49,10 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
       clearTimeout(timer2)
       clearTimeout(timer3)
     }
-  }, [isModalOpen])
+  }, [isConfirmingOpen])
 
   return (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+    <Modal isOpen={isConfirmingOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
         className="w-full border-[2px] bg-[#0F0816] max-w-md p-6 rounded-2xl shadow-lg"

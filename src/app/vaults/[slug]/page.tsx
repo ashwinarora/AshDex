@@ -38,7 +38,7 @@ export default function VaultDetails() {
 
   return (
     <>
-      <div className="w-full lg:px-14 md:px-10 px-4 bg-[#0d021f] pt-5">
+      <div className="w-full lg:px-14 md:px-10 px-4 pt-5">
         <Breadcrumbs mainTitle="Vaults" subtitle="WETH" />
         <div className="grid md:grid-cols-4 gap-5 mt-5">
           <div className="md:col-span-3 space-y-6">
