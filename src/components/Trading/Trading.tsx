@@ -8,7 +8,6 @@ import UserData from './UserData/UserData'
 import useIsSpot from '@/hooks/useIsSpot'
 
 const Trading = () => {
-  const { isConnected } = useAccount()
   const isSpot = useIsSpot()
   const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE-SPOT' : 'BTC-PERP')
 
