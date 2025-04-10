@@ -167,10 +167,10 @@ const placeSpotOrder = async ({
   isBuy,
   limitPrice,
   amount,
-  isPostOnly,
+  isPostOnly
 }: {
-  spotMeta: SpotMeta,
-  spotAssetContext: IWebData2['spotAssetCtxs'],
+  spotMeta: SpotMeta
+  spotAssetContext: IWebData2['spotAssetCtxs']
   agentWallet: PrivateKeyAccount
   isTestnet: boolean
   hyperliquidAxios: AxiosInstance
@@ -181,7 +181,8 @@ const placeSpotOrder = async ({
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
-  const assetIndex = spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
+  const assetIndex =
+    spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
   const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
   if (!tokenData) return
   const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
@@ -218,7 +219,8 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId } = useAccount()
-  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } = useHyperLiquid()
+  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } =
+    useHyperLiquid()
   const { toggleConnectWalletModal } = useWalletModal()
   const isSpot = useIsSpot()
   const { signTypedDataAsync } = useSignTypedData()

@@ -24,7 +24,7 @@ const AmountInputSpot = ({
   total,
   setTotal,
   limitPrice,
-  isBuy,
+  isBuy
 }: AmountInputSpotProps) => {
   const { spotState } = useHyperLiquid()
   const [usdPercent, setUsdPercent] = useState(0)
@@ -32,8 +32,8 @@ const AmountInputSpot = ({
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
-      ? spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0
-      : spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0
+      ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
 
   const updateFromAmount = (newAmount: number) => {
@@ -91,7 +91,9 @@ const AmountInputSpot = ({
             onChange={(e) => updateFromTotal(parseFloat(e.target.value) || 0)}
             className="w-full rounded-md p-2 focus:outline-none text-xl font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">USD</span>
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+            USD
+          </span>
         </div>
       </div>
 
@@ -109,7 +111,7 @@ const AmountInputSpot = ({
             onChange={(e) => updateFromPercent(parseFloat(e.target.value) || 0)}
             className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
             style={{
-              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`,
+              background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
             }}
           />
           <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
