@@ -1,11 +1,16 @@
-import React from 'react'
-
-import { Breadcrumbs } from '@/components/common/Breadcrumbs'
+'use client'
+import React, { useRef, useState } from 'react'
 import Image from 'next/image'
-import lido from '../../../assets/images/lido.svg'
 import vaultsDetailsData from '@/utils/VaultDetails.json'
+import { ORDER_INTERVALS, VAULT_TAB } from '@/utils/constants'
 import { ValutsDetailsCard } from '@/components/Vault/ValutsDetailsCard'
 import { PerformanceCard } from '@/components/Vault/PerformanceCard'
+import { Breadcrumbs } from '@/components/common/Breadcrumbs'
+import TabsVaultsDetails from '@/components/Vault/TabsVaultsDetails'
+import VaultsTabs from '@/components/Vault/VaultsTabs'
+import VaultsActions from '@/components/Vault/VaultsActions'
+import lido from '../../../assets/images/lido.svg'
+import copyicon from '@/assets/images/copy_icon.svg'
 
 export interface PerformanceItem {
   value: string
@@ -15,7 +20,22 @@ export interface PerformanceItem {
 }
 
 export default function VaultDetails() {
-  const { vault, performance } = vaultsDetailsData
+  const { vault, performance, vaultsDescription } = vaultsDetailsData
+  const leaderRef = useRef<HTMLSpanElement | null>(null)
+  const strategiesRef = useRef<HTMLSpanElement | null>(null)
+  const [copiedRef, setCopiedRef] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState(0)
+  const [selectedInterval, setSelectedInterval] = useState<(typeof ORDER_INTERVALS)[number]>('1D')
+
+  const handleCopy = (ref: React.RefObject<HTMLSpanElement | null>, refName: string) => {
+    if (ref.current) {
+      const text = ref.current.innerText
+      navigator.clipboard.writeText(text)
+      setCopiedRef(refName)
+      setTimeout(() => setCopiedRef(null), 2000)
+    }
+  }
+
   return (
     <>
       <div className="w-full lg:px-14 md:px-10 px-4 bg-[#0d021f] pt-5">
@@ -49,37 +69,77 @@ export default function VaultDetails() {
                     period={value.period}
                   />
                 ))}
-                {/* {supplyInfo?.map((item, index) => {
-                              return (
-                                <div
-                                  key={index}
-                                  className="bg-gradient-to-b px-5 w-[227px] text-center from-white/5 via-gray-400/5 border-2 border-white/10 backdrop-blur-[48px] p-4 rounded-xl"
-                                >
-                                  <div className="flex justify-start items-center mb-1.5 gap-x-1">
-                                    <p className="text-[#8B8BA0] text-sm font-medium">{item?.label}</p>
-                                    <Image
-                                      className="opacity-80 cursor-pointer"
-                                      src={infoicon}
-                                      alt="infoicon"
-                                      width={15}
-                                      height={15}
-                                    />
-                                  </div>
-                                  <p className="text-white flex items-center justify-start font-medium text-xl">
-                                    {item?.value}
-                                    {item?.difference && (
-                                      <span className="px-[5px] ml-3 rounded-[8px] text-xs font-medium text-[#FFFFFF] py-[2px] bg-[#1F1F30]">
-                                        {item?.difference}
-                                      </span>
-                                    )}
-                                  </p>
-                                </div>
-                              )
-                            })} */}
               </div>
             </div>
+            {/* Tab Section */}
+            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
+              <VaultsTabs
+                tabs={[...VAULT_TAB]}
+                activeTab={activeTab}
+                setActiveTab={setActiveTab}
+                selectedInterval={selectedInterval}
+                setSelectedInterval={setSelectedInterval}
+                intervals={Array.from(ORDER_INTERVALS)}
+              />
+            </div>
+            {/* Leader */}
+            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
+              <div className="flex items-center justify-between">
+                <h3 className="text-base pt-1 px-2 pb-2 text-white font-medium">Leader</h3>
+                <p className="text-[#8B8BA0] flex items-center tracking-normal px-2 font-normal text-sm align-middle">
+                  <span ref={leaderRef}>0x63c6...3a00</span>
+                  <button
+                    onClick={() => handleCopy(leaderRef, 'leader')}
+                    className="px-3 py-1 opacity-70 cursor-pointer"
+                  >
+                    <Image
+                      className={copiedRef === 'leader' ? 'filter-green' : ''}
+                      height={16}
+                      width={16}
+                      src={copyicon}
+                      alt="Copy"
+                    />
+                  </button>
+                </p>
+              </div>
+              <h3 className="text-base pt-1 px-2 text-white font-medium">Description</h3>
+              {vaultsDescription?.map((desc, index) => (
+                <p
+                  key={index}
+                  className="text-[#8B8BA0] tracking-normal px-2 font-normal text-sm align-middle my-2"
+                >
+                  {desc}
+                </p>
+              ))}
+              <p className="text-[#8B8BA0] tracking-normal px-2 font-normal text-sm align-middle my-2">
+                This vault uses the following vaults as component strategies:
+              </p>
+              <p className="text-[#FFFFFF] flex items-center tracking-normal px-2 font-normal text-sm align-middle my-2 opacity-80">
+                <span ref={strategiesRef}>
+                  0x010461c14e146ac35fe42271bdc1134ee31c703a
+                  0x2e3d94f0562703b25c83308a05046ddaf9a8dd14
+                  0x31ca8395cf837de08b24da3f660e77761dfb974b
+                </span>
+                <button
+                  onClick={() => handleCopy(strategiesRef, 'strategies')}
+                  className="px-3 py-1 opacity-70 cursor-pointer"
+                >
+                  <Image
+                    className={copiedRef === 'strategies' ? 'filter-green' : ''}
+                    height={16}
+                    width={16}
+                    src={copyicon}
+                    alt="Copy"
+                  />
+                </button>
+              </p>
+            </div>
+          </div>
+          <div>
+            <VaultsActions />
           </div>
         </div>
+        <TabsVaultsDetails />
       </div>
     </>
   )

@@ -7,18 +7,14 @@ import { switchChain } from 'wagmi/actions'
 interface WalletModalContextProps {
   isModalOpen: boolean
   toggleConnectWalletModal: () => void
-  isTransferModalOpen: boolean
-  toggleTransferModal: () => void
 }
 
 const WalletModalContext = createContext<WalletModalContextProps | undefined>(undefined)
 
 export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const { chainId, isConnected } = useAccount()
   const toggleConnectWalletModal = () => setIsModalOpen((s) => !s)
-  const toggleTransferModal = () => setIsTransferModalOpen((s) => !s)
 
   useEffect(() => {
     if (isConnected && config.chains.length && chainId) {
@@ -31,7 +27,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <WalletModalContext.Provider
-      value={{ isModalOpen, toggleConnectWalletModal, isTransferModalOpen, toggleTransferModal }}
+      value={{ isModalOpen, toggleConnectWalletModal }}
     >
       {children}
     </WalletModalContext.Provider>

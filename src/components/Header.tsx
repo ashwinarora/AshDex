@@ -61,11 +61,12 @@ const Header: FC = () => {
     { name: 'Settings', path: '/settings' }
   ]
 
-  const activeMenu = pathname?.startsWith('/lendBorrow')
-    ? 'Lend/Borrow'
-    : pathname?.startsWith('/stake')
-      ? 'Stake'
-      : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
+  const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
+    if (pathname === '/' || pathname === '') return 'Futures'
+    const firstSegment = pathname?.split('/')[1]
+    return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
+  }
+  const activeMenu = getActiveMenu(pathname, mobileMenu)
 
   const handleMenuClick = (path: string) => {
     router.push(path)

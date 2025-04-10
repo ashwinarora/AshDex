@@ -49,5 +49,30 @@
     "associatedVaults": [
       "0x016f4c45e54e2f3ffc11ae57b0a3ce9d64b669d270bb3c9a5b9d6378bc2e34f3d9d6e7761fa976b"
     ]
-  }
+  },
+  "accountValueChartData": [
+    { "time": "2022-01-17", "value": 0 },
+    { "time": "2022-01-18", "value": 8 },
+    { "time": "2022-01-19", "value": 10 },
+    { "time": "2022-01-20", "value": 20 },
+    { "time": "2022-01-21", "value": 3 },
+    { "time": "2022-01-22", "value": 43 },
+    { "time": "2022-01-23", "value": 41 },
+    { "time": "2022-01-24", "value": 43 },
+    { "time": "2022-01-25", "value": 56 },
+    { "time": "2022-01-26", "value": 46 }
+  ],
+  "pnlChartData": [
+    { "time": "2022-01-17", "value": 5 },
+    { "time": "2022-01-18", "value": 12 },
+    { "time": "2022-01-19", "value": 15 },
+    { "time": "2022-01-20", "value": 25 },
+    { "time": "2022-01-21", "value": 7 },
+    { "time": "2022-01-22", "value": 35 },
+    { "time": "2022-01-23", "value": 38 },
+    { "time": "2022-01-24", "value": 50 },
+    { "time": "2022-01-25", "value": 60 },
+    { "time": "2022-01-26", "value": 70 }
+  ],
+  "vaultsDescription":["The protocol vault you are currently using has been officially deprecated, meaning it will no longer accept any new positions or investments. We understand that this may raise some questions, but rest assured that users can still withdraw their funds at any time that suits them. This flexibility allows you to manage your assets according to your needs. Additionally, it's important to note that liquidations will now be handled as an integral part of the HLP (High Liquidity Pool) system. This change is designed to streamline the process and enhance the overall efficiency of fund management within our platform. We appreciate your understanding and encourage you to reach out if you have any further questions regarding these updates."]
 }

@@ -47,6 +47,8 @@ export const CHART_INTERVALS = [
 ] as const
 
 export const VAULTS_TAB = ['My Vaults', 'New', 'Popular', 'LP', 'Single', 'Stable'] as const
+export const VAULTS_DETAILS_TAB = ['My Vaults', 'All', 'Active', 'Long', 'Short'] as const
+export const VAULT_TAB = ['Account Value', 'PNL'] as const
 
 export const LENDBORROW_TAB = ['Supply APR', 'Borrow APR', 'Interest Rate'] as const
 
@@ -78,6 +80,17 @@ export const LENDBORROW_LOADING_MESSAGES = {
   }
 } as const
 
+export const VAULTSDETAILS_LOADING_MESSAGES = {
+  Deposit: {
+    title: 'Processing your deposit…',
+    subtitle: 'Your transaction has been sent to the blockchain. Please wait for confirmation.'
+  },
+  Withdraw: {
+    title: 'Processing your withdrawal…',
+    subtitle: 'Your transaction has been sent to the blockchain. Please wait for confirmation.'
+  }
+} as const
+
 export const ORDER_INTERVALS = ['1s', '1m', '5m', '15m', '30m', '1H', '4H', '1D', '1W'] as const
 
 export const OPEN_ORDERS_SPOT_COLUMNS = [
@@ -104,6 +117,93 @@ export const OPEN_ORDERS_FEATURE_COLUMNS = [
   { key: 'timestamp', label: 'Timestamp' },
   { key: 'originalsize', label: 'Original Size' }
 ] as const
+
+export const OPEN_ORDERS_VAULTS_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'type', label: 'Type' },
+  { key: 'coin', label: 'Coin' },
+  { key: 'direction', label: 'Direction' },
+  { key: 'size', label: 'Size' },
+  { key: 'originalSize', label: 'Original Size' },
+  { key: 'orderValue', label: 'Order Value' },
+  { key: 'price', label: 'Price' },
+  { key: 'reduce Only', label: 'Reduce Only' },
+  { key: 'triggerConditions', label: 'Trigger Conditions' },
+  { key: 'tpsl', label: 'TP/SL' }
+] as const
+
+export const BALANCE_FEATURE_COLUMNS = [
+  { key: 'totalBalance', label: 'Total Balance' },
+  { key: 'withdrawableBalance', label: 'Withdrawable Balance' },
+  { key: 'send', label: 'Send' },
+  { key: 'transfer', label: 'Transfer' }
+]
+
+export const BALANCE_VAULTS_COLUMNS = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'totalBalance', label: 'Total Balance' },
+  { key: 'availableBalance', label: 'Available Balance' },
+  { key: 'usdc', label: 'USDC Value' },
+  { key: 'pnl', label: 'PNL (ROE %)' },
+  { key: 'contract', label: 'Contract' }
+]
+
+export const TWAP_VAULTS_COLUMNS = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'size', label: 'Size' },
+  { key: 'executedSize', label: 'Executed Size' },
+  { key: 'averagePrice', label: 'Average Price' },
+  { key: 'runningTime', label: 'Running Time / Total' },
+  { key: 'reduceOnly', label: 'Reduce Only' },
+  { key: 'Actions', label: 'Actions' }
+]
+
+export const TRADEHISTORY_VAULTS_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'symbol', label: 'Symbol' },
+  { key: 'buysell', label: 'Buy/Sell' },
+  { key: 'price', label: 'Price' },
+  { key: 'quantity', label: 'Quantity' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'realizedProfit', label: 'Realized Profit' }
+]
+
+export const FUNDINGHISTORY_VAULTS_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'symbol', label: 'Symbol' },
+  { key: 'fundingRate', label: 'Funding Rate' },
+  { key: 'amountPaid', label: 'Amount Paid/Received' }
+]
+
+export const DEPOSITORS_VAULTS_COLUMNS = [
+  { key: 'depositor', label: 'Depositor' },
+  { key: 'vaultAmount', label: 'Vault Amount' },
+  { key: 'unrealizedPNL', label: 'Unrealized PNL' },
+  { key: 'allTimePNL', label: 'All-time PNL' },
+  { key: 'daysFollowing', label: 'Days Following' }
+]
+
+export const DEPOSIT_WITHDRAWALS_VAULTS_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'status', label: 'Status' },
+  { key: 'network', label: 'Network' },
+  { key: 'action', label: 'Action' },
+  { key: 'accountValueChangr', label: 'Account Value Changr' },
+  { key: 'fee', label: 'Fee' }
+]
+
+export const ORDERHISTORY_VAULTS_COLUMNS = [
+  { key: 'time', label: 'Time' },
+  { key: 'symbol', label: 'Symbol' },
+  { key: 'buysell', label: 'Buy/Sell' },
+  { key: 'type', label: 'Type' },
+  { key: 'price', label: 'Price' },
+  { key: 'amount', label: 'Amount' },
+  { key: 'filled', label: 'Filled' },
+  { key: 'avgPrice', label: 'Avg. Price' },
+  { key: 'fee', label: 'Fee' },
+  { key: 'status', label: 'Status' }
+]
 
 export const AGENT_NAME = 'nexon_agent'
 
@@ -238,4 +338,15 @@ export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [
     content:
       'Percentage of rewards retained by the validator. Lower fees = higher net rewards for you.'
   }
+] as const
+export const VAULTS_LIST_COLUMNS = [
+  { label: 'Name', key: 'name' },
+  { label: 'Leader', key: 'leader' },
+  { label: 'APR', key: 'apr' },
+  { label: 'Total Funds', key: 'totalFunds' },
+  { label: 'Your Deposit', key: 'yourDeposit' },
+  { label: 'Age (days)', key: 'age' },
+  { label: 'Snapshot', key: 'snapshot' },
+  { label: 'Status', key: 'status' },
+  { label: 'Actions', key: 'actions' }
 ] as const

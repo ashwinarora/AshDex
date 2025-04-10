@@ -1,3 +1,4 @@
+'use client'
 import Image from 'next/image'
 import infoicon from '../../assets/images/info_icon.svg'
 

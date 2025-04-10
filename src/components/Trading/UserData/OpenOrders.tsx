@@ -1,18 +1,22 @@
 'use client'
-import { Order, SpotOrder, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { Order, SpotOrder, VaultsOrder, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { usePathname } from 'next/navigation'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { useWalletModal } from '@/context/WalletModalContext'
 import Pagination from '@/components/common/Pagination'
-import { OPEN_ORDERS_SPOT_COLUMNS, OPEN_ORDERS_FEATURE_COLUMNS } from '@/utils/constants'
+import NoData from '@/components/common/NoData'
+import {
+  OPEN_ORDERS_SPOT_COLUMNS,
+  OPEN_ORDERS_FEATURE_COLUMNS,
+  OPEN_ORDERS_VAULTS_COLUMNS
+} from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
-import noordericon from '@/assets/images/noorder_icon.svg'
 import deleteicon from '@/assets/images/delete_icon.svg'
+import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 
 const spotOrders: SpotOrder[] = Array.from({ length: 10 }, (_, index) => ({
   time: '11/05/25  12:35:16',
@@ -30,10 +34,26 @@ const spotOrders: SpotOrder[] = Array.from({ length: 10 }, (_, index) => ({
   id: index + 1
 }))
 
+export const vaultsOrders: VaultsOrder[] = Array.from({ length: 10 }, (_, index) => ({
+  id: index + 1,
+  vid: index + 1,
+  time: '12:34:56 UTC',
+  type: 'Limit',
+  coin: ['Bitcoin', 'Binance Coin', 'Shiba Inu', 'Ethereum'][index % 4],
+  symbol: ['BTC', 'BNB', 'SHB', 'ETH'][index % 4],
+  direction: 'Buy',
+  size: '0.25 BTC',
+  originalSize: '0.27 BTC',
+  orderValue: '$15,000',
+  price: '$50,000',
+  reduceOnly: 'No',
+  triggerConditions: 'Trigger @ $59,500',
+  tpsl: 'TP: $62,000\nSL: $58,500'
+}))
+
 const OpenOrders = () => {
   const { address, isConnected } = useAccount()
   const { sdk } = useHyperLiquid()
-  const { toggleConnectWalletModal } = useWalletModal()
   const queryClient = useQueryClient()
   const pathname = usePathname()
   const { data: openOrders, isLoading } = useQuery<Order[]>({
@@ -46,21 +66,62 @@ const OpenOrders = () => {
     initialData: []
   })
   const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(5)
+  const [pageSize, setPageSize] = useState(10)
+
+  function getOrdersLength(
+    pathname: string,
+    spotOrders?: SpotOrder[],
+    openOrders?: Order[],
+    vaultsOrders?: VaultsOrder[]
+  ): number {
+    if (pathname.includes('/spot')) {
+      return spotOrders?.length || 0
+    } else if (pathname?.includes('/vaults')) {
+      return vaultsOrders?.length || 0
+    } else {
+      return openOrders?.length || 0
+    }
+  }
 
   const totalPages = Math.ceil(
-    (pathname === '/spot' ? spotOrders?.length : openOrders?.length) / pageSize
+    getOrdersLength(pathname, spotOrders, openOrders, vaultsOrders) / pageSize
+  )
+
+  const getColumnsByPathname = (pathname: string) => {
+    if (pathname?.includes('/spot')) {
+      return OPEN_ORDERS_SPOT_COLUMNS
+    } else if (pathname?.includes('/vaults')) {
+      return OPEN_ORDERS_VAULTS_COLUMNS
+    } else {
+      return OPEN_ORDERS_FEATURE_COLUMNS
+    }
+  }
+
+  const getDataByPathname = (
+    pathname: string,
+    spotOrders: SpotOrder[],
+    openOrders: Order[],
+    vaultsOrders: VaultsOrder[]
+  ) => {
+    if (pathname?.includes('/spot')) {
+      return spotOrders
+    } else if (pathname?.includes('/vaults')) {
+      return vaultsOrders
+    } else {
+      return openOrders
+    }
+  }
+
+  const data = useMemo(
+    () => getDataByPathname(pathname, spotOrders, openOrders, vaultsOrders),
+    [pathname, spotOrders, openOrders, vaultsOrders]
   )
 
   const paginatedOrders = useMemo(() => {
-    const data = pathname === '/spot' ? spotOrders : openOrders
     return data?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [openOrders, spotOrders, currentPage, pageSize, pathname])
+  }, [data, currentPage, pageSize])
 
-  const selectedColumns = useMemo(() => {
-    return pathname === '/spot' ? OPEN_ORDERS_SPOT_COLUMNS : OPEN_ORDERS_FEATURE_COLUMNS
-  }, [pathname])
-
+  const selectedColumns = useMemo(() => getColumnsByPathname(pathname), [pathname])
   const [columns, setColumns] = useState(selectedColumns)
 
   useEffect(() => {
@@ -127,10 +188,10 @@ const OpenOrders = () => {
           <table className="w-full text-white">
             <thead>
               <tr>
-                {columns.map((col) => (
+                {columns?.map((col) => (
                   <th
                     key={col?.key}
-                    className="pt-3 pb-1 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                    className="pt-3 pb-2 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
                   >
                     <div className="flex justify-start items-center gap-1">
                       {col?.label ? (
@@ -143,7 +204,7 @@ const OpenOrders = () => {
                     </div>
                   </th>
                 ))}
-                {pathname !== '/spot' && (
+                {pathname == '/' && (
                   <th className="px-7">
                     <button
                       className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded cursor-pointer"
@@ -196,43 +257,99 @@ const OpenOrders = () => {
                       </td>
                     </tr>
                   )
+                } else if ('vid' in order) {
+                  return (
+                    <tr key={order.id} className=" border-b border-white/10">
+                      <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        {order?.time}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                        <span className="bg-[#505061] text-xs font-medium text-[#FFFFFF] px-2 py-1 rounded-lg">
+                          {order?.type}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                        <div className="flex items-center gap-x-1">
+                          <Image
+                            src={bitcoinicon}
+                            alt="Bitcoin"
+                            width={27}
+                            height={27}
+                            className="mx-1 cursor-pointer"
+                          />
+                          <div className="flex justify-between flex-col">
+                            {order?.coin}{' '}
+                            <span className="text-[#8B8BA0] pt-0.5 font-normal text-xs">
+                              {order?.symbol}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
+                        {order?.direction}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        {order?.size}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        {order?.originalSize}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        {order?.orderValue}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        {order?.price}
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                        <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
+                          {order?.reduceOnly}
+                        </span>
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <span>{order.triggerConditions}</span>
+                      </td>
+                      <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm whitespace-pre-line">
+                        <span>{order.tpsl}</span>
+                      </td>
+                    </tr>
+                  )
                 } else {
                   return (
                     <tr key={order.id} className=" border-b border-white/10">
                       <td className="py-2.5 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.time}
+                        {order?.time}
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                         <div className="flex flex-col gap-1">
-                          <span>{order.symbol}</span>
+                          <span>{order?.symbol}</span>
                           <span className="text-[#8B8BA0] text-xs font-normal">
-                            {order.symbolText}
+                            {order?.symbolText}
                           </span>
                         </div>
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.type}
+                        {order?.type}
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.side}
+                        {order?.side}
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.price}
+                        {order?.price}
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.amount}
+                        {order?.amount}
                       </td>
                       <td className="py-2.5 pr-7  max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                        {order.filled}
+                        {order?.filled}
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                         <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
-                          {order.reduceOnly}
+                          {order?.reduceOnly}
                         </span>
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                         <span className="text-[#2FA766] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
-                          {order.postOnly}
+                          {order?.postOnly}
                         </span>
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
@@ -242,7 +359,7 @@ const OpenOrders = () => {
                         </div>
                       </td>
                       <td className="py-2.5 pr-7 max-[1025px]:px-7 text-[#7D67FF] font-medium text-sm">
-                        {order.tp_sl}
+                        {order?.tp_sl}
                       </td>
                       <td className="py-2.5 pl-7 max-[1450px]:px-2 text-[#FFFFFF] font-normal text-sm">
                         <Image
@@ -268,24 +385,7 @@ const OpenOrders = () => {
           )}
         </>
       ) : (
-        <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
-          <Image
-            src={noordericon}
-            width={90}
-            height={90}
-            alt={`noordericon`}
-            className="h-[93px] w-[93px] max-[770px]:w-[70px] max-[770px]:h-[70px]"
-          />
-          <span className="font-medium text-center my-2.5 text-base text-[#FFFFFF]">
-            You have no orders.
-          </span>
-          <button
-            onClick={toggleConnectWalletModal}
-            className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
-          >
-            <span className="">Connect Wallet</span>
-          </button>
-        </div>
+        <NoData title="You have no orders." />
       )}
     </div>
   )
