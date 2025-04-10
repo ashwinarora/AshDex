@@ -5,7 +5,7 @@ import { AGENT_NAME, BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { IExtraAgent, MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { IExtraAgent, MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { formatPrice, getUniverseIndex, splitSignature } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useQuery } from '@tanstack/react-query'
@@ -15,6 +15,7 @@ import { TPSLType } from './TPSL'
 import useIsSpot from '@/hooks/useIsSpot'
 import { AxiosInstance } from 'axios'
 import { PrivateKeyAccount } from 'viem'
+import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 
 type StopOrder = {
   isMarket: boolean
@@ -156,6 +157,53 @@ const placePerpOrder = async ({
   console.log(placeOrderRes)
 }
 
+const placeSpotOrder = async ({
+  spotMeta,
+  spotAssetContext,
+  agentWallet,
+  isTestnet,
+  hyperliquidAxios,
+  selectedAsset,
+  isBuy,
+  limitPrice,
+  amount,
+  isPostOnly,
+}: {
+  spotMeta: SpotMeta,
+  spotAssetContext: IWebData2['spotAssetCtxs'],
+  agentWallet: PrivateKeyAccount
+  isTestnet: boolean
+  hyperliquidAxios: AxiosInstance
+  selectedAsset: string
+  isBuy: boolean
+  limitPrice: number
+  amount: number
+  isPostOnly: boolean
+}) => {
+  if (!spotMeta.tokens) return
+  const assetIndex = spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
+  const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+  if (!tokenData) return
+  const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+    grouping: 'na',
+    orders: [
+      {
+        assetIndex: assetIndex,
+        isBuy: isBuy,
+        price: formatPrice(limitPrice, 4),
+        size: formatPrice(amount, tokenData.szDecimals),
+        reduceOnly: false,
+        orderType: {
+          limit: {
+            tif: isPostOnly ? 'Alo' : 'Gtc'
+          }
+        }
+      }
+    ]
+  })
+  console.log(res)
+}
+
 const OrderButton = ({
   selectedAsset,
   isBuy,
@@ -170,8 +218,7 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const { isRendered } = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId } = useAccount()
-  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } =
-    useHyperLiquid()
+  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } = useHyperLiquid()
   const { toggleConnectWalletModal } = useWalletModal()
   const isSpot = useIsSpot()
   const { signTypedDataAsync } = useSignTypedData()
@@ -316,30 +363,19 @@ const OrderButton = ({
       onClick={async () => {
         if (!agentWallet) return
         if (!currentFeeApproval) return
-        if (!spotMeta.tokens) return
         if (isSpot) {
-          const assetIndex =
-            spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
-          const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
-          if (!tokenData) return
-          const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-            grouping: 'na',
-            orders: [
-              {
-                assetIndex: assetIndex,
-                isBuy: isBuy,
-                price: formatPrice(limitPrice, 4),
-                size: formatPrice(amount, tokenData.szDecimals),
-                reduceOnly: false,
-                orderType: {
-                  limit: {
-                    tif: isPostOnly ? 'Alo' : 'Gtc'
-                  }
-                }
-              }
-            ]
+          await placeSpotOrder({
+            spotMeta,
+            spotAssetContext,
+            agentWallet,
+            isTestnet,
+            hyperliquidAxios,
+            selectedAsset,
+            isBuy,
+            limitPrice,
+            amount,
+            isPostOnly
           })
-          console.log(res)
         } else {
           await placePerpOrder({
             sdk,
