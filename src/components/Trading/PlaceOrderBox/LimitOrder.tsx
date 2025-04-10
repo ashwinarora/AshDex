@@ -52,8 +52,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </span>
           </div>
         </div>
-        {
-          isSpot ?
+        {isSpot ? (
           <AmountInputSpot
             selectedAsset={selectedAsset}
             amount={amount}
@@ -63,7 +62,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             limitPrice={limitPrice}
             isBuy={isBuy}
           />
-          :
+        ) : (
           <AmountInput
             selectedAsset={selectedAsset}
             amount={amount}
@@ -74,7 +73,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
           />
-        }
+        )}
         {!isSpot && (
           <LeverageMargin
             selectedAsset={selectedAsset}

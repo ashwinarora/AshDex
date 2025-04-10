@@ -17,9 +17,9 @@ interface AmountInputSpotProps {
 }
 
 const isMatch = (a: string, b: string): boolean => {
-  const baseA = a.split("-")[0];
-  const baseB = b.split("-")[0];
-  return baseA === baseB;
+  const baseA = a.split('-')[0]
+  const baseB = b.split('-')[0]
+  return baseA === baseB
 }
 
 const AmountInputSpot = ({
@@ -36,12 +36,12 @@ const AmountInputSpot = ({
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
-    if (isBuy) return spotState.balances.find((balance) => balance.coin === "USDC")?.total
+    if (isBuy) return spotState.balances.find((balance) => balance.coin === 'USDC')?.total
     return spotState.balances.find((balance) => isMatch(balance.coin, selectedAsset))?.total
   }, [spotState, selectedAsset, isBuy])
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!maxAllowed) return
+    if (!maxAllowed) return
     const newAmount = parseFloat(e.target.value) || 0
     setAmount(newAmount)
     setTotal(limitPrice * newAmount)
@@ -49,7 +49,7 @@ const AmountInputSpot = ({
   }
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!maxAllowed) return
+    if (!maxAllowed) return
     const newTotal = parseFloat(e.target.value) || 0
     setTotal(newTotal)
     setAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
@@ -57,7 +57,7 @@ const AmountInputSpot = ({
   }
 
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if(!maxAllowed) return
+    if (!maxAllowed) return
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
     setAmount((newUsdPercent * maxAllowed) / 100 / limitPrice)
