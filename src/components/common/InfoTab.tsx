@@ -78,7 +78,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
 
   return (
     <div
-      className={`flex justify-center max-[770px]:flex-col flex-row gap-4 px-3 py-6 h-[90vh] max-[770px]:h-full rounded-xl text-white ${
+      className={`flex justify-center max-[770px]:flex-col flex-row gap-4 px-3 py-6 h-full rounded-xl text-white ${
         isLoading ? 'items-center' : ''
       }`}
     >
@@ -128,7 +128,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
               </div>
             </div>
             <p className="text-sm text-[#8B8BA0] font-normal">Info</p>
-            <div className="h-[57vh] mt-2 xl:h-[50vh] 2xl:h-[60vh] max-[770px]:h-full font-normal overflow-y-auto text-sm text-[#FFFFFF] space-y-4 pr-2">
+            <div className="  font-normal overflow-y-auto text-sm text-[#FFFFFF] space-y-4 pr-2">
               {(coinInfo?.description ?? '')
                 ?.split('\n')
                 .map((line: string, index: number) => <div key={index}>{line}</div>)}
