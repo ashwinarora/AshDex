@@ -153,7 +153,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               e.stopPropagation()
               toggleFavorite({
                 name: assetKey,
-                value: price,
+                value: price.toString(),
                 index: assetKey,
                 price: price,
                 change24h: priceChangeData.value
