@@ -254,7 +254,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
       {/* Settings Dropdown */}
       {isSettingsOpen && (
-        <div className="absolute -right-3 border-2 border-white/10 top-12 mt-2 w-48 bg-[#0F0816] rounded-2xl shadow-lg">
+        <div className="absolute -right-3 border-2 border-white/10 top-12 mt-2 w-48 bg-secondary rounded-2xl shadow-lg">
           <ul className="p-2 text-white">
             {settingsOptions?.map((option, index) => (
               <li
@@ -269,7 +269,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       )}
       {isOpen && (
-        <div className="absolute left-0 top-12 2xl:top-[60px] z-50 w-[800px] max-w-[95vw] bg-[#0F0816] rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
+        <div className="absolute left-0 top-12 2xl:top-[60px] z-50 w-[800px] max-w-[95vw] bg-secondary rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
           {/* Search Input */}
           <div className="p-4">
             <div className="border-2 border-[#FFFFFF15] bg-[#FFFFFF08] rounded-md flex items-center px-4 py-2">
@@ -313,7 +313,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 onClick={() => setSelectedTab(tab)}
                 className={`md:py-2  md:px-5 px-2 py-0  text-xs md:text-sm rounded-full transition-all duration-200 cursor-pointer ${
                   selectedTab === tab
-                    ? 'text-[#0F0816] bg-white font-medium'
+                    ? 'text-secondary bg-white font-medium'
                     : 'text-white   hover:bg-[#FFFFFF20]'
                 }`}
               >
@@ -324,7 +324,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
           {/* Table Headers */}
           <div className="overflow-auto">
-            <div className="flex text-left px-4 py-3 border-t border-b border-[#FFFFFF10] bg-[#0F0816] text-[#8B8BA0] sticky top-0 text-sm font-medium">
+            <div className="flex text-left px-4 py-3 border-t border-b border-[#FFFFFF10] bg-secondary text-[#8B8BA0] sticky top-0 text-sm font-medium">
               <div className="w-1/12"></div> {/* Checkbox column */}
               <div className="w-3/12">Market</div>
               <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
@@ -384,7 +384,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </div>
 
           {/* Apply Button */}
-          <div className="p-4 bg-[#0F0816] hidden">
+          <div className="p-4 bg-secondary hidden">
             <button
               onClick={() => {
                 // Handle selection confirmation

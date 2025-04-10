@@ -90,7 +90,7 @@ const OrderButton = ({
       <button
         type="button"
         className={
-          'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
+          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
         }
         onClick={() => {
           toggleConnectWalletModal()
@@ -105,7 +105,7 @@ const OrderButton = ({
       <button
         type="button"
         className={
-          'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
+          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
         }
         onClick={async () => {
           if (!chainId) return
@@ -146,7 +146,7 @@ const OrderButton = ({
       <button
         type="button"
         className={
-          'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
+          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
         }
         onClick={async () => {
           if (!chainId) return
@@ -186,7 +186,7 @@ const OrderButton = ({
     <button
       type="button"
       className={
-        'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
+        'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
       }
       onClick={async () => {
         if (!agentWallet) return

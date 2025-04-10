@@ -23,7 +23,7 @@ const Switch: React.FC<SwitchProps> = ({ label, setIsChecked, isChecked }) => {
   return (
     <label className="flex items-center gap-2 cursor-pointer">
       <div
-        className={`relative inline-block w-9.5 h-5.5 ${checked ? 'bg-[#5F46F9]' : 'bg-white/30'} rounded-full transition-colors`}
+        className={`relative inline-block w-9.5 h-5.5 ${checked ? 'bg-primary' : 'bg-white/30'} rounded-full transition-colors`}
         onClick={handleChange}
       >
         <div

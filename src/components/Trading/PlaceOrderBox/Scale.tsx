@@ -339,7 +339,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             type="submit"
             disabled={totalSize! > maxAllowedUsd}
             className={
-              'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
+              'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer'
             }
           >
             Scale Buy ({totalOrders} Orders)

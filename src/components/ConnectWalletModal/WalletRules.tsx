@@ -18,14 +18,14 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onAgree, onClose }) => {
       <div className="mt-6 flex flex-col space-y-3">
         <button
           className={
-            'w-full py-3 text-sm rounded-xl text-white font-bold bg-[#5F46F9] cursor-pointer'
+            'w-full py-3 text-sm rounded-xl text-white font-bold bg-primary cursor-pointer'
           }
           onClick={onAgree}
         >
           I agree to the Rules
         </button>
         <button
-          className="w-full py-2 font-medium rounded-xl bg-[#0F0816] hover:bg-[#36303B] text-[#8B8BA0] cursor-pointer"
+          className="w-full py-2 font-medium rounded-xl bg-secondary hover:bg-[#36303B] text-[#8B8BA0] cursor-pointer"
           onClick={onClose}
         >
           Cancel

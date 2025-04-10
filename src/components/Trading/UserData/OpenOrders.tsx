@@ -281,7 +281,7 @@ const OpenOrders = () => {
           </span>
           <button
             onClick={toggleConnectWalletModal}
-            className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+            className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
           >
             <span className="">Connect Wallet</span>
           </button>

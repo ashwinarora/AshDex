@@ -34,7 +34,7 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
               key={tab}
               onClick={() => setActiveTab(index)}
               className={`py-2 px-1 font-medium text-base border-b-3 cursor-pointer whitespace-nowrap 
-          ${activeTab === index ? 'border-[#5F46F9] text-white rounded-xs' : 'border-transparent text-[#8B8BA0]'}
+          ${activeTab === index ? 'border-primary text-white rounded-xs' : 'border-transparent text-[#8B8BA0]'}
         `}
             >
               {tab}

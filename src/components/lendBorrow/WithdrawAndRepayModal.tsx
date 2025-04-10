@@ -65,7 +65,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({ type, set
     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="w-full border-[2px] bg-[#0F0816] max-w-md p-6 rounded-2xl shadow-lg"
+        className="w-full border-[2px] bg-secondary max-w-md p-6 rounded-2xl shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Full-Width Header */}
@@ -186,7 +186,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({ type, set
                     amount === '0.00' || amount === '0' || amount === '' || parseFloat(amount) > 100
                   }
                   className={
-                    'py-[12px] px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
+                    'py-[12px] px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer'
                   }
                 >
                   {type}

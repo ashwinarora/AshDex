@@ -134,7 +134,7 @@ const Footer: FC = () => {
           {!isConnected ? (
             <button
               onClick={toggleConnectWalletModal}
-              className={`bg-[#5F46F9] font-bold block text-[#FFFFFF] ${pathname == '/spot' ? 'md:block' : 'md:hidden'} text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
+              className={`bg-primary font-bold block text-[#FFFFFF] ${pathname == '/spot' ? 'md:block' : 'md:hidden'} text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
             >
               Connect Wallet
             </button>

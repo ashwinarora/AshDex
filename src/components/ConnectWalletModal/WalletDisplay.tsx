@@ -23,7 +23,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
   onClose
 }) => {
   return (
-    <div className="w-full flex flex-col items-center justify-center bg-[#0F0816] rounded-2xl shadow-lg">
+    <div className="w-full flex flex-col items-center justify-center bg-secondary rounded-2xl shadow-lg">
       <div className="w-full border border-[#33293B] items-center justify-center bg-[#1c1624] rounded-xl cursor-pointer">
         {hasAgreedToRules ? (
           <div className="py-4 mt-10 mb-12 text-center w-full flex flex-col items-center justify-center rounded-xl">
@@ -72,7 +72,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
       </div>
       {hasAgreedToRules ? (
         <button
-          className="w-full py-3 mt-5 font-bold text-md rounded-xl text-white bg-[#5F46F9] cursor-pointer"
+          className="w-full py-3 mt-5 font-bold text-md rounded-xl text-white bg-primary cursor-pointer"
           onClick={onClose}
         >
           Let&apos;s Go!

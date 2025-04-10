@@ -28,7 +28,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 border-2 border-white/10 bg-[#0F0816] min-w-24 rounded-2xl shadow-lg p-2">
+        <div className="absolute z-50 border-2 border-white/10 bg-secondary min-w-24 rounded-2xl shadow-lg p-2">
           {options.map((option) => (
             <div
               key={option.value}
