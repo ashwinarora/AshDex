@@ -2,28 +2,13 @@
 import React, { useMemo } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-
-// Default icon color by first letter (for coins without icons)
-const ICON_COLORS: Record<string, string> = {
-  A: 'from-blue-500 to-cyan-400',
-  B: 'from-yellow-500 to-orange-400',
-  C: 'from-green-500 to-emerald-400',
-  D: 'from-yellow-400 to-yellow-600',
-  E: 'from-purple-400 to-indigo-500',
-  F: 'from-red-500 to-pink-500',
-  L: 'from-green-400 to-teal-500',
-  R: 'from-orange-500 to-red-500',
-  S: 'from-blue-400 to-indigo-600',
-  T: 'from-purple-500 to-indigo-600',
-  U: 'from-indigo-400 to-blue-600',
-  X: 'from-pink-500 to-rose-500'
-}
-
-// Get gradient for coin without icon
-const getCoinGradient = (symbol: string): string => {
-  const firstLetter = symbol.charAt(0).toUpperCase()
-  return ICON_COLORS[firstLetter] || 'from-gray-400 to-gray-600'
-}
+import {
+  IconStar,
+  IconStarFilled,
+  IconTriangleFilled,
+  IconTriangleInvertedFilled
+} from '@tabler/icons-react'
+import { useFavorites } from '@/context/FavoritesContext'
 
 interface AssetItemProps {
   assetKey: string
@@ -39,7 +24,6 @@ interface AssetItemProps {
 const AssetItem: React.FC<AssetItemProps> = ({
   assetKey,
   value,
-  selectedAsset,
   setSelectedAsset,
   icons = {},
   isInSelectorDropdown = false,
@@ -47,6 +31,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
   change24h: propChange24h
 }) => {
   const { universe, perpAssetContext } = useHyperLiquid()
+  const { isFavorite, toggleFavorite } = useFavorites()
 
   // Find the asset context for this asset
   const assetIndex = useMemo(() => {
@@ -87,8 +72,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
           const isPositive = !changeValue.startsWith('-')
           return {
             value: changeValue,
-            className: isPositive ? 'text-[#4DAA85]' : 'text-[#F45F5F]',
-            raw: parseFloat(changeValue) || 0
+            className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+            raw: parseFloat(changeValue) || 0,
+            isPositive
           }
         }
 
@@ -100,14 +86,15 @@ const AssetItem: React.FC<AssetItemProps> = ({
       const isPositive = Number(changeValue) >= 0
       return {
         value: `${isPositive ? '+' : ''}${Number(changeValue).toFixed(1)}%`,
-        className: isPositive ? 'text-[#4DAA85]' : 'text-[#F45F5F]',
-        raw: Number(changeValue)
+        className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+        raw: Number(changeValue),
+        isPositive
       }
     }
 
     // If no prop is provided, calculate from context
     if (!assetCtx || !assetCtx.prevDayPx || !assetCtx.midPx) {
-      return { value: '0.00%', className: 'text-gray-400', raw: 0 }
+      return { value: '0.00%', className: 'text-gray-400', raw: 0, isPositive: false }
     }
 
     const prevDayPrice = assetCtx.prevDayPx
@@ -118,8 +105,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
     return {
       value: `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`,
-      className: isPositive ? 'text-[#4DAA85]' : 'text-[#F45F5F]',
-      raw: percentageChange
+      className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+      raw: percentageChange,
+      isPositive
     }
   }, [propChange24h, assetCtx])
 
@@ -157,21 +145,29 @@ const AssetItem: React.FC<AssetItemProps> = ({
     return (
       <div
         key={assetKey}
-        onClick={handleClick}
         className="bg-white/5 cursor-pointer rounded-lg border-white/5 last:border-b-0"
       >
-        <div className="flex items-center px-4 py-3 text-white">
-          <div className="w-1/12">
-            <div
-              className={`h-5 w-5 rounded-full border ${
-                selectedAsset === assetKey
-                  ? 'border-[#6366F1] bg-[#6366F1]'
-                  : 'border-[#FFFFFF30] bg-transparent'
-              } flex items-center justify-center`}
-            >
-              {selectedAsset === assetKey && <div className="h-2 w-2 rounded-full bg-white"></div>}
-            </div>
-          </div>
+        <div onClick={handleClick} className="flex items-center px-4 py-3 text-white gap-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation()
+              toggleFavorite({
+                name: assetKey,
+                value: price,
+                index: assetKey,
+                price: price,
+                change24h: priceChangeData.value
+              })
+            }}
+            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer    h-5 w-5"
+            aria-label={isFavorite(assetKey) ? 'Remove from favorites' : 'Add to favorites'}
+          >
+            {isFavorite(assetKey) ? (
+              <IconStarFilled size={16} className="mr-1" />
+            ) : (
+              <IconStar size={16} className="mr-1" />
+            )}
+          </button>
           <div className="w-3/12 flex items-center">
             {icons[assetKey] ? (
               <Image
@@ -183,9 +179,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               />
             ) : (
               <div
-                className={`rounded-full bg-gradient-to-r ${getCoinGradient(
-                  assetKey
-                )} h-8 w-8 flex items-center justify-center mr-2 text-white font-bold`}
+                className={`rounded-full bg-[#6366F1] w-8 h-8 mr-2 flex items-center justify-center text-white font-bold`}
               >
                 {assetKey.substring(0, 1)}
               </div>
@@ -196,7 +190,14 @@ const AssetItem: React.FC<AssetItemProps> = ({
             {universe[assetIndex]?.maxLeverage || 50}×
           </div>
           <div className="w-2/12 text-right font-medium">${formattedPrice}</div>
-          <div className={`w-2/12 text-right font-medium ${priceChangeData.className}`}>
+          <div
+            className={`w-2/12 text-right font-medium ${priceChangeData.className} flex items-center justify-end`}
+          >
+            {priceChangeData.isPositive ? (
+              <IconTriangleFilled size={14} className="mr-1" />
+            ) : (
+              <IconTriangleInvertedFilled size={14} className="mr-1" />
+            )}
             {priceChangeData.value}
           </div>
           <div className="w-2/12 text-right font-medium text-gray-300">{volumeValue}</div>
@@ -205,64 +206,6 @@ const AssetItem: React.FC<AssetItemProps> = ({
       </div>
     )
   }
-
-  // Default view for non-dropdown usage
-  return (
-    <div
-      key={assetKey}
-      onClick={handleClick}
-      className="flex items-center px-4 py-3 text-white cursor-pointer hover:bg-[#FFFFFF0F] rounded-md transition-colors m-2"
-    >
-      {/* Radio selection */}
-      <div className="min-w-6 flex items-center">
-        <div
-          className={`min-w-6 min-h-6 border-2 rounded-full flex items-center justify-center ${
-            selectedAsset === assetKey
-              ? 'border-[#5F46F9] bg-transparent'
-              : 'bg-[#0F081680] border-[#FFFFFF29]'
-          }`}
-        >
-          {selectedAsset === assetKey && (
-            <div className="min-w-2 min-h-2 bg-[#5F46F9] rounded-full"></div>
-          )}
-        </div>
-      </div>
-
-      {/* Asset information */}
-      <div className="flex flex-1 items-center">
-        {/* Asset name and icon */}
-        <div className="flex min-w-[140px] items-center space-x-2 ml-3">
-          {icons[assetKey] ? (
-            <Image src={icons[assetKey]} alt={assetKey} className="w-6 h-6" />
-          ) : (
-            <div
-              className={`rounded-full bg-gradient-to-r ${getCoinGradient(assetKey)} w-6 h-6 flex items-center justify-center text-white font-bold`}
-            >
-              {assetKey.substring(0, 1)}
-            </div>
-          )}
-          <span className="font-medium">{assetKey}</span>
-        </div>
-
-        {/* Leverage */}
-        <div className="min-w-[60px] text-center">
-          <p className="mx-1">{universe[assetIndex]?.maxLeverage || 50}×</p>
-        </div>
-
-        {/* Price */}
-        <div className="min-w-[100px] text-right">${formattedPrice}</div>
-
-        {/* 24h Change */}
-        <div className={`min-w-[100px] text-right ${priceChangeData.className}`}>
-          {priceChangeData.value}
-        </div>
-
-        {/* Volume and Market Cap */}
-        <div className="min-w-[100px] text-right text-gray-300">{volumeValue}</div>
-        <div className="min-w-[100px] text-right text-gray-300">{marketCap}</div>
-      </div>
-    </div>
-  )
 }
 
 export default AssetItem

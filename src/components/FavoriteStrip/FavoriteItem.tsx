@@ -2,6 +2,7 @@
 
 import Image from 'next/image'
 import starticon from '@/assets/images/star_icon.svg'
+import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react'
 
 interface FavoriteItemProps {
   favorite?: {
@@ -57,8 +58,8 @@ const FavoriteItem = ({ favorite }: FavoriteItemProps) => {
         : false
 
   const priceChangeClass = isPositiveChange
-    ? 'text-[#4DAA85]' // green for positive
-    : 'text-[#F45F5F]' // red for negative
+    ? 'text-[#2FA766]' // green for positive
+    : 'text-[#E2464A]' // red for negative
 
   // Get just the percentage part
   const percentageOnly = getPercentageOnly(favorite.change24h)
@@ -80,7 +81,14 @@ const FavoriteItem = ({ favorite }: FavoriteItemProps) => {
             : `$${favorite.price}`
           : '-/-'}
       </span> */}
-      <span className={`text-[12px] ${priceChangeClass} my-auto`}>{percentageOnly}</span>
+      <div className={`text-[12px] ${priceChangeClass} my-auto flex items-center`}>
+        {isPositiveChange ? (
+          <IconTriangleFilled size={12} className="mr-1" />
+        ) : (
+          <IconTriangleInvertedFilled size={12} className="mr-1" />
+        )}
+        {percentageOnly}
+      </div>
     </div>
   )
 }

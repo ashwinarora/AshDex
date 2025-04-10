@@ -22,11 +22,10 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 
 // Default favorites to add when no favorites exist
 const DEFAULT_FAVORITES: FavoriteAsset[] = [
-  { name: 'BTC-PERP', value: 'BTC-PERP', index: 'BTC-PERP' },
-  { name: 'ETH-PERP', value: 'ETH-PERP', index: 'ETH-PERP' },
-  { name: 'ADA-PERP', value: 'ADA-PERP', index: 'ADA-PERP' },
-  { name: 'SOL-PERP', value: 'SOL-PERP', index: 'SOL-PERP' },
-  { name: 'BNB-PERP', value: 'BNB-PERP', index: 'BNB-PERP' }
+  { name: 'BTC-PERP', value: '0', index: 'BTC-PERP' },
+  { name: 'ETH-PERP', value: '0', index: 'ETH-PERP' },
+  { name: 'HYPE-PERP', value: '0', index: 'HYPE-PERP' },
+  { name: 'PURR-PERP', value: '0', index: 'PURR-PERP' }
 ]
 
 // Helper to format price change with amount and percentage
@@ -55,20 +54,16 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   // --- Load favorites from localStorage on initial render ---
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('[Favorites] Attempting to load from localStorage')
       const storedFavorites = localStorage.getItem('favorites')
-      console.log('[Favorites] Stored string:', storedFavorites)
 
       let initialFavorites: FavoriteAsset[] = []
 
       if (storedFavorites) {
         try {
           const parsedFavorites = JSON.parse(storedFavorites)
-          console.log('[Favorites] Parsed from localStorage:', parsedFavorites)
           if (Array.isArray(parsedFavorites)) {
             initialFavorites = parsedFavorites
           } else {
-            console.error('[Favorites] Stored data not an array, resetting.')
             localStorage.removeItem('favorites')
           }
         } catch (error) {
@@ -79,7 +74,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
 
       // If no favorites exist or the array is empty, add default favorites
       if (initialFavorites.length === 0) {
-        console.log('[Favorites] Adding default favorites')
         initialFavorites = DEFAULT_FAVORITES.map((fav) => {
           // Try to populate with current price data if available
           const price = allMids ? String(allMids[fav.index] ?? '0') : '0'
@@ -110,7 +104,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
 
       setFavorites(initialFavorites)
       isInitialized.current = true
-      console.log('[Favorites] Initialization complete with favorites:', initialFavorites)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -129,8 +122,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     ) {
       return
     }
-
-    console.log('[Favorites] Updating favorites with latest price data')
 
     const updatedFavorites = favorites.map((favorite) => {
       const assetIndex = universe.findIndex((asset) => asset.name === favorite.index)
@@ -178,7 +169,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     const currentJson = JSON.stringify(favorites)
 
     if (updatedJson !== currentJson) {
-      console.log('[Favorites] Updated with new data:', updatedFavorites)
       setFavorites(updatedFavorites)
       localStorage.setItem('favorites', updatedJson)
     }
@@ -187,7 +177,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   // --- Favorite Management Functions ---
 
   const addFavorite = (asset: FavoriteAsset) => {
-    console.log('[Favorites] Adding favorite:', asset)
     if (!isFavorite(asset.index)) {
       const existingData = favorites.find((f) => f.index === asset.index)
       const newFavorite: FavoriteAsset = {
@@ -201,7 +190,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   }
 
   const removeFavorite = (assetKey: string) => {
-    console.log('[Favorites] Removing favorite:', assetKey)
     const updatedFavorites = favorites.filter((fav) => fav.index !== assetKey)
     setFavorites(updatedFavorites)
     localStorage.setItem('favorites', JSON.stringify(updatedFavorites))
@@ -212,7 +200,6 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   }
 
   const toggleFavorite = (asset: FavoriteAsset) => {
-    console.log('[Favorites] Toggling favorite:', asset)
     if (isFavorite(asset.index)) {
       removeFavorite(asset.index)
     } else {

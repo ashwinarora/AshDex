@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useMemo, useRef, useState, Fragment } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
@@ -9,12 +9,13 @@ import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
-import staricon from '@/assets/images/star_icon.svg'
 
 import { useFavorites } from '@/context/FavoritesContext'
 
 // Crypto icons imports
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
+import Skeleton from '../common/Skeleton'
+import { IconArrowsSort, IconStar, IconStarFilled } from '@tabler/icons-react'
 
 // Crypto icon mapping - only include Bitcoin which we know exists
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
@@ -32,8 +33,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
-  const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 8
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
 
@@ -59,58 +58,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     key.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  // Calculate paginated items
-  const paginatedAssets = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredAssets.slice(startIndex, startIndex + ITEMS_PER_PAGE)
-  }, [filteredAssets, currentPage, ITEMS_PER_PAGE])
-
-  // Calculate total pages
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(filteredAssets.length / ITEMS_PER_PAGE)),
-    [filteredAssets, ITEMS_PER_PAGE]
-  )
-
-  // Generate page numbers to display
-  const pageNumbers = useMemo(() => {
-    const pages = []
-    const maxButtons = 5
-
-    if (totalPages <= maxButtons) {
-      // Show all pages if there are few
-      for (let i = 1; i <= totalPages; i++) {
-        pages.push(i)
-      }
-    } else {
-      // Show first, last, current, and adjacent pages
-      const startPage = Math.max(1, currentPage - 1)
-      const endPage = Math.min(totalPages, startPage + maxButtons - 1)
-
-      if (startPage > 1) {
-        pages.push(1)
-        if (startPage > 2) pages.push('...')
-      }
-
-      for (let i = startPage; i <= endPage; i++) {
-        pages.push(i)
-      }
-
-      if (endPage < totalPages) {
-        if (endPage < totalPages - 1) pages.push('...')
-        pages.push(totalPages)
-      }
-    }
-
-    return pages
-  }, [currentPage, totalPages])
-
-  // Handle page change
-  const changePage = (page: number) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page)
-    }
-  }
-
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
   const marketData = useMemo(() => {
@@ -122,18 +69,27 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       const sign = change >= 0 ? '+' : ''
       return `${sign}${change.toFixed(2)} (${sign}${percentageChange.toFixed(2)}%)`
     }
-
     const changeString = calculate24hChange()
     return [
-      { label: '24h Change', value: changeString, color: 'text-[#2FA766]' },
+      {
+        label: '24h Change',
+        value: changeString ?? <Skeleton size="md" />,
+        color: 'text-[#2FA766]'
+      },
       { label: '24h High', value: '$99,149.00' },
       { label: '24h Low', value: '$99,149.00' },
-      { label: '24h Volume (BTC)', value: selectedAssetContext?.dayBaseVlm ?? '0.00' },
-      { label: '24h Volume (USDT)', value: selectedAssetContext?.dayNtlVlm ?? '0.00' },
+      {
+        label: '24h Volume (BTC)',
+        value: selectedAssetContext?.dayBaseVlm.toFixed(2) ?? <Skeleton size="md" />
+      },
+      {
+        label: '24h Volume (USDT)',
+        value: selectedAssetContext?.dayNtlVlm.toFixed(2) ?? <Skeleton size="md" />
+      },
       { label: 'Market Cap', value: '$928B' },
       {
         label: '1h Funding',
-        value: selectedAssetContext?.funding ?? '0.00%',
+        value: selectedAssetContext?.funding ?? <Skeleton size="md" />,
         color: 'text-[#2FA766]'
       },
       { label: 'Next Funding', value: '27:57' }
@@ -166,16 +122,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
     // Get the 24h change value
     const change24hItem = marketData?.find((item) => item.label === '24h Change')
-    const change24hValue = change24hItem?.value || '0%'
-
-    // Log the values we're saving for debugging
-    console.log('[Favorites] Toggling with values:', {
-      name: selectedAsset,
-      value: assetPrice,
-      index: selectedAsset,
-      price: assetPrice,
-      change24h: change24hValue
-    })
+    const change24hValue =
+      typeof change24hItem?.value === 'string' || typeof change24hItem?.value === 'number'
+        ? change24hItem.value
+        : '0.00%'
 
     toggleFavorite({
       name: selectedAsset,
@@ -231,14 +181,14 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
           <button
             onClick={handleToggleFavorite}
-            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer 2xl:relative absolute -top-1 -left-1 h-5 w-5"
+            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer   md:static absolute -top-2 -left-2 h-5 w-5"
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
-            <Image
-              src={staricon}
-              alt={isFav ? 'Remove from favorites' : 'Add to favorites'}
-              className={`h-5 w-5 ${isFav ? 'opacity-100' : 'opacity-50'}`}
-            />
+            {isFavorite(selectedAsset) ? (
+              <IconStarFilled size={16} className="mr-1" />
+            ) : (
+              <IconStar size={16} className="mr-1" />
+            )}
           </button>
           <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} height={32} />
           <button
@@ -247,10 +197,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="text-lg text-white flex items-center gap-x-2 focus:outline-none cursor-pointer"
           >
             <div className="flex flex-col">
-              <span className="text-[#FFFFFF] font-bold text-base">
+              <span className="text-[#FFFFFF] font-bold text-base text-nowrap">
                 {selectedAsset || 'Select an asset'}
               </span>
-              <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium">
+              <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium hidden">
                 Bitcoin price
               </span>
             </div>
@@ -276,7 +226,9 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               className="flex max-[770px]:pb-2 py-3 flex-wrap flex-1 max-[770px]:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
               <div className="flex flex-col space-y-1">
-                <div className="opacity-60 font-medium text-xs text-[#E8E0F1]">{item.label}</div>
+                <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
+                  {item.label}
+                </div>
                 <div className={`font-medium md:text-sm text-xs ${item.color || 'text-[#FFFFFF]'}`}>
                   {item.value}
                 </div>
@@ -359,10 +311,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`py-2 px-5 text-sm rounded-full transition-all duration-200 cursor-pointer ${
+                className={`md:py-2  md:px-5 px-2 py-0  text-xs md:text-sm rounded-full transition-all duration-200 cursor-pointer ${
                   selectedTab === tab
                     ? 'text-[#0F0816] bg-white font-medium'
-                    : 'text-white bg-[#FFFFFF15] hover:bg-[#FFFFFF20]'
+                    : 'text-white   hover:bg-[#FFFFFF20]'
                 }`}
               >
                 {tab}
@@ -375,17 +327,27 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             <div className="flex text-left px-4 py-3 border-t border-b border-[#FFFFFF10] bg-[#0F0816] text-[#8B8BA0] sticky top-0 text-sm font-medium">
               <div className="w-1/12"></div> {/* Checkbox column */}
               <div className="w-3/12">Market</div>
-              <div className="w-1/12 text-right">Leverage</div>
-              <div className="w-2/12 text-right">Price</div>
-              <div className="w-2/12 text-right">24h Change</div>
-              <div className="w-2/12 text-right">Volume</div>
-              <div className="w-2/12 text-right pr-4">Market Cap</div>
+              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+                <IconArrowsSort className="w-4 h-4" /> Leverage
+              </div>
+              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+                <IconArrowsSort className="w-4 h-4" /> Price
+              </div>
+              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+                <IconArrowsSort className="w-4 h-4" /> 24h Change
+              </div>
+              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+                <IconArrowsSort className="w-4 h-4" /> Volume
+              </div>
+              <div className="w-2/12 text-right pr-4 cursor-pointer whitespace-nowrap flex items-center justify-end">
+                <IconArrowsSort className="w-4 h-4" /> Market Cap
+              </div>
             </div>
 
             {/* Asset List */}
-            <div className="max-h-[400px] gap-2 flex flex-col p-2">
+            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto">
               {filteredAssets.length > 0 ? (
-                paginatedAssets.map(([key, value]) => {
+                filteredAssets.map(([key, value]) => {
                   // Find the asset context for this asset
                   const assetIndex = universe.findIndex((asset) => asset.name === key)
                   const assetCtx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
@@ -421,111 +383,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             </div>
           </div>
 
-          {/* Pagination */}
-          <div className="flex justify-between items-center px-4 py-3 bg-[#0F0816] border-t border-[#FFFFFF10]">
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => changePage(currentPage - 1)}
-                disabled={currentPage === 1}
-                className={`h-8 w-8 rounded ${currentPage === 1 ? 'bg-[#FFFFFF05] text-gray-500' : 'bg-[#FFFFFF08] text-gray-400 hover:bg-[#FFFFFF15] cursor-pointer'} flex items-center justify-center`}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M10 12L6 8L10 4"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-
-              {pageNumbers.map((page, index) => (
-                <Fragment key={index}>
-                  {page === '...' ? (
-                    <button className="h-8 px-2 rounded bg-[#FFFFFF08] text-gray-300 flex items-center justify-center">
-                      ...
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => page !== '...' && changePage(page as number)}
-                      className={`h-8 w-8 rounded ${
-                        page === currentPage
-                          ? 'bg-[#6366F1] text-white'
-                          : 'bg-[#FFFFFF08] text-gray-300 hover:bg-[#FFFFFF15]'
-                      } flex items-center justify-center font-medium`}
-                    >
-                      {page}
-                    </button>
-                  )}
-                </Fragment>
-              ))}
-
-              <button
-                onClick={() => changePage(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className={`h-8 w-8 rounded ${currentPage === totalPages ? 'bg-[#FFFFFF05] text-gray-500' : 'bg-[#FFFFFF08] text-gray-400 hover:bg-[#FFFFFF15] cursor-pointer'} flex items-center justify-center`}
-              >
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M6 4L10 8L6 12"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            <div className="flex items-center text-gray-400 text-sm">
-              <span>Page</span>
-              <div className="mx-2 bg-[#FFFFFF08] rounded px-3 py-1 flex items-center cursor-pointer">
-                <select
-                  value={currentPage}
-                  onChange={(e) => changePage(Number(e.target.value))}
-                  className="bg-transparent text-white appearance-none outline-none w-8 mr-1"
-                >
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                    <option key={page} value={page}>
-                      {page}
-                    </option>
-                  ))}
-                </select>
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 16 16"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M4 6L8 10L12 6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </div>
-              <span>of {totalPages}</span>
-            </div>
-          </div>
-
           {/* Apply Button */}
-          <div className="p-4 bg-[#0F0816]">
+          <div className="p-4 bg-[#0F0816] hidden">
             <button
               onClick={() => {
                 // Handle selection confirmation

@@ -19,13 +19,13 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
 
   return (
     <div className="relative">
-      <button
+      <div
         className={`w-full text-white px-4 py-2 text-sm rounded-md flex justify-between items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
         <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
-      </button>
+      </div>
 
       {isOpen && (
         <div className="absolute z-50 border-2 border-white/10 bg-[#0F0816] min-w-24 rounded-2xl shadow-lg p-2">
