@@ -8,6 +8,7 @@ import CheckBox from '@/components/common/CheckBox'
 import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
+import AmountInputSpot from './components/AmountInputSpot'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -51,16 +52,29 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </span>
           </div>
         </div>
-        <AmountInput
-          selectedAsset={selectedAsset}
-          amount={amount}
-          setAmount={setAmount}
-          total={total}
-          setTotal={setTotal}
-          limitPrice={limitPrice}
-          isReduceOnly={isReduceOnly}
-          isBuy={isBuy}
-        />
+        {
+          isSpot ?
+          <AmountInputSpot
+            selectedAsset={selectedAsset}
+            amount={amount}
+            setAmount={setAmount}
+            total={total}
+            setTotal={setTotal}
+            limitPrice={limitPrice}
+            isBuy={isBuy}
+          />
+          :
+          <AmountInput
+            selectedAsset={selectedAsset}
+            amount={amount}
+            setAmount={setAmount}
+            total={total}
+            setTotal={setTotal}
+            limitPrice={limitPrice}
+            isReduceOnly={isReduceOnly}
+            isBuy={isBuy}
+          />
+        }
         {!isSpot && (
           <LeverageMargin
             selectedAsset={selectedAsset}
