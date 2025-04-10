@@ -21,11 +21,12 @@ interface HyperLiquidContextProps {
   clearingHouseState?: IClearingHouseState
   perpAssetContext: IWebData2['assetCtxs']
   spotAssetContext: IWebData2['spotAssetCtxs']
+  spotState: IWebData2['spotState']
   spotMeta: SpotMeta
   isTestnet: boolean
 }
 
-const initialValue = {
+const initialValue: HyperLiquidContextProps = {
   sdk: null,
   isSdkConnected: false,
   allMids: {},
@@ -35,6 +36,9 @@ const initialValue = {
   clearingHouseState: undefined,
   perpAssetContext: [],
   spotAssetContext: [],
+  spotState: {
+    balances: []
+  },
   spotMeta: {
     tokens: [],
     universe: []
@@ -57,6 +61,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [allMids, setAllMids] = useState<PriceMap>({})
   const [perpAssetContext, setPerpAssetContext] = useState<IWebData2['assetCtxs']>([])
   const [spotAssetContext, setSpotAssetContext] = useState<IWebData2['spotAssetCtxs']>([])
+  const [spotState, setSpotState] = useState<IWebData2['spotState']>(initialValue.spotState)
   const queryClient = useQueryClient()
 
   const isTestnet = useMemo(() => {
@@ -94,7 +99,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     queryKey: ['universe', isTestnet],
     queryFn: async () => {
       const res = await sdk.info.perpetuals.getMeta()
-      console.log('universe', res)
       return res.universe as MetaData[]
     },
     enabled: !!sdk || !!isSdkConnected,
@@ -105,7 +109,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     queryKey: ['spotUniverse', isTestnet],
     queryFn: async () => {
       const res = await sdk.info.spot.getSpotMeta()
-      console.log(res)
       return res as SpotMeta
     },
     enabled: !!sdk || !!isSdkConnected,
@@ -181,10 +184,11 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (!address) return
     console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
-      const { clearinghouseState, assetCtxs, spotAssetCtxs } = data
+      const { clearinghouseState, assetCtxs, spotAssetCtxs, spotState } = data
       queryClient.setQueryData(['clearingHouseState', address], clearinghouseState)
       setPerpAssetContext(assetCtxs)
       setSpotAssetContext(spotAssetCtxs)
+      setSpotState(spotState)
     })
     return () => {
       sdk.subscriptions.unsubscribeFromWebData2()
@@ -203,6 +207,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         clearingHouseState,
         perpAssetContext,
         spotAssetContext,
+        spotState,
         spotMeta,
         isTestnet
       }}
