@@ -19,14 +19,7 @@ const Trading = () => {
       </div>
       {/* Main Trading Layout */}
       <div className="flex gap-6  flex-col ">
-        <div
-          className={`
-    w-full gap-4  
-    grid grid-cols-1
-    lg:grid-cols-5
-     
-  `}
-        >
+        <div className={`w-full gap-4  grid grid-cols-1lg:grid-cols-5`}>
           {/* Chart on top in mobile, middle in desktop */}
           <div className="order-1 lg:order-2 lg:col-span-3 nexon-card">
             <Chart selectedAsset={selectedAsset} />
