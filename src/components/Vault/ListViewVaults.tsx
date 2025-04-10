@@ -80,7 +80,7 @@ function ListViewVaults() {
                     {col?.label ? (
                       <>
                         <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
-                        <span>{col?.label}</span>
+                        <span className="text-nowrap">{col?.label}</span>
                         <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
                       </>
                     ) : null}

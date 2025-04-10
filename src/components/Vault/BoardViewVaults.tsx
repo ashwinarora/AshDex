@@ -29,7 +29,7 @@ const BoardViewVaults = () => {
     router.push(`/vaults/${index}`)
   }
   return (
-    <div className=" text-white">
+    <div className="px-2 text-white">
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-5 gap-5 cursor-pointer">
         {paginatedVaults?.map((vault, index) => (
           <div

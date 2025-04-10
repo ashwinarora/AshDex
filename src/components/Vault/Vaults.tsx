@@ -34,13 +34,13 @@ const Vaults = () => {
 
   return (
     <>
-      <div id="vaults" className="text-white p-6">
+      <div id="vaults" className="text-white md:p-6 p-2">
         <div className="max-[1450px]:mx-1 mx-10">
           <div className="">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mt-6">
-              <div className="flex items-center gap-x-3">
+            <div className="flex flex-col md:flex-row gap-2 justify-between items-start md:items-center mt-6">
+              <div className="flex items-center gap-x-3 md:w-max w-full">
                 <div
-                  className="flex items-center justify-center rounded-2xl border-2 border-white/10 px-6 py-4 w-[299px] h-[90px] backdrop-blur-[48.3px]"
+                  className="lg:flex hidden items-center justify-center rounded-2xl border-2 border-white/10 px-6 py-4 w-[299px] h-[90px] backdrop-blur-[48.3px]"
                   style={{
                     background:
                       'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
@@ -50,9 +50,8 @@ const Vaults = () => {
                     Placeholder for gamification
                   </p>
                 </div>
-
                 <div
-                  className="flex items-center gap-4 rounded-xl border-[2px] border-white/10 p-4 backdrop-blur-[48.3px] w-fit"
+                  className="flex items-center gap-4 rounded-xl border-[2px] border-white/10 p-4 backdrop-blur-[48.3px] w-full md:w-fit"
                   style={{
                     background:
                       'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
@@ -75,18 +74,18 @@ const Vaults = () => {
                 </div>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex gap-2 md:w-fit w-full">
                 {isConnected && tradingEnabled ? (
                   <button
                     onClick={handleCreateVault}
-                    className="2xl:px-[20px] px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] flex items-center justify-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
                   >
                     <span className="2xl:block">Create Vault</span>
                   </button>
                 ) : (
                   <button
                     onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
-                    className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex justify-center items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
                   >
                     {!isConnected && (
                       <Image
@@ -97,7 +96,7 @@ const Vaults = () => {
                         className="w-5 h-5 mr-2"
                       />
                     )}
-                    <span className="hidden 2xl:block">
+                    <span className="block">
                       {' '}
                       {isConnected ? 'Enable Trading' : 'Connect Wallet'}
                     </span>
@@ -108,23 +107,23 @@ const Vaults = () => {
           </div>
 
           <div
-            className="rounded-xl mt-5 border-[2px] border-white/10 backdrop-blur-[40px] p-4"
+            className="rounded-xl mt-5 border-[2px] border-white/10 backdrop-blur-[40px] md:p-4"
             style={{
               background:
                 'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
             }}
           >
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center ">
+            <div className="flex justify-between items-center md:p-0 p-2 border-b md:border-b-0 border-[#FFFFFF0F]">
               <p className="font-bold text-white text-base">Vaults</p>
               <div className="flex bg-[#FFFFFF0F] rounded-lg p-2 mt-2 sm:mt-0">
                 <button
-                  className={`px-4 py-3 cursor-pointer ${viewMode === 'list' ? 'bg-[#FFFFFF0F]' : ''}`}
+                  className={`p-4 rounded cursor-pointer ${viewMode === 'list' ? 'bg-[#FFFFFF0F]' : ''}`}
                   onClick={() => setViewMode('list')}
                 >
                   <Image src={listicon} alt="list" width={16} height={16} />
                 </button>
                 <button
-                  className={`px-4 py-3 cursor-pointer ${viewMode === 'board' ? 'bg-[#FFFFFF0F]' : ''}`}
+                  className={`p-4 rounded cursor-pointer ${viewMode === 'board' ? 'bg-[#FFFFFF0F]' : ''}`}
                   onClick={() => setViewMode('board')}
                 >
                   <Image src={boardicon} alt="board" width={16} height={16} />
@@ -133,14 +132,14 @@ const Vaults = () => {
             </div>
 
             {/* Search and Filters Container */}
-            <div className="mt-3 flex flex-col md:flex-row justify-between items-center gap-4 w-full">
+            <div className="mt-3 flex flex-col md:flex-row justify-between items-start px-2 md:px-0 gap-4 w-full">
               {/* Filters Section */}
-              <div className="flex items-center gap-x-1.5 text-sm text-white">
+              <div className="flex items-center flex-wrap gap-1.5 text-sm text-white">
                 {VAULTS_TAB?.map((item) => (
                   <button
                     key={item}
                     onClick={() => setSelectedTab(item)}
-                    className={`px-4 py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
+                    className={`md:px-4 px-3 py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
                       selectedTab === item
                         ? 'bg-[#FFFFFF1A] text-white font-semibold'
                         : 'text-white/50 hover:text-white'
