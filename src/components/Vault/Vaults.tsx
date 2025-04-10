@@ -13,6 +13,7 @@ import walleticon from '@/assets/images/wallet_icon.svg'
 import listicon from '@/assets/images/list_icon.svg'
 import boardicon from '@/assets/images/board_icon.svg'
 import searchnormalicon from '@/assets/images/search-normal.svg'
+import { CreateYaultModal } from './CreateYaultModal'
 
 const Vaults = () => {
   const { toggleConnectWalletModal } = useWalletModal()
@@ -20,6 +21,10 @@ const Vaults = () => {
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list')
   const [selectedTab, setSelectedTab] = useState<(typeof VAULTS_TAB)[number]>('My Vaults')
   const handleEnableTrading = () => {
+    toggleConnectWalletModal()
+  }
+
+  const handleCreateYault = () => {
     toggleConnectWalletModal()
   }
 
@@ -65,24 +70,33 @@ const Vaults = () => {
                   </div>
                 </div>
               </div>
-              <button
-                onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
-                className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
-              >
-                {!isConnected && (
-                  <Image
-                    height={20}
-                    width={20}
-                    src={walleticon}
-                    alt="walleticon"
-                    className="w-5 h-5 mr-2"
-                  />
-                )}
-                <span className="hidden 2xl:block">
-                  {' '}
-                  {isConnected ? 'Enable Trading' : 'Connect Wallet'}
-                </span>
-              </button>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
+                  className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                >
+                  {!isConnected && (
+                    <Image
+                      height={20}
+                      width={20}
+                      src={walleticon}
+                      alt="walleticon"
+                      className="w-5 h-5 mr-2"
+                    />
+                  )}
+                  <span className="hidden 2xl:block">
+                    {' '}
+                    {isConnected ? 'Enable Trading' : 'Connect Wallet'}
+                  </span>
+                </button>
+                <button
+                  onClick={handleCreateYault}
+                  className="2xl:px-[20px] px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                >
+                  <span className="2xl:block">Create Yault</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -157,6 +171,7 @@ const Vaults = () => {
         </div>
       </div>
       <EnableTrading />
+      <CreateYaultModal />
     </>
   )
 }
