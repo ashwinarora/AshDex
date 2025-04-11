@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { VAULTS_LIST_COLUMNS } from '../../utils/constants'
 import Pagination from '../common/Pagination'
 import SparklineChart from '../common/SparklineChart'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import lidoicon from '../../assets/images/lido_icon.svg'
@@ -37,18 +38,18 @@ function ListViewVaults() {
 
   function ActionRenderer(params: { value: string }) {
     return (
-      <div className="flex gap-x-2">
+      <div className="flex flex-col gap-y-2 lg:gap-y-1 xl:flex-row gap-x-2">
         {params.value === 'Open' ? (
           <>
-            <button className="bg-white/10 py-2.5 cursor-pointer font-semibold text-sm rounded-xl px-1 w-full">
+            <button className="bg-white/10 py-2.5 cursor-pointer font-semibold text-sm rounded-xl px-3 lg:px-1 w-full">
               Top Up
             </button>
-            <button className="bg-white/10 py-2.5 cursor-pointer font-semibold text-sm rounded-xl px-1 w-full">
+            <button className="bg-white/10 py-2.5 cursor-pointer font-semibold text-sm rounded-xl px-3 lg:px-1 w-full">
               Withdraw
             </button>
           </>
         ) : (
-          <button className="bg-white/10 px-1 py-2.5 cursor-pointer font-semibold rounded-xl text-sm w-full">
+          <button className="bg-white/10 px-3 lg:px-1 py-2.5 cursor-pointer font-semibold rounded-xl text-sm w-full">
             Deposit
           </button>
         )}
@@ -56,10 +57,74 @@ function ListViewVaults() {
     )
   }
 
+  type ColumnType = {
+    key: string
+    label: string
+  }
+
+  type RenderRowProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    item: any
+    columns: ColumnType[]
+  }
+
   const handleRowClick = (index: number) => {
     router.push(`/vaults/${index}`)
   }
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <Image src={lidoicon} alt="lidoicon" width={30} height={30} />
+            <div className="flex flex-col">
+              <span className="font-medium">{item?.name}</span>
+              <span className="text-xs text-[#8B8BA0]">{item?.description}</span>
+            </div>
+          </div>
+        </div>
+        {columns
+          ?.filter(
+            (col) =>
+              col?.key !== 'name' &&
+              col?.key !== 'snapshot' &&
+              col?.key !== 'status' &&
+              col?.key !== 'actions'
+          )
+          ?.map((col) => (
+            <div key={col?.key} className="flex justify-between">
+              <span className="text-[#8B8BA0]">{col?.label}</span>
+              {col?.key === 'totalFunds' ? (
+                <span className="flex items-center gap-x-2">
+                  {item?.totalFunds}{' '}
+                  <span className="text-[#2FA766] pt-0.5 font-normal text-xs">{'+$190,73'}</span>
+                </span>
+              ) : (
+                <span className={col?.key === 'contract' ? 'truncate' : ''}>
+                  {item[col?.key] ?? '-'}
+                </span>
+              )}
+            </div>
+          ))}
+        <div className="flex items-center justify-between w-full">
+          <div className="flex gap-x-12">
+            <div className="flex flex-col gap-y-2">
+              <span className="text-[#8B8BA0]">Snapshot</span>
+              <div className="h-[15px] w-full">
+                <SparklineChart data={item?.snapshot} />
+              </div>
+            </div>
+            <div className="flex flex-col gap-y-2">
+              <span className="text-[#8B8BA0]">Status</span>
+              <StatusRenderer value={item?.status} />
+            </div>
+          </div>
+          <ActionRenderer value={item?.status} />
+        </div>
+      </div>
+    )
+  }
   const totalPages = Math.ceil(data?.length / pageSize)
   const paginatedValuts = useMemo(() => {
     return data?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
@@ -67,14 +132,14 @@ function ListViewVaults() {
 
   return (
     <>
-      <div className="overflow-x-auto w-full">
-        <table className="w-full text-white">
+      <div className="overflow-x-auto max-sm:px-3 w-full">
+        <table className="w-full text-whit hidden lg:table">
           <thead>
             <tr>
               {VAULTS_LIST_COLUMNS?.map((col) => (
                 <th
                   key={col?.key}
-                  className="pt-3 pb-1 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                  className="pt-3 pb-1 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
                 >
                   <div className="flex justify-start items-center gap-1">
                     {col?.label ? (
@@ -144,6 +209,11 @@ function ListViewVaults() {
             ))}
           </tbody>
         </table>
+        <ResponsiveDataCard
+          columns={[...VAULTS_LIST_COLUMNS]}
+          data={paginatedValuts}
+          renderRow={(item) => <RenderRowData item={item} columns={[...VAULTS_LIST_COLUMNS]} />}
+        />
         {data?.length > 0 && (
           <Pagination
             currentPage={currentPage}

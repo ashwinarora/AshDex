@@ -41,9 +41,9 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
     }
   }
   return (
-    <div className="flex flex-col mx-2 md:flex-row justify-between items-center mt-5 space-y-3 md:space-y-0">
+    <div className="flex mx-2 flex-row justify-between items-start mt-5 space-y-3">
       {/* Pagination Controls */}
-      <div className="flex flex-wrap justify-center md:justify-start items-center space-x-2">
+      <div className="flex flex-wrap justify-start items-center space-x-2">
         <button
           onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
@@ -89,8 +89,7 @@ const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPage
           &gt;
         </button>
       </div>
-
-      <div className="flex items-center space-x-2 mt-3 md:mt-0">
+      <div className="flex items-center space-x-2 mb-3">
         <span className="text-[#8B8BA0] text-sm">Page</span>
         <select
           value={currentPage}

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { ORDERHISTORY_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 
@@ -26,8 +27,20 @@ export const vaultsOrdersHistory = Array.from({ length: 10 }, (_, index) => {
   }
 })
 
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
+
 function OrdersHistory() {
   const pathname = usePathname()
+  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -70,19 +83,53 @@ function OrdersHistory() {
   const selectedColumns = useMemo(() => getColumnsByPathname(pathname), [pathname])
   const [columns, setColumns] = useState(selectedColumns)
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        {columns?.map((col) => (
+          <div key={col?.key} className="flex justify-between">
+            <span className="text-[#8B8BA0]">{col?.label}</span>
+            <span className={col?.key === 'contract' ? 'truncate' : ''}>
+              {col?.key === 'symbol' ? (
+                <span className="flex items-center gap-x-2">
+                  {item?.symbol}{' '}
+                  <span className="text-[#8B8BA0] pt-0.5 font-normal text-xs">
+                    {item?.symbolText}
+                  </span>
+                </span>
+              ) : (
+                <span
+                  className={`flex ${
+                    col?.key === 'status'
+                      ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-[#2FA766]' : ''}
+                        ${item?.status === 'Rejected' ? 'bg-[#27273b] text-[#E2464A]' : ''}
+                        ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
+                      : `${col?.key === 'buysell' ? 'text-[#2FA766]' : ''}`
+                  } item-center gap-x-2`}
+                >
+                  {item[col?.key] ?? '-'}
+                </span>
+              )}
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   useEffect(() => {
     setColumns(selectedColumns)
   }, [selectedColumns])
 
   return (
     <div className="overflow-x-auto w-full px-3">
-      <table className="w-full text-white">
+      <table className="w-full text-white hidden lg:table">
         <thead>
           <tr>
             {columns?.map((col) => (
               <th
                 key={col?.key}
-                className="pt-3 pb-2 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
@@ -102,10 +149,10 @@ function OrdersHistory() {
             if ('vid' in order) {
               return (
                 <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.time}
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
                     <div className="flex justify-between flex-col">
                       {order?.symbol}{' '}
                       <span className="text-[#8B8BA0] pt-0.5 font-normal text-xs">
@@ -113,28 +160,28 @@ function OrdersHistory() {
                       </span>
                     </div>
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
                     {order?.buysell}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.type}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.price}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.amount}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.filled}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.avgPrice}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.fee}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     <span
                       className={`
                         rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block
@@ -154,6 +201,13 @@ function OrdersHistory() {
           })}
         </tbody>
       </table>
+      {isVaults && (
+        <ResponsiveDataCard
+          columns={columns}
+          data={paginatedOrders || []}
+          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
+        />
+      )}
       {vaultsOrdersHistory?.length > 0 && (
         <Pagination
           currentPage={currentPage}

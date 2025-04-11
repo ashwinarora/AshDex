@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { DEPOSITORS_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 
@@ -18,8 +19,20 @@ export const vaultsDepositors = Array.from({ length: 10 }, (_, index) => {
   }
 })
 
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
+
 function Depositors() {
   const pathname = usePathname()
+  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -49,6 +62,21 @@ function Depositors() {
     }
   }
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        {columns?.map((col) => (
+          <div key={col?.key} className="flex justify-between">
+            <span className="text-[#8B8BA0]">{col?.label}</span>
+            <span className={col?.key === 'contract' ? 'truncate' : ''}>
+              {item[col?.key] ?? '-'}
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   const data = useMemo(
     () => getDataByPathname(pathname, vaultsDepositors),
     [pathname, vaultsDepositors]
@@ -67,13 +95,13 @@ function Depositors() {
 
   return (
     <div className="overflow-x-auto w-full px-3">
-      <table className="w-full text-white">
+      <table className="w-full  hidden lg:table text-white">
         <thead>
           <tr>
             {columns?.map((col) => (
               <th
                 key={col?.key}
-                className="pt-3 pb-2 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
@@ -93,19 +121,19 @@ function Depositors() {
             if ('vid' in order) {
               return (
                 <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.depositor}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.vaultAmount}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.unrealizedPNL}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.allTimePNL}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.daysFollowing}
                   </td>
                 </tr>
@@ -116,6 +144,13 @@ function Depositors() {
           })}
         </tbody>
       </table>
+      {isVaults && (
+        <ResponsiveDataCard
+          columns={columns}
+          data={paginatedOrders || []}
+          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
+        />
+      )}
       {vaultsDepositors?.length > 0 && (
         <Pagination
           currentPage={currentPage}

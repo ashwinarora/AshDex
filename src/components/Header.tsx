@@ -113,7 +113,7 @@ const Header: FC = () => {
     <>
       <header
         className="
-    w-full h-20 sticky top-0 z-50
+    w-full h-20 sticky top-0 z-55
       backdrop-blur-xl backdrop-filter
     sm:px-9 flex border-b border-white/10
     items-center justify-between
@@ -127,7 +127,7 @@ const Header: FC = () => {
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
           </h1>
-          <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
+          <nav className="min-[1025px]:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
@@ -139,7 +139,6 @@ const Header: FC = () => {
                 {name}
               </Link>
             ))}
-
             {/* More Dropdown */}
             <button className={`flex items-center gap-x-1.5 transition-all duration-300 `}>
               More
@@ -270,7 +269,7 @@ const Header: FC = () => {
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="p-1 lg:hidden block hover:text-blue-400 text-[#ffffff]"
+            className="p-1 min-[1025px]:hidden block hover:text-blue-400 text-[#ffffff]"
           >
             <Image
               height={20}
@@ -285,7 +284,7 @@ const Header: FC = () => {
 
       {/* Sidebar Menu */}
       {isOpen && (
-        <div className="absolute z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
+        <div className="sticky z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
               <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />

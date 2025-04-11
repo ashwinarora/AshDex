@@ -74,7 +74,8 @@ export const CreateVaultModal = ({ createVaultModal, handleCreateVault }: Props)
     <Modal isOpen={createVaultModal} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="w-full border-[2px] bg-[#0F0816] max-w-[480px] p-6 rounded-2xl shadow-lg"
+        className="w-full max-w-md max-md:max-w-sm border-[2px] bg-[#0F0816] p-6 rounded-2xl shadow-lg 
+        relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between w-full">

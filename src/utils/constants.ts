@@ -127,7 +127,7 @@ export const OPEN_ORDERS_VAULTS_COLUMNS = [
   { key: 'originalSize', label: 'Original Size' },
   { key: 'orderValue', label: 'Order Value' },
   { key: 'price', label: 'Price' },
-  { key: 'reduce Only', label: 'Reduce Only' },
+  { key: 'reduceOnly', label: 'Reduce Only' },
   { key: 'triggerConditions', label: 'Trigger Conditions' },
   { key: 'tpsl', label: 'TP/SL' }
 ] as const
@@ -155,7 +155,7 @@ export const TWAP_VAULTS_COLUMNS = [
   { key: 'averagePrice', label: 'Average Price' },
   { key: 'runningTime', label: 'Running Time / Total' },
   { key: 'reduceOnly', label: 'Reduce Only' },
-  { key: 'Actions', label: 'Actions' }
+  { key: 'actions', label: 'Actions' }
 ]
 
 export const TRADEHISTORY_VAULTS_COLUMNS = [
@@ -340,7 +340,7 @@ export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [
   }
 ] as const
 export const VAULTS_LIST_COLUMNS = [
-  { label: 'Name', key: 'name' },
+  { label: 'Name & Ticker', key: 'name' },
   { label: 'Leader', key: 'leader' },
   { label: 'APR', key: 'apr' },
   { label: 'Total Funds', key: 'totalFunds' },

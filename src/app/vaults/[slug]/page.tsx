@@ -38,11 +38,11 @@ export default function VaultDetails() {
 
   return (
     <>
-      <div className="w-full lg:px-14 md:px-10 px-4 pt-5">
-        <Breadcrumbs mainTitle="Vaults" subtitle="WETH" />
-        <div className="grid md:grid-cols-4 gap-5 mt-5">
-          <div className="md:col-span-3 space-y-6">
-            <div className="flex items-center justify-between mb-5">
+      <div className="w-full 2xl:px-14  px-4 pt-5">
+        <Breadcrumbs mainTitle="Vaults" subtitle={vault.name} />
+        <div className="grid grid-cols-1 min-[1025px]:grid-cols-4 gap-5 mt-5">
+          <div className="min-xl:col-span-3 space-y-6">
+            <div className="flex max-lg:flex-col max-lg:items-start items-center justify-between mb-5">
               <div className="flex items-center space-x-4 py-4">
                 <Image src={lido} alt="WETH" width={35} height={35} />
                 <div>
@@ -50,15 +50,15 @@ export default function VaultDetails() {
                   <p className="text-sm text-[#8B8BA0] font-medium">{vault.type}</p>
                 </div>
               </div>
-              <div className="flex flex-wrap gap-4">
+              <div className="flex max-lg:w-full max-md:gap-2 flex-wrap gap-4">
                 {Object.entries(vault.details)?.map(([key, value]) => (
                   <ValutsDetailsCard key={key} title={key} value={value} />
                 ))}
               </div>
             </div>
-            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
-              <h3 className="text-xl pt-1 pb-3 px-2 text-white font-bold">Performance</h3>
-              <div className="grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 grid-cols-2 px-2 flex-wrap gap-3">
+            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 max-lg:px-1 max-lg:py-3 rounded-xl">
+              <h3 className="text-xl pt-1 pb-3 px-2 text-white font-medium">Performance</h3>
+              <div className="grid 2xl:grid-cols-5 xl:grid-cols-4 lg:grid-cols-3 grid-cols-2 max-[765px]:grid-cols-1 px-2 flex-wrap max-[765px]:gap-2  gap-3">
                 {Object.entries(performance).map(([key, value]: [string, PerformanceItem]) => (
                   <PerformanceCard
                     key={key}
@@ -72,7 +72,7 @@ export default function VaultDetails() {
               </div>
             </div>
             {/* Tab Section */}
-            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
+            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 max-lg:px-1 p-4 rounded-xl">
               <VaultsTabs
                 tabs={[...VAULT_TAB]}
                 activeTab={activeTab}
@@ -83,7 +83,7 @@ export default function VaultDetails() {
               />
             </div>
             {/* Leader */}
-            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-4 rounded-xl">
+            <div className="bg-gradient-to-b pb-5 from-white/5 to-gray-600/5 p-1 min-lg:p-4 rounded-xl">
               <div className="flex items-center justify-between">
                 <h3 className="text-base pt-1 px-2 pb-2 text-white font-medium">Leader</h3>
                 <p className="text-[#8B8BA0] flex items-center tracking-normal px-2 font-normal text-sm align-middle">
@@ -115,17 +115,17 @@ export default function VaultDetails() {
                 This vault uses the following vaults as component strategies:
               </p>
               <p className="text-[#FFFFFF] flex items-center tracking-normal px-2 font-normal text-sm align-middle my-2 opacity-80">
-                <span ref={strategiesRef}>
+                <span className="overflow-hidden" ref={strategiesRef}>
                   0x010461c14e146ac35fe42271bdc1134ee31c703a
                   0x2e3d94f0562703b25c83308a05046ddaf9a8dd14
                   0x31ca8395cf837de08b24da3f660e77761dfb974b
                 </span>
                 <button
                   onClick={() => handleCopy(strategiesRef, 'strategies')}
-                  className="px-3 py-1 opacity-70 cursor-pointer"
+                  className="min-lg:px-3 pl-4 max-sm:w-1/3 py-1 opacity-70 cursor-pointer"
                 >
                   <Image
-                    className={copiedRef === 'strategies' ? 'filter-green' : ''}
+                    className={`${copiedRef === 'strategies' ? 'filter-green' : ''} w-auto h-auto`}
                     height={16}
                     width={16}
                     src={copyicon}

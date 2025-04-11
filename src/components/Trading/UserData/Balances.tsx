@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import Pagination from '@/components/common/Pagination'
 import NoData from '@/components/common/NoData'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { BALANCE_FEATURE_COLUMNS, BALANCE_VAULTS_COLUMNS } from '@/utils/constants'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import infoicon from '@/assets/images/info_icon.svg'
@@ -20,6 +21,17 @@ const vaultsBalance = Array.from({ length: 10 }, (_, index) => ({
   contract: '0xA12b...34cD',
   id: index + 1
 }))
+
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
 
 const Balances = () => {
   const { isConnected } = useAccount()
@@ -42,6 +54,40 @@ const Balances = () => {
 
   const [columns, setColumns] = useState(selectedColumns)
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <Image src={bitcoinicon} alt="BTC" width={30} height={30} />
+            <div className="flex flex-col">
+              <span className="font-medium">{item?.coin}</span>
+              <span className="text-xs text-[#8B8BA0]">{item?.symbol}</span>
+            </div>
+          </div>
+        </div>
+        {columns
+          ?.filter((col) => col?.key !== 'coin')
+          ?.map((col) => (
+            <div key={col?.key} className="flex justify-between">
+              <span className="text-[#8B8BA0]">{col?.label}</span>
+              <span
+                className={
+                  col?.key === 'pnl'
+                    ? 'text-[#2FA766] font-medium'
+                    : col?.key === 'contract'
+                      ? 'truncate'
+                      : ''
+                }
+              >
+                {item[col?.key] ?? '-'}
+              </span>
+            </div>
+          ))}
+      </div>
+    )
+  }
+
   useEffect(() => {
     setColumns(selectedColumns)
   }, [selectedColumns])
@@ -49,14 +95,14 @@ const Balances = () => {
   return (
     <>
       {isConnected ? (
-        <div className="overflow-x-auto w-full px-4">
-          <table className="w-full text-white">
+        <div className="overflow-x-auto w-full px-3 lg:px-4">
+          <table className="w-full hidden lg:table text-white">
             <thead>
               <tr>
                 {columns?.map((col) => (
                   <th
                     key={col.key}
-                    className="pt-3 pb-2.5 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                    className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
                   >
                     <div className="flex justify-start items-center gap-1">
                       <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
@@ -73,7 +119,7 @@ const Balances = () => {
                   {paginatedBalance?.map((item, index) => {
                     return (
                       <tr key={index} className="cursor-pointer border-b border-white/10">
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-semibold text-sm">
                           <div className="flex items-center gap-x-1">
                             <Image
                               src={bitcoinicon}
@@ -90,19 +136,19 @@ const Balances = () => {
                             </div>
                           </div>
                         </td>
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
                           {item?.totalBalance}
                         </td>
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
                           {item?.availableBalance}
                         </td>
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
                           {item?.usdc}
                         </td>
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
                           <span className="text-[#2FA766]">{item?.pnl}</span>
                         </td>
-                        <td className="py-2 pr-7 max-[1025px]:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                        <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
                           {item?.contract}
                         </td>
                       </tr>
@@ -131,6 +177,13 @@ const Balances = () => {
               )}
             </tbody>
           </table>
+          {isVaults && (
+            <ResponsiveDataCard
+              columns={columns}
+              data={paginatedBalance}
+              renderRow={(item) => <RenderRowData item={item} columns={columns} />}
+            />
+          )}
           {isVaults && vaultsBalance?.length > 0 && (
             <Pagination
               currentPage={currentPage}

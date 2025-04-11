@@ -28,11 +28,11 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 border-2 border-white/10 bg-secondary min-w-24 rounded-2xl shadow-lg p-2">
+        <div className="absolute z-55 border-2 border-white/10 bg-secondary w-full min-w-24 rounded-2xl shadow-lg p-2">
           {options.map((option) => (
             <div
               key={option.value}
-              className="px-4 py-2 cursor-pointer hover:bg-[#322944] hover:rounded text-gray-300"
+              className="px-4 py-2  cursor-pointer hover:bg-[#322944] hover:rounded text-gray-300"
               onClick={() => {
                 onChange(option.value)
                 setIsOpen(false)

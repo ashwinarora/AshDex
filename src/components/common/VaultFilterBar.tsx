@@ -21,13 +21,13 @@ const VaultFilterBar: FC<VaultFilterBarProps> = ({
   onSearchChange
 }) => {
   return (
-    <div className="mt-5 px-3 flex flex-col md:flex-row justify-between items-center gap-1 w-full">
-      <div className="flex items-center gap-x-2 text-sm text-white">
+    <div className="mt-5 max-lg:items-start max-lg:gap-y-3 sm:px-3 px-1 flex flex-row max-lg:flex-col justify-between items-center gap-1 w-full">
+      <div className="flex flex-wrap items-center gap-x-2 text-sm text-white">
         {vaultTabs?.map((item) => (
           <button
             key={item}
             onClick={() => onSelectTab(item)}
-            className={`${shouldShowVaultTabs ? 'px-4' : 'px-2.5'} py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
+            className={`${shouldShowVaultTabs ? 'px-4 max-lg:px-2.5' : 'px-2.5'} py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
               selectedTab === item
                 ? 'bg-[#FFFFFF1A] text-white font-semibold'
                 : 'text-white/50 hover:text-white'
@@ -38,7 +38,7 @@ const VaultFilterBar: FC<VaultFilterBarProps> = ({
         ))}
       </div>
       {shouldShowVaultTabs && (
-        <div className="relative w-full md:w-[20%]">
+        <div className="relative max-lg:w-full w-[20%]">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Image src={searchnormalicon} alt="search" width={18} height={18} />
           </div>

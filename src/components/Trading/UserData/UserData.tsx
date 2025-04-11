@@ -16,6 +16,7 @@ import FundingHistory from './FundingHistory'
 import Depositors from './Depositors'
 import DepositsAndWithdrawals from './DepositsAndWithdrawals'
 import OrdersHistory from './OrdersHistory'
+import CustomSelector from '../PlaceOrderBox/CustomSelector'
 
 const UserData = () => {
   const pathname = usePathname()
@@ -53,12 +54,18 @@ const UserData = () => {
   }, [pathname])
 
   const [activeTab, setActiveTab] = useState<number>(getDefaultTab)
+  const showExportButton = isVaults && (activeTab === 4 || activeTab === 6 || activeTab === 7)
   const shouldShowVaultTabs = isVaults && (activeTab === 0 || activeTab === 1)
   const shouldShowSpotOrdersFilter = pathname === '/spot' && activeTab === 1
   const currentVaultTabs = shouldShowVaultTabs ? VAULTS_DETAILS_TAB : ORDER_INTERVALS
   const [selectedTab, setSelectedTab] = useState<(typeof currentVaultTabs)[number]>(
     shouldShowVaultTabs ? 'My Vaults' : '1s'
   )
+
+  const tabOptions = tabs.map((label, index) => ({
+    value: index.toString(),
+    label
+  }))
 
   useEffect(() => {
     const defaultTab = shouldShowVaultTabs ? 'My Vaults' : '1s'
@@ -71,8 +78,8 @@ const UserData = () => {
 
   return (
     <div className="w-full">
-      <div className="border-b flex justify-between items-center border-white/10">
-        <nav className="flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+      <div className="border-b w-full flex justify-between items-center border-white/10">
+        <nav className="hidden lg:flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
           {tabs?.map((tab, index) => (
             <button
               key={tab}
@@ -87,8 +94,17 @@ const UserData = () => {
             </button>
           ))}
         </nav>
-        {isVaults && (activeTab === 4 || activeTab === 6 || activeTab === 7) && (
-          <button className="bg-white/10 mx-2 my-1 px-6 py-2.5 cursor-pointer font-semibold rounded-xl text-sm">
+        <div className="lg:hidden w-full">
+          <CustomSelector
+            options={tabOptions}
+            selectedValue={activeTab?.toString()}
+            onChange={(value) => {
+              setActiveTab(Number(value))
+            }}
+          />
+        </div>
+        {showExportButton && (
+          <button className="bg-white/10 max-[770px]:hidden flex mx-2 my-1 px-6 py-2.5 cursor-pointer font-semibold rounded-xl text-sm">
             Export as CSV
           </button>
         )}
@@ -108,10 +124,16 @@ const UserData = () => {
         {pathname !== '/spot' && activeTab === 1 && <Positions />}
         {activeTab === (pathname === '/spot' ? 1 : 2) && <OpenOrders />}
         {activeTab === (pathname === '/spot' ? 2 : 3) && <Twap />}
-        {activeTab === (pathname === '/spot' ? 3 : 4) && <TradeHistory />}
+        {activeTab === (pathname === '/spot' ? 3 : 4) && (
+          <TradeHistory showExportButton={showExportButton} />
+        )}
         {activeTab === (pathname === '/spot' ? 4 : 5) && <OrdersHistory />}
-        {activeTab === (pathname === '/spot' ? 5 : 6) && <FundingHistory />}
-        {activeTab === (pathname === '/spot' ? 6 : 7) && <DepositsAndWithdrawals />}
+        {activeTab === (pathname === '/spot' ? 5 : 6) && (
+          <FundingHistory showExportButton={showExportButton} />
+        )}
+        {activeTab === (pathname === '/spot' ? 6 : 7) && (
+          <DepositsAndWithdrawals showExportButton={showExportButton} />
+        )}
         {activeTab === (pathname === '/spot' ? 7 : 8) && <Depositors />}
       </div>
     </div>

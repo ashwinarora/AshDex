@@ -61,9 +61,15 @@ const TabContent: React.FC<ITabContentProps> = ({
               <button className="text-sm font-medium p-[8px] text-white bg-white/10 rounded-lg">
                 MAX
               </button>
-              <span className="ml-3 text-white flex items-center text-sm font-medium">
-                <Image src={usdcicon} width={30} height={30} className="pr-2" alt="usdcicon" />
-                {'USDC'}
+              <span className="2xl:ml-3 max-lg:ml-2 text-white flex items-center text-sm font-medium">
+                <Image
+                  src={usdcicon}
+                  width={30}
+                  height={30}
+                  className="2xl:pr-2 max-lg:pr-1"
+                  alt="usdcicon"
+                />
+                <span>{'USDC'}</span>
               </span>
             </div>
           </div>

@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { DEPOSIT_WITHDRAWALS_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import exporticon from '../../../assets/images/export_icon.svg'
@@ -20,8 +21,24 @@ export const vaultsDepositAndWIthdrawals = Array.from({ length: 10 }, (_, index)
   }
 })
 
-function DepositsAndWithdrawals() {
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
+
+type DepositsAndWithdrawalsProps = {
+  showExportButton?: boolean
+}
+
+function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProps) {
   const pathname = usePathname()
+  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -51,6 +68,28 @@ function DepositsAndWithdrawals() {
     }
   }
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        {columns?.map((col) => (
+          <div key={col?.key} className="flex justify-between">
+            <span className="text-[#8B8BA0]">{col?.label}</span>
+            <span className={col?.key === 'contract' ? 'truncate' : ''}>
+              <span
+                className={`flex ${col?.key === 'status' ? 'text-[#2FA766] bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium ' : ''} item-center gap-x-2`}
+              >
+                {item[col?.key] ?? '-'}
+                {col?.key === 'time' && (
+                  <Image src={exporticon} alt="export" width={13} height={13} />
+                )}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   const data = useMemo(
     () => getDataByPathname(pathname, vaultsDepositAndWIthdrawals),
     [pathname, vaultsDepositAndWIthdrawals]
@@ -69,13 +108,13 @@ function DepositsAndWithdrawals() {
 
   return (
     <div className="overflow-x-auto w-full px-3">
-      <table className="w-full text-white">
+      <table className="w-full text-white hidden lg:table">
         <thead>
           <tr>
             {columns?.map((col) => (
               <th
                 key={col?.key}
-                className="pt-3 pb-2 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
@@ -95,7 +134,7 @@ function DepositsAndWithdrawals() {
             if ('vid' in order) {
               return (
                 <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     <div className="flex items-center gap-x-1">
                       <span>{order?.time}</span>
                       <Image
@@ -107,21 +146,21 @@ function DepositsAndWithdrawals() {
                       />
                     </div>
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     <span className="text-[#2FA766] bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium text-sm">
                       {order?.status}
                     </span>
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.network}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.action}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.accountValueChangr}
                   </td>
-                  <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.fee}
                   </td>
                 </tr>
@@ -132,6 +171,14 @@ function DepositsAndWithdrawals() {
           })}
         </tbody>
       </table>
+      {isVaults && (
+        <ResponsiveDataCard
+          columns={columns}
+          data={paginatedOrders || []}
+          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
+          showExportButton={showExportButton}
+        />
+      )}
       {vaultsDepositAndWIthdrawals?.length > 0 && (
         <Pagination
           currentPage={currentPage}

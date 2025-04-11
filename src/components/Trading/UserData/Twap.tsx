@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { TWAP_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
@@ -23,8 +24,20 @@ export const vaultsTwap = Array.from({ length: 10 }, (_, index) => {
   }
 })
 
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
+
 function Twap() {
   const pathname = usePathname()
+  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -54,6 +67,65 @@ function Twap() {
     }
   }
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-2">
+            <Image src={bitcoinicon} alt="BTC" width={30} height={30} />
+            <div className="flex flex-col">
+              <span className="font-medium">{item?.coin}</span>
+              <span className="text-xs text-[#8B8BA0]">{item?.symbol}</span>
+            </div>
+          </div>
+        </div>
+        {columns
+          ?.filter((col) => col?.key !== 'coin')
+          ?.map((col) => (
+            <div key={col?.key} className="flex justify-between">
+              {col?.key !== 'reduceOnly' && col?.key !== 'actions' && (
+                <span className="text-[#8B8BA0]">{col?.label}</span>
+              )}
+              {col?.key === 'reduceOnly' ? (
+                <div className="flex items-center w-full justify-between gap-x-4">
+                  <div className="flex flex-col gap-y-2">
+                    <span className="text-[#8B8BA0]">Reduce Only</span>
+                    <span
+                      className={`${
+                        item?.reduceOnly === 'Yes'
+                          ? 'text-[#2FA766] bg-[#1F1F30]'
+                          : 'text-[#E2464A] bg-[#1F1F30]'
+                      } text-sm px-2 py-0.5 w-fit font-semibold rounded-lg`}
+                    >
+                      {item?.reduceOnly}
+                    </span>
+                  </div>
+                  <div className="flex flex-col gap-y-2 items-end">
+                    <span className="text-[#8B8BA0]">Actions</span>
+                    <button className="text-white bg-white/10 px-4 py-2 rounded-xl text-sm font-semibold">
+                      Terminate
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <span
+                  className={
+                    col?.key === 'pnl'
+                      ? 'text-[#2FA766] font-medium'
+                      : col?.key === 'contract'
+                        ? 'truncate'
+                        : ''
+                  }
+                >
+                  {item[col?.key]}
+                </span>
+              )}
+            </div>
+          ))}
+      </div>
+    )
+  }
+
   const data = useMemo(() => getDataByPathname(pathname, vaultsTwap), [pathname, vaultsTwap])
 
   const paginatedOrders = useMemo(() => {
@@ -69,13 +141,13 @@ function Twap() {
 
   return (
     <div className="overflow-x-auto w-full px-3">
-      <table className="w-full text-white">
+      <table className="w-full hidden lg:table text-white">
         <thead>
           <tr>
             {columns?.map((col) => (
               <th
                 key={col?.key}
-                className="pt-3 pb-2 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
@@ -95,7 +167,7 @@ function Twap() {
             if ('vid' in order) {
               return (
                 <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
                     <div className="flex items-center gap-x-1">
                       <Image
                         src={bitcoinicon}
@@ -112,26 +184,26 @@ function Twap() {
                       </div>
                     </div>
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.size}
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.executedSize}
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.averagePrice}
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     {order?.runningTime}
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                     <span
                       className={`${order?.reduceOnly === 'Yes' ? 'text-[#2FA766] bg-[#1F1F30]' : 'text-[#E2464A] bg-[#1F1F30]'}  ml-1 px-1.5 py-1 rounded-lg  font-semibold text-sm`}
                     >
                       {order?.reduceOnly}
                     </span>
                   </td>
-                  <td className="py-2 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                     <button className="bg-white/10 px-6 flex justify-center py-2.5 cursor-pointer font-semibold rounded-xl text-sm w-1/2">
                       Terminate
                     </button>
@@ -144,6 +216,13 @@ function Twap() {
           })}
         </tbody>
       </table>
+      {isVaults && (
+        <ResponsiveDataCard
+          columns={columns}
+          data={paginatedOrders || []}
+          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
+        />
+      )}
       {vaultsTwap?.length > 0 && (
         <Pagination
           currentPage={currentPage}
