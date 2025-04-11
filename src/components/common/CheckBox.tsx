@@ -23,7 +23,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({ label, setIsChecked, isChecked }) =
   return (
     <label className="flex items-center gap-2 cursor-pointer">
       <div
-        className={`h-5 w-5 rounded-lg border border-[#FFFFFF0F] bg-[#0F081680] ${checked ? 'bg-[#5F46F9]' : ''} peer-checked:hidden flex items-center justify-center transition-all`}
+        className={`h-5 w-5 rounded-lg border border-[#FFFFFF0F] bg-[#0F081680] ${checked ? 'bg-primary' : ''} peer-checked:hidden flex items-center justify-center transition-all`}
         onClick={handleChange}
       >
         {checked && (

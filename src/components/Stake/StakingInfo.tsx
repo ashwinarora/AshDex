@@ -48,7 +48,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
           <p className="text-xl font-medium text-[#FFFFFF]">95,123.24 HYPE</p>
           <button
             onClick={toggleTransferModal}
-            className="w-full text-sm my-3 bg-[#5F46F9] cursor-pointer text-[#FFFFFF] py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
+            className="w-full text-sm my-3 bg-primary cursor-pointer text-[#FFFFFF] py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
           >
             Spot{' '}
             <Image src={arrowsorticon} alt="arrowsorticon" className="w-3.5 h-3.5 cursor-pointer" />

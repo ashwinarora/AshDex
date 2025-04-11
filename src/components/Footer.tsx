@@ -3,7 +3,6 @@
 import { FC } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
-import { usePathname } from 'next/navigation'
 import { useWalletModal } from '@/context/WalletModalContext'
 import nexonLogo from '@/assets/images/logo.svg'
 import solarmoon from '@/assets/images/light_mode.svg'
@@ -13,7 +12,6 @@ import forwardicon from '@/assets/images/twitter_icon.svg'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 
 const Footer: FC = () => {
-  const pathname = usePathname()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
 
@@ -134,7 +132,7 @@ const Footer: FC = () => {
           {!isConnected ? (
             <button
               onClick={toggleConnectWalletModal}
-              className={`bg-[#5F46F9] font-bold block text-[#FFFFFF] ${pathname == '/spot' ? 'md:block' : 'md:hidden'} text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
+              className={`bg-primary font-bold block text-[#FFFFFF]   text-xs px-[15px] py-[11px] rounded-lg cursor-pointer`}
             >
               Connect Wallet
             </button>

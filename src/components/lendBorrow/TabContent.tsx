@@ -115,7 +115,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
             (amount === '0.00' || amount === '0' || amount === '' || parseFloat(amount) > 100)
           }
           className={
-            'py-[12px] px[24px] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
+            'py-[12px] px[24px] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer'
           }
         >
           {isConnected ? activeTab : 'Connect wallet'}

@@ -4,9 +4,7 @@
 :root {
   --background: #0a0a0a;
   --foreground: #ededed;
-  --color-primary: #5f46f9; /* Primary brand color */
-  --color-secondary: #0f0816; /* Secondary brand color */
-  --color-brand: #10b981; /* Brand accent color */
+
   --tw-color-aggrid-background: #1f2937;
 
   --tw-color-aggrid-text: #e5e7eb;
@@ -17,6 +15,9 @@
 }
 
 @theme inline {
+  --color-primary: #5f46f9; /* Primary brand color */
+  --color-secondary: #0f0816; /* Secondary brand color */
+  --color-brand: #10b981; /* Brand accent color */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -101,6 +102,28 @@ input {
     rgba(153, 153, 153, 0.05) 67.22%
   );
   @apply border-2 border-white/5 backdrop-blur-2xl rounded-3xl shadow-md w-full;
+  @apply overflow-clip;
+  @apply max-h-min;
+}
+
+.nexon-rounded-sm {
+  @apply rounded-sm;
+}
+
+.nexon-rounded-md {
+  @apply rounded-md;
+}
+
+.nexon-rounded-lg {
+  @apply rounded-lg;
+}
+
+.nexon-rounded-xl {
+  @apply rounded-xl;
+}
+
+.nexon-button {
+  @apply bg-white/5 backdrop-blur-2xl  py-2 px-4 text-sm hover:bg-white/20 transition-colors duration-200 cursor-pointer active:scale-95;
   @apply overflow-clip;
   @apply max-h-min;
 }

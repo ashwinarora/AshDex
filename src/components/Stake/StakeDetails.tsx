@@ -34,7 +34,7 @@ const StakeDetails = () => {
           <button
             type="button"
             className={
-              'py-2 rounded-2xl w-full  bg-[#5F46F9] hover:bg-purple-600 text-white cursor-pointer'
+              'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
             }
             onClick={() => {
               toggleConnectWalletModal()
@@ -52,7 +52,7 @@ const StakeDetails = () => {
             <span className="text-2xl font-medium">1,593.32</span>
           </div>
           <div className="flex gap-x-2 font-semibold text-base">
-            <button className="bg-[#5F46F9] px-4.5 py-2.5 rounded-xl cursor-pointer">
+            <button className="bg-primary px-4.5 py-2.5 rounded-xl cursor-pointer">
               Stake Tokens
             </button>
             <button className="bg-[#FFFFFF0F] px-4.5 py-2.5 rounded-xl cursor-pointer">

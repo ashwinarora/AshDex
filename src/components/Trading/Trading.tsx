@@ -5,14 +5,14 @@ import OrderBook from './OrderBook'
 import Selector from './Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
-const Trading = () => {
+const Trading = ({ type }: { type: 'spot' | 'perp' }) => {
   const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
 
   return (
     <div className="h-full bg-transparent flex flex-col px-4 md:px-10 gap-4 p-4">
       {/* Top Bar for Asset Selector */}
       <div className="flex   justify-between items-center   relative">
-        <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+        <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} type={type} />
       </div>
       {/* Main Trading Layout */}
       <div className="flex gap-6  flex-col ">
