@@ -5,9 +5,6 @@ module.exports = {
     extend: {
       colors: {
         aggrid: {
-          primary: '#5F46F9',
-          secondary: '#0F0816',
-          brand: '#10B981',
           background: 'var(--tw-color-aggrid-background)',
 
           border: 'var(--tw-color-aggrid-border)',

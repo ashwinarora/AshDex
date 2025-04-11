@@ -37,7 +37,7 @@ const MarketAsset = () => {
           </button>
 
           {selecterOpen && (
-            <div className="absolute right-0  top-10 w-48  shadow-lg z-10 bg-[#0F0816] border-2 border-white/10 rounded-2xl">
+            <div className="absolute right-0  top-10 w-48  shadow-lg z-10 bg-secondary border-2 border-white/10 rounded-2xl">
               <div className="max-h-[400px] overflow-y-auto">
                 <ul className="p-2 text-white">
                   {LENDBORROW_EDIT_OPTIONS?.map((option, index) => (

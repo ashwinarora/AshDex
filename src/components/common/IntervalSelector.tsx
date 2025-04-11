@@ -39,7 +39,7 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
         options={intervals}
         selected={selectedInterval}
         onSelect={(option) => setSelectedInterval(option as (typeof CHART_INTERVALS)[number])}
-        className=" text-sm text-white bg-[#0F0816]"
+        className=" text-sm text-white bg-secondary"
       />
 
       {/* Calendar Icon */}
