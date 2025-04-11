@@ -27,7 +27,7 @@ type ColumnType = {
 }
 
 type RenderRowProps = {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   item: any
   columns: ColumnType[]
 }
