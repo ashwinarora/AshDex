@@ -108,8 +108,8 @@ const LendBorrowTabs: React.FC<ILendBorrowTabsProps> = ({
 
   return (
     <div className="">
-      <div className="flex mb-3 max-[770px]:border-b px-2 pt-1 max-[770px]:border-white/10  items-center justify-between">
-        <nav className="flex flex-wrap gap-x-5 max-[770px]:gap-x-4">
+      <div className="flex mb-3 max-lg:border-b px-2 pt-1 max-lg:border-white/10  items-center justify-between">
+        <nav className="flex flex-wrap gap-x-5 max-lg:gap-x-4">
           {tabs?.map((tab, index) => (
             <button
               key={tab}
