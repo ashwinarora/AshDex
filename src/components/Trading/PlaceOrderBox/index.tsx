@@ -8,6 +8,7 @@ import CustomSelector from './CustomSelector'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
 import useIsSpot from '@/hooks/useIsSpot'
+import ScaleSpot from './ScaleSpot'
 
 /** Define the possible tab options */
 type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
@@ -29,7 +30,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'TWAP':
         return <TWAP selectedAsset={selectedAsset} />
       case 'SCALE':
-        return <Scale selectedAsset={selectedAsset} />
+        return isSpot ? (
+          <ScaleSpot selectedAsset={selectedAsset} />
+        ) : (
+          <Scale selectedAsset={selectedAsset} />
+        )
       case 'STOP_LIMIT':
         return <StopLimit selectedAsset={selectedAsset} />
       case 'STOP_MARKET':
