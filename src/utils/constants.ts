@@ -95,7 +95,7 @@ export const OPEN_ORDERS_SPOT_COLUMNS = [
   { key: 'action', label: '' }
 ] as const
 
-export const OPEN_ORDERS_FEATURE_COLUMNS = [
+export const OPEN_ORDERS_COLUMNS = [
   { key: 'coin', label: 'Coin' },
   { key: 'side', label: 'Side' },
   { key: 'limitPrice', label: 'Limit Price' },
