@@ -242,12 +242,12 @@ const Positions = () => {
           ))}
         </tbody>
       </table>
-        <ResponsiveDataCard
-          columns={[...columns]}
-          data={paginatedPositions || []}
-          positionTab={true}
-          renderRow={(item) => <RenderRowData item={item} columns={[...columns]} />}
-        />
+      <ResponsiveDataCard
+        columns={[...columns]}
+        data={paginatedPositions || []}
+        positionTab={true}
+        renderRow={(item) => <RenderRowData item={item} columns={[...columns]} />}
+      />
       {clearingHouseState?.assetPositions && clearingHouseState?.assetPositions?.length > 0 && (
         <Pagination
           currentPage={currentPage}

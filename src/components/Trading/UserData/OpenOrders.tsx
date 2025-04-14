@@ -8,10 +8,7 @@ import { usePathname } from 'next/navigation'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import Pagination from '@/components/common/Pagination'
 import NoData from '@/components/common/NoData'
-import {
-  OPEN_ORDERS_SPOT_COLUMNS,
-  OPEN_ORDERS_FEATURE_COLUMNS,
-} from '@/utils/constants'
+import { OPEN_ORDERS_SPOT_COLUMNS, OPEN_ORDERS_FEATURE_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import deleteicon from '@/assets/images/delete_icon.svg'
@@ -52,18 +49,16 @@ const OpenOrders = () => {
   function getOrdersLength(
     pathname: string,
     spotOrders?: SpotOrder[],
-    openOrders?: Order[],
+    openOrders?: Order[]
   ): number {
     if (pathname.includes('/spot')) {
       return spotOrders?.length || 0
-    }  else {
+    } else {
       return openOrders?.length || 0
     }
   }
 
-  const totalPages = Math.ceil(
-    getOrdersLength(pathname, spotOrders, openOrders) / pageSize
-  )
+  const totalPages = Math.ceil(getOrdersLength(pathname, spotOrders, openOrders) / pageSize)
 
   const getColumnsByPathname = (pathname: string) => {
     if (pathname?.includes('/spot')) {
@@ -73,14 +68,10 @@ const OpenOrders = () => {
     }
   }
 
-  const getDataByPathname = (
-    pathname: string,
-    spotOrders: SpotOrder[],
-    openOrders: Order[]
-  ) => {
+  const getDataByPathname = (pathname: string, spotOrders: SpotOrder[], openOrders: Order[]) => {
     if (pathname?.includes('/spot')) {
       return spotOrders
-    }  else {
+    } else {
       return openOrders
     }
   }
@@ -230,7 +221,7 @@ const OpenOrders = () => {
                       </td>
                     </tr>
                   )
-                }  else {
+                } else {
                   return (
                     <tr key={order.id} className=" border-b border-white/10">
                       <td className="py-2.5 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-normal text-sm">

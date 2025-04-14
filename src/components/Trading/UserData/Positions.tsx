@@ -29,7 +29,6 @@ const Positions = () => {
     return clearingHouseState?.assetPositions?.slice((currentPage - 1) * 10, currentPage * 10)
   }, [clearingHouseState?.assetPositions, currentPage])
 
-
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full hidden lg:table text-white">
