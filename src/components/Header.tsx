@@ -190,12 +190,12 @@ const Header: FC = () => {
                   alt="BalanceIcon"
                   className="w-[22px] h-[22px] mr-2"
                 />
-                <span className="text-sm max-[1025px]:hidden flex font-medium truncate text-[#E8E0F1]">
+                <span className="text-sm max-xl:hidden flex font-medium truncate text-[#E8E0F1]">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="border-l max-[1025px]:hidden flex border-gray-600 h-4 mx-2"></span>
-                <span className="font-medium max-[1025px]:hidden flex truncate">
+                <span className="border-l max-xl:hidden flex border-gray-600 h-4 mx-2"></span>
+                <span className="font-medium max-xl:hidden flex truncate">
                   {truncateAddress(address!)}
                 </span>
                 <Image
