@@ -173,7 +173,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
   return (
     <div
       ref={containerRef}
-      className={`relative w-full my-0 rounded-2xl max-[1100px]:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${
+      className={`relative w-full my-0 rounded-2xl max-xl:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${
         isOpen || isSettingsOpen ? 'z-50' : ''
       }`}
       style={{
@@ -182,8 +182,8 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
       }}
     >
       {/* Left Side */}
-      <div className="flex max-[1100px]:border-b max-[1100px]:border-white/10 max-[1100px]:w-full">
-        <div className="flex items-center max-[576px]:px-2 max-[770px]:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
+      <div className="flex max-xl:border-b max-xl:border-white/10 max-xl:w-full">
+        <div className="flex items-center max-sm:px-2 max-lg:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
           <button
             onClick={handleToggleFavorite}
             className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer   md:static absolute -top-2 -left-2 h-5 w-5"
@@ -218,17 +218,17 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
             />
           </button>
         </div>
-        <div className="flex flex-col max-[770px]:pl-3 items-center p-4 px-3 2xl:px-5 max-[576px]:border-r-0 border-r border-white/10 min-w-32">
+        <div className="flex flex-col max-lg:pl-3 items-center p-4 px-3 2xl:px-5 max-sm:border-r-0 border-r border-white/10 min-w-32">
           <ValueIndicator value={selectedAssetContext?.midPx} className="text-xl font-normal" />
         </div>
       </div>
 
-      <div className="flex items-center relative max-[1100px]:w-full w-[80%] justify-between">
-        <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-[770px]:divide-y divide-white/10 divide">
+      <div className="flex items-center relative max-xl:w-full w-[80%] justify-between">
+        <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-[770px]:pb-2 py-3 flex-wrap flex-1 max-[770px]:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="flex max-lg:pb-2 py-3 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
               <div className="flex flex-col space-y-1">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
@@ -242,7 +242,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
           ))}
         </div>
 
-        <div ref={settingsRef} className="relative block max-[770px]:hidden pr-4">
+        <div ref={settingsRef} className="relative block max-lg:hidden pr-4">
           <button
             onClick={() => setIsSettingsOpen((prev) => !prev)}
             className="mx-2 cursor-pointer"
@@ -252,7 +252,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
         </div>
         <button
           onClick={() => setIsSettingsOpen((prev) => !prev)}
-          className="mx-2 max-[770px]:block hidden absolute -top-12 right-0 cursor-pointer"
+          className="mx-2 max-lg:block hidden absolute -top-12 right-0 cursor-pointer"
         >
           <Image src={settingicon} alt="Settings" className="w-5 h-5" width={24} height={24} />
         </button>

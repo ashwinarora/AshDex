@@ -101,16 +101,16 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           </select>
         </div>
       </div>
-      <div className="flex w-full max-[1025px]:hidden opacity-60 justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
+      <div className="flex w-full max-xl:hidden opacity-60 justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
         <span className="text-xs font-medium">Price (USDS)</span>
         <span className="text-xs font-medium">Amount (BTC)</span>
         <span className="text-xs font-medium">Total</span>
       </div>
 
-      <div className="flex max-[1025px]:flex-row flex-col space-y-1">
+      <div className="flex max-xl:flex-row flex-col space-y-1">
         {/* red */}
-        <div className="max-[1025px]:w-1/2">
-          <div className="max-[1025px]:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
+        <div className="max-xl:w-1/2">
+          <div className="max-xl:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
             <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
             <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
           </div>
@@ -137,7 +137,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                         <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
                           {order.sz}
                         </span>
-                        <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-[1025px]:hidden">
+                        <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-xl:hidden">
                           {order.cumulative.toFixed(2)}
                         </span>
                       </div>
@@ -146,7 +146,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                   .reverse()}
           </div>
         </div>
-        <div className="max-[1025px]:hidden flex justify-between text-xs text-gray-400 py-1 px-2 border-t border-b border-gray-700 my-1">
+        <div className="max-xl:hidden flex justify-between text-xs text-gray-400 py-1 px-2 border-t border-b border-gray-700 my-1">
           <span>Spread</span>
           <span>
             {isLoading ? (
@@ -164,8 +164,8 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           </span>
         </div>
         {/* green */}
-        <div className="max-[1025px]:w-1/2">
-          <div className="max-[1025px]:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
+        <div className="max-xl:w-1/2">
+          <div className="max-xl:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
             <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
             <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
           </div>
@@ -191,7 +191,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                       <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
                         {order.sz}
                       </span>
-                      <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-[1025px]:hidden">
+                      <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-xl:hidden">
                         {order.cumulative.toFixed(2)}
                       </span>
                     </div>
