@@ -319,3 +319,30 @@ export type VaultsOrder = {
   id: number
   vid: number
 }
+
+type SpotToken = {
+  name: string
+  szDecimals: number
+  weiDecimals: number
+  index: number
+  tokenId: string
+  isCanonical: boolean
+  evmContract: {
+    address: string
+    evm_extra_wei_decimals: number
+  }
+  fullName: string | null
+  deployerTradingFeeShare: number
+}
+
+type SpotUniverse = {
+  tokens: number[]
+  name: string
+  index: number
+  isCanonical: boolean
+}
+
+export type SpotMeta = {
+  tokens: SpotToken[]
+  universe: SpotUniverse[]
+}

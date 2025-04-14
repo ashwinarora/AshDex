@@ -9,6 +9,7 @@ import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
+import useIsSpot from '@/hooks/useIsSpot'
 
 import { useFavorites } from '@/context/FavoritesContext'
 
@@ -29,39 +30,39 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => {
-  const { allMids, perpAssetContext, universe } = useHyperLiquid()
+  const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
+  const isSpot = useIsSpot()
 
   const selectedAssetContext = useMemo(() => {
-    if (!universe.length) return
-    if (!perpAssetContext.length) return
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    return perpAssetContext[assetIndex]
-  }, [selectedAsset, perpAssetContext, universe])
+    if (isSpot) {
+      const asset = spotAssetContext.find((assets) => assets.coin.includes(selectedAsset))
+      return asset
+    } else {
+      const assetIndex = getUniverseIndex(universe, selectedAsset)
+      return perpAssetContext[assetIndex]
+    }
+  }, [selectedAsset, perpAssetContext, universe, spotAssetContext, isSpot])
 
   // Get and filter asset entries based on searchTerm and "PERP"
-  const assetEntries = useMemo(
+  const filteredAssets = useMemo(
     () =>
       Object.entries(allMids)
         .filter(([key]) => !key.startsWith('@'))
-        .filter(([key]) => key.includes('PERP'))
+        .filter(([key]) => key.includes(isSpot ? 'SPOT' : 'PERP'))
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase())),
     [allMids, searchTerm]
-  )
-
-  // Use the full filtered list of assets
-  const filteredAssets = assetEntries.filter(([key]) =>
-    key.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
   const marketData = useMemo(() => {
+    if (!selectedAssetContext) return []
     const calculate24hChange = () => {
       if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
       const prevDayPrice = selectedAssetContext?.prevDayPx
@@ -71,7 +72,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
       return `${sign}${change.toFixed(2)} (${sign}${percentageChange.toFixed(2)}%)`
     }
     const changeString = calculate24hChange()
-    return [
+    const data = [
       {
         label: '24h Change',
         value: changeString ?? <Skeleton size="md" />,
@@ -88,13 +89,16 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
         value: selectedAssetContext?.dayNtlVlm.toFixed(2) ?? <Skeleton size="md" />
       },
       { label: 'Market Cap', value: '$928B' },
-      {
-        label: '1h Funding',
-        value: selectedAssetContext?.funding ?? <Skeleton size="md" />,
-        color: 'text-[#2FA766]'
-      },
       { label: 'Next Funding', value: '27:57' }
     ]
+    if ('funding' in selectedAssetContext) {
+      data.splice(data.length - 1, 0, {
+        label: '1h Funding',
+        value: selectedAssetContext?.funding.toString() ?? <Skeleton size="md" />,
+        color: 'text-[#2FA766]'
+      })
+    }
+    return data
   }, [selectedAssetContext])
 
   const settingsOptions = useMemo(
