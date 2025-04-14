@@ -4,7 +4,7 @@ import phantom from '@/assets/images/phantom_icon.svg'
 import trustwallet from '@/assets/images/trustwallet_icon.svg'
 import rabbywallet from '@/assets/images/rabbywallet_icon.svg'
 import walletconnect from '@/assets/images/walletconnect_icon.svg'
-import coinbase from '@/assets/images/coinbase_icon.webp'
+import coinbase from '@/assets/images/coinbase.svg'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 

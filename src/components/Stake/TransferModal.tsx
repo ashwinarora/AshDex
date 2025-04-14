@@ -16,7 +16,7 @@ function TransferModal() {
     <Modal isOpen={isTransferModalOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="w-full border-[2px] bg-[#0F0816] max-w-lg p-6 rounded-2xl shadow-lg"
+        className="w-full border-[2px] bg-secondary max-w-lg p-6 rounded-2xl shadow-lg"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4 w-full">
@@ -71,7 +71,7 @@ function TransferModal() {
           </p>
           <Image src={infoicon} alt="Info" width={14} height={14} className="ml-1" />
         </div>
-        <button className="w-full bg-[#5F46F9] cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold">
+        <button className="w-full bg-primary cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold">
           Transfer
         </button>
       </div>

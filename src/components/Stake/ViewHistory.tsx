@@ -59,7 +59,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
               </div>
             </div>
             <CheckBox label="Show auto-compounding" setIsChecked={setShow} isChecked={show} />
-            <button className="text-sm px-4 py-2.5 rounded-2xl bg-[#5F46F9] text-[#FFFFFF] font-semibold">
+            <button className="text-sm px-4 py-2.5 rounded-2xl bg-primary text-[#FFFFFF] font-semibold">
               Export as CSV
             </button>
           </div>

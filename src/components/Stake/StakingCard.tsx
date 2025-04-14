@@ -107,7 +107,7 @@ const StakingCard = () => {
               <p className="text-[#FFFFFF] text-2xl tracking-normal font-medium">Staking</p>
               <button
                 onClick={() => toggleConnectWalletModal()}
-                className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
               >
                 <Image
                   height={20}

@@ -64,14 +64,14 @@ const UserData = () => {
   return (
     <div className="w-full">
       <div className="border-b border-white/10">
-        <nav className="flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
-          {tabs.map((tab, index) => (
+        <nav className="flex flex-wrap max-lg:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+          {tabs?.map((tab, index) => (
             <button
               key={tab.header}
               onClick={() => setActiveTab(index)}
               className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
                 activeTab === index
-                  ? 'border-[#5F46F9] text-[#FFFFFF] rounded-xs'
+                  ? 'border-primary text-[#FFFFFF] rounded-xs'
                   : 'border-transparent text-[#8B8BA0]'
               }`}
             >

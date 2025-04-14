@@ -108,14 +108,14 @@ const LendBorrowTabs: React.FC<ILendBorrowTabsProps> = ({
 
   return (
     <div className="">
-      <div className="flex mb-3 max-[770px]:border-b px-2 pt-1 max-[770px]:border-white/10  items-center justify-between">
-        <nav className="flex flex-wrap gap-x-5 max-[770px]:gap-x-4">
+      <div className="flex mb-3 max-lg:border-b px-2 pt-1 max-lg:border-white/10  items-center justify-between">
+        <nav className="flex flex-wrap gap-x-5 max-lg:gap-x-4">
           {tabs?.map((tab, index) => (
             <button
               key={tab}
               onClick={() => setActiveTab(index)}
               className={`py-2 px-1 text-base border-b-3 cursor-pointer whitespace-nowrap 
-          ${activeTab === index ? 'border-[#5F46F9] text-white font-bold rounded-xs' : 'border-transparent font-medium text-[#8B8BA0]'}
+          ${activeTab === index ? 'border-primary text-white font-bold rounded-xs' : 'border-transparent font-medium text-[#8B8BA0]'}
         `}
             >
               {tab}

@@ -168,7 +168,7 @@ const Header: FC = () => {
             {notificationCount > 0 && (
               <span
                 className="absolute -top-1 right-0 2xl:-right-0 flex items-center justify-center w-[18px] h-[17px] 
-                bg-[#5F46F9] text-[#FFFFFF] text-[11px] font-['Proxima Nova'] font-normal leading-[140%] 
+                bg-primary text-[#FFFFFF] text-[11px] font-['Proxima Nova'] font-normal leading-[140%] 
                 rounded-[12px]"
               >
                 {notificationCount}
@@ -190,12 +190,12 @@ const Header: FC = () => {
                   alt="BalanceIcon"
                   className="w-[22px] h-[22px] mr-2"
                 />
-                <span className="text-sm max-[1025px]:hidden flex font-medium truncate text-[#E8E0F1]">
+                <span className="text-sm max-xl:hidden flex font-medium truncate text-[#E8E0F1]">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="border-l max-[1025px]:hidden flex border-gray-600 h-4 mx-2"></span>
-                <span className="font-medium max-[1025px]:hidden flex truncate">
+                <span className="border-l max-xl:hidden flex border-gray-600 h-4 mx-2"></span>
+                <span className="font-medium max-xl:hidden flex truncate">
                   {truncateAddress(address!)}
                 </span>
                 <Image
@@ -210,7 +210,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-[#0F0816] border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
                 >
                   <div className="flex items-start text-[#E8E0F1]">
                     <Image
@@ -261,7 +261,7 @@ const Header: FC = () => {
           ) : (
             <button
               onClick={toggleConnectWalletModal}
-              className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+              className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
             >
               <Image height={20} width={20} src={walleticon} alt="walleticon" className="w-5 h-5" />
               <span className="ml-2 hidden 2xl:block">Connect Wallet</span>

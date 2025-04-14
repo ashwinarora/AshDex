@@ -106,7 +106,7 @@ const MarketTable = () => {
                     <button className="bg-[#FFFFFF0F] text-base font-medium px-3 py-2 rounded-md">
                       Borrow
                     </button>
-                    <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 rounded-xl -top-8 bg-[#0F0816] text-white text-xs p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
+                    <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 rounded-xl -top-8 bg-secondary text-white text-xs p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
                       Maximum amount available to borrow is 9.9 k ezETH ($24.4 mn)
                     </span>
                   </div>
@@ -115,7 +115,7 @@ const MarketTable = () => {
               <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 <span className="relative group">
                   <span className="">{position?.szi}</span>
-                  <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 -top-8 bg-[#0F0816] text-white text-xs rounded-xl p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
+                  <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 -top-8 bg-secondary text-white text-xs rounded-xl p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
                     <span>Participating in this ezETH reserve gives annualized rewards.</span>
                   </span>
                 </span>

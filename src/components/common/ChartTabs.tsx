@@ -27,14 +27,14 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
   ]
   return (
     <div className="border-b border-white/10">
-      <div className="flex max-[770px]:border-b px-4 pt-1 max-[770px]:border-white/10  items-center justify-between">
-        <nav className="flex flex-wrap gap-x-5 max-[770px]:gap-x-4">
+      <div className="flex max-lg:border-b px-4 pt-1 max-lg:border-white/10  items-center justify-between">
+        <nav className="flex flex-wrap gap-x-5 max-lg:gap-x-4">
           {tabs?.map((tab, index) => (
             <button
               key={tab}
               onClick={() => setActiveTab(index)}
               className={`py-2 px-1 font-medium text-base border-b-3 cursor-pointer whitespace-nowrap 
-          ${activeTab === index ? 'border-[#5F46F9] text-white rounded-xs' : 'border-transparent text-[#8B8BA0]'}
+          ${activeTab === index ? 'border-primary text-white rounded-xs' : 'border-transparent text-[#8B8BA0]'}
         `}
             >
               {tab}
@@ -50,14 +50,14 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
               className={`w-4 h-4 cursor-pointer hover:opacity-100 transition-opacity
         ${index === 2 ? 'ml-4' : ''}
         ${index === 4 ? 'mr-4' : ''}
-        ${index > 1 ? 'max-[770px]:hidden' : ''} 
+        ${index > 1 ? 'max-lg:hidden' : ''} 
       `}
             />
           ))}
         </div>
       </div>
 
-      <div className="hidden justify-between max-[770px]:flex items-center p-4 flex-wrap md:flex-nowrap">
+      <div className="hidden justify-between max-lg:flex items-center p-4 flex-wrap md:flex-nowrap">
         <div className="flex gap-x-4">
           {[ballpenicon, layouticon, chartbaricon].map((icon, index) => (
             <Image
