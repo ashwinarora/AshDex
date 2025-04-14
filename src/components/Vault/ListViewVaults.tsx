@@ -66,15 +66,17 @@ function ListViewVaults() {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     item: any
     columns: ColumnType[]
+    index: number
+    onRowClick: (index: number) => void
   }
 
   const handleRowClick = (index: number) => {
     router.push(`/vaults/${index}`)
   }
 
-  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, index, onRowClick }) => {
     return (
-      <div className="flex flex-col gap-2 text-white text-sm">
+      <div onClick={() => onRowClick(index)} className="flex flex-col gap-2 text-white text-sm">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
             <Image src={lidoicon} alt="lidoicon" width={30} height={30} />
@@ -211,8 +213,15 @@ function ListViewVaults() {
         </table>
         <ResponsiveDataCard
           columns={[...VAULTS_LIST_COLUMNS]}
-          data={paginatedValuts}
-          renderRow={(item) => <RenderRowData item={item} columns={[...VAULTS_LIST_COLUMNS]} />}
+          data={paginatedValuts?.map((item, index) => ({ ...item, _index: index }))}
+          renderRow={(item) => (
+            <RenderRowData
+              item={item}
+              columns={[...VAULTS_LIST_COLUMNS]}
+              index={item?._index}
+              onRowClick={handleRowClick}
+            />
+          )}
         />
         {data?.length > 0 && (
           <Pagination

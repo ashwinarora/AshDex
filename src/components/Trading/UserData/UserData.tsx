@@ -1,15 +1,13 @@
 'use client'
 import { usePathname } from 'next/navigation'
-import { useCallback, useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { VAULTS_DETAILS_TAB, ORDER_INTERVALS } from '../../../utils/constants'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
-import VaultFilterBar from '@/components/common/VaultFilterBar'
 import Twap from './Twap'
 import TradeHistory from './TradeHistory'
 import FundingHistory from './FundingHistory'
@@ -21,7 +19,6 @@ import CustomSelector from '../PlaceOrderBox/CustomSelector'
 const UserData = () => {
   const pathname = usePathname()
   const { address } = useAccount()
-  const isVaults = pathname.includes('/vaults')
   const { clearingHouseState } = useHyperLiquid()
   const { data: openOrders } = useQuery<Order[]>({
     queryKey: ['openOrders', address],
@@ -31,8 +28,7 @@ const UserData = () => {
     enabled: !!address,
     initialData: []
   })
-  const [searchValue, setSearchValue] = useState('')
-
+  const isSpot = pathname.includes('/spot')
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
   const tabs = [
     'Balances',
@@ -43,38 +39,14 @@ const UserData = () => {
     'TWAP',
     'Trade History',
     'Orders History',
-    'Funding History',
-    ...(isVaults ? ['Deposits and Withdrawals', 'Depositors (100+)'] : [])
+    'Funding History'
   ] as const
 
-  const getDefaultTab = useCallback(() => {
-    if (pathname === '/spot') return 1
-    if (isVaults) return 0
-    return 1
-  }, [pathname])
-
-  const [activeTab, setActiveTab] = useState<number>(getDefaultTab)
-  const showExportButton = isVaults && (activeTab === 4 || activeTab === 6 || activeTab === 7)
-  const shouldShowVaultTabs = isVaults && (activeTab === 0 || activeTab === 1)
-  const shouldShowSpotOrdersFilter = pathname === '/spot' && activeTab === 1
-  const currentVaultTabs = shouldShowVaultTabs ? VAULTS_DETAILS_TAB : ORDER_INTERVALS
-  const [selectedTab, setSelectedTab] = useState<(typeof currentVaultTabs)[number]>(
-    shouldShowVaultTabs ? 'My Vaults' : '1s'
-  )
-
+  const [activeTab, setActiveTab] = useState<number>(1)
   const tabOptions = tabs.map((label, index) => ({
     value: index.toString(),
     label
   }))
-
-  useEffect(() => {
-    const defaultTab = shouldShowVaultTabs ? 'My Vaults' : '1s'
-    setSelectedTab(defaultTab)
-  }, [shouldShowVaultTabs])
-
-  useEffect(() => {
-    setActiveTab(getDefaultTab)
-  }, [pathname, getDefaultTab])
 
   return (
     <div className="w-full">
@@ -103,38 +75,17 @@ const UserData = () => {
             }}
           />
         </div>
-        {showExportButton && (
-          <button className="bg-white/10 max-[770px]:hidden flex mx-2 my-1 px-6 py-2.5 cursor-pointer font-semibold rounded-xl text-sm">
-            Export as CSV
-          </button>
-        )}
       </div>
-      {(isVaults || shouldShowSpotOrdersFilter) && (
-        <VaultFilterBar
-          shouldShowVaultTabs={shouldShowVaultTabs}
-          vaultTabs={currentVaultTabs}
-          selectedTab={selectedTab}
-          onSelectTab={(tab: string) => setSelectedTab(tab as (typeof VAULTS_DETAILS_TAB)[number])}
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-        />
-      )}
       <div className="mt-3 mb-6 w-full">
         {activeTab === 0 && <Balances />}
         {pathname !== '/spot' && activeTab === 1 && <Positions />}
-        {activeTab === (pathname === '/spot' ? 1 : 2) && <OpenOrders />}
-        {activeTab === (pathname === '/spot' ? 2 : 3) && <Twap />}
-        {activeTab === (pathname === '/spot' ? 3 : 4) && (
-          <TradeHistory showExportButton={showExportButton} />
-        )}
-        {activeTab === (pathname === '/spot' ? 4 : 5) && <OrdersHistory />}
-        {activeTab === (pathname === '/spot' ? 5 : 6) && (
-          <FundingHistory showExportButton={showExportButton} />
-        )}
-        {activeTab === (pathname === '/spot' ? 6 : 7) && (
-          <DepositsAndWithdrawals showExportButton={showExportButton} />
-        )}
-        {activeTab === (pathname === '/spot' ? 7 : 8) && <Depositors />}
+        {activeTab === (isSpot ? 1 : 2) && <OpenOrders />}
+        {activeTab === (isSpot ? 2 : 3) && <Twap />}
+        {activeTab === (isSpot ? 3 : 4) && <TradeHistory />}
+        {activeTab === (isSpot ? 4 : 5) && <OrdersHistory />}
+        {activeTab === (isSpot ? 5 : 6) && <FundingHistory />}
+        {activeTab === (isSpot ? 6 : 7) && <DepositsAndWithdrawals />}
+        {activeTab === (isSpot ? 7 : 8) && <Depositors />}
       </div>
     </div>
   )
