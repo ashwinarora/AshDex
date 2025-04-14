@@ -5,16 +5,10 @@ import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
+import CustomSelector from '../../common/CustomSelector'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
-import Twap from './Twap'
-import TradeHistory from './TradeHistory'
-import FundingHistory from './FundingHistory'
-import Depositors from './Depositors'
-import DepositsAndWithdrawals from './DepositsAndWithdrawals'
-import OrdersHistory from './OrdersHistory'
-import CustomSelector from '../PlaceOrderBox/CustomSelector'
 
 const UserData = () => {
   const pathname = usePathname()
@@ -80,12 +74,6 @@ const UserData = () => {
         {activeTab === 0 && <Balances />}
         {pathname !== '/spot' && activeTab === 1 && <Positions />}
         {activeTab === (isSpot ? 1 : 2) && <OpenOrders />}
-        {activeTab === (isSpot ? 2 : 3) && <Twap />}
-        {activeTab === (isSpot ? 3 : 4) && <TradeHistory />}
-        {activeTab === (isSpot ? 4 : 5) && <OrdersHistory />}
-        {activeTab === (isSpot ? 5 : 6) && <FundingHistory />}
-        {activeTab === (isSpot ? 6 : 7) && <DepositsAndWithdrawals />}
-        {activeTab === (isSpot ? 7 : 8) && <Depositors />}
       </div>
     </div>
   )

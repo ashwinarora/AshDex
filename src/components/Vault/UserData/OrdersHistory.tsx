@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import { ORDERHISTORY_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
@@ -39,49 +38,13 @@ type RenderRowProps = {
 }
 
 function OrdersHistory() {
-  const pathname = usePathname()
-  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function getOrdersLength(pathname: string, vaultsOrdersHistory?: any[]): number {
-    if (pathname?.includes('/vaults')) {
-      return vaultsOrdersHistory?.length || 0
-    } else {
-      return 0
-    }
-  }
-
-  const totalPages = Math.ceil(getOrdersLength(pathname, vaultsOrdersHistory) / pageSize)
-  const getColumnsByPathname = (pathname: string) => {
-    if (pathname?.includes('/vaults')) {
-      return ORDERHISTORY_VAULTS_COLUMNS
-    } else {
-      return []
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getDataByPathname = (pathname: string, vaultsOrdersHistory?: any[]) => {
-    if (pathname?.includes('/vaults')) {
-      return vaultsOrdersHistory
-    } else {
-      return []
-    }
-  }
-
-  const data = useMemo(
-    () => getDataByPathname(pathname, vaultsOrdersHistory),
-    [pathname, vaultsOrdersHistory]
-  )
-
+  const totalPages = Math.ceil(vaultsOrdersHistory?.length / pageSize)
   const paginatedOrders = useMemo(() => {
-    return data?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [data, currentPage, pageSize])
-
-  const selectedColumns = useMemo(() => getColumnsByPathname(pathname), [pathname])
-  const [columns, setColumns] = useState(selectedColumns)
+    return vaultsOrdersHistory?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }, [vaultsOrdersHistory, currentPage, pageSize])
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     return (
@@ -117,16 +80,12 @@ function OrdersHistory() {
     )
   }
 
-  useEffect(() => {
-    setColumns(selectedColumns)
-  }, [selectedColumns])
-
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full text-white hidden lg:table">
         <thead>
           <tr>
-            {columns?.map((col) => (
+            {ORDERHISTORY_VAULTS_COLUMNS?.map((col) => (
               <th
                 key={col?.key}
                 className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
@@ -146,68 +105,64 @@ function OrdersHistory() {
         </thead>
         <tbody>
           {paginatedOrders?.map((order) => {
-            if ('vid' in order) {
-              return (
-                <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.time}
-                  </td>
-                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
-                    <div className="flex justify-between flex-col">
-                      {order?.symbol}{' '}
-                      <span className="text-[#8B8BA0] pt-0.5 font-normal text-xs">
-                        {order?.symbolText}
-                      </span>
-                    </div>
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
-                    {order?.buysell}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.type}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.price}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.amount}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.filled}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.avgPrice}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.fee}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    <span
-                      className={`
+            return (
+              <tr key={order.id} className=" border-b border-white/10">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.time}
+                </td>
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                  <div className="flex justify-between flex-col">
+                    {order?.symbol}{' '}
+                    <span className="text-[#8B8BA0] pt-0.5 font-normal text-xs">
+                      {order?.symbolText}
+                    </span>
+                  </div>
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
+                  {order?.buysell}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.type}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.price}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.amount}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.filled}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.avgPrice}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.fee}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  <span
+                    className={`
                         rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block
                         ${order?.status === 'Filled' ? 'bg-[#28283e] text-[#2FA766]' : ''}
                         ${order?.status === 'Rejected' ? 'bg-[#27273b] text-[#E2464A]' : ''}
                         ${order?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''}
                        `}
-                    >
-                      {order?.status}
-                    </span>
-                  </td>
-                </tr>
-              )
-            } else {
-              return <></>
-            }
+                  >
+                    {order?.status}
+                  </span>
+                </td>
+              </tr>
+            )
           })}
         </tbody>
       </table>
-      {isVaults && (
-        <ResponsiveDataCard
-          columns={columns}
-          data={paginatedOrders || []}
-          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
-        />
-      )}
+      <ResponsiveDataCard
+        columns={[...ORDERHISTORY_VAULTS_COLUMNS]}
+        data={paginatedOrders || []}
+        renderRow={(item) => (
+          <RenderRowData item={item} columns={[...ORDERHISTORY_VAULTS_COLUMNS]} />
+        )}
+      />
       {vaultsOrdersHistory?.length > 0 && (
         <Pagination
           currentPage={currentPage}

@@ -1,6 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
 import { FUNDINGHISTORY_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
@@ -34,48 +33,14 @@ type FundingHistoryProps = {
 }
 
 function FundingHistory({ showExportButton }: FundingHistoryProps) {
-  const pathname = usePathname()
-  const isVaults = pathname.includes('/vaults')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  function getOrdersLength(pathname: string, vaultsFundingHistory?: any[]): number {
-    if (pathname?.includes('/vaults')) {
-      return vaultsFundingHistory?.length || 0
-    } else {
-      return 0
-    }
-  }
-  const totalPages = Math.ceil(getOrdersLength(pathname, vaultsFundingHistory) / pageSize)
-  const getColumnsByPathname = (pathname: string) => {
-    if (pathname?.includes('/vaults')) {
-      return FUNDINGHISTORY_VAULTS_COLUMNS
-    } else {
-      return []
-    }
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const getDataByPathname = (pathname: string, vaultsFundingHistory?: any[]) => {
-    if (pathname?.includes('/vaults')) {
-      return vaultsFundingHistory
-    } else {
-      return []
-    }
-  }
-
-  const data = useMemo(
-    () => getDataByPathname(pathname, vaultsFundingHistory),
-    [pathname, vaultsFundingHistory]
-  )
+  const totalPages = Math.ceil(vaultsFundingHistory?.length / pageSize)
 
   const paginatedOrders = useMemo(() => {
-    return data?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [data, currentPage, pageSize])
-
-  const selectedColumns = useMemo(() => getColumnsByPathname(pathname), [pathname])
-  const [columns, setColumns] = useState(selectedColumns)
+    return vaultsFundingHistory?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }, [vaultsFundingHistory, currentPage, pageSize])
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     return (
@@ -92,16 +57,12 @@ function FundingHistory({ showExportButton }: FundingHistoryProps) {
     )
   }
 
-  useEffect(() => {
-    setColumns(selectedColumns)
-  }, [selectedColumns])
-
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full hidden lg:table text-white">
         <thead>
           <tr>
-            {columns?.map((col) => (
+            {FUNDINGHISTORY_VAULTS_COLUMNS?.map((col) => (
               <th
                 key={col?.key}
                 className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
@@ -121,37 +82,33 @@ function FundingHistory({ showExportButton }: FundingHistoryProps) {
         </thead>
         <tbody>
           {paginatedOrders?.map((order) => {
-            if ('vid' in order) {
-              return (
-                <tr key={order.id} className=" border-b border-white/10">
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.time}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.symbol}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.fundingRate}
-                  </td>
-                  <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {order?.amountPaid}
-                  </td>
-                </tr>
-              )
-            } else {
-              return <></>
-            }
+            return (
+              <tr key={order.id} className=" border-b border-white/10">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.time}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.symbol}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.fundingRate}
+                </td>
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                  {order?.amountPaid}
+                </td>
+              </tr>
+            )
           })}
         </tbody>
       </table>
-      {isVaults && (
-        <ResponsiveDataCard
-          columns={columns}
-          data={paginatedOrders || []}
-          showExportButton={showExportButton}
-          renderRow={(item) => <RenderRowData item={item} columns={columns} />}
-        />
-      )}
+      <ResponsiveDataCard
+        columns={[...FUNDINGHISTORY_VAULTS_COLUMNS]}
+        data={paginatedOrders || []}
+        showExportButton={showExportButton}
+        renderRow={(item) => (
+          <RenderRowData item={item} columns={[...FUNDINGHISTORY_VAULTS_COLUMNS]} />
+        )}
+      />
       {vaultsFundingHistory?.length > 0 && (
         <Pagination
           currentPage={currentPage}

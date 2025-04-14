@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import DropDown from '../../../assets/images/tabler_chevron-down.svg'
+import DropDown from '@/assets/images/tabler_chevron-down.svg'
 import Image from 'next/image'
 
 interface CustomSelectorProps {

@@ -4,7 +4,7 @@ import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useEffect, useMemo } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
-import CustomSelector from '../CustomSelector'
+import CustomSelector from '../../../common/CustomSelector'
 
 interface LeverageMarginProps {
   selectedAsset: string

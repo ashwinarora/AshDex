@@ -6,7 +6,7 @@ import { ORDER_INTERVALS, VAULT_TAB } from '@/utils/constants'
 import { ValutsDetailsCard } from '@/components/Vault/ValutsDetailsCard'
 import { PerformanceCard } from '@/components/Vault/PerformanceCard'
 import { Breadcrumbs } from '@/components/common/Breadcrumbs'
-import TabsVaultsDetails from '@/components/Vault/TabsVaultsDetails'
+import UserData from '@/components/Vault/UserData/UserData'
 import VaultsTabs from '@/components/Vault/VaultsTabs'
 import VaultsActions from '@/components/Vault/VaultsActions'
 import lido from '../../../assets/images/lido.svg'
@@ -139,7 +139,7 @@ export default function VaultDetails() {
             <VaultsActions />
           </div>
         </div>
-        <TabsVaultsDetails />
+        <UserData />
       </div>
     </>
   )

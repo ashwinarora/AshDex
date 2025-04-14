@@ -5,19 +5,19 @@ import { useQuery } from '@tanstack/react-query'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { ORDER_INTERVALS, VAULTS_DETAILS_TAB } from '@/utils/constants'
-import VaultFilterBar from '../common/VaultFilterBar'
-import Balances from '../Trading/UserData/Balances'
-import Positions from '../Trading/UserData/Positions'
-import OpenOrders from '../Trading/UserData/OpenOrders'
-import Twap from '../Trading/UserData/Twap'
-import TradeHistory from '../Trading/UserData/TradeHistory'
-import OrdersHistory from '../Trading/UserData/OrdersHistory'
-import FundingHistory from '../Trading/UserData/FundingHistory'
-import DepositsAndWithdrawals from '../Trading/UserData/DepositsAndWithdrawals'
-import Depositors from '../Trading/UserData/Depositors'
-import CustomSelector from '../Trading/PlaceOrderBox/CustomSelector'
+import VaultFilterBar from '@/components/Vault/UserData/VaultFilterBar'
+import Balances from '@/components/Vault/UserData/Balances'
+import Positions from '@/components/Vault/UserData/Positions'
+import OpenOrders from '@/components/Vault/UserData/OpenOrders'
+import Twap from '@/components/Vault/UserData/Twap'
+import TradeHistory from '@/components/Vault/UserData/TradeHistory'
+import OrdersHistory from '@/components/Vault/UserData/OrdersHistory'
+import FundingHistory from '@/components/Vault/UserData/FundingHistory'
+import DepositsAndWithdrawals from '@/components/Vault/UserData/DepositsAndWithdrawals'
+import Depositors from '@/components/Vault/UserData/Depositors'
+import CustomSelector from '@/components/common/CustomSelector'
 
-function TabsVaultsDetails() {
+function UserData() {
   const { address } = useAccount()
   const { clearingHouseState } = useHyperLiquid()
   const { data: openOrders } = useQuery<Order[]>({
@@ -122,4 +122,4 @@ function TabsVaultsDetails() {
   )
 }
 
-export default TabsVaultsDetails
+export default UserData
