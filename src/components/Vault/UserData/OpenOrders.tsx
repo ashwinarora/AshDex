@@ -1,5 +1,5 @@
 'use client'
-import { VaultsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { VaultsOrder } from '@/utils/vaultsTypes'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
