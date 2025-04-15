@@ -13,8 +13,8 @@ import useIsSpot from '@/hooks/useIsSpot'
 
 const OpenOrders = () => {
   const { address, isConnected } = useAccount()
-  const { sdk } = useHyperLiquid()
   const { toggleConnectWalletModal } = useWalletModal()
+  const { sdk } = useHyperLiquid()
   const queryClient = useQueryClient()
   const isSpot = useIsSpot()
 

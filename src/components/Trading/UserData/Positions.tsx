@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
+import { useHyperLiquid } from '@/context/HyperLiquid'
 import Pagination from '../../common/Pagination'
 import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 
 const columns = [
   { key: 'coin', label: 'Position' },
@@ -30,8 +30,8 @@ const Positions = () => {
   }, [clearingHouseState?.assetPositions, currentPage])
 
   return (
-    <div className="overflow-x-auto w-full">
-      <table className="w-full text-white">
+    <div className="overflow-x-auto w-full px-3">
+      <table className="w-full hidden lg:table text-white">
         <thead>
           <tr>
             {columns.map((col) => (

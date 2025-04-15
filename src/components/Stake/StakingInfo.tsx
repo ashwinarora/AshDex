@@ -1,6 +1,6 @@
 'use client'
+import { useState } from 'react'
 import Image from 'next/image'
-import { useWalletModal } from '@/context/WalletModalContext'
 import TransferModal from './TransferModal'
 import hyperliquidicon from '@/assets/images/hyperliquid_icon.svg'
 import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
@@ -10,13 +10,17 @@ type StakingInfoProps = {
 }
 
 const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
-  const { isTransferModalOpen, toggleTransferModal } = useWalletModal()
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
 
   const handleViewHistory = () => {
     if (setIsViewHistory) {
       setIsViewHistory(true)
     }
   }
+  const toggleTransferModal = () => {
+    setIsTransferModalOpen((prev) => !prev)
+  }
+
   return (
     <>
       <div className="rounded-2xl space-y-4">
@@ -75,7 +79,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
           View Actions history
         </button>
       </div>
-      {isTransferModalOpen && <TransferModal />}
+      <TransferModal isOpen={isTransferModalOpen} onClose={toggleTransferModal} />
     </>
   )
 }

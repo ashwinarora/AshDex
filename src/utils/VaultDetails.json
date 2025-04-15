@@ -1,0 +1,80 @@
+{
+  "vault": {
+    "name": "Lido",
+    "type": "Liquid staking",
+    "details": {
+      "TVL": "$136.34k",
+      "APY": "3.75%",
+      "yourDeposits": "-",
+      "allTimeEarned": "-"
+    }
+  },
+  "performance": {
+    "PNL": {
+      "value": "$12,450",
+      "changeProfit": "+$2,350",
+      "period": "30D"
+    },
+    "unrealizedPNL": {
+      "value": "$1,250",
+      "changeProfit": "+$350",
+      "period": "30D"
+    },
+    "maxDrawdown": {
+      "value": "-6.5%",
+      "changeLost": "-8.2%",
+      "period": "30D"
+    },
+    "volume": {
+      "value": "$1,245,600",
+      "changeProfit": "+$1,350",
+      "period": "30D"
+    },
+    "profitShare": {
+      "value": "20%",
+      "changeProfit": "2%",
+      "period": "30D"
+    }
+  },
+  "accountValue": {
+    "selectedTab": "Account Value",
+    "subTabs": ["1s", "1m", "5m", "15m", "30m", "1h", "1D"],
+    "selectedDate": "2025 Feb 9",
+    "value": "$18,997",
+    "description": "The total value of all assets placed in this vault."
+  },
+  "leader": {
+    "title": "Description",
+    "content": "The protocol vaults you are currently using has been officially deprecated, meaning it will no longer accept any new positions or investments. We understand this may raise some questions, but rest assured the users can still withdraw funds at any time through this vault. This flexibility allows you to manage your asset according to your needs. Additionally, it is important to note that liquidations will now be handled as an integral part of the HLP strategy (liquidity pooling system). This change is designed to streamline the process and enhance the overall efficiency of fund management within our platform. We appreciate your understanding and encourage you to reach out if you have any further questions regarding these updates.",
+    "associatedVaults": [
+      "0x016f4c45e54e2f3ffc11ae57b0a3ce9d64b669d270bb3c9a5b9d6378bc2e34f3d9d6e7761fa976b"
+    ]
+  },
+  "accountValueChartData": [
+    { "time": "2022-01-17", "value": 0 },
+    { "time": "2022-01-18", "value": 8 },
+    { "time": "2022-01-19", "value": 10 },
+    { "time": "2022-01-20", "value": 20 },
+    { "time": "2022-01-21", "value": 3 },
+    { "time": "2022-01-22", "value": 43 },
+    { "time": "2022-01-23", "value": 41 },
+    { "time": "2022-01-24", "value": 43 },
+    { "time": "2022-01-25", "value": 56 },
+    { "time": "2022-01-26", "value": 46 }
+  ],
+  "pnlChartData": [
+    { "time": "2022-01-17", "value": 5 },
+    { "time": "2022-01-18", "value": 12 },
+    { "time": "2022-01-19", "value": 15 },
+    { "time": "2022-01-20", "value": 25 },
+    { "time": "2022-01-21", "value": 7 },
+    { "time": "2022-01-22", "value": 35 },
+    { "time": "2022-01-23", "value": 38 },
+    { "time": "2022-01-24", "value": 50 },
+    { "time": "2022-01-25", "value": 60 },
+    { "time": "2022-01-26", "value": 70 }
+  ],
+  "vaultsDescription": [
+    "The protocol vault you are currently using has been officially deprecated, meaning it will no longer accept any new positions or investments. We understand that this may raise some questions, but rest assured that users can still withdraw their funds at any time that suits them. This flexibility allows you to manage your assets according to your needs. Additionally, it's important to note that liquidations will now be handled as an integral part of the HLP (High Liquidity Pool) system. This change is designed to streamline the process and enhance the overall efficiency of fund management within our platform. We appreciate your understanding and encourage you to reach out if you have any further questions regarding these updates."
+  ]
+}

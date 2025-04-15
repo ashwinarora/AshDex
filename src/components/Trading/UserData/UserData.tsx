@@ -20,7 +20,6 @@ const UserData = () => {
     enabled: !!address,
     initialData: []
   })
-
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
 
   const tabs = useMemo(() => {
@@ -51,7 +50,7 @@ const UserData = () => {
       }
     ]
     if (!isSpot) {
-      tabs.splice(2, 0, {
+      tabs.splice(1, 0, {
         header: `Positions (${positionsCount})`,
         element: <Positions />
       })
@@ -63,8 +62,8 @@ const UserData = () => {
 
   return (
     <div className="w-full">
-      <div className="border-b border-white/10">
-        <nav className="flex flex-wrap max-lg:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+      <div className="border-b w-full flex justify-between items-center border-white/10">
+        <nav className="hidden lg:flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
           {tabs?.map((tab, index) => (
             <button
               key={tab.header}
@@ -80,7 +79,6 @@ const UserData = () => {
           ))}
         </nav>
       </div>
-
       <div className="mt-3 mb-6 w-full">
         {tabs.map((tab, index) => (
           <div key={index} className={activeTab === index ? 'block' : 'hidden'}>

@@ -4,7 +4,7 @@ import MarketAsset from './MarketAsset'
 
 const LendBorrow = () => {
   return (
-    <div className="w-full lg:px-14 md:px-10 px-4 bg-[#0d021f] pt-5">
+    <div className="w-full lg:px-14 md:px-10 px-4 pt-5">
       <Card />
       <MarketAsset />
     </div>
