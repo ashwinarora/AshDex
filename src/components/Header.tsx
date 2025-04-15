@@ -14,6 +14,7 @@ import helpicon from '@/assets/images/help_icon.svg'
 import bellicon from '@/assets/images/bell_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import balanceicon from '@/assets/images/balance.svg'
+import balanceVaulticon from '@/assets/images/balanceVault_icon.svg'
 import copyicon from '@/assets/images/copy_icon.svg'
 import switchicon from '@/assets/images/switch_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
@@ -210,7 +211,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-4"
                 >
                   <div className="flex items-start text-[#E8E0F1]">
                     <Image
@@ -221,6 +222,26 @@ const Header: FC = () => {
                       className="w-[40px] h-[40px] mr-3"
                     />
                     <div className="flex flex-col">
+                      <span className="truncate">{truncateAddress(address!)}</span>
+                      <div className="text-sm text-[#E8E0F1]">
+                        {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
+                        {balanceData?.symbol}
+                      </div>
+                    </div>
+                    <button onClick={handleCopy} className="px-3 py-1 opacity-70 cursor-pointer">
+                      <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1]">
+                    <Image
+                      src={balanceVaulticon}
+                      alt="BalanceVaultIcon"
+                      width={20}
+                      height={20}
+                      className="w-[40px] h-[40px] mr-3"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-[#E8E0F1]">Vault Trading Account</span>
                       <span className="truncate">{truncateAddress(address!)}</span>
                       <div className="text-sm text-[#E8E0F1]">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}

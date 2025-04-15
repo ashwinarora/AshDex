@@ -118,14 +118,14 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
             <div className="flex items-center justify-between w-full px-4 relative">
               {/* Step 1 */}
               <div className="flex flex-col items-center relative">
-                <div className="absolute -right-12 min-[770px]:-right-18 top-2.5 w-[80%] min-[770px]:w-full border-t border-[#FFFFFF29]" />
+                <div className="absolute -right-12 min-lg:-right-18 top-2.5 w-[80%] min-lg:w-full border-t border-[#FFFFFF29]" />
                 <Image height={20} width={20} src={successicon} alt="successicon" />
                 <p className="text-sm text-[#2FA766] mt-2 font-semibold">Pending {activeTab}</p>
               </div>
 
               {/* Step 2 */}
               <div className="flex flex-col items-center relative">
-                <div className="absolute -right-10 min-[770px]:-right-16 top-2.5 w-[80%] min-[770px]:w-full border-t border-[#FFFFFF29]" />
+                <div className="absolute -right-10 min-lg:-right-16 top-2.5 w-[80%] min-lg:w-full border-t border-[#FFFFFF29]" />
                 {step >= 2 ? (
                   <Image height={20} width={20} src={successicon} alt="successicon" />
                 ) : (
