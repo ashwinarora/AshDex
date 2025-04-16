@@ -4,6 +4,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { toHumanNumber, truncateAddress } from '@/utils/utils'
+import { MORE_OPTIONS } from '@/utils/constants'
 import nexonlogo from '@/assets/images/logo.svg'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 import moonicon from '@/assets/images/dark_mode.svg'
@@ -37,8 +38,11 @@ const Header: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [notificationCount] = useState(5)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isMoreDropdownOpen, setIsMoreDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const moreDropdownRef = useRef<HTMLDivElement | null>(null)
+  const moreButtonRef = useRef<HTMLButtonElement | null>(null)
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
@@ -49,17 +53,7 @@ const Header: FC = () => {
     { name: 'Vaults', path: '/vaults' }
   ]
 
-  const mobileMenu: MenuItem[] = [
-    ...desktopMenu,
-    { name: 'Leaderboards', path: '/leaderboards' },
-    { name: 'Referrals', path: '/referrals' },
-    { name: 'Points', path: '/points' },
-    { name: 'Sub-accounts', path: '/sub-accounts' },
-    { name: 'Stats', path: '/stats' },
-    { name: 'Docs', path: '/docs' },
-    { name: 'Vocabulary for novices', path: '/vocabulary' },
-    { name: 'Settings', path: '/settings' }
-  ]
+  const mobileMenu: MenuItem[] = [...desktopMenu, ...MORE_OPTIONS]
 
   const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
     if (pathname === '/' || pathname === '') return 'Futures'
@@ -69,6 +63,7 @@ const Header: FC = () => {
   const activeMenu = getActiveMenu(pathname, mobileMenu)
 
   const handleMenuClick = (path: string) => {
+    setIsMoreDropdownOpen(false)
     router.push(path)
   }
 
@@ -92,6 +87,14 @@ const Header: FC = () => {
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
+        moreDropdownRef.current &&
+        !moreDropdownRef.current.contains(event.target as Node) &&
+        moreButtonRef.current &&
+        !moreButtonRef.current.contains(event.target as Node)
+      ) {
+        setIsMoreDropdownOpen(false)
+      }
+      if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node) &&
         buttonRef.current &&
@@ -100,14 +103,11 @@ const Header: FC = () => {
         setIsDropdownOpen(false)
       }
     }
-
-    if (isDropdownOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
+    document.addEventListener('mousedown', handleClickOutside)
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isDropdownOpen])
+  }, [])
 
   return (
     <>
@@ -140,9 +140,31 @@ const Header: FC = () => {
               </Link>
             ))}
             {/* More Dropdown */}
-            <button className={`flex items-center gap-x-1.5 transition-all duration-300 `}>
-              More
-            </button>
+            <div className="relative">
+              <button
+                ref={moreButtonRef}
+                onClick={() => setIsMoreDropdownOpen(!isMoreDropdownOpen)}
+                className="flex cursor-pointer gap-x-1.5 items-center"
+              >
+                More
+              </button>
+              {isMoreDropdownOpen && (
+                <div
+                  ref={moreDropdownRef}
+                  className="absolute top-full left-0 mt-2 w-[220px] bg-[#0F0816] border-2 border-white/10 rounded-2xl shadow-lg z-50 px-1.5 py-2.5"
+                >
+                  {MORE_OPTIONS?.map((option) => (
+                    <div
+                      key={option?.path}
+                      className="last:border-t last:border-white/10 px-3 py-2 text-base font-medium cursor-pointer hover:text-white hover:bg-[#322944] hover:rounded text-[#8B8BA0]"
+                      onClick={() => handleMenuClick(option?.path)}
+                    >
+                      {option?.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </nav>
         </div>
 

@@ -352,3 +352,14 @@ export const VAULTS_LIST_COLUMNS = [
   { label: 'Status', key: 'status' },
   { label: 'Actions', key: 'actions' }
 ] as const
+
+export const MORE_OPTIONS = [
+  { name: 'Leaderboards', path: '/leaderboards' },
+  { name: 'Referrals', path: '/referrals' },
+  { name: 'Points', path: '/points' },
+  { name: 'Sub-accounts', path: '/sub-accounts' },
+  { name: 'Stats', path: '/stats' },
+  { name: 'Docs', path: '/docs' },
+  { name: 'Vocabulary for novices', path: '/vocabulary' },
+  { name: 'Settings', path: '/settings' }
+]
