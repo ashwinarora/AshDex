@@ -1,11 +1,16 @@
-import React, { useMemo, useState } from 'react'
+import React from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import Pagination from '../../common/Pagination'
 import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
+import { IPosition } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { formatPrice, getUniverseIndex } from '@/utils/utils'
+import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { BUILDER_ADDRESS } from '@/utils/constants'
+import { useAccount } from 'wagmi'
+import { useQuery } from '@tanstack/react-query'
 
 const columns = [
   { key: 'coin', label: 'Position' },
@@ -20,14 +25,53 @@ const columns = [
 ]
 
 const Positions = () => {
-  const { clearingHouseState } = useHyperLiquid()
-  const [currentPage, setCurrentPage] = useState(1)
+  const { address } = useAccount()
+  const { clearingHouseState, universe, sdk, agentWallet, isTestnet, hyperliquidAxios, allMids } =
+    useHyperLiquid()
 
-  const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / 10)
+  const { data: currentFeeApproval } = useQuery<number>({
+    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS]
+  })
 
-  const paginatedPositions = useMemo(() => {
-    return clearingHouseState?.assetPositions?.slice((currentPage - 1) * 10, currentPage * 10)
-  }, [clearingHouseState?.assetPositions, currentPage])
+  console.log(clearingHouseState)
+
+  const closePosition = async ({ position }: IPosition) => {
+    if (!agentWallet) return
+    if (!currentFeeApproval) return
+    const assetIndex = getUniverseIndex(universe, position.coin)
+    const szDecimals = universe[assetIndex].szDecimals
+    const tif = 'Gtc'
+    const isBuy = !(position.szi > 0)
+    const res = await sdk.exchange.updateLeverage(
+      position.coin,
+      position.leverage.type,
+      position.leverage.value
+    )
+    const price = isBuy ? allMids[position.coin] * 1.1 : allMids[position.coin] * 0.9
+    console.log(res)
+    const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      grouping: 'na',
+      builder: {
+        address: BUILDER_ADDRESS,
+        fee: currentFeeApproval
+      },
+      orders: [
+        {
+          assetIndex: assetIndex,
+          isBuy: isBuy,
+          reduceOnly: true,
+          price: formatPrice(price, szDecimals),
+          size: Math.abs(position.szi).toString(),
+          orderType: {
+            limit: {
+              tif: tif
+            }
+          }
+        }
+      ]
+    })
+    console.log(order)
+  }
 
   return (
     <div className="overflow-x-auto w-full px-3">
@@ -59,7 +103,16 @@ const Positions = () => {
               </th>
             ))}
             <th className="pt-3 pb-1 px-7 text-left text-sm font-normal text-[#7D67FF]">
-              Close all positions
+              <button
+                className="cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2"
+                onClick={() => {
+                  clearingHouseState?.assetPositions?.forEach((position) => {
+                    closePosition(position)
+                  })
+                }}
+              >
+                Close all positions
+              </button>
             </th>
             <th className="pt-3 pb-1 pl-2 pr-10 text-left text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
@@ -83,15 +136,12 @@ const Positions = () => {
           </tr>
         </thead>
         <tbody>
-          {paginatedPositions?.map((position, index) => (
-            <tr key={index} className=" border-b border-white/10">
-              <td className="py-4 px-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
+          {clearingHouseState?.assetPositions?.map((position, index) => (
+            <tr key={index} className="border-b border-white/10">
+              <td className="py-4 px-7 text-[#FFFFFF] opacity-80 font-normal text-sm">
                 <div className="flex items-center gap-1">
                   <span
-                    // fix later
-                    className={`w-[4px] h-[36px] rounded-sm ${
-                      index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
-                    }`}
+                    className={`w-[4px] h-[36px] rounded-sm ${index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'}`}
                   ></span>
                   <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
                   {position.position.coin}{' '}
@@ -103,7 +153,7 @@ const Positions = () => {
               <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.entryPx}
               </td>
-              <td className="py-4 px-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.entryPx}
               </td>
               <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
@@ -121,13 +171,18 @@ const Positions = () => {
               <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] ">
+              <td className="py-4 px-7 opacity-80 text-[#FFFFFF]">
                 <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
                   Open
                 </span>
               </td>
               <td className="py-4 opacity-80 text-[#7D67FF] text-sm px-7">
-                <span className="px-3 font-medium py-2 mr-2">Market</span>
+                <button
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2"
+                  onClick={() => closePosition(position)}
+                >
+                  Cancel
+                </button>
                 <span className="px-3 font-medium py-2">Limit</span>
                 <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
                   dummy
@@ -150,13 +205,6 @@ const Positions = () => {
           ))}
         </tbody>
       </table>
-      {clearingHouseState?.assetPositions && clearingHouseState?.assetPositions?.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-        />
-      )}
     </div>
   )
 }
