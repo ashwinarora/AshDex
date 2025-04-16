@@ -150,6 +150,14 @@ export const BALANCE_VAULTS_COLUMNS = [
   { key: 'contract', label: 'Contract' }
 ]
 
+export const REFERRALS_COLUMNS = [
+  { key: 'address', label: 'Address' },
+  { key: 'dateJoined', label: 'Date Joined' },
+  { key: 'totalVolume', label: 'Total Volume' },
+  { key: 'feesPaid', label: 'Fees Paid' },
+  { key: 'yourRewards', label: 'Your Rewards' }
+]
+
 export const TWAP_VAULTS_COLUMNS = [
   { key: 'coin', label: 'Coin' },
   { key: 'size', label: 'Size' },
@@ -183,6 +191,13 @@ export const DEPOSITORS_VAULTS_COLUMNS = [
   { key: 'unrealizedPNL', label: 'Unrealized PNL' },
   { key: 'allTimePNL', label: 'All-time PNL' },
   { key: 'daysFollowing', label: 'Days Following' }
+]
+
+export const LEGACY_REWARD_COLUMNS = [
+  { key: 'date', label: 'Date' },
+  { key: 'yourVolume', label: 'Your Volume' },
+  { key: 'yourReferralVolume', label: 'Your Referral Volume' },
+  { key: 'totalRewardsTool', label: 'Total Rewards Tool' }
 ]
 
 export const DEPOSIT_WITHDRAWALS_VAULTS_COLUMNS = [
