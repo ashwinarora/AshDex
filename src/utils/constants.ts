@@ -5,6 +5,9 @@ import trustwallet from '@/assets/images/trustwallet_icon.svg'
 import rabbywallet from '@/assets/images/rabbywallet_icon.svg'
 import walletconnect from '@/assets/images/walletconnect_icon.svg'
 import coinbase from '@/assets/images/coinbase.svg'
+import invitefriends from '@/assets/images/invitefriends_icon.svg'
+import theycommit from '@/assets/images/theycommit_icon.svg'
+import earnrewards from '@/assets/images/earnrewards_icon.svg'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -377,4 +380,45 @@ export const MORE_OPTIONS = [
   { name: 'Docs', path: '/docs' },
   { name: 'Vocabulary for novices', path: '/vocabulary' },
   { name: 'Settings', path: '/settings' }
+]
+
+export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Claim'] as const
+
+export const REFERRALSDATA = [
+  {
+    src: invitefriends,
+    alt: 'InviteFriends',
+    label: 'Invite your friends',
+    opacityClass: 'opacity-60'
+  },
+  {
+    src: theycommit,
+    alt: 'TheyCommit',
+    label: 'They Commit',
+    opacityClass: ''
+  },
+  {
+    src: earnrewards,
+    alt: 'Earnrewards',
+    label: 'Earn Rewards',
+    opacityClass: 'opacity-60'
+  }
+] as const
+
+export const REFERRALS_DESC = [
+  `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
+] as const
+
+export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
+
+export const REFERRALS_ENTERCODE_DESC = [
+  `This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.`
+] as const
+
+export const REFERRALS_CREATECODE_DESC = [
+  `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`
+]
+
+export const REFERRALS_CLAIM_DESC = [
+  `Claim your bonuses and rewards for your referral activity. If you’ve referred new users or they’ve completed the program’s requirements, click 'Claim' to receive your reward!`
 ]

@@ -72,12 +72,12 @@ const ReferralsTable = () => {
               <tr>
                 {REFERRALS_COLUMNS?.map((col) => (
                   <th
-                    key={col.key}
+                    key={col?.key}
                     className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
                   >
                     <div className="flex justify-start items-center gap-1">
                       <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
-                      <span>{col.label}</span>
+                      <span>{col?.label}</span>
                     </div>
                   </th>
                 ))}
