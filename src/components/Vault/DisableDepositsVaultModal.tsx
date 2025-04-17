@@ -30,7 +30,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
     setStatusType('success')
     setIsModalOpen(true)
     setTimeout(() => {
-      setIsDepositsDisabled(prev => !prev)
+      setIsDepositsDisabled(!isDepositsDisabled)
       setIsModalOpen(false)
       openVaultsModal()
     }, 3000)
