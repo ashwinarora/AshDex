@@ -16,6 +16,7 @@
     "@tabler/icons-react": "^3.31.0",
     "@tanstack/react-query": "^5.67.3",
     "@tanstack/react-query-devtools": "^5.67.3",
+    "@tanstack/react-table": "^8.21.3",
     "ag-grid-community": "^33.1.1",
     "ag-grid-enterprise": "^33.1.1",
     "ag-grid-react": "^33.1.1",
