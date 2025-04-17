@@ -2,8 +2,6 @@ import React, { useCallback, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import editicon from '@/assets/images/edit_icon.svg'
-import infoicon from '@/assets/images/info_icon.svg'
-import sorting_icon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { formatPrice, getUniverseIndex } from '@/utils/utils'
@@ -19,30 +17,7 @@ import {
   getSortedRowModel,
   SortingState
 } from '@tanstack/react-table'
-
-const HeaderWithIcons = ({ label }: { label: string }) => (
-  <div className="flex justify-start items-center gap-1">
-    <Image
-      src={sorting_icon}
-      alt="Sort"
-      width={12}
-      height={12}
-      priority
-      unoptimized
-      className="cursor-pointer"
-    />
-    <span>{label}</span>
-    <Image
-      src={infoicon}
-      alt="Info"
-      width={16}
-      height={16}
-      priority
-      unoptimized
-      className="cursor-pointer"
-    />
-  </div>
-)
+import HeaderWithIcons from './component/HeaderWithIcon'
 
 const Positions = () => {
   const { address } = useAccount()
