@@ -1,7 +1,7 @@
 'use client'
 import { Order, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -10,7 +10,9 @@ import {
   createColumnHelper,
   flexRender,
   getCoreRowModel,
-  useReactTable
+  getSortedRowModel,
+  useReactTable,
+  SortingState
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
 
@@ -36,7 +38,6 @@ const OpenOrders = () => {
   useEffect(() => {
     if (!sdk || !address) return
     sdk.subscriptions.subscribeToOrderUpdates(address, (data: WsOrder[]) => {
-      console.log('User Orders Update', data)
       queryClient.setQueryData(['openOrders', address], (oldData: Order[]) => {
         const updatedOrders = [...oldData]
         data.forEach((order) => {
@@ -74,19 +75,18 @@ const OpenOrders = () => {
     return () => {
       if (sdk.subscriptions.unsubscribeFromUserOrders) {
         sdk.subscriptions.unsubscribeFromUserOrders()
-      } else {
-        console.warn('unsubscribeFromUserOrders is not available in the SDK.')
       }
     }
   }, [sdk, address, queryClient])
 
-  // Filter by SPOT/PERP
   const data = useMemo(
     () => openOrders.filter((o) => o.coin.includes(isSpot ? 'SPOT' : 'PERP')),
     [openOrders, isSpot]
   )
 
-  // Define columns
+  // Sorting state
+  const [sorting, setSorting] = useState<SortingState>([])
+
   const columns = useMemo(
     () => [
       columnHelper.accessor('coin', {
@@ -95,7 +95,8 @@ const OpenOrders = () => {
           <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
             {info.getValue()}
           </span>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('side', {
         header: () => <HeaderWithIcons label="Side" />,
@@ -103,7 +104,8 @@ const OpenOrders = () => {
           <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
             {info.getValue()}
           </span>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('limitPx', {
         header: () => <HeaderWithIcons label="Limit Price" />,
@@ -127,7 +129,8 @@ const OpenOrders = () => {
           <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
             {info.getValue()}
           </span>
-        )
+        ),
+        enableSorting: false
       }),
       columnHelper.accessor('timestamp', {
         header: () => <HeaderWithIcons label="Timestamp" />,
@@ -167,7 +170,8 @@ const OpenOrders = () => {
           >
             Cancel
           </button>
-        )
+        ),
+        enableSorting: false
       })
     ],
     [sdk]
@@ -176,7 +180,10 @@ const OpenOrders = () => {
   const table = useReactTable({
     data,
     columns,
-    getCoreRowModel: getCoreRowModel()
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel()
   })
 
   if (isLoading) {
@@ -193,7 +200,8 @@ const OpenOrders = () => {
                 {hg.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="pt-3 pb-1 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                    className="pt-3 pb-1 max-[1025px]:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                    onClick={header.column.getToggleSortingHandler()}
                   >
                     {header.isPlaceholder
                       ? null
