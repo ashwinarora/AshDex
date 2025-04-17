@@ -1,30 +1,25 @@
-import { http, createConfig } from 'wagmi'
-import { arbitrum, arbitrumSepolia } from 'wagmi/chains'
-import { injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
+import { createConfig, http } from 'wagmi'
+import { arbitrum, arbitrumSepolia, mainnet } from 'wagmi/chains'
+import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const phantomWalletConnector = injected({
   target: 'phantom'
-})
-
-const trustWalletConnector = injected({
-  target: 'trustWallet'
 })
 
 const rabbyWalletConnector = injected({
   target: 'rabby'
 })
 
-const coinbaseWalletConnector = injected({
-  target: 'coinbaseWallet'
+const coinbaseWalletConnector = coinbaseWallet({
+  appName: 'Nexon'
 })
 
 export const config = createConfig({
-  chains: [arbitrumSepolia, arbitrum],
+  chains: [arbitrumSepolia, arbitrum, mainnet],
   connectors: [
     coinbaseWalletConnector,
     rabbyWalletConnector,
     phantomWalletConnector,
-    trustWalletConnector,
     walletConnect({
       projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
     }),
@@ -33,6 +28,7 @@ export const config = createConfig({
   ],
   transports: {
     [arbitrum.id]: http(),
-    [arbitrumSepolia.id]: http()
+    [arbitrumSepolia.id]: http(),
+    [mainnet.id]: http()
   }
 })
