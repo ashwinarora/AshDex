@@ -75,7 +75,11 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
       {
         label: '24h Change',
         value: changeString ?? <Skeleton size="md" />,
-        color: 'text-[#2FA766]'
+        color: changeString
+          ? changeString.includes('+')
+            ? 'text-[#2FA766]'
+            : 'text-[#E2464A]'
+          : ''
       },
       { label: '24h High', value: '$99,149.00' },
       { label: '24h Low', value: '$99,149.00' },
@@ -234,7 +238,9 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div className={`font-medium md:text-sm text-xs ${item.color || 'text-[#FFFFFF]'}`}>
+                <div
+                  className={`font-medium md:text-sm text-xs font-dm-mono    ${item.color || 'text-[#FFFFFF]'}`}
+                >
                   {item.value}
                 </div>
               </div>

@@ -46,12 +46,14 @@ const ConnectWalletModal: React.FC = () => {
       try {
         const walletConnector = WALLETS?.find((c) => c?.id === wallet?.id)
         setSelectedConnector(walletConnector)
+        console.log('walletConnector', walletConnector)
         const result = await connectAsync({ connector })
+        console.log('result', result)
         if (result) {
           setIsWalletConnected(true)
         }
       } catch (error) {
-        console.error('Error connecting wallet 123:', error)
+        console.error('Error connecting wallet ', error)
         setIsWalletConnected(false)
       }
     }

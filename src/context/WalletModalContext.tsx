@@ -17,6 +17,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const { chainId, isConnected } = useAccount()
+
   const toggleConnectWalletModal = () => setIsModalOpen((s) => !s)
   const toggleTransferModal = () => setIsTransferModalOpen((s) => !s)
 
@@ -31,7 +32,12 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <WalletModalContext.Provider
-      value={{ isModalOpen, toggleConnectWalletModal, isTransferModalOpen, toggleTransferModal }}
+      value={{
+        isModalOpen,
+        toggleConnectWalletModal,
+        isTransferModalOpen,
+        toggleTransferModal
+      }}
     >
       {children}
     </WalletModalContext.Provider>

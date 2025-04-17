@@ -20,9 +20,9 @@ const ValueIndicator: React.FC<ValueIndicatorProps> = ({ value, className = '' }
   }, [value])
 
   return (
-    <div className={`${colorClass} ${className}`}>
+    <div className={`${colorClass} ${className} font-mono `}>
       {value !== undefined ? (
-        `$${value}`
+        `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`
       ) : (
         <div className="animate-pulse h-6 w-16 bg-white/10 rounded" />
       )}

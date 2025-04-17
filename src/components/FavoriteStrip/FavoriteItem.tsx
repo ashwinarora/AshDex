@@ -65,7 +65,7 @@ const FavoriteItem = ({ favorite }: FavoriteItemProps) => {
   const percentageOnly = getPercentageOnly(favorite.change24h)
 
   return (
-    <div className="flex items-center justify-center gap-1 h-full">
+    <div className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-4 px-6 cursor-pointer">
       <Image
         src={starticon}
         alt="staricon"

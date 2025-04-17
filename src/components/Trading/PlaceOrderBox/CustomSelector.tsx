@@ -3,7 +3,7 @@ import DropDown from '../../../assets/images/tabler_chevron-down.svg'
 import Image from 'next/image'
 
 interface CustomSelectorProps {
-  options: { value: string; label: string }[]
+  options: { value: string; label: string; flag?: string }[]
   selectedValue: string
   onChange: (value: string) => void
   className?: string
@@ -18,26 +18,44 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="relative">
+    <div className="relative z-50">
       <div
-        className={`w-full text-white px-4 py-2 text-sm rounded-md flex justify-between items-center ${className}`}
+        className={`w-full text-white px-4 py-2 text-sm   flex justify-between z-40 items-center ${className} gap-2`}
         onClick={() => setIsOpen(!isOpen)}
       >
+        {options?.find((opt) => opt?.value === selectedValue)?.flag && (
+          <Image
+            className="w-4 h-4"
+            width={16}
+            height={16}
+            alt={options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
+            src={options?.find((opt) => opt?.value === selectedValue)?.flag || ''}
+          />
+        )}
         {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
         <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
       </div>
 
       {isOpen && (
-        <div className="absolute z-50 border-2 border-white/10 bg-secondary min-w-24 rounded-2xl shadow-lg p-2">
+        <div className="absolute z-50 border-2 border-white/10 bg-secondary min-w-24 mt-2  rounded-lg shadow-lg p-2">
           {options.map((option) => (
             <div
               key={option.value}
-              className="px-4 py-2 cursor-pointer hover:bg-[#322944] hover:rounded text-gray-300"
+              className=" px-2 py-2 cursor-pointer hover:bg-[#322944] hover:rounded text-gray-300 flex items-center gap-2 "
               onClick={() => {
                 onChange(option.value)
                 setIsOpen(false)
               }}
             >
+              {option.flag && (
+                <Image
+                  className="w-4 h-4"
+                  width={16}
+                  height={16}
+                  alt={option.label}
+                  src={option.flag}
+                />
+              )}{' '}
               {option.label}
             </div>
           ))}
