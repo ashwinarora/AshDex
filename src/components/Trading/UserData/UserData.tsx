@@ -7,6 +7,7 @@ import { useAccount } from 'wagmi'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
+import OrderHistory from './OrderHistory'
 
 const UserData = () => {
   const { address } = useAccount()
@@ -42,7 +43,7 @@ const UserData = () => {
       },
       {
         header: 'Orders History',
-        element: null
+        element: <OrderHistory />
       },
       {
         header: 'Funding History',

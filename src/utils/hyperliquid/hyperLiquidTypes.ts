@@ -329,3 +329,27 @@ export type SpotMeta = {
   tokens: SpotToken[]
   universe: SpotUniverse[]
 }
+
+
+export interface HistoricOrder {
+  order: {
+    coin: string
+    side: 'buy' | 'sell'
+    limitPx: number
+    sz: number
+    oid: number
+    timestamp: number
+    triggerCondition: string
+    isTrigger: boolean
+    triggerPx: number
+    children: []
+    isPositionTpsl: boolean
+    reduceOnly: boolean
+    orderType: string
+    origSz: number
+    tif: string
+    cloid: string | null
+  }
+  status: string
+  statusTimestamp: number
+}
