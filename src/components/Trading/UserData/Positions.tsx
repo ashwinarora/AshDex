@@ -20,7 +20,7 @@ import {
   SortingState
 } from '@tanstack/react-table'
 
-const HeaderWithIcons = ({label}: {label: string}) => (
+const HeaderWithIcons = ({ label }: { label: string }) => (
   <div className="flex justify-start items-center gap-1">
     <Image
       src={sorting_icon}
