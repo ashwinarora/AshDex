@@ -11,7 +11,7 @@ import {
   getSortedRowModel,
   getPaginationRowModel,
   SortingState,
-  flexRender,
+  flexRender
 } from '@tanstack/react-table'
 import { HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 
@@ -23,73 +23,67 @@ const OrderHistory = () => {
     queryKey: ['orderHistory', address],
     queryFn: async () => sdk.info.getHistoricalOrders(address),
     enabled: !!address && !!sdk,
-    initialData: [],
+    initialData: []
   })
 
   // sorting + pagination state
   const [sorting, setSorting] = useState<SortingState>([])
   const [{ pageIndex, pageSize }, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10,
+    pageSize: 10
   })
 
   const columnHelper = createColumnHelper<HistoricOrder>()
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor(row => row.order.coin, {
+      columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
         header: 'Coin',
-        cell: info => info.getValue(),
-        enableSorting: true,
+        cell: (info) => info.getValue(),
+        enableSorting: true
       }),
-      columnHelper.accessor(row => row.order.side, {
+      columnHelper.accessor((row) => row.order.side, {
         id: 'side',
         header: 'Side',
-        cell: info => info.getValue(),
-        enableSorting: true,
+        cell: (info) => info.getValue(),
+        enableSorting: true
       }),
-      columnHelper.accessor(row => row.order.limitPx, {
+      columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
         header: 'Limit Price',
-        cell: info => info.getValue().toFixed(2),
-        enableSorting: true,
+        cell: (info) => info.getValue().toFixed(2),
+        enableSorting: true
       }),
-      columnHelper.accessor(row => row.order.sz, {
+      columnHelper.accessor((row) => row.order.sz, {
         id: 'size',
         header: 'Size',
-        cell: info => info.getValue(),
-        enableSorting: true,
+        cell: (info) => info.getValue(),
+        enableSorting: true
       }),
-      columnHelper.accessor(row => row.order.oid, {
+      columnHelper.accessor((row) => row.order.oid, {
         id: 'orderId',
         header: 'Order ID',
-        cell: info => info.getValue().toString(),
-        enableSorting: true,
+        cell: (info) => info.getValue().toString(),
+        enableSorting: true
       }),
-      columnHelper.accessor(
-        row => new Date(row.order.timestamp).toLocaleString(),
-        {
-          id: 'timestamp',
-          header: 'Timestamp',
-          cell: info => info.getValue(),
-          enableSorting: true,
-        }
-      ),
+      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString(), {
+        id: 'timestamp',
+        header: 'Timestamp',
+        cell: (info) => info.getValue(),
+        enableSorting: true
+      }),
       columnHelper.accessor('status', {
         header: 'Status',
-        cell: info => info.getValue(),
-        enableSorting: true,
+        cell: (info) => info.getValue(),
+        enableSorting: true
       }),
-      columnHelper.accessor(
-        row => new Date(row.statusTimestamp).toLocaleString(),
-        {
-          id: 'statusTs',
-          header: 'Status Time',
-          cell: info => info.getValue(),
-          enableSorting: true,
-        }
-      ),
+      columnHelper.accessor((row) => new Date(row.statusTimestamp).toLocaleString(), {
+        id: 'statusTs',
+        header: 'Status Time',
+        cell: (info) => info.getValue(),
+        enableSorting: true
+      })
     ],
     [columnHelper]
   )
@@ -102,16 +96,16 @@ const OrderHistory = () => {
     onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+    getPaginationRowModel: getPaginationRowModel()
   })
 
   return (
     <div className="p-4 bg-gray-900 rounded-lg shadow-lg overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-700">
         <thead className="bg-gray-800">
-          {table.getHeaderGroups().map(headerGroup => (
+          {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => {
+              {headerGroup.headers.map((header) => {
                 const sortDir = header.column.getIsSorted()
                 return (
                   <th
@@ -124,10 +118,7 @@ const OrderHistory = () => {
                     `}
                   >
                     <div className="flex items-center gap-1">
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                       {sortDir === 'asc' ? '▲' : sortDir === 'desc' ? '▼' : ''}
                     </div>
                   </th>
@@ -137,20 +128,11 @@ const OrderHistory = () => {
           ))}
         </thead>
         <tbody className="bg-gray-900 divide-y divide-gray-700">
-          {table.getRowModel().rows.map(row => (
-            <tr
-              key={row.id}
-              className="hover:bg-gray-800 transition-colors"
-            >
-              {row.getVisibleCells().map(cell => (
-                <td
-                  key={cell.id}
-                  className="px-6 py-4 whitespace-nowrap text-sm text-gray-200"
-                >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="hover:bg-gray-800 transition-colors">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="px-6 py-4 whitespace-nowrap text-sm text-gray-200">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
@@ -201,10 +183,10 @@ const OrderHistory = () => {
         <div>
           <select
             value={table.getState().pagination.pageSize}
-            onChange={e => table.setPageSize(Number(e.target.value))}
+            onChange={(e) => table.setPageSize(Number(e.target.value))}
             className="bg-gray-800 text-gray-200 text-sm rounded p-1"
           >
-            {[10, 20, 50].map(size => (
+            {[10, 20, 50].map((size) => (
               <option key={size} value={size}>
                 Show {size}
               </option>

@@ -330,7 +330,6 @@ export type SpotMeta = {
   universe: SpotUniverse[]
 }
 
-
 export interface HistoricOrder {
   order: {
     coin: string
