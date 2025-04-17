@@ -99,17 +99,4 @@ export async function updateUser(
     return null
   }
 }
-
-/**
- * Fetches all available languages
- * @returns Array of language objects
- */
-export async function getLanguages(): Promise<Language[]> {
-  try {
-    const response = await axios.get('/api/languages')
-    return response.data
-  } catch (error) {
-    console.error('Error fetching languages:', error)
-    return []
-  }
-}
+ 
