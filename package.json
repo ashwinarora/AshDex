@@ -15,7 +15,7 @@
     "@dicebear/core": "^9.2.2",
     "@msgpack/msgpack": "^3.1.1",
     "@neondatabase/serverless": "^1.0.0",
-    "@splidejs/react-splide": "^0.7.12",
+    "@splidejs/react-splide": "https://github.com/sahilm310/react-splide.git",
     "@splidejs/splide-extension-auto-scroll": "^0.5.3",
     "@tabler/icons": "^3.31.0",
     "@tabler/icons-react": "^3.31.0",
