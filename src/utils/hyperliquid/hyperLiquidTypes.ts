@@ -352,3 +352,20 @@ export interface HistoricOrder {
   status: string
   statusTimestamp: number
 }
+
+export interface ITradeHistory {
+  coin: string
+  px: string
+  sz: string
+  side: string
+  time: number
+  startPosition: string
+  dir: string
+  closedPnl: string
+  hash: string
+  oid: number
+  crossed: boolean
+  fee: string
+  tid: number
+  feeToken: string
+}

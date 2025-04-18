@@ -8,6 +8,7 @@ import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
+import TradeHistory from './TradeHistory'
 
 const UserData = () => {
   const { address } = useAccount()
@@ -24,30 +25,23 @@ const UserData = () => {
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
 
   const tabs = useMemo(() => {
+    const openOrdersLength = openOrders.filter((o) => o.coin.includes(isSpot ? 'SPOT' : 'PERP')).length
     const tabs = [
       {
         header: 'Balances',
         element: <Balances />
       },
       {
-        header: `Open Orders (${openOrders?.length})`,
+        header: `Open Orders (${openOrdersLength})`,
         element: <OpenOrders />
       },
       {
-        header: 'TWAP',
-        element: null
-      },
-      {
         header: 'Trade History',
-        element: null
+        element: <TradeHistory />
       },
       {
         header: 'Orders History',
         element: <OrderHistory />
-      },
-      {
-        header: 'Funding History',
-        element: null
       }
     ]
     if (!isSpot) {
@@ -55,9 +49,13 @@ const UserData = () => {
         header: `Positions (${positionsCount})`,
         element: <Positions />
       })
+      tabs.push({
+        header: 'Funding History',
+        element: <></>
+      })
     }
     return tabs
-  }, [isSpot, positionsCount, openOrders?.length])
+  }, [isSpot, positionsCount, openOrders.length])
 
   const [activeTab, setActiveTab] = useState<number>(0)
 
