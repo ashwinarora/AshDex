@@ -20,6 +20,7 @@ function Referrals() {
       setIsCreateCode(false)
     }
   }
+
   return (
     <div className="max-sm:px-1 px-6 py-4 overflow-x-hidden">
       <div className="w-full my-2 gap-5 max-2xl:px-1 px-10 grid grid-cols-1 min-xl:grid-cols-12">

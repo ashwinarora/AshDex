@@ -6,16 +6,6 @@ import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 
-export const legacyRewardHistory = Array.from({ length: 10 }, (_, index) => {
-  return {
-    id: index + 1,
-    date: '26.03.2025',
-    yourVolume: '$5 000',
-    yourReferralVolume: '$0.123',
-    totalRewardsTool: '$4'
-  }
-})
-
 type ColumnType = {
   key: string
   label: string
@@ -26,11 +16,21 @@ type RenderRowProps = {
   item: any
   columns: ColumnType[]
 }
+interface RewardHistoryItem {
+  id: number
+  date: string
+  yourVolume: string
+  yourReferralVolume: string
+  totalRewardsTool: string
+}
+interface LegacyRewardHistoryProps {
+  rewardHistory?: RewardHistoryItem[]
+}
 
-function LegacyRewardHistory() {
+function LegacyRewardHistory({ rewardHistory }: LegacyRewardHistoryProps) {
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
-  const totalPages = Math.ceil(legacyRewardHistory?.length / pageSize)
+  const totalPages = Math.ceil((rewardHistory?.length ?? 0) / pageSize)
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     return (
@@ -46,10 +46,9 @@ function LegacyRewardHistory() {
       </div>
     )
   }
-
   const paginatedOrders = useMemo(() => {
-    return legacyRewardHistory?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [legacyRewardHistory, currentPage, pageSize])
+    return rewardHistory?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
+  }, [rewardHistory, currentPage, pageSize])
 
   return (
     <div className="overflow-x-auto w-full px-3">
@@ -77,7 +76,7 @@ function LegacyRewardHistory() {
         <tbody>
           {paginatedOrders?.map((order) => {
             return (
-              <tr key={order.id} className=" border-b border-white/10">
+              <tr key={order?.id} className=" border-b border-white/10">
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
                   {order?.date}
                 </td>
@@ -100,7 +99,7 @@ function LegacyRewardHistory() {
         data={paginatedOrders || []}
         renderRow={(item) => <RenderRowData item={item} columns={[...LEGACY_REWARD_COLUMNS]} />}
       />
-      {legacyRewardHistory?.length > 0 && (
+      {(rewardHistory?.length ?? 0) > 0 && (
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}

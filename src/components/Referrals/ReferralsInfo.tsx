@@ -1,6 +1,7 @@
-import React, { useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
+import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import EnterCode from '@/components/Referrals/EnterCode'
 import CreateCode from '@/components/Referrals/CreateCode'
 import Claim from '@/components/Referrals/Claim'
@@ -14,15 +15,28 @@ interface ReferralsInfoProps {
 }
 function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
+  const { data: referralsDetails } = useReferralsInfo()
+
+  const totalClaim = useMemo(() => {
+    return (
+      parseFloat(referralsDetails?.builderRewards || '0') +
+      parseFloat(referralsDetails?.claimedRewards || '0')
+    )
+  }, [referralsDetails])
+
+  const eligibleAmount = useMemo(() => {
+    const required = referralsDetails?.referrerState?.data?.required
+    return required ? parseFloat(required) : 0
+  }, [referralsDetails])
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Enter Code':
         return <EnterCode isCreateCode={isCreateCode} />
       case 'Create Code':
-        return <CreateCode isCreateCode={isCreateCode} />
+        return <CreateCode eligibleAmount={eligibleAmount} isCreateCode={isCreateCode} />
       case 'Claim':
-        return <Claim isCreateCode={isCreateCode} />
+        return <Claim isCreateCode={isCreateCode} totalClaim={totalClaim} />
       default:
         return null
     }
@@ -41,11 +55,11 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
       <div className="border-t font-medium tracking-normal border-b border-white/10 py-4 px-4 min-2xl:px-8">
         <div className="flex justify-between gap-x-2">
           <span className="text-base opacity-50 text-[#E8E0F1] ">Trades Referred</span>
-          <span className="text-white text-lg">4</span>
+          <span className="text-white text-lg">{referralsDetails?.builderRewards || '0'}</span>
         </div>
         <div className="flex justify-between gap-x-2">
           <span className="text-base opacity-50 text-[#E8E0F1]">Rewards Earned</span>
-          <span className="text-white text-lg">$24</span>
+          <span className="text-white text-lg">${referralsDetails?.claimedRewards || '0'}</span>
         </div>
       </div>
       {isCreateCode && (
