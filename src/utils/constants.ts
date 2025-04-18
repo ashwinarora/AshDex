@@ -5,9 +5,14 @@ import trustwallet from '@/assets/images/trustwallet_icon.svg'
 import rabbywallet from '@/assets/images/rabbywallet_icon.svg'
 import walletconnect from '@/assets/images/walletconnect_icon.svg'
 import coinbase from '@/assets/images/coinbase.svg'
-import invitefriends from '@/assets/images/invitefriends_icon.svg'
-import theycommit from '@/assets/images/theycommit_icon.svg'
-import earnrewards from '@/assets/images/earnrewards_icon.svg'
+import refreshicon from '@/assets/images/refresh_icon.svg'
+import disableicon from '@/assets/images/disable_icon.svg'
+import hourglassicon from '@/assets/images/hourglass_icon.svg'
+import sendcopyicon from '@/assets/images/sendcopy_icon.svg'
+import lockoutlineicon from '@/assets/images/lockoutline_icon.svg'
+import invitefriends from '@/assets/images/invitefriends.svg'
+import theycommit from '@/assets/images/theycommit.svg'
+import earnrewards from '@/assets/images/earnrewards.svg'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -239,7 +244,7 @@ export const WALLETS = [
     icon: phantom
   },
   {
-    id: 'coinbaseWallet',
+    id: 'coinbaseWalletSDK',
     name: 'Coinbase',
     icon: coinbase
   },
@@ -359,6 +364,7 @@ export const TOOLTIP_CONTENTS: { key: string; content: string }[] = [
       'Percentage of rewards retained by the validator. Lower fees = higher net rewards for you.'
   }
 ] as const
+
 export const VAULTS_LIST_COLUMNS = [
   { label: 'Name & Ticker', key: 'name' },
   { label: 'Leader', key: 'leader' },
@@ -422,3 +428,32 @@ export const REFERRALS_CREATECODE_DESC = [
 export const REFERRALS_CLAIM_DESC = [
   `Claim your bonuses and rewards for your referral activity. If you’ve referred new users or they’ve completed the program’s requirements, click 'Claim' to receive your reward!`
 ]
+
+export const VAULT_ACTION_OPTIONS = [
+  {
+    key: 'trade',
+    label: 'Trade for Vault',
+    icon: refreshicon
+  },
+  {
+    key: 'disableDeposits',
+    label: 'Disable Deposits',
+    icon: disableicon
+  },
+  {
+    key: 'enableAutoClose',
+    label: 'Enable Auto-Close on Withdraw',
+    icon: hourglassicon
+  },
+  {
+    key: 'distribute',
+    label: 'Distribute',
+    icon: sendcopyicon
+  },
+  {
+    key: 'closeVault',
+    label: 'Close Vault',
+    icon: lockoutlineicon,
+    textColor: 'text-[#E2464A]'
+  }
+] as const

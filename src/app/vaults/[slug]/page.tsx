@@ -1,16 +1,24 @@
 'use client'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import vaultsDetailsData from '@/utils/VaultDetails.json'
 import { ORDER_INTERVALS, VAULT_TAB } from '@/utils/constants'
+import Modal from '@/components/common/Modal'
 import { ValutsDetailsCard } from '@/components/Vault/ValutsDetailsCard'
 import { PerformanceCard } from '@/components/Vault/PerformanceCard'
 import { Breadcrumbs } from '@/components/common/Breadcrumbs'
 import UserData from '@/components/Vault/UserData/UserData'
 import VaultsTabs from '@/components/Vault/VaultsTabs'
 import VaultsActions from '@/components/Vault/VaultsActions'
-import lido from '../../../assets/images/lido.svg'
+import TradeVaultModal from '@/components/Vault/TradeVaultModal'
+import DisableDepositsVaultModal from '@/components/Vault/DisableDepositsVaultModal'
+import CloseVaultModal from '@/components/Vault/CloseVaultModal'
+import AutoCloseWithdrawModal from '@/components/Vault/AutoCloseWithdrawModal'
+import DistributeModal from '@/components/Vault/DistributeModal'
+import VaultActionButtons from '@/components/Vault/VaultActionButtons'
 import copyicon from '@/assets/images/copy_icon.svg'
+import settingicon from '@/assets/images/setting_icon.svg'
+import menuClose from '@/assets/images/close_icon.svg'
 
 export interface PerformanceItem {
   value: string
@@ -23,9 +31,16 @@ export default function VaultDetails() {
   const { vault, performance, vaultsDescription } = vaultsDetailsData
   const leaderRef = useRef<HTMLSpanElement | null>(null)
   const strategiesRef = useRef<HTMLSpanElement | null>(null)
+  const vaultsRef = useRef<HTMLSpanElement | null>(null)
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
   const [copiedRef, setCopiedRef] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState(0)
   const [selectedInterval, setSelectedInterval] = useState<(typeof ORDER_INTERVALS)[number]>('1D')
+  const [showDropdown, setShowDropdown] = useState(false)
+  const [activeVaultAction, setActiveVaultAction] = useState<string | null>(null)
+  const [isDepositsDisabled, setIsDepositsDisabled] = useState(false)
+  const [isAutoCloseWithdraw, setIsAutoCloseWithdraw] = useState(false)
+  const [isDesktop, setIsDesktop] = useState(false)
 
   const handleCopy = (ref: React.RefObject<HTMLSpanElement | null>, refName: string) => {
     if (ref.current) {
@@ -36,6 +51,119 @@ export default function VaultDetails() {
     }
   }
 
+  const handleVaultAction = (actionKey: string | null) => {
+    setShowDropdown(false)
+    setActiveVaultAction(actionKey)
+  }
+
+  const renderVaultActionModal = () => {
+    switch (activeVaultAction) {
+      case 'trade':
+        return (
+          <TradeVaultModal
+            isVaultModal={!!activeVaultAction}
+            openVaultsModal={() => handleVaultAction(null)}
+          />
+        )
+      case 'disableDeposits':
+        return (
+          <DisableDepositsVaultModal
+            isVaultModal={!!activeVaultAction}
+            openVaultsModal={() => handleVaultAction(null)}
+            isDepositsDisabled={isDepositsDisabled}
+            setIsDepositsDisabled={setIsDepositsDisabled}
+          />
+        )
+      case 'enableAutoClose':
+        return (
+          <AutoCloseWithdrawModal
+            isVaultModal={!!activeVaultAction}
+            openVaultsModal={() => handleVaultAction(null)}
+            isAutoCloseWithdraw={isAutoCloseWithdraw}
+            setIsAutoCloseWithdraw={setIsAutoCloseWithdraw}
+          />
+        )
+      case 'distribute':
+        return (
+          <DistributeModal
+            isVaultModal={!!activeVaultAction}
+            openVaultsModal={() => handleVaultAction(null)}
+          />
+        )
+      case 'closeVault':
+        return (
+          <CloseVaultModal
+            isVaultModal={!!activeVaultAction}
+            openVaultsModal={() => handleVaultAction(null)}
+          />
+        )
+      default:
+        return null
+    }
+  }
+
+  const handleCloseVaultActionMenu = () => {
+    setShowDropdown((prev) => !prev)
+  }
+
+  const renderVaultActionMenu = () => {
+    return (
+      <>
+        <Modal isOpen={showDropdown} onClose={handleCloseVaultActionMenu}>
+          <div
+            className="w-full max-w-md max-md:max-w-sm border-white/10 border-[2px] bg-[#0F0816] max-md:py-3 max-md:px-2 p-6 rounded-2xl shadow-lg 
+           relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-end mb-1">
+              <button
+                onClick={handleCloseVaultActionMenu}
+                className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
+              >
+                <Image
+                  height={20}
+                  width={20}
+                  src={menuClose}
+                  alt="menuclose"
+                  className="w-[13px] h-[13px]"
+                />
+              </button>
+            </div>
+            <div className="flex flex-col space-y-2">
+              <VaultActionButtons
+                isDepositsDisabled={isDepositsDisabled}
+                isAutoCloseWithdraw={isAutoCloseWithdraw}
+                handleVaultAction={handleVaultAction}
+                activeVaultAction={activeVaultAction}
+              />
+            </div>
+          </div>
+        </Modal>
+      </>
+    )
+  }
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 768)
+    }
+    handleResize()
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  useEffect(() => {
+    if (!showDropdown || !isDesktop) return
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setShowDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [showDropdown, isDesktop])
   return (
     <>
       <div className="w-full 2xl:px-14  px-4 pt-5">
@@ -43,15 +171,63 @@ export default function VaultDetails() {
         <div className="grid grid-cols-1 min-[1025px]:grid-cols-4 gap-5 mt-5">
           <div className="min-xl:col-span-3 space-y-6">
             <div className="flex max-lg:flex-col max-lg:items-start items-center justify-between mb-5">
-              <div className="flex items-center space-x-4 py-4">
-                <Image src={lido} alt="WETH" width={35} height={35} />
-                <div>
-                  <h2 className="text-base text-white font-bold">{vault.name}</h2>
-                  <p className="text-sm text-[#8B8BA0] font-medium">{vault.type}</p>
+              <div className="flex max-md:w-full max-md:justify-between flex-row items-center gap-x-8 py-4">
+                <div className="">
+                  <h2 className="text-base flex items-center gap-x-1 text-white font-bold">
+                    {vault?.name}
+                    {isDepositsDisabled && (
+                      <span
+                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#f139391a] text-[#E2464A]`}
+                      >
+                        Deposits Disabled
+                      </span>
+                    )}
+                    {isAutoCloseWithdraw && (
+                      <span
+                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#1F1F30] text-[#2FA766]`}
+                      >
+                        Auto-Close Enabled
+                      </span>
+                    )}
+                  </h2>
+                  <p className="text-sm gap-x-2 mt-2 flex items-center text-[#8B8BA0] font-medium">
+                    <span ref={vaultsRef}>{vault?.type}</span>
+                    <button
+                      className="opacity-70 cursor-pointer"
+                      onClick={() => handleCopy(vaultsRef, 'vaults')}
+                    >
+                      <Image
+                        className={`${copiedRef === 'vaults' ? 'filter-green' : ''}`}
+                        height={15}
+                        width={15}
+                        src={copyicon}
+                        alt="Copy"
+                      />
+                    </button>
+                  </p>
+                </div>
+                <div
+                  onClick={() => setShowDropdown((prev) => !prev)}
+                  className="bg-white/6 rounded-xl p-3 cursor-pointer relative"
+                >
+                  <Image src={settingicon} alt="Setting" width={17} height={17} />
+                  {showDropdown && (
+                    <div
+                      ref={dropdownRef}
+                      className="absolute max-md:hidden flex flex-col top-12 px-1.5 left-0 bg-[#0F0816] shadow-lg rounded-xl w-80 py-2 z-50"
+                    >
+                      <VaultActionButtons
+                        isDepositsDisabled={isDepositsDisabled}
+                        isAutoCloseWithdraw={isAutoCloseWithdraw}
+                        handleVaultAction={handleVaultAction}
+                        activeVaultAction={activeVaultAction}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex max-lg:w-full max-md:gap-2 flex-wrap gap-4">
-                {Object.entries(vault.details)?.map(([key, value]) => (
+                {Object.entries(vault?.details)?.map(([key, value]) => (
                   <ValutsDetailsCard key={key} title={key} value={value} />
                 ))}
               </div>
@@ -141,6 +317,8 @@ export default function VaultDetails() {
         </div>
         <UserData />
       </div>
+      {renderVaultActionModal()}
+      {showDropdown && <div className="max-md:block hidden">{renderVaultActionMenu()}</div>}
     </>
   )
 }
