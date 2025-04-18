@@ -82,13 +82,14 @@ const placePerpOrder = async ({
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
+  const formattedSize = parseFloat(amount.toFixed(szDecimals)).toString()
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
       price: formatPrice(limitPrice, szDecimals),
-      size: amount.toFixed(szDecimals),
+      size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
         trigger: {
@@ -103,7 +104,7 @@ const placePerpOrder = async ({
       assetIndex: assetIndex,
       isBuy: isBuy,
       price: formatPrice(limitPrice, szDecimals),
-      size: amount.toFixed(szDecimals),
+      size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
         limit: {
@@ -118,7 +119,7 @@ const placePerpOrder = async ({
         assetIndex: assetIndex,
         isBuy: !isBuy,
         price: formatPrice(tpsl.stopLoss, szDecimals),
-        size: amount.toFixed(szDecimals),
+        size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
@@ -134,7 +135,7 @@ const placePerpOrder = async ({
         assetIndex: assetIndex,
         isBuy: !isBuy,
         price: formatPrice(tpsl.takeProfit, szDecimals),
-        size: amount.toFixed(szDecimals),
+        size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
