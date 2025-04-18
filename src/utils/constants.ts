@@ -10,9 +10,9 @@ import disableicon from '@/assets/images/disable_icon.svg'
 import hourglassicon from '@/assets/images/hourglass_icon.svg'
 import sendcopyicon from '@/assets/images/sendcopy_icon.svg'
 import lockoutlineicon from '@/assets/images/lockoutline_icon.svg'
-import invitefriends from '@/assets/images/invitefriends.svg'
-import theycommit from '@/assets/images/theycommit.svg'
-import earnrewards from '@/assets/images/earnrewards.svg'
+import invitefriends from '@/assets/images/invitefriends_icon.svg'
+import theycommit from '@/assets/images/theycommit_icon.svg'
+import earnrewards from '@/assets/images/earnrewards_icon.svg'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -457,4 +457,3 @@ export const VAULT_ACTION_OPTIONS = [
     textColor: 'text-[#E2464A]'
   }
 ] as const
-
