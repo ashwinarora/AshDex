@@ -63,11 +63,12 @@ const Header: FC = () => {
     { name: 'Settings', path: '/settings' }
   ]
 
-  const activeMenu = pathname?.startsWith('/lendBorrow')
-    ? 'Lend/Borrow'
-    : pathname?.startsWith('/stake')
-      ? 'Stake'
-      : mobileMenu?.find((item) => item.path === pathname)?.name || 'Futures'
+  const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
+    if (pathname === '/' || pathname === '') return 'Futures'
+    const firstSegment = pathname?.split('/')[1]
+    return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
+  }
+  const activeMenu = getActiveMenu(pathname, mobileMenu)
 
   const handleMenuClick = (path: string) => {
     router.push(path)
@@ -114,7 +115,7 @@ const Header: FC = () => {
     <>
       <header
         className="
-    w-full h-20 sticky top-0 z-50
+    w-full h-20 sticky top-0 z-55
       backdrop-blur-xl backdrop-filter
     sm:px-9 flex border-b border-white/10
     items-center justify-between
@@ -128,7 +129,7 @@ const Header: FC = () => {
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
           </h1>
-          <nav className="lg:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
+          <nav className="min-[1025px]:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
@@ -140,7 +141,6 @@ const Header: FC = () => {
                 {name}
               </Link>
             ))}
-
             {/* More Dropdown */}
             <button className={`flex items-center gap-x-1.5 transition-all duration-300 `}>
               More
@@ -190,8 +190,8 @@ const Header: FC = () => {
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="border-l max-[1025px]:hidden flex border-gray-600 h-4 mx-2"></span>
-                <span className="font-medium max-[1025px]:hidden flex truncate">
+                <span className="border-l max-xl:hidden flex border-gray-600 h-4 mx-2"></span>
+                <span className="font-medium max-xl:hidden flex truncate">
                   {truncateAddress(address!)}
                 </span>
                 <Image
@@ -206,7 +206,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[250px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-5"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-4"
                 >
                   <div className="flex items-start text-[#E8E0F1] gap-2">
                     <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
@@ -262,7 +262,7 @@ const Header: FC = () => {
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="p-1 lg:hidden block hover:text-blue-400 text-[#ffffff]"
+            className="p-1 min-[1025px]:hidden block hover:text-blue-400 text-[#ffffff]"
           >
             <Image
               height={20}
@@ -277,7 +277,7 @@ const Header: FC = () => {
 
       {/* Sidebar Menu */}
       {isOpen && (
-        <div className="absolute z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
+        <div className="sticky z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
               <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />

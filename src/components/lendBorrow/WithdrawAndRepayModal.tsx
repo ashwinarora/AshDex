@@ -3,7 +3,6 @@ import Image from 'next/image'
 import Modal from '../common/Modal'
 import Switch from '../common/Switch'
 import Loading from '../common/Loading'
-import { useWalletModal } from '@/context/WalletModalContext'
 import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
 import { useToast } from '@/context/ToastContext'
 import lendBorrowData from '@/utils/lendBorrow.json'
@@ -14,13 +13,19 @@ import Slider1 from '@/assets/images/slider_value.svg'
 interface WithdrawAndRepayModalProps {
   type: 'Withdraw' | 'Repay' | null
   setModalType: React.Dispatch<React.SetStateAction<'Withdraw' | 'Repay' | null>>
+  isModalOpen: boolean
+  openModal: () => void
 }
 
 type TypeName = 'Withdraw' | 'Repay'
 
-const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({ type, setModalType }) => {
+const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
+  type,
+  setModalType,
+  isModalOpen,
+  openModal
+}) => {
   const { withdrawAndRepayData } = lendBorrowData?.lendBorrow
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
   const { showToast } = useToast()
   const [amount, setAmount] = useState('0.00')
   const [isChecked, setIsChecked] = useState<boolean>(true)
@@ -37,7 +42,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({ type, set
     setIsChecked(true)
     setModalType(null)
     setIsLoading(false)
-    toggleConnectWalletModal()
+    openModal()
   }
 
   const onHandleClick = (type: 'Withdraw' | 'Repay') => {

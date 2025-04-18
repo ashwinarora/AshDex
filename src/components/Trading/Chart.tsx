@@ -154,7 +154,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
 
       tooltipRef.current.innerHTML = `
-        <div class="text-[#E8E0F1] font-normal text-xs flex max-[770px]:gap-[10px] gap-[16px] max-[770px]:flex-col">
+        <div class="text-[#E8E0F1] font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
       <strong>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</strong>
           <span>Open: <span class="text-[#FFFFFF]">${seriesData?.open?.toFixed(2)}</span></span>
           <span>High: <span class="text-[#FFFFFF]">${seriesData?.high?.toFixed(2)}</span></span>
@@ -200,8 +200,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
             setSelectedInterval={setSelectedInterval}
             intervals={Array.from(CHART_INTERVALS)}
           />
-          <div className="flex max-[770px]:block">
-            <div className="w-auto max-[770px]:w-full max-[770px]:py-3 max-[770px]:px-4 px-3 py-6 flex flex-col max-[770px]:flex-row max-[770px]:gap-4 max-[1025px]:gap-7 gap-10 items-center max-[770px]:justify-between min-[770px]:border-r-2 max-[770px]:border-b border-white/10">
+          <div className="flex max-lg:block">
+            <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
               {sidebarIcons?.map((icon, index) => (
                 <button
                   key={index}
@@ -220,12 +220,12 @@ const Chart = ({ selectedAsset }: IChartProps) => {
                 <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
               </div>
             ) : (
-              <div ref={chartRef} className=" w-full    flex-1" />
+              <div ref={chartRef} className=" w-full flex-1" />
             )}
           </div>
           <div
             ref={tooltipRef}
-            className="absolute z-50 bg-[#33293B] max-[770px]:p-3 p-[14px] rounded-lg shadow-md hidden"
+            className="absolute z-50 bg-[#33293B] max-lg:p-3 p-[14px] rounded-lg shadow-md hidden"
           />
         </>
       ) : null}

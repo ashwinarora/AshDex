@@ -4,9 +4,11 @@ import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
 import TWAP from './TWAP'
 import Scale from './Scale'
-import CustomSelector from './CustomSelector'
+import CustomSelector from '../../common/CustomSelector'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
+import useIsSpot from '@/hooks/useIsSpot'
+import ScaleSpot from './ScaleSpot'
 
 /** Define the possible tab options */
 type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
@@ -17,6 +19,7 @@ export interface IPlaceOrderProps {
 
 const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [activeTab, setActiveTab] = useState<OrderTab>('LIMIT')
+  const isSpot = useIsSpot()
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -27,7 +30,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'TWAP':
         return <TWAP selectedAsset={selectedAsset} />
       case 'SCALE':
-        return <Scale selectedAsset={selectedAsset} />
+        return isSpot ? (
+          <ScaleSpot selectedAsset={selectedAsset} />
+        ) : (
+          <Scale selectedAsset={selectedAsset} />
+        )
       case 'STOP_LIMIT':
         return <StopLimit selectedAsset={selectedAsset} />
       case 'STOP_MARKET':
@@ -36,6 +43,18 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return null
     }
   }
+
+  const availableOptions = isSpot
+    ? [
+        { value: 'TWAP', label: 'TWAP' },
+        { value: 'SCALE', label: 'SCALE' }
+      ]
+    : [
+        { value: 'TWAP', label: 'TWAP' },
+        { value: 'SCALE', label: 'SCALE' },
+        { value: 'STOP_LIMIT', label: 'Stop Limit' },
+        { value: 'STOP_MARKET', label: 'Stop Market' }
+      ]
 
   return (
     <div>
@@ -60,12 +79,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           }`}
         >
           <CustomSelector
-            options={[
-              { value: 'TWAP', label: 'TWAP' },
-              { value: 'SCALE', label: 'SCALE' },
-              { value: 'STOP_LIMIT', label: 'Stop Limit' },
-              { value: 'STOP_MARKET', label: 'Stop Market' }
-            ]}
+            options={availableOptions}
             selectedValue={activeTab}
             onChange={(value) => {
               setActiveTab(value as OrderTab)

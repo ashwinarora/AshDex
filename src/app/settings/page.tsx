@@ -10,7 +10,7 @@ import {
   IconX
 } from '@tabler/icons-react'
 import Modal from '@/components/common/Modal'
-import CustomSelector from '@/components/Trading/PlaceOrderBox/CustomSelector'
+import CustomSelector from '@/components/common/CustomSelector'
 import { truncateAddress } from '@/utils/utils'
 import { useUser } from '@/context/UserContext'
 import Avatar from '@/components/common/Avatar'

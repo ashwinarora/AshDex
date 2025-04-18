@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import TabContent from './TabContent'
 import Loading from '../common/Loading'
-import { useWalletModal } from '@/context/WalletModalContext'
 import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
 import WithdrawAndRepayModal from './WithdrawAndRepayModal'
 import lendBorrowData from '@/utils/lendBorrow.json'
@@ -19,14 +18,14 @@ const iconMap: { [key: string]: string } = {
 const WalletActions: React.FC = () => {
   const { yourSuppliesAndBorrows } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
-  const { toggleConnectWalletModal } = useWalletModal()
   const [activeTab, setActiveTab] = useState<'Supply' | 'Borrow'>('Supply')
   const [isLoading, setIsLoading] = useState(false)
   const [modalType, setModalType] = useState<'Withdraw' | 'Repay' | null>(null)
+  const [isModalOpen, setModalOpen] = useState(false)
 
   const openModal = (type: 'Withdraw' | 'Repay') => {
     setModalType(type)
-    toggleConnectWalletModal()
+    setModalOpen((p) => !p)
   }
 
   return (
@@ -135,7 +134,12 @@ const WalletActions: React.FC = () => {
           </div>
         </div>
       )}
-      <WithdrawAndRepayModal type={modalType} setModalType={setModalType} />
+      <WithdrawAndRepayModal
+        isModalOpen={isModalOpen}
+        openModal={() => openModal('Withdraw')}
+        type={modalType}
+        setModalType={setModalType}
+      />
     </>
   )
 }

@@ -78,7 +78,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
 
   return (
     <div
-      className={`flex justify-center max-[770px]:flex-col flex-row gap-4 px-3 py-6 h-full rounded-xl text-white ${
+      className={`flex justify-center max-lg:flex-col flex-row gap-4 px-3 py-6 h-full rounded-xl text-white ${
         isLoading ? 'items-center' : ''
       }`}
     >
@@ -88,7 +88,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
         </>
       ) : (
         <>
-          <div className="w-[45%] max-[770px]:w-full p-6 bg-transparent border-2 border-white/10 rounded-2xl">
+          <div className="w-[45%] max-lg:w-full p-6 bg-transparent border-2 border-white/10 rounded-2xl">
             <div className="flex items-center gap-3 mb-5">
               <Image src={coinInfo?.logo ?? bitcoinicon} alt="Bitcoin" width={30} height={30} />
               <h2 className="text-xl font-semibold">{selectedAsset}</h2>
@@ -110,17 +110,17 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
               ))}
             </div>
           </div>
-          <div className="w-[55%] max-[770px]:w-full max-[770px]:px-3 py-5 px-4 bg-transparent border-2 border-white/10 rounded-2xl">
+          <div className="w-[55%] max-lg:w-full max-lg:px-3 py-5 px-4 bg-transparent border-2 border-white/10 rounded-2xl">
             <div className="mb-5">
               <p className="text-sm text-[#8B8BA0] font-normal mb-4">Links</p>
-              <div className="flex flex-wrap max-[770px]:gap-0 gap-2 xl:gap-1  2xl:gap-x-0.5 2xl:gap-y-2">
+              <div className="flex flex-wrap max-lg:gap-0 gap-2 xl:gap-1  2xl:gap-x-0.5 2xl:gap-y-2">
                 {assetLinks?.map((link, index) => (
                   <a
                     key={index}
                     href={link?.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 max-[770px]:px-3 max-[770px]:mb-1.5 max-[770px]:mr-1 py-2 text-[#E8E0F1] text-sm font-medium bg-white/6 rounded-full flex items-center max-[770px]:gap-x-1.5 gap-2 xl:gap-1  2xl:gap-x-2 2xl:gap-y-2 hover:bg-[#322944]"
+                    className="px-4 max-lg:px-3 max-lg:mb-1.5 max-lg:mr-1 py-2 text-[#E8E0F1] text-sm font-medium bg-white/6 rounded-full flex items-center max-lg:gap-x-1.5 gap-2 xl:gap-1  2xl:gap-x-2 2xl:gap-y-2 hover:bg-[#322944]"
                   >
                     {link?.name} <Image alt="exporticon" src={exporticon} width={14} height={14} />
                   </a>
