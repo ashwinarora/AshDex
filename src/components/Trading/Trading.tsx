@@ -5,8 +5,10 @@ import OrderBook from './OrderBook'
 import Selector from './Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
+import useIsSpot from '@/hooks/useIsSpot'
 const Trading = ({ type }: { type: 'spot' | 'perp' }) => {
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
+  const isSpot = useIsSpot()
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ?  'HYPE-SPOT' : 'BTC-PERP')
 
   return (
     <div className="h-full bg-transparent flex flex-col px-4 md:px-10 gap-4 p-4">
