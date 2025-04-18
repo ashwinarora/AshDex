@@ -25,7 +25,9 @@ const UserData = () => {
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.filter((o) => o.coin.includes(isSpot ? 'SPOT' : 'PERP')).length
+    const openOrdersLength = openOrders.filter((o) =>
+      o.coin.includes(isSpot ? 'SPOT' : 'PERP')
+    ).length
     const tabs = [
       {
         header: 'Balances',

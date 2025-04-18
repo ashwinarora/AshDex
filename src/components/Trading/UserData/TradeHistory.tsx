@@ -8,62 +8,57 @@ import {
   getSortedRowModel,
   createColumnHelper,
   flexRender,
-  SortingState,
+  SortingState
 } from '@tanstack/react-table'
 import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
-
 
 const columnHelper = createColumnHelper<ITradeHistory>()
 
 const columns = [
   columnHelper.accessor('coin', {
     header: 'Coin',
-    cell: info => info.getValue(),
-    enableSorting: false,
+    cell: (info) => info.getValue(),
+    enableSorting: false
   }),
   columnHelper.accessor('px', {
     header: 'Price',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) =>
-      Number(rowA.original.px) - Number(rowB.original.px),
+    sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px)
   }),
   columnHelper.accessor('sz', {
     header: 'Size',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) =>
-      Number(rowA.original.sz) - Number(rowB.original.sz),
+    sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz)
   }),
   columnHelper.accessor('side', {
     header: 'Side',
-    cell: info => info.getValue(),
-    enableSorting: false,
+    cell: (info) => info.getValue(),
+    enableSorting: false
   }),
   columnHelper.accessor('time', {
     header: 'Time',
-    cell: info => new Date(info.getValue()).toLocaleString(),
+    cell: (info) => new Date(info.getValue()).toLocaleString(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) =>
-      rowA.original.time - rowB.original.time,
+    sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time
   }),
   columnHelper.accessor('dir', {
     header: 'Direction',
-    cell: info => info.getValue(),
-    enableSorting: false,
+    cell: (info) => info.getValue(),
+    enableSorting: false
   }),
   columnHelper.accessor('closedPnl', {
     header: 'Closed PnL',
-    cell: info => info.getValue(),
+    cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) =>
-      Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
+    sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl)
   }),
   columnHelper.accessor('crossed', {
     header: 'Crossed',
-    cell: info => (info.getValue() ? 'Yes' : 'No'),
-    enableSorting: false,
-  }),
+    cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+    enableSorting: false
+  })
 ]
 
 const TradeHistoryTable: React.FC = () => {
@@ -77,12 +72,12 @@ const TradeHistoryTable: React.FC = () => {
       const response = await hyperliquidAxios.post('/info', {
         type: 'userFills',
         user: address,
-        aggregateByTime: true,
+        aggregateByTime: true
       })
       return response.data
     },
     enabled: !!address && !!hyperliquidAxios,
-    initialData: [],
+    initialData: []
   })
 
   const table = useReactTable({
@@ -91,16 +86,16 @@ const TradeHistoryTable: React.FC = () => {
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getSortedRowModel: getSortedRowModel()
   })
 
   return (
     <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100">
       <table className="min-w-full divide-y divide-gray-700">
         <thead className="bg-gray-700">
-          {table.getHeaderGroups().map(headerGroup => (
+          {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
-              {headerGroup.headers.map(header => (
+              {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
                   className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider"
@@ -110,13 +105,10 @@ const TradeHistoryTable: React.FC = () => {
                       onClick={header.column.getToggleSortingHandler()}
                       className="flex items-center gap-1"
                     >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                      {flexRender(header.column.columnDef.header, header.getContext())}
                       {{
                         asc: '▲',
-                        desc: '▼',
+                        desc: '▼'
                       }[header.column.getIsSorted() as string] ?? null}
                     </button>
                   )}
@@ -126,9 +118,9 @@ const TradeHistoryTable: React.FC = () => {
           ))}
         </thead>
         <tbody className="divide-y divide-gray-700">
-          {table.getRowModel().rows.map(row => (
+          {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="odd:bg-gray-800 even:bg-gray-900">
-              {row.getVisibleCells().map(cell => (
+              {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-2 whitespace-nowrap text-sm">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
