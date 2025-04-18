@@ -226,7 +226,7 @@ export const WALLETS = [
     icon: phantom
   },
   {
-    id: 'coinbaseWallet',
+    id: 'coinbaseWalletSDK',
     name: 'Coinbase',
     icon: coinbase
   },
