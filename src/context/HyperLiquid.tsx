@@ -65,7 +65,8 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const queryClient = useQueryClient()
 
   const isTestnet = useMemo(() => {
-    return true // update this code when ready for mainnet
+    if(process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK === 'mainnet') return false
+    return true
   }, [])
 
   const privateKey = useMemo(() => {
