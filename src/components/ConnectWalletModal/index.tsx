@@ -2,6 +2,8 @@
 import React, { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { useConnect } from 'wagmi'
+import { TrustWallet } from '@trustwallet/web3-react-trust-wallet'
+import { initializeConnector } from '@web3-react/core'
 import { WALLETS } from '@/utils/constants'
 import Modal from '../common/Modal'
 import { WalletDisplay } from './WalletDisplay'
@@ -24,7 +26,7 @@ const ConnectWalletModal: React.FC = () => {
   >(null)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(null)
   const [hasAgreedToRules, setHasAgreedToRules] = useState(false)
-
+  const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
   const handleAgreeToRules = () => {
     setHasAgreedToRules(true)
   }
@@ -38,24 +40,24 @@ const ConnectWalletModal: React.FC = () => {
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
     const connector = connectors?.find((c) => c.id === wallet.id)
-    if (!connector) {
-      console.error('Connector not found for wallet:', wallet.id)
-      return
-    }
     if (wallet?.id) {
       try {
         const walletConnector = WALLETS?.find((c) => c?.id === wallet?.id)
         setSelectedConnector(walletConnector)
-        const result = await connectAsync({ connector })
-        if (result) {
+        if (connector) {
+          await connectAsync({ connector })
+          setIsWalletConnected(true)
+        } else if (wallet?.id === 'trustWallet') {
+          await trustWallet.activate()
           setIsWalletConnected(true)
         }
       } catch (error) {
-        console.error('Error connecting wallet 123:', error)
+        console.error('Error connecting wallet:', error)
         setIsWalletConnected(false)
       }
     }
   }
+
   return (
     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
       <div
