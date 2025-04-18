@@ -21,7 +21,6 @@ import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
 import Avatar from './common/Avatar'
 import { IconSettings, IconSwitch3 } from '@tabler/icons-react'
-
 type MenuItem = {
   name: string
   path: string
@@ -211,6 +210,20 @@ const Header: FC = () => {
                   <div className="flex items-start text-[#E8E0F1] gap-2">
                     <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
                     <div className="flex flex-col">
+                      <span className="truncate">{truncateAddress(address!)}</span>
+                      <div className="text-sm text-[#E8E0F1]">
+                        {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
+                        {balanceData?.symbol}
+                      </div>
+                    </div>
+                    <button onClick={handleCopy} className="px-3 py-1 opacity-70 cursor-pointer">
+                      <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1] gap-2">
+                    <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
+                    <div className="flex flex-col">
+                      <span className="text-xs text-[#E8E0F1]">Vault Trading Account</span>
                       <span className="truncate">{truncateAddress(address!)}</span>
                       <div className="text-sm text-[#E8E0F1]">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
