@@ -457,3 +457,4 @@ export const VAULT_ACTION_OPTIONS = [
     textColor: 'text-[#E2464A]'
   }
 ] as const
+
