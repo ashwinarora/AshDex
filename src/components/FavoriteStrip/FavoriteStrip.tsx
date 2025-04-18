@@ -6,7 +6,13 @@ import { Splide, SplideSlide } from '@splidejs/react-splide'
 import { AutoScroll } from '@splidejs/splide-extension-auto-scroll'
 import '@splidejs/react-splide/css'
 
-const FavoriteStrip = ({ type }: { type: 'spot' | 'perp' }) => {
+const FavoriteStrip = ({
+  type,
+  setSelectedAsset
+}: {
+  type: 'spot' | 'perp'
+  setSelectedAsset: (asset: string) => void
+}) => {
   const { favorites } = useFavorites()
 
   if (favorites[type].length === 0) {
@@ -36,7 +42,7 @@ const FavoriteStrip = ({ type }: { type: 'spot' | 'perp' }) => {
       >
         {favorites[type].map((favorite, index) => (
           <SplideSlide key={index}>
-            <FavoriteItem favorite={favorite} />
+            <FavoriteItem favorite={favorite} setSelectedAsset={setSelectedAsset} />
           </SplideSlide>
         ))}
       </Splide>

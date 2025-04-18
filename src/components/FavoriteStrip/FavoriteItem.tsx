@@ -12,9 +12,10 @@ interface FavoriteItemProps {
     price?: string | number
     change24h?: string | number
   }
+  setSelectedAsset: (asset: string) => void
 }
 
-const FavoriteItem = ({ favorite }: FavoriteItemProps) => {
+const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
   // If favorite is undefined, don't continue
   if (!favorite) {
     return null
@@ -65,7 +66,10 @@ const FavoriteItem = ({ favorite }: FavoriteItemProps) => {
   const percentageOnly = getPercentageOnly(favorite.change24h)
 
   return (
-    <div className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-4 px-6 cursor-pointer">
+    <div
+      onClick={() => setSelectedAsset(favorite.name)}
+      className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-4 px-6 cursor-pointer"
+    >
       <Image
         src={starticon}
         alt="staricon"

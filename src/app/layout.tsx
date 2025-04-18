@@ -13,6 +13,7 @@ import { ToastProvider } from '../context/ToastContext'
 import { FavoritesProvider } from '@/context/FavoritesContext'
 import './globals.css'
 import '@/styles/table.css'
+import OnboardingModal from '@/components/common/Onboarding'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -53,6 +54,7 @@ export default function RootLayout({
                   <FavoritesProvider>
                     <ConnectWalletModal />
                     <Header />
+                    <OnboardingModal />
                     {children}
                     <div className="py-8 px-4 md:px-9   col-span-full">
                       <Footer />
