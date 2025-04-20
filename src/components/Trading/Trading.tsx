@@ -6,8 +6,10 @@ import Selector from './Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
+import useIsSpot from '@/hooks/useIsSpot'
 const Trading = ({ type }: { type: 'spot' | 'perp' }) => {
-  const [selectedAsset, setSelectedAsset] = useState<string>('BTC-PERP')
+  const isSpot = useIsSpot()
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE-SPOT' : 'BTC-PERP')
 
   return (
     <>

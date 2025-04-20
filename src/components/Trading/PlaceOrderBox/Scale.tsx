@@ -102,8 +102,6 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     sizeSkew
   ])
 
-  console.log(maxAllowedUsd)
-
   const { data: extraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
