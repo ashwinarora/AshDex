@@ -26,10 +26,9 @@ const CRYPTO_ICONS: Record<string, StaticImageData> = {
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
-  type: 'spot' | 'perp'
 }
 
-const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => {
+const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -38,7 +37,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
   const isSpot = useIsSpot()
-
+  const type = isSpot ? 'spot' : 'perp'
   const selectedAssetContext = useMemo(() => {
     if (isSpot) {
       const asset = spotAssetContext.find((assets) => assets.coin.includes(selectedAsset))

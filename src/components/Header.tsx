@@ -123,18 +123,18 @@ const Header: FC = () => {
         <div className="flex items-center justify-center space-x-4">
           <h1
             onClick={() => router.push('/')}
-            className="flex items-center mr-6 lg:mr-6 xl:12 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
+            className="flex items-center mr-6 lg:mr-6  gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
           >
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
           </h1>
-          <nav className="min-[1025px]:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
+          <nav className="md:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
                 href={path}
                 onClick={() => handleMenuClick(path)}
-                className={`tab-btn px-6
+                className={`tab-btn xl:px-6 px-4
                   ${activeMenu === name && 'tab-btn-active'}`}
               >
                 {name}
@@ -205,7 +205,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-4"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg p-4"
                 >
                   <div className="flex items-start text-[#E8E0F1] gap-2">
                     <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />

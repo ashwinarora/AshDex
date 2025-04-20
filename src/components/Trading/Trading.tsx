@@ -7,17 +7,17 @@ import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
 import useIsSpot from '@/hooks/useIsSpot'
-const Trading = ({ type }: { type: 'spot' | 'perp' }) => {
+const Trading = () => {
   const isSpot = useIsSpot()
   const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE-SPOT' : 'BTC-PERP')
 
   return (
     <>
-      <FavoriteStrip type={type} setSelectedAsset={setSelectedAsset} />
+      <FavoriteStrip setSelectedAsset={setSelectedAsset} />
       <div className="h-full bg-transparent flex flex-col px-4 md:px-10 gap-4 p-4">
         {/* Top Bar for Asset Selector */}
         <div className="flex   justify-between items-center   relative">
-          <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} type={type} />
+          <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         </div>
         {/* Main Trading Layout */}
         <div className="flex gap-6  flex-col ">

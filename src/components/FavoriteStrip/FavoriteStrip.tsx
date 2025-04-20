@@ -5,16 +5,12 @@ import FavoriteItem from './FavoriteItem'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import { AutoScroll } from '@splidejs/splide-extension-auto-scroll'
 import '@splidejs/react-splide/css'
+import useIsSpot from '@/hooks/useIsSpot'
 
-const FavoriteStrip = ({
-  type,
-  setSelectedAsset
-}: {
-  type: 'spot' | 'perp'
-  setSelectedAsset: (asset: string) => void
-}) => {
+const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const { favorites } = useFavorites()
-
+  const isSpot = useIsSpot()
+  const type = isSpot ? 'spot' : 'perp'
   if (favorites[type].length === 0) {
     return null
   }

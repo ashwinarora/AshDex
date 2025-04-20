@@ -4,7 +4,7 @@ import Trading from '@/components/Trading/Trading'
 export default function Home() {
   return (
     <>
-      <Trading type="perp" />
+      <Trading />
     </>
   )
 }
