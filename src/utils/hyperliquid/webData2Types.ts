@@ -1,6 +1,6 @@
 // Define types for all nested structures
 
-import { IClearingHouseState } from "./hyperLiquidTypes"
+import { IClearingHouseState } from './hyperLiquidTypes'
 
 export interface IWebData2 {
   clearinghouseState: IClearingHouseState
