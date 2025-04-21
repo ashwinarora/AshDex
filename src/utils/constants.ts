@@ -27,7 +27,10 @@ export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163
 
 export const AGENT_PRIVATE_KEY = 'agentPrivateKey'
 
-export const BUILDER_ADDRESS = '0x1710022f671b4032d6c7262107ba231f41f84ce8' // Ashwin's address
+export const BUILDER_ADDRESS =
+  process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK === 'mainnet'
+    ? '0x6a181ef519f21f933884038952aabef02876dbcc' // Ahmed's address
+    : '0x1710022f671b4032d6c7262107ba231f41f84ce8' // Ashwin's address
 
 export const HLP_VAULT_TESTNET = '0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0' // https://app.hyperliquid-testnet.xyz/vaults/0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0
 
