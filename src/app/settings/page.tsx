@@ -309,196 +309,198 @@ const SettingsPage = () => {
   }, [isConnected, router])
 
   return (
-    <div className="p-4 sm:p-8 min-h-screen text-white">
-      <div className="max-w-7xl mx-auto nexon-card p-4 sm:p-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-4">
-          <Tabs
-            tabs={['Account', 'Notifications']}
-            onTabSelect={(tab) => {
-              setSelectedTab(tab)
-            }}
-          />
+    isConnected && (
+      <div className="p-4 sm:p-8 min-h-screen text-white">
+        <div className="max-w-7xl mx-auto nexon-card p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-4">
+            <Tabs
+              tabs={['Account', 'Notifications']}
+              onTabSelect={(tab) => {
+                setSelectedTab(tab)
+              }}
+            />
+            {hasChanges() && (
+              <button
+                onClick={handleSaveChanges}
+                className="nexon-button nexon-primary w-full sm:w-max hidden md:block"
+              >
+                Save Changes
+              </button>
+            )}
+          </div>
+          {selectedTab === 'Account' && (
+            <div className="py-4">
+              <div className="flex items-center mb-6 gap-2">
+                <Avatar avatar={String(userInfo.avatar)} />
+                <div>
+                  <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
+                    {userInfo.nickname ?? <Skeleton className="w-20 h-4" />}
+                    <IconEdit className="w-4 h-4 cursor-pointer" onClick={() => setIsOpen(true)} />
+                  </h2>
+                  <div className="text-xs sm:text-sm text-gray-400 flex items-center gap-2">
+                    {userInfo.address ? (
+                      truncateAddress(userInfo.address)
+                    ) : (
+                      <Skeleton className="w-20 h-2 mt-2" />
+                    )}
+
+                    {isCopied ? (
+                      <div className="flex items-center gap-2">
+                        <IconClipboardCheckFilled className="w-4 h-4  " />
+                        <p className="text-xs text-green-500">Copied</p>
+                      </div>
+                    ) : (
+                      <IconCopy
+                        className="w-4 h-4 cursor-pointer"
+                        onClick={() => {
+                          if (userInfo.address) {
+                            navigator.clipboard.writeText(userInfo.address)
+                            setIsCopied(true)
+                            setTimeout(() => {
+                              setIsCopied(false)
+                            }, 5000)
+                            toast.success('Copied to clipboard')
+                          }
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+                <div className="nexon-rounded-xl nexon-card p-4 py-2">
+                  <p className="text-sm text-gray-400">IP</p>
+                  <p className="text-lg font-bold">
+                    {ipAddress || <Skeleton className="w-full h-7" />}
+                  </p>
+                </div>
+                <div className="nexon-rounded-xl nexon-card p-4 py-2">
+                  <p className="text-sm text-gray-400">Last login time</p>
+                  <p className="text-lg font-bold flex items-center gap-2 text-nowrap">
+                    <IconDeviceImacFilled className="w-4 h-4 text-white/80" />
+                    PC | 2025-04-03 09:07
+                  </p>
+                </div>
+                <div className="nexon-rounded-xl nexon-card p-4 py-2 hidden  ">
+                  <p className="text-sm text-gray-400">Security Level</p>
+                  <p className="text-lg font-bold text-red-500">Low</p>
+                </div>
+              </div>
+              <div className="  w-full sm:w-max ">
+                <p className="text-sm text-gray-400 mb-2">Language</p>
+
+                <CustomSelector
+                  options={[
+                    {
+                      value: 'English',
+                      label: 'English',
+                      flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
+                    },
+                    {
+                      value: 'Arabic',
+                      label: 'العربية',
+                      flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
+                    }
+                  ]}
+                  selectedValue={selectedLanguage}
+                  onChange={(value) => {
+                    setSelectedLanguage(value)
+                  }}
+                  className=" nexon-card nexon-rounded-lg   cursor-pointer"
+                />
+              </div>
+              <div className="hidden">
+                <p className="text-sm text-gray-400 mb-2">Session Management</p>
+                <div className="nexon-rounded-xl nexon-card p-4 flex justify-between items-center mb-2">
+                  <p className="text-lg font-bold flex items-center gap-2">
+                    <IconDeviceImacFilled className="w-12 h-12 bg-white/5 rounded-lg p-2 text-white/80" />
+                    PC | 2025-04-03 09:07
+                  </p>
+                  <button
+                    onClick={() => {
+                      toast.error('Session ended successfully')
+                    }}
+                    className="nexon-button nexon-rounded-xl py-1 px-3 hover:bg-opacity-90"
+                  >
+                    End session
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+          {selectedTab === 'Notifications' && (
+            <div className=" flex flex-col md:flex-row  gap-4">
+              <div className="nexon-card nexon-rounded-xl p-6">
+                <p className="text-lg text-white text-gray-400 mb-2">Notifications</p>
+                <div className="flex flex-row gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 w-full">
+                    {Object.values(notificationSettings).map((notification) => (
+                      <Switch
+                        key={notification.id}
+                        label={notification.label}
+                        isChecked={notification.value}
+                        setIsChecked={(value) => {
+                          setNotificationSettings({
+                            ...notificationSettings,
+                            [notification.id]: {
+                              ...notification,
+                              value: value
+                            }
+                          })
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+              <div className="nexon-card nexon-rounded-xl p-6 w-full ">
+                <p className="text-lg text-white text-gray-400 mb-2">Display Settings</p>
+                <div className="flex flex-col gap-2 mb-4">
+                  <RadioGroup
+                    className="flex flex-col   md:flex-row"
+                    name="Popup"
+                    label="Popup Position"
+                    value={popupPosition}
+                    onChange={(value) => {
+                      setPopupPosition(value)
+                    }}
+                  >
+                    <RadioGroupItem value="0" label="Top Left" />
+                    <RadioGroupItem value="1" label="Top Right" />
+                    <RadioGroupItem value="2" label="Bottom Right" />
+                    <RadioGroupItem value="3" label="Bottom Left" />
+                  </RadioGroup>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-md text-gray-400">Sound Settings</label>
+                  <Switch
+                    label="Enable Sound on Important Events"
+                    isChecked={soundEnabled}
+                    setIsChecked={(value) => {
+                      setSoundEnabled(value)
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
           {hasChanges() && (
             <button
               onClick={handleSaveChanges}
-              className="nexon-button nexon-primary w-full sm:w-max hidden md:block"
+              className="nexon-button nexon-primary w-full block md:hidden mt-4"
             >
               Save Changes
             </button>
           )}
         </div>
-        {selectedTab === 'Account' && (
-          <div className="py-4">
-            <div className="flex items-center mb-6 gap-2">
-              <Avatar avatar={String(userInfo.avatar)} />
-              <div>
-                <h2 className="text-lg sm:text-xl font-semibold flex items-center gap-2">
-                  {userInfo.nickname ?? <Skeleton className="w-20 h-4" />}
-                  <IconEdit className="w-4 h-4 cursor-pointer" onClick={() => setIsOpen(true)} />
-                </h2>
-                <div className="text-xs sm:text-sm text-gray-400 flex items-center gap-2">
-                  {userInfo.address ? (
-                    truncateAddress(userInfo.address)
-                  ) : (
-                    <Skeleton className="w-20 h-2 mt-2" />
-                  )}
-
-                  {isCopied ? (
-                    <div className="flex items-center gap-2">
-                      <IconClipboardCheckFilled className="w-4 h-4  " />
-                      <p className="text-xs text-green-500">Copied</p>
-                    </div>
-                  ) : (
-                    <IconCopy
-                      className="w-4 h-4 cursor-pointer"
-                      onClick={() => {
-                        if (userInfo.address) {
-                          navigator.clipboard.writeText(userInfo.address)
-                          setIsCopied(true)
-                          setTimeout(() => {
-                            setIsCopied(false)
-                          }, 5000)
-                          toast.success('Copied to clipboard')
-                        }
-                      }}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-              <div className="nexon-rounded-xl nexon-card p-4 py-2">
-                <p className="text-sm text-gray-400">IP</p>
-                <p className="text-lg font-bold">
-                  {ipAddress || <Skeleton className="w-full h-7" />}
-                </p>
-              </div>
-              <div className="nexon-rounded-xl nexon-card p-4 py-2">
-                <p className="text-sm text-gray-400">Last login time</p>
-                <p className="text-lg font-bold flex items-center gap-2 text-nowrap">
-                  <IconDeviceImacFilled className="w-4 h-4 text-white/80" />
-                  PC | 2025-04-03 09:07
-                </p>
-              </div>
-              <div className="nexon-rounded-xl nexon-card p-4 py-2 hidden  ">
-                <p className="text-sm text-gray-400">Security Level</p>
-                <p className="text-lg font-bold text-red-500">Low</p>
-              </div>
-            </div>
-            <div className="  w-full sm:w-max ">
-              <p className="text-sm text-gray-400 mb-2">Language</p>
-
-              <CustomSelector
-                options={[
-                  {
-                    value: 'English',
-                    label: 'English',
-                    flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
-                  },
-                  {
-                    value: 'Arabic',
-                    label: 'العربية',
-                    flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
-                  }
-                ]}
-                selectedValue={selectedLanguage}
-                onChange={(value) => {
-                  setSelectedLanguage(value)
-                }}
-                className=" nexon-card nexon-rounded-lg   cursor-pointer"
-              />
-            </div>
-            <div className="hidden">
-              <p className="text-sm text-gray-400 mb-2">Session Management</p>
-              <div className="nexon-rounded-xl nexon-card p-4 flex justify-between items-center mb-2">
-                <p className="text-lg font-bold flex items-center gap-2">
-                  <IconDeviceImacFilled className="w-12 h-12 bg-white/5 rounded-lg p-2 text-white/80" />
-                  PC | 2025-04-03 09:07
-                </p>
-                <button
-                  onClick={() => {
-                    toast.error('Session ended successfully')
-                  }}
-                  className="nexon-button nexon-rounded-xl py-1 px-3 hover:bg-opacity-90"
-                >
-                  End session
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-        {selectedTab === 'Notifications' && (
-          <div className=" flex flex-col md:flex-row  gap-4">
-            <div className="nexon-card nexon-rounded-xl p-6">
-              <p className="text-lg text-white text-gray-400 mb-2">Notifications</p>
-              <div className="flex flex-row gap-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 w-full">
-                  {Object.values(notificationSettings).map((notification) => (
-                    <Switch
-                      key={notification.id}
-                      label={notification.label}
-                      isChecked={notification.value}
-                      setIsChecked={(value) => {
-                        setNotificationSettings({
-                          ...notificationSettings,
-                          [notification.id]: {
-                            ...notification,
-                            value: value
-                          }
-                        })
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-            <div className="nexon-card nexon-rounded-xl p-6 w-full ">
-              <p className="text-lg text-white text-gray-400 mb-2">Display Settings</p>
-              <div className="flex flex-col gap-2 mb-4">
-                <RadioGroup
-                  className="flex flex-col   md:flex-row"
-                  name="Popup"
-                  label="Popup Position"
-                  value={popupPosition}
-                  onChange={(value) => {
-                    setPopupPosition(value)
-                  }}
-                >
-                  <RadioGroupItem value="0" label="Top Left" />
-                  <RadioGroupItem value="1" label="Top Right" />
-                  <RadioGroupItem value="2" label="Bottom Right" />
-                  <RadioGroupItem value="3" label="Bottom Left" />
-                </RadioGroup>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="text-md text-gray-400">Sound Settings</label>
-                <Switch
-                  label="Enable Sound on Important Events"
-                  isChecked={soundEnabled}
-                  setIsChecked={(value) => {
-                    setSoundEnabled(value)
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        )}
-        {hasChanges() && (
-          <button
-            onClick={handleSaveChanges}
-            className="nexon-button nexon-primary w-full block md:hidden mt-4"
-          >
-            Save Changes
-          </button>
-        )}
+        <EditNicknameModal
+          isOpen={isOpen}
+          onClose={handleCloseModal}
+          userInfo={userInfo}
+          refreshUser={refreshUser}
+        />
       </div>
-      <EditNicknameModal
-        isOpen={isOpen}
-        onClose={handleCloseModal}
-        userInfo={userInfo}
-        refreshUser={refreshUser}
-      />
-    </div>
+    )
   )
 }
 

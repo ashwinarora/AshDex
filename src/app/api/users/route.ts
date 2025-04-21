@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { neon } from '@neondatabase/serverless'
-import { NEON_DATABASE_URL } from '@/utils/constants'
-import { sql } from '@vercel/postgres'
-
-const sqlNeon = neon(NEON_DATABASE_URL)
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
 
 interface UserPreferences {
   popup_position?: number
@@ -35,15 +32,18 @@ export async function GET(request: NextRequest) {
     }
 
     // Use the tagged template literal with parameter substitution
-    const result = await sqlNeon`
-        SELECT * FROM users WHERE wallet_id = ${walletId}
-      `
+    const result = await prisma.user.findFirst({
+      where: {
+        wallet_id: walletId
+      }
+    })
 
-    if (result.length === 0) {
+    console.log(result, 'result USer')
+    if (!result) {
       return NextResponse.json({ message: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(result[0])
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error fetching users:', error)
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 })
@@ -59,19 +59,47 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Wallet ID is required' }, { status: 400 })
     }
 
-    // Update or insert user
-    const result = await sql`
-      INSERT INTO users (username, avatar_url, wallet_id, user_preferences)
-      VALUES (${userData.username}, ${userData.avatar_url}, ${userData.wallet_id}, ${JSON.stringify(userData.user_preferences)})
-      ON CONFLICT (wallet_id) 
-      DO UPDATE SET
-        username = EXCLUDED.username,
-        avatar_url = EXCLUDED.avatar_url,
-        user_preferences = EXCLUDED.user_preferences
-      RETURNING *
-    `
+    // Check if user exists
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        wallet_id: userData.wallet_id
+      }
+    })
 
-    return NextResponse.json(result.rows[0])
+    let result
+
+    if (existingUser) {
+      // Update existing user
+      result = await prisma.user.updateMany({
+        where: {
+          wallet_id: userData.wallet_id
+        },
+        data: {
+          username: userData.username,
+          avatar_url: userData.avatar_url ? parseInt(userData.avatar_url) : undefined,
+          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+        }
+      })
+
+      // Get the updated user
+      result = await prisma.user.findFirst({
+        where: {
+          wallet_id: userData.wallet_id
+        }
+      })
+    } else {
+      // Create new user
+      result = await prisma.user.create({
+        data: {
+          wallet_id: userData.wallet_id,
+          username: userData.username || '',
+          avatar_url: userData.avatar_url ? parseInt(userData.avatar_url) : null,
+          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+        }
+      })
+    }
+
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating user:', error)
     return NextResponse.json({ error: 'Failed to update user' }, { status: 500 })
@@ -87,46 +115,33 @@ export async function PATCH(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required field: wallet_id' }, { status: 400 })
     }
 
-    const updates = []
+    // Update user using Prisma
+    await prisma.user.updateMany({
+      where: {
+        wallet_id: wallet_id
+      },
+      data: {
+        ...(username !== undefined && { username }),
+        ...(avatar_url !== undefined && { avatar_url: parseInt(avatar_url) }),
+        ...(preferred_language_id !== undefined && { preferred_language_id }),
+        ...(user_preferences !== undefined && {
+          user_preferences: user_preferences as Prisma.InputJsonValue
+        })
+      }
+    })
 
-    if (username !== undefined) {
-      updates.push(sqlNeon`username = ${username}`)
-    }
+    // Get the updated user
+    const result = await prisma.user.findFirst({
+      where: {
+        wallet_id: wallet_id
+      }
+    })
 
-    if (avatar_url !== undefined) {
-      updates.push(sqlNeon`avatar_url = ${avatar_url}`)
-    }
-
-    if (preferred_language_id !== undefined) {
-      updates.push(sqlNeon`preferred_language_id = ${preferred_language_id}`)
-    }
-
-    if (user_preferences !== undefined) {
-      updates.push(sqlNeon`user_preferences = ${JSON.stringify(user_preferences)}`)
-    }
-
-    // Always update updated_at
-    updates.push(sqlNeon`updated_at = NOW()`)
-
-    if (updates.length === 0) {
-      return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
-    }
-
-    // Combine updates with commas between them using reduce
-    const setClause = updates.reduce((acc, val, i) => (i === 0 ? val : sqlNeon`${acc}, ${val}`))
-
-    const result = await sqlNeon`
-        UPDATE users
-        SET ${setClause}
-        WHERE wallet_id = ${wallet_id}
-        RETURNING *
-      `
-
-    if (result.length === 0) {
+    if (!result) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(result[0])
+    return NextResponse.json(result)
   } catch (error) {
     console.error('Error updating user:', error)
     return NextResponse.json({ error: 'Failed to update user', details: error }, { status: 500 })

@@ -26,7 +26,7 @@ const Footer: FC = () => {
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
         <div className="mt-4 md:mt-0">
-          <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md hover:bg-gray-900 font-semibold">
+          <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md   font-semibold">
             <Image src={nexonLogo} alt="Nexon Logo" height={20} width={20} className="w-7 h-7" />
             Nexon
           </h1>

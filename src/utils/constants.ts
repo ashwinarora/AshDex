@@ -34,8 +34,6 @@ export const HLP_VAULT_TESTNET = '0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0' //
 export const MAX_DECIMALS_PERP = 6 // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
 export const MAX_DECIMALS_SPOT = 8
 
-export const NEON_DATABASE_URL =
-  'postgresql://neondb_owner:REDACTED@ep-jolly-voice-a22pgv70-pooler.eu-central-1.aws.neon.tech/neondb?sslmode=require'
 export const SPOT_DELTA = 10000 // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/asset-ids
 
 export const CHART_INTERVALS = [
