@@ -1,7 +1,9 @@
 // Define types for all nested structures
 
+import { IClearingHouseState } from "./hyperLiquidTypes"
+
 export interface IWebData2 {
-  clearinghouseState: ClearinghouseState
+  clearinghouseState: IClearingHouseState
   // leadingVaults: any[]
   totalVaultEquity: number
   // openOrders: any[]
@@ -17,52 +19,6 @@ export interface IWebData2 {
   spotState: SpotState
   spotAssetCtxs: SpotAssetCtx[]
   perpsAtOpenInterestCap: string[]
-}
-
-interface ClearinghouseState {
-  marginSummary: MarginSummary
-  crossMarginSummary: MarginSummary
-  crossMaintenanceMarginUsed: number
-  withdrawable: number
-  assetPositions: AssetPosition[]
-  time: number
-}
-
-interface MarginSummary {
-  accountValue: number
-  totalNtlPos: number
-  totalRawUsd: number
-  totalMarginUsed: number
-}
-
-interface AssetPosition {
-  type: string
-  position: Position
-}
-
-interface Position {
-  coin: string
-  szi: number
-  leverage: Leverage
-  entryPx: number
-  positionValue: number
-  unrealizedPnl: number
-  returnOnEquity: number
-  liquidationPx: number | null
-  marginUsed: number
-  maxLeverage: number
-  cumFunding: CumFunding
-}
-
-interface Leverage {
-  type: string
-  value: number
-}
-
-interface CumFunding {
-  allTime: number
-  sinceOpen: number
-  sinceChange: number
 }
 
 interface Meta {
