@@ -1,9 +1,6 @@
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import useIsSpot from '@/hooks/useIsSpot'
-import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { useQuery } from '@tanstack/react-query'
 import { useMemo, useState } from 'react'
-import { useAccount } from 'wagmi'
 import Balances from './Balances'
 import Positions from './Positions'
 import OpenOrders from './OpenOrders'
@@ -11,17 +8,8 @@ import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 
 const UserData = () => {
-  const { address } = useAccount()
-  const { clearingHouseState } = useHyperLiquid()
+  const { clearingHouseState, openOrders } = useHyperLiquid()
   const isSpot = useIsSpot()
-  const { data: openOrders } = useQuery<Order[]>({
-    queryKey: ['openOrders', address],
-    queryFn: async () => {
-      return []
-    },
-    enabled: !!address,
-    initialData: []
-  })
 
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0

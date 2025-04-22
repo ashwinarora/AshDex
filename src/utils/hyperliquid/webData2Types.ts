@@ -6,7 +6,7 @@ export interface IWebData2 {
   clearinghouseState: IClearingHouseState
   // leadingVaults: any[]
   totalVaultEquity: number
-  // openOrders: any[]
+  openOrders: IOpenOrder[]
   agentAddress: string
   agentValidUntil: number
   cumLedger: number
@@ -19,6 +19,25 @@ export interface IWebData2 {
   spotState: SpotState
   spotAssetCtxs: SpotAssetCtx[]
   perpsAtOpenInterestCap: string[]
+}
+
+export interface IOpenOrder {
+  coin: string
+  side: 'buy' | 'sell'
+  limitPx: number
+  sz: number
+  oid: number
+  timestamp: number
+  triggerCondition: string
+  isTrigger: boolean
+  triggerPx: number
+  children: unknown[]
+  isPositionTpsl: boolean
+  reduceOnly: boolean
+  orderType: string
+  origSz: number
+  tif: string
+  cloid: string | null
 }
 
 interface Meta {

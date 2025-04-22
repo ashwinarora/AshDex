@@ -1,7 +1,5 @@
 'use client'
-import { Order, WsOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -16,76 +14,21 @@ import {
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
+import { IOpenOrder } from '@/utils/hyperliquid/webData2Types'
 
-const columnHelper = createColumnHelper<Order>()
+const columnHelper = createColumnHelper<IOpenOrder>()
 
 const OpenOrders = () => {
-  const { address, isConnected } = useAccount()
+  const { isConnected } = useAccount()
   const { toggleConnectWalletModal } = useWalletModal()
-  const { sdk } = useHyperLiquid()
-  const queryClient = useQueryClient()
+  const { sdk, openOrders } = useHyperLiquid()
   const isSpot = useIsSpot()
-
-  const { data: openOrders = [], isLoading } = useQuery<Order[]>({
-    queryKey: ['openOrders', address],
-    queryFn: async () => {
-      const response = await sdk.info.getUserOpenOrders(address!)
-      return response
-    },
-    enabled: !!address && !!sdk,
-    initialData: []
-  })
-
-  useEffect(() => {
-    if (!sdk || !address) return
-    sdk.subscriptions.subscribeToOrderUpdates(address, (data: WsOrder[]) => {
-      queryClient.setQueryData(['openOrders', address], (oldData: Order[]) => {
-        const updatedOrders = [...oldData]
-        data.forEach((order) => {
-          const index = updatedOrders.findIndex((o) => o.oid === order.order.oid)
-          if (index !== -1) {
-            if (order.status !== 'open') {
-              updatedOrders.splice(index, 1)
-              return
-            }
-            updatedOrders[index] = {
-              coin: order.order.coin,
-              limitPx: Number(order.order.limitPx),
-              oid: order.order.oid,
-              origSz: Number(order.order.origSz),
-              side: order.order.side === 'buy' ? 'buy' : 'sell',
-              sz: Number(order.order.sz),
-              timestamp: order.statusTimestamp
-            }
-          } else {
-            if (order.status !== 'open') return
-            updatedOrders.push({
-              coin: order.order.coin,
-              limitPx: Number(order.order.limitPx),
-              oid: order.order.oid,
-              origSz: Number(order.order.origSz),
-              side: order.order.side === 'buy' ? 'buy' : 'sell',
-              sz: Number(order.order.sz),
-              timestamp: order.statusTimestamp
-            })
-          }
-        })
-        return updatedOrders
-      })
-    })
-    return () => {
-      if (sdk.subscriptions.unsubscribeFromUserOrders) {
-        sdk.subscriptions.unsubscribeFromUserOrders()
-      }
-    }
-  }, [sdk, address, queryClient])
 
   const data = useMemo(
     () => openOrders.filter((o) => o.coin.includes(isSpot ? 'SPOT' : 'PERP')),
     [openOrders, isSpot]
   )
 
-  // Sorting state
   const [sorting, setSorting] = useState<SortingState>([])
 
   const columns = useMemo(
@@ -186,10 +129,6 @@ const OpenOrders = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
   if (!isConnected) {
     return <WalletNotConnected />
