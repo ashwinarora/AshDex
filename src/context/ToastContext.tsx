@@ -58,7 +58,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
         draggable
         stacked
         position={popupPosition}
-        className="z-50 bg-red-500"
+        className=" pointer-events-none  bg-red-500"
         hideProgressBar={true}
       />
       {children}

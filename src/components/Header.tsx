@@ -121,20 +121,20 @@ const Header: FC = () => {
   "
       >
         <div className="flex items-center justify-center space-x-4">
-          <h1
-            onClick={() => router.push('/')}
-            className="flex items-center mr-6 lg:mr-6  gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
+          <Link
+            href="/"
+            className="flex items-center mr-6 lg:mr-6 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold"
           >
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
-          </h1>
+          </Link>
           <nav className="md:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
                 href={path}
                 onClick={() => handleMenuClick(path)}
-                className={`tab-btn xl:px-6 px-4
+                className={`tab-btn xl:px-6 px-4 cursor-pointer
                   ${activeMenu === name && 'tab-btn-active'}`}
               >
                 {name}
