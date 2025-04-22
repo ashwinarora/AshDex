@@ -15,6 +15,7 @@ import {
   SortingState
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 
 const columnHelper = createColumnHelper<Order>()
 
@@ -188,6 +189,10 @@ const OpenOrders = () => {
 
   if (isLoading) {
     return <div>Loading...</div>
+  }
+
+  if (!isConnected) {
+    return <WalletNotConnected />
   }
 
   return (

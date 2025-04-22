@@ -15,8 +15,11 @@ import {
   SortingState
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
+import { useAccount } from 'wagmi'
 
 const Positions = () => {
+  const { isConnected } = useAccount()
   const { clearingHouseState, universe, sdk, agentWallet, isTestnet, hyperliquidAxios, allMids } =
     useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
@@ -170,6 +173,10 @@ const Positions = () => {
     getSortedRowModel: getSortedRowModel(),
     enableSorting: true
   })
+
+  if (!isConnected) {
+    return <WalletNotConnected />
+  }
 
   return (
     <div className="overflow-x-auto w-full px-3">
