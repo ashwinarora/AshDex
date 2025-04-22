@@ -2,10 +2,10 @@
 import React, { createContext, useState, ReactNode, useEffect, useMemo, useContext } from 'react'
 import { useAccount } from 'wagmi'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
-import type { Hex, PrivateKeyAccount } from 'viem'
+import { zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
 import type { AxiosInstance } from 'axios'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { IClearingHouseState, MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { useQuery } from '@tanstack/react-query'
+import { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AGENT_PRIVATE_KEY } from '@/utils/constants'
 import { mainnetAxios, testnetAxios } from '@/config/axios'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
@@ -18,7 +18,7 @@ interface HyperLiquidContextProps {
   agentWallet?: PrivateKeyAccount
   hyperliquidAxios: AxiosInstance
   universe: MetaData[]
-  clearingHouseState?: IClearingHouseState
+  clearingHouseState?: IWebData2['clearinghouseState']
   perpAssetContext: IWebData2['assetCtxs']
   spotAssetContext: IWebData2['spotAssetCtxs']
   spotState: IWebData2['spotState']
@@ -62,7 +62,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [perpAssetContext, setPerpAssetContext] = useState<IWebData2['assetCtxs']>([])
   const [spotAssetContext, setSpotAssetContext] = useState<IWebData2['spotAssetCtxs']>([])
   const [spotState, setSpotState] = useState<IWebData2['spotState']>(initialValue.spotState)
-  const queryClient = useQueryClient()
+  const [clearingHouseState, setClearingHouseState] = useState<IWebData2['clearinghouseState']>()
 
   const isTestnet = useMemo(() => {
     if (process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK === 'mainnet') return false
@@ -86,15 +86,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     if (!privateKey) return
     return privateKeyToAccount(privateKey)
   }, [privateKey])
-
-  const { data: clearingHouseState } = useQuery<IClearingHouseState>({
-    queryKey: ['clearingHouseState', address],
-    queryFn: async () => {
-      const res = await sdk.info.perpetuals.getClearinghouseState(address)
-      return res
-    },
-    enabled: !!sdk || !!isSdkConnected
-  })
 
   const { data: universe } = useQuery({
     queryKey: ['universe', isTestnet],
@@ -182,11 +173,11 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
 
   useEffect(() => {
     if (!sdk) return
-    if (!address) return
+    const userAddress = address ? address : zeroAddress
     console.log('Subscribing to fills')
-    sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
+    sdk.subscriptions.subscribeToWebData2(userAddress, (data: IWebData2) => {
       const { clearinghouseState, assetCtxs, spotAssetCtxs, spotState } = data
-      queryClient.setQueryData(['clearingHouseState', address], clearinghouseState)
+      setClearingHouseState(clearinghouseState)
       setPerpAssetContext(assetCtxs)
       setSpotAssetContext(spotAssetCtxs)
       setSpotState(spotState)
@@ -194,7 +185,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     return () => {
       sdk.subscriptions.unsubscribeFromWebData2()
     }
-  }, [sdk, address, queryClient])
+  }, [sdk, address])
 
   return (
     <HyperLiquidContext.Provider
