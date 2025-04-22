@@ -67,7 +67,7 @@ const UserData = () => {
   return (
     <div className="w-full">
       <div className="border-b w-full flex justify-between items-center border-white/10">
-        <nav className="hidden lg:flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+        <nav className="  lg:flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3   overflow-x-auto">
           {tabs?.map((tab, index) => (
             <button
               key={tab.header}

@@ -1,6 +1,6 @@
 /* Proxima Nova Font Family */
 @font-face {
-  font-family: 'Proxima Nova';
+  font-family: 'Proxima Nova Regular';
   src: url('../assets/fonts/proximaNova/proximanova_regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
@@ -40,7 +40,7 @@
 }
 
 @font-face {
-  font-family: 'Proxima Nova';
+  font-family: 'Proxima Nova Black';
   src: url('../assets/fonts/proximaNova/proximanova_black.otf') format('opentype');
   font-weight: 900;
   font-style: normal;
