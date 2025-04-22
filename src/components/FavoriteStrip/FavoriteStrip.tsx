@@ -3,6 +3,7 @@
 import { useFavorites } from '@/context/FavoritesContext'
 import FavoriteItem from './FavoriteItem'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
+import { AutoScroll } from '@splidejs/splide-extension-auto-scroll'
 import '@splidejs/react-splide/css'
 import useIsSpot from '@/hooks/useIsSpot'
 
@@ -16,19 +17,24 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
 
   return (
     <div className="relative w-full overflow-hidden bg-[#0f081681] border-y border-white/5">
-      <div className="xl:w-24 w-16 h-full absolute left-0 top-0 z-10 bg-gradient-to-l from-transparent via-secondary via-50% to-secondary"></div>
+      <div className="w-24 h-full absolute left-0 top-0 z-10 bg-gradient-to-l from-transparent via-secondary via-50% to-secondary"></div>
 
       <Splide
-        className="xl:mx-12 mx-8"
         aria-label="My Favorite Tokens"
         options={{
           drag: true,
+          type: 'loop',
           pagination: false,
           arrows: false,
           rewind: true,
           gap: 16,
-          autoWidth: true
+          autoWidth: true,
+          autoScroll: {
+            autoStart: true,
+            speed: 1
+          }
         }}
+        extensions={{ AutoScroll }}
       >
         {favorites[type].map((favorite, index) => (
           <SplideSlide key={index}>
@@ -37,7 +43,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
         ))}
       </Splide>
 
-      <div className="xl:w-24 w-16 h-full absolute right-0 top-0 z-10 bg-gradient-to-r from-transparent via-secondary via-50% to-secondary"></div>
+      <div className="w-24 h-full absolute right-0 top-0 z-10 bg-gradient-to-r from-transparent via-secondary via-50% to-secondary"></div>
     </div>
   )
 }
