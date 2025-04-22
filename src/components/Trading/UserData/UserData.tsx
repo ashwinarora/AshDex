@@ -22,7 +22,10 @@ const UserData = () => {
     enabled: !!address,
     initialData: []
   })
-  const positionsCount = clearingHouseState?.assetPositions?.length || 0
+
+  const positionsCount = useMemo(() => {
+    return clearingHouseState?.assetPositions?.length || 0
+  }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((o) =>

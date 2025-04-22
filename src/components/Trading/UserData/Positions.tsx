@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import editicon from '@/assets/images/edit_icon.svg'
@@ -6,9 +6,6 @@ import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { formatPrice, getUniverseIndex } from '@/utils/utils'
 import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { BUILDER_ADDRESS } from '@/utils/constants'
-import { useAccount } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
 import {
   createColumnHelper,
   flexRender,
@@ -20,21 +17,20 @@ import {
 import HeaderWithIcons from './component/HeaderWithIcon'
 
 const Positions = () => {
-  const { address } = useAccount()
   const { clearingHouseState, universe, sdk, agentWallet, isTestnet, hyperliquidAxios, allMids } =
     useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
 
-  const { data: currentFeeApproval } = useQuery<number>({
-    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS]
-  })
-
   const helper = useMemo(() => createColumnHelper<IPositionData>(), [])
+
+  const allMidsRef = useRef(allMids)
+  useEffect(() => {
+    allMidsRef.current = allMids
+  }, [allMids])
 
   const closePosition = useCallback(
     async (position: IPositionData) => {
       if (!agentWallet) return
-      if (!currentFeeApproval) return
       const assetIndex = getUniverseIndex(universe, position.coin)
       const szDecimals = universe[assetIndex].szDecimals
       const tif = 'Gtc'
@@ -44,14 +40,11 @@ const Positions = () => {
         position.leverage.type,
         position.leverage.value
       )
-      const price = isBuy ? allMids[position.coin] * 1.1 : allMids[position.coin] * 0.9
       console.log(res)
+      const mid = allMidsRef.current[position.coin]
+      const price = isBuy ? mid * 1.1 : mid * 0.9
       const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
         grouping: 'na',
-        builder: {
-          address: BUILDER_ADDRESS,
-          fee: currentFeeApproval
-        },
         orders: [
           {
             assetIndex: assetIndex,
@@ -69,7 +62,7 @@ const Positions = () => {
       })
       console.log(order)
     },
-    [agentWallet, currentFeeApproval, universe, sdk, allMids, isTestnet, hyperliquidAxios]
+    [agentWallet, universe, sdk, isTestnet, hyperliquidAxios]
   )
 
   const columns = useMemo(
