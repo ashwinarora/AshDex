@@ -14,9 +14,10 @@ import {
   flexRender
 } from '@tanstack/react-table'
 import { HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 
 const OrderHistory: React.FC = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { sdk } = useHyperLiquid()
 
   const { data: orderHistory = [] } = useQuery<HistoricOrder[]>({
@@ -97,6 +98,10 @@ const OrderHistory: React.FC = () => {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel()
   })
+
+  if (!isConnected) {
+    return <WalletNotConnected />
+  }
 
   return (
     <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100">
