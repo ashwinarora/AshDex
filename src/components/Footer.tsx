@@ -143,10 +143,6 @@ const Footer: FC = () => {
       {/* Bottom Section */}
       <div className="flex flex-row justify-between items-center mt-6 text-gray-400 text-sm">
         <div className="text-sm text-[#8B8BA0]">© 2025 Nexon, Inc.</div>
-        <div>
-          <span className="text-[#8B8BA0] text-sm mr-1">Created in</span>{' '}
-          <span className="text-[#8B8BA0] font-bold">U1CORE</span>
-        </div>
       </div>
     </footer>
   )
