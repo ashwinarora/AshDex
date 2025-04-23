@@ -154,12 +154,12 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
 
       tooltipRef.current.innerHTML = `
-        <div class="text-[#E8E0F1] font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
-      <strong>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</strong>
-          <span>Open: <span class="text-[#FFFFFF]">${seriesData?.open?.toFixed(2)}</span></span>
-          <span>High: <span class="text-[#FFFFFF]">${seriesData?.high?.toFixed(2)}</span></span>
-          <span>Low: <span class="text-[#FFFFFF]">${seriesData?.low?.toFixed(2)}</span></span>
-          <span>Close: <span class="text-[#FFFFFF]">${seriesData?.close?.toFixed(2)}<span></span>
+        <div className="  font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
+      <span>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</span>
+          <span{{color: '#F00'}}>Open: <span className="">${seriesData?.open?.toFixed(2)}</span></span>
+          <span{{color: '#00F'}}>High: <span className="text-[#FFFFFF]">${seriesData?.high?.toFixed(2)}</span></span>
+          <span{{color: '#0F0'}}>Low: <span className="text-[#FFFFFF]">${seriesData?.low?.toFixed(2)}</span></span>
+          <span{{color: '#00F'}}>Close: <span className="text-[#FFFFFF]">${seriesData?.close?.toFixed(2)}<span></span>
         </div>
       `
     })
@@ -191,7 +191,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
   ]
 
   return (
-    <div className="relative">
+    <div className="relative h-full flex flex-col">
       <ChartTabs tabs={tabs as string[]} activeTab={activeTab} setActiveTab={setActiveTab} />
       {activeTab === 0 ? (
         <>
@@ -200,7 +200,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
             setSelectedInterval={setSelectedInterval}
             intervals={Array.from(CHART_INTERVALS)}
           />
-          <div className="flex max-lg:block">
+          <div className="flex max-lg:block flex-1 h-full">
             <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
               {sidebarIcons?.map((icon, index) => (
                 <button
@@ -220,7 +220,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
                 <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
               </div>
             ) : (
-              <div ref={chartRef} className=" w-full flex-1" />
+              <div ref={chartRef} className=" w-full h-full" />
             )}
           </div>
           <div
