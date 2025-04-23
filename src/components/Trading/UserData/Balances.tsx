@@ -6,11 +6,14 @@ import { BALANCE_FEATURE_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import useIsSpot from '@/hooks/useIsSpot'
+import { useState } from 'react'
+import TransferModal from './TransferModal'
 
 const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperLiquid()
   const isSpot = useIsSpot()
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
 
   const spotColumns = ['Coin', 'Tokens', 'Total Balance', 'Hold', 'Entry NTL']
 
@@ -88,13 +91,20 @@ const Balances = () => {
               </button>
             </td>
             <td className="py-2 px-7 border-b border-gray-600 text-left">
-              <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded">
+              <button
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded"
+                onClick={() => setIsTransferModalOpen(true)}
+              >
                 Transfer
               </button>
             </td>
           </tr>
         </tbody>
       </table>
+      <TransferModal
+        isOpen={isTransferModalOpen}
+        onClose={() => setIsTransferModalOpen(false)}
+      />
     </div>
   )
 }
