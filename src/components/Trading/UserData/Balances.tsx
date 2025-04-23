@@ -101,10 +101,7 @@ const Balances = () => {
           </tr>
         </tbody>
       </table>
-      <TransferModal
-        isOpen={isTransferModalOpen}
-        onClose={() => setIsTransferModalOpen(false)}
-      />
+      <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
     </div>
   )
 }

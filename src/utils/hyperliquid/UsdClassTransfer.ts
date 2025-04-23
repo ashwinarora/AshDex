@@ -60,8 +60,8 @@ export const getUsdClassTransferPayload = ({
           type: 'string'
         },
         {
-          name: "toPerp",
-          type: "bool"
+          name: 'toPerp',
+          type: 'bool'
         },
         {
           name: 'nonce',

@@ -1,10 +1,10 @@
-import { useHyperLiquid } from '@/context/HyperLiquid';
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer';
-import { splitSignature } from '@/utils/utils';
-import { X } from 'lucide-react';
-import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
-import { useAccount, useSignTypedData } from 'wagmi';
+import { useHyperLiquid } from '@/context/HyperLiquid'
+import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
+import { splitSignature } from '@/utils/utils'
+import { X } from 'lucide-react'
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import { useAccount, useSignTypedData } from 'wagmi'
 
 interface ITransferModal {
   isOpen: boolean
@@ -13,24 +13,26 @@ interface ITransferModal {
 
 const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
-  const [amount, setAmount] = useState<string>('');
-  const [toPerp, setToPerp] = useState(false);
+  const [amount, setAmount] = useState<string>('')
+  const [toPerp, setToPerp] = useState(false)
   const { clearingHouseState, spotState, isTestnet, hyperliquidAxios } = useHyperLiquid()
   const { signTypedDataAsync } = useSignTypedData()
 
-  if (!isOpen) return null;
+  if (!isOpen) return null
 
   const handleBackdropClick = (e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
-      onClose();
+      onClose()
     }
-  };
+  }
 
   const getBalance = () => {
     if (toPerp) {
-      return spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total.toString() ?? "0";
+      return (
+        spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total.toString() ?? '0'
+      )
     } else {
-      return clearingHouseState?.withdrawable.toString() ?? "0";
+      return clearingHouseState?.withdrawable.toString() ?? '0'
     }
   }
 
@@ -39,13 +41,9 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
       className="fixed inset-0 bg-[#0F081680] bg-opacity-70 backdrop-blur-[40px] flex justify-center items-center z-50"
       onClick={handleBackdropClick}
     >
-      <div
-        className="bg-secondary text-white p-6 rounded-lg shadow-lg max-w-md w-full"
-      >
+      <div className="bg-secondary text-white p-6 rounded-lg shadow-lg max-w-md w-full">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">
-            Transfer between Perp and Spot
-          </h2>
+          <h2 className="text-xl font-semibold">Transfer between Perp and Spot</h2>
           <button
             className="text-xl font-bold text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
             onClick={onClose}
@@ -65,9 +63,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
           >
             →
           </button>
-          <div
-            className={`p-4 bg-blue-500 text-white border rounded-lg w-24 text-center`}
-          >
+          <div className={`p-4 bg-blue-500 text-white border rounded-lg w-24 text-center`}>
             {!toPerp ? 'Spot' : 'Perp'}
           </div>
         </div>
@@ -125,10 +121,10 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   signature: splitSignature(sign)
                 }
                 const res = await hyperliquidAxios.post('/exchange', body)
-                console.log('Transfer response:', res.data);
-                onClose();
+                console.log('Transfer response:', res.data)
+                onClose()
               } catch (error) {
-                console.error('Transfer failed:', error);
+                console.error('Transfer failed:', error)
               }
             }}
             className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -139,7 +135,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
       </div>
     </div>,
     document.body
-  );
+  )
 }
 
 export default TransferModal
