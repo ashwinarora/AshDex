@@ -13,14 +13,14 @@ import menuClose from '@/assets/images/close_icon.svg'
 import helpicon from '@/assets/images/help_icon.svg'
 import bellicon from '@/assets/images/bell_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import copyicon from '@/assets/images/copy_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
 import Avatar from './common/Avatar'
-import { IconSettings, IconSwitch3 } from '@tabler/icons-react'
+import { IconCopy, IconSettings, IconSwitch3 } from '@tabler/icons-react'
+import { toast } from 'react-toastify'
 type MenuItem = {
   name: string
   path: string
@@ -36,29 +36,29 @@ const Header: FC = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
   const [isOpen, setIsOpen] = useState(false)
-  const [notificationCount] = useState(5)
+  const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
-    { name: 'Spot', path: '/spot' },
-    { name: 'Lend/Borrow', path: '/lendBorrow' },
-    { name: 'Predictions', path: '/predictions' },
-    { name: 'Stake', path: '/stake' },
-    { name: 'Vaults', path: '/vaults' }
+    { name: 'Spot', path: '/spot' }
+    // { name: 'Lend/Borrow', path: '/lendBorrow' },
+    // { name: 'Predictions', path: '/predictions' },
+    // { name: 'Stake', path: '/stake' },
+    // { name: 'Vaults', path: '/vaults' }
   ]
 
   const mobileMenu: MenuItem[] = [
     ...desktopMenu,
-    { name: 'Leaderboards', path: '/leaderboards' },
-    { name: 'Referrals', path: '/referrals' },
-    { name: 'Points', path: '/points' },
-    { name: 'Sub-accounts', path: '/sub-accounts' },
-    { name: 'Stats', path: '/stats' },
-    { name: 'Docs', path: '/docs' },
-    { name: 'Vocabulary for novices', path: '/vocabulary' },
+    // { name: 'Leaderboards', path: '/leaderboards' },
+    // { name: 'Referrals', path: '/referrals' },
+    // { name: 'Points', path: '/points' },
+    // { name: 'Sub-accounts', path: '/sub-accounts' },
+    // { name: 'Stats', path: '/stats' },
+    // { name: 'Docs', path: '/docs' },
+    // { name: 'Vocabulary for novices', path: '/vocabulary' },
     { name: 'Settings', path: '/settings' }
   ]
 
@@ -75,6 +75,7 @@ const Header: FC = () => {
 
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
+    toast.success('Copied to clipboard')
   }
 
   useEffect(() => {
@@ -120,7 +121,7 @@ const Header: FC = () => {
     items-center justify-between
   "
       >
-        <div className="flex items-center justify-center space-x-4">
+        <div className="flex items-center justify-center space-x-4 align-middle">
           <h1
             onClick={() => router.push('/')}
             className="flex items-center mr-6 lg:mr-6  gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
@@ -141,8 +142,13 @@ const Header: FC = () => {
               </Link>
             ))}
             {/* More Dropdown */}
-            <button className={`flex items-center gap-x-1.5 transition-all duration-300 `}>
+            <button
+              className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative`}
+            >
               More
+              <span className="text-xs text-white bg-primary  rounded  group-hover:opacity-100 opacity-0 transition-all duration-300  flex items-center justify-center text-nowrap px-1">
+                Coming Soon!
+              </span>
             </button>
           </nav>
         </div>
@@ -205,45 +211,44 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg p-4"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg py-4 px-2"
                 >
-                  <div className="flex items-start text-[#E8E0F1] gap-2">
-                    <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
+                  <div className="flex items-start text-[#E8E0F1] gap-2 px-2">
                     <div className="flex flex-col">
-                      <span className="truncate">{truncateAddress(address!)}</span>
+                      <span className="truncate flex items-center">
+                        {truncateAddress(address!)}
+                        <button
+                          onClick={handleCopy}
+                          className="px-3 py-1 opacity-70 cursor-pointer hover:opacity-100 transition-all duration-300"
+                        >
+                          <IconCopy className="h-4 w-4" />
+                        </button>
+                      </span>
                       <div className="text-sm text-[#E8E0F1]">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                         {balanceData?.symbol}
                       </div>
                     </div>
-                    <button onClick={handleCopy} className="px-3 py-1 opacity-70 cursor-pointer">
-                      <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
-                    </button>
                   </div>
-                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1] gap-2">
-                    <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
+                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1] gap-2 px-2">
                     <div className="flex flex-col">
                       <span className="text-xs text-[#E8E0F1]">Vault Trading Account</span>
-                      <span className="truncate">{truncateAddress(address!)}</span>
                       <div className="text-sm text-[#E8E0F1]">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                         {balanceData?.symbol}
                       </div>
                     </div>
-                    <button onClick={handleCopy} className="px-3 py-1 opacity-70 cursor-pointer">
-                      <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
-                    </button>
                   </div>
                   <button
                     onClick={toggleConnectWalletModal}
-                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex text-base items-center w-full mt-3  px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
                   >
                     <IconSwitch3 size={24} className="mr-3" />
                     Switch Wallet
                   </button>
                   <Link
                     href="/settings"
-                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex text-base items-center w-full mt-3 px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
                   >
                     <IconSettings size={24} className="mr-3" />
                     Settings
