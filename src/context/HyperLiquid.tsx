@@ -19,6 +19,7 @@ interface HyperLiquidContextProps {
   hyperliquidAxios: AxiosInstance
   universe: MetaData[]
   clearingHouseState?: IWebData2['clearinghouseState']
+  openOrders: IWebData2['openOrders']
   perpAssetContext: IWebData2['assetCtxs']
   spotAssetContext: IWebData2['spotAssetCtxs']
   spotState: IWebData2['spotState']
@@ -34,6 +35,7 @@ const initialValue: HyperLiquidContextProps = {
   hyperliquidAxios: mainnetAxios,
   universe: [],
   clearingHouseState: undefined,
+  openOrders: [],
   perpAssetContext: [],
   spotAssetContext: [],
   spotState: {
@@ -63,6 +65,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [spotAssetContext, setSpotAssetContext] = useState<IWebData2['spotAssetCtxs']>([])
   const [spotState, setSpotState] = useState<IWebData2['spotState']>(initialValue.spotState)
   const [clearingHouseState, setClearingHouseState] = useState<IWebData2['clearinghouseState']>()
+  const [openOrders, setOpenOrders] = useState<IWebData2['openOrders']>([])
 
   const isTestnet = useMemo(() => {
     if (process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK === 'mainnet') return false
@@ -176,8 +179,10 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     const userAddress = address ? address : zeroAddress
     console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToWebData2(userAddress, (data: IWebData2) => {
-      const { clearinghouseState, assetCtxs, spotAssetCtxs, spotState } = data
+      const { clearinghouseState, assetCtxs, spotAssetCtxs, spotState, openOrders } = data
+      console.log(openOrders)
       setClearingHouseState(clearinghouseState)
+      setOpenOrders(openOrders)
       setPerpAssetContext(assetCtxs)
       setSpotAssetContext(spotAssetCtxs)
       setSpotState(spotState)
@@ -197,6 +202,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         hyperliquidAxios,
         universe,
         clearingHouseState,
+        openOrders,
         perpAssetContext,
         spotAssetContext,
         spotState,
