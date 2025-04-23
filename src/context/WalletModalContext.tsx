@@ -14,6 +14,7 @@ const WalletModalContext = createContext<WalletModalContextProps | undefined>(un
 export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { chainId, isConnected } = useAccount()
+
   const toggleConnectWalletModal = () => setIsModalOpen((s) => !s)
 
   useEffect(() => {

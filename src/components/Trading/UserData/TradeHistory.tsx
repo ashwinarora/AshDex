@@ -11,6 +11,7 @@ import {
   SortingState
 } from '@tanstack/react-table'
 import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 
 const columnHelper = createColumnHelper<ITradeHistory>()
 
@@ -62,7 +63,7 @@ const columns = [
 ]
 
 const TradeHistoryTable: React.FC = () => {
-  const { address } = useAccount()
+  const { address, isConnected } = useAccount()
   const { hyperliquidAxios } = useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -88,6 +89,10 @@ const TradeHistoryTable: React.FC = () => {
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel()
   })
+
+  if (!isConnected) {
+    return <WalletNotConnected />
+  }
 
   return (
     <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100">

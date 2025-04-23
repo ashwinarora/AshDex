@@ -1,7 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
 import { useHyperLiquid } from './HyperLiquid'
-
+import useIsSpot from '@/hooks/useIsSpot'
 interface FavoriteAsset {
   name: string
   value: string
@@ -73,9 +73,9 @@ const formatPriceChange = (currentPrice: number, prevDayPrice: number): string =
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<FavoritesData>({ spot: [], perp: [] })
-  const { allMids, perpAssetContext, universe } = useHyperLiquid()
+  const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
   const isInitialized = useRef(false)
-
+  const isSpot = useIsSpot()
   // Load favorites from localStorage on initial render
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -122,22 +122,28 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
       (!favorites.perp.length && !favorites.spot.length) ||
       !perpAssetContext ||
       !universe ||
-      !allMids
+      !allMids ||
+      !spotAssetContext
     ) {
       return
     }
 
     const updateFavoritesList = (favoritesList: FavoriteAsset[]) => {
       return favoritesList.map((favorite) => {
-        const assetIndex = universe.findIndex((asset) => asset.name === favorite.index)
+        const assetIndex = isSpot
+          ? spotAssetContext.findIndex((asset) => asset.coin === favorite.index)
+          : universe.findIndex((asset) => asset.name === favorite.index)
 
-        if (assetIndex === -1 || !perpAssetContext[assetIndex]) {
+        if (assetIndex === -1 || !perpAssetContext[assetIndex] || !spotAssetContext[assetIndex]) {
           return favorite
         }
 
-        const currentPrice = perpAssetContext[assetIndex].midPx
-        const prevDayPrice = perpAssetContext[assetIndex].prevDayPx
-
+        const currentPrice = isSpot
+          ? spotAssetContext[assetIndex].midPx
+          : perpAssetContext[assetIndex].midPx
+        const prevDayPrice = isSpot
+          ? spotAssetContext[assetIndex].prevDayPx
+          : perpAssetContext[assetIndex].prevDayPx
         const newPrice = allMids[favorite.index]
           ? `$${allMids[favorite.index].toLocaleString(undefined, {
               minimumFractionDigits: 2,
@@ -177,7 +183,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
       setFavorites(updatedFavorites)
       localStorage.setItem('favorites', updatedJson)
     }
-  }, [perpAssetContext, allMids, universe, favorites])
+  }, [perpAssetContext, allMids, universe, favorites, spotAssetContext])
 
   const addFavorite = (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
     if (!isFavorite(asset.index, type)) {

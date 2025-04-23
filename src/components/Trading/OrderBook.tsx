@@ -13,9 +13,10 @@ import { SkeletonSize } from '../common/Skeleton'
 
 interface IOrderBookProps {
   selectedAsset: string
+  layout?: 'horizontal' | 'vertical'
 }
 
-const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
+const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const { sdk, isSdkConnected } = useHyperLiquid()
   const [l2Book, setL2Book] = useState<WsBook>()
   const [isLoading, setIsLoading] = useState(true)
@@ -75,6 +76,11 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
     )
   }
 
+  // Determine which elements to show based on layout
+  const showTotalColumn = layout === 'horizontal'
+  const showMobileHeaders = layout === 'vertical'
+  const showSpreadInfo = layout === 'horizontal'
+
   return (
     <div className="w-full text-gray-200 font-mono text-sm">
       <div>
@@ -101,19 +107,23 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           </select>
         </div>
       </div>
-      <div className="flex w-full max-xl:hidden opacity-60 justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
-        <span className="text-xs font-medium">Price (USDS)</span>
-        <span className="text-xs font-medium">Amount (BTC)</span>
-        <span className="text-xs font-medium">Total</span>
-      </div>
+      {showTotalColumn && (
+        <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
+          <span className="text-xs font-medium">Price (USDS)</span>
+          <span className="text-xs font-medium">Amount (BTC)</span>
+          <span className="text-xs font-medium">Total</span>
+        </div>
+      )}
 
-      <div className="flex max-xl:flex-row flex-col space-y-1">
+      <div className={`flex ${layout === 'vertical' ? 'flex-col' : 'flex-row'} space-y-1`}>
         {/* red */}
-        <div className="max-xl:w-1/2">
-          <div className="max-xl:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
-            <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
-            <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
-          </div>
+        <div className={layout === 'vertical' ? 'w-full' : 'w-1/2'}>
+          {showMobileHeaders && (
+            <div className="flex w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
+              <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
+              <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
+            </div>
+          )}
           <div className="w-full">
             {isLoading
               ? // Skeleton loading state for sells
@@ -137,38 +147,44 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                         <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
                           {order.sz}
                         </span>
-                        <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-xl:hidden">
-                          {order.cumulative.toFixed(2)}
-                        </span>
+                        {showTotalColumn && (
+                          <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
+                            {order.cumulative.toFixed(2)}
+                          </span>
+                        )}
                       </div>
                     )
                   })
                   .reverse()}
           </div>
         </div>
-        <div className="max-xl:hidden flex justify-between text-xs text-gray-400 py-1 px-2 border-t border-b border-gray-700 my-1">
-          <span>Spread</span>
-          <span>
-            {isLoading ? (
-              <Skeleton size="sm" color="bg-white/10" className="w-16" />
-            ) : (
-              spread.toFixed(4)
-            )}
-          </span>
-          <span>
-            {isLoading ? (
-              <Skeleton size="sm" color="bg-white/10" className="w-12" />
-            ) : (
-              `${spreadPercent.toFixed(2)}%`
-            )}
-          </span>
-        </div>
-        {/* green */}
-        <div className="max-xl:w-1/2">
-          <div className="max-xl:flex hidden w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
-            <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
-            <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
+        {showSpreadInfo && (
+          <div className="flex justify-between text-xs text-gray-400 py-1 px-2 border-t border-b border-gray-700 my-1">
+            <span>Spread</span>
+            <span>
+              {isLoading ? (
+                <Skeleton size="sm" color="bg-white/10" className="w-16" />
+              ) : (
+                spread.toFixed(4)
+              )}
+            </span>
+            <span>
+              {isLoading ? (
+                <Skeleton size="sm" color="bg-white/10" className="w-12" />
+              ) : (
+                `${spreadPercent.toFixed(2)}%`
+              )}
+            </span>
           </div>
+        )}
+        {/* green */}
+        <div className={layout === 'vertical' ? 'w-full' : 'w-1/2'}>
+          {showMobileHeaders && (
+            <div className="flex w-full opacity-60 text-[#E8E0F1] font-medium px-2 py-3 my-1">
+              <span className="text-xs font-medium w-1/2 text-left">Price (USDS)</span>
+              <span className="text-xs font-medium w-1/2 text-right">Amount (BTC)</span>
+            </div>
+          )}
           <div className="w-full">
             {isLoading
               ? // Skeleton loading state for buys
@@ -191,9 +207,11 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                       <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
                         {order.sz}
                       </span>
-                      <span className="text-[#FFFFFF] text-xs font-normal opacity-90 max-xl:hidden">
-                        {order.cumulative.toFixed(2)}
-                      </span>
+                      {showTotalColumn && (
+                        <span className="text-[#FFFFFF] text-xs font-normal opacity-90">
+                          {order.cumulative.toFixed(2)}
+                        </span>
+                      )}
                     </div>
                   )
                 })}

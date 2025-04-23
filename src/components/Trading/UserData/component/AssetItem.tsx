@@ -194,9 +194,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
           <div className="w-1/12 text-right font-medium text-gray-300">
             {universe[assetIndex]?.maxLeverage || 50}×
           </div>
-          <div className="w-2/12 text-right font-medium">${formattedPrice}</div>
+          <div className="w-2/12 text-right font-medium font-dm-mono">${formattedPrice}</div>
           <div
-            className={`w-2/12 text-right font-medium ${priceChangeData.className} flex items-center justify-end`}
+            className={`w-2/12 text-right font-medium ${priceChangeData.className} flex items-center justify-end font-dm-mono`}
           >
             {priceChangeData.isPositive ? (
               <IconTriangleFilled size={14} className="mr-1" />
@@ -205,8 +205,10 @@ const AssetItem: React.FC<AssetItemProps> = ({
             )}
             {priceChangeData.value}
           </div>
-          <div className="w-2/12 text-right font-medium text-gray-300">{volumeValue}</div>
-          <div className="w-2/12 text-right font-medium text-gray-300 pr-4">{marketCap}</div>
+          <div className="w-2/12 text-right font-medium text-gray-300 font-mono">{volumeValue}</div>
+          <div className="w-2/12 text-right font-medium text-gray-300 font-mono pr-4">
+            {marketCap}
+          </div>
         </div>
       </div>
     )

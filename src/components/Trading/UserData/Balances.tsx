@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import NoData from '@/components/common/NoData'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { BALANCE_FEATURE_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
@@ -15,12 +15,7 @@ const Balances = () => {
   const spotColumns = ['Coin', 'Tokens', 'Total Balance', 'Hold', 'Entry NTL']
 
   if (!isConnected) {
-    return (
-      <NoData
-        title="Your wallet is currently disconnected"
-        description="Connect your wallet to access your balance, deposit funds, and manage your vaults."
-      />
-    )
+    return <WalletNotConnected />
   }
 
   if (isSpot) {

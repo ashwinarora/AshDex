@@ -26,7 +26,7 @@ const Footer: FC = () => {
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
         <div className="mt-4 md:mt-0">
-          <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md hover:bg-gray-900 font-semibold">
+          <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md   font-semibold">
             <Image src={nexonLogo} alt="Nexon Logo" height={20} width={20} className="w-7 h-7" />
             Nexon
           </h1>
@@ -143,10 +143,6 @@ const Footer: FC = () => {
       {/* Bottom Section */}
       <div className="flex flex-row justify-between items-center mt-6 text-gray-400 text-sm">
         <div className="text-sm text-[#8B8BA0]">© 2025 Nexon, Inc.</div>
-        <div>
-          <span className="text-[#8B8BA0] text-sm mr-1">Created in</span>{' '}
-          <span className="text-[#8B8BA0] font-bold">U1CORE</span>
-        </div>
       </div>
     </footer>
   )

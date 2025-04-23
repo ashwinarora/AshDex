@@ -1,9 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
-import { useQuery } from '@tanstack/react-query'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { Order } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { ORDER_INTERVALS, VAULTS_DETAILS_TAB } from '@/utils/constants'
 import VaultFilterBar from '@/components/Vault/UserData/VaultFilterBar'
 import Balances from '@/components/Vault/UserData/Balances'
@@ -18,16 +15,7 @@ import Depositors from '@/components/Vault/UserData/Depositors'
 import CustomSelector from '@/components/common/CustomSelector'
 
 function UserData() {
-  const { address } = useAccount()
-  const { clearingHouseState } = useHyperLiquid()
-  const { data: openOrders } = useQuery<Order[]>({
-    queryKey: ['openOrders', address],
-    queryFn: async () => {
-      return []
-    },
-    enabled: !!address,
-    initialData: []
-  })
+  const { clearingHouseState, openOrders } = useHyperLiquid()
   const [searchValue, setSearchValue] = useState('')
   const [activeTab, setActiveTab] = useState<number>(0)
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
