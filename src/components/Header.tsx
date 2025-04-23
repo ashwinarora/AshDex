@@ -5,7 +5,6 @@ import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { toHumanNumber, truncateAddress } from '@/utils/utils'
 import nexonlogo from '@/assets/images/logo.svg'
-import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 import moonicon from '@/assets/images/dark_mode.svg'
 import walleticon from '@/assets/images/wallet_icon.svg'
 import menuline from '@/assets/images/menu_icon.svg'
@@ -27,6 +26,7 @@ import {
   IconSwitch3
 } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
+import BridgeButton from './common/BridgeButton'
 type MenuItem = {
   name: string
   path: string
@@ -160,16 +160,7 @@ const Header: FC = () => {
         </div>
 
         <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
-          <button className="2xl:px-[20px] ml-2 px-[10px] py-[10px] flex items-center hover:bg-white/10 bg-white/5 font-bold text-white text-sm rounded-md cursor-pointer">
-            <Image
-              height={20}
-              width={20}
-              src={bridgingbtnlogo}
-              alt="bridgingbtnlogo"
-              className="w-5 h-5 2xl:mr-2"
-            />
-            <span className="font-bold text-sm text-white hidden 2xl:block">Bridge</span>
-          </button>
+          <BridgeButton />
           <button className="p-1 md:block hidden  hover:text-white text-gray-400">
             <IconMoonFilled size={24} />
           </button>

@@ -181,7 +181,7 @@ input {
 }
 
 .nexon-button {
-  @apply bg-white/5 backdrop-blur-2xl  py-2 px-4 rounded-xl   transition-colors duration-200 cursor-pointer;
+  @apply bg-white/5 backdrop-blur-2xl flex py-2 px-4 rounded-xl   transition-colors duration-200 cursor-pointer;
   @apply overflow-clip;
   @apply max-h-min;
 }
