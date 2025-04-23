@@ -46,9 +46,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
         >
           <div className="flex items-start justify-between max-md:mb-0 mb-4 w-full">
             <p className="flex flex-col">
-              <span className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">
-                Distribute
-              </span>
+              <span className="text-lg text-white font-semibold tracking-[0em]">Distribute</span>
               <span className="text-[#E8E0F1] opacity-40 mt-1 text-sm font-normal tracking-normal">
                 Distribute the available profit between the vault leader and depositors. Once
                 distributed, funds will be credited to respective accounts.
@@ -117,7 +115,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                   <span className="text-[#8B8BA0] text-sm font-medium">
                     Profit Share for Leader
                   </span>
-                  <span className="text-[#FFFFFF] text-sm font-medium">$500</span>
+                  <span className="text-white text-sm font-medium">$500</span>
                 </p>
                 <div className="my-2">
                   <input
@@ -166,12 +164,12 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                 <span
                   className={`text-sm font-medium flex items-center gap-x-2 ${
                     index === 0
-                      ? 'text-[#FFFFFF]'
+                      ? 'text-white'
                       : index === 1
                         ? 'text-[#FFA90A]'
                         : index === 2
                           ? 'text-[#2FA766]'
-                          : 'text-[#FFFFFF]'
+                          : 'text-white'
                   }`}
                 >
                   {item?.value}
@@ -188,7 +186,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
             </button>
             <button
               onClick={isDistribute ? handleConfirmDistribution : handleDistribute}
-              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer"
+              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer"
             >
               <span>{isDistribute ? 'Confirm distribution' : 'Distribute Now'}</span>
             </button>

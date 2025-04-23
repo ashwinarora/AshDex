@@ -36,7 +36,7 @@ const OpenOrders = () => {
       columnHelper.accessor('coin', {
         header: () => <HeaderWithIcons label="Coin" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         ),
@@ -45,7 +45,7 @@ const OpenOrders = () => {
       columnHelper.accessor('side', {
         header: () => <HeaderWithIcons label="Side" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         ),
@@ -54,7 +54,7 @@ const OpenOrders = () => {
       columnHelper.accessor('limitPx', {
         header: () => <HeaderWithIcons label="Limit Price" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         )
@@ -62,7 +62,7 @@ const OpenOrders = () => {
       columnHelper.accessor('sz', {
         header: () => <HeaderWithIcons label="Size" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         )
@@ -70,7 +70,7 @@ const OpenOrders = () => {
       columnHelper.accessor('oid', {
         header: () => <HeaderWithIcons label="Order ID" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         ),
@@ -79,7 +79,7 @@ const OpenOrders = () => {
       columnHelper.accessor('timestamp', {
         header: () => <HeaderWithIcons label="Timestamp" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {new Date(info.getValue()).toLocaleString()}
           </span>
         )
@@ -87,7 +87,7 @@ const OpenOrders = () => {
       columnHelper.accessor('origSz', {
         header: () => <HeaderWithIcons label="Original Size" />,
         cell: (info) => (
-          <span className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+          <span className="py-4 px-7 opacity-80 text-white font-normal text-sm">
             {info.getValue()}
           </span>
         )
@@ -167,12 +167,12 @@ const OpenOrders = () => {
         </table>
       ) : (
         <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
-          <span className="font-medium text-center my-2.5 text-base text-[#FFFFFF]">
+          <span className="font-medium text-center my-2.5 text-base text-white">
             You have no orders.
           </span>
           <button
             onClick={toggleConnectWalletModal}
-            className="2xl:px-[20px] max-lg:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+            className="2xl:px-[20px] max-lg:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
           >
             Connect Wallet
           </button>

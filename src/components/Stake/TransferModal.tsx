@@ -24,7 +24,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4 w-full">
-          <p className="text-lg text-[#FFFFFF] font-medium tracking-[0em]">{'Transfer HYPE'}</p>
+          <p className="text-lg text-white font-medium tracking-[0em]">{'Transfer HYPE'}</p>
           <button
             onClick={handleCloseModal}
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
@@ -64,7 +64,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
             className="bg-transparent text-white placeholder-[#8B8BA0] text-lg w-full outline-none"
           />
           <Image src={hyperliquidicon} alt="HYPE" width={20} height={20} className="ml-2" />
-          <span className="text-[#FFFFFF] mx-3 text-sm font-medium">HYPE</span>
+          <span className="text-white mx-3 text-sm font-medium">HYPE</span>
           <button className="text-[#8B8BA0] border py-1 px-2 border-white/10 bg-[#FFFFFF0F] text-sm font-medium rounded-lg">
             MAX
           </button>
@@ -75,7 +75,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
           </p>
           <Image src={infoicon} alt="Info" width={14} height={14} className="ml-1" />
         </div>
-        <button className="w-full bg-primary cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold">
+        <button className="w-full bg-primary cursor-pointer text-white py-3 rounded-xl text-base font-semibold">
           Transfer
         </button>
       </div>

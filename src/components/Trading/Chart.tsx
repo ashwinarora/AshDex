@@ -157,9 +157,9 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         <div className="  font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
       <span>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</span>
           <span{{color: '#F00'}}>Open: <span className="">${seriesData?.open?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>High: <span className="text-[#FFFFFF]">${seriesData?.high?.toFixed(2)}</span></span>
-          <span{{color: '#0F0'}}>Low: <span className="text-[#FFFFFF]">${seriesData?.low?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>Close: <span className="text-[#FFFFFF]">${seriesData?.close?.toFixed(2)}<span></span>
+          <span{{color: '#00F'}}>High: <span className="text-white">${seriesData?.high?.toFixed(2)}</span></span>
+          <span{{color: '#0F0'}}>Low: <span className="text-white">${seriesData?.low?.toFixed(2)}</span></span>
+          <span{{color: '#00F'}}>Close: <span className="text-white">${seriesData?.close?.toFixed(2)}<span></span>
         </div>
       `
     })

@@ -111,7 +111,7 @@ function StakingTable() {
             </button>
           </div>
         ) : (
-          <p className="text-[#FFFFFF] tracking-normal font-semibold text-base">Validators</p>
+          <p className="text-white tracking-normal font-semibold text-base">Validators</p>
         )}
         <div className="flex flex-wrap items-center gap-x-3 text-white text-sm">
           {STAKE_TABS?.map((item) => (
@@ -170,10 +170,10 @@ function StakingTable() {
                 className="border-b cursor-pointer hover:bg-white/10  border-white/10"
               >
                 <td
-                  className={`py-3 ${isConnected ? getDynamicClass(activeType, activeTab) : 'w-1/2'} overflow-hidden px-3.5 opacity-80 text-[#FFFFFF] font-normal text-sm`}
+                  className={`py-3 ${isConnected ? getDynamicClass(activeType, activeTab) : 'w-1/2'} overflow-hidden px-3.5 opacity-80 text-white font-normal text-sm`}
                 >
                   <div className="flex items-center gap-2">
-                    <span className="text-base text-[#FFFFFF] font-medium">{item.validator}</span>
+                    <span className="text-base text-white font-medium">{item.validator}</span>
                     {item.status && (
                       <span
                         className={`px-1.5 py-[3px] flex items-center tracking-tight text-sm font-semibold rounded-md ${
@@ -193,7 +193,7 @@ function StakingTable() {
                   ?.map((col) => (
                     <td
                       key={col.key}
-                      className="py-3 px-3.5 opacity-80 text-[#FFFFFF] font-normal text-sm"
+                      className="py-3 px-3.5 opacity-80 text-white font-normal text-sm"
                     >
                       {item[col.key as keyof typeof item]}
                     </td>

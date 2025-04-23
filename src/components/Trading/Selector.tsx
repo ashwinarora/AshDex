@@ -209,7 +209,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="text-lg text-white flex items-center gap-x-2 focus:outline-none cursor-pointer"
           >
             <div className="flex flex-col">
-              <span className="text-[#FFFFFF] font-bold text-base text-nowrap">
+              <span className="text-white font-bold text-base text-nowrap">
                 {selectedAsset || 'Select an asset'}
               </span>
               <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium hidden">
@@ -241,9 +241,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div
-                  className={`font-medium md:text-sm text-x     ${item.color || 'text-[#FFFFFF]'}`}
-                >
+                <div className={`font-medium md:text-sm text-x     ${item.color || 'text-white'}`}>
                   {item.value}
                 </div>
               </div>

@@ -72,7 +72,7 @@ const StakingCard = () => {
                   <p className="text-sm tracking-normal font-medium text-[#8B8BA0]">
                     Lifetime earnings
                   </p>
-                  <p className="text-xl mt-1 text-[#FFFFFF] font-medium">
+                  <p className="text-xl mt-1 text-white font-medium">
                     40,298.24 HYPE{' '}
                     <span className="text-sm ml-2 font-medium text-[#8B8BA0]">~$1,394.95</span>
                   </p>
@@ -84,7 +84,7 @@ const StakingCard = () => {
                       <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
                     </Tooltip>
                   </p>
-                  <p className="text-xl mt-1 text-[#FFFFFF] font-medium">2.83%</p>
+                  <p className="text-xl mt-1 text-white font-medium">2.83%</p>
                 </div>
               </div>
 
@@ -104,10 +104,10 @@ const StakingCard = () => {
         ) : (
           <>
             <div className="flex justify-between items-start">
-              <p className="text-[#FFFFFF] text-2xl tracking-normal font-medium">Staking</p>
+              <p className="text-white text-2xl tracking-normal font-medium">Staking</p>
               <button
                 onClick={() => toggleConnectWalletModal()}
-                className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
               >
                 <Image
                   height={20}

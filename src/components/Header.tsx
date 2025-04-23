@@ -11,7 +11,6 @@ import walleticon from '@/assets/images/wallet_icon.svg'
 import menuline from '@/assets/images/menu_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import helpicon from '@/assets/images/help_icon.svg'
-import bellicon from '@/assets/images/bell_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
@@ -19,7 +18,14 @@ import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
 import Avatar from './common/Avatar'
-import { IconCopy, IconSettings, IconSwitch3 } from '@tabler/icons-react'
+import {
+  IconBell,
+  IconCopy,
+  IconHelp,
+  IconMoonFilled,
+  IconSettings,
+  IconSwitch3
+} from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 type MenuItem = {
   name: string
@@ -143,7 +149,7 @@ const Header: FC = () => {
             ))}
             {/* More Dropdown */}
             <button
-              className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative`}
+              className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative hover:text-white`}
             >
               More
               <span className="text-xs text-white bg-primary  rounded  group-hover:opacity-100 opacity-0 transition-all duration-300  flex items-center justify-center text-nowrap px-1">
@@ -154,7 +160,7 @@ const Header: FC = () => {
         </div>
 
         <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
-          <button className="2xl:px-[20px] ml-2 px-[10px] py-[10px] flex items-center bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
+          <button className="2xl:px-[20px] ml-2 px-[10px] py-[10px] flex items-center hover:bg-white/10 bg-white/5 font-bold text-white text-sm rounded-md cursor-pointer">
             <Image
               height={20}
               width={20}
@@ -162,20 +168,21 @@ const Header: FC = () => {
               alt="bridgingbtnlogo"
               className="w-5 h-5 2xl:mr-2"
             />
-            <span className="font-bold text-sm text-[#FFFFFF] hidden 2xl:block">Bridge</span>
+            <span className="font-bold text-sm text-white hidden 2xl:block">Bridge</span>
           </button>
-          <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            <Image height={20} width={20} src={moonicon} alt="moonicon" className="w-5 h-5 mr-1" />
+          <button className="p-1 md:block hidden  hover:text-white text-gray-400">
+            <IconMoonFilled size={24} />
           </button>
-          <button className="p-1 md:block hidden hover:text-blue-400 text-gray-400">
-            <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5 mr-1" />
+          <button className="p-1 md:block hidden  hover:text-white text-gray-400">
+            <IconHelp size={24} />
           </button>
-          <button className="relative p-1 hover:text-blue-400 text-gray-400">
-            <Image src={bellicon} alt="bellicon" height={20} width={20} className="w-5 h-5 mr:2" />
+          <button className="relative p-1  hover:text-white text-gray-400">
+            <IconBell size={24} />
+
             {notificationCount > 0 && (
               <span
                 className="absolute -top-1 right-0 2xl:-right-0 flex items-center justify-center w-[18px] h-[17px] 
-                bg-primary text-[#FFFFFF] text-[11px] font-['Proxima Nova'] font-normal leading-[140%] 
+                bg-primary text-white 
                 rounded-[12px]"
               >
                 {notificationCount}
@@ -188,7 +195,7 @@ const Header: FC = () => {
               <button
                 ref={buttonRef}
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex w-auto relative hover:bg-[#322944] items-center p-[10px] bg-[#1C0C30] cursor-pointer rounded-lg overflow-hidden "
+                className="flex w-auto relative hover:bg-white/10 items-center p-[10px]   cursor-pointer rounded-lg overflow-hidden "
               >
                 <Avatar className="w-6 h-6 mr-2" avatar={currentUser?.avatar_url || '0'} />
                 <span className="text-sm max-[1025px]:hidden flex font-medium truncate text-[#E8E0F1]">
@@ -211,7 +218,7 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg py-4 px-2"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-white/10 rounded-2xl shadow-lg py-4 px-2"
                 >
                   <div className="flex items-start text-[#E8E0F1] gap-2 px-2">
                     <div className="flex flex-col">
@@ -241,21 +248,21 @@ const Header: FC = () => {
                   </div>
                   <button
                     onClick={toggleConnectWalletModal}
-                    className="flex text-base items-center w-full mt-3  px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex text-base items-center w-full mt-3  px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-white/10 cursor-pointer"
                   >
                     <IconSwitch3 size={24} className="mr-3" />
                     Switch Wallet
                   </button>
                   <Link
                     href="/settings"
-                    className="flex text-base items-center w-full mt-3 px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex text-base items-center w-full mt-3 px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-white/10 cursor-pointer"
                   >
                     <IconSettings size={24} className="mr-3" />
                     Settings
                   </Link>
                   <button
                     onClick={() => disconnect()}
-                    className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-[#322944] cursor-pointer"
+                    className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-white/10 cursor-pointer"
                   >
                     <Image
                       height={20}
@@ -272,7 +279,7 @@ const Header: FC = () => {
           ) : (
             <button
               onClick={toggleConnectWalletModal}
-              className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+              className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
             >
               <Image height={20} width={20} src={walleticon} alt="walleticon" className="w-5 h-5" />
               <span className="ml-2 hidden 2xl:block">Connect Wallet</span>
@@ -280,7 +287,7 @@ const Header: FC = () => {
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="p-1 min-[1025px]:hidden block hover:text-blue-400 text-[#ffffff]"
+            className="p-1 min-[1025px]:hidden block hover:text-blue-400 text-white"
           >
             <Image
               height={20}
@@ -297,10 +304,10 @@ const Header: FC = () => {
       {isOpen && (
         <div className="sticky z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
-            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
+            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
               <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />
             </button>
-            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-[#322944] font-bold text-[#FFFFFF] text-sm rounded-md cursor-pointer">
+            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
               <Image
                 height={20}
                 width={20}

@@ -204,10 +204,7 @@ const Positions = () => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="border-b border-white/10">
               {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm"
-                >
+                <td key={cell.id} className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

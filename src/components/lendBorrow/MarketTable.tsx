@@ -68,7 +68,7 @@ const MarketTable = () => {
               className=" border-b border-white/10 cursor-pointer"
               onClick={() => handleRowClick(index)}
             >
-              <td className="py-4 pr-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
+              <td className="py-4 pr-7 text-white opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
                   <div className="flex flex-col">
@@ -77,7 +77,7 @@ const MarketTable = () => {
                   </div>
                 </div>
               </td>
-              <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 pr-7 opacity-80 text-white font-normal text-sm">
                 <div className="flex space-x-2">
                   <div>
                     <p className="text-base">{position?.entryPx}</p>
@@ -93,10 +93,10 @@ const MarketTable = () => {
                   </div>
                 </div>
               </td>
-              <td className="py-4 pr-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 pr-7 opacity-80  text-white font-normal text-sm">
                 {position?.entryPx}
               </td>
-              <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 pr-7 opacity-80 text-white font-normal text-sm">
                 <div className="flex space-x-2">
                   <div>
                     <p className="text-base">{position?.cumFunding?.allTime}</p>
@@ -112,7 +112,7 @@ const MarketTable = () => {
                   </div>
                 </div>
               </td>
-              <td className="py-4 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 pr-7 opacity-80 text-white font-normal text-sm">
                 <span className="relative group">
                   <span className="">{position?.szi}</span>
                   <span className="hidden group-hover:block absolute left-1/2 transform -translate-x-1/2 -top-8 bg-secondary text-white text-xs rounded-xl p-7 w-[10vw] border-2 border-[#FFFFFF0F]">
