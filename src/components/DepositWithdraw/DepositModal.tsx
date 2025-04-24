@@ -1,13 +1,17 @@
-import { useState } from 'react'
-import Modal from '../common/Modal'
-import { useAccount, useReadContract, useWriteContract } from 'wagmi'
-import { ChevronDown, X } from 'lucide-react'
-import arbitrum from '@/assets/images/arbitrum.svg'
-import Image from 'next/image'
-import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
+import { useEffect, useState } from 'react'
+import { useAccount, useReadContract, useWalletClient, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
+import { ChevronDown, X } from 'lucide-react'
+import Image from 'next/image'
+import { useToast } from '@/context/ToastContext'
+import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
 import { toHumanNumber, toRealNumber } from '@/utils/utils'
+import Loading from '../common/Loading'
+import Modal from '../common/Modal'
+import CheckBox from '../common/CheckBox'
+import arbitrum from '@/assets/images/arbitrum.svg'
+import usdcicon from '@/assets/images/usdc_icon.svg'
 
 interface DepositModalProps {
   isOpen: boolean
@@ -16,6 +20,11 @@ interface DepositModalProps {
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
+  const { showToast } = useToast()
+  const [isLoading, setIsLoading] = useState(false)
+  const [stayConnected, setStayConnected] = useState(true)
+  const [hasConnected, setHasConnected] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
   const { data: balance } = useReadContract({
@@ -28,92 +37,228 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     }
   })
   const { writeContract } = useWriteContract()
+  const handleCloseModal = () => {
+    onClose()
+  }
+
+  const onDepositClick = () => {
+    if (!usdc) return
+    setIsLoading(true)
+    setTimeout(() => {
+      setIsLoading(false)
+      writeContract({
+        address: usdc.address,
+        abi: erc20Abi,
+        functionName: 'transfer',
+        args: [HYPERLIQUID_DEPOSIT, amount]
+      })
+      handleCloseModal()
+      setTimeout(() => {
+        showToast(
+          'success',
+          'Deposit confirmed. Balance will update on the next block.',
+          `<span className="text-[#2FA766]">Arbiscan Link</span>`
+        )
+      }, 2000)
+    }, 3000)
+  }
+  const onEstablishConnection = async () => {
+    if (!walletClient || !address) {
+      return
+    }
+    try {
+      await walletClient.signMessage({
+        account: address,
+        message: JSON.stringify({
+          primaryType: 'HyperliquidTransaction:ApproveAgent',
+          hyperliquidChain: 'Mainnet',
+          agentAddress: address,
+          agentName: '',
+          nonce: Date.now().toString()
+        })
+      })
+      setHasConnected(!hasConnected)
+      localStorage.setItem(`hyperliquid_signature_${address}`, 'true')
+      setHasConnected(true)
+      if (!stayConnected) {
+        window.addEventListener('beforeunload', () => {
+          localStorage.removeItem(`hyperliquid_signature_${address}`)
+        })
+      }
+    } catch (err) {
+      console.error('Signature rejected or failed:', err)
+    }
+  }
+  const renderCloseButton = () => (
+    <button
+      onClick={handleCloseModal}
+      className="p-2 bg-white/10 rounded-full text-[#E8E0F1] hover:text-white"
+    >
+      <X className="w-5 h-5" />
+    </button>
+  )
+
+  const renderConnectionPrompt = () => (
+    <div>
+      <div className="flex justify-between items-start mb-2">
+        <div className="flex flex-col items-start">
+          <p className="text-lg text-white font-semibold">Establish Connection</p>
+          <p className="text-[#8B8BA0] text-sm mt-1 font-normal mb-3">
+            This signature is gas-free. It opens a decentralized channel for instant and gasless
+            deposits.
+          </p>
+        </div>
+        {renderCloseButton()}
+      </div>
+      <div className="flex items-center gap-x-1">
+        <CheckBox label="" isChecked={stayConnected} setIsChecked={setStayConnected} />
+        <span className="text-sm font-normal text-[#E8E0F1]">Stay Connected</span>
+      </div>
+
+      <button
+        className="w-full mt-6 text-white cursor-pointer text-base font-semibold bg-[#5F46F9] hover:opacity-90 rounded-2xl px-6 py-3"
+        onClick={onEstablishConnection}
+      >
+        Establish Connection
+      </button>
+    </div>
+  )
+
+  useEffect(() => {
+    const saved = localStorage.getItem(`hyperliquid_signature_${address}`)
+    const stay = localStorage.getItem(`stay_connected_${address}`)
+    if (saved === 'true') {
+      setHasConnected(true)
+      setStayConnected(stay === 'true')
+    }
+  }, [address])
+
+  useEffect(() => {
+    if (address) {
+      localStorage.setItem(`stay_connected_${address}`, stayConnected?.toString())
+    }
+  }, [stayConnected, address])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={handleCloseModal}>
       <div
-        className=" flex flex-col rounded-lg w-3/12 bg-secondary border border-gray-300 p-6"
+        className="w-full max-w-md max-md:max-w-sm border-white/10 border-[2px] bg-[#0F0816] max-md:p-3 p-6 rounded-2xl shadow-lg 
+          relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Deposit on Nexon</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-200 rounded-full p-2 cursor-pointer bg-gray-700"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-        <div className="mb-4 flex items-center justify-between">
-          <label htmlFor="chain" className="text-sm font-medium text-gray-300">
-            Select Chain
-          </label>
-          <div className="relative w-2/3">
-            <select
-              id="chain"
-              className="block w-full bg-gray-700 border border-gray-500 text-gray-300 rounded-lg py-2 px-3 appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="ethereum">Arbitrum</option>
-            </select>
-            <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-          </div>
-        </div>
-        <div className="flex flex-col items-center mb-4">
-          <Image src={arbitrum} alt="test" width={50} height={50} />
-          <h3 className="text-2xl font-medium text-gray-300 mb-2">Deposit USDC on Arbitrum</h3>
-        </div>
-        <div className="mb-4">
-          <label
-            htmlFor="amount"
-            className="text-sm font-medium text-gray-300 flex justify-between"
-          >
-            <div>Amount</div>
-            <div>
-              Balance: {toHumanNumber(balance, usdc?.decimals, 2)} {usdc?.symbol}
+        {!hasConnected ? (
+          renderConnectionPrompt()
+        ) : (
+          <>
+            {' '}
+            <div className="flex items-start justify-between max-md:mb-0 mb-4 w-full">
+              {isLoading ? (
+                <div />
+              ) : (
+                <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">
+                  Deposit to Nexon
+                </p>
+              )}
+              {renderCloseButton()}
             </div>
-          </label>
-          <div className="relative mt-2">
-            <input
-              type="text"
-              id="amount"
-              value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
-              onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
-              className="block w-full bg-gray-700 border border-gray-500 text-gray-300 rounded-lg py-2 px-3 pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter amount"
-            />
-            <button
-              onClick={() => setAmount(balance ?? 0n)}
-              className="absolute right-14 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-lg hover:bg-blue-600 focus:outline-none"
-            >
-              Max
-            </button>
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300">
-              USDC
-            </span>
-          </div>
-        </div>
-        <div className="flex justify-end space-x-4">
-          <button
-            onClick={onClose}
-            className="bg-gray-500 w-full text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-gray-600 focus:outline-none"
-          >
-            Cancel
-          </button>
-          <button
-            className="bg-blue-500 w-full text-white text-sm font-medium py-2 px-4 rounded-lg hover:bg-blue-600 focus:outline-none"
-            onClick={async () => {
-              if (!usdc) return
-              writeContract({
-                address: usdc.address,
-                abi: erc20Abi,
-                functionName: 'transfer',
-                args: [HYPERLIQUID_DEPOSIT, amount]
-              })
-            }}
-          >
-            Deposit
-          </button>
-        </div>
+            {isLoading ? (
+              <Loading
+                title={'Deposit in progress…'}
+                subTitle={'You will need to sign this transaction in your wallet:'}
+                className="py-[1rem] px-[1rem]"
+              />
+            ) : (
+              <>
+                {' '}
+                <div className="border-2 max-md:mt-4 border-white/10 rounded-md bg-[#FFFFFF0F] pl-4 py-3 text-white text-sm mb-6 flex items-center justify-between">
+                  <span className="text-[#8B8BA0] text-sm font-medium">Deposit Cain</span>
+                  <div className="relative w-1/4 text-white tracking-normal flex items-center gap-x-1 text-sm font-medium">
+                    <select id="chain" className="appearance-none focus:outline-none">
+                      <option value="ethereum">Arbitrum</option>
+                    </select>
+                    <ChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-y-2 mb-6">
+                  <Image src={arbitrum} alt="test" width={50} height={50} />
+                  <p className="text-white tracking-normal font-medium">
+                    Deposit USDC from Arbitrum
+                  </p>
+                </div>
+                <div className="mb-4">
+                  <div className="flex mb-2 justify-between font-medium text-sm text-[#8B8BA0]">
+                    <div>Amount</div>
+                    <div>
+                      Available to deposit: {toHumanNumber(balance, usdc?.decimals, 2)}{' '}
+                      {usdc?.symbol}
+                    </div>
+                  </div>
+                  <div className="relative flex justify-between items-center pr-4 pt-1 border-b border-white/10 pb-3">
+                    <input
+                      type="text"
+                      id="amount"
+                      value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
+                      onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
+                      className="w-full rounded-md placeholder:text-[#8B8BA0] py-1 focus:outline-none text-base font-semibold placeholder:opacity-70 text-white pr-28"
+                      placeholder="00,000.00"
+                    />
+                    <div className="flex items-center gap-x-2">
+                      <button
+                        onClick={() => setAmount(balance ?? 0n)}
+                        className="text-sm font-medium p-[8px] text-white bg-white/10 rounded-lg"
+                      >
+                        Max
+                      </button>
+                      <span className="text-white flex items-center text-sm font-normal">
+                        <Image
+                          src={usdcicon}
+                          width={30}
+                          height={30}
+                          className="pr-2"
+                          alt="usdcicon"
+                        />
+                        USDC
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-x-2 justify-between mt-5">
+                  <button
+                    onClick={handleCloseModal}
+                    className="text-[#8B8BA0] cursor-pointer w-1/2 text-base font-medium hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    disabled={!amount || parseFloat(amount.toString()) === 0}
+                    className={`text-base w-1/2 font-semibold px-6 py-3 rounded-2xl ${
+                      !amount || parseFloat(amount.toString()) === 0
+                        ? 'bg-white/10 text-[#8B8BA0] cursor-not-allowed opacity-70'
+                        : 'bg-[#5F46F9] text-white hover:opacity-90 cursor-pointer'
+                    }`}
+                    onClick={onDepositClick}
+                  >
+                    Deposit
+                  </button>
+                </div>
+              </>
+            )}
+            {isLoading && (
+              <div
+                style={{
+                  background:
+                    'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
+                }}
+                className="border-2 border-white/10 rounded-2xl px-4 py-4 text-white text-sm flex items-center justify-between"
+              >
+                <span className="text-[#FFFFFF] text-sm font-medium">Deposit USDC to Nexon</span>
+                <span className="text-[#E8E0F1] opacity-50 tracking-normal flex items-center gap-x-1 text-sm font-medium">
+                  Not Signed
+                </span>
+              </div>
+            )}
+          </>
+        )}
       </div>
     </Modal>
   )
