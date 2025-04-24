@@ -177,7 +177,7 @@ const Positions = () => {
         <tbody>
           {paginatedPositions?.map((position, index) => (
             <tr key={index} className=" border-b border-white/10">
-              <td className="py-4 px-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
+              <td className="py-4 px-7 text-white opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
                   <span
                     // fix later
@@ -192,28 +192,28 @@ const Positions = () => {
                   </span>
                 </div>
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.entryPx}
               </td>
-              <td className="py-4 px-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80  text-white font-normal text-sm">
                 {position.position.entryPx}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.cumFunding.allTime}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.szi}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.unrealizedPnl}
               </td>
               <td className="py-4 px-7 opacity-80 text-[#E2464A] font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#FFFFFF] ">
+              <td className="py-4 px-7 opacity-80 text-white ">
                 <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
                   Open
                 </span>
@@ -228,7 +228,7 @@ const Positions = () => {
                   dummy
                 </span>
               </td>
-              <td className="py-4 opacity-80 text-[#FFFFFF] font-normal text-sm px-7">
+              <td className="py-4 opacity-80 text-white font-normal text-sm px-7">
                 {true ? (
                   <div className="flex items-center gap-2">
                     <span className="w-17 break-words overflow-hidden">Dummy</span>

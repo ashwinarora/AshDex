@@ -20,7 +20,7 @@ const ValueIndicator: React.FC<ValueIndicatorProps> = ({ value, className = '' }
   }, [value])
 
   return (
-    <div className={`${colorClass} ${className}   md:text-lg text-sm  `}>
+    <div className={`${colorClass} ${className}  md:text-lg text-sm font-semibold`}>
       {value !== undefined ? (
         `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`
       ) : (

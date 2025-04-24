@@ -82,10 +82,10 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
           <tbody>
             {paginatedPositions?.map((position, index) => (
               <tr key={index} className=" border-b border-white/10">
-                <td className="py-4 md:px-0 px-7 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-4 md:px-0 px-7 text-white font-medium text-sm">
                   {position.time}
                 </td>
-                <td className="py-4 opacity-80 md:px-0 px-7 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-4 opacity-80 md:px-0 px-7 text-white font-medium text-sm">
                   {show && position.action === 'Reward' ? (
                     <div>
                       {position.action}
@@ -95,14 +95,14 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
                     position.action
                   )}
                 </td>
-                <td className="py-4 md:px-0 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-4 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
                   <span
                     className={`font-medium  p-1.5 rounded-[8px] ${position.status === 'Success' ? 'text-[#2FA766] bg-[#213539]' : 'text-white bg-[#50505e]'}`}
                   >
                     {position.status}
                   </span>
                 </td>
-                <td className="py-4 md:px-0 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-4 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
                   {position.amountChange}
                 </td>
               </tr>

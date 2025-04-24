@@ -63,7 +63,7 @@ function UserData() {
                 onClick={() => setActiveTab(index)}
                 className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
                   activeTab === index
-                    ? 'border-primary text-[#FFFFFF] rounded-xs'
+                    ? 'border-primary text-white rounded-xs'
                     : 'border-transparent text-[#8B8BA0]'
                 }`}
               >

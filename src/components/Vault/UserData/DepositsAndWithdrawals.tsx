@@ -93,7 +93,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
           {paginatedOrders?.map((order) => {
             return (
               <tr key={order.id} className=" border-b border-white/10">
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   <div className="flex items-center gap-x-1">
                     <span>{order?.time}</span>
                     <Image
@@ -105,21 +105,21 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
                     />
                   </div>
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   <span className="text-[#2FA766] bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium text-sm">
                     {order?.status}
                   </span>
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.network}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.action}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.accountValueChangr}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.fee}
                 </td>
               </tr>

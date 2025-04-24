@@ -84,16 +84,16 @@ function FundingHistory({ showExportButton }: FundingHistoryProps) {
           {paginatedOrders?.map((order) => {
             return (
               <tr key={order.id} className=" border-b border-white/10">
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.time}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.symbol}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.fundingRate}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.amountPaid}
                 </td>
               </tr>

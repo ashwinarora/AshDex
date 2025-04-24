@@ -28,8 +28,8 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
         {hasAgreedToRules ? (
           <div className="py-4 mt-10 mb-12 text-center w-full flex flex-col items-center justify-center rounded-xl">
             <Image src={verifiedicon} alt={name} width={100} height={100} />
-            <div className="text-[#FFFFFF] font-medium mt-4 text-lg">Wallet connected!</div>
-            <div className="text-[#FFFFFF] w-[70%] opacity-70 font-light mt-2 text-sm">
+            <div className="text-white font-medium mt-4 text-lg">Wallet connected!</div>
+            <div className="text-white w-[70%] opacity-70 font-light mt-2 text-sm">
               You&apos;re ready to deposit, trade, and manage your assets.
             </div>
           </div>

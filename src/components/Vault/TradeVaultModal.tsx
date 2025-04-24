@@ -47,7 +47,7 @@ const TradeVaultModal: React.FC<TradeVaultModalProps> = ({ isVaultModal, openVau
           </p>
           <button
             onClick={handleCloseModal}
-            className="w-full px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer"
+            className="w-full px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer"
           >
             Ok
           </button>

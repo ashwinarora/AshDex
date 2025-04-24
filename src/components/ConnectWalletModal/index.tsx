@@ -67,7 +67,7 @@ const ConnectWalletModal: React.FC = () => {
       >
         {/* Full-Width Header */}
         <div className="flex items-center justify-between mb-4 w-full">
-          <h2 className="text-xl text-[#FFFFFF] font-medium">
+          <h2 className="text-xl text-white font-medium">
             {isWalletConnected && !hasAgreedToRules ? 'Rules' : 'Connect Wallet'}
           </h2>
           <button
@@ -126,7 +126,7 @@ const ConnectWalletModal: React.FC = () => {
                           className="w-9 h-9 mr-3 rounded-md"
                         />
                       )}
-                      <span className="text-[#FFFFFF] font-medium text-base">{wallet?.name}</span>
+                      <span className="text-white font-medium text-base">{wallet?.name}</span>
                     </div>
                     <Image
                       height={20}

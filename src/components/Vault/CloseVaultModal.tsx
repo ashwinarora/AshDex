@@ -45,7 +45,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-4 w-full">
-            <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]"> {'Close Vault'}</p>{' '}
+            <p className="text-lg text-white font-semibold tracking-[0em]"> {'Close Vault'}</p>{' '}
             <button
               onClick={handleCloseModal}
               className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
@@ -79,7 +79,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
                 <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
                   {item?.label}:
                 </span>
-                <span className="text-[#FFFFFF] text-sm font-medium flex items-center ">
+                <span className="text-white text-sm font-medium flex items-center ">
                   {item?.value}
                 </span>
               </div>
@@ -94,7 +94,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             </button>
             <button
               onClick={handleCloseVault}
-              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer"
+              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer"
             >
               <span>Close Vault</span>
             </button>

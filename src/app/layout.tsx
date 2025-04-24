@@ -9,6 +9,7 @@ import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
 import ConnectWalletModal from '@/components/ConnectWalletModal'
 import { ToastProvider } from '../context/ToastContext'
+import { GoogleAnalytics } from '@next/third-parties/google'
 
 import { FavoritesProvider } from '@/context/FavoritesContext'
 import './globals.css'
@@ -46,6 +47,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary`}
       >
+        <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <Provider>
           <HyperLiquidProvider>
             <WalletModalProvider>

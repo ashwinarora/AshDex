@@ -101,7 +101,7 @@ function TradeHistory({ showExportButton }: TradeHistoryProps) {
           {paginatedOrders?.map((order) => {
             return (
               <tr key={order.id} className=" border-b border-white/10">
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   <div className="flex items-center gap-x-1">
                     <span>{order?.time}</span>
                     <Image
@@ -113,22 +113,22 @@ function TradeHistory({ showExportButton }: TradeHistoryProps) {
                     />
                   </div>
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.symbol}
                 </td>
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#E2464A] font-medium text-sm">
                   {order?.buysell}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.price}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.quantity}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.fee}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.realizedProfit}
                 </td>
               </tr>
