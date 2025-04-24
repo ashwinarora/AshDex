@@ -14,15 +14,14 @@ import menuClose from '@/assets/images/close_icon.svg'
 import helpicon from '@/assets/images/help_icon.svg'
 import bellicon from '@/assets/images/bell_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import balanceicon from '@/assets/images/balance.svg'
-import balanceVaulticon from '@/assets/images/balanceVault_icon.svg'
 import copyicon from '@/assets/images/copy_icon.svg'
-import switchicon from '@/assets/images/switch_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
+import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
-
+import Avatar from './common/Avatar'
+import { IconSettings, IconSwitch3 } from '@tabler/icons-react'
 type MenuItem = {
   name: string
   path: string
@@ -36,6 +35,7 @@ const Header: FC = () => {
   const { isRendered } = useComponentRendered()
   const { data: balanceData } = useBalance({ address })
   const { toggleConnectWalletModal } = useWalletModal()
+  const { currentUser } = useUser()
   const [isOpen, setIsOpen] = useState(false)
   const [notificationCount] = useState(5)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -121,20 +121,20 @@ const Header: FC = () => {
   "
       >
         <div className="flex items-center justify-center space-x-4">
-          <h1
-            onClick={() => router.push('/')}
-            className="flex items-center mr-6 lg:mr-6 xl:12 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
+          <Link
+            href="/"
+            className="flex items-center mr-6 lg:mr-6 gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold"
           >
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
-          </h1>
-          <nav className="min-[1025px]:flex hidden text-[#8B8BA0] text-base items-center gap-2 ">
+          </Link>
+          <nav className="md:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
                 href={path}
                 onClick={() => handleMenuClick(path)}
-                className={`tab-btn px-6
+                className={`tab-btn xl:px-6 px-4 cursor-pointer
                   ${activeMenu === name && 'tab-btn-active'}`}
               >
                 {name}
@@ -204,16 +204,10 @@ const Header: FC = () => {
               <button
                 ref={buttonRef}
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex w-auto relative hover:bg-[#322944] items-center p-[10px] bg-[#1C0C30] cursor-pointer rounded-lg overflow-hidden"
+                className="flex w-auto relative hover:bg-[#322944] items-center p-[10px] bg-[#1C0C30] cursor-pointer rounded-lg overflow-hidden "
               >
-                <Image
-                  height={20}
-                  width={20}
-                  src={balanceicon}
-                  alt="BalanceIcon"
-                  className="w-[22px] h-[22px] mr-2"
-                />
-                <span className="text-sm max-xl:hidden flex font-medium truncate text-[#E8E0F1]">
+                <Avatar className="w-6 h-6 mr-2" avatar={currentUser?.avatar_url || '0'} />
+                <span className="text-sm max-[1025px]:hidden flex font-medium truncate text-[#E8E0F1]">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
@@ -233,16 +227,10 @@ const Header: FC = () => {
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg z-50 p-4"
+                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-[#322944] rounded-2xl shadow-lg p-4"
                 >
-                  <div className="flex items-start text-[#E8E0F1]">
-                    <Image
-                      src={balanceicon}
-                      alt="BalanceIcon"
-                      width={20}
-                      height={20}
-                      className="w-[40px] h-[40px] mr-3"
-                    />
+                  <div className="flex items-start text-[#E8E0F1] gap-2">
+                    <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
                     <div className="flex flex-col">
                       <span className="truncate">{truncateAddress(address!)}</span>
                       <div className="text-sm text-[#E8E0F1]">
@@ -254,14 +242,8 @@ const Header: FC = () => {
                       <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
                     </button>
                   </div>
-                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1]">
-                    <Image
-                      src={balanceVaulticon}
-                      alt="BalanceVaultIcon"
-                      width={20}
-                      height={20}
-                      className="w-[40px] h-[40px] mr-3"
-                    />
+                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1] gap-2">
+                    <Avatar className="w-10 h-10" avatar={currentUser?.avatar_url || '0'} />
                     <div className="flex flex-col">
                       <span className="text-xs text-[#E8E0F1]">Vault Trading Account</span>
                       <span className="truncate">{truncateAddress(address!)}</span>
@@ -274,17 +256,20 @@ const Header: FC = () => {
                       <Image height={20} width={20} src={copyicon} alt="Copy" className="w-5 h-5" />
                     </button>
                   </div>
-                  <button className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer">
-                    <Image
-                      height={20}
-                      width={20}
-                      src={switchicon}
-                      alt="Switch Wallet"
-                      className="w-5 h-5 mr-3"
-                    />
+                  <button
+                    onClick={toggleConnectWalletModal}
+                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                  >
+                    <IconSwitch3 size={24} className="mr-3" />
                     Switch Wallet
                   </button>
-
+                  <Link
+                    href="/settings"
+                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                  >
+                    <IconSettings size={24} className="mr-3" />
+                    Settings
+                  </Link>
                   <button
                     onClick={() => disconnect()}
                     className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-[#322944] cursor-pointer"

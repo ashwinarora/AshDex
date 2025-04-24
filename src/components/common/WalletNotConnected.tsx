@@ -3,13 +3,17 @@ import Image from 'next/image'
 import { useWalletModal } from '@/context/WalletModalContext'
 import noordericon from '@/assets/images/noorder_icon.svg'
 
-type NoDataProps = {
-  title: string
+type WalletNotConnectedProps = {
+  title?: string
   description?: string
   type?: string
 }
 
-const NoData = ({ title, description, type }: NoDataProps) => {
+const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
+  title = 'Your wallet is currently disconnected',
+  description = 'Connect your wallet to access your balance, deposit funds, and manage your vaults.',
+  type
+}) => {
   const { toggleConnectWalletModal } = useWalletModal()
   return (
     <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
@@ -20,7 +24,7 @@ const NoData = ({ title, description, type }: NoDataProps) => {
         alt={title}
         className="h-[93px] w-[93px] max-[770px]:w-[70px] max-[770px]:h-[70px]"
       />
-      <span className="font-medium text-center mt-2.5 text-base text-[#FFFFFF]">{title}</span>
+      <span className="font-medium text-center mt-2.5 text-base text-white">{title}</span>
       {description && (
         <p className="text-[#8B8BA0] text-sm mt-1.5 mb-2 font-normal max-w-[300px]">
           {description}
@@ -38,4 +42,4 @@ const NoData = ({ title, description, type }: NoDataProps) => {
   )
 }
 
-export default NoData
+export default WalletNotConnected

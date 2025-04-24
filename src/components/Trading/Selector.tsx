@@ -26,10 +26,9 @@ const CRYPTO_ICONS: Record<string, StaticImageData> = {
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
-  type: 'spot' | 'perp'
 }
 
-const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => {
+const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -38,7 +37,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
   const isSpot = useIsSpot()
-
+  const type = isSpot ? 'spot' : 'perp'
   const selectedAssetContext = useMemo(() => {
     if (isSpot) {
       const asset = spotAssetContext.find((assets) => assets.coin.includes(selectedAsset))
@@ -76,7 +75,11 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
       {
         label: '24h Change',
         value: changeString ?? <Skeleton size="md" />,
-        color: 'text-[#2FA766]'
+        color: changeString
+          ? changeString.includes('+')
+            ? 'text-[#2FA766]'
+            : 'text-[#E2464A]'
+          : ''
       },
       { label: '24h High', value: '$99,149.00' },
       { label: '24h Low', value: '$99,149.00' },
@@ -238,7 +241,9 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div className={`font-medium md:text-sm text-xs ${item.color || 'text-[#FFFFFF]'}`}>
+                <div
+                  className={`font-medium md:text-sm text-xs    ${item.color || 'text-[#FFFFFF]'}`}
+                >
                   {item.value}
                 </div>
               </div>
@@ -278,7 +283,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
         </div>
       )}
       {isOpen && (
-        <div className="absolute left-0 top-12 2xl:top-[60px] z-50 w-[800px] max-w-[95vw] bg-secondary rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
+        <div className="absolute left-0 top-12  z-50 w-[800px] max-w-[95vw] bg-secondary rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
           {/* Search Input */}
           <div className="p-4">
             <div className="border-2 border-[#FFFFFF15] bg-[#FFFFFF08] rounded-md flex items-center px-4 py-2">
@@ -309,7 +314,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
                 placeholder='e.g. "BTC" or "Bitcoin"'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm"
+                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm font-proxima-nova"
               />
             </div>
           </div>
@@ -320,10 +325,10 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`md:py-2  md:px-5 px-2 py-0  text-xs md:text-sm rounded-full transition-all duration-200 cursor-pointer ${
+                className={`md:py-2  md:px-5 px-2 py-0    rounded-full transition-all duration-200 cursor-pointer ${
                   selectedTab === tab
-                    ? 'text-secondary bg-white font-medium'
-                    : 'text-white   hover:bg-[#FFFFFF20]'
+                    ? 'text-secondary bg-white/80  font-medium'
+                    : 'text-white   bg-white/5 hover:bg-[#FFFFFF20]'
                 }`}
               >
                 {tab}
@@ -354,39 +359,83 @@ const Selector = ({ selectedAsset, setSelectedAsset, type }: ISelectorProps) => 
             </div>
 
             {/* Asset List */}
-            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto">
+            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto gap-y-2">
               {filteredAssets.length > 0 ? (
-                filteredAssets.map(([key, value]) => {
-                  // Find the asset context for this asset
-                  const assetIndex = universe.findIndex((asset) => asset.name === key)
-                  const assetCtx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
+                <>
+                  {/* Favorite Assets Section */}
+                  <div className="  flex flex-col gap-y-2">
+                    {filteredAssets
+                      .filter(([key]) => isFavorite(key, type))
+                      .map(([key, value]) => {
+                        // Find the asset context for this asset
+                        const assetIndex = universe.findIndex((asset) => asset.name === key)
+                        const assetCtx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
 
-                  // Calculate formatted 24h change
-                  let change24h = '0.00%'
-                  if (assetCtx?.prevDayPx && assetCtx?.midPx) {
-                    const prevDayPrice = assetCtx.prevDayPx
-                    const currentPrice = assetCtx.midPx
-                    const change = currentPrice - prevDayPrice
-                    const percentageChange = (change / prevDayPrice) * 100
-                    const isPositive = percentageChange >= 0
-                    change24h = `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`
-                  }
+                        // Calculate formatted 24h change
+                        let change24h = '0.00%'
+                        if (assetCtx?.prevDayPx && assetCtx?.midPx) {
+                          const prevDayPrice = assetCtx.prevDayPx
+                          const currentPrice = assetCtx.midPx
+                          const change = currentPrice - prevDayPrice
+                          const percentageChange = (change / prevDayPrice) * 100
+                          const isPositive = percentageChange >= 0
+                          change24h = `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`
+                        }
 
-                  return (
-                    <AssetItem
-                      key={key}
-                      assetKey={key}
-                      value={value}
-                      selectedAsset={selectedAsset}
-                      setSelectedAsset={handleAssetSelect}
-                      icons={CRYPTO_ICONS}
-                      isInSelectorDropdown={true}
-                      price={value}
-                      change24h={change24h}
-                      type={type}
-                    />
-                  )
-                })
+                        return (
+                          <AssetItem
+                            key={key}
+                            assetKey={key}
+                            value={value}
+                            selectedAsset={selectedAsset}
+                            setSelectedAsset={handleAssetSelect}
+                            icons={CRYPTO_ICONS}
+                            isInSelectorDropdown={true}
+                            price={value}
+                            change24h={change24h}
+                            type={type}
+                          />
+                        )
+                      })}
+                  </div>
+
+                  {/* All Assets Section */}
+                  <div className="flex flex-col gap-y-2">
+                    {filteredAssets
+                      .filter(([key]) => !isFavorite(key, type))
+                      .map(([key, value]) => {
+                        // Find the asset context for this asset
+                        const assetIndex = universe.findIndex((asset) => asset.name === key)
+                        const assetCtx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
+
+                        // Calculate formatted 24h change
+                        let change24h = '0.00%'
+                        if (assetCtx?.prevDayPx && assetCtx?.midPx) {
+                          const prevDayPrice = assetCtx.prevDayPx
+                          const currentPrice = assetCtx.midPx
+                          const change = currentPrice - prevDayPrice
+                          const percentageChange = (change / prevDayPrice) * 100
+                          const isPositive = percentageChange >= 0
+                          change24h = `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`
+                        }
+
+                        return (
+                          <AssetItem
+                            key={key}
+                            assetKey={key}
+                            value={value}
+                            selectedAsset={selectedAsset}
+                            setSelectedAsset={handleAssetSelect}
+                            icons={CRYPTO_ICONS}
+                            isInSelectorDropdown={true}
+                            price={value}
+                            change24h={change24h}
+                            type={type}
+                          />
+                        )
+                      })}
+                  </div>
+                </>
               ) : (
                 <div className="p-6 text-center text-gray-400">No assets found.</div>
               )}
