@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { useAccount, useReadContract, useWalletClient, useWriteContract } from 'wagmi'
+import { useState } from 'react'
+import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
 import { ChevronDown, X } from 'lucide-react'
 import Image from 'next/image'
@@ -20,7 +20,6 @@ interface DepositModalProps {
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { address } = useAccount()
-  const { data: walletClient } = useWalletClient()
   const { showToast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [stayConnected, setStayConnected] = useState(true)
@@ -41,52 +40,29 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     onClose()
   }
 
-  const onDepositClick = () => {
+  const onEstablishConnection = async () => {
+    setHasConnected(!hasConnected)
+  }
+
+  const onDepositClick = async () => {
     if (!usdc) return
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      writeContract({
+    try {
+      setIsLoading(true)
+      await writeContract({
         address: usdc.address,
         abi: erc20Abi,
         functionName: 'transfer',
         args: [HYPERLIQUID_DEPOSIT, amount]
       })
+      setIsLoading(false)
       handleCloseModal()
-      setTimeout(() => {
-        showToast(
-          'success',
-          'Deposit confirmed. Balance will update on the next block.',
-          `<span className="text-[#2FA766]">Arbiscan Link</span>`
-        )
-      }, 2000)
-    }, 3000)
-  }
-  const onEstablishConnection = async () => {
-    if (!walletClient || !address) {
-      return
-    }
-    try {
-      await walletClient.signMessage({
-        account: address,
-        message: JSON.stringify({
-          primaryType: 'HyperliquidTransaction:ApproveAgent',
-          hyperliquidChain: 'Mainnet',
-          agentAddress: address,
-          agentName: '',
-          nonce: Date.now().toString()
-        })
-      })
-      setHasConnected(!hasConnected)
-      localStorage.setItem(`hyperliquid_signature_${address}`, 'true')
-      setHasConnected(true)
-      if (!stayConnected) {
-        window.addEventListener('beforeunload', () => {
-          localStorage.removeItem(`hyperliquid_signature_${address}`)
-        })
-      }
-    } catch (err) {
-      console.error('Signature rejected or failed:', err)
+      showToast(
+        'success',
+        'Deposit confirmed. Balance will update on the next block.',
+        `<span className="text-[#2FA766]">Arbiscan Link</span>`
+      )
+    } catch (error) {
+      console.error('Deposit error:', error)
     }
   }
   const renderCloseButton = () => (
@@ -123,21 +99,6 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       </button>
     </div>
   )
-
-  useEffect(() => {
-    const saved = localStorage.getItem(`hyperliquid_signature_${address}`)
-    const stay = localStorage.getItem(`stay_connected_${address}`)
-    if (saved === 'true') {
-      setHasConnected(true)
-      setStayConnected(stay === 'true')
-    }
-  }, [address])
-
-  useEffect(() => {
-    if (address) {
-      localStorage.setItem(`stay_connected_${address}`, stayConnected?.toString())
-    }
-  }, [stayConnected, address])
 
   return (
     <Modal isOpen={isOpen} onClose={handleCloseModal}>
