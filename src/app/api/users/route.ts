@@ -147,3 +147,4 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to update user', details: error }, { status: 500 })
   }
 }
+
