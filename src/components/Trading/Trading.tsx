@@ -16,12 +16,12 @@ const Trading = () => {
       <FavoriteStrip setSelectedAsset={setSelectedAsset} />
       <div className="h-full bg-transparent flex flex-col px-4 md:px-10 gap-4 p-4">
         {/* Top Bar for Asset Selector */}
-        <div className="flex   justify-between items-center   relative">
+        <div className="flex   justify-between items-center relative">
           <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         </div>
         {/* Main Trading Layout */}
         <div className="flex gap-6  flex-col ">
-          <div className={`w-full gap-4 grid grid-cols-1 2xl:grid-cols-5  xl:h-[80vh]`}>
+          <div className={`w-full gap-4 grid grid-cols-1 2xl:grid-cols-5`}>
             {/* Chart on top in mobile, middle in desktop */}
             <div className="order-1 2xl:order-2 2xl:col-span-3 nexon-card h-full">
               <Chart selectedAsset={selectedAsset} />

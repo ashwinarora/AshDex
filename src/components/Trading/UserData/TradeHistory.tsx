@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+'use client'
+import React, { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
@@ -12,6 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
+import dynamic from 'next/dynamic'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 
@@ -95,6 +97,12 @@ const TradeHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { hyperliquidAxios } = useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
+  const [mounted, setMounted] = useState(false)
+
+  // Use useEffect to set mounted to true after hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data: tradeHistory } = useQuery<ITradeHistory[]>({
     queryKey: ['tradeHistory', address],
@@ -177,6 +185,11 @@ const TradeHistoryTable: React.FC = () => {
     return <WalletNotConnected />
   }
 
+  // During server-side rendering and initial client render, show a placeholder
+  if (!mounted) {
+    return <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100 h-40"></div>
+  }
+
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full hidden lg:table text-white">
@@ -250,4 +263,5 @@ const TradeHistoryTable: React.FC = () => {
   )
 }
 
-export default TradeHistoryTable
+// Export a dynamic version of the component with ssr disabled
+export default dynamic(() => Promise.resolve(TradeHistoryTable), { ssr: false })

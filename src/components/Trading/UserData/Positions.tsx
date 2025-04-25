@@ -17,6 +17,7 @@ import {
 import HeaderWithIcons from './component/HeaderWithIcon'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
+import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 
 type ColumnType = {
@@ -35,6 +36,11 @@ const Positions = () => {
   const { clearingHouseState, universe, sdk, agentWallet, isTestnet, hyperliquidAxios, allMids } =
     useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const helper = useMemo(
     () => createColumnHelper<IPositionData & { meta?: { label: string } }>(),
@@ -300,6 +306,10 @@ const Positions = () => {
     return <WalletNotConnected />
   }
 
+  if (!mounted) {
+    return <div className="overflow-x-auto w-full px-3 lg:px-4 h-40"></div>
+  }
+
   return (
     <div className="overflow-x-auto w-full px-3">
       <table className="w-full hidden lg:table text-white">
@@ -358,4 +368,4 @@ const Positions = () => {
   )
 }
 
-export default Positions
+export default dynamic(() => Promise.resolve(Positions), { ssr: false })
