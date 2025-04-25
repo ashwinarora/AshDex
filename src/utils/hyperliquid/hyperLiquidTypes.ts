@@ -369,3 +369,38 @@ export interface ITradeHistory {
   tid: number
   feeToken: string
 }
+
+export type ReferralData = {
+  referredBy: string | null
+  cumVlm: string
+  unclaimedRewards: string
+  claimedRewards: string
+  builderRewards: string
+  referrerState: ReadyReferrerState | NeedToTradeReferrerState | NeedToCreateCodeReferrerState
+  rewardHistory: Array<string> // TODO: define this type
+}
+
+type ReadyReferrerState = {
+  stage: 'ready'
+  data: {
+    code: string
+    referralStates: Array<{
+      cumVlm: string
+      cumRewardedFeesSinceReferred: string
+      cumFeesRewardedToReferrer: string
+      timeJoined: number
+      user: string
+    }>
+  }
+}
+
+type NeedToTradeReferrerState = {
+  stage: 'needToTrade'
+  data: {
+    required: string
+  }
+}
+
+type NeedToCreateCodeReferrerState = {
+  stage: 'needToCreateCode'
+}

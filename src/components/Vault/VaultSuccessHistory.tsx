@@ -93,7 +93,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
         >
           Go Back
         </button>
-        <button className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer">
+        <button className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer">
           {isFinalSuccess ? (
             <span>Go to history</span>
           ) : (

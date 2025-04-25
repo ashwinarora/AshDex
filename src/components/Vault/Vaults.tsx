@@ -78,14 +78,14 @@ const Vaults = () => {
                 {isConnected && tradingEnabled ? (
                   <button
                     onClick={handleCreateVault}
-                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] flex items-center justify-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] flex items-center justify-center py-[10px] bg-[#5F46F9] font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
                   >
                     <span className="2xl:block">Create Vault</span>
                   </button>
                 ) : (
                   <button
                     onClick={!isConnected ? toggleConnectWalletModal : handleEnableTrading}
-                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex justify-center items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+                    className="md:w-fit w-full 2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex justify-center items-center py-[10px] bg-[#5F46F9] font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
                   >
                     {!isConnected && (
                       <Image

@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi'
 import { OPEN_ORDERS_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import NoData from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
@@ -70,7 +70,7 @@ const OpenOrders = () => {
                   col?.key === 'direction'
                     ? 'text-[#2FA766] font-medium'
                     : col?.key === 'type'
-                      ? 'bg-[#505061] text-sm font-medium text-[#FFFFFF] px-1.5 py-0.5 rounded-lg'
+                      ? 'bg-[#505061] text-sm font-medium text-white px-1.5 py-0.5 rounded-lg'
                       : col?.key === 'reduceOnly'
                         ? 'bg-[#1F1F30] text-sm font-medium text-[#E2464A] px-2 py-0.5 rounded-lg'
                         : ''
@@ -124,15 +124,15 @@ const OpenOrders = () => {
               {paginatedOrders?.map((order) => {
                 return (
                   <tr key={order.id} className=" border-b border-white/10">
-                    <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                       {order?.time}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                      <span className="bg-[#505061] text-xs font-medium text-[#FFFFFF] px-2 py-1 rounded-lg">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-normal text-sm">
+                      <span className="bg-[#505061] text-xs font-medium text-white px-2 py-1 rounded-lg">
                         {order?.type}
                       </span>
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-semibold text-sm">
                       <div className="flex items-center gap-x-1">
                         <Image
                           src={bitcoinicon}
@@ -152,27 +152,27 @@ const OpenOrders = () => {
                     <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
                       {order?.direction}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                       {order?.size}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                       {order?.originalSize}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                       {order?.orderValue}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                       {order?.price}
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-normal text-sm">
                       <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                         {order?.reduceOnly}
                       </span>
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                       <span>{order.triggerConditions}</span>
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm whitespace-pre-line">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm whitespace-pre-line">
                       <span>{order.tpsl}</span>
                     </td>
                   </tr>
@@ -198,7 +198,7 @@ const OpenOrders = () => {
           )}
         </>
       ) : (
-        <NoData title="You have no orders." />
+        <WalletNotConnected title="You have no orders." />
       )}
     </div>
   )

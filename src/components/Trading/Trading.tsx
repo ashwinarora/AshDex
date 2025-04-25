@@ -21,19 +21,20 @@ const Trading = () => {
         </div>
         {/* Main Trading Layout */}
         <div className="flex gap-6  flex-col ">
-          <div className={`w-full gap-4  grid grid-cols-1 2xl:grid-cols-5`}>
+          <div className={`w-full gap-4 grid grid-cols-1 2xl:grid-cols-5  xl:h-[80vh]`}>
             {/* Chart on top in mobile, middle in desktop */}
-            <div className="order-1 2xl:order-2 2xl:col-span-3 nexon-card">
+            <div className="order-1 2xl:order-2 2xl:col-span-3 nexon-card h-full">
               <Chart selectedAsset={selectedAsset} />
             </div>
 
             {/* OrderBook: Left on desktop, middle in mobile */}
-            <div className="order-2 2xl:order-1 2xl:col-span-1 nexon-card">
+            <div className="order-2 2xl:order-1 2xl:col-span-1 overflow-hidden  nexon-card h-full">
+              {/* */}
               <OrderBook selectedAsset={selectedAsset} />
             </div>
 
             {/* PlaceOrder: Right on desktop, bottom in mobile */}
-            <div className="order-3 2xl:order-3 2xl:col-span-1 nexon-card">
+            <div className="order-3 2xl:order-3 2xl:col-span-1 nexon-card h-full">
               <PlaceOrder selectedAsset={selectedAsset} />
             </div>
           </div>

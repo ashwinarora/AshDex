@@ -290,7 +290,7 @@ export default function VaultDetails() {
               <p className="text-[#8B8BA0] tracking-normal px-2 font-normal text-sm align-middle my-2">
                 This vault uses the following vaults as component strategies:
               </p>
-              <p className="text-[#FFFFFF] flex items-center tracking-normal px-2 font-normal text-sm align-middle my-2 opacity-80">
+              <p className="text-white flex items-center tracking-normal px-2 font-normal text-sm align-middle my-2 opacity-80">
                 <span className="overflow-hidden" ref={strategiesRef}>
                   0x010461c14e146ac35fe42271bdc1134ee31c703a
                   0x2e3d94f0562703b25c83308a05046ddaf9a8dd14

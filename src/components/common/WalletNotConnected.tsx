@@ -6,14 +6,15 @@ import noordericon from '@/assets/images/noorder_icon.svg'
 type WalletNotConnectedProps = {
   title?: string
   description?: string
+  type?: string
 }
 
 const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
   title = 'Your wallet is currently disconnected',
-  description = 'Connect your wallet to access your balance, deposit funds, and manage your vaults.'
+  description = 'Connect your wallet to access your balance, deposit funds, and manage your vaults.',
+  type
 }) => {
   const { toggleConnectWalletModal } = useWalletModal()
-
   return (
     <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
       <Image
@@ -29,12 +30,14 @@ const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
           {description}
         </p>
       )}
-      <button
-        onClick={toggleConnectWalletModal}
-        className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
-      >
-        Connect Wallet
-      </button>
+      {type !== 'Referrals' && (
+        <button
+          onClick={toggleConnectWalletModal}
+          className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+        >
+          {'Connect Wallet'}
+        </button>
+      )}
     </div>
   )
 }

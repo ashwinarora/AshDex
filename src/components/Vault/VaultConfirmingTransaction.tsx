@@ -65,7 +65,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
           <>
             {/* Full-Width Header */}
             <div className="flex items-center justify-between mb-4 w-full">
-              <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">
+              <p className="text-lg text-white font-semibold tracking-[0em]">
                 Confirming the Transaction
               </p>
               <button
