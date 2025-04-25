@@ -6,13 +6,25 @@ import { BALANCE_FEATURE_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import useIsSpot from '@/hooks/useIsSpot'
+import { useEffect, useState } from 'react'
 
 const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperLiquid()
   const isSpot = useIsSpot()
+  const [isClient, setIsClient] = useState(false)
+
+  // Use useEffect to set isClient to true after hydration
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const spotColumns = ['Coin', 'Tokens', 'Total Balance', 'Hold', 'Entry NTL']
+
+  // During server-side rendering and initial client render, show a placeholder
+  if (!isClient) {
+    return <div className="overflow-x-auto w-full px-3 lg:px-4 h-40"></div>
+  }
 
   if (!isConnected) {
     return <WalletNotConnected />
