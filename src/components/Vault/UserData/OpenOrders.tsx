@@ -6,7 +6,7 @@ import { useAccount } from 'wagmi'
 import { OPEN_ORDERS_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import NoData from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
@@ -198,7 +198,7 @@ const OpenOrders = () => {
           )}
         </>
       ) : (
-        <NoData title="You have no orders." />
+        <WalletNotConnected title="You have no orders." />
       )}
     </div>
   )

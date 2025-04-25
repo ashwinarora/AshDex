@@ -24,17 +24,12 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
     )
   }, [referralsDetails])
 
-  const eligibleAmount = useMemo(() => {
-    const required = referralsDetails?.referrerState?.data?.required
-    return required ? parseFloat(required) : 0
-  }, [referralsDetails])
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Enter Code':
         return <EnterCode isCreateCode={isCreateCode} />
       case 'Create Code':
-        return <CreateCode eligibleAmount={eligibleAmount} isCreateCode={isCreateCode} />
+        return <CreateCode />
       case 'Claim':
         return <Claim isCreateCode={isCreateCode} totalClaim={totalClaim} />
       default:
@@ -92,7 +87,6 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
           </div>
         </div>
       )}
-
       <div className="py-4 px-4 min-2xl:px-8">
         <div className="flex mb-5 items-center justify-between space-x-2  ">
           {REFERRALSINFO_TAB?.map((tab) => (
