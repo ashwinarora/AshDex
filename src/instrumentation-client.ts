@@ -2,9 +2,8 @@
 // The added config here will be used whenever a users loads a page in their browser.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/
 
-import * as Sentry from '@sentry/nextjs' 
-if (process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true') { 
-   
+import * as Sentry from '@sentry/nextjs'
+if (process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true') {
   Sentry.init({
     dsn: 'https://26e6f006235d537c7129de65f28f5575@o4509212957933568.ingest.de.sentry.io/4509212993060945',
 
