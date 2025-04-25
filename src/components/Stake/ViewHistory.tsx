@@ -39,7 +39,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
         className="mt-4 border-2 p-3 border-white/10 backdrop-blur-[40px] rounded-xl"
       >
         <div className="flex py-3 justify-between items-center">
-          <p className="text-[#FFFFFF] tracking-normal font-semibold text-base">
+          <p className="text-white tracking-normal font-semibold text-base">
             Staking Actions History
           </p>
           <div className="flex items-center gap-x-3">
@@ -59,7 +59,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
               </div>
             </div>
             <CheckBox label="Show auto-compounding" setIsChecked={setShow} isChecked={show} />
-            <button className="text-sm px-4 py-2.5 rounded-2xl bg-primary text-[#FFFFFF] font-semibold">
+            <button className="text-sm px-4 py-2.5 rounded-2xl bg-primary text-white font-semibold">
               Export as CSV
             </button>
           </div>
@@ -92,10 +92,10 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
             <tbody>
               {paginatedPositions?.map((position, index) => (
                 <tr key={index} className=" border-b border-white/10">
-                  <td className="py-3.5 md:px-0 px-7 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-3.5 md:px-0 px-7 text-white font-medium text-sm">
                     {position.time}
                   </td>
-                  <td className="py-3.5 opacity-80 md:px-0 px-7 text-[#FFFFFF] font-medium text-sm">
+                  <td className="py-3.5 opacity-80 md:px-0 px-7 text-white font-medium text-sm">
                     {show && position.action === 'Reward' ? (
                       <div>
                         {position.action}
@@ -105,20 +105,18 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
                       position.action
                     )}
                   </td>
-                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
-                    <span className="text-base text-[#FFFFFF] font-medium">
-                      {position.validator}
-                    </span>
+                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
+                    <span className="text-base text-white font-medium">{position.validator}</span>
                     <p className="text-sm text-[#8B8BA0] mt-0.5">{position.description}</p>
                   </td>
-                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
                     <span
                       className={`font-medium  p-1.5 rounded-[8px] ${position.status === 'Success' ? 'text-[#2FA766] bg-[#213539]' : 'text-white bg-[#50505e]'}`}
                     >
                       {position.status}
                     </span>
                   </td>
-                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                  <td className="py-3.5 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
                     {position.amountChange}
                   </td>
                 </tr>

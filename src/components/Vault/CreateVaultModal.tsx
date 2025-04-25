@@ -79,7 +79,7 @@ export const CreateVaultModal = ({ createVaultModal, handleCreateVault }: Props)
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between w-full">
-          <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">
+          <p className="text-lg text-white font-semibold tracking-[0em]">
             {!isSuccess && 'Create your own vault'}
           </p>
           <button

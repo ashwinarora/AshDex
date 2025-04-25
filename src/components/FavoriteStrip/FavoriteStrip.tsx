@@ -16,7 +16,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
 
   return (
     <div className="relative w-full overflow-hidden bg-[#0f081681] border-y border-white/5">
-      <div className="xl:w-24 w-16 h-full absolute left-0 top-0 z-10 bg-gradient-to-l from-transparent via-secondary via-50% to-secondary"></div>
+      <div className="xl:w-24 w-12 h-full absolute left-0 top-0 z-10 bg-gradient-to-l from-transparent via-secondary via-50% to-secondary"></div>
 
       <Splide
         className="xl:mx-12 mx-8"
@@ -37,7 +37,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
         ))}
       </Splide>
 
-      <div className="xl:w-24 w-16 h-full absolute right-0 top-0 z-10 bg-gradient-to-r from-transparent via-secondary via-50% to-secondary"></div>
+      <div className="xl:w-24 w-12 h-full absolute right-0 top-0 z-10 bg-gradient-to-r from-transparent via-secondary via-50% to-secondary"></div>
     </div>
   )
 }

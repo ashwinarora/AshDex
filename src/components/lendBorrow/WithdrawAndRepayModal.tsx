@@ -75,7 +75,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
       >
         {/* Full-Width Header */}
         <div className="flex items-center justify-between mb-4 w-full">
-          <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">{type}</p>
+          <p className="text-lg text-white font-semibold tracking-[0em]">{type}</p>
           <button
             onClick={handleCloseModal}
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"

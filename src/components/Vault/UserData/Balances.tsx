@@ -102,7 +102,7 @@ const Balances = () => {
                 {paginatedBalance?.map((item, index) => {
                   return (
                     <tr key={index} className="cursor-pointer border-b border-white/10">
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-semibold text-sm">
                         <div className="flex items-center gap-x-1">
                           <Image
                             src={bitcoinicon}
@@ -119,19 +119,19 @@ const Balances = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         {item?.totalBalance}
                       </td>
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         {item?.availableBalance}
                       </td>
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         {item?.usdc}
                       </td>
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         <span className="text-[#2FA766]">{item?.pnl}</span>
                       </td>
-                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
+                      <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         {item?.contract}
                       </td>
                     </tr>
