@@ -1,10 +1,12 @@
+import React, { useState } from 'react'
+import ReactDOM from 'react-dom'
+import Image from 'next/image'
+import { X } from 'lucide-react'
+import { useAccount, useSignTypedData } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
 import { splitSignature } from '@/utils/utils'
-import { X } from 'lucide-react'
-import React, { useState } from 'react'
-import ReactDOM from 'react-dom'
-import { useAccount, useSignTypedData } from 'wagmi'
+import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
 
 interface ITransferModal {
   isOpen: boolean
@@ -41,11 +43,17 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
       className="fixed inset-0 bg-[#0F081680] bg-opacity-70 backdrop-blur-[40px] flex justify-center items-center z-50"
       onClick={handleBackdropClick}
     >
-      <div className="bg-secondary text-white p-6 rounded-lg shadow-lg max-w-md w-full">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Transfer between Perp and Spot</h2>
+      <div
+        className="w-full max-w-md max-md:max-w-sm border-white/10 border-[2px] bg-[#0F0816] max-md:p-3 p-6 rounded-2xl shadow-lg 
+          relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4 w-full">
+          <p className="text-lg text-[#FFFFFF] font-medium tracking-[0em]">
+            Transfer between Perp and Spot
+          </p>
           <button
-            className="text-xl font-bold text-gray-500 hover:text-gray-700 dark:text-gray-300 dark:hover:text-gray-100"
+            className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
             onClick={onClose}
           >
             <X className="w-5 h-5" />
@@ -53,46 +61,40 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
         </div>
         <div className="flex items-center justify-between">
           <div
-            className={`p-4 bg-gray-200 dark:bg-gray-700 dark:text-gray-300 border rounded-lg w-24 text-center`}
+            className={`flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left`}
           >
             {toPerp ? 'Spot' : 'Perp'}
           </div>
-          <button
-            className="mx-4 text-xl dark:text-gray-300"
-            onClick={() => setToPerp((prev) => !prev)}
-          >
-            →
+          <button className="mx-4 cursor-pointer" onClick={() => setToPerp((prev) => !prev)}>
+            <Image src={arrowsorticon} alt="Swap" width={17} height={17} />
           </button>
-          <div className={`p-4 bg-blue-500 text-white border rounded-lg w-24 text-center`}>
+          <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
             {!toPerp ? 'Spot' : 'Perp'}
           </div>
         </div>
-        <div className="mb-4">
-          <label
-            htmlFor="amount"
-            className="text-sm font-medium text-gray-300 flex justify-between"
-          >
+        <div className="my-4">
+          <div className="flex mb-2 justify-between font-medium text-sm text-[#8B8BA0]">
             <div>Amount</div>
             <div>Balance: {getBalance()} USDC</div>
-          </label>
-          <div className="relative mt-2">
+          </div>
+          <div className="flex items-center border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-3 py-2 rounded-lg mb-3">
             <input
               type="number"
               id="amount"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="block w-full bg-gray-700 border border-gray-500 text-gray-300 rounded-lg py-2 px-3 pr-20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Enter amount"
+              className="bg-transparent text-white placeholder-[#8B8BA0] text-lg w-full outline-none"
+              placeholder="0.00"
             />
-            <button
-              onClick={() => setAmount(getBalance())}
-              className="absolute right-14 top-1/2 transform -translate-y-1/2 bg-blue-500 text-white text-sm font-medium py-1 px-3 rounded-lg hover:bg-blue-600 focus:outline-none"
-            >
-              Max
-            </button>
-            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-300">
-              USDC
-            </span>
+            <div className="flex items-center gap-x-2">
+              <button
+                onClick={() => setAmount(getBalance())}
+                className="text-[#8B8BA0] border py-1 px-2 border-white/10 bg-[#FFFFFF0F] text-sm font-medium rounded-lg"
+              >
+                Max
+              </button>
+              <span className="text-[#8B8BA0] text-sm font-medium">USDC</span>
+            </div>
           </div>
         </div>
         <div className="flex justify-between">
@@ -127,7 +129,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
                 console.error('Transfer failed:', error)
               }
             }}
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="w-full bg-primary cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold"
           >
             Transfer to {toPerp ? 'Perp' : 'Spot'}
           </button>
