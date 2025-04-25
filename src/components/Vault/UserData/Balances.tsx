@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import Pagination from '@/components/common/Pagination'
-import NoData from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/common/WalletNotConnected'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { BALANCE_VAULTS_COLUMNS } from '@/utils/constants'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
@@ -158,7 +158,7 @@ const Balances = () => {
           )}
         </div>
       ) : (
-        <NoData
+        <WalletNotConnected
           title="Your wallet is currently disconnected"
           description="Connect your wallet to access your balance, deposit funds, and manage your vaults."
         />

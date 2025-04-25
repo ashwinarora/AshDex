@@ -34,9 +34,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const existingUser = await getUserByWalletId(address)
 
       if (existingUser) {
-        console.log('User already exists')
         setCurrentUser(existingUser)
-        console.log(existingUser)
       } else {
         // Generate a random username based on wallet address
         const randomUsername = `user_${address.slice(2, 8)}`
