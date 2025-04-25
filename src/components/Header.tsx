@@ -17,6 +17,8 @@ import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
 import Link from 'next/link'
 import Avatar from './common/Avatar'
+import WithdrawModal from './DepositWithdraw/WithdrawModal'
+import DepositModal from './DepositWithdraw/DepositModal'
 import {
   IconBell,
   IconCopy,
@@ -44,6 +46,8 @@ const Header: FC = () => {
   const [isOpen, setIsOpen] = useState(false)
   const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [isDepositOpen, setIsDepositOpen] = useState(false)
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
@@ -252,6 +256,18 @@ const Header: FC = () => {
                     Settings
                   </Link>
                   <button
+                    onClick={() => setIsDepositOpen(true)}
+                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                  >
+                    Deposit
+                  </button>
+                  <button
+                    onClick={() => setIsWithdrawOpen(true)}
+                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                  >
+                    Withdraw
+                  </button>
+                  <button
                     onClick={() => disconnect()}
                     className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-white/10 cursor-pointer"
                   >
@@ -327,6 +343,8 @@ const Header: FC = () => {
           </nav>
         </div>
       )}
+      <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
+      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
     </>
   )
 }
