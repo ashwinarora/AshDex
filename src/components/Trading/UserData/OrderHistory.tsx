@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
@@ -15,10 +15,17 @@ import {
 } from '@tanstack/react-table'
 import { HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
+import dynamic from 'next/dynamic'
 
-const OrderHistory: React.FC = () => {
+const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { sdk } = useHyperLiquid()
+  const [mounted, setMounted] = useState(false)
+
+  // Use useEffect to set mounted to true after hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const { data: orderHistory = [] } = useQuery<HistoricOrder[]>({
     queryKey: ['orderHistory', address],
@@ -101,6 +108,11 @@ const OrderHistory: React.FC = () => {
 
   if (!isConnected) {
     return <WalletNotConnected />
+  }
+
+  // During server-side rendering and initial client render, show a placeholder
+  if (!mounted) {
+    return <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100 h-40"></div>
   }
 
   return (
@@ -202,4 +214,5 @@ const OrderHistory: React.FC = () => {
   )
 }
 
-export default OrderHistory
+// Export a dynamic version of the component with ssr disabled
+export default dynamic(() => Promise.resolve(OrderHistoryTable), { ssr: false })

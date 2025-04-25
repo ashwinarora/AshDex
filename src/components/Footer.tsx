@@ -1,6 +1,6 @@
 'use client'
 
-import { FC } from 'react'
+import { FC, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -10,10 +10,32 @@ import linkicon from '@/assets/images/telegram_icon.svg'
 import forwardicon from '@/assets/images/twitter_icon.svg'
 import { IconMoonFilled } from '@tabler/icons-react'
 import BridgeButton from './common/BridgeButton'
+import dynamic from 'next/dynamic'
 
-const Footer: FC = () => {
+const FooterContent: FC = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
+  const [mounted, setMounted] = useState(false)
+
+  // Use useEffect to set mounted to true after hydration
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  // During server-side rendering and initial client render, show a placeholder
+  if (!mounted) {
+    return (
+      <footer
+        className="nexon-card border border-[#251A3C] rounded-2xl pt-0 p-5 md:p-8"
+        style={{
+          backdropFilter: 'blur(40px)',
+          WebkitBackdropFilter: 'blur(40px)'
+        }}
+      >
+        <div className="h-40"></div>
+      </footer>
+    )
+  }
 
   return (
     <footer
@@ -147,4 +169,5 @@ const Footer: FC = () => {
   )
 }
 
-export default Footer
+// Export a dynamic version of the component with ssr disabled
+export default dynamic(() => Promise.resolve(FooterContent), { ssr: false })

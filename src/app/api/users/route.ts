@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
 
     console.log(result, 'result USer')
     if (!result) {
-      return NextResponse.json({ message: 'User not found' }, { status: 404 })
+      // Return a 200 status with null data instead of a 404
+      return NextResponse.json({ data: null, message: 'User not found' }, { status: 200 })
     }
 
     return NextResponse.json(result)

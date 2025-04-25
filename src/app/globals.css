@@ -181,9 +181,11 @@ input {
 }
 
 .nexon-button {
-  @apply bg-white/5 backdrop-blur-2xl flex py-2 px-4 rounded-xl   transition-colors duration-200 cursor-pointer;
+  @apply bg-white/5 flex py-2 px-4 rounded-xl transition-colors duration-200 cursor-pointer;
   @apply overflow-clip;
   @apply max-h-min;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .nexon-ghost {
   @apply bg-transparent;
@@ -197,8 +199,7 @@ input {
 }
 
 .nexon-primary {
-  @apply bg-primary text-white py-2 px-4  transition-colors duration-200 cursor-pointer;
-
+  @apply bg-primary text-white py-2 px-4 transition-colors duration-200 cursor-pointer rounded-xl;
   @apply hover:bg-primary/60;
 }
 

@@ -39,8 +39,21 @@ export async function getUserByWalletId(walletId: string): Promise<User | null> 
   try {
     const response = await axios.get(`/api/users?wallet_id=${walletId}`)
 
+    // Check if the response has a data property that might be null
+    if (response.data && 'data' in response.data) {
+      return response.data.data
+    }
+
+    // Otherwise return the response data directly
     return response.data ? response.data : null
   } catch (error) {
+    // Check if the error is a 404 response (user not found)
+    if (axios.isAxiosError(error) && error.response?.status === 404) {
+      // This is expected when a user doesn't exist yet, so we don't need to log an error
+      return null
+    }
+
+    // For other errors, log and show toast
     console.error('Error fetching user by wallet ID:', error)
     toast.error('Error fetching user by wallet ID:' + error)
     return null
