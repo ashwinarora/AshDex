@@ -180,7 +180,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     console.log('Subscribing to fills')
     sdk.subscriptions.subscribeToWebData2(userAddress, (data: IWebData2) => {
       const { clearinghouseState, assetCtxs, spotAssetCtxs, spotState, openOrders } = data
-      console.log(openOrders)
       setClearingHouseState(clearinghouseState)
       setOpenOrders(openOrders)
       setPerpAssetContext(assetCtxs)
