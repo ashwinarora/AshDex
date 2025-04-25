@@ -142,7 +142,7 @@ export const OPEN_ORDERS_VAULTS_COLUMNS = [
   { key: 'tpsl', label: 'TP/SL' }
 ] as const
 
-export const BALANCE_FEATURE_COLUMNS = [
+export const BALANCE_FUTURES_COLUMNS = [
   { key: 'totalBalance', label: 'Total Balance' },
   { key: 'withdrawableBalance', label: 'Withdrawable Balance' },
   { key: 'send', label: 'Send' },
