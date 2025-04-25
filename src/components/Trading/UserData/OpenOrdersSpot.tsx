@@ -41,12 +41,12 @@ const OpenOrdersSpot = () => {
           alt="No Orders"
           className="h-[93px] w-[93px] max-[770px]:w-[70px] max-[770px]:h-[70px]"
         />
-        <span className="font-medium text-center my-2.5 text-base text-[#FFFFFF]">
+        <span className="font-medium text-center my-2.5 text-base text-white">
           You have no orders.
         </span>
         <button
           onClick={toggleConnectWalletModal}
-          className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
+          className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
         >
           Connect Wallet
         </button>
@@ -80,41 +80,41 @@ const OpenOrdersSpot = () => {
         <tbody>
           {spotOrders.map((order) => (
             <tr key={order.id} className="border-b border-white/10">
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.time}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 <div className="flex flex-col gap-1">
                   <span>{order.symbol}</span>
                   <span className="text-[#8B8BA0] text-xs font-normal">{order.symbolText}</span>
                 </div>
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.type}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.side}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.price}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.amount}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 {order.filled}
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                   {order.reduceOnly}
                 </span>
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 <span className="text-[#2FA766] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                   {order.postOnly}
                 </span>
               </td>
-              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
                 <div className="flex flex-col gap-1">
                   <span>{order.triggerConditions}</span>
                   <span className="text-[#8B8BA0] text-xs font-normal">Mark Price</span>
@@ -123,7 +123,7 @@ const OpenOrdersSpot = () => {
               <td className="py-2.5 pr-7 max-[1025px]:px-7 text-[#7D67FF] font-medium text-sm">
                 {order.tp_sl}
               </td>
-              <td className="py-2.5 pl-7 max-[1450px]:px-2 text-[#FFFFFF] font-normal text-sm">
+              <td className="py-2.5 pl-7 max-[1450px]:px-2 text-white font-normal text-sm">
                 <Image src={deleteicon} alt="Delete" className="w-[17px] h-[17px] cursor-pointer" />
               </td>
             </tr>

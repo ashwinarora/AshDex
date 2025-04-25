@@ -45,10 +45,10 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
           className="rounded-xl border-2 border-white/10 p-3 backdrop-blur-[40px]"
         >
           <p className="text-[#8B8BA0] font-medium text-sm">Available Staking Balance</p>
-          <p className="text-xl font-medium text-[#FFFFFF]">95,123.24 HYPE</p>
+          <p className="text-xl font-medium text-white">95,123.24 HYPE</p>
           <button
             onClick={toggleTransferModal}
-            className="w-full text-sm my-3 bg-primary cursor-pointer text-[#FFFFFF] py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
+            className="w-full text-sm my-3 bg-primary cursor-pointer text-white py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
           >
             Spot{' '}
             <Image src={arrowsorticon} alt="arrowsorticon" className="w-3.5 h-3.5 cursor-pointer" />
@@ -62,7 +62,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
             className="p-2.5 rounded-xl font-medium mt-4 border-2 border-white/10 backdrop-blur-[40px] flex justify-between items-center"
           >
             <p className="text-[#8B8BA0] text-xs">Pending Transfers to Spot Balance</p>
-            <p className="flex text-[#FFFFFF] text-base items-center gap-2">
+            <p className="flex text-white text-base items-center gap-2">
               <Image
                 src={hyperliquidicon}
                 alt="hyperliquidicon"
@@ -74,7 +74,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
         </div>
         <button
           onClick={handleViewHistory}
-          className="w-full bg-white/10 text-[#FFFFFF] text-sm py-3 rounded-xl font-semibold tracking-normal cursor-pointer"
+          className="w-full bg-white/10 text-white text-sm py-3 rounded-xl font-semibold tracking-normal cursor-pointer"
         >
           View Actions history
         </button>

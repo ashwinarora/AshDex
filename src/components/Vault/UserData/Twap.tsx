@@ -129,7 +129,7 @@ function Twap() {
           {paginatedOrders?.map((order) => {
             return (
               <tr key={order.id} className=" border-b border-white/10">
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-semibold text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-semibold text-sm">
                   <div className="flex items-center gap-x-1">
                     <Image
                       src={bitcoinicon}
@@ -146,26 +146,26 @@ function Twap() {
                     </div>
                   </div>
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.size}
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.executedSize}
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.averagePrice}
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.runningTime}
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-normal text-sm">
                   <span
                     className={`${order?.reduceOnly === 'Yes' ? 'text-[#2FA766] bg-[#1F1F30]' : 'text-[#E2464A] bg-[#1F1F30]'}  ml-1 px-1.5 py-1 rounded-lg  font-semibold text-sm`}
                   >
                     {order?.reduceOnly}
                   </span>
                 </td>
-                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
+                <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   <button className="bg-white/10 px-6 flex justify-center py-2.5 cursor-pointer font-semibold rounded-xl text-sm w-1/2">
                     Terminate
                   </button>

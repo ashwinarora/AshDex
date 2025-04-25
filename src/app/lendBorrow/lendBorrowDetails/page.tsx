@@ -108,7 +108,7 @@ function LendBorrowDetails() {
                       <p className="text-white flex items-center justify-start font-medium text-xl">
                         {item?.value}
                         {item?.difference && (
-                          <span className="px-[5px] ml-3 rounded-[8px] text-xs font-medium text-[#FFFFFF] py-[2px] bg-[#1F1F30]">
+                          <span className="px-[5px] ml-3 rounded-[8px] text-xs font-medium text-white py-[2px] bg-[#1F1F30]">
                             {item?.difference}
                           </span>
                         )}
@@ -141,7 +141,7 @@ function LendBorrowDetails() {
                       <p className="text-white flex items-center justify-start font-medium text-xl">
                         {item?.value}
                         {item?.difference && (
-                          <span className="px-[5px] ml-3 rounded-[8px] text-xs font-medium text-[#FFFFFF] py-[2px] bg-[#1F1F30]">
+                          <span className="px-[5px] ml-3 rounded-[8px] text-xs font-medium text-white py-[2px] bg-[#1F1F30]">
                             {item?.difference}
                           </span>
                         )}

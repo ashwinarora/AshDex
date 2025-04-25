@@ -128,7 +128,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
               </div>
             </div>
             <p className="text-sm text-[#8B8BA0] font-normal">Info</p>
-            <div className="  font-normal overflow-y-auto text-sm text-[#FFFFFF] space-y-4 pr-2">
+            <div className="  font-normal overflow-y-auto text-sm text-white space-y-4 pr-2">
               {(coinInfo?.description ?? '')
                 ?.split('\n')
                 .map((line: string, index: number) => <div key={index}>{line}</div>)}

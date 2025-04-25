@@ -20,7 +20,6 @@
   --tw-color-aggrid-hover: #374151;
   --tw-color-aggrid-pagination: #1f2937;
   --tw-color-aggrid-paginationtext: #ffffff;
-
   --toastify-toast-background: #1c1725;
 }
 
@@ -34,7 +33,12 @@
   --font-mono: var(--font-geist-mono);
   --font-dm-mono: var(--font-dm-mono);
   --font-proxima-nova: var(--font-proxima-nova);
+  --font-proxima-nova-bold: var(--font-proxima-nova-bold);
+  --font-proxima-nova-light: var(--font-proxima-nova-light);
+  --font-proxima-nova-extra-bold: var(--font-proxima-nova-extra-bold);
   --font-proxima-nova-black: var(--font-proxima-nova-black);
+  --font-proxima-nova-black-italic: var(--font-proxima-nova-black-italic);
+  --font-proxima-nova-bold-italic: var(--font-proxima-nova-bold-italic);
 }
 
 .Toastify__toast {
@@ -61,14 +65,11 @@
   font-family: var(--font-dm-mono);
 }
 .font-proxima-nova {
-  font-family: var(--font-proxima-nova);
-}
-.font-proxima-nova-black {
-  font-family: var(--font-proxima-nova-black);
+  font-family: var(--font-proxima-nova), Arial, Helvetica, sans-serif;
 }
 body {
   color: var(--foreground);
-  font-family: var(--font-proxima-nova);
+  font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
   background:
     radial-gradient(
       1100px circle at 30% top,
@@ -83,6 +84,26 @@ body {
   width: 100%;
   margin: 0;
   padding: 0;
+}
+
+.font-bold {
+  font-family: 'Proxima Nova Bold';
+}
+
+.font-semi-bold {
+  font-family: 'Proxima Nova Semi Bold';
+}
+
+.font-light {
+  font-family: 'Proxima Nova Light';
+}
+
+.font-extra-bold {
+  font-family: 'Proxima Nova Extra Bold';
+}
+
+.font-black {
+  font-family: 'Proxima Nova Black';
 }
 
 ::-webkit-scrollbar {
@@ -160,7 +181,7 @@ input {
 }
 
 .nexon-button {
-  @apply bg-white/5 backdrop-blur-2xl  py-2 px-4 rounded-xl   transition-colors duration-200 cursor-pointer;
+  @apply bg-white/5 backdrop-blur-2xl flex py-2 px-4 rounded-xl   transition-colors duration-200 cursor-pointer;
   @apply overflow-clip;
   @apply max-h-min;
 }

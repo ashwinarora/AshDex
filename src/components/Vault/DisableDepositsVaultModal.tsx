@@ -51,7 +51,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between mb-4 w-full">
-            <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">
+            <p className="text-lg text-white font-semibold tracking-[0em]">
               {' '}
               {isDepositsDisabled ? 'Enable Deposits' : 'Disable Deposits'}
             </p>{' '}
@@ -99,7 +99,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
                 <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
                   {item?.label}:
                 </span>
-                <span className="text-[#FFFFFF] text-sm font-medium flex items-center gap-x-2">
+                <span className="text-white text-sm font-medium flex items-center gap-x-2">
                   {item?.value}
                 </span>
               </div>
@@ -115,7 +115,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             </button>
             <button
               onClick={handleDisable}
-              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer"
+              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer"
             >
               <span>Disable Deposits</span>
             </button>

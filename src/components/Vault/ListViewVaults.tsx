@@ -163,7 +163,7 @@ function ListViewVaults() {
                 key={index}
                 className=" border-b border-white/10 cursor-pointer"
               >
-                <td className="py-3 pr-7 text-[#FFFFFF] opacity-80 font-normal text-sm ">
+                <td className="py-3 pr-7 text-white opacity-80 font-normal text-sm ">
                   <div className="flex items-center gap-1">
                     <Image
                       width={30}
@@ -178,33 +178,33 @@ function ListViewVaults() {
                     </div>
                   </div>
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   {position?.leader}
                 </td>
-                <td className="py-3 pr-7 opacity-80  text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80  text-white font-normal text-sm">
                   {position?.apr}
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   <div className="flex items-center space-x-2">
                     <p>{position?.totalFunds}</p>
                     <p className="text-[#2FA766]">${'+$190,73'}</p>
                   </div>
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   {position?.yourDeposit}
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   {position?.age}
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   <div className="h-[15px] w-16">
                     <SparklineChart data={position?.snapshot} />
                   </div>
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   <StatusRenderer value={position?.status} />
                 </td>
-                <td className="py-3 pr-7 opacity-80 text-[#FFFFFF] font-normal text-sm">
+                <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   <ActionRenderer value={position?.status} />
                 </td>
               </tr>

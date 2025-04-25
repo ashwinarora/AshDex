@@ -62,7 +62,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
         >
           <div className="flex items-start justify-between max-md:mb-2 mb-4 w-full">
             <p className="flex flex-col">
-              <span className="text-lg flex flex-col text-[#FFFFFF] font-semibold tracking-[0em]">
+              <span className="text-lg flex flex-col text-white font-semibold tracking-[0em]">
                 {' '}
                 {isAutoCloseWithdraw
                   ? 'Disable Auto-Close on Withdraw'
@@ -119,7 +119,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
                 <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
                   {item?.label}:
                 </span>
-                <span className="text-[#FFFFFF] text-sm font-medium flex items-center gap-x-2">
+                <span className="text-white text-sm font-medium flex items-center gap-x-2">
                   {item?.value}
                 </span>
               </div>
@@ -178,7 +178,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
           </div>
           {!isAutoCloseWithdraw && (
             <div className="pl-3.5 pr-2 rounded-lg py-3 mt-5 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]">
-              <span className="text-[#FFFFFF] text-sm font-normal">
+              <span className="text-white text-sm font-normal">
                 If enabled, the vault will close when total withdrawals exceed 90% ($45,000).
               </span>
             </div>
@@ -192,7 +192,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
             </button>
             <button
               onClick={handleDisable}
-              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-lg md:rounded-xl cursor-pointer"
+              className=" w-1/2  px-[11px] justify-center  flex items-center py-[11px] bg-[#5F46F9] font-bold text-white text-sm rounded-lg md:rounded-xl cursor-pointer"
             >
               <span>{isAutoCloseWithdraw ? 'Disable Auto-Close' : 'Enable Auto-Close'}</span>
             </button>

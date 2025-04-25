@@ -209,7 +209,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             className="text-lg text-white flex items-center gap-x-2 focus:outline-none cursor-pointer"
           >
             <div className="flex flex-col">
-              <span className="text-[#FFFFFF] font-bold text-base text-nowrap">
+              <span className="text-white font-bold text-base text-nowrap">
                 {selectedAsset || 'Select an asset'}
               </span>
               <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium hidden">
@@ -241,9 +241,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div
-                  className={`font-medium md:text-sm text-xs    ${item.color || 'text-[#FFFFFF]'}`}
-                >
+                <div className={`font-medium md:text-sm text-x     ${item.color || 'text-white'}`}>
                   {item.value}
                 </div>
               </div>
@@ -314,7 +312,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 placeholder='e.g. "BTC" or "Bitcoin"'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm font-proxima-nova"
+                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm"
               />
             </div>
           </div>
@@ -325,7 +323,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <button
                 key={tab}
                 onClick={() => setSelectedTab(tab)}
-                className={`md:py-2  md:px-5 px-2 py-0    rounded-full transition-all duration-200 cursor-pointer ${
+                className={`md:py-2  md:px-5 px-2 py-0   rounded-full transition-all duration-200 cursor-pointer ${
                   selectedTab === tab
                     ? 'text-secondary bg-white/80  font-medium'
                     : 'text-white   bg-white/5 hover:bg-[#FFFFFF20]'
@@ -359,7 +357,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             </div>
 
             {/* Asset List */}
-            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto gap-y-2">
+            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto">
               {filteredAssets.length > 0 ? (
                 <>
                   {/* Favorite Assets Section */}
