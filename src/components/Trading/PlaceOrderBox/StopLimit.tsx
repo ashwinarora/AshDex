@@ -83,5 +83,4 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default StopLimit

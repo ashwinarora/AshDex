@@ -66,5 +66,4 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default StopMarket

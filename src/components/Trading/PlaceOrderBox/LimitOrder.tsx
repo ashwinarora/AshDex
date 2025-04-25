@@ -1,5 +1,6 @@
 'use client'
 import React, { useState } from 'react'
+import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -9,6 +10,7 @@ import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
+import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -25,7 +27,6 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0
     setLimitPrice(newLimitPrice)
@@ -35,7 +36,6 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="w-full h-auto">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-
       <div className="space-y-4">
         <div className="px-4 border-b border-[#FFFFFF0F]">
           <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
@@ -47,8 +47,9 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               onChange={handleLimitPriceChange}
               className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
             />
-            <span className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium">
-              USD
+            <span className="absolute right-2 top-1/2 flex text-sm items-center gap-x-1.5 -translate-y-1/2 text-[#7D67FF] font-medium">
+              <Image src={refreshpurpleIcon} alt="Refresh Icon" className="w-3.5 h-3.5" />
+              Last
             </span>
           </div>
         </div>
@@ -113,5 +114,4 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default LimitOrder
