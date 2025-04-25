@@ -35,7 +35,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       enabled: !!address
     }
   })
-  const { writeContract } = useWriteContract()
+  const { writeContractAsync } = useWriteContract()
   const handleCloseModal = () => {
     onClose()
   }
@@ -48,7 +48,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     if (!usdc) return
     try {
       setIsLoading(true)
-      await writeContract({
+      await writeContractAsync({
         address: usdc.address,
         abi: erc20Abi,
         functionName: 'transfer',
