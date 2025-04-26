@@ -14,53 +14,82 @@ import {
 import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
+import HeaderWithIcons from './component/HeaderWithIcon'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 
-const columnHelper = createColumnHelper<ITradeHistory>()
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
+
+const columnHelper = createColumnHelper<ITradeHistory & { meta?: { label: string } }>()
 
 const columns = [
   columnHelper.accessor('coin', {
-    header: 'Coin',
+    id: 'coin',
+    header: () => <HeaderWithIcons label="Coin" />,
     cell: (info) => info.getValue(),
-    enableSorting: false
+    enableSorting: false,
+    meta: { label: 'Coin' }
   }),
   columnHelper.accessor('px', {
-    header: 'Price',
+    id: 'px',
+    header: () => <HeaderWithIcons label="Price" />,
     cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px)
+    sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
+    meta: { label: 'Price' }
   }),
   columnHelper.accessor('sz', {
-    header: 'Size',
+    id: 'sz',
+    header: () => <HeaderWithIcons label="Size" />,
     cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz)
+    sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz),
+    meta: { label: 'Size' }
   }),
   columnHelper.accessor('side', {
-    header: 'Side',
+    id: 'side',
+    header: () => <HeaderWithIcons label="Side" />,
     cell: (info) => info.getValue(),
-    enableSorting: false
+    enableSorting: false,
+    meta: { label: 'Side' }
   }),
   columnHelper.accessor('time', {
-    header: 'Time',
+    id: 'time',
+    header: () => <HeaderWithIcons label="Time" />,
     cell: (info) => new Date(info.getValue()).toLocaleString(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time
+    sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time,
+    meta: { label: 'Time' }
   }),
   columnHelper.accessor('dir', {
-    header: 'Direction',
+    id: 'dir',
+    header: () => <HeaderWithIcons label="Direction" />,
     cell: (info) => info.getValue(),
-    enableSorting: false
+    enableSorting: false,
+    meta: { label: 'Direction' }
   }),
   columnHelper.accessor('closedPnl', {
-    header: 'Closed PnL',
+    id: 'closedPnl',
+    header: () => <HeaderWithIcons label="Closed PnL" />,
     cell: (info) => info.getValue(),
     enableSorting: true,
-    sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl)
+    sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
+    meta: { label: 'Closed PnL' }
   }),
   columnHelper.accessor('crossed', {
-    header: 'Crossed',
+    id: 'crossed',
+    header: () => <HeaderWithIcons label="Crossed" />,
     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
-    enableSorting: false
+    enableSorting: false,
+    meta: { label: 'Crossed' }
   })
 ]
 
@@ -98,6 +127,60 @@ const TradeHistoryTable: React.FC = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
+  const getCellClass = (columnId: string, cellValue: unknown): string => {
+    let customClass = 'opacity-80 font-normal text-sm'
+    if (columnId === 'crossed') {
+      customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
+      if (cellValue === true) {
+        customClass += ' bg-[#28283e] text-[#2FA766]'
+      } else if (cellValue === false) {
+        customClass += ' bg-[#27273b] text-[#E2464A]'
+      }
+    } else if (columnId === 'side') {
+      customClass += ' text-sm font-normal'
+      const value = (cellValue as string)?.toLowerCase()
+      if (value === 'buy') {
+        customClass += ' text-[#2FA766]'
+      } else if (value === 'sell') {
+        customClass += ' text-[#E2464A]'
+      }
+    } else {
+      customClass += ' text-[#FFFFFF]'
+    }
+    return customClass
+  }
+
+  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+    const formatValue = (key: string, value: unknown) => {
+      if (key === 'crossed') {
+        return value === true ? 'Yes' : 'No'
+      }
+      return value ?? '-'
+    }
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        {columns?.map((col) => (
+          <div key={col?.key} className="flex justify-between">
+            <span className="text-[#8B8BA0]">{col?.label}</span>
+            <span className={col?.key === 'contract' ? 'truncate' : ''}>
+              <span
+                className={`flex items-center gap-x-2 ${
+                  col?.key === 'crossed'
+                    ? `${item?.crossed ? 'bg-[#28283e] text-[#2FA766]' : 'bg-[#27273b] text-[#E2464A]'} px-1.5 py-1 w-fit rounded-lg font-medium`
+                    : col?.key === 'side'
+                      ? 'text-[#E2464A]'
+                      : ''
+                }`}
+              >
+                {String(formatValue(col?.key, item[col?.key]))}
+              </span>
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   if (!isConnected) {
     return <WalletNotConnected />
   }
@@ -108,15 +191,15 @@ const TradeHistoryTable: React.FC = () => {
   }
 
   return (
-    <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100">
-      <table className="min-w-full divide-y divide-gray-700">
-        <thead className="bg-gray-700">
+    <div className="overflow-x-auto w-full px-3">
+      <table className="w-full hidden lg:table text-white">
+        <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-4 py-2 text-left text-sm font-medium uppercase tracking-wider"
+                  className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
                 >
                   {header.isPlaceholder ? null : (
                     <button
@@ -135,18 +218,47 @@ const TradeHistoryTable: React.FC = () => {
             </tr>
           ))}
         </thead>
-        <tbody className="divide-y divide-gray-700">
+        <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="odd:bg-gray-800 even:bg-gray-900">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-4 py-2 whitespace-nowrap text-sm">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+            <tr key={row.id} className="border-b border-white/10">
+              {row.getVisibleCells().map((cell) => {
+                const columnId = cell.column.id
+                const cellValue = cell.getValue()
+                const customClass = getCellClass(columnId, cellValue)
+                return (
+                  <td key={cell.id} className="py-4 px-7">
+                    <div className={customClass}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </div>
+                  </td>
+                )
+              })}
             </tr>
           ))}
         </tbody>
       </table>
+      <ResponsiveDataCard
+        columns={columns.map((col) => ({
+          key: col?.id as string,
+          label: col?.meta && 'label' in col?.meta ? String(col?.meta?.label) : ''
+        }))}
+        data={table.getRowModel().rows.map((row) => {
+          const rowData: Record<string, unknown> = {}
+          row.getVisibleCells().forEach((cell) => {
+            rowData[cell?.column?.id] = cell?.getValue()
+          })
+          return rowData
+        })}
+        renderRow={(item) => (
+          <RenderRowData
+            item={item}
+            columns={columns.map((col) => ({
+              key: col?.id as string,
+              label: col?.meta && 'label' in col?.meta ? String(col?.meta?.label) : ''
+            }))}
+          />
+        )}
+      />
     </div>
   )
 }

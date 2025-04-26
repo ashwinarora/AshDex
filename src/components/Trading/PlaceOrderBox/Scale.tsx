@@ -1,8 +1,7 @@
-'use client'
-import { useMemo, useState } from 'react'
-import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
+import { useMemo, useState } from 'react'
+import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
@@ -13,13 +12,13 @@ import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
+import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { IPlaceOrderProps } from '.'
 
 interface Order {
   price: number
   size: number
 }
-
 function calculateScaleOrders(
   totalUSD: number,
   startPrice: number,
@@ -28,33 +27,27 @@ function calculateScaleOrders(
   skew: number
 ): Order[] {
   const orders: Order[] = []
-
   if (totalOrders === 1) {
     orders.push({ price: startPrice, size: totalUSD / startPrice })
     return orders
   }
-
   const prices: number[] = []
   for (let i = 0; i < totalOrders; i++) {
     const price = startPrice + (i * (endPrice - startPrice)) / (totalOrders - 1)
     prices.push(price)
   }
-
   const adjustedSkew = skew * (endPrice / startPrice)
   const weights: number[] = []
   for (let i = 0; i < totalOrders; i++) {
     const weight = 1 + (i * (adjustedSkew - 1)) / (totalOrders - 1)
     weights.push(weight)
   }
-
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-
   for (let i = 0; i < totalOrders; i++) {
     const allocationUSD = totalUSD * (weights[i] / totalWeight)
     const assetSize = allocationUSD / prices[i]
     orders.push({ price: prices[i], size: assetSize })
   }
-
   return orders
 }
 
@@ -101,7 +94,6 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     totalOrders,
     sizeSkew
   ])
-
   const { data: extraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
@@ -113,14 +105,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     },
     enabled: isWalletConnected && !!hyperliquidAxios
   })
-
   const isAgentApproved = useMemo(() => {
     if (!extraAgents) return false
     return extraAgents.some(
       (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
     )
   }, [extraAgents, agentWallet])
-
   const { data: currentFeeApproval } = useQuery({
     queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
     queryFn: async () => {
@@ -133,7 +123,6 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     },
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!universe.length) return
@@ -165,14 +154,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     })
     console.log(res)
   }
-
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
     setTotalSize((newUsdPercent * maxAllowedUsd) / 100)
   }
-
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -215,9 +202,9 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 }
                 className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
               />
-              <span className="text-white flex items-center text-sm font-medium">
-                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
-                USDC
+              <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-sm font-medium">
+                <Image src={refreshpurpleIcon} alt="Refresh Icon" className="w-3.5 h-3.5" />
+                Last
               </span>
             </div>
           </label>
@@ -350,5 +337,4 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default Scale

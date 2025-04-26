@@ -2,7 +2,7 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
-import { BALANCE_FEATURE_COLUMNS } from '@/utils/constants'
+import { BALANCE_FUTURES_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import useIsSpot from '@/hooks/useIsSpot'
@@ -74,7 +74,7 @@ const Balances = () => {
         <table className="w-full hidden lg:table text-white">
           <thead>
             <tr>
-              {BALANCE_FEATURE_COLUMNS?.map((col) => (
+              {BALANCE_FUTURES_COLUMNS?.map((col) => (
                 <th
                   key={col.key}
                   className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"

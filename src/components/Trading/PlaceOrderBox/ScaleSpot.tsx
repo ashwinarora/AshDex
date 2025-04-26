@@ -19,7 +19,6 @@ interface Order {
   price: number
   size: number
 }
-
 function calculateScaleOrders(
   totalUSD: number,
   startPrice: number,
@@ -28,33 +27,27 @@ function calculateScaleOrders(
   skew: number
 ): Order[] {
   const orders: Order[] = []
-
   if (totalOrders === 1) {
     orders.push({ price: startPrice, size: totalUSD / startPrice })
     return orders
   }
-
   const prices: number[] = []
   for (let i = 0; i < totalOrders; i++) {
     const price = startPrice + (i * (endPrice - startPrice)) / (totalOrders - 1)
     prices.push(price)
   }
-
   const adjustedSkew = skew * (endPrice / startPrice)
   const weights: number[] = []
   for (let i = 0; i < totalOrders; i++) {
     const weight = 1 + (i * (adjustedSkew - 1)) / (totalOrders - 1)
     weights.push(weight)
   }
-
   const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-
   for (let i = 0; i < totalOrders; i++) {
     const allocationUSD = totalUSD * (weights[i] / totalWeight)
     const assetSize = allocationUSD / prices[i]
     orders.push({ price: prices[i], size: assetSize })
   }
-
   return orders
 }
 
@@ -71,16 +64,13 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
-
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
       ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
       : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
-
   console.log(maxAllowed)
-
   const { data: extraAgents } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
@@ -92,14 +82,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     },
     enabled: isWalletConnected && !!hyperliquidAxios
   })
-
   const isAgentApproved = useMemo(() => {
     if (!extraAgents) return false
     return extraAgents.some(
       (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
     )
   }, [extraAgents, agentWallet])
-
   const { data: currentFeeApproval } = useQuery({
     queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
     queryFn: async () => {
@@ -112,7 +100,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     },
     enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
   })
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!spotMeta.tokens) return
@@ -145,7 +132,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     })
     console.log(res)
   }
-
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const percent = parseFloat(e.target.value) || 0
     setUsdPercent(percent)
@@ -157,7 +143,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
       setTotalSize(newAmount * maxAllowed)
     }
   }
-
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -207,7 +192,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </label>
         </div>
-
         <div className="flex w-full mb-3 items-end px-4 border-b border-[#FFFFFF0F] pb-4">
           <div className="w-5/6">
             <input
@@ -246,7 +230,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             <span className="absolute right-2 top-2.5 text-gray-500">%</span>
           </div>
         </div>
-
         <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
           <label className="mb-2">
             <div className="flex mb-1 justify-between">
@@ -297,7 +280,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </label>
         </div>
-
         <label className="mb-2">
           <span className="block mb-1 text-sm font-medium text-gray-200">Size Skew</span>
           <input
@@ -335,5 +317,4 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default ScaleSpot
