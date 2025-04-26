@@ -10,6 +10,9 @@ import disableicon from '@/assets/images/disable_icon.svg'
 import hourglassicon from '@/assets/images/hourglass_icon.svg'
 import sendcopyicon from '@/assets/images/sendcopy_icon.svg'
 import lockoutlineicon from '@/assets/images/lockoutline_icon.svg'
+import invitefriends from '@/assets/images/invitefriends_icon.svg'
+import theycommit from '@/assets/images/theycommit_icon.svg'
+import earnrewards from '@/assets/images/earnrewards_icon.svg'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -158,6 +161,14 @@ export const BALANCE_VAULTS_COLUMNS = [
   { key: 'contract', label: 'Contract' }
 ]
 
+export const REFERRALS_COLUMNS = [
+  { key: 'address', label: 'Address' },
+  { key: 'dateJoined', label: 'Date Joined' },
+  { key: 'totalVolume', label: 'Total Volume' },
+  { key: 'feesPaid', label: 'Fees Paid' },
+  { key: 'yourRewards', label: 'Your Rewards' }
+]
+
 export const TWAP_VAULTS_COLUMNS = [
   { key: 'coin', label: 'Coin' },
   { key: 'size', label: 'Size' },
@@ -191,6 +202,13 @@ export const DEPOSITORS_VAULTS_COLUMNS = [
   { key: 'unrealizedPNL', label: 'Unrealized PNL' },
   { key: 'allTimePNL', label: 'All-time PNL' },
   { key: 'daysFollowing', label: 'Days Following' }
+]
+
+export const LEGACY_REWARD_COLUMNS = [
+  { key: 'date', label: 'Date' },
+  { key: 'yourVolume', label: 'Your Volume' },
+  { key: 'yourReferralVolume', label: 'Your Referral Volume' },
+  { key: 'totalRewardsTool', label: 'Total Rewards Tool' }
 ]
 
 export const DEPOSIT_WITHDRAWALS_VAULTS_COLUMNS = [
@@ -361,6 +379,58 @@ export const VAULTS_LIST_COLUMNS = [
   { label: 'Status', key: 'status' },
   { label: 'Actions', key: 'actions' }
 ] as const
+
+export const MORE_OPTIONS = [
+  { name: 'Leaderboards', path: '/leaderboards' },
+  { name: 'Referrals', path: '/referrals' },
+  { name: 'Points', path: '/points' },
+  { name: 'Sub-accounts', path: '/sub-accounts' },
+  { name: 'Stats', path: '/stats' },
+  { name: 'Docs', path: '/docs' },
+  { name: 'Vocabulary for novices', path: '/vocabulary' },
+  { name: 'Settings', path: '/settings' }
+]
+
+export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Claim'] as const
+
+export const REFERRALSDATA = [
+  {
+    src: invitefriends,
+    alt: 'InviteFriends',
+    label: 'Invite your friends',
+    opacityClass: 'opacity-60'
+  },
+  {
+    src: theycommit,
+    alt: 'TheyCommit',
+    label: 'They Commit',
+    opacityClass: ''
+  },
+  {
+    src: earnrewards,
+    alt: 'Earnrewards',
+    label: 'Earn Rewards',
+    opacityClass: 'opacity-60'
+  }
+] as const
+
+export const REFERRALS_DESC = [
+  `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
+] as const
+
+export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
+
+export const REFERRALS_ENTERCODE_DESC = [
+  `This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.`
+] as const
+
+export const REFERRALS_CREATECODE_DESC = [
+  `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`
+]
+
+export const REFERRALS_CLAIM_DESC = [
+  `Claim your bonuses and rewards for your referral activity. If you’ve referred new users or they’ve completed the program’s requirements, click 'Claim' to receive your reward!`
+]
 
 export const VAULT_ACTION_OPTIONS = [
   {

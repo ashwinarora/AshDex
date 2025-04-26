@@ -53,7 +53,8 @@ const Header: FC = () => {
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
-    { name: 'Spot', path: '/spot' }
+    { name: 'Spot', path: '/spot' },
+    { name: 'Referrals', path: '/referrals' }
     // { name: 'Lend/Borrow', path: '/lendBorrow' },
     // { name: 'Predictions', path: '/predictions' },
     // { name: 'Stake', path: '/stake' },
