@@ -27,5 +27,4 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
     </div>
   )
 }
-
 export default BuyOrSell

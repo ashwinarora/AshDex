@@ -3,8 +3,8 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useEffect, useMemo } from 'react'
-import Slider1 from '@/assets/images/slider_value.svg'
 import CustomSelector from '../../../common/CustomSelector'
+import Slider1 from '@/assets/images/slider_value.svg'
 
 interface LeverageMarginProps {
   selectedAsset: string

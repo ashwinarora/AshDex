@@ -18,6 +18,18 @@ import HeaderWithIcons from './component/HeaderWithIcon'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
+import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+
+type ColumnType = {
+  key: string
+  label: string
+}
+
+type RenderRowProps = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  item: any
+  columns: ColumnType[]
+}
 
 const Positions = () => {
   const { isConnected } = useAccount()
@@ -30,7 +42,10 @@ const Positions = () => {
     setMounted(true)
   }, [])
 
-  const helper = useMemo(() => createColumnHelper<IPositionData>(), [])
+  const helper = useMemo(
+    () => createColumnHelper<IPositionData & { meta?: { label: string } }>(),
+    []
+  )
 
   const allMidsRef = useRef(allMids)
   useEffect(() => {
@@ -77,6 +92,7 @@ const Positions = () => {
   const columns = useMemo(
     () => [
       helper.accessor('coin', {
+        id: 'coin',
         header: 'Position',
         cell: (info) => {
           const coin = info.getValue()
@@ -93,25 +109,38 @@ const Positions = () => {
               </span>
             </div>
           )
-        }
+        },
+        meta: { label: 'Coin' }
       }),
       helper.accessor('entryPx', {
-        header: () => <HeaderWithIcons label="Entry Price" />
+        id: 'entryPx',
+        header: () => <HeaderWithIcons label="Entry Price" />,
+        meta: { label: 'Entry Price' }
       }),
       helper.accessor('cumFunding.allTime', {
-        header: () => <HeaderWithIcons label="Funding P&L" />
+        id: 'cumFunding.allTime',
+        header: () => <HeaderWithIcons label="Funding P&L" />,
+        meta: { label: 'Funding P&L' }
       }),
       helper.accessor('szi', {
-        header: () => <HeaderWithIcons label="Size" />
+        id: 'szi',
+        header: () => <HeaderWithIcons label="Size" />,
+        meta: { label: 'Size' }
       }),
       helper.accessor('unrealizedPnl', {
-        header: () => <HeaderWithIcons label="Unrealized PnL" />
+        id: 'unrealizedPnl',
+        header: () => <HeaderWithIcons label="Unrealized PnL" />,
+        meta: { label: 'Unrealized PnL' }
       }),
       helper.accessor('liquidationPx', {
-        header: () => <HeaderWithIcons label="Liq. Price" />
+        id: 'liquidationPx',
+        header: () => <HeaderWithIcons label="Liq. Price" />,
+        meta: { label: 'Liq. Price' }
       }),
       helper.accessor('marginUsed', {
-        header: () => <HeaderWithIcons label="Margin" />
+        id: 'marginUsed',
+        header: () => <HeaderWithIcons label="Margin" />,
+        meta: { label: 'Margin' }
       }),
       helper.display({
         id: 'status',
@@ -123,7 +152,8 @@ const Positions = () => {
               {status.szi > 0 ? 'Open' : 'Closed'}
             </span>
           )
-        }
+        },
+        meta: { label: 'Status' }
       }),
       helper.display({
         id: 'actions',
@@ -147,19 +177,31 @@ const Positions = () => {
               </span>
             </div>
           )
-        }
+        },
+        meta: { label: 'Actions' }
       }),
       helper.display({
         id: 'tp_sl',
         header: () => <HeaderWithIcons label="TP/SL for position" />,
-        cell: () => {
+        cell: ({ row }) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const { tp_sl } = row.original as any
+          const tp = tp_sl?.tp
+          const sl = tp_sl?.sl
           return (
             <div className="flex items-center gap-2">
-              {true ? <span className="w-17 break-words overflow-hidden">Dummy</span> : '-/-'}
+              {tp && sl ? (
+                <span className="w-17 break-words overflow-hidden">
+                  {tp}/{sl}
+                </span>
+              ) : (
+                '-/-'
+              )}
               <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
             </div>
           )
-        }
+        },
+        meta: { label: 'TP/SL for position' }
       })
     ],
     [helper, closePosition]
@@ -180,6 +222,86 @@ const Positions = () => {
     enableSorting: true
   })
 
+  const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
+    return (
+      <div className="flex flex-col gap-2 text-white text-sm">
+        <div className="flex justify-between">
+          <div className="flex items-center gap-1">
+            <span className={`w-[4px] h-[30px] rounded-sm ${'bg-[#2FA766]'}`}></span>
+            <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+            {item?.coin}{' '}
+            <span className="text-[#7D67FF] ml-1 px-1.5 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-xs">
+              {item?.leverage?.value + 'x'}
+            </span>
+          </div>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Entry Price</span>{' '}
+          <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Mark Price</span>{' '}
+          <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Funding P&L</span>{' '}
+          <span className="text-sm font-medium">{item?.cumFunding?.allTime}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Size</span>{' '}
+          <span className="text-sm font-medium">{item?.szi}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Unrealized PnL</span>{' '}
+          <span className="text-sm font-medium">{item?.unrealizedPnl}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Liq. Price</span>{' '}
+          <span className="text-sm text-[#E2464A] font-medium">{item?.liquidationPx}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Margin</span>{' '}
+          <span className="text-sm font-medium">{item?.liquidationPx}</span>{' '}
+        </div>
+        <div className="flex justify-between">
+          <span className="text-[#8B8BA0]">Status</span>{' '}
+          <span className="bg-[#1F1F30] text-sm font-medium text-[#2FA766] px-1.5 py-0.5 rounded-lg">
+            {'Open'}
+          </span>{' '}
+        </div>
+        <div className="flex justify-between gap-1">
+          <div className="flex font-medium items-center text-[#7D67FF] text-sm">
+            <span className="pr-3 py-2">Market</span>
+            <span className="px-3 py-2">Limit</span>
+          </div>
+          <div className="flex items-center">
+            <span className="px-3 py-1 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+              dummy
+            </span>
+            <span className="px-3 text-sm py-1.5 bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+              dummy
+            </span>
+          </div>
+        </div>
+        <div className="flex justify-between gap-1">
+          <span className="text-[#8B8BA0]">TP/SL for position</span>
+          <span>
+            {item?.tp_sl?.tp && item?.tp_sl?.sl ? (
+              <div className="flex items-center gap-x-1">
+                <span className="w-17 break-words overflow-hidden">
+                  {item.tp_sl.tp}/{item.tp_sl.sl}
+                </span>
+                <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
+              </div>
+            ) : (
+              '-/-'
+            )}
+          </span>
+        </div>
+      </div>
+    )
+  }
+
   if (!isConnected) {
     return <WalletNotConnected />
   }
@@ -197,7 +319,7 @@ const Positions = () => {
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                  className="pt-3 pb-1 px-5 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
                   onClick={
                     header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
                   }
@@ -214,7 +336,10 @@ const Positions = () => {
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="border-b border-white/10">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-4 px-7 opacity-80 text-white font-normal text-sm">
+                <td
+                  key={cell.id}
+                  className="py-4 px-5 opacity-80 text-[#FFFFFF] font-normal text-sm"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -222,6 +347,23 @@ const Positions = () => {
           ))}
         </tbody>
       </table>
+      <ResponsiveDataCard
+        columns={columns.map((col) => ({
+          key: col.id as string,
+          label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+        }))}
+        data={table.getRowModel().rows.map((row) => row.original)}
+        renderRow={(item) => (
+          <RenderRowData
+            item={item}
+            columns={columns.map((col) => ({
+              key: col.id as string,
+              label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+            }))}
+          />
+        )}
+        positionTab={true}
+      />
     </div>
   )
 }

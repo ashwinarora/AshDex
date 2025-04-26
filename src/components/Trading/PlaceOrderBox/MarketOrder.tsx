@@ -91,5 +91,4 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     </div>
   )
 }
-
 export default MarketOrder

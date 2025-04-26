@@ -20,7 +20,7 @@ export interface IPlaceOrderProps {
 const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [activeTab, setActiveTab] = useState<OrderTab>('LIMIT')
   const isSpot = useIsSpot()
-
+  const isAdvancedTab = ['TWAP', 'SCALE', 'STOP_LIMIT', 'STOP_MARKET']?.includes(activeTab)
   const renderTabContent = () => {
     switch (activeTab) {
       case 'LIMIT':
@@ -43,7 +43,6 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return null
     }
   }
-
   const availableOptions = isSpot
     ? [
         { value: 'TWAP', label: 'TWAP' },
@@ -58,39 +57,42 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex border-b border-white/10 p-3 mb-2.5 items-center justify-evenly space-x-2  ">
-        <button
-          onClick={() => setActiveTab('LIMIT')}
-          className={`tab-btn ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
-        >
-          Limit
-        </button>
-
-        <button
-          onClick={() => setActiveTab('MARKET')}
-          className={`tab-btn ${activeTab === 'MARKET' && 'tab-btn-active'}`}
-        >
-          Market
-        </button>
-
-        <button
-          className={`tab-btn ${
-            activeTab === 'TWAP' || (activeTab === 'SCALE' && 'tab-btn-active')
-          }`}
-        >
-          <CustomSelector
-            options={availableOptions}
-            selectedValue={activeTab}
-            onChange={(value) => {
-              setActiveTab(value as OrderTab)
-            }}
-          />
-        </button>
+      <div className="flex border-b border-white/10 p-3 mb-2.5 items-center justify-start w-full space-x-2">
+        <div className={`flex space-x-2 ${isAdvancedTab ? 'w-[55%]' : 'w-[70%]'}`}>
+          <button
+            onClick={() => setActiveTab('LIMIT')}
+            className={`tab-btn flex-1 ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
+          >
+            Limit
+          </button>
+          <button
+            onClick={() => setActiveTab('MARKET')}
+            className={`tab-btn flex-1 ${activeTab === 'MARKET' && 'tab-btn-active'}`}
+          >
+            Market
+          </button>
+        </div>
+        <div className={`${isAdvancedTab ? 'w-[45%]' : 'w-[30%]'}`}>
+          <button
+            className={`tab-btn w-full ${
+              ['TWAP', 'SCALE', 'STOP_LIMIT', 'STOP_MARKET']?.includes(activeTab)
+                ? 'tab-btn-active'
+                : ''
+            }`}
+          >
+            <CustomSelector
+              options={availableOptions}
+              selectedValue={activeTab}
+              onChange={(value) => {
+                setActiveTab(value as OrderTab)
+              }}
+            />
+          </button>
+        </div>
       </div>
 
       <div className="">{renderTabContent()}</div>
     </div>
   )
 }
-
 export default PlaceOrder
