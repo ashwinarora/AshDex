@@ -56,9 +56,7 @@ const OpenOrders = () => {
   }, [sdk])
 
   const renderCancelButton = useCallback(
-    (
-      rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })
-    ) => {
+    (rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })) => {
       const order = 'original' in rowOrOrder ? rowOrOrder?.original : rowOrOrder
       return (
         <button
@@ -127,7 +125,7 @@ const OpenOrders = () => {
       </div>
     )
   }
-  
+
   const [mounted, setMounted] = useState(false)
 
   // Use useEffect to set mounted to true after hydration
