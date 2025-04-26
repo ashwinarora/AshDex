@@ -16,6 +16,7 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { IOpenOrder } from '@/utils/hyperliquid/webData2Types'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { toast } from 'react-toastify'
 
 type ColumnType = {
   key: string
@@ -47,7 +48,23 @@ const OpenOrders = () => {
       <button
         className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
         onClick={async () => {
-          await sdk.custom.cancelAllOrders()
+          const toastId = toast.loading('Cancelling all orders...')
+          try {
+            await sdk.exchange.cancelAllOrders()
+            toast.update(toastId, {
+              render: 'All orders cancelled',
+              type: 'success',
+              isLoading: false,
+              autoClose: 2000
+            })
+          } catch (error) {
+            toast.update(toastId, {
+              render: '❌ ' + error,
+              type: 'error',
+              isLoading: false,
+              autoClose: 2000
+            })
+          }
         }}
       >
         Cancel All
@@ -62,7 +79,23 @@ const OpenOrders = () => {
         <button
           className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-[#E2464A] font-bold rounded"
           onClick={async () => {
-            await sdk.exchange.cancelOrder({ coin: order?.coin, o: order?.oid })
+            const toastId = toast.loading('Cancelling order...')
+            try {
+              await sdk.exchange.cancelOrder({ coin: order?.coin, o: order?.oid })
+              toast.update(toastId, {
+                render: 'Order cancelled',
+                type: 'success',
+                isLoading: false,
+                autoClose: 2000
+              })
+            } catch (error) {
+              toast.update(toastId, {
+                render: '❌ ' + error,
+                type: 'error',
+                isLoading: false,
+                autoClose: 2000
+              })
+            }
           }}
         >
           Cancel
