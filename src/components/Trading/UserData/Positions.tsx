@@ -19,6 +19,7 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { toast } from 'react-toastify'
 
 type ColumnType = {
   key: string
@@ -59,32 +60,59 @@ const Positions = () => {
       const szDecimals = universe[assetIndex].szDecimals
       const tif = 'Gtc'
       const isBuy = !(position.szi > 0)
-      const res = await sdk.exchange.updateLeverage(
-        position.coin,
-        position.leverage.type,
-        position.leverage.value
-      )
-      console.log(res)
-      const mid = allMidsRef.current[position.coin]
-      const price = isBuy ? mid * 1.1 : mid * 0.9
-      const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-        grouping: 'na',
-        orders: [
-          {
-            assetIndex: assetIndex,
-            isBuy: isBuy,
-            reduceOnly: true,
-            price: formatPrice(price, szDecimals),
-            size: Math.abs(position.szi).toString(),
-            orderType: {
-              limit: {
-                tif: tif
+      const toastId = toast.loading('Closing position...')
+      try {
+        const res = await sdk.exchange.updateLeverage(
+          position.coin,
+          position.leverage.type,
+          position.leverage.value
+        )
+        console.log(res)
+        const mid = allMidsRef.current[position.coin]
+        const price = isBuy ? mid * 1.1 : mid * 0.9
+        const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+          grouping: 'na',
+          orders: [
+            {
+              assetIndex: assetIndex,
+              isBuy: isBuy,
+              reduceOnly: true,
+              price: formatPrice(price, szDecimals),
+              size: Math.abs(position.szi).toString(),
+              orderType: {
+                limit: {
+                  tif: tif
+                }
               }
             }
-          }
-        ]
-      })
-      console.log(order)
+          ]
+        })
+        console.log(order)
+        const status = order.data.response.data.statuses[0]
+        if (status.error) {
+          toast.update(toastId, {
+            render: '❌' + status.error,
+            type: 'error',
+            isLoading: false,
+            autoClose: 3000
+          })
+        } else {
+          toast.update(toastId, {
+            render: '✅ Order placed successfully',
+            type: 'success',
+            isLoading: false,
+            autoClose: 2000
+          })
+        }
+      } catch (error) {
+        console.error('Error closing position:', error)
+        toast.update(toastId, {
+          render: '❌' + error,
+          type: 'error',
+          isLoading: false,
+          autoClose: 2000
+        })
+      }
     },
     [agentWallet, universe, sdk, isTestnet, hyperliquidAxios]
   )

@@ -16,6 +16,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { AxiosInstance } from 'axios'
 import { PrivateKeyAccount } from 'viem'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
+import { toast } from 'react-toastify'
 
 type StopOrder = {
   isMarket: boolean
@@ -72,12 +73,6 @@ const placePerpOrder = async ({
   tpsl?: TPSLType
   stopOrder?: StopOrder
 }) => {
-  const res = await sdk.exchange.updateLeverage(
-    selectedAsset,
-    isCross ? 'cross' : 'isolated',
-    leverage
-  )
-  console.log(res)
   const assetIndex = getUniverseIndex(universe, selectedAsset)
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
@@ -147,15 +142,48 @@ const placePerpOrder = async ({
       })
     }
   }
-  const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-    orders: orders,
-    grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-    builder: {
-      address: BUILDER_ADDRESS,
-      fee: currentFeeApproval
+  const toastId = toast.loading('⏳ Loading…')
+  try {
+    const res = await sdk.exchange.updateLeverage(
+      selectedAsset,
+      isCross ? 'cross' : 'isolated',
+      leverage
+    )
+    console.log(res)
+    const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      orders: orders,
+      grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
+      builder: {
+        address: BUILDER_ADDRESS,
+        fee: currentFeeApproval
+      }
+    })
+    console.log(placeOrderRes)
+    const status = placeOrderRes.data.response.data.statuses[0]
+    if (status.error) {
+      toast.update(toastId, {
+        render: '❌' + status.error,
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      })
+    } else {
+      toast.update(toastId, {
+        render: '✅ Order placed successfully',
+        type: 'success',
+        isLoading: false,
+        autoClose: 2000
+      })
     }
-  })
-  console.log(placeOrderRes)
+  } catch (error) {
+    console.error('Error placing perp order:', error)
+    toast.update(toastId, {
+      render: '❌' + error,
+      type: 'error',
+      isLoading: false,
+      autoClose: 2000
+    })
+  }
 }
 
 const placeSpotOrder = async ({
@@ -186,24 +214,51 @@ const placeSpotOrder = async ({
     spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
   const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
   if (!tokenData) return
-  const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-    grouping: 'na',
-    orders: [
-      {
-        assetIndex: assetIndex,
-        isBuy: isBuy,
-        price: formatPrice(limitPrice, 4),
-        size: formatPrice(amount, tokenData.szDecimals),
-        reduceOnly: false,
-        orderType: {
-          limit: {
-            tif: isPostOnly ? 'Alo' : 'Gtc'
+  const toastId = toast.loading('⏳ Loading…')
+  try {
+    const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      grouping: 'na',
+      orders: [
+        {
+          assetIndex: assetIndex,
+          isBuy: isBuy,
+          price: formatPrice(limitPrice, 4),
+          size: formatPrice(amount, tokenData.szDecimals),
+          reduceOnly: false,
+          orderType: {
+            limit: {
+              tif: isPostOnly ? 'Alo' : 'Gtc'
+            }
           }
         }
-      }
-    ]
-  })
-  console.log(res)
+      ]
+    })
+    console.log(res)
+    const status = res.data.response.data.statuses[0]
+    if (status.error) {
+      toast.update(toastId, {
+        render: '❌' + status.error,
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      })
+    } else {
+      toast.update(toastId, {
+        render: '✅ Order placed successfully',
+        type: 'success',
+        isLoading: false,
+        autoClose: 2000
+      })
+    }
+  } catch (error) {
+    console.error('Error placing spot order:', error)
+    toast.update(toastId, {
+      render: '❌' + error,
+      type: 'error',
+      isLoading: false,
+      autoClose: 2000
+    })
+  }
 }
 
 const OrderButton = ({
