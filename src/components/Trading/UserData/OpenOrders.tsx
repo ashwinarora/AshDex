@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import useIsSpot from '@/hooks/useIsSpot'
@@ -42,7 +42,7 @@ const OpenOrders = () => {
   const isSpot = useIsSpot()
 
   const [sorting, setSorting] = useState<SortingState>([])
-  const renderCancelAllButton = () => {
+  const renderCancelAllButton = useCallback(() => {
     return (
       <button
         className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
@@ -53,23 +53,26 @@ const OpenOrders = () => {
         Cancel All
       </button>
     )
-  }
+  }, [sdk])
 
-  const renderCancelButton = (
-    rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })
-  ) => {
-    const order = 'original' in rowOrOrder ? rowOrOrder?.original : rowOrOrder
-    return (
-      <button
-        className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-[#E2464A] font-bold rounded"
-        onClick={async () => {
-          await sdk.exchange.cancelOrder({ coin: order?.coin, o: order?.oid })
-        }}
-      >
-        Cancel
-      </button>
-    )
-  }
+  const renderCancelButton = useCallback(
+    (
+      rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })
+    ) => {
+      const order = 'original' in rowOrOrder ? rowOrOrder?.original : rowOrOrder
+      return (
+        <button
+          className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-[#E2464A] font-bold rounded"
+          onClick={async () => {
+            await sdk.exchange.cancelOrder({ coin: order?.coin, o: order?.oid })
+          }}
+        >
+          Cancel
+        </button>
+      )
+    },
+    [sdk]
+  )
 
   const getCellClass = (columnId: string, cellValue: unknown): string => {
     const baseClass = 'opacity-80 font-normal text-sm'
@@ -124,6 +127,7 @@ const OpenOrders = () => {
       </div>
     )
   }
+  
   const [mounted, setMounted] = useState(false)
 
   // Use useEffect to set mounted to true after hydration
