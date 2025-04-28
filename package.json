@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
+    "@allbridge/bridge-core-sdk": "^3.22.0",
     "@dicebear/collection": "^9.2.2",
     "@dicebear/core": "^9.2.2",
     "@headlessui/react": "^2.2.2",

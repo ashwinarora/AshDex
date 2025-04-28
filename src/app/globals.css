@@ -76,7 +76,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 body {
@@ -205,7 +205,7 @@ input {
 }
 button:active {
   @apply scale-95;
-} 
+}
 .nexon-button:disabled {
   @apply opacity-50 cursor-not-allowed;
 }
