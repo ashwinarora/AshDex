@@ -339,15 +339,16 @@ const OrderButton = ({
         }
         onClick={async () => {
           if (!chainId) return
+          const payload = getApproveAgentPayload({
+            agentAddress: agentWallet?.address || '',
+            agentName: AGENT_NAME,
+            chainId: chainId,
+            isTestnet: isTestnet,
+            nonce: Date.now()
+          })
+          const sign = await signTypedDataAsync(payload)
+          const toastId = toast.loading('⏳ Approving agent…')
           try {
-            const payload = getApproveAgentPayload({
-              agentAddress: agentWallet?.address || '',
-              agentName: AGENT_NAME,
-              chainId: chainId,
-              isTestnet: isTestnet,
-              nonce: Date.now()
-            })
-            const sign = await signTypedDataAsync(payload)
             const body = {
               action: {
                 type: payload.message.type,
@@ -362,8 +363,20 @@ const OrderButton = ({
             }
             await hyperliquidAxios.post('/exchange', body)
             await refetchExtraAgents()
+            toast.update(toastId, {
+              render: '✅ Agent approved successfully',
+              type: 'success',
+              isLoading: false,
+              autoClose: 2000
+            })
           } catch (error) {
             console.error('Error approving agent:', error)
+            toast.update(toastId, {
+              render: '❌' + error,
+              type: 'error',
+              isLoading: false,
+              autoClose: 2000
+            })
           }
         }}
       >
@@ -380,15 +393,16 @@ const OrderButton = ({
         }
         onClick={async () => {
           if (!chainId) return
+          const payload = getApproveBuilderFeePayload({
+            chainId: chainId,
+            isTestnet: isTestnet,
+            builder: BUILDER_ADDRESS,
+            nonce: Date.now(),
+            feePercentage: '0.1%'
+          })
+          const sign = await signTypedDataAsync(payload)
+          const toastId = toast.loading('⏳ Approving fee…')
           try {
-            const payload = getApproveBuilderFeePayload({
-              chainId: chainId,
-              isTestnet: isTestnet,
-              builder: BUILDER_ADDRESS,
-              nonce: Date.now(),
-              feePercentage: '0.1%'
-            })
-            const sign = await signTypedDataAsync(payload)
             const body = {
               action: {
                 type: payload.message.type,
@@ -403,8 +417,20 @@ const OrderButton = ({
             }
             await hyperliquidAxios.post('/exchange', body)
             await refetchCurrentFeeApproval()
+            toast.update(toastId, {
+              render: '✅ Fee approved successfully',
+              type: 'success',
+              isLoading: false,
+              autoClose: 2000
+            })
           } catch (error) {
             console.error('Error approving agent:', error)
+            toast.update(toastId, {
+              render: '❌' + error,
+              type: 'error',
+              isLoading: false,
+              autoClose: 2000
+            })
           }
         }}
       >
