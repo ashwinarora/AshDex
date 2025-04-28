@@ -81,7 +81,7 @@ const LeverageMargin = ({
               <span>{maxLeverage}x</span>
             </div>
           </div>
-          <div className="flex items-center pl-4 space-x-3">
+          <div className="flex items-center pl-4 space-x-1">
             <button
               onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
               className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"

@@ -18,18 +18,17 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-md shadow-md">
+    <div>
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Stop Price:</label>
+      <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+        <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Stop Price:</label>
         <input
-          type="number"
+          type="text"
           value={stopPrice}
           onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
-          className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
         />
       </div>
-
       <AmountInput
         selectedAsset={selectedAsset}
         amount={amount}
@@ -40,7 +39,9 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
         isReduceOnly={isReduceOnly}
         isBuy={isBuy}
       />
-      <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+      <div className="px-4 pb-3">
+        <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+      </div>
       <LeverageMargin
         selectedAsset={selectedAsset}
         isCross={isCross}
@@ -48,21 +49,23 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
         setLeverage={setLeverage}
         setIsCross={setIsCross}
       />
-      <OrderButton
-        selectedAsset={selectedAsset}
-        isBuy={isBuy}
-        isCross={isCross}
-        isPostOnly={false}
-        isReduceOnly={isReduceOnly}
-        leverage={leverage}
-        amount={amount}
-        limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
-        stopOrder={{
-          isMarket: false,
-          tpsl: 'sl',
-          triggerPx: stopPrice
-        }}
-      />
+      <div className="p-4">
+        <OrderButton
+          selectedAsset={selectedAsset}
+          isBuy={isBuy}
+          isCross={isCross}
+          isPostOnly={false}
+          isReduceOnly={isReduceOnly}
+          leverage={leverage}
+          amount={amount}
+          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
+          stopOrder={{
+            isMarket: false,
+            tpsl: 'sl',
+            triggerPx: stopPrice
+          }}
+        />
+      </div>
     </div>
   )
 }
