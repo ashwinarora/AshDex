@@ -40,7 +40,7 @@ const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
         />
         <span className="text-sm font-medium text-[#E8E0F1]">Randomize</span>
       </label>
-      <div className="px-4">
+      <div className="px-4 pb-4">
         <button
           className={
             'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'

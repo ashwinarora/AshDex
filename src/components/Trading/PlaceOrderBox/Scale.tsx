@@ -14,6 +14,7 @@ import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
 import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { IPlaceOrderProps } from '.'
+import CheckBox from '@/components/common/CheckBox'
 
 interface Order {
   price: number
@@ -300,24 +301,23 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </label>
         </div>
 
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">Size Skew</span>
+        <label className="mb-2 px-4">
+          <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size Skew</span>
           <input
-            type="number"
+            type="text"
             value={sizeSkew ?? ''}
             onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="Enter size skew"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="0.00"
+            className="w-full rounded-md text-white p-2 placeholder:text-lg placeholder:text-[#8B8BA0] focus:outline-none  focus:none focus:none text-lg font-medium"
           />
         </label>
-        <label className="mb-2 flex items-center">
-          <input
-            type="checkbox"
-            checked={isReduceOnly}
-            onChange={(e) => setIsReduceOnly(e.target.checked)}
-            className="mr-2"
+        <label className="mb-4 mt-1 px-4 flex items-center">
+          <CheckBox
+            label=""
+            setIsChecked={(checked) => setIsReduceOnly(checked)}
+            isChecked={isReduceOnly}
           />
-          <span className="text-sm font-medium text-gray-200">Reduce Only</span>
+          <span className="text-sm font-medium text-[#E8E0F1]">Reduce Only</span>
         </label>
         <div className="px-4">
           <button
