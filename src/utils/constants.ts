@@ -420,10 +420,6 @@ export const REFERRALS_DESC = [
 
 export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
 
-export const REFERRALS_ENTERCODE_DESC = [
-  `This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.`
-] as const
-
 export const REFERRALS_CREATECODE_DESC = [
   `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`
 ]
