@@ -2,7 +2,7 @@
 import React, { useState } from 'react'
 import Image from 'next/image'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
-import DeBridgeModal from './DeBridgeModal'
+import BridgeModal from '../Bridge/BridgeModal'
 
 const BridgeButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -23,7 +23,7 @@ const BridgeButton = () => {
         Bridge
       </button>
 
-      <DeBridgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      <BridgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </>
   )
 }
