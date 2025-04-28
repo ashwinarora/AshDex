@@ -1,3 +1,4 @@
+'use client'
 import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
@@ -27,7 +28,7 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Enter Code':
-        return <EnterCode isCreateCode={isCreateCode} />
+        return <EnterCode />
       case 'Create Code':
         return <CreateCode />
       case 'Claim':
