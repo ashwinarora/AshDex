@@ -49,8 +49,8 @@ function EnterCode() {
       return (
         <div>
           <span className="font-medium mb-6 opacity-90 max-sm:text-sm text-base text-[#8B8BA0]">
-            This will allow you to earn bonuses or other rewards offered by the program. Simply
-            copy and paste the code into this field.
+            This will allow you to earn bonuses or other rewards offered by the program. Simply copy
+            and paste the code into this field.
           </span>
           <div>
             <input
