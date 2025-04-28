@@ -62,7 +62,8 @@ const ConnectWalletModal: React.FC = () => {
     <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="w-full border-[2px] bg-secondary max-w-md p-6 rounded-2xl shadow-lg"
+        className="w-full max-w-md max-md:max-w-sm border-white/10 border-[2px] bg-[#0F0816] max-md:p-3 p-6 rounded-2xl shadow-lg 
+          relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Full-Width Header */}

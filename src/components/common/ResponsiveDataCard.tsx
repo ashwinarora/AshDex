@@ -70,9 +70,9 @@ const ResponsiveDataCard: React.FC<ResponsiveDataCardProps> = ({
           ) : (
             <div className="flex flex-col gap-2">
               {columns?.map((col) => (
-                <div key={col.key} className="flex justify-between text-sm text-white/80">
-                  <span className="text-[#8B8BA0]">{col.label}</span>
-                  <span>{item[col.key]}</span>
+                <div key={col?.key} className="flex justify-between text-sm text-white/80">
+                  <span className="text-[#8B8BA0]">{col?.label}</span>
+                  <span>{item[col?.key]}</span>
                 </div>
               ))}
             </div>

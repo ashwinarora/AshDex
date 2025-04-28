@@ -8,6 +8,7 @@ interface RadioButtonProps extends Omit<React.InputHTMLAttributes<HTMLInputEleme
   checked?: boolean
   onChange?: (value: string) => void
   className?: string
+  isBackground?: boolean
 }
 
 const RadioButton: React.FC<RadioButtonProps> = ({
@@ -17,6 +18,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   checked,
   onChange,
   className,
+  isBackground,
   ...props
 }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,9 +26,14 @@ const RadioButton: React.FC<RadioButtonProps> = ({
       onChange(e.target.value)
     }
   }
-
   return (
-    <label className={cn('flex items-center gap-2 cursor-pointer', className)}>
+    <label
+      className={cn(
+        'flex items-center gap-2 cursor-pointer',
+        className,
+        isBackground && 'max-sm:bg-white/10 max-sm:rounded-lg max-sm:p-3'
+      )}
+    >
       <div className="relative">
         <input
           type="radio"
@@ -39,17 +46,19 @@ const RadioButton: React.FC<RadioButtonProps> = ({
         />
         <div
           className={cn(
-            'h-5 w-5 rounded-full border border-[#FFFFFF0F] bg-[#0F081680]',
-            'peer-checked:border-primary peer-checked:bg-primary',
+            'h-5.5 w-5.5 rounded-full bg-[rgba(15,8,22,0.5)] border-2 border-[rgba(255,255,255,0.16)]',
+            'peer-checked:border-primary border-2',
             'transition-all duration-200'
           )}
         >
           {checked && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 bg-white rounded-full" />
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full" />
           )}
         </div>
       </div>
-      {label && <span className="text-[#E8E0F1]">{label}</span>}
+      {label && (
+        <span className="text-[#E8E0F1] text-base font-medium tracking-tight">{label}</span>
+      )}
     </label>
   )
 }

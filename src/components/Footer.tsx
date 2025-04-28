@@ -94,7 +94,7 @@ const FooterContent: FC = () => {
       {/* Links Section */}
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="flex  mt-5 border-t border-b  flex-col md:flex-row justify-between items-start align-middle"
+        className="flex  mt-5 border-t border-b  flex-col lg:flex-row justify-between items-start align-middle"
       >
         <div className="grid py-5 grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-10 text-sm text-gray-300">
           <div>
@@ -147,12 +147,11 @@ const FooterContent: FC = () => {
             </ul>
           </div>
         </div>
-        <div className="flex items-center gap-2 h-full align-middle justify-center p-4">
+        <div className="flex items-center gap-2 h-full align-middle justify-center max-lg:px-0 p-4">
           <button className="nexon-button nexon-ghost">
             <IconMoonFilled size={24} />
           </button>
           <BridgeButton />
-
           {!isConnected ? (
             <button onClick={toggleConnectWalletModal} className={`nexon-button nexon-primary`}>
               Connect Wallet
