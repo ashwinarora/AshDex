@@ -172,9 +172,9 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <form onSubmit={handleSubmit} className="flex flex-col w-full rounded-md shadow-md">
         <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-          <label className="mb-2 ">
+          <label className="mb-2">
             <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Start Price</span>
-            <div className="flex ">
+            <div className="flex">
               <input
                 type="text"
                 value={startPrice ?? '0'}

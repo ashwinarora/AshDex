@@ -97,7 +97,7 @@ const AmountInputSpot = ({
         </div>
       </div>
 
-      <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
+      <div className="flex w-full items-end px-4 border-b border-[#FFFFFF0F] pb-4">
         <div className="w-5/6">
           <label className="block text-sm font-medium text-gray-400">
             Balance = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
