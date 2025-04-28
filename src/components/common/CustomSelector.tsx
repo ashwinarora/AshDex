@@ -20,7 +20,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   return (
     <div className="relative z-50">
       <div
-        className={`w-full text-white px-4 py-2 text-sm   flex justify-between z-40 items-center ${className} gap-2`}
+        className={`w-full text-white px-4 text-sm  flex justify-between z-40 items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {options?.find((opt) => opt?.value === selectedValue)?.flag && (
