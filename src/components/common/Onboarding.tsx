@@ -85,7 +85,7 @@ export default function OnboardingModal() {
               toast.success('Welcome to Nexon!')
             }
           }}
-          className={`${step === 3 ? 'w-full' : 'w-1/2'} bg-primary w-1/2 order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
+          className={`${step === 3 ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
         >
           {onboardingSteps[step]?.button}
         </button>
