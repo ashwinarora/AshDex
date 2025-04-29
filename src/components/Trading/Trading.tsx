@@ -16,7 +16,7 @@ const Trading = () => {
       <FavoriteStrip setSelectedAsset={setSelectedAsset} />
       <div className="h-full bg-transparent flex flex-col px-4 md:px-10 gap-4 p-4">
         {/* Top Bar for Asset Selector */}
-        <div className="flex   justify-between items-center relative">
+        <div className="flex  justify-between items-center   relative">
           <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         </div>
         {/* Main Trading Layout */}

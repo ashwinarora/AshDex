@@ -18,7 +18,7 @@ const BridgeButton = () => {
           width={20}
           src={bridgingbtnlogo}
           alt="bridgingbtnlogo"
-          className="w-5 h-5 2xl:mr-2"
+          className="w-5 h-5"
         />
         Bridge
       </button>

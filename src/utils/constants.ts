@@ -151,6 +151,13 @@ export const BALANCE_FUTURES_COLUMNS = [
   { key: 'send', label: 'Send' },
   { key: 'transfer', label: 'Transfer' }
 ]
+export const BALANCE_SPOT__COLUMNS = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'token', label: 'Tokens' },
+  { key: 'total', label: 'Total Balance' },
+  { key: 'hold', label: 'Hold' },
+  { key: 'entryNtl', label: 'Entry NTL' }
+]
 
 export const BALANCE_VAULTS_COLUMNS = [
   { key: 'coin', label: 'Coin' },

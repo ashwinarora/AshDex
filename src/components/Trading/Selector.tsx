@@ -10,13 +10,13 @@ import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
 import useIsSpot from '@/hooks/useIsSpot'
-
 import { useFavorites } from '@/context/FavoritesContext'
 
 // Crypto icons imports
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
 import Skeleton from '../common/Skeleton'
 import { IconArrowsSort, IconStar, IconStarFilled } from '@tabler/icons-react'
+import CheckBox from '../common/CheckBox'
 
 // Crypto icon mapping - only include Bitcoin which we know exists
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
@@ -221,7 +221,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               width={20}
               src={arrowdownicon}
               alt="arrowdown"
-              className="w-3 h-3 mx-2"
+              className="w-3 h-3 mx-2 max-2xl:mr-5 max-xl:mx-2"
             />
           </button>
         </div>
@@ -273,8 +273,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 key={index}
                 className="flex items-center p-2 font-medium text-base cursor-pointer hover:bg-[#322944] rounded"
               >
-                <input type="checkbox" className="mr-2" defaultChecked={option.checked} />
-                <span>{option.label}</span>
+                <CheckBox label="" setIsChecked={() => {}} isChecked={option.checked} />
+                <span className="ml-1">{option.label}</span>
               </li>
             ))}
           </ul>

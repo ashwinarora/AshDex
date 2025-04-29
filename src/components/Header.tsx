@@ -140,7 +140,7 @@ const Header: FC = () => {
             <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
             Nexon
           </h1>
-          <nav className="md:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
+          <nav className="lg:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
@@ -163,7 +163,6 @@ const Header: FC = () => {
             </button>
           </nav>
         </div>
-
         <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
           <BridgeButton />
           <button className="p-1 md:block hidden  hover:text-white text-gray-400">
@@ -307,10 +306,9 @@ const Header: FC = () => {
           </button>
         </div>
       </header>
-
       {/* Sidebar Menu */}
       {isOpen && (
-        <div className="sticky z-55 left-0 top-14 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
+        <div className="fixed z-55 left-0 top-20 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
               <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />
