@@ -2,7 +2,6 @@
 import { CandlestickSeries, createChart, Time, CandlestickData } from 'lightweight-charts'
 import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { CHART_INTERVALS } from '../../utils/constants'
 import type { Candle } from '../../utils/hyperliquid/hyperLiquidTypes'
@@ -10,18 +9,18 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import ChartTabs from '../common/ChartTabs'
 import IntervalSelector from '../common/IntervalSelector'
 import InfoTab from '../common/InfoTab'
-import unionicon from '@/assets/images/union_icon.svg'
-import union11icon from '@/assets/images/union11_icon.svg'
-import union12icon from '@/assets/images/union12_icon.svg'
-import union13icon from '@/assets/images/union13_icon.svg'
-import union14icon from '@/assets/images/union14_icon.svg'
-import union15icon from '@/assets/images/union15_icon.svg'
-import union16icon from '@/assets/images/union16_icon.svg'
-import union17icon from '@/assets/images/union17_icon.svg'
-import union18icon from '@/assets/images/union18_icon.svg'
-import union19icon from '@/assets/images/union19_icon.svg'
-import union20icon from '@/assets/images/union20_icon.svg'
-import union21icon from '@/assets/images/union21_icon.svg'
+// import unionicon from '@/assets/images/union_icon.svg'
+// import union11icon from '@/assets/images/union11_icon.svg'
+// import union12icon from '@/assets/images/union12_icon.svg'
+// import union13icon from '@/assets/images/union13_icon.svg'
+// import union14icon from '@/assets/images/union14_icon.svg'
+// import union15icon from '@/assets/images/union15_icon.svg'
+// import union16icon from '@/assets/images/union16_icon.svg'
+// import union17icon from '@/assets/images/union17_icon.svg'
+// import union18icon from '@/assets/images/union18_icon.svg'
+// import union19icon from '@/assets/images/union19_icon.svg'
+// import union20icon from '@/assets/images/union20_icon.svg'
+// import union21icon from '@/assets/images/union21_icon.svg'
 
 interface IChartProps {
   selectedAsset: string
@@ -175,23 +174,23 @@ const Chart = ({ selectedAsset }: IChartProps) => {
     }
   }, [candlestickData, activeTab, isLoading])
 
-  const sidebarIcons = [
-    unionicon,
-    union11icon,
-    union12icon,
-    union13icon,
-    union14icon,
-    union15icon,
-    union16icon,
-    union17icon,
-    union18icon,
-    union19icon,
-    union20icon,
-    union21icon
-  ]
+  // const sidebarIcons = [
+  //   unionicon,
+  //   union11icon,
+  //   union12icon,
+  //   union13icon,
+  //   union14icon,
+  //   union15icon,
+  //   union16icon,
+  //   union17icon,
+  //   union18icon,
+  //   union19icon,
+  //   union20icon,
+  //   union21icon
+  // ]
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative h-full">
       <ChartTabs tabs={tabs as string[]} activeTab={activeTab} setActiveTab={setActiveTab} />
       {activeTab === 0 ? (
         <>
@@ -200,8 +199,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
             setSelectedInterval={setSelectedInterval}
             intervals={Array.from(CHART_INTERVALS)}
           />
-          <div className="flex max-lg:block flex-1 h-full">
-            <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
+          <div className="flex max-lg:block flex-1 h-[80%]">
+            {/* <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
               {sidebarIcons?.map((icon, index) => (
                 <button
                   key={index}
@@ -214,7 +213,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
                   />
                 </button>
               ))}
-            </div>
+            </div> */}
             {isLoading ? (
               <div className="flex justify-center items-center w-full">
                 <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />

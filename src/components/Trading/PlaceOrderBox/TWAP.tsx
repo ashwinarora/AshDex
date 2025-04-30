@@ -12,39 +12,43 @@ const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
   const [randomize, setRandomize] = useState<boolean>(false)
 
   return (
-    <div>
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-        <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size</label>
-        <input
-          type="text"
-          value={size}
-          onChange={(e) => setSize(Number(e.target.value))}
-          className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
-        />
+    <div className="w-full h-full flex flex-col">
+      <div className="border-b border-white/10">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       </div>
-      <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-        <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Minutes</label>
-        <input
-          type="text"
-          value={minutes}
-          onChange={(e) => setMinutes(Number(e.target.value))}
-          className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
-        />
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="space-y-2">
+          <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
+            <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size</label>
+            <input
+              type="text"
+              value={size}
+              onChange={(e) => setSize(Number(e.target.value))}
+              className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            />
+          </div>
+          <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
+            <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Minutes</label>
+            <input
+              type="text"
+              value={minutes}
+              onChange={(e) => setMinutes(Number(e.target.value))}
+              className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            />
+          </div>
+          <label className="flex py-1 items-center px-4 mb-2">
+            <CheckBox
+              label=""
+              setIsChecked={(checked) => setRandomize(checked)}
+              isChecked={randomize}
+            />
+            <span className="text-sm font-medium text-[#E8E0F1]">Randomize</span>
+          </label>
+        </div>
       </div>
-      <label className="flex py-1 items-center px-4 mb-4">
-        <CheckBox
-          label=""
-          setIsChecked={(checked) => setRandomize(checked)}
-          isChecked={randomize}
-        />
-        <span className="text-sm font-medium text-[#E8E0F1]">Randomize</span>
-      </label>
-      <div className="px-4 pb-4">
+      <div className="p-4 border-t border-white/10">
         <button
-          className={
-            'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
-          }
+          className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer"
           onClick={async () => {
             const res = await sdk.exchange.placeTwapOrder({
               coin: selectedAsset,
