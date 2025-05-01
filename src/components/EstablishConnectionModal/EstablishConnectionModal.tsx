@@ -1,18 +1,147 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { AGENT_NAME } from '@/utils/constants'
+import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { toast } from 'react-toastify'
 import { splitSignature } from '@/utils/utils'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 
 const EstablishConnectionModal = () => {
   const { chainId } = useAccount()
   const { agentWallet, hyperliquidAxios, isTestnet } = useHyperLiquid()
   const { signTypedDataAsync } = useSignTypedData()
-  const { closeModal, refetchAgentApproval } = useAgentApproval()
+  const [isApproving, setIsApproving] = useState(false)
+  const {
+    closeModal,
+    refetchAgentApproval,
+    isAgentApproved,
+    currentFeeApproval,
+    refetchCurrentFeeApproval
+  } = useAgentApproval()
+
+  useEffect(() => {
+    if (isApproving && isAgentApproved && currentFeeApproval > 0) {
+      closeModal()
+      setIsApproving(false)
+    }
+  }, [isApproving, isAgentApproved, currentFeeApproval, closeModal])
+
+  const getButton = () => {
+    if (!isAgentApproved) {
+      return (
+        <button
+          className="w-full mt-6 text-white cursor-pointer text-base font-semibold bg-[#5F46F9] hover:opacity-90 rounded-2xl px-6 py-3"
+          onClick={async () => {
+            if (!chainId) return
+            const payload = getApproveAgentPayload({
+              agentAddress: agentWallet?.address || '',
+              agentName: AGENT_NAME,
+              chainId: chainId,
+              isTestnet: isTestnet,
+              nonce: Date.now()
+            })
+            const sign = await signTypedDataAsync(payload)
+            const toastId = toast.loading('⏳ Approving agent…')
+            try {
+              const body = {
+                action: {
+                  type: payload.message.type,
+                  agentAddress: payload.message.agentAddress,
+                  agentName: payload.message.agentName,
+                  nonce: payload.message.nonce,
+                  signatureChainId: payload.message.signatureChainId,
+                  hyperliquidChain: payload.message.hyperliquidChain
+                },
+                nonce: payload.message.nonce,
+                signature: splitSignature(sign)
+              }
+              await hyperliquidAxios.post('/exchange', body)
+              await refetchAgentApproval()
+              setIsApproving(true)
+              toast.update(toastId, {
+                render: '✅ Agent approved successfully',
+                type: 'success',
+                isLoading: false,
+                autoClose: 2000
+              })
+            } catch (error) {
+              console.error('Error approving agent:', error)
+              toast.update(toastId, {
+                render: '❌' + error,
+                type: 'error',
+                isLoading: false,
+                autoClose: 2000
+              })
+            }
+          }}
+        >
+          Establish Connection
+        </button>
+      )
+    }
+    if (currentFeeApproval === 0) {
+      return (
+        <button
+          className="w-full mt-6 text-white cursor-pointer text-base font-semibold bg-[#5F46F9] hover:opacity-90 rounded-2xl px-6 py-3"
+          onClick={async () => {
+            if (!chainId) return
+            const payload = getApproveBuilderFeePayload({
+              chainId: chainId,
+              isTestnet: isTestnet,
+              builder: BUILDER_ADDRESS,
+              nonce: Date.now(),
+              feePercentage: BUILDER_FEE
+            })
+            const sign = await signTypedDataAsync(payload)
+            const toastId = toast.loading('⏳ Approving fee…')
+            try {
+              const body = {
+                action: {
+                  type: payload.message.type,
+                  builder: payload.message.builder,
+                  maxFeeRate: payload.message.maxFeeRate,
+                  nonce: payload.message.nonce,
+                  signatureChainId: payload.message.signatureChainId,
+                  hyperliquidChain: payload.message.hyperliquidChain
+                },
+                nonce: payload.message.nonce,
+                signature: splitSignature(sign)
+              }
+              await hyperliquidAxios.post('/exchange', body)
+              await refetchCurrentFeeApproval()
+              toast.update(toastId, {
+                render: '✅ Fee approved successfully',
+                type: 'success',
+                isLoading: false,
+                autoClose: 2000
+              })
+            } catch (error) {
+              console.error('Error approving agent:', error)
+              toast.update(toastId, {
+                render: '❌' + error,
+                type: 'error',
+                isLoading: false,
+                autoClose: 2000
+              })
+            }
+          }}
+        >
+          Approve Fee
+        </button>
+      )
+    }
+    return (
+      <button
+        className="w-full mt-6 text-white cursor-pointer text-base font-semibold bg-[#5F46F9] hover:opacity-90 rounded-2xl px-6 py-3"
+        onClick={closeModal}
+      >
+        Close
+      </button>
+    )
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -43,55 +172,7 @@ const EstablishConnectionModal = () => {
             <CheckBox label="" isChecked={stayConnected} setIsChecked={setStayConnected} />
             <span className="text-sm font-normal text-[#E8E0F1]">Stay Connected</span>
           </div> */}
-
-          <button
-            className="w-full mt-6 text-white cursor-pointer text-base font-semibold bg-[#5F46F9] hover:opacity-90 rounded-2xl px-6 py-3"
-            onClick={async () => {
-              if (!chainId) return
-              const payload = getApproveAgentPayload({
-                agentAddress: agentWallet?.address || '',
-                agentName: AGENT_NAME,
-                chainId: chainId,
-                isTestnet: isTestnet,
-                nonce: Date.now()
-              })
-              const sign = await signTypedDataAsync(payload)
-              const toastId = toast.loading('⏳ Approving agent…')
-              try {
-                const body = {
-                  action: {
-                    type: payload.message.type,
-                    agentAddress: payload.message.agentAddress,
-                    agentName: payload.message.agentName,
-                    nonce: payload.message.nonce,
-                    signatureChainId: payload.message.signatureChainId,
-                    hyperliquidChain: payload.message.hyperliquidChain
-                  },
-                  nonce: payload.message.nonce,
-                  signature: splitSignature(sign)
-                }
-                await hyperliquidAxios.post('/exchange', body)
-                await refetchAgentApproval()
-                toast.update(toastId, {
-                  render: '✅ Agent approved successfully',
-                  type: 'success',
-                  isLoading: false,
-                  autoClose: 2000
-                })
-                closeModal()
-              } catch (error) {
-                console.error('Error approving agent:', error)
-                toast.update(toastId, {
-                  render: '❌' + error,
-                  type: 'error',
-                  isLoading: false,
-                  autoClose: 2000
-                })
-              }
-            }}
-          >
-            Establish Connection
-          </button>
+          {getButton()}
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { useHyperLiquid } from './HyperLiquid'
 import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
 import dynamic from 'next/dynamic'
+import { BUILDER_ADDRESS } from '@/utils/constants'
 
 const EstablishConnectionModal = dynamic(
   () => import('@/components/EstablishConnectionModal/EstablishConnectionModal'),
@@ -18,6 +19,10 @@ interface ConnectionContextType {
     options?: RefetchOptions | undefined
   ) => Promise<QueryObserverResult<boolean, Error>>
   isAgentApproved: boolean
+  currentFeeApproval: number
+  refetchCurrentFeeApproval: (
+    options?: RefetchOptions | undefined
+  ) => Promise<QueryObserverResult<number, Error>>
 }
 
 const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined)
@@ -28,7 +33,7 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
   const { hyperliquidAxios, agentWallet } = useHyperLiquid()
 
   const { data: isAgentApproved, refetch: refetchAgentApproval } = useQuery({
-    queryKey: ['extraAgents', 'new'],
+    queryKey: ['extraAgents'],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {
         type: 'extraAgents',
@@ -44,7 +49,21 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
     initialData: false
   })
 
-  console.log('asdfasdf', isAgentApproved)
+  const { data: currentFeeApproval, refetch: refetchCurrentFeeApproval } = useQuery<number>({
+    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
+    queryFn: async () => {
+      const response = await hyperliquidAxios.post('/info', {
+        type: 'maxBuilderFee',
+        user: address,
+        builder: BUILDER_ADDRESS
+      })
+      return response.data
+    },
+    enabled: isConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved,
+    initialData: 0
+  })
+
+  console.log('currentFeeApproval', currentFeeApproval)
 
   return (
     <ConnectionContext.Provider
@@ -52,7 +71,9 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
         closeModal: () => setIsModalOpen(false),
         openModal: () => setIsModalOpen(true),
         refetchAgentApproval,
-        isAgentApproved
+        isAgentApproved,
+        currentFeeApproval,
+        refetchCurrentFeeApproval
       }}
     >
       {isModalOpen && <EstablishConnectionModal />}
