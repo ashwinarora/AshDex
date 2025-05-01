@@ -1,7 +1,7 @@
 'use client'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { ReactNode } from 'react'
-import { ToastPosition, ToastContainer } from 'react-toastify'
+import { ToastPosition, toast, ToastContainer, ToastOptions } from 'react-toastify'
 import { useUser } from './UserContext'
 
 type ToastType = 'success' | 'error'
@@ -32,18 +32,26 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     'bottom-left'
   ]
 
-  const showToast = (type: ToastType, title: string, message: string) => {
-    const newToast: Toast = {
-      id: Date.now(),
-      type,
-      title,
-      message
-    }
-    setToasts((prevToasts) => [...prevToasts, newToast])
-  }
-
   const hideToast = (id: number) => {
     setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id))
+  }
+
+  const showToast = (type: ToastType, title: string, message: string) => {
+    const options: ToastOptions = {
+      position: popupPosition,
+      autoClose: 3000,
+      closeButton: true,
+      hideProgressBar: true,
+      onClose: () => console.log(`Toast closed: ${title}`)
+    }
+    const content = (
+      <div>
+        <strong>{title}</strong>
+        <div>{message}</div>
+      </div>
+    )
+    if (type === 'success') toast.success(content, options)
+    else if (type === 'error') toast.error(content, options)
   }
 
   useEffect(() => {
@@ -54,13 +62,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <ToastContext.Provider value={{ toasts, showToast, hideToast }}>
-      <ToastContainer
-        draggable
-        stacked
-        position={popupPosition}
-        // className="z-50"
-        hideProgressBar={true}
-      />
+      <ToastContainer />
       {children}
     </ToastContext.Provider>
   )

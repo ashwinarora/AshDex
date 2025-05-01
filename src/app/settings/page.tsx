@@ -12,6 +12,7 @@ import {
 import Modal from '@/components/common/Modal'
 import CustomSelector from '@/components/common/CustomSelector'
 import { truncateAddress } from '@/utils/utils'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useUser } from '@/context/UserContext'
 import Avatar from '@/components/common/Avatar'
 import { updateUser } from '@/utils/user'
@@ -59,7 +60,7 @@ const SettingsPage = () => {
   const router = useRouter()
   const { currentUser, refreshUser } = useUser()
   const { address, isConnected } = useAccount()
-
+  const isRendered = useComponentRendered()
   // Debug log to check user data structure
   useEffect(() => {
     console.log('Current User Data:', currentUser)
@@ -307,6 +308,8 @@ const SettingsPage = () => {
       router.push('/')
     }
   }, [isConnected, router])
+
+  if (!isRendered) return null
 
   return (
     isConnected && (

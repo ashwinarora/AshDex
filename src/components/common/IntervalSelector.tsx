@@ -46,6 +46,7 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
       <Image
         src={calendaricon}
         alt="Calendar"
+        style={{ width: 16, height: 'auto' }}
         className="w-4 mx-2 h-4 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
       />
     </div>

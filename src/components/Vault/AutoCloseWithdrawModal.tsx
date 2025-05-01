@@ -79,9 +79,9 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
               className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
             >
               <Image
-                height={20}
-                width={20}
                 src={menuClose}
+                width={20}
+                height={20}
                 alt="menuclose"
                 className="w-auto h-auto"
               />
@@ -91,7 +91,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
             <div
               className={`rounded-lg py-4 px-3 flex items-center gap-y-1 gap-x-3 mb-6 ${'bg-[#FFA90A14]'}`}
             >
-              <Image src={erroryellowicon} alt="warning" width={25} height={25} />
+              <Image src={erroryellowicon} alt="warning" style={{ width: 25, height: 'auto' }} />
               <p className={`font-normal text-sm ${'text-[#FFA90A]'}`}>
                 {`If disabled, the vault will remain open even if withdrawals exceed the threshold. You will need to manually close it when necessary.`}
               </p>
@@ -148,7 +148,13 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
                   />
                   <div className="flex justify-between items-start">
                     <div className="w-5/6 mr-3">
-                      <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+                      <Image
+                        src={Slider1}
+                        alt="Slider1"
+                        width={20}
+                        height={20}
+                        className="w-full mt-1"
+                      />
                       <div className="text-xs text-gray-500 flex justify-between">
                         <span>0%</span>
                         <span>25%</span>

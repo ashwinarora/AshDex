@@ -77,7 +77,12 @@ const StakeDetails = () => {
               onClick={() => handleBackClick()}
               className="flex items-center space-x-2 cursor-pointer"
             >
-              <Image src={LaftArrow} alt="Back" />
+              <Image
+                style={{ width: 16, height: 'auto' }}
+                className="w-4 h-4"
+                src={LaftArrow}
+                alt="Back"
+              />
               <span className="text-base font-medium">Back</span>
             </div>
 
@@ -104,7 +109,12 @@ const StakeDetails = () => {
               >
                 <div className="flex">
                   <span>{item.label}</span>
-                  <Image src={InfoIcon} alt="" className="px-2" />
+                  <Image
+                    style={{ width: 12, height: 'auto' }}
+                    src={InfoIcon}
+                    alt=""
+                    className="px-2"
+                  />
                 </div>
                 <p>{item.value}</p>
               </div>
@@ -119,7 +129,7 @@ const StakeDetails = () => {
                 <p className="text-[#8B8BA0] text-base font-medium">Total staked</p>
                 <div className="flex space-x-3 items-center">
                   <div className="bg-[#072723] p-1 rounded-full">
-                    <Image src={VectorIcon} alt="" />
+                    <Image style={{ width: 16, height: 'auto' }} src={VectorIcon} alt="" />
                   </div>
                   <p className="text-[28px] font-medium">1,498,283.92 HYPE</p>
                 </div>
@@ -187,7 +197,7 @@ const StakeDetails = () => {
                 >
                   <div className="flex flex-col">
                     <span className="flex gap-x-1 text-base font-medium text-[#8B8BA0]">
-                      Est. APY <Image src={InfoIcon} alt="" />
+                      Est. APY <Image style={{ width: 12, height: 'auto' }} src={InfoIcon} alt="" />
                     </span>
                     <span className="text-2xl font-medium">2.99%</span>
                   </div>

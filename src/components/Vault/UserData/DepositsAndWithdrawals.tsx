@@ -52,7 +52,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
               >
                 {item[col?.key] ?? '-'}
                 {col?.key === 'time' && (
-                  <Image src={exporticon} alt="export" width={13} height={13} />
+                  <Image src={exporticon} alt="export" style={{ width: 13, height: 'auto' }} />
                 )}
               </span>
             </span>
@@ -79,9 +79,19 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
                     <>
-                      <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                      <Image
+                        src={shortingicon}
+                        alt="Sort"
+                        style={{ width: 13, height: 'auto' }}
+                        className="w-3 h-3 cursor-pointer"
+                      />
                       <span>{col?.label}</span>
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Image
+                        src={infoicon}
+                        alt="Info"
+                        style={{ width: 16, height: 'auto' }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                     </>
                   ) : null}
                 </div>
@@ -99,8 +109,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
                     <Image
                       src={exporticon}
                       alt="export"
-                      width={13}
-                      height={13}
+                      style={{ width: 13, height: 'auto' }}
                       className="mx-1 cursor-pointer opacity-70"
                     />
                   </div>

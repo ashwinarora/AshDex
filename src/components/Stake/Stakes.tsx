@@ -1,6 +1,7 @@
 'use client'
 import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import StakingCard from '../Stake/StakingCard'
 import StakingTable from '../Stake/StakingTable'
 import StakingInfo from '../Stake/StakingInfo'
@@ -8,7 +9,11 @@ import ViewHistory from '../Stake/ViewHistory'
 
 function Stakes() {
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const [isViewHistory, setIsViewHistory] = useState(false)
+
+  if (!isRendered) return null
+
   return (
     <div className="p-4 overflow-x-hidden">
       <div

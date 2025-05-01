@@ -11,7 +11,12 @@ export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ mainTitle, subtitle })
     <div className="flex items-center text-[#8B8BA0] text-sm font-medium px-2 gap-x-2.5">
       <span>{mainTitle}</span>
       <span>
-        <Image className="opacity-70" src={nexticon} alt="nexticon" width={5} height={5} />
+        <Image
+          className="opacity-70"
+          style={{ width: 5, height: 'auto' }}
+          src={nexticon}
+          alt="nexticon"
+        />
       </span>
       <span className="text-white">{subtitle}</span>
     </div>

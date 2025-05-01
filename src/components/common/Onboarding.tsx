@@ -14,7 +14,7 @@ import { toast } from 'react-toastify'
 const NextButton = () => (
   <div className="flex items-center justify-center gap-2">
     Next
-    <Image src={arrowrightlineicon} alt="Next" width={15} height={15} />
+    <Image src={arrowrightlineicon} alt="Next" style={{ width: 15, height: 'auto' }} />
   </div>
 )
 
@@ -168,8 +168,8 @@ export default function OnboardingModal() {
             <Image
               src={current.image}
               alt="onboarding-step"
-              width={300}
               className="w-full h-full object-cover rounded-3xl"
+              width={300}
               height={100}
             />
           </div>

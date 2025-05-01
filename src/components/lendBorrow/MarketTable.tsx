@@ -44,16 +44,14 @@ const MarketTable = () => {
                   <Image
                     src={shortingicon}
                     alt="Sort"
-                    height={16}
-                    width={16}
+                    style={{ width: 16, height: 'auto' }}
                     className="w-3 h-3 cursor-pointer"
                   />
                   <span>{col?.label}</span>
                   <Image
                     src={infoicon}
                     alt="Info"
-                    height={16}
-                    width={16}
+                    style={{ width: 16, height: 'auto' }}
                     className="w-4 h-4 cursor-pointer"
                   />
                 </div>
@@ -70,7 +68,12 @@ const MarketTable = () => {
             >
               <td className="py-4 pr-7 text-white opacity-80 font-normal text-sm ">
                 <div className="flex items-center gap-1">
-                  <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+                  <Image
+                    src={bitcoinicon}
+                    alt="Bitcoin"
+                    style={{ width: 24, height: 'auto' }}
+                    className="w-6 h-6 mx-1 cursor-pointer"
+                  />
                   <div className="flex flex-col">
                     {position?.coin}{' '}
                     <span className="text-[#8B8BA0] text-sm">{position?.coin}</span>

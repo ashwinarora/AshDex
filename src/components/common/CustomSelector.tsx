@@ -35,7 +35,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
           />
         )}
         {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
-        <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
+        <Image src={DropDown} style={{ width: 20, height: 'auto' }} className="pl-1" alt="" />
       </div>
 
       {isOpen && (

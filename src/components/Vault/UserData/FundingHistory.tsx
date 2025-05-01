@@ -70,9 +70,19 @@ function FundingHistory({ showExportButton }: FundingHistoryProps) {
                 <div className="flex justify-start items-center gap-1">
                   {col?.label ? (
                     <>
-                      <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                      <Image
+                        src={shortingicon}
+                        alt="Sort"
+                        style={{ width: 13, height: 'auto' }}
+                        className="w-3 h-3 cursor-pointer"
+                      />
                       <span>{col?.label}</span>
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Image
+                        src={infoicon}
+                        alt="Info"
+                        style={{ width: 16, height: 'auto' }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                     </>
                   ) : null}
                 </div>

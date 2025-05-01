@@ -41,7 +41,7 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
                     backdrop-blur-[48.3px] items-center"
         >
           <div className="flex gap-x-2 items-center w-full">
-            <Image src={SearchIcon} height={22} width={22} alt="SearchIcon" />
+            <Image src={SearchIcon} style={{ width: 22, height: 'auto' }} alt="SearchIcon" />
             <input
               type="text"
               placeholder="Search..."
@@ -68,8 +68,7 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
                       <Image
                         src={shortingicon}
                         alt="Sort"
-                        height={16}
-                        width={16}
+                        style={{ width: 16, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"
                       />
                     )}

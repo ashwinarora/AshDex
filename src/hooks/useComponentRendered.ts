@@ -5,5 +5,5 @@ export const useComponentRendered = () => {
   useEffect(() => {
     setRendered(true)
   }, [])
-  return { isRendered }
+  return isRendered
 }

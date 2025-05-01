@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import TabContent from './TabContent'
 import Loading from '../common/Loading'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
 import WithdrawAndRepayModal from './WithdrawAndRepayModal'
 import lendBorrowData from '@/utils/lendBorrow.json'
@@ -18,6 +19,7 @@ const iconMap: { [key: string]: string } = {
 const WalletActions: React.FC = () => {
   const { yourSuppliesAndBorrows } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const [activeTab, setActiveTab] = useState<'Supply' | 'Borrow'>('Supply')
   const [isLoading, setIsLoading] = useState(false)
   const [modalType, setModalType] = useState<'Withdraw' | 'Repay' | null>(null)
@@ -27,6 +29,7 @@ const WalletActions: React.FC = () => {
     setModalType(type)
     setModalOpen((p) => !p)
   }
+  if (!isRendered) return null
 
   return (
     <>
@@ -87,8 +90,7 @@ const WalletActions: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Image
                     alt={supply?.icon}
-                    height={27}
-                    width={27}
+                    style={{ width: 27, height: 'auto' }}
                     src={iconMap[supply?.icon]}
                     className="text-lg"
                   />
@@ -121,8 +123,7 @@ const WalletActions: React.FC = () => {
                 <div className="flex items-center space-x-2">
                   <Image
                     alt={supply?.icon}
-                    height={27}
-                    width={27}
+                    style={{ width: 27, height: 'auto' }}
                     src={iconMap[supply?.icon]}
                     className="text-lg"
                   />

@@ -13,7 +13,7 @@ const Loading: React.FC<LoadingProps> = ({ title, subTitle, className }) => {
   return (
     <div className={cn('flex justify-center items-center w-full flex-col', className)}>
       <div className="w-16 h-16">
-        <Image src={nexonlogo} alt="Nexon Logo" width={64} height={64} />
+        <Image src={nexonlogo} alt="Nexon Logo" style={{ width: 64, height: 'auto' }} />
       </div>
       <div className="">
         <p className="mt-8 text-white font-medium text-base text-center">{title ?? ''}</p>

@@ -73,8 +73,7 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
       <Image
         src={starticon}
         alt="staricon"
-        height={20}
-        width={20}
+        style={{ width: 20, height: 'auto' }}
         className="w-4 h-4 my-auto flex-shrink-0"
       />
       <span className="font-medium text-sm text-[#E8E0F1] my-auto">{favorite.name}</span>

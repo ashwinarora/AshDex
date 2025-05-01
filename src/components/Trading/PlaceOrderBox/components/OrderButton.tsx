@@ -273,7 +273,7 @@ const OrderButton = ({
   tpsl,
   stopOrder
 }: OrderButtonProps) => {
-  const { isRendered } = useComponentRendered()
+  const isRendered = useComponentRendered()
   const { address, isConnected: isWalletConnected, chainId } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } =
     useHyperLiquid()

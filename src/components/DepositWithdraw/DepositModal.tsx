@@ -102,7 +102,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
             <div className="flex flex-col items-center gap-y-2 mb-6">
-              <Image src={arbitrum} alt="test" width={50} height={50} />
+              <Image src={arbitrum} alt="test" style={{ width: 50, height: 'auto' }} />
               <p className="text-white tracking-normal font-medium">Deposit USDC from Arbitrum</p>
             </div>
             <div className="mb-4">

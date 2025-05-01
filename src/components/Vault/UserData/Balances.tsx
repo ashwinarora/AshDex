@@ -4,6 +4,7 @@ import { useAccount } from 'wagmi'
 import Pagination from '@/components/common/Pagination'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { BALANCE_VAULTS_COLUMNS } from '@/utils/constants'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import infoicon from '@/assets/images/info_icon.svg'
@@ -33,6 +34,7 @@ type RenderRowProps = {
 
 const Balances = () => {
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
 
@@ -47,7 +49,7 @@ const Balances = () => {
       <div className="flex flex-col gap-2 text-white text-sm">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
-            <Image src={bitcoinicon} alt="BTC" width={30} height={30} />
+            <Image src={bitcoinicon} alt="BTC" style={{ width: 30, height: 'auto' }} />
             <div className="flex flex-col">
               <span className="font-medium">{item?.coin}</span>
               <span className="text-xs text-[#8B8BA0]">{item?.symbol}</span>
@@ -76,6 +78,8 @@ const Balances = () => {
     )
   }
 
+  if (!isRendered) return null
+
   return (
     <>
       {isConnected ? (
@@ -89,9 +93,19 @@ const Balances = () => {
                     className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
                   >
                     <div className="flex justify-start items-center gap-1">
-                      <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                      <Image
+                        src={shortingicon}
+                        alt="Sort"
+                        style={{ width: 13, height: 'auto' }}
+                        className="w-3 h-3 cursor-pointer"
+                      />
                       <span>{col.label}</span>
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Image
+                        src={infoicon}
+                        alt="Info"
+                        style={{ width: 16, height: 'auto' }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                     </div>
                   </th>
                 ))}
@@ -107,8 +121,7 @@ const Balances = () => {
                           <Image
                             src={bitcoinicon}
                             alt="Bitcoin"
-                            width={27}
-                            height={27}
+                            style={{ width: 27, height: 'auto' }}
                             className="mx-1 cursor-pointer"
                           />
                           <div className="flex justify-between flex-col">

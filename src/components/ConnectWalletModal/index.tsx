@@ -76,8 +76,8 @@ const ConnectWalletModal: React.FC = () => {
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={menuClose}
               alt="menuclose"
               className="w-[13px] h-[13px]"
@@ -130,8 +130,8 @@ const ConnectWalletModal: React.FC = () => {
                       <span className="text-white font-medium text-base">{wallet?.name}</span>
                     </div>
                     <Image
-                      height={20}
                       width={20}
+                      height={20}
                       src={nexticon}
                       alt="nexticon"
                       className="w-3 h-3 mr-2"

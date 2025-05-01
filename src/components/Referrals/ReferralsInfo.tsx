@@ -63,16 +63,14 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
           <div className="flex items-center gap-4">
             <div className="w-10 h-10 flex items-center justify-center rounded-lg">
               <Image
-                width={20}
-                height={20}
+                style={{ width: 20, height: 'auto' }}
                 src={trophyicon}
                 alt="Trophy Icon"
                 className="w-9 h-9"
               />
             </div>
             <Image
-              width={15}
-              height={15}
+              style={{ width: 15, height: 'auto' }}
               src={referralsellipseImg}
               alt="User Avatar"
               className="w-9 h-9 rounded-full"
