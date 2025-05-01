@@ -59,7 +59,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
   const [totalOrders, setTotalOrders] = useState<number>(10)
-  const [sizeSkew] = useState<number>()
+  const [sizeSkew, setSizeSkew] = useState<number>()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
@@ -174,7 +174,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       </div>
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <form onSubmit={handleSubmit} className="flex flex-col w-full rounded-md shadow-md">
+        <div className="flex flex-col w-full rounded-md shadow-md">
           <div className="space-y-2">
             <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
               <label className="mb-1">
@@ -254,51 +254,104 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </div>
 
-            <div className="flex w-full mb-2 items-end px-4 border-b border-[#FFFFFF0F] pb-2">
-              <div className="w-5/6">
-                <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Total Orders</span>
-                <div className="flex items-center gap-2">
+            <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+              <label className="mb-2">
+                <div className="flex mb-1 justify-between">
+                  <span className="block  text-sm font-medium text-[#8B8BA0]">Total Size</span>
+                  <span className="block text-sm font-medium text-[#8B8BA0]">
+                    Balance: {clearingHouseState?.withdrawable.toFixed(2)} USDC
+                  </span>
+                </div>
+                <div className="flex ">
+                  <input
+                    type="text"
+                    value={totalSize ?? '0'}
+                    onChange={(e) =>
+                      setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+                    }
+                    className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+                  />
+                  <span className="text-white flex items-center text-sm font-medium">
+                    <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                    USDC
+                  </span>
+                </div>
+              </label>
+            </div>
+            <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
+              <span className="block mb-3 text-sm font-bold text-[#8B8BA0]">Scale Settings</span>
+              <label className="mb-2">
+                <span className="block mb-2 text-sm font-medium text-[#8B8BA0]">
+                  Number of Orders
+                </span>
+                <div className="flex items-center gap-2 mb-3 rounded-lg">
                   <button
                     onClick={handleDecrease}
-                    className="p-2 rounded-md bg-white/10 hover:bg-white/20"
+                    className="rounded-md px-3 py-5 border border-white/10 bg-white/10 cursor-pointer"
                   >
-                    <Image src={minusicon} alt="" width={20} height={20} />
+                    <Image
+                      src={minusicon}
+                      width={20}
+                      height={20}
+                      className="pr-1"
+                      alt="minusicon"
+                    />
                   </button>
                   <input
                     type="text"
                     value={totalOrders}
                     onChange={handleChange}
-                    className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+                    className="w-full text-center rounded-md px-3 py-[9px] border-2 border-white/10 bg-white/10 text-base font-medium focus:outline-none"
                   />
                   <button
                     onClick={handleIncrease}
-                    className="p-2 rounded-md bg-white/10 hover:bg-white/20"
+                    className="rounded-md px-3 py-4 border border-white/10 bg-white/10 cursor-pointer"
                   >
-                    <Image src={plusicon} alt="" width={20} height={20} />
+                    <Image src={plusicon} width={20} height={20} className="pr-1" alt="plusicon" />
                   </button>
                 </div>
-              </div>
+              </label>
             </div>
 
-            <div className="px-4 mb-2">
+            <label className="mb-2 px-4">
+              <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size Skew</span>
+              <input
+                type="text"
+                value={sizeSkew ?? ''}
+                onChange={(e) =>
+                  setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)
+                }
+                placeholder="0.00"
+                className="w-full rounded-md text-white p-2 placeholder:text-lg placeholder:text-[#8B8BA0] focus:outline-none  focus:none focus:none text-lg font-medium"
+              />
+            </label>
+            <label className="mb-4 mt-1 px-4 flex items-center">
               <CheckBox
-                label="Reduce Only"
-                setIsChecked={setIsReduceOnly}
+                label=""
+                setIsChecked={(checked) => setIsReduceOnly(checked)}
                 isChecked={isReduceOnly}
               />
-            </div>
+              <span className="text-sm font-medium text-[#E8E0F1]">Reduce Only</span>
+            </label>
           </div>
-        </form>
+        </div>
       </div>
-      <div className="p-4 border-t border-white/10">
+
+      <div className="p-4 pb-0 border-t border-white/10">
         <button
-          type="submit"
-          className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer"
           onClick={handleSubmit}
+          type="submit"
+          disabled={totalSize! > maxAllowedUsd}
+          className={
+            'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer'
+          }
         >
-          Place Order
+          Scale Buy ({totalOrders} Orders)
         </button>
       </div>
+      <span className="font-medium mx-4 mb-4 text-sm text-[#8B8BA0]">
+        Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
+      </span>
     </div>
   )
 }
