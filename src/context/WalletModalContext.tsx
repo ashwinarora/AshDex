@@ -1,8 +1,13 @@
 'use client'
 import { config } from '@/config/wagmi'
+import dynamic from 'next/dynamic'
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
+
+const ConnectWalletModal = dynamic(() => import('@/components/ConnectWalletModal'), {
+  ssr: false
+})
 
 interface WalletModalContextProps {
   isModalOpen: boolean
@@ -28,6 +33,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <WalletModalContext.Provider value={{ isModalOpen, toggleConnectWalletModal }}>
+      {isModalOpen && <ConnectWalletModal />}
       {children}
     </WalletModalContext.Provider>
   )
