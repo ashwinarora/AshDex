@@ -28,65 +28,69 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
 
   return (
-    <div className="w-full h-auto">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="space-y-4">
-        {isSpot ? (
-          <AmountInputSpot
-            selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
-            limitPrice={allMids[selectedAsset]}
-            isBuy={isBuy}
-          />
-        ) : (
-          <AmountInput
-            selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
-            limitPrice={allMids[selectedAsset]}
-            isReduceOnly={isReduceOnly}
-            isBuy={isBuy}
-          />
-        )}
-        {!isSpot && (
-          <LeverageMargin
-            selectedAsset={selectedAsset}
-            leverage={leverage}
-            setLeverage={setLeverage}
-            isCross={isCross}
-            setIsCross={setIsCross}
-          />
-        )}
-        <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
-          {!isSpot && (
-            <>
-              <TPSL tpsl={tpsl} setTpsl={setTpsl} />
-              <CheckBox
-                label="Reduce Only"
-                setIsChecked={setIsReduceOnly}
-                isChecked={isReduceOnly}
-              />
-            </>
+    <div className="w-full h-full flex flex-col">
+      <div className="border-b border-white/10">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="space-y-2">
+          {isSpot ? (
+            <AmountInputSpot
+              selectedAsset={selectedAsset}
+              amount={amount}
+              setAmount={setAmount}
+              total={total}
+              setTotal={setTotal}
+              limitPrice={allMids[selectedAsset]}
+              isBuy={isBuy}
+            />
+          ) : (
+            <AmountInput
+              selectedAsset={selectedAsset}
+              amount={amount}
+              setAmount={setAmount}
+              total={total}
+              setTotal={setTotal}
+              limitPrice={allMids[selectedAsset]}
+              isReduceOnly={isReduceOnly}
+              isBuy={isBuy}
+            />
           )}
-          <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
+          {!isSpot && (
+            <LeverageMargin
+              selectedAsset={selectedAsset}
+              leverage={leverage}
+              setLeverage={setLeverage}
+              isCross={isCross}
+              setIsCross={setIsCross}
+            />
+          )}
+          <div className="grid grid-cols-2 gap-2 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-2 px-4">
+            {!isSpot && (
+              <>
+                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
+                <CheckBox
+                  label="Reduce Only"
+                  setIsChecked={setIsReduceOnly}
+                  isChecked={isReduceOnly}
+                />
+              </>
+            )}
+            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
+          </div>
         </div>
-        <div className="p-4 pb-8">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
-            amount={amount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-          />
-        </div>
+      </div>
+      <div className="p-4 border-t border-white/10">
+        <OrderButton
+          isBuy={isBuy}
+          selectedAsset={selectedAsset}
+          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
+          amount={amount}
+          leverage={leverage}
+          isCross={isCross}
+          isPostOnly={isPostOnly}
+          isReduceOnly={isReduceOnly}
+        />
       </div>
     </div>
   )

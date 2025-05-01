@@ -231,17 +231,19 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
 
       <div className="flex items-center relative max-xl:w-full w-[80%] justify-between">
-        <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
+        <div className="flex flex-wrap text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-lg:pb-2 py-3 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="flex max-lg:pb-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-1 overflow-hidden">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div className={`font-medium md:text-sm text-x     ${item.color || 'text-white'}`}>
+                <div
+                  className={`font-medium md:text-sm text-x ${item.color || 'text-white'} whitespace-nowrap`}
+                >
                   {item.value}
                 </div>
               </div>

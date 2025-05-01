@@ -16,7 +16,7 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
   intervals
 }) => {
   return (
-    <div className="flex items-center gap-2 pt-4 px-4 py-3 border-b-2 border-white/10">
+    <div className="flex items-center gap-2 px-4 border-b-2 border-white/10">
       {/* Intervals List */}
       <div className="flex items-center overflow-hidden gap-2 text-white text-sm">
         {intervals.map((interval) => (
