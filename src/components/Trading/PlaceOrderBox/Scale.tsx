@@ -1,4 +1,3 @@
-
 import { useAccount } from 'wagmi'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
