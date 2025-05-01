@@ -57,8 +57,8 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex border-b border-white/10 p-3 mb-2.5 items-center justify-start w-full space-x-2">
-        <div className={`flex space-x-2 ${isAdvancedTab ? 'w-[55%]' : 'w-[70%]'}`}>
+      <div className="flex border-b border-white/10 p-2 mb-1 items-center justify-start w-full space-x-2">
+        <div className={`flex space-x-2 ${isAdvancedTab ? '2xl:w-[45%] w-[70%]' : 'w-[70%]'}`}>
           <button
             onClick={() => setActiveTab('LIMIT')}
             className={`tab-btn flex-1 ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
@@ -72,7 +72,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             Market
           </button>
         </div>
-        <div className={`${isAdvancedTab ? 'w-[45%]' : 'w-[30%]'}`}>
+        <div className={`${isAdvancedTab ? '2xl:w-[55%] w-[30%]' : 'w-[30%]'}`}>
           <button
             className={`tab-btn w-full ${
               ['TWAP', 'SCALE', 'STOP_LIMIT', 'STOP_MARKET']?.includes(activeTab)
@@ -91,7 +91,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         </div>
       </div>
 
-      <div className="">{renderTabContent()}</div>
+      <div className="flex-1 overflow-y-auto no-scrollbar">{renderTabContent()}</div>
     </div>
   )
 }

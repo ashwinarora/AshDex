@@ -335,9 +335,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             Scale Buy ({totalOrders} Orders)
           </button>
         </div>
-        <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
+        {/* <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
           Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
-        </span>
+        </span> */}
       </form>
     </div>
   )
