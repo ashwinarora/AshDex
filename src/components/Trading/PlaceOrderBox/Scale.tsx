@@ -190,11 +190,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   />
                   <span className="text-white flex items-center text-sm font-medium">
                     <Image
-                  style={{ width: 45, height: 'auto' }}
-                  src={usdcicon}
-                  className="pr-1"
-                  alt="usdcicon"
-                />
+                      style={{ width: 45, height: 'auto' }}
+                      src={usdcicon}
+                      className="pr-1"
+                      alt="usdcicon"
+                    />
                     USDC
                   </span>
                 </div>
@@ -214,11 +214,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   />
                   <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-sm font-medium">
                     <Image
-                  src={refreshpurpleIcon}
-                  style={{ width: 15, height: 'auto' }}
-                  alt="Refresh Icon"
-                  className="w-3.5 h-3.5"
-                />
+                      src={refreshpurpleIcon}
+                      style={{ width: 15, height: 'auto' }}
+                      alt="Refresh Icon"
+                      className="w-3.5 h-3.5"
+                    />
                     Last
                   </span>
                 </div>
@@ -283,11 +283,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   />
                   <span className="text-white flex items-center text-sm font-medium">
                     <Image
-                  src={usdcicon}
-                  style={{ width: 45, height: 'auto' }}
-                  className="pr-1"
-                  alt="usdcicon"
-                />
+                      src={usdcicon}
+                      style={{ width: 45, height: 'auto' }}
+                      className="pr-1"
+                      alt="usdcicon"
+                    />
                     USDC
                   </span>
                 </div>
@@ -305,16 +305,13 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                     className="rounded-md px-3 py-5 border border-white/10 bg-white/10 cursor-pointer"
                   >
                     <Image
-                 
                       src={minusicon}
-                  style={{
-                      width: 20,
-                      height: 'auto' }}
-                 
+                      style={{
+                        width: 20,
+                        height: 'auto'
+                      }}
                       className="pr-1"
-                 
                       alt="minusicon"
-               
                     />
                   </button>
                   <input
@@ -328,11 +325,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                     className="rounded-md px-3 py-4 border border-white/10 bg-white/10 cursor-pointer"
                   >
                     <Image
-                  src={plusicon}
-                  style={{ width: 20, height: 'auto' }}
-                  className="pr-1"
-                  alt="plusicon"
-                />
+                      src={plusicon}
+                      style={{ width: 20, height: 'auto' }}
+                      className="pr-1"
+                      alt="plusicon"
+                    />
                   </button>
                 </div>
               </label>

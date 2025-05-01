@@ -52,11 +52,11 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               />
               <span className="absolute right-2 top-1/2 flex text-sm items-center gap-x-1.5 -translate-y-1/2 text-[#7D67FF] font-medium">
                 <Image
-                src={refreshpurpleIcon}
-                style={{ width: 15, height: 'auto' }}
-                alt="Refresh Icon"
-                className="w-3.5 h-3.5"
-              />
+                  src={refreshpurpleIcon}
+                  style={{ width: 15, height: 'auto' }}
+                  alt="Refresh Icon"
+                  className="w-3.5 h-3.5"
+                />
                 Last
               </span>
             </div>
