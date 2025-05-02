@@ -12,13 +12,14 @@ import {
 } from '@allbridge/bridge-core-sdk'
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 
 interface Chain {
   name: string
   chainSymbol: string
   chainType: string
   allbridgeChainId: number
+  chainId?: string
   bridgeAddress: string
   tokens: TokenWithChainDetails[]
 }
@@ -65,13 +66,13 @@ interface BridgeContextProps {
   isLoading: boolean
   error: string | null
   transactions: BridgeTransaction[]
-  initiateBridge: (params: SendParams) => Promise<void>
+  initiateBridge: (params: SendParams) => Promise<string>
   getTransactionStatus: (transactionId: string) => Promise<BridgeTransaction['status']>
   getGasFeeOptions: (
     sourceToken: TokenWithChainDetails,
     destinationToken: TokenWithChainDetails,
     messenger: Messenger
-  ) => Promise<GasFeeOptions>
+  ) => Promise<GasFeeOptions | null>
   getAverageTransferTime: (
     sourceToken: TokenWithChainDetails,
     destinationToken: TokenWithChainDetails,
@@ -93,21 +94,30 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [error, setError] = useState<string | null>(null)
   const [transactions, setTransactions] = useState<BridgeTransaction[]>([])
   const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
 
   useEffect(() => {
     const initializeBridge = async () => {
       try {
         toast.success('Initializing bridge...')
         setIsLoading(true)
-        const bridgeSdk = new AllbridgeCoreSdk(nodeRpcUrlsDefault)
+
+        // Initialize SDK with custom RPC URLs
+        const bridgeSdk = new AllbridgeCoreSdk({
+          ...nodeRpcUrlsDefault,
+          ETH: 'https://mainnet.infura.io/v3/65630cb840de47268841556908ea0932',
+          POL: 'https://polygon-mainnet.infura.io/v3/65630cb840de47268841556908ea0932',
+          CEL: 'https://celo-mainnet.infura.io/v3/65630cb840de47268841556908ea0932',
+          BSC: 'https://bsc-mainnet.infura.io/v3/65630cb840de47268841556908ea0932',
+          ARB: 'https://arbitrum-mainnet.infura.io/v3/65630cb840de47268841556908ea0932'
+        })
+
         setSdk(bridgeSdk)
 
         const chainDetails = await bridgeSdk.chainDetailsMap()
         setChains(chainDetails)
-        console.log('chainDetails', chainDetails)
         const tokenList = await bridgeSdk.tokens()
         setTokens(tokenList)
-        console.log('tokenList', tokenList)
 
         // Set default chains and tokens
         const defaultSourceChain = chainDetails[ChainSymbol.ETH]
@@ -144,56 +154,6 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }, [address])
 
-  const initiateBridge = async (params: SendParams) => {
-    if (!sdk || !address) {
-      throw new Error('Bridge not properly initialized')
-    }
-
-    const transaction: BridgeTransaction = {
-      id: Date.now().toString(),
-      status: 'pending',
-      sourceChain: params.sourceToken.chainId || 'unknown',
-      destinationChain: params.destinationToken.chainId || 'unknown',
-      sourceToken: params.sourceToken.symbol,
-      destinationToken: params.destinationToken.symbol,
-      amount: params.amount,
-      timestamp: Date.now()
-    }
-
-    try {
-      setIsLoading(true)
-      setTransactions((prev) => [...prev, transaction])
-
-      // Build the raw transaction
-      await sdk.bridge.rawTxBuilder.send({
-        ...params,
-        fromAccountAddress: address,
-        toAccountAddress: address, // Using same address as recipient for now
-        gasFeePaymentMethod: params.gasFeePaymentMethod,
-        messenger: params.messenger,
-        txFeeParams: params.txFeeParams
-      })
-
-      // Update transaction with hash
-      setTransactions((prev) =>
-        prev.map((t) =>
-          t.id === transaction.id ? { ...t, status: 'completed', txHash: 'txHash' } : t
-        )
-      )
-
-      toast.success('Bridge transaction initiated successfully')
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to initiate bridge transaction')
-      setTransactions((prev) =>
-        prev.map((t) => (t.id === transaction.id ? { ...t, status: 'failed' } : t))
-      )
-      toast.error('Failed to initiate bridge transaction')
-      throw err
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const getTransactionStatus = async (
     transactionId: string
   ): Promise<BridgeTransaction['status']> => {
@@ -209,8 +169,16 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     destinationToken: TokenWithChainDetails,
     messenger: Messenger
   ) => {
-    if (!sdk) throw new Error('SDK not initialized')
-    return await sdk.getGasFeeOptions(sourceToken, destinationToken, messenger)
+    if (!sdk) {
+      console.log('SDK not initialized')
+      return null
+    }
+    try {
+      return await sdk.getGasFeeOptions(sourceToken, destinationToken, messenger)
+    } catch (error) {
+      console.log('Error getting gas fee options:', error)
+      return null
+    }
   }
 
   const getAverageTransferTime = async (
@@ -218,8 +186,61 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     destinationToken: TokenWithChainDetails,
     messenger: Messenger
   ) => {
-    if (!sdk) throw new Error('SDK not initialized')
-    return await sdk.getAverageTransferTime(sourceToken, destinationToken, messenger)
+    if (!sdk) {
+      console.log('SDK not initialized')
+      return null
+    }
+    try {
+      return await sdk.getAverageTransferTime(sourceToken, destinationToken, messenger)
+    } catch (error) {
+      console.log('Error getting average transfer time:', error)
+      return null
+    }
+  }
+
+  const initiateBridge = async (params: SendParams): Promise<string> => {
+    if (!sdk || !address) {
+      throw new Error('Bridge not properly initialized')
+    }
+
+    if (!walletClient) {
+      throw new Error('Wallet client not available')
+    }
+
+    try {
+      setIsLoading(true)
+
+      // Get the raw transaction
+      const rawTx = await sdk.bridge.rawTxBuilder.send(params)
+
+      // Send the transaction
+      const hash = await walletClient.sendTransaction(rawTx)
+
+      // Add to transactions list
+      const transaction: BridgeTransaction = {
+        id: Date.now().toString(),
+        status: 'pending',
+        sourceChain: params.sourceToken.chainId || 'unknown',
+        destinationChain: params.destinationToken.chainId || 'unknown',
+        sourceToken: params.sourceToken.symbol,
+        destinationToken: params.destinationToken.symbol,
+        amount: params.amount,
+        timestamp: Date.now(),
+        txHash: hash
+      }
+
+      setTransactions((prev) => [...prev, transaction])
+
+      toast.success('Bridge transaction sent successfully')
+      return hash
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to send bridge transaction'
+      setError(errorMessage)
+      toast.error(errorMessage)
+      throw err
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   const value = {
@@ -237,10 +258,10 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     isLoading,
     error,
     transactions,
-    initiateBridge,
     getTransactionStatus,
     getGasFeeOptions,
-    getAverageTransferTime
+    getAverageTransferTime,
+    initiateBridge
   }
 
   return <BridgeContext.Provider value={value}>{children}</BridgeContext.Provider>
