@@ -20,6 +20,7 @@ import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 type ColumnType = {
   key: string
@@ -38,6 +39,8 @@ const Positions = () => {
     useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
+
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   useEffect(() => {
     setMounted(true)
@@ -178,11 +181,10 @@ const Positions = () => {
       helper.display({
         id: 'status',
         header: () => <HeaderWithIcons label="Status" />,
-        cell: (info) => {
-          const status = info.row.original
+        cell: () => {
           return (
             <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
-              {status.szi > 0 ? 'Open' : 'Closed'}
+              Open
             </span>
           )
         },
@@ -195,12 +197,21 @@ const Positions = () => {
           const position = info.row.original
           return (
             <div className="flex items-center gap-2">
-              <button
-                className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2"
-                onClick={() => closePosition(position)}
-              >
-                Close
-              </button>
+              {!isAgentApproved || currentFeeApproval === 0 ? (
+                <button
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
+                  onClick={openAgentModal}
+                >
+                  Connect
+                </button>
+              ) : (
+                <button
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
+                  onClick={() => closePosition(position)}
+                >
+                  Close
+                </button>
+              )}
               <span className="px-3 font-medium py-2">Limit</span>
               <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
                 dummy

@@ -1,22 +1,19 @@
 'use client'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { AGENT_NAME, BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
-import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
-import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
+import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { IExtraAgent, MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { formatPrice, getUniverseIndex, splitSignature } from '@/utils/utils'
+import { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { formatPrice, getUniverseIndex } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
-import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
+import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
 import useIsSpot from '@/hooks/useIsSpot'
 import { AxiosInstance } from 'axios'
 import { PrivateKeyAccount } from 'viem'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 import { toast } from 'react-toastify'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 type StopOrder = {
   isMarket: boolean
@@ -274,43 +271,12 @@ const OrderButton = ({
   stopOrder
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
-  const { address, isConnected: isWalletConnected, chainId } = useAccount()
+  const { isConnected: isWalletConnected } = useAccount()
   const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } =
     useHyperLiquid()
   const { toggleConnectWalletModal } = useWalletModal()
   const isSpot = useIsSpot()
-  const { signTypedDataAsync } = useSignTypedData()
-  const { data: extraAgents, refetch: refetchExtraAgents } = useQuery({
-    queryKey: ['extraAgents'],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'extraAgents',
-        user: address
-      })
-      return response.data as IExtraAgent[]
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios
-  })
-
-  const isAgentApproved = useMemo(() => {
-    if (!extraAgents) return false
-    return extraAgents.some(
-      (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
-    )
-  }, [extraAgents, agentWallet])
-
-  const { data: currentFeeApproval, refetch: refetchCurrentFeeApproval } = useQuery({
-    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'maxBuilderFee',
-        user: address,
-        builder: BUILDER_ADDRESS
-      })
-      return response.data as number
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
-  })
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
 
   // We handle the render logic after hooks are all set up
   if (!isRendered) return null
@@ -319,9 +285,7 @@ const OrderButton = ({
     return (
       <button
         type="button"
-        className={
-          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
-        }
+        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
         onClick={() => {
           toggleConnectWalletModal()
         }}
@@ -330,111 +294,14 @@ const OrderButton = ({
       </button>
     )
   }
-  if (!isAgentApproved) {
+  if (!isAgentApproved || currentFeeApproval === 0) {
     return (
       <button
         type="button"
-        className={
-          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
-        }
-        onClick={async () => {
-          if (!chainId) return
-          const payload = getApproveAgentPayload({
-            agentAddress: agentWallet?.address || '',
-            agentName: AGENT_NAME,
-            chainId: chainId,
-            isTestnet: isTestnet,
-            nonce: Date.now()
-          })
-          const sign = await signTypedDataAsync(payload)
-          const toastId = toast.loading('⏳ Approving agent…')
-          try {
-            const body = {
-              action: {
-                type: payload.message.type,
-                agentAddress: payload.message.agentAddress,
-                agentName: payload.message.agentName,
-                nonce: payload.message.nonce,
-                signatureChainId: payload.message.signatureChainId,
-                hyperliquidChain: payload.message.hyperliquidChain
-              },
-              nonce: payload.message.nonce,
-              signature: splitSignature(sign)
-            }
-            await hyperliquidAxios.post('/exchange', body)
-            await refetchExtraAgents()
-            toast.update(toastId, {
-              render: '✅ Agent approved successfully',
-              type: 'success',
-              isLoading: false,
-              autoClose: 2000
-            })
-          } catch (error) {
-            console.error('Error approving agent:', error)
-            toast.update(toastId, {
-              render: '❌' + error,
-              type: 'error',
-              isLoading: false,
-              autoClose: 2000
-            })
-          }
-        }}
+        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+        onClick={async () => openAgentModal()}
       >
-        Approve Agent
-      </button>
-    )
-  }
-  if (currentFeeApproval === 0) {
-    return (
-      <button
-        type="button"
-        className={
-          'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
-        }
-        onClick={async () => {
-          if (!chainId) return
-          const payload = getApproveBuilderFeePayload({
-            chainId: chainId,
-            isTestnet: isTestnet,
-            builder: BUILDER_ADDRESS,
-            nonce: Date.now(),
-            feePercentage: '0.1%'
-          })
-          const sign = await signTypedDataAsync(payload)
-          const toastId = toast.loading('⏳ Approving fee…')
-          try {
-            const body = {
-              action: {
-                type: payload.message.type,
-                builder: payload.message.builder,
-                maxFeeRate: payload.message.maxFeeRate,
-                nonce: payload.message.nonce,
-                signatureChainId: payload.message.signatureChainId,
-                hyperliquidChain: payload.message.hyperliquidChain
-              },
-              nonce: payload.message.nonce,
-              signature: splitSignature(sign)
-            }
-            await hyperliquidAxios.post('/exchange', body)
-            await refetchCurrentFeeApproval()
-            toast.update(toastId, {
-              render: '✅ Fee approved successfully',
-              type: 'success',
-              isLoading: false,
-              autoClose: 2000
-            })
-          } catch (error) {
-            console.error('Error approving agent:', error)
-            toast.update(toastId, {
-              render: '❌' + error,
-              type: 'error',
-              isLoading: false,
-              autoClose: 2000
-            })
-          }
-        }}
-      >
-        Approve Fee
+        Establish Connection
       </button>
     )
   }

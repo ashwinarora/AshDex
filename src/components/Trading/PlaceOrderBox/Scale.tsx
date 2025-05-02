@@ -1,4 +1,3 @@
-import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
@@ -7,7 +6,6 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
-import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
 import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
@@ -15,6 +13,7 @@ import minusicon from '@/assets/images/minus_icon.svg'
 import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { IPlaceOrderProps } from '.'
 import CheckBox from '@/components/common/CheckBox'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface Order {
   price: number
@@ -54,7 +53,7 @@ function calculateScaleOrders(
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const { universe, agentWallet, hyperliquidAxios, clearingHouseState } = useHyperLiquid()
-  const { address, chain, isConnected: isWalletConnected } = useAccount()
+  const { chain } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
@@ -63,6 +62,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
+
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
@@ -95,35 +96,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     totalOrders,
     sizeSkew
   ])
-  const { data: extraAgents } = useQuery({
-    queryKey: ['extraAgents'],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'extraAgents',
-        user: address
-      })
-      return response.data as IExtraAgent[]
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios
-  })
-  const isAgentApproved = useMemo(() => {
-    if (!extraAgents) return false
-    return extraAgents.some(
-      (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
-    )
-  }, [extraAgents, agentWallet])
-  const { data: currentFeeApproval } = useQuery({
-    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'maxBuilderFee',
-        user: address,
-        builder: BUILDER_ADDRESS
-      })
-      return response.data as number
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
-  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!universe.length) return
@@ -360,16 +333,24 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       </div>
 
       <div className="p-4 pb-0 border-t border-white/10">
-        <button
-          onClick={handleSubmit}
-          type="submit"
-          disabled={totalSize! > maxAllowedUsd}
-          className={
-            'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer'
-          }
-        >
-          Scale Buy ({totalOrders} Orders)
-        </button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <button
+            type="button"
+            className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+            onClick={async () => openAgentModal()}
+          >
+            Establish Connection
+          </button>
+        ) : (
+          <button
+            onClick={handleSubmit}
+            type="submit"
+            disabled={totalSize! > maxAllowedUsd}
+            className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
+          >
+            Scale Buy ({totalOrders} Orders)
+          </button>
+        )}
       </div>
       {/* <span className="font-medium mx-4 mb-4 text-sm text-[#8B8BA0]">
         Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
