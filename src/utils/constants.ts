@@ -35,6 +35,8 @@ export const BUILDER_ADDRESS =
     ? '0x6a181ef519f21f933884038952aabef02876dbcc' // Ahmed's address
     : '0x1710022f671b4032d6c7262107ba231f41f84ce8' // Ashwin's address
 
+export const BUILDER_FEE = '0.1%'
+
 export const HLP_VAULT_TESTNET = '0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0' // https://app.hyperliquid-testnet.xyz/vaults/0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0
 
 export const MAX_DECIMALS_PERP = 6 // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
@@ -150,6 +152,13 @@ export const BALANCE_FUTURES_COLUMNS = [
   { key: 'withdrawableBalance', label: 'Withdrawable Balance' },
   { key: 'send', label: 'Send' },
   { key: 'transfer', label: 'Transfer' }
+]
+export const BALANCE_SPOT__COLUMNS = [
+  { key: 'coin', label: 'Coin' },
+  { key: 'token', label: 'Tokens' },
+  { key: 'total', label: 'Total Balance' },
+  { key: 'hold', label: 'Hold' },
+  { key: 'entryNtl', label: 'Entry NTL' }
 ]
 
 export const BALANCE_VAULTS_COLUMNS = [
@@ -419,10 +428,6 @@ export const REFERRALS_DESC = [
 ] as const
 
 export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
-
-export const REFERRALS_ENTERCODE_DESC = [
-  `This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.`
-] as const
 
 export const REFERRALS_CREATECODE_DESC = [
   `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`

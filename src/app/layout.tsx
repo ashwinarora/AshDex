@@ -7,7 +7,6 @@ import { Provider } from './provider'
 import Footer from '@/components/Footer'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
-import ConnectWalletModal from '@/components/ConnectWalletModal'
 import { ToastProvider } from '../context/ToastContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
 
@@ -16,6 +15,7 @@ import './globals.css'
 import '@/styles/table.css'
 import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
+import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -53,19 +53,20 @@ export default function RootLayout({
           <HyperLiquidProvider>
             <WalletModalProvider>
               <BridgeProvider>
-                <UserProvider>
-                  <ToastProvider>
-                    <FavoritesProvider>
-                      <ConnectWalletModal />
-                      <Header />
-                      <OnboardingModal />
-                      {children}
-                      <div className="py-8 px-4 md:px-9   col-span-full">
-                        <Footer />
-                      </div>
-                    </FavoritesProvider>
-                  </ToastProvider>
-                </UserProvider>
+                <EstablishConnectionProvider>
+                  <UserProvider>
+                    <ToastProvider>
+                      <FavoritesProvider>
+                        <Header />
+                        <OnboardingModal />
+                        {children}
+                        <div className="py-8 px-4 md:px-9   col-span-full">
+                          <Footer />
+                        </div>
+                      </FavoritesProvider>
+                    </ToastProvider>
+                  </UserProvider>
+                </EstablishConnectionProvider>
               </BridgeProvider>
             </WalletModalProvider>
           </HyperLiquidProvider>

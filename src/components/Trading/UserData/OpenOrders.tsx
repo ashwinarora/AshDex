@@ -17,6 +17,7 @@ import { IOpenOrder } from '@/utils/hyperliquid/webData2Types'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 type ColumnType = {
   key: string
@@ -42,8 +43,20 @@ const OpenOrders = () => {
   const { sdk, openOrders } = useHyperLiquid()
   const isSpot = useIsSpot()
 
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [sorting, setSorting] = useState<SortingState>([])
+
   const renderCancelAllButton = useCallback(() => {
+    if (!isAgentApproved || currentFeeApproval <= 0) {
+      return (
+        <button
+          className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
+          onClick={openAgentModal}
+        >
+          Connect
+        </button>
+      )
+    }
     return (
       <button
         className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
@@ -75,6 +88,16 @@ const OpenOrders = () => {
   const renderCancelButton = useCallback(
     (rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })) => {
       const order = 'original' in rowOrOrder ? rowOrOrder?.original : rowOrOrder
+      if (!isAgentApproved || currentFeeApproval <= 0) {
+        return (
+          <button
+            className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
+            onClick={openAgentModal}
+          >
+            Connect
+          </button>
+        )
+      }
       return (
         <button
           className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-[#E2464A] font-bold rounded"

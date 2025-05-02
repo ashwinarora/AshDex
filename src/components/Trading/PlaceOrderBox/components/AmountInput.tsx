@@ -70,8 +70,8 @@ const AmountInput = ({
 
   return (
     <>
-      <div className="px-4 border-b border-[#FFFFFF0F]">
-        <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
+      <div className="px-4 border-b mb-3 border-[#FFFFFF0F]">
+        <label className="block text-sm font-medium text-[#8B8BA0] mb-1">Amount</label>
         <div className="relative">
           <input
             type="text"
@@ -80,14 +80,14 @@ const AmountInput = ({
             onChange={handleAmountChange}
             className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-sm">
             {getCoinName(selectedAsset)}
           </span>
         </div>
       </div>
 
-      <div className="px-4 border-b border-[#FFFFFF0F]">
-        <label className="block text-sm font-medium text-gray-300 mb-1">TOTAL</label>
+      <div className="px-4 border-b mb-3 border-[#FFFFFF0F]">
+        <label className="block text-sm font-medium text-[#8B8BA0] mb-1">TOTAL</label>
         <div className="relative">
           <input
             type="text"
@@ -96,12 +96,12 @@ const AmountInput = ({
             onChange={handleTotalChange}
             className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-sm">
             USD
           </span>
         </div>
       </div>
-      <div className="flex w-full px-4 border-b border-[#FFFFFF0F] pb-4">
+      <div className="flex mb-3 items-end w-full px-4 border-b border-[#FFFFFF0F] pb-4">
         <div className="w-5/6">
           <label className="block text-sm font-medium text-gray-400">
             Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD

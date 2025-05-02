@@ -5,9 +5,9 @@ import Image from 'next/image'
 import { useHyperLiquid } from '../../context/HyperLiquid'
 import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
 import ThreeDot from '../../assets/images/three_dot.svg'
-import Filter1 from '../../assets/images/filter_1.svg'
-import Filter2 from '../../assets/images/filter_2.svg'
-import Filter3 from '../../assets/images/filter_3.svg'
+// import Filter1 from '../../assets/images/filter_1.svg'
+// import Filter2 from '../../assets/images/filter_2.svg'
+// import Filter3 from '../../assets/images/filter_3.svg'
 import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
@@ -94,12 +94,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   return (
     <div className="w-full text-gray-200 text-sm h-full flex flex-col">
       <div className="flex px-4 py-2 justify-between">
-        <p className="text-lg   text-white font-semi-bold ">Order Book</p>
+        <p className="text-lg text-white font-semi-bold ">Order Book</p>
         <div className="flex items-center">
           <Image src={ThreeDot} alt="" width={20} height={20} className="w-5 h-5" />
         </div>
       </div>
-      <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
+      {/* <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
         <div className="flex items-center">
           <Image src={Filter1} alt="" className="w-5 h-5 mx-1" />
           <Image src={Filter2} alt="" className="w-5 h-5 mx-1" />
@@ -112,7 +112,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
           <option value="10">10</option>
           <option value="100">100</option>
         </select>
-      </div>
+      </div> */}
 
       {showTotalColumn && (
         <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
@@ -122,9 +122,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         </div>
       )}
 
-      <div className="relative flex flex-col flex-1  overflow-hidden">
+      <div className="overflow-hidden h-full flex flex-col">
         {/* Top - Sells */}
-        <div className="overflow-y-auto  flex flex-col no-scrollbar" style={{ maxHeight: '48%' }}>
+        <div className="overflow-y-auto flex-col no-scrollbar h-[50%]">
           {isLoading
             ? Array(10)
                 .fill(0)
@@ -155,8 +155,8 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
         {/* Middle - Fixed Price */}
         {allMids[selectedAsset] && (
-          <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 z-10 pointer-events-none     ">
-            <div className="flex justify-between items-center   rounded-md px-4 py-2 pointer-events-auto">
+          <div className="z-10 pointer-events-none">
+            <div className="flex justify-between items-center rounded-md px-4 py-2 pointer-events-auto">
               <p
                 className={`text-lg font-semibold font-proxima-nova ${
                   priceChange === 'up'
@@ -178,7 +178,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         )}
 
         {/* Bottom - Buys */}
-        <div className="mt-auto overflow-y-auto   no-scrollbar" style={{ maxHeight: '48%' }}>
+        <div className="overflow-y-auto no-scrollbar h-[50%]">
           {isLoading
             ? Array(10)
                 .fill(0)

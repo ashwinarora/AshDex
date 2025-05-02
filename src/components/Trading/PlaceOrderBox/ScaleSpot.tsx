@@ -1,19 +1,19 @@
 'use client'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import BuyOrSell from './components/BuyOrSell'
+import CheckBox from '@/components/common/CheckBox'
 import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getCoinName } from '@/utils/utils'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
-import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
 import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
 import { IPlaceOrderProps } from '.'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface Order {
   price: number
@@ -55,7 +55,7 @@ const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('
 
 const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const { agentWallet, hyperliquidAxios, spotState, spotAssetContext, spotMeta } = useHyperLiquid()
-  const { address, chain, isConnected: isWalletConnected } = useAccount()
+  const { chain } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
@@ -64,42 +64,16 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
+
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
       ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
       : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
-  console.log(maxAllowed)
-  const { data: extraAgents } = useQuery({
-    queryKey: ['extraAgents'],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'extraAgents',
-        user: address
-      })
-      return response.data as IExtraAgent[]
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios
-  })
-  const isAgentApproved = useMemo(() => {
-    if (!extraAgents) return false
-    return extraAgents.some(
-      (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
-    )
-  }, [extraAgents, agentWallet])
-  const { data: currentFeeApproval } = useQuery({
-    queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
-    queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'maxBuilderFee',
-        user: address,
-        builder: BUILDER_ADDRESS
-      })
-      return response.data as number
-    },
-    enabled: isWalletConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved
-  })
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!spotMeta.tokens) return
@@ -280,39 +254,47 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </label>
         </div>
-        <label className="mb-2">
-          <span className="block mb-1 text-sm font-medium text-gray-200">Size Skew</span>
+        <label className="mb-2 px-4">
+          <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size Skew</span>
           <input
-            type="number"
+            type="text"
             value={sizeSkew ?? ''}
             onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="Enter size skew"
-            className="w-full px-3 py-2 bg-gray-800 text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="0.00"
+            className="w-full rounded-md text-white p-2 placeholder:text-lg placeholder:text-[#8B8BA0] focus:outline-none  focus:none focus:none text-lg font-medium"
           />
         </label>
-        <label className="mb-2 flex items-center">
-          <input
-            type="checkbox"
-            checked={isReduceOnly}
-            onChange={(e) => setIsReduceOnly(e.target.checked)}
-            className="mr-2"
+        <label className="mb-4 mt-1 px-4 flex items-center">
+          <CheckBox
+            label=""
+            setIsChecked={(checked) => setIsReduceOnly(checked)}
+            isChecked={isReduceOnly}
           />
-          <span className="text-sm font-medium text-gray-200">Reduce Only</span>
+          <span className="text-sm font-medium text-[#E8E0F1]">Reduce Only</span>
         </label>
         <div className="px-4">
-          <button
-            type="submit"
-            disabled={totalSize! > maxAllowed}
-            className={
-              'py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-[#5F46F9] text-white cursor-pointer'
-            }
-          >
-            Scale Buy ({totalOrders} Orders)
-          </button>
+          {!isAgentApproved || currentFeeApproval === 0 ? (
+            <button
+              type="button"
+              className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+              onClick={async () => openAgentModal()}
+            >
+              Establish Connection
+            </button>
+          ) : (
+            <button
+              onClick={handleSubmit}
+              type="submit"
+              disabled={totalSize! > maxAllowed}
+              className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
+            >
+              Scale Buy ({totalOrders} Orders)
+            </button>
+          )}
         </div>
-        <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
+        {/* <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
           Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
-        </span>
+        </span> */}
       </form>
     </div>
   )

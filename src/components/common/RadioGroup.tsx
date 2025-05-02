@@ -43,8 +43,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
 
   return (
     <RadioGroupContext.Provider value={{ value, onChange: handleChange, name }}>
-      {label && <p className="text-md text-gray-400">{label}</p>}
-
+      {label && <p className="text-base tracking-tight font-medium text-[#8B8BA0]">{label}</p>}
       <div className={cn('flex flex-col gap-4', className)} role="radiogroup">
         {children}
       </div>
@@ -56,9 +55,15 @@ interface RadioGroupItemProps {
   value: string
   label?: string
   className?: string
+  isBackground?: boolean
 }
 
-export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({ value, label, className }) => {
+export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({
+  value,
+  label,
+  className,
+  isBackground
+}) => {
   const context = useContext(RadioGroupContext)
 
   if (!context) {
@@ -75,6 +80,7 @@ export const RadioGroupItem: React.FC<RadioGroupItemProps> = ({ value, label, cl
       onChange={onChange}
       label={label}
       className={className}
+      isBackground={isBackground}
     />
   )
 }

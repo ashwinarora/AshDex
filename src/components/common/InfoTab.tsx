@@ -78,7 +78,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
 
   return (
     <div
-      className={`flex justify-center max-lg:flex-col flex-row gap-4 px-3 py-6 h-full rounded-xl text-white ${
+      className={`flex justify-center max-lg:flex-col flex-row gap-4 px-3 py-3 h-full rounded-xl text-white overflow-scroll no-scrollbar ${
         isLoading ? 'items-center' : ''
       }`}
     >
@@ -88,7 +88,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
         </>
       ) : (
         <>
-          <div className="w-[45%] max-lg:w-full p-6 bg-transparent border-2 border-white/10 rounded-2xl">
+          <div className="w-[45%] max-lg:w-full p-3 bg-transparent border-2 border-white/10 rounded-2xl">
             <div className="flex items-center gap-3 mb-5">
               <Image src={coinInfo?.logo ?? bitcoinicon} alt="Bitcoin" width={30} height={30} />
               <h2 className="text-xl font-semibold">{selectedAsset}</h2>

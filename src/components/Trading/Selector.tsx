@@ -10,13 +10,13 @@ import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
 import useIsSpot from '@/hooks/useIsSpot'
-
 import { useFavorites } from '@/context/FavoritesContext'
 
 // Crypto icons imports
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
 import Skeleton from '../common/Skeleton'
 import { IconArrowsSort, IconStar, IconStarFilled } from '@tabler/icons-react'
+import CheckBox from '../common/CheckBox'
 
 // Crypto icon mapping - only include Bitcoin which we know exists
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
@@ -221,7 +221,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               width={20}
               src={arrowdownicon}
               alt="arrowdown"
-              className="w-3 h-3 mx-2"
+              className="w-3 h-3 mx-2 max-2xl:mr-5 max-xl:mx-2"
             />
           </button>
         </div>
@@ -231,17 +231,19 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
 
       <div className="flex items-center relative max-xl:w-full w-[80%] justify-between">
-        <div className="flex flex-wrap 2xl:gap-6 text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
+        <div className="flex flex-wrap text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-lg:pb-2 py-3 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="flex max-lg:pb-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
-              <div className="flex flex-col space-y-1">
+              <div className="flex flex-col space-y-1 overflow-hidden">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
                   {item.label}
                 </div>
-                <div className={`font-medium md:text-sm text-x     ${item.color || 'text-white'}`}>
+                <div
+                  className={`font-medium md:text-sm text-x ${item.color || 'text-white'} whitespace-nowrap`}
+                >
                   {item.value}
                 </div>
               </div>
@@ -273,8 +275,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 key={index}
                 className="flex items-center p-2 font-medium text-base cursor-pointer hover:bg-[#322944] rounded"
               >
-                <input type="checkbox" className="mr-2" defaultChecked={option.checked} />
-                <span>{option.label}</span>
+                <CheckBox label="" setIsChecked={() => {}} isChecked={option.checked} />
+                <span className="ml-1">{option.label}</span>
               </li>
             ))}
           </ul>

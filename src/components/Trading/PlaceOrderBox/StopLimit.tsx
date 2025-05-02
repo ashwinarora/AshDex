@@ -23,63 +23,73 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="p-4 bg-gray-800 text-white rounded-md shadow-md">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="mb-4">
-        <label className="block text-sm font-medium mb-1">Stop Price:</label>
-        <input
-          type="number"
-          value={stopPrice}
-          onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
-          className="w-full p-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+    <div className="w-full h-full flex flex-col">
+      <div className="border-b border-white/10">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="space-y-2">
+          <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
+            <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Stop Price:</label>
+            <input
+              type="text"
+              value={stopPrice}
+              onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
+              className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            />
+          </div>
+          <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
+            <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Limit Price:</label>
+            <div className="flex items-center ">
+              <input
+                type="text"
+                placeholder="0.0000"
+                value={limitPrice}
+                onChange={handleLimitPriceChange}
+                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+              />
+              <span className=" text-white text-sm font-medium">USD</span>
+            </div>
+          </div>
+          <AmountInput
+            selectedAsset={selectedAsset}
+            amount={amount}
+            setAmount={setAmount}
+            total={total}
+            setTotal={setTotal}
+            limitPrice={limitPrice}
+            isReduceOnly={isReduceOnly}
+            isBuy={isBuy}
+          />
+          <div className="px-4 pb-2">
+            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+          </div>
+          <LeverageMargin
+            selectedAsset={selectedAsset}
+            isCross={isCross}
+            leverage={leverage}
+            setLeverage={setLeverage}
+            setIsCross={setIsCross}
+          />
+        </div>
+      </div>
+      <div className="p-4 border-t border-white/10">
+        <OrderButton
+          selectedAsset={selectedAsset}
+          isBuy={isBuy}
+          isCross={isCross}
+          isPostOnly={false}
+          isReduceOnly={isReduceOnly}
+          leverage={leverage}
+          amount={amount}
+          limitPrice={limitPrice}
+          stopOrder={{
+            isMarket: false,
+            tpsl: 'sl',
+            triggerPx: stopPrice
+          }}
         />
       </div>
-      <div className="relative">
-        <input
-          type="text"
-          placeholder="0.0000"
-          value={limitPrice}
-          onChange={handleLimitPriceChange}
-          className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
-        />
-        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-white text-sm font-medium">
-          USD
-        </span>
-      </div>
-
-      <AmountInput
-        selectedAsset={selectedAsset}
-        amount={amount}
-        setAmount={setAmount}
-        total={total}
-        setTotal={setTotal}
-        limitPrice={limitPrice}
-        isReduceOnly={isReduceOnly}
-        isBuy={isBuy}
-      />
-      <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
-      <LeverageMargin
-        selectedAsset={selectedAsset}
-        isCross={isCross}
-        leverage={leverage}
-        setLeverage={setLeverage}
-        setIsCross={setIsCross}
-      />
-      <OrderButton
-        selectedAsset={selectedAsset}
-        isBuy={isBuy}
-        isCross={isCross}
-        isPostOnly={false}
-        isReduceOnly={isReduceOnly}
-        leverage={leverage}
-        amount={amount}
-        limitPrice={limitPrice}
-        stopOrder={{
-          isMarket: false,
-          tpsl: 'sl',
-          triggerPx: stopPrice
-        }}
-      />
     </div>
   )
 }
