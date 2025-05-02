@@ -37,14 +37,14 @@ type TriggerOrder = {
   }
 }
 
-const phantomDomain = {
+export const phantomDomain = {
   name: 'Exchange',
   version: '1',
   chainId: 1337,
   verifyingContract: '0x0000000000000000000000000000000000000000'
 } as const
 
-const agentTypes = {
+export const agentTypes = {
   Agent: [
     { name: 'source', type: 'string' },
     { name: 'connectionId', type: 'bytes32' }
@@ -59,7 +59,7 @@ export const placeOrder = async (
 ) => {
   const action = getAction(orderData)
   const nonce = Date.now()
-  const hash = actionHash(action, null, nonce) as Hex
+  const hash = getActionHash(action, null, nonce) as Hex
   const sign = await agentWallet.signTypedData({
     domain: phantomDomain,
     types: agentTypes,
@@ -100,7 +100,11 @@ const getAction = (orderData: orderData) => {
   }
 }
 
-const actionHash = (action: unknown, vaultAddress: string | null, nonce: number): string => {
+export const getActionHash = (
+  action: unknown,
+  vaultAddress: string | null,
+  nonce: number
+): string => {
   const msgPackBytes = encode(action)
   const additionalBytesLength = vaultAddress === null ? 9 : 29
   const data = new Uint8Array(msgPackBytes.length + additionalBytesLength)
