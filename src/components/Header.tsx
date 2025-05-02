@@ -21,8 +21,6 @@ import {
 } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import BridgeButton from './common/BridgeButton'
-import { useHyperLiquid } from '@/context/HyperLiquid'
-import { useToast } from '@/context/ToastContext'
 import nexonlogo from '@/assets/images/logo.svg'
 import moonicon from '@/assets/images/dark_mode.svg'
 import walleticon from '@/assets/images/wallet_icon.svg'
@@ -42,8 +40,6 @@ const Header: FC = () => {
   const pathname = usePathname()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
-  const { showToast } = useToast()
-  const { sdkConnectionFailed } = useHyperLiquid()
   const isRendered = useComponentRendered()
   const { data: balanceData } = useBalance({ address })
   const { toggleConnectWalletModal } = useWalletModal()
@@ -126,12 +122,6 @@ const Header: FC = () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
   }, [isDropdownOpen])
-
-  useEffect(() => {
-    if (sdkConnectionFailed) {
-      showToast('error', 'Connection Failed', 'Failed to connect to Hyperliquid WebSocket')
-    }
-  }, [sdkConnectionFailed])
 
   if (!isRendered) return null
 

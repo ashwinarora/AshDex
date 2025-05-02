@@ -13,7 +13,6 @@ interface HyperLiquidContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any
   isSdkConnected: boolean
-  sdkConnectionFailed: boolean
   allMids: PriceMap
   agentWallet?: PrivateKeyAccount
   hyperliquidAxios: AxiosInstance
@@ -30,7 +29,6 @@ interface HyperLiquidContextProps {
 const initialValue: HyperLiquidContextProps = {
   sdk: null,
   isSdkConnected: false,
-  sdkConnectionFailed: false,
   allMids: {},
   agentWallet: undefined,
   hyperliquidAxios: mainnetAxios,
@@ -61,7 +59,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
   const [sdk, setSdk] = useState<any>()
   const [isSdkScriptLoaded, setIsSdkScriptLoaded] = useState(false)
   const [isSdkConnected, setIsSdkConnected] = useState(false)
-  const [sdkConnectionFailed, setSdkConnectionFailed] = useState(false)
   const [allMids, setAllMids] = useState<PriceMap>({})
   const [perpAssetContext, setPerpAssetContext] = useState<IWebData2['assetCtxs']>([])
   const [spotAssetContext, setSpotAssetContext] = useState<IWebData2['spotAssetCtxs']>([])
@@ -163,11 +160,9 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         await sdkInstance.connect()
         setSdk(sdkInstance)
         setIsSdkConnected(true)
-        setSdkConnectionFailed(false)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         console.error('SDK connection error:', err)
-        setSdkConnectionFailed(true)
       }
     }
     initSdk()
@@ -205,7 +200,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       value={{
         sdk,
         isSdkConnected,
-        sdkConnectionFailed,
         allMids,
         agentWallet,
         hyperliquidAxios,
