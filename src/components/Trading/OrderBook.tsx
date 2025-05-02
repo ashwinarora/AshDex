@@ -23,6 +23,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
+  const sellsContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isSdkConnected || !selectedAsset) return
@@ -50,10 +51,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const sells = useMemo(() => processOrders(rawSells.slice(0, 25)), [rawSells])
   const buys = useMemo(() => processOrders(rawBuys.slice(0, 25)), [rawBuys])
 
-  // const bestAsk = sells.length ? sells[0].px : 0
-  // const bestBid = buys.length ? buys[0].px : 0
-  // const spread = bestAsk && bestBid ? Number(bestAsk) - Number(bestBid) : 0
-  // const spreadPercent = bestAsk ? (spread / Number(bestAsk)) * 100 : 0
+  useEffect(() => {
+    if (!isLoading && sellsContainerRef.current) {
+      sellsContainerRef.current.scrollTop = sellsContainerRef.current.scrollHeight
+    }
+  }, [isLoading])
+
 
   const maxSellCumulative = sells[sells.length - 1]?.cumulative ?? 0
   const maxBuyCumulative = buys[buys.length - 1]?.cumulative ?? 0
@@ -124,7 +127,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
       <div className="overflow-hidden h-full flex flex-col">
         {/* Top - Sells */}
-        <div className="overflow-y-auto flex-col no-scrollbar h-[50%]">
+        <div ref={sellsContainerRef} className="overflow-y-auto flex-col no-scrollbar h-[50%]">
           {isLoading
             ? Array(10)
                 .fill(0)
