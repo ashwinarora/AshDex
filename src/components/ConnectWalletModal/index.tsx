@@ -1,11 +1,11 @@
 'use client'
+
 import React, { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
 import { useConnect } from 'wagmi'
 import { TrustWallet } from '@trustwallet/web3-react-trust-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { WALLETS } from '@/utils/constants'
-import Modal from '../common/Modal'
 import { WalletDisplay } from './WalletDisplay'
 import WalletRules from './WalletRules'
 import nexticon from '@/assets/images/next_icon.svg'
@@ -19,137 +19,107 @@ interface WalletConnectProvider {
 }
 
 const ConnectWalletModal: React.FC = () => {
-  const { isModalOpen, toggleConnectWalletModal } = useWalletModal()
+  const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
-  const [selectedConnector, setSelectedConnector] = useState<
-    WalletConnectProvider | null | undefined
-  >(null)
+  const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(null)
   const [hasAgreedToRules, setHasAgreedToRules] = useState(false)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
-  const handleAgreeToRules = () => {
-    setHasAgreedToRules(true)
-  }
 
-  const handleCloseModal = () => {
+  const handleClose = () => {
     toggleConnectWalletModal()
     setSelectedConnector(null)
     setIsWalletConnected(null)
     setHasAgreedToRules(false)
+    reset()
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
-    const connector = connectors?.find((c) => c.id === wallet.id)
-    if (wallet?.id) {
-      try {
-        const walletConnector = WALLETS?.find((c) => c?.id === wallet?.id)
-        setSelectedConnector(walletConnector)
-        if (connector) {
-          await connectAsync({ connector })
-          setIsWalletConnected(true)
-        } else if (wallet?.id === 'trustWallet') {
-          await trustWallet.activate()
-          setIsWalletConnected(true)
-        }
-      } catch (error) {
-        console.error('Error connecting wallet:', error)
-        setIsWalletConnected(false)
+    setSelectedConnector(wallet)
+    try {
+      const connector = connectors.find((c) => c.id === wallet.id)
+      if (connector) {
+        await connectAsync({ connector })
+      } else if (wallet.id === 'trustWallet') {
+        await trustWallet.activate()
       }
+      setIsWalletConnected(true)
+    } catch (error) {
+      console.error('Error connecting wallet:', error)
+      setIsWalletConnected(false)
     }
   }
 
+  const handleAgreeToRules = () => setHasAgreedToRules(true)
+
   return (
-    <Modal isOpen={isModalOpen} onClose={handleCloseModal}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/50  backdrop-blur-sm" onClick={handleClose} />
+      {/* Modal Container */}
       <div
-        style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="w-full border-[2px] bg-secondary max-w-md p-6 rounded-2xl shadow-lg"
+        className="relative bg-[#0F0816] border border-white/10 rounded-2xl shadow-lg max-w-md w-full p-6 mx-4"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Full-Width Header */}
-        <div className="flex items-center justify-between mb-4 w-full">
-          <h2 className="text-xl text-white font-medium">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-medium text-white">
             {isWalletConnected && !hasAgreedToRules ? 'Rules' : 'Connect Wallet'}
-          </h2>
-          <button
-            onClick={handleCloseModal}
-            className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
-          >
-            <Image
-              height={20}
-              width={20}
-              src={menuClose}
-              alt="menuclose"
-              className="w-[13px] h-[13px]"
-            />
+          </h3>
+          <button onClick={handleClose} className="p-2 bg-[#322944] rounded-full">
+            <Image src={menuClose} alt="Close" width={16} height={16} />
           </button>
         </div>
 
-        {/* Show Wallet Rules if Wallet is Connected */}
-        {isWalletConnected && !hasAgreedToRules && (
-          <WalletRules onAgree={handleAgreeToRules} onClose={handleCloseModal} />
-        )}
-
-        {/* Content Section: Left (Wallet List) & Right (QR Code) */}
-        <div className="flex gap-6">
-          {selectedConnector && (!isWalletConnected || hasAgreedToRules) && (
-            <WalletDisplay
-              onBack={() => {
-                setIsWalletConnected(null)
-                setSelectedConnector(null)
-                reset()
-              }}
-              onClose={handleCloseModal}
-              name={selectedConnector.name}
-              icon={selectedConnector.icon}
-              isWalletConnected={isWalletConnected}
-              hasAgreedToRules={hasAgreedToRules}
-            />
-          )}
-          {!selectedConnector && (
-            <div className="w-full">
-              <div className="space-y-2 mt-3">
-                {WALLETS?.map((wallet, index) => (
-                  <button
-                    key={index}
-                    onClick={() => connectWallet(wallet)}
-                    className={`w-full flex border border-[#33293B] items-center justify-between px-3
-                 ${index === WALLETS?.length - 1 ? 'py-[14px]' : 'py-2'}
-                 bg-[#1c1624] hover:bg-[#36303b] rounded-xl cursor-pointer`}
-                  >
-                    <div className="flex items-center">
-                      {wallet.icon && (
-                        <Image
-                          src={wallet?.icon}
-                          alt={wallet?.name}
-                          width={100}
-                          height={100}
-                          className="w-9 h-9 mr-3 rounded-md"
-                        />
-                      )}
-                      <span className="text-white font-medium text-base">{wallet?.name}</span>
-                    </div>
+        {/* Content */}
+        {isWalletConnected && !hasAgreedToRules ? (
+          <WalletRules onAgree={handleAgreeToRules} onClose={handleClose} />
+        ) : selectedConnector ? (
+          <WalletDisplay
+            onBack={() => {
+              setIsWalletConnected(null)
+              setSelectedConnector(null)
+              reset()
+            }}
+            onClose={handleClose}
+            name={selectedConnector.name}
+            icon={selectedConnector.icon}
+            isWalletConnected={isWalletConnected}
+            hasAgreedToRules={hasAgreedToRules}
+          />
+        ) : (
+          <div className="space-y-4">
+            {WALLETS.map((wallet) => (
+              <button
+                key={wallet.id}
+                onClick={() => connectWallet(wallet)}
+                className="w-full flex items-center justify-between px-4 py-3 bg-[#1c1624] border border-[#33293B] rounded-xl hover:bg-[#36303b] focus:outline-none"
+              >
+                <div className="flex items-center">
+                  {wallet.icon && (
                     <Image
-                      height={20}
-                      width={20}
-                      src={nexticon}
-                      alt="nexticon"
-                      className="w-3 h-3 mr-2"
+                      src={wallet.icon}
+                      alt={wallet.name}
+                      width={36}
+                      height={36}
+                      className="rounded-md mr-3"
                     />
-                  </button>
-                ))}
-              </div>
-
-              <div className="mt-6 w-full flex flex-col items-start">
-                <div className="text-sm text-white">Don’t have a wallet?</div>
-                <button className="w-full px-5 mt-2 text-sm font-bold py-4 text-white bg-[#1c1624] hover:bg-[#36303b] rounded-xl cursor-pointer text-center">
-                  Create
-                </button>
-              </div>
+                  )}
+                  <span className="text-white font-medium">{wallet.name}</span>
+                </div>
+                <Image src={nexticon} alt="Next" width={12} height={12} />
+              </button>
+            ))}
+            <div className="mt-6 text-center">
+              <p className="text-sm text-white mb-2">Don’t have a wallet?</p>
+              <button className="px-6 py-3 bg-[#1c1624] text-white font-bold rounded-xl hover:bg-[#36303b]">
+                Create
+              </button>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
-    </Modal>
+    </div>
   )
 }
 

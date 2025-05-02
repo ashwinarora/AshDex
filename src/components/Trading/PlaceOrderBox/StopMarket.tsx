@@ -18,38 +18,44 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
 
   return (
-    <div>
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-        <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Stop Price:</label>
-        <input
-          type="text"
-          value={stopPrice}
-          onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
-          className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
-        />
+    <div className="w-full h-full flex flex-col">
+      <div className="border-b border-white/10">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       </div>
-      <AmountInput
-        selectedAsset={selectedAsset}
-        amount={amount}
-        setAmount={setAmount}
-        total={total}
-        setTotal={setTotal}
-        limitPrice={allMids[selectedAsset]}
-        isReduceOnly={isReduceOnly}
-        isBuy={isBuy}
-      />
-      <div className="px-4 pb-3">
-        <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="space-y-2">
+          <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
+            <label className="block mb-1 text-sm font-medium text-[#8B8BA0]">Stop Price:</label>
+            <input
+              type="text"
+              value={stopPrice}
+              onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
+              className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            />
+          </div>
+          <AmountInput
+            selectedAsset={selectedAsset}
+            amount={amount}
+            setAmount={setAmount}
+            total={total}
+            setTotal={setTotal}
+            limitPrice={allMids[selectedAsset]}
+            isReduceOnly={isReduceOnly}
+            isBuy={isBuy}
+          />
+          <div className="px-4 pb-2">
+            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+          </div>
+          <LeverageMargin
+            selectedAsset={selectedAsset}
+            isCross={isCross}
+            leverage={leverage}
+            setLeverage={setLeverage}
+            setIsCross={setIsCross}
+          />
+        </div>
       </div>
-      <LeverageMargin
-        selectedAsset={selectedAsset}
-        isCross={isCross}
-        leverage={leverage}
-        setLeverage={setLeverage}
-        setIsCross={setIsCross}
-      />
-      <div className="p-4">
+      <div className="p-4 border-t border-white/10">
         <OrderButton
           selectedAsset={selectedAsset}
           isBuy={isBuy}

@@ -3,6 +3,7 @@ import React, { useState } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { REFERRALSDATA, REFERRALS_DESC } from '@/utils/constants'
 import ReferralsInfo from './ReferralsInfo'
 import ReferralsTablesTab from './ReferralsTablesTab'
@@ -12,6 +13,7 @@ function Referrals() {
   const { isConnected } = useAccount()
   const { toggleConnectWalletModal } = useWalletModal()
   const [isCreateCode, setIsCreateCode] = useState(false)
+  const isRendered = useComponentRendered()
   const handleButtonClick = () => {
     if (isConnected) {
       setIsCreateCode((p) => !p)
@@ -20,6 +22,8 @@ function Referrals() {
       setIsCreateCode(false)
     }
   }
+
+  if (!isRendered) return null
 
   return (
     <div className="max-sm:px-1 px-6 py-4 overflow-x-hidden">

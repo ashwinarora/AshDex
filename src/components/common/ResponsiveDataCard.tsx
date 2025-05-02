@@ -34,16 +34,14 @@ const ResponsiveDataCard: React.FC<ResponsiveDataCardProps> = ({
           <Image
             src={infoicon}
             alt="Info"
-            width={20}
-            height={20}
+            style={{ width: 20, height: 'auto' }}
             className="w-6 h-6 cursor-pointer"
           />
           <span className="text-base text-[#8B8BA0]">{columns[0]?.label}</span>
           <Image
             src={arrowdownfillicon}
             alt="arrowdown"
-            width={10}
-            height={10}
+            style={{ width: 10, height: 'auto' }}
             className="w-2.5 h-2.5 cursor-pointer"
           />
         </div>
@@ -57,8 +55,7 @@ const ResponsiveDataCard: React.FC<ResponsiveDataCardProps> = ({
           <Image
             src={shortingicon}
             alt="Sort"
-            width={20}
-            height={20}
+            style={{ width: 20, height: 'auto' }}
             className="w-5 h-5 cursor-pointer"
           />
         </div>
@@ -70,9 +67,9 @@ const ResponsiveDataCard: React.FC<ResponsiveDataCardProps> = ({
           ) : (
             <div className="flex flex-col gap-2">
               {columns?.map((col) => (
-                <div key={col.key} className="flex justify-between text-sm text-white/80">
-                  <span className="text-[#8B8BA0]">{col.label}</span>
-                  <span>{item[col.key]}</span>
+                <div key={col?.key} className="flex justify-between text-sm text-white/80">
+                  <span className="text-[#8B8BA0]">{col?.label}</span>
+                  <span>{item[col?.key]}</span>
                 </div>
               ))}
             </div>

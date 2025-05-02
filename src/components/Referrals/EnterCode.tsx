@@ -5,11 +5,14 @@ import successicon from '@/assets/images/success_icon.svg'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useMutation } from '@tanstack/react-query'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 function EnterCode() {
   const [code, setCode] = useState('')
   const { data: referral } = useReferralsInfo()
   const { sdk } = useHyperLiquid()
+
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   const { mutate, isSuccess } = useMutation({
     mutationFn: async () => {
@@ -38,7 +41,7 @@ function EnterCode() {
       return (
         <div className="flex flex-col pt-12 gap-y-5 pb-3">
           <div className="flex justify-center">
-            <Image src={successicon} alt="Success" width={48} height={48} />
+            <Image src={successicon} alt="Success" style={{ width: 48, height: 'auto' }} />
           </div>
           <p className="text-white text-center text-base font-semibold">
             The code has been successfully applied
@@ -61,16 +64,25 @@ function EnterCode() {
               className={`mt-4 mb-2 w-full rounded-md text-sm bg-[rgba(255,255,255,0.06)] border-2 border-[rgba(255,255,255,0.06)] p-3 focus:outline-none focus:none focus:none placeholder:text-[#8B8BA0] font-medium`}
             />
           </div>
-          <button
-            disabled={code === ''}
-            onClick={() => {
-              if (!code.length) return
-              mutate()
-            }}
-            className={`py-[10px] max-lg:mt-2 mt-12 px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
-          >
-            {'Enter'}
-          </button>
+          {!isAgentApproved || currentFeeApproval === 0 ? (
+            <button
+              onClick={openAgentModal}
+              className={`py-[10px] mt-12 px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
+            >
+              Establish Connection
+            </button>
+          ) : (
+            <button
+              disabled={code === ''}
+              onClick={() => {
+                if (!code.length) return
+                mutate()
+              }}
+              className={`py-[10px] max-lg:mt-2 mt-12 px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
+            >
+              Enter
+            </button>
+          )}
         </div>
       )
     }

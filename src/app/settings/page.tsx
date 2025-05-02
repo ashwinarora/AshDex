@@ -12,6 +12,7 @@ import {
 import Modal from '@/components/common/Modal'
 import CustomSelector from '@/components/common/CustomSelector'
 import { truncateAddress } from '@/utils/utils'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useUser } from '@/context/UserContext'
 import Avatar from '@/components/common/Avatar'
 import { updateUser } from '@/utils/user'
@@ -59,7 +60,7 @@ const SettingsPage = () => {
   const router = useRouter()
   const { currentUser, refreshUser } = useUser()
   const { address, isConnected } = useAccount()
-
+  const isRendered = useComponentRendered()
   // Debug log to check user data structure
   useEffect(() => {
     console.log('Current User Data:', currentUser)
@@ -308,11 +309,13 @@ const SettingsPage = () => {
     }
   }, [isConnected, router])
 
+  if (!isRendered) return null
+
   return (
     isConnected && (
       <div className="p-4 sm:p-8 min-h-screen text-white">
-        <div className="max-w-7xl mx-auto nexon-card p-4 sm:p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-8 gap-4">
+        <div className="max-w-7xl mx-auto nexon-card p-4 max-sm:p-2">
+          <div className="flex flex-col sm:flex-row justify-between sm:justify-start items-center sm:items-start max-md:items-start mb-4 sm:mb-4 gap-4">
             <Tabs
               tabs={['Account', 'Notifications']}
               onTabSelect={(tab) => {
@@ -334,10 +337,13 @@ const SettingsPage = () => {
                 <Avatar avatar={String(userInfo.avatar)} />
                 <div>
                   <div className="text-lg sm:text-xl font-semibold flex items-center gap-2">
-                    {userInfo.nickname ?? <Skeleton className="w-20 h-4" />}
-                    <IconEdit className="w-4 h-4 cursor-pointer" onClick={() => setIsOpen(true)} />
+                    {userInfo?.nickname ?? <Skeleton className="w-20 h-4" />}
+                    <IconEdit
+                      className="w-5 h-5 cursor-pointer opacity-50"
+                      onClick={() => setIsOpen(true)}
+                    />
                   </div>
-                  <div className="text-xs sm:text-sm text-gray-400 flex items-center gap-2">
+                  <div className="text-xs mt-1 font-medium sm:text-sm text-[#8B8BA0] flex items-center gap-2">
                     {userInfo.address ? (
                       truncateAddress(userInfo.address)
                     ) : (
@@ -367,28 +373,27 @@ const SettingsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                <div className="nexon-rounded-xl nexon-card p-4 py-2">
-                  <p className="text-sm text-gray-400">IP</p>
-                  <div className="text-lg font-bold">
+              <div className="grid grid-cols-1 sm:grid-cols-2 max-sm:gap-y-1.5 gap-4 mb-6">
+                <div className="nexon-rounded-xl flex max-md:items-center max-md:justify-between max-md:flex-row flex-col font-medium nexon-card max-sm:px-2 p-4 py-2">
+                  <p className="text-sm text-[#8B8BA0]">IP</p>
+                  <div className="text-lg max-sm:text-base text-white">
                     {ipAddress || <Skeleton className="w-full h-7" />}
                   </div>
                 </div>
-                <div className="nexon-rounded-xl nexon-card p-4 py-2">
-                  <p className="text-sm text-gray-400">Last login time</p>
-                  <p className="text-lg font-bold flex items-center gap-2 text-nowrap">
-                    <IconDeviceImacFilled className="w-4 h-4 text-white/80" />
+                <div className="nexon-rounded-xl flex max-md:items-center max-md:justify-between max-md:flex-row flex-col font-medium nexon-card max-sm:px-2 p-4 py-2">
+                  <p className="text-sm text-[#8B8BA0]">Last login time</p>
+                  <p className="text-lg max-sm:text-base flex items-center gap-2 text-nowrap">
+                    <IconDeviceImacFilled className="w-4 h-4 opacity-70" />
                     PC | 2025-04-03 09:07
                   </p>
                 </div>
-                <div className="nexon-rounded-xl nexon-card p-4 py-2 hidden  ">
-                  <p className="text-sm text-gray-400">Security Level</p>
-                  <p className="text-lg font-bold text-red-500">Low</p>
+                <div className="nexon-rounded-xl max-md:items-center max-md:justify-between max-md:flex-row flex-col font-medium nexon-card p-4 py-2 hidden">
+                  <p className="text-sm text-[#8B8BA0]">Security Level</p>
+                  <p className="text-lg text-[#E2464A]">Low</p>
                 </div>
               </div>
-              <div className="  w-full sm:w-max ">
-                <p className="text-sm text-gray-400 mb-2">Language</p>
-
+              <div className="w-full sm:w-max">
+                <p className="text-sm font-medium text-[#8B8BA0] mb-2">Language</p>
                 <CustomSelector
                   options={[
                     {
@@ -406,11 +411,12 @@ const SettingsPage = () => {
                   onChange={(value) => {
                     setSelectedLanguage(value)
                   }}
-                  className=" nexon-card nexon-rounded-lg   cursor-pointer"
+                  className="nexon-card nexon-rounded-lg cursor-pointer"
+                  isPadding={true}
                 />
               </div>
               <div className="hidden">
-                <p className="text-sm text-gray-400 mb-2">Session Management</p>
+                <p className="text-sm text-[#8B8BA0] mb-2">Session Management</p>
                 <div className="nexon-rounded-xl nexon-card p-4 flex justify-between items-center mb-2">
                   <p className="text-lg font-bold flex items-center gap-2">
                     <IconDeviceImacFilled className="w-12 h-12 bg-white/5 rounded-lg p-2 text-white/80" />
@@ -429,11 +435,13 @@ const SettingsPage = () => {
             </div>
           )}
           {selectedTab === 'Notifications' && (
-            <div className=" flex flex-col md:flex-row  gap-4">
-              <div className="nexon-card nexon-rounded-xl p-6">
-                <p className="text-lg text-white text-gray-400 mb-2">Notifications</p>
+            <div className="flex flex-col xl:flex-row  gap-4">
+              <div className="nexon-card nexon-rounded-xl max-md:p-2 p-6">
+                <p className="text-xl tracking-normal font-medium text-white max-md:mb-0 mb-2">
+                  Notifications
+                </p>
                 <div className="flex flex-row gap-2">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 w-full">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-md:px-0 p-2 w-full">
                     {Object.values(notificationSettings).map((notification) => (
                       <Switch
                         key={notification.id}
@@ -453,11 +461,13 @@ const SettingsPage = () => {
                   </div>
                 </div>
               </div>
-              <div className="nexon-card nexon-rounded-xl p-6 w-full ">
-                <p className="text-lg text-white text-gray-400 mb-2">Display Settings</p>
+              <div className="nexon-card max-md:p-2 nexon-rounded-xl p-6 w-full">
+                <p className="text-xl tracking-normal font-medium text-white mb-3">
+                  Display Settings
+                </p>
                 <div className="flex flex-col gap-2 mb-4">
                   <RadioGroup
-                    className="flex flex-col   md:flex-row"
+                    className="grid grid-cols-4 max-sm:grid-cols-2 max-sm:gap-2 gap-4"
                     name="Popup"
                     label="Popup Position"
                     value={popupPosition}
@@ -465,14 +475,36 @@ const SettingsPage = () => {
                       setPopupPosition(value)
                     }}
                   >
-                    <RadioGroupItem value="0" label="Top Left" />
-                    <RadioGroupItem value="1" label="Top Right" />
-                    <RadioGroupItem value="2" label="Bottom Right" />
-                    <RadioGroupItem value="3" label="Bottom Left" />
+                    <RadioGroupItem
+                      isBackground={true}
+                      className="order-1 max-sm:order-3"
+                      value="0"
+                      label="Top Left"
+                    />
+                    <RadioGroupItem
+                      className="order-2 max-sm:order-4"
+                      value="1"
+                      label="Top Right"
+                      isBackground={true}
+                    />
+                    <RadioGroupItem
+                      className="order-3 max-sm:order-1"
+                      value="2"
+                      label="Bottom Right"
+                      isBackground={true}
+                    />
+                    <RadioGroupItem
+                      className="order-4 max-sm:order-2"
+                      value="3"
+                      label="Bottom Left"
+                      isBackground={true}
+                    />
                   </RadioGroup>
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-md text-gray-400">Sound Settings</label>
+                  <label className="text-base mb-1 tracking-tight font-medium text-[#8B8BA0]">
+                    Sound Settings
+                  </label>
                   <Switch
                     label="Enable Sound on Important Events"
                     isChecked={soundEnabled}
@@ -527,12 +559,12 @@ const EditNicknameModal = ({
     <Modal isOpen={isOpen} onClose={onClose}>
       <div
         onClick={(e) => e.stopPropagation()}
-        className="bg-secondary rounded-2xl border-2 border-white/5 backdrop-blur-2xl  flex items-center justify-center  "
+        className="bg-secondary relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 rounded-2xl border-2 border-white/5 backdrop-blur-2xl  flex items-center justify-center  "
       >
-        <div className="w-96 rounded-xl   p-4 shadow-xl text-white gap-4 flex flex-col">
+        <div className="w-96 rounded-xl  p-4 shadow-xl text-white gap-4 flex flex-col">
           <button
             onClick={onClose}
-            className="w-8 h-8 float-right ml-auto text-gray-400 hover:text-white bg-white/5 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
+            className="w-8 h-8 float-right ml-auto text-[#E8E0F1] hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
           >
             <IconX className="w-4 h-4" />
           </button>
@@ -547,13 +579,13 @@ const EditNicknameModal = ({
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-white text-sm placeholder-gray-400 w-full outline-none border-none"
               />
-              <button className="text-gray-400 hover:text-white">
+              <button className="text-[#E8E0F1] hover:text-white">
                 <IconEdit className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-3 max-h-72 overflow-y-auto  bg-white/5 p-2 rounded-lg">
+          <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto  bg-white/5 p-2 rounded-lg">
             {Array.from({ length: 45 }).map((_, index) => (
               <div
                 key={index}
@@ -569,15 +601,15 @@ const EditNicknameModal = ({
               </div>
             ))}
           </div>
-          <div className="  flex justify-end gap-2">
+          <div className="flex items-center justify-center gap-2">
             <button
-              className=" nexon-button nexon-ghost text-gray-400 hover:text-white w-full "
+              className="nexon-button nexon-ghost flex items-center justify-center text-[#8B8BA0] hover:text-white w-full "
               onClick={onClose}
             >
               Cancel
             </button>
             <button
-              className={`nexon-button nexon-primary w-full`}
+              className={`nexon-button flex items-center justify-center nexon-primary w-full`}
               disabled={
                 nickname === userInfo.nickname && String(avatar) === String(userInfo.avatar)
               }

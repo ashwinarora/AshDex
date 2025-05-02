@@ -2,11 +2,19 @@ import React, { useState } from 'react'
 import { REFERRALS_CREATECODE_DESC } from '@/utils/constants'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useAgentApproval } from '@/context/EstablishConnection'
+import { useAccount } from 'wagmi'
+import { splitSignature } from '@/utils/utils'
+import { toast } from 'react-toastify'
+import { agentTypes, getActionHash, phantomDomain } from '@/utils/hyperliquid/PlaceOrder'
+import { Hex } from 'viem'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
-  const { data: referral, refetch: refetchReferral } = useReferralsInfo()
-  const { sdk } = useHyperLiquid()
+  const { data: referral } = useReferralsInfo()
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const { chainId } = useAccount()
+  const { agentWallet, hyperliquidAxios, isTestnet } = useHyperLiquid()
 
   if (referral?.referrerState.stage === 'needToTrade') {
     const eligibleAmount = referral.referrerState.data.required
@@ -30,6 +38,11 @@ function CreateCode() {
   } else if (referral?.referrerState.stage === 'needToCreateCode') {
     return (
       <div>
+        <div className={`flex mt-3 flex-row w-full justify-between items-center`}>
+          <p className="text-[#8B8BA0] font-medium text-base">
+            This referral code is permanent and unique to you. Choose wisely.
+          </p>
+        </div>
         <input
           type="text"
           value={createdCode}
@@ -37,20 +50,74 @@ function CreateCode() {
           onChange={(e) => setCreatedCode(e.target.value.toUpperCase())}
           placeholder="Create a referral code"
         />
-        <button
-          onClick={async () => {
-            try {
-              const res = await sdk.exchange.setReferrer(createdCode)
-              await refetchReferral()
-              console.log('res', res)
-            } catch (error) {
-              console.log(error)
-            }
-          }}
-          className={`py-[10px]  mt-16 min-2xl:mt-16 px[24px] tracking-[0em] disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
-        >
-          {'Create'}
-        </button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <button
+            onClick={openAgentModal}
+            className={`py-[10px] mt-12 px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
+          >
+            Establish Connection
+          </button>
+        ) : (
+          <button
+            onClick={async () => {
+              const toastId = toast.loading('Registering Referral…')
+              try {
+                if (!chainId) return
+                if (!createdCode.length) return
+                if (!agentWallet) return
+                const action = {
+                  code: createdCode,
+                  type: 'registerReferrer'
+                }
+                const nonce = Date.now()
+                const hash = getActionHash(action, null, nonce) as Hex
+                const sign = await agentWallet.signTypedData({
+                  domain: phantomDomain,
+                  types: agentTypes,
+                  primaryType: 'Agent',
+                  message: {
+                    source: isTestnet ? 'b' : 'a',
+                    connectionId: hash
+                  }
+                })
+                const splitSig = splitSignature(sign)
+                const res = await hyperliquidAxios.post('/exchange', {
+                  action,
+                  nonce,
+                  signature: splitSig,
+                  isFrontend: true
+                })
+                if (res.data.status === 'err') {
+                  toast.update(toastId, {
+                    render: '❌' + res.data.response,
+                    type: 'error',
+                    isLoading: false,
+                    autoClose: 2000
+                  })
+                } else {
+                  toast.update(toastId, {
+                    render: '✅ Referral code created successfully',
+                    type: 'success',
+                    isLoading: false,
+                    autoClose: 2000
+                  })
+                  setCreatedCode('')
+                }
+              } catch (error) {
+                console.log(error)
+                toast.update(toastId, {
+                  render: '❌' + error,
+                  type: 'error',
+                  isLoading: false,
+                  autoClose: 2000
+                })
+              }
+            }}
+            className={`py-[10px]  mt-16 min-2xl:mt-16 px[24px] tracking-[0em] disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
+          >
+            {'Create'}
+          </button>
+        )}
       </div>
     )
   } else if (referral?.referrerState.stage === 'ready') {
@@ -59,6 +126,7 @@ function CreateCode() {
       <div className="flex flex-col items-center">
         <p className="text-[#8B8BA0] font-medium text-base mb-4">Your referral code is:</p>
         <p className="text-white text-2xl font-bold mb-6">{code}</p>
+
         <button
           className="py-[10px] px-[24px] tracking-[0em] font-bold rounded-xl bg-primary text-white text-base cursor-pointer"
           onClick={() => navigator.clipboard.writeText(code)}

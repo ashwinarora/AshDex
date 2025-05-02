@@ -5,6 +5,7 @@ import { useAccount } from 'wagmi'
 import { createChart, IChartApi, ISeriesApi, AreaData, AreaSeries } from 'lightweight-charts'
 import { useWalletModal } from '@/context/WalletModalContext'
 import Tooltip from '../common/Tooltip'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { getTooltipContent } from '@/utils/utils'
 import stakesData from '@/utils/stake.json'
 import walleticon from '@/assets/images/wallet_icon.svg'
@@ -15,13 +16,14 @@ const StakingCard = () => {
   const { chartData } = stakesData
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const chartContainerRef = useRef<HTMLDivElement>(null)
   const chartRef = useRef<IChartApi | null>(null)
   const seriesRef = useRef<ISeriesApi<'Area'> | null>(null)
   const chartdata: AreaData[] = chartData
 
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    if (!chartContainerRef.current || !isRendered || !isConnected) return
     chartRef.current = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
       layout: {
@@ -52,7 +54,9 @@ const StakingCard = () => {
     seriesRef.current.setData(chartdata)
     chartRef.current.timeScale().fitContent()
     return () => chartRef.current?.remove()
-  }, [isConnected])
+  }, [isRendered, isConnected])
+
+  if (!isRendered) return null
 
   return (
     <>
@@ -81,7 +85,12 @@ const StakingCard = () => {
                   <p className="text-sm flex gap-x-[4px] items-center tracking-normal font-medium text-[#8B8BA0]">
                     Avg. APY
                     <Tooltip content={getTooltipContent('avgApy')}>
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Image
+                        style={{ width: 16, height: 'auto' }}
+                        src={infoicon}
+                        alt="Info"
+                        className="w-4 h-4 cursor-pointer"
+                      />
                     </Tooltip>
                   </p>
                   <p className="text-xl mt-1 text-white font-medium">2.83%</p>
@@ -95,7 +104,12 @@ const StakingCard = () => {
                 </span>
                 <span className="font-semibold border-white/10 bg-white/10 rounded-2xl py-2.5 text-white px-4.5 text-sm flex justify-between items-center">
                   {'All Time'}
-                  <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
+                  <Image
+                    style={{ width: 20, height: 'auto' }}
+                    src={DropDown}
+                    className="pl-1"
+                    alt=""
+                  />
                 </span>
               </div>
             </div>
@@ -110,8 +124,7 @@ const StakingCard = () => {
                 className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
               >
                 <Image
-                  height={20}
-                  width={20}
+                  style={{ width: 20, height: 'auto' }}
                   src={walleticon}
                   alt="walleticon"
                   className="w-5 h-5"

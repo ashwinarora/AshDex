@@ -60,8 +60,8 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
               className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
             >
               <Image
-                height={20}
                 width={20}
+                height={20}
                 src={menuClose}
                 alt="menuclose"
                 className="w-[13px] h-[13px]"
@@ -71,7 +71,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
           <div
             className={`rounded-lg py-4 px-3 flex items-center gap-y-1 gap-x-3 mb-6 ${'bg-[#FFA90A14]'}`}
           >
-            <Image src={erroryellowicon} alt="warning" width={25} height={25} />
+            <Image src={erroryellowicon} alt="warning" style={{ width: 25, height: 'auto' }} />
             <p className={`font-normal text-sm ${'text-[#FFA90A]'}`}>
               {isDepositsDisabled
                 ? 'By enabling deposits, users will be able to add funds to this vault again.'

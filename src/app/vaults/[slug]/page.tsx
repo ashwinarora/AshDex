@@ -121,8 +121,8 @@ export default function VaultDetails() {
                 className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
               >
                 <Image
-                  height={20}
                   width={20}
+                  height={20}
                   src={menuClose}
                   alt="menuclose"
                   className="w-[13px] h-[13px]"
@@ -155,7 +155,11 @@ export default function VaultDetails() {
   useEffect(() => {
     if (!showDropdown || !isDesktop) return
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        showDropdown &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setShowDropdown(false)
       }
     }
@@ -163,7 +167,8 @@ export default function VaultDetails() {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [showDropdown, isDesktop])
+  }, [isDesktop, showDropdown])
+
   return (
     <>
       <div className="w-full 2xl:px-14  px-4 pt-5">
@@ -198,8 +203,7 @@ export default function VaultDetails() {
                     >
                       <Image
                         className={`${copiedRef === 'vaults' ? 'filter-green' : ''}`}
-                        height={15}
-                        width={15}
+                        style={{ width: 15, height: 'auto' }}
                         src={copyicon}
                         alt="Copy"
                       />
@@ -210,7 +214,7 @@ export default function VaultDetails() {
                   onClick={() => setShowDropdown((prev) => !prev)}
                   className="bg-white/6 rounded-xl p-3 cursor-pointer relative"
                 >
-                  <Image src={settingicon} alt="Setting" width={17} height={17} />
+                  <Image src={settingicon} alt="Setting" style={{ width: 17, height: 'auto' }} />
                   {showDropdown && (
                     <div
                       ref={dropdownRef}
@@ -270,10 +274,9 @@ export default function VaultDetails() {
                   >
                     <Image
                       className={copiedRef === 'leader' ? 'filter-green' : ''}
-                      height={16}
-                      width={16}
                       src={copyicon}
                       alt="Copy"
+                      style={{ width: 16, height: 'auto' }}
                     />
                   </button>
                 </p>
@@ -302,8 +305,7 @@ export default function VaultDetails() {
                 >
                   <Image
                     className={`${copiedRef === 'strategies' ? 'filter-green' : ''} w-auto h-auto`}
-                    height={16}
-                    width={16}
+                    style={{ width: 16, height: 'auto' }}
                     src={copyicon}
                     alt="Copy"
                   />

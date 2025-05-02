@@ -2,7 +2,6 @@
 import { CandlestickSeries, createChart, Time, CandlestickData } from 'lightweight-charts'
 import { useEffect, useRef, useState } from 'react'
 import { Loader2 } from 'lucide-react'
-import Image from 'next/image'
 import { useQuery } from '@tanstack/react-query'
 import { CHART_INTERVALS } from '../../utils/constants'
 import type { Candle } from '../../utils/hyperliquid/hyperLiquidTypes'
@@ -10,18 +9,18 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import ChartTabs from '../common/ChartTabs'
 import IntervalSelector from '../common/IntervalSelector'
 import InfoTab from '../common/InfoTab'
-import unionicon from '@/assets/images/union_icon.svg'
-import union11icon from '@/assets/images/union11_icon.svg'
-import union12icon from '@/assets/images/union12_icon.svg'
-import union13icon from '@/assets/images/union13_icon.svg'
-import union14icon from '@/assets/images/union14_icon.svg'
-import union15icon from '@/assets/images/union15_icon.svg'
-import union16icon from '@/assets/images/union16_icon.svg'
-import union17icon from '@/assets/images/union17_icon.svg'
-import union18icon from '@/assets/images/union18_icon.svg'
-import union19icon from '@/assets/images/union19_icon.svg'
-import union20icon from '@/assets/images/union20_icon.svg'
-import union21icon from '@/assets/images/union21_icon.svg'
+// import unionicon from '@/assets/images/union_icon.svg'
+// import union11icon from '@/assets/images/union11_icon.svg'
+// import union12icon from '@/assets/images/union12_icon.svg'
+// import union13icon from '@/assets/images/union13_icon.svg'
+// import union14icon from '@/assets/images/union14_icon.svg'
+// import union15icon from '@/assets/images/union15_icon.svg'
+// import union16icon from '@/assets/images/union16_icon.svg'
+// import union17icon from '@/assets/images/union17_icon.svg'
+// import union18icon from '@/assets/images/union18_icon.svg'
+// import union19icon from '@/assets/images/union19_icon.svg'
+// import union20icon from '@/assets/images/union20_icon.svg'
+// import union21icon from '@/assets/images/union21_icon.svg'
 
 interface IChartProps {
   selectedAsset: string
@@ -147,22 +146,27 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         tooltipRef.current.style.display = 'none'
         return
       }
+
       tooltipRef.current.style.display = 'block'
 
       const isMobile = window.innerWidth <= 770
       tooltipRef.current.style.left = isMobile ? '1rem' : '3.5rem'
       tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
 
+      const formattedDate = new Date((seriesData?.time as number) * 1000).toLocaleDateString(
+        'en-US'
+      )
       tooltipRef.current.innerHTML = `
-        <div className="  font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
-      <span>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</span>
-          <span{{color: '#F00'}}>Open: <span className="">${seriesData?.open?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>High: <span className="text-white">${seriesData?.high?.toFixed(2)}</span></span>
-          <span{{color: '#0F0'}}>Low: <span className="text-white">${seriesData?.low?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>Close: <span className="text-white">${seriesData?.close?.toFixed(2)}<span></span>
+        <div class="font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
+          <span>${formattedDate}</span>
+          <span style="color: #F00;">Open: <span>${seriesData?.open?.toFixed(2)}</span></span>
+          <span style="color: #00F;">High: <span class="text-white">${seriesData?.high?.toFixed(2)}</span></span>
+          <span style="color: #0F0;">Low: <span class="text-white">${seriesData?.low?.toFixed(2)}</span></span>
+          <span style="color: #00F;">Close: <span class="text-white">${seriesData?.close?.toFixed(2)}</span></span>
         </div>
       `
     })
+
     const handleResize = () => {
       if (chartRef.current) {
         chart.resize(chartRef.current.clientWidth, chartRef.current.clientHeight)
@@ -175,23 +179,23 @@ const Chart = ({ selectedAsset }: IChartProps) => {
     }
   }, [candlestickData, activeTab, isLoading])
 
-  const sidebarIcons = [
-    unionicon,
-    union11icon,
-    union12icon,
-    union13icon,
-    union14icon,
-    union15icon,
-    union16icon,
-    union17icon,
-    union18icon,
-    union19icon,
-    union20icon,
-    union21icon
-  ]
+  // const sidebarIcons = [
+  //   unionicon,
+  //   union11icon,
+  //   union12icon,
+  //   union13icon,
+  //   union14icon,
+  //   union15icon,
+  //   union16icon,
+  //   union17icon,
+  //   union18icon,
+  //   union19icon,
+  //   union20icon,
+  //   union21icon
+  // ]
 
   return (
-    <div className="relative h-full flex flex-col">
+    <div className="relative h-full">
       <ChartTabs tabs={tabs as string[]} activeTab={activeTab} setActiveTab={setActiveTab} />
       {activeTab === 0 ? (
         <>
@@ -200,8 +204,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
             setSelectedInterval={setSelectedInterval}
             intervals={Array.from(CHART_INTERVALS)}
           />
-          <div className="flex max-lg:block flex-1 h-full">
-            <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
+          <div className="flex max-lg:block flex-1 h-[80%]">
+            {/* <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
               {sidebarIcons?.map((icon, index) => (
                 <button
                   key={index}
@@ -210,17 +214,18 @@ const Chart = ({ selectedAsset }: IChartProps) => {
                   <Image
                     src={icon}
                     alt={`icon-${index}`}
-                    className="max-sm:w-[16px] max-sm:h-[16px] w-[19px] h-[19px]"
+                    style={{ width: 19, height: 'auto' }}
+                    className="max-sm:w-4 max-sm:h-4 w-4.5 h-4.5"
                   />
                 </button>
               ))}
-            </div>
+            </div> */}
             {isLoading ? (
-              <div className="flex justify-center items-center w-full   ">
+              <div className="flex justify-center items-center w-full">
                 <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
               </div>
             ) : (
-              <div ref={chartRef} className=" w-full h-full" />
+              <div ref={chartRef} className="w-full h-full" />
             )}
           </div>
           <div

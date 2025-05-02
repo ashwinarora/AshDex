@@ -78,7 +78,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
 
   return (
     <div
-      className={`flex justify-center max-lg:flex-col flex-row gap-4 px-3 py-6 h-full rounded-xl text-white ${
+      className={`flex justify-center max-lg:flex-col flex-row gap-4 px-3 py-3 h-full rounded-xl text-white overflow-scroll no-scrollbar ${
         isLoading ? 'items-center' : ''
       }`}
     >
@@ -88,7 +88,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
         </>
       ) : (
         <>
-          <div className="w-[45%] max-lg:w-full p-6 bg-transparent border-2 border-white/10 rounded-2xl">
+          <div className="w-[45%] max-lg:w-full p-3 bg-transparent border-2 border-white/10 rounded-2xl">
             <div className="flex items-center gap-3 mb-5">
               <Image src={coinInfo?.logo ?? bitcoinicon} alt="Bitcoin" width={30} height={30} />
               <h2 className="text-xl font-semibold">{selectedAsset}</h2>
@@ -122,7 +122,12 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
                     rel="noopener noreferrer"
                     className="px-4 max-lg:px-3 max-lg:mb-1.5 max-lg:mr-1 py-2 text-[#E8E0F1] text-sm font-medium bg-white/6 rounded-full flex items-center max-lg:gap-x-1.5 gap-2 xl:gap-1  2xl:gap-x-2 2xl:gap-y-2 hover:bg-[#322944]"
                   >
-                    {link?.name} <Image alt="exporticon" src={exporticon} width={14} height={14} />
+                    {link?.name}{' '}
+                    <Image
+                      alt="exporticon"
+                      src={exporticon}
+                      style={{ width: 14, height: 'auto' }}
+                    />
                   </a>
                 ))}
               </div>

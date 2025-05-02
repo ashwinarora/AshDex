@@ -72,7 +72,7 @@ const LeverageMargin = ({
               }}
               disabled={maxLeverage <= 1}
             />
-            <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+            <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>1x</span>
               <span>{1 + (maxLeverage - 1) * 0.25}x</span>

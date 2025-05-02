@@ -132,7 +132,7 @@ const AmountInput = ({
               background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
             }}
           />
-          <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+          <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
           <div className="flex justify-between text-xs text-gray-500 mt-1">
             <span>0%</span>
             <span>25%</span>

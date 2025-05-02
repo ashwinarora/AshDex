@@ -49,7 +49,12 @@ const FooterContent: FC = () => {
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
         <div className="mt-4 md:mt-0">
           <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md   font-semibold">
-            <Image src={nexonLogo} alt="Nexon Logo" height={20} width={20} className="w-7 h-7" />
+            <Image
+              src={nexonLogo}
+              alt="Nexon Logo"
+              style={{ width: 20, height: 'auto' }}
+              className="w-7 h-7"
+            />
             Nexon
           </h1>
           <div className="text-[#8B8BA0] text-sm">Empower Your Trades. Maximize Your Gains.</div>
@@ -62,8 +67,8 @@ const FooterContent: FC = () => {
           >
             <Image
               src={forwardicon}
-              height={20}
               width={20}
+              height={20}
               alt="forwardicon"
               className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]"
             />
@@ -72,8 +77,8 @@ const FooterContent: FC = () => {
             <Image
               // onClick={() => window.open('https://t.me/nexon_official', '_blank')}
               src={linkicon}
-              height={20}
               width={20}
+              height={20}
               alt="linkicon"
               className="w-[13px] h-[13px] md:w-[14px] md:h-[14px]"
             />
@@ -82,8 +87,8 @@ const FooterContent: FC = () => {
             <Image
               // onClick={() => window.open('https://discord.gg/nexon', '_blank')}
               src={roboticon}
-              height={20}
               width={20}
+              height={20}
               alt="roboticon"
               className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]"
             />
@@ -94,7 +99,7 @@ const FooterContent: FC = () => {
       {/* Links Section */}
       <div
         style={{ borderColor: 'rgba(255, 255, 255, 0.06)' }}
-        className="flex  mt-5 border-t border-b  flex-col md:flex-row justify-between items-start align-middle"
+        className="flex  mt-5 border-t border-b  flex-col lg:flex-row justify-between items-start align-middle"
       >
         <div className="grid py-5 grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-10 text-sm text-gray-300">
           <div>
@@ -147,12 +152,11 @@ const FooterContent: FC = () => {
             </ul>
           </div>
         </div>
-        <div className="flex items-center gap-2 h-full align-middle justify-center p-4">
+        <div className="flex items-center gap-2 h-full align-middle justify-center max-lg:px-0 p-4">
           <button className="nexon-button nexon-ghost">
             <IconMoonFilled size={24} />
           </button>
           <BridgeButton />
-
           {!isConnected ? (
             <button onClick={toggleConnectWalletModal} className={`nexon-button nexon-primary`}>
               Connect Wallet

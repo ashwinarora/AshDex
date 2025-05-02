@@ -15,14 +15,16 @@ const Tabs: React.FC<TabsProps> = ({ tabs, onTabSelect }) => {
   }
 
   return (
-    <div className="relative  ">
-      <div className="flex space-x-8 justify-center items-center ">
-        {tabs.map((tab) => (
+    <div className="relative">
+      <div className="flex space-x-8 justify-start items-center">
+        {tabs?.map((tab) => (
           <button
             key={tab}
             onClick={() => handleTabClick(tab)}
             className={`flex text-md font-medium cursor-pointer text-center  ${
-              selectedTab === tab ? 'text-white border-b-2 py-2  border-primary' : 'text-gray-400'
+              selectedTab === tab
+                ? 'text-white border-b-2 py-1.5  border-primary'
+                : 'text-[#8B8BA0]'
             }`}
           >
             {tab}

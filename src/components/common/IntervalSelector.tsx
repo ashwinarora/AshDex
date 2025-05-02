@@ -16,7 +16,7 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
   intervals
 }) => {
   return (
-    <div className="flex items-center gap-2 pt-4 px-4 py-3 border-b-2 border-white/10">
+    <div className="flex items-center gap-2 px-4 border-b-2 border-white/10">
       {/* Intervals List */}
       <div className="flex items-center overflow-hidden gap-2 text-white text-sm">
         {intervals.map((interval) => (
@@ -46,6 +46,7 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
       <Image
         src={calendaricon}
         alt="Calendar"
+        style={{ width: 16, height: 'auto' }}
         className="w-4 mx-2 h-4 cursor-pointer opacity-60 hover:opacity-100 transition-opacity"
       />
     </div>

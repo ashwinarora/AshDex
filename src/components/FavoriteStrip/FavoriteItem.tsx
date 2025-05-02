@@ -68,13 +68,12 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
   return (
     <div
       onClick={() => setSelectedAsset(favorite.name)}
-      className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-4 px-6 cursor-pointer"
+      className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-2 px-6 cursor-pointer"
     >
       <Image
         src={starticon}
         alt="staricon"
-        height={20}
-        width={20}
+        style={{ width: 20, height: 'auto' }}
         className="w-4 h-4 my-auto flex-shrink-0"
       />
       <span className="font-medium text-sm text-[#E8E0F1] my-auto">{favorite.name}</span>

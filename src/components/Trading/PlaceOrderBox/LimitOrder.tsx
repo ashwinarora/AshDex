@@ -34,82 +34,91 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="w-full h-auto">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="space-y-4">
-        <div className="px-4 border-b border-[#FFFFFF0F]">
-          <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="0.0000"
-              value={limitPrice}
-              onChange={handleLimitPriceChange}
-              className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+    <div className="w-full h-full flex flex-col">
+      <div className="border-b border-white/10">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+      </div>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        <div className="space-y-2">
+          <div className="px-4 border-b border-[#FFFFFF0F] mb-2">
+            <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="0.0000"
+                value={limitPrice}
+                onChange={handleLimitPriceChange}
+                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+              />
+              <span className="absolute right-2 top-1/2 flex text-sm items-center gap-x-1.5 -translate-y-1/2 text-[#7D67FF] font-medium">
+                <Image
+                  src={refreshpurpleIcon}
+                  style={{ width: 15, height: 'auto' }}
+                  alt="Refresh Icon"
+                  className="w-3.5 h-3.5"
+                />
+                Last
+              </span>
+            </div>
+          </div>
+          {isSpot ? (
+            <AmountInputSpot
+              selectedAsset={selectedAsset}
+              amount={amount}
+              setAmount={setAmount}
+              total={total}
+              setTotal={setTotal}
+              limitPrice={limitPrice}
+              isBuy={isBuy}
             />
-            <span className="absolute right-2 top-1/2 flex text-sm items-center gap-x-1.5 -translate-y-1/2 text-[#7D67FF] font-medium">
-              <Image src={refreshpurpleIcon} alt="Refresh Icon" className="w-3.5 h-3.5" />
-              Last
-            </span>
+          ) : (
+            <AmountInput
+              selectedAsset={selectedAsset}
+              amount={amount}
+              setAmount={setAmount}
+              total={total}
+              setTotal={setTotal}
+              limitPrice={limitPrice}
+              isReduceOnly={isReduceOnly}
+              isBuy={isBuy}
+            />
+          )}
+          {!isSpot && (
+            <LeverageMargin
+              selectedAsset={selectedAsset}
+              leverage={leverage}
+              setLeverage={setLeverage}
+              isCross={isCross}
+              setIsCross={setIsCross}
+            />
+          )}
+          <div className="grid grid-cols-2 gap-2 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-2 px-4">
+            {!isSpot && (
+              <>
+                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
+                <CheckBox
+                  label="Reduce Only"
+                  setIsChecked={setIsReduceOnly}
+                  isChecked={isReduceOnly}
+                />
+              </>
+            )}
+            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
-        {isSpot ? (
-          <AmountInputSpot
-            selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
-            limitPrice={limitPrice}
-            isBuy={isBuy}
-          />
-        ) : (
-          <AmountInput
-            selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
-            limitPrice={limitPrice}
-            isReduceOnly={isReduceOnly}
-            isBuy={isBuy}
-          />
-        )}
-        {!isSpot && (
-          <LeverageMargin
-            selectedAsset={selectedAsset}
-            leverage={leverage}
-            setLeverage={setLeverage}
-            isCross={isCross}
-            setIsCross={setIsCross}
-          />
-        )}
-        <div className="grid grid-cols-2 gap-3 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-3 px-4">
-          {!isSpot && (
-            <>
-              <TPSL tpsl={tpsl} setTpsl={setTpsl} />
-              <CheckBox
-                label="Reduce Only"
-                setIsChecked={setIsReduceOnly}
-                isChecked={isReduceOnly}
-              />
-            </>
-          )}
-          <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
-        </div>
-        <div className="p-4  ">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={limitPrice}
-            amount={amount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
+      </div>
+      <div className="p-4 border-t border-white/10">
+        <OrderButton
+          isBuy={isBuy}
+          selectedAsset={selectedAsset}
+          limitPrice={limitPrice}
+          amount={amount}
+          leverage={leverage}
+          isCross={isCross}
+          isPostOnly={isPostOnly}
+          isReduceOnly={isReduceOnly}
+          tpsl={tpsl}
+        />
       </div>
     </div>
   )

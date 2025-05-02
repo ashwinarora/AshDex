@@ -20,6 +20,7 @@ import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 type ColumnType = {
   key: string
@@ -38,6 +39,8 @@ const Positions = () => {
     useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
+
+  const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   useEffect(() => {
     setMounted(true)
@@ -130,7 +133,12 @@ const Positions = () => {
               <span
                 className={`w-[4px] h-[36px] rounded-sm ${szi < 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'}`}
               ></span>
-              <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+              <Image
+                src={bitcoinicon}
+                alt="Bitcoin"
+                style={{ width: 24, height: 'auto' }}
+                className="w-6 h-6 mx-1 cursor-pointer"
+              />
               {coin}{' '}
               <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
                 {leverage.value}x
@@ -173,11 +181,10 @@ const Positions = () => {
       helper.display({
         id: 'status',
         header: () => <HeaderWithIcons label="Status" />,
-        cell: (info) => {
-          const status = info.row.original
+        cell: () => {
           return (
             <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
-              {status.szi > 0 ? 'Open' : 'Closed'}
+              Open
             </span>
           )
         },
@@ -190,12 +197,21 @@ const Positions = () => {
           const position = info.row.original
           return (
             <div className="flex items-center gap-2">
-              <button
-                className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2"
-                onClick={() => closePosition(position)}
-              >
-                Close
-              </button>
+              {!isAgentApproved || currentFeeApproval === 0 ? (
+                <button
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
+                  onClick={openAgentModal}
+                >
+                  Connect
+                </button>
+              ) : (
+                <button
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
+                  onClick={() => closePosition(position)}
+                >
+                  Close
+                </button>
+              )}
               <span className="px-3 font-medium py-2">Limit</span>
               <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
                 dummy
@@ -225,7 +241,12 @@ const Positions = () => {
               ) : (
                 '-/-'
               )}
-              <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
+              <Image
+                src={editicon}
+                alt="Edit"
+                style={{ width: 16, height: 'auto' }}
+                className="w-4 h-4 cursor-pointer"
+              />
             </div>
           )
         },
@@ -256,7 +277,12 @@ const Positions = () => {
         <div className="flex justify-between">
           <div className="flex items-center gap-1">
             <span className={`w-[4px] h-[30px] rounded-sm ${'bg-[#2FA766]'}`}></span>
-            <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+            <Image
+              src={bitcoinicon}
+              alt="Bitcoin"
+              style={{ width: 24, height: 'auto' }}
+              className="w-6 h-6 mx-1 cursor-pointer"
+            />
             {item?.coin}{' '}
             <span className="text-[#7D67FF] ml-1 px-1.5 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-xs">
               {item?.leverage?.value + 'x'}
@@ -319,7 +345,12 @@ const Positions = () => {
                 <span className="w-17 break-words overflow-hidden">
                   {item.tp_sl.tp}/{item.tp_sl.sl}
                 </span>
-                <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
+                <Image
+                  src={editicon}
+                  alt="Edit"
+                  style={{ width: 16, height: 'auto' }}
+                  className="w-4 h-4 cursor-pointer"
+                />
               </div>
             ) : (
               '-/-'

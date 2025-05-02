@@ -7,20 +7,22 @@ interface CustomSelectorProps {
   selectedValue: string
   onChange: (value: string) => void
   className?: string
+  isPadding?: boolean
 }
 
 const CustomSelector: React.FC<CustomSelectorProps> = ({
   options,
   selectedValue,
   onChange,
-  className = ''
+  className = '',
+  isPadding
 }) => {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="relative z-50">
       <div
-        className={`w-full text-white px-4 text-sm  flex justify-between z-40 items-center ${className}`}
+        className={`w-full text-white px-4 ${isPadding ? 'py-1.5' : 'py-0'}  text-sm flex justify-between z-40 items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {options?.find((opt) => opt?.value === selectedValue)?.flag && (
@@ -33,7 +35,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
           />
         )}
         {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
-        <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
+        <Image src={DropDown} style={{ width: 20, height: 'auto' }} className="pl-1" alt="" />
       </div>
 
       {isOpen && (

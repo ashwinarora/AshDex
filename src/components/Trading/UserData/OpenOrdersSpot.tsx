@@ -36,8 +36,7 @@ const OpenOrdersSpot = () => {
       <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
         <Image
           src={noordericon}
-          width={90}
-          height={90}
+          style={{ width: 90, height: 'auto' }}
           alt="No Orders"
           className="h-[93px] w-[93px] max-[770px]:w-[70px] max-[770px]:h-[70px]"
         />
@@ -67,9 +66,19 @@ const OpenOrdersSpot = () => {
                 <div className="flex justify-start items-center gap-1">
                   {col?.label && (
                     <>
-                      <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                      <Image
+                        src={shortingicon}
+                        alt="Sort"
+                        style={{ width: 12, height: 'auto' }}
+                        className="w-3 h-3 cursor-pointer"
+                      />
                       <span>{col.label}</span>
-                      <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                      <Image
+                        src={infoicon}
+                        alt="Info"
+                        style={{ width: 16, height: 'auto' }}
+                        className="w-4 h-4 cursor-pointer"
+                      />
                     </>
                   )}
                 </div>
@@ -124,7 +133,12 @@ const OpenOrdersSpot = () => {
                 {order.tp_sl}
               </td>
               <td className="py-2.5 pl-7 max-[1450px]:px-2 text-white font-normal text-sm">
-                <Image src={deleteicon} alt="Delete" className="w-[17px] h-[17px] cursor-pointer" />
+                <Image
+                  src={deleteicon}
+                  alt="Delete"
+                  style={{ width: 16, height: 'auto' }}
+                  className="w-4 h-4 cursor-pointer"
+                />
               </td>
             </tr>
           ))}

@@ -66,7 +66,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
             {toPerp ? 'Spot' : 'Perp'}
           </div>
           <button className="mx-4 cursor-pointer" onClick={() => setToPerp((prev) => !prev)}>
-            <Image src={arrowsorticon} alt="Swap" width={17} height={17} />
+            <Image src={arrowsorticon} alt="Swap" style={{ width: 17, height: 'auto' }} />
           </button>
           <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
             {!toPerp ? 'Spot' : 'Perp'}

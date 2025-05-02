@@ -30,7 +30,9 @@ const Switch: React.FC<SwitchProps> = ({ label, setIsChecked, isChecked }) => {
           className={`absolute top-0.5 left-0.5 w-4.5 h-4.5 bg-[#E8E0F1] rounded-full transition-transform ${checked ? 'transform translate-x-4' : ''}`}
         />
       </div>
-      <span className="checkbox-text">{label ?? ''}</span>
+      <span className="checkbox-text tracking-normal text-[#E8E0F1] font-medium text-sm">
+        {label ?? ''}
+      </span>
     </label>
   )
 }

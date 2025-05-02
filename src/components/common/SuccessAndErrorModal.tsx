@@ -42,8 +42,8 @@ const SuccessAndErrorModal: React.FC<SuccessAndErrorModalProps> = ({
               className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
             >
               <Image
-                height={20}
                 width={20}
+                height={20}
                 src={menuClose}
                 alt="menuclose"
                 className="w-[13px] h-[13px]"
@@ -54,8 +54,7 @@ const SuccessAndErrorModal: React.FC<SuccessAndErrorModalProps> = ({
             <Image
               src={statusType === 'success' ? successicon : erroricon}
               alt="status"
-              width={60}
-              height={60}
+              style={{ width: 60, height: 'auto' }}
               className="mb-4"
             />
             <h2 className="text-white tracking-normal text-base font-semibold mb-1">{title}</h2>
