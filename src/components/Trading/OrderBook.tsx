@@ -57,7 +57,6 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     }
   }, [isLoading])
 
-
   const maxSellCumulative = sells[sells.length - 1]?.cumulative ?? 0
   const maxBuyCumulative = buys[buys.length - 1]?.cumulative ?? 0
   const maxCumulative = Math.max(maxSellCumulative, maxBuyCumulative)
