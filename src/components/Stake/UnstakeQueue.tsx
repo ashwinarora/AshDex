@@ -22,7 +22,12 @@ const UnstakeQueue: React.FC<UnstakeItemProps> = ({ unstakeItems }) => {
         <span className="text-[#8B8BA0] text-base font-medium">Pending Total</span>
         <span className="text-white font-medium text-xl flex">
           <div className="bg-[#072723] p-1 rounded-full items-center">
-            <Image src={VectorIcon} alt="" className="mt-0.5" />
+            <Image
+              style={{ width: 12, height: 'auto' }}
+              src={VectorIcon}
+              alt=""
+              className="mt-0.5"
+            />
           </div>
           12,382.28 HYPE
         </span>

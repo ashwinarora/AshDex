@@ -27,7 +27,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
       <div className="w-full border border-[#33293B] items-center justify-center bg-[#1c1624] rounded-xl cursor-pointer">
         {hasAgreedToRules ? (
           <div className="py-4 mt-10 mb-12 text-center w-full flex flex-col items-center justify-center rounded-xl">
-            <Image src={verifiedicon} alt={name} width={100} height={100} />
+            <Image src={verifiedicon} alt={name} style={{ width: 100, height: 100 }} />
             <div className="text-white font-medium mt-4 text-lg">Wallet connected!</div>
             <div className="text-white w-[70%] opacity-70 font-light mt-2 text-sm">
               You&apos;re ready to deposit, trade, and manage your assets.
@@ -43,8 +43,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
               <Image
                 src={name === 'Metamask' ? metamask : icon}
                 alt={name}
-                width={80}
-                height={80}
+                style={{ width: 80, height: 80 }}
                 className={`transition-all duration-300 ${
                   isWalletConnected === false ? 'grayscale' : ''
                 }`}

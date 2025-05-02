@@ -40,7 +40,7 @@ const VaultFilterBar: FC<VaultFilterBarProps> = ({
       {shouldShowVaultTabs && (
         <div className="relative max-lg:w-full w-[20%]">
           <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-            <Image src={searchnormalicon} alt="search" width={18} height={18} />
+            <Image src={searchnormalicon} alt="search" style={{ width: 18, height: 'auto' }} />
           </div>
           <input
             type="text"

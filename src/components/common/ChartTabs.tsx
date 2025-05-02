@@ -46,6 +46,7 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
             <Image
               key={index}
               src={icon}
+              style={{ width: 16, height: 'auto' }}
               alt="icon"
               className={`w-4 h-4 cursor-pointer hover:opacity-100 transition-opacity
         ${index === 2 ? 'ml-4' : ''}
@@ -64,6 +65,7 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
               key={index + 2}
               src={icon}
               alt="icon"
+              style={{ width: 16, height: 'auto' }}
               className="w-4 h-4 cursor-pointer hover:opacity-100 transition-opacity"
             />
           ))}
@@ -77,6 +79,7 @@ const ChartTabs: React.FC<IChartTabsProps> = ({ tabs, activeTab, setActiveTab })
               alt={index === 0 ? 'settings' : 'expand'}
               className={`w-4 h-4 cursor-pointer hover:opacity-100  transition-opacity
                ${index === 1 ? 'mr-2' : ''}`}
+              style={{ width: 16, height: 'auto' }}
             />
           ))}
         </div>

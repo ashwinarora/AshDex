@@ -49,7 +49,12 @@ const FooterContent: FC = () => {
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
         <div className="mt-4 md:mt-0">
           <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md   font-semibold">
-            <Image src={nexonLogo} alt="Nexon Logo" height={20} width={20} className="w-7 h-7" />
+            <Image
+              src={nexonLogo}
+              alt="Nexon Logo"
+              style={{ width: 20, height: 'auto' }}
+              className="w-7 h-7"
+            />
             Nexon
           </h1>
           <div className="text-[#8B8BA0] text-sm">Empower Your Trades. Maximize Your Gains.</div>
@@ -62,8 +67,8 @@ const FooterContent: FC = () => {
           >
             <Image
               src={forwardicon}
-              height={20}
               width={20}
+              height={20}
               alt="forwardicon"
               className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]"
             />
@@ -72,8 +77,8 @@ const FooterContent: FC = () => {
             <Image
               // onClick={() => window.open('https://t.me/nexon_official', '_blank')}
               src={linkicon}
-              height={20}
               width={20}
+              height={20}
               alt="linkicon"
               className="w-[13px] h-[13px] md:w-[14px] md:h-[14px]"
             />
@@ -82,8 +87,8 @@ const FooterContent: FC = () => {
             <Image
               // onClick={() => window.open('https://discord.gg/nexon', '_blank')}
               src={roboticon}
-              height={20}
               width={20}
+              height={20}
               alt="roboticon"
               className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]"
             />

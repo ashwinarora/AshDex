@@ -16,8 +16,7 @@ export const ValutsDetailsCard: React.FC<ValutsDetailsProps> = ({ title, value }
           className="opacity-80 cursor-pointer w-[15px] h-[15px] max-sm:w-[25px] max-sm:h-[25px]"
           src={infoicon}
           alt="infoicon"
-          width={15}
-          height={15}
+          style={{ width: 15, height: 'auto' }}
         />
       </div>
       <p className="text-white max-sm:text-base flex items-center justify-center gap-x-2 font-medium text-2xl">

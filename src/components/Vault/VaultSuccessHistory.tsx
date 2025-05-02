@@ -25,7 +25,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
 
       <div className="flex items-center justify-center gap-x-2 mb-4 w-full">
         <div className="flex items-center">
-          <Image src={eth} alt="token1" width={30} height={30} />
+          <Image src={eth} alt="token1" style={{ width: 30, height: 'auto' }} />
           <div className="w-10 h-px bg-[#FFFFFF29] mx-2" />
         </div>
         <div className="flex items-center">
@@ -37,7 +37,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
           />
           <div className="w-10 h-px bg-[#FFFFFF29] mx-2" />
         </div>
-        <Image src={weth} alt="token2" width={30} height={30} />
+        <Image src={weth} alt="token2" style={{ width: 30, height: 'auto' }} />
       </div>
 
       <div className="text-center">
@@ -63,13 +63,15 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
                 Confirmation time:
               </span>
               <span className="text-[#2FA766] text-sm font-medium flex items-center gap-x-2">
-                00h 00m 02s <Image src={checkIcon} alt="check" width={14} height={14} />
+                00h 00m 02s{' '}
+                <Image src={checkIcon} alt="check" style={{ width: 14, height: 'auto' }} />
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">Total time:</span>
               <span className="text-[#2FA766] text-sm font-medium flex items-center gap-x-2">
-                00h 00m 04s <Image src={checkIcon} alt="check" width={14} height={14} />
+                00h 00m 04s{' '}
+                <Image src={checkIcon} alt="check" style={{ width: 14, height: 'auto' }} />
               </span>
             </div>
           </>
@@ -98,7 +100,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
             <span>Go to history</span>
           ) : (
             <div className="flex items-center gap-x-2">
-              <Image src={refreshIcon} alt="refresh" width={14} height={14} />
+              <Image src={refreshIcon} alt="refresh" style={{ width: 14, height: 'auto' }} />
               <span>Try again</span>
             </div>
           )}

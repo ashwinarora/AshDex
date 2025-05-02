@@ -98,14 +98,34 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
       <div className="flex px-4 py-2 justify-between">
         <p className="text-lg text-white font-semi-bold ">Order Book</p>
         <div className="flex items-center">
-          <Image src={ThreeDot} alt="" width={20} height={20} className="w-5 h-5" />
+          <Image
+            src={ThreeDot}
+            alt="ThreeDot"
+            style={{ width: 20, height: 20 }}
+            className="w-5 h-5"
+          />
         </div>
       </div>
       {/* <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
         <div className="flex items-center">
-          <Image src={Filter1} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter2} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter3} alt="" className="w-5 h-5 mx-1" />
+          <Image
+            src={Filter1}
+            alt="Filter1"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
+          <Image
+            src={Filter2}
+            alt="Filter2"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
+          <Image
+            src={Filter3}
+            alt="Filter3"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
         </div>
         <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">
           <option value="0.01">0.01</option>

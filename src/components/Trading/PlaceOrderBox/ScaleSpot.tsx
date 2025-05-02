@@ -141,7 +141,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
               />
               <span className="text-white flex items-center text-sm font-medium">
-                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                <Image
+                  src={usdcicon}
+                  style={{ width: 45, height: 'auto' }}
+                  className="pr-1"
+                  alt="usdcicon"
+                />
                 USDC
               </span>
             </div>
@@ -160,7 +165,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
               />
               <span className="text-white flex items-center text-sm font-medium">
-                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                <Image
+                  src={usdcicon}
+                  style={{ width: 45, height: 'auto' }}
+                  className="pr-1"
+                  alt="usdcicon"
+                />
                 USDC
               </span>
             </div>
@@ -185,7 +195,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   '%, #2A1B3D 100%)'
               }}
             />
-            <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+            <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
             <div className="flex justify-between text-xs text-gray-500 mt-1">
               <span>0%</span>
               <span>25%</span>
@@ -222,7 +232,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
               />
               <span className="text-white flex items-center text-sm font-medium">
-                <Image src={usdcicon} width={45} height={45} className="pr-1" alt="usdcicon" />
+                <Image
+                  src={usdcicon}
+                  style={{ width: 45, height: 'auto' }}
+                  className="pr-1"
+                  alt="usdcicon"
+                />
                 USDC
               </span>
             </div>
@@ -237,7 +252,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 onClick={handleDecrease}
                 className="rounded-md px-3 py-5 border border-white/10 bg-white/10 cursor-pointer"
               >
-                <Image src={minusicon} width={20} height={20} className="pr-1" alt="minusicon" />
+                <Image
+                  src={minusicon}
+                  style={{ width: 20, height: 'auto' }}
+                  className="pr-1"
+                  alt="minusicon"
+                />
               </button>
               <input
                 type="text"
@@ -249,7 +269,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 onClick={handleIncrease}
                 className="rounded-md px-3 py-4 border border-white/10 bg-white/10 cursor-pointer"
               >
-                <Image src={plusicon} width={20} height={20} className="pr-1" alt="plusicon" />
+                <Image
+                  src={plusicon}
+                  style={{ width: 20, height: 'auto' }}
+                  className="pr-1"
+                  alt="plusicon"
+                />
               </button>
             </div>
           </label>

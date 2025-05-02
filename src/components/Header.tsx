@@ -4,14 +4,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { toHumanNumber, truncateAddress } from '@/utils/utils'
-import nexonlogo from '@/assets/images/logo.svg'
-import moonicon from '@/assets/images/dark_mode.svg'
-import walleticon from '@/assets/images/wallet_icon.svg'
-import menuline from '@/assets/images/menu_icon.svg'
-import menuClose from '@/assets/images/close_icon.svg'
-import helpicon from '@/assets/images/help_icon.svg'
-import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
@@ -29,6 +21,15 @@ import {
 } from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import BridgeButton from './common/BridgeButton'
+import nexonlogo from '@/assets/images/logo.svg'
+import moonicon from '@/assets/images/dark_mode.svg'
+import walleticon from '@/assets/images/wallet_icon.svg'
+import menuline from '@/assets/images/menu_icon.svg'
+import menuClose from '@/assets/images/close_icon.svg'
+import helpicon from '@/assets/images/help_icon.svg'
+import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
+import disconnecticon from '@/assets/images/disconnect_icon.svg'
+
 type MenuItem = {
   name: string
   path: string
@@ -39,7 +40,7 @@ const Header: FC = () => {
   const pathname = usePathname()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
-  const { isRendered } = useComponentRendered()
+  const isRendered = useComponentRendered()
   const { data: balanceData } = useBalance({ address })
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
@@ -122,6 +123,8 @@ const Header: FC = () => {
     }
   }, [isDropdownOpen])
 
+  if (!isRendered) return null
+
   return (
     <>
       <header
@@ -137,10 +140,15 @@ const Header: FC = () => {
             onClick={() => router.push('/')}
             className="flex items-center mr-6 lg:mr-6  gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
           >
-            <Image height={20} width={20} src={nexonlogo} alt="Nexon Logo" className="w-6 h-6" />
+            <Image
+              style={{ width: 20, height: 'auto' }}
+              src={nexonlogo}
+              alt="Nexon Logo"
+              className="w-6 h-6"
+            />
             Nexon
           </h1>
-          <nav className="lg:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
+          <nav className="xl:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
@@ -165,10 +173,10 @@ const Header: FC = () => {
         </div>
         <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
           <BridgeButton />
-          <button className="p-1 md:block hidden  hover:text-white text-gray-400">
+          <button className="p-1 xl:block hidden  hover:text-white text-gray-400">
             <IconMoonFilled size={24} />
           </button>
-          <button className="p-1 md:block hidden  hover:text-white text-gray-400">
+          <button className="p-1 xl:block hidden  hover:text-white text-gray-400">
             <IconHelp size={24} />
           </button>
           <button className="relative p-1  hover:text-white text-gray-400">
@@ -202,8 +210,7 @@ const Header: FC = () => {
                   {truncateAddress(address!)}
                 </span>
                 <Image
-                  height={20}
-                  width={20}
+                  style={{ width: 16, height: 'auto' }}
                   src={arrowdownicon}
                   alt="arrowdown"
                   className="w-3 h-3 ml-2"
@@ -272,8 +279,7 @@ const Header: FC = () => {
                     className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-white/10 cursor-pointer"
                   >
                     <Image
-                      height={20}
-                      width={20}
+                      style={{ width: 20, height: 'auto' }}
                       src={disconnecticon}
                       alt="Disconnect"
                       className="w-5 h-5 mr-3"
@@ -288,20 +294,25 @@ const Header: FC = () => {
               onClick={toggleConnectWalletModal}
               className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
             >
-              <Image height={20} width={20} src={walleticon} alt="walleticon" className="w-5 h-5" />
+              <Image
+                style={{ width: 20, height: 'auto' }}
+                src={walleticon}
+                alt="walleticon"
+                className="w-5 h-5"
+              />
               <span className="ml-2 hidden 2xl:block">Connect Wallet</span>
             </button>
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="p-1 min-[1025px]:hidden block hover:text-blue-400 text-white"
+            className="p-1 min-xl:hidden block hover:text-blue-400 text-white"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={isOpen ? menuClose : menuline}
               alt="menu-icon"
-              className={`w-[20px] h-[20px] mr-5`}
+              className={`w-5 h-5 mr-5`}
             />
           </button>
         </div>
@@ -311,12 +322,16 @@ const Header: FC = () => {
         <div className="fixed z-55 left-0 top-20 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
           <div className="flex mb-3 ml-1 gap-2">
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
-              <Image height={20} width={20} src={helpicon} alt="helpicon" className="w-5 h-5" />
+              <Image
+                style={{ width: 20, height: 'auto' }}
+                src={helpicon}
+                alt="helpicon"
+                className="w-5 h-5"
+              />
             </button>
             <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
               <Image
-                height={20}
-                width={20}
+                style={{ width: 20, height: 'auto' }}
                 src={moonicon}
                 alt="moonicon"
                 className="w-4 h-4 md:mr-2"

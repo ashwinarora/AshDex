@@ -71,11 +71,21 @@ function EnableTrading({ enableModal, handleEnableTrading, setTradingEnabled }: 
             <div className="border-2 border-white/10 rounded-md bg-[#FFFFFF0F] px-4 py-3 text-white text-sm mb-6 flex items-center justify-between">
               <span className="text-[#8B8BA0] text-sm font-medium">Deposit Cain</span>
               <span className="text-white tracking-normal flex items-center gap-x-1 text-sm font-medium">
-                Arbitrum <Image src={DropDown} width={26} height={26} className="pl-1" alt="" />
+                Arbitrum{' '}
+                <Image
+                  src={DropDown}
+                  style={{ width: 26, height: 'auto' }}
+                  className="pl-1"
+                  alt=""
+                />
               </span>
             </div>
             <div className="flex flex-col items-center gap-2 mb-6">
-              <Image src={depositusdcicon} alt="depositusdc" width={40} height={40} />
+              <Image
+                src={depositusdcicon}
+                alt="depositusdc"
+                style={{ width: 40, height: 'auto' }}
+              />
               <p className="text-white tracking-normal font-medium">Deposit USDC from Arbitrum</p>
             </div>
             <div className="flex flex-col gap-2 mb-6">
@@ -97,7 +107,12 @@ function EnableTrading({ enableModal, handleEnableTrading, setTradingEnabled }: 
                     MAX
                   </button>
                   <span className="ml-3 text-white flex items-center text-sm font-medium">
-                    <Image src={usdcicon} width={30} height={30} className="pr-2" alt="usdcicon" />
+                    <Image
+                      src={usdcicon}
+                      style={{ width: 30, height: 'auto' }}
+                      className="pr-2"
+                      alt="usdcicon"
+                    />
                     USDC
                   </span>
                 </div>

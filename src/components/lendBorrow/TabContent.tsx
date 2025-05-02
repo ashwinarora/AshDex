@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useToast } from '@/context/ToastContext'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import Switch from '../common/Switch'
 import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
@@ -20,6 +21,7 @@ type TabName = 'Supply' | 'Borrow'
 const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIsLoading }) => {
   const { supplyAndBorrowTabData } = lendBorrowData?.lendBorrow
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
   const { showToast } = useToast()
   const [amount, setAmount] = useState('0.00')
@@ -53,6 +55,8 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
     setIsLoading(false)
   }, [activeTab])
 
+  if (!isRendered) return null
+
   return (
     <div className="">
       <div className="mb-3 px-4 py-2">
@@ -71,8 +75,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
             <span className="ml-3 text-white flex items-center text-sm font-medium">
               <Image
                 src={isChecked ? ethicon : wethicon}
-                width={30}
-                height={30}
+                style={{ width: 30, height: 'auto' }}
                 className="pr-2"
                 alt="ethicon"
               />

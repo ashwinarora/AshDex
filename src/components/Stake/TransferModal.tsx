@@ -30,8 +30,8 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={menuClose}
               alt="menuclose"
               className="w-[13px] h-[13px]"
@@ -47,7 +47,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
             </p>
           </div>
           <div className="mx-3">
-            <Image src={arrowsorticon} alt="Swap" width={17} height={17} />
+            <Image src={arrowsorticon} alt="Swap" style={{ width: 17, height: 'auto' }} />
           </div>
           <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
             <p className="text-sm mb-1.5 font-medium text-[#8B8BA0]">To</p>
@@ -63,7 +63,12 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
             placeholder="0.00"
             className="bg-transparent text-white placeholder-[#8B8BA0] text-lg w-full outline-none"
           />
-          <Image src={hyperliquidicon} alt="HYPE" width={20} height={20} className="ml-2" />
+          <Image
+            src={hyperliquidicon}
+            alt="HYPE"
+            style={{ width: 20, height: 'auto' }}
+            className="ml-2"
+          />
           <span className="text-white mx-3 text-sm font-medium">HYPE</span>
           <button className="text-[#8B8BA0] border py-1 px-2 border-white/10 bg-[#FFFFFF0F] text-sm font-medium rounded-lg">
             MAX
@@ -73,7 +78,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
           <p>
             ETA for Staking → Spot transfer: <span className="text-white">7 days.</span>
           </p>
-          <Image src={infoicon} alt="Info" width={14} height={14} className="ml-1" />
+          <Image src={infoicon} alt="Info" style={{ width: 14, height: 'auto' }} className="ml-1" />
         </div>
         <button className="w-full bg-primary cursor-pointer text-white py-3 rounded-xl text-base font-semibold">
           Transfer

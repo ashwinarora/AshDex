@@ -17,7 +17,7 @@ import CustomSelector from '@/components/common/CustomSelector'
 function UserData() {
   const { clearingHouseState, openOrders } = useHyperLiquid()
   const [searchValue, setSearchValue] = useState('')
-  const [activeTab, setActiveTab] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<number>(1)
   const positionsCount = clearingHouseState?.assetPositions?.length || 0
   const tabs = [
     'Balances',

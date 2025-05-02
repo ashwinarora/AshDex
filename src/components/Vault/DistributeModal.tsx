@@ -59,8 +59,8 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
               <Image
                 src={menuClose}
                 alt="menuclose"
-                height={20}
                 width={20}
+                height={20}
                 className="w-auto h-auto"
               />
             </button>
@@ -132,7 +132,13 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                   />
                   <div className="flex justify-between items-start">
                     <div className="w-5/6 mr-3">
-                      <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
+                      <Image
+                        src={Slider1}
+                        alt="Slider1"
+                        width={20}
+                        height={20}
+                        className="w-full mt-1"
+                      />
                       <div className="text-xs text-gray-500 flex justify-between">
                         <span>0%</span>
                         <span>25%</span>

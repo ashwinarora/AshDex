@@ -1,9 +1,17 @@
 'use client'
 
 import { Line } from 'react-chartjs-2'
-import { Chart, CategoryScale, LinearScale, PointElement, LineElement, Tooltip } from 'chart.js'
+import {
+  Chart,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Tooltip,
+  Filler
+} from 'chart.js'
 
-Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip)
+Chart.register(CategoryScale, LinearScale, PointElement, LineElement, Tooltip, Filler)
 
 const SparklineChart = ({ data }: { data: number[] }) => {
   const chartData = {
@@ -11,7 +19,7 @@ const SparklineChart = ({ data }: { data: number[] }) => {
     datasets: [
       {
         data: data,
-        borderColor: '#f7931a', // orange tone like your image
+        borderColor: '#f7931a',
         borderWidth: 2,
         pointRadius: 0,
         pointHoverRadius: 0,

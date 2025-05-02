@@ -29,6 +29,7 @@ function StakingTable() {
   const [activeType, setActiveType] = useState<StakeType>('My Stakings')
   const [columns, setColumns] = useState(STAKE_INITIAL_COLUMNS)
   const [rows, setRows] = useState(validatorTableData)
+  const [isClient, setIsClient] = useState(false)
   const rowsPerPage = isConnected ? 5 : 10
   const totalPages = Math.ceil((rows?.length ?? 0) / rowsPerPage)
 
@@ -75,8 +76,16 @@ function StakingTable() {
   }, [rows, currentPage])
 
   useEffect(() => {
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
     updateTableData()
   }, [updateTableData])
+
+  if (!isClient) {
+    return null
+  }
 
   return (
     <div
@@ -134,7 +143,7 @@ function StakingTable() {
           <Tooltip content={getTooltipContent('allTime')}>
             <button className="cursor-pointer font-semibold border-white/10 bg-white/10 rounded-2xl py-2.5 text-white px-4.5 text-sm flex justify-between items-center">
               <span>All Time</span>
-              <Image src={DropDown} width={20} height={20} className="pl-1" alt="" />
+              <Image src={DropDown} style={{ width: 20, height: 'auto' }} className="pl-1" alt="" />
             </button>
           </Tooltip>
         </div>
@@ -153,7 +162,12 @@ function StakingTable() {
                     <span>{col.label}</span>
                     {STAKE_SHOWINFOICON?.includes(col?.key as SpecialColumnKeys) && (
                       <Tooltip content={getTooltipContent(col?.key)}>
-                        <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                        <Image
+                          src={infoicon}
+                          alt="Info"
+                          style={{ width: 16, height: 'auto' }}
+                          className="w-4 h-4 cursor-pointer"
+                        />
                       </Tooltip>
                     )}
                   </div>

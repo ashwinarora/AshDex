@@ -41,7 +41,6 @@ const BoardViewVaults = () => {
             onClick={() => handleRowClick(index)}
             className="border-[2px] border-white/10 backdrop-blur-[48.3px] p-4 rounded-lg shadow-md hover:shadow-lg transition-all duration-300"
           >
-            {/* Top - Total Funds */}
             <div className="flex pt-1 justify-between items-center mb-4">
               <div className="flex items-center">
                 <span className="mr-1 text-sm text-[#8B8BA0] font-medium">Total funds:</span>
@@ -54,11 +53,9 @@ const BoardViewVaults = () => {
                 <SparklineChart data={vault?.snapshot} />
               </div>
             </div>
-
-            {/* Middle - Logo and Status */}
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-x-3">
-                <Image height={35} width={35} src={lidoicon} alt="vault icon" />
+                <Image style={{ width: 35, height: 'auto' }} src={lidoicon} alt="vault icon" />
                 <div>
                   <p className="text-white text-md font-medium">{vault.name}</p>
                   <p className="text-sm font-normal text-[#8B8BA0]">Liquid staking</p>
@@ -68,12 +65,10 @@ const BoardViewVaults = () => {
                 {vault.status}
               </span>
             </div>
-
-            {/* Vault Info */}
             <div className="grid grid-cols-2 font-medium gap-y-2 text-sm text-[#8B8BA0] my-4">
               <div className="flex items-center gap-x-1">
                 <p>APR:</p>
-                <Image height={15} width={15} src={infoicon} alt="infoicon1" />
+                <Image style={{ width: 15, height: 'auto' }} src={infoicon} alt="infoicon1" />
                 <p className="ml-auto text-[#E8E0F1]">{vault.apr}</p>
               </div>
               <div className="flex justify-end items-center">
@@ -81,16 +76,15 @@ const BoardViewVaults = () => {
               </div>
               <div className="flex items-center gap-x-1">
                 <span>Age (days):</span>
-                <Image height={15} width={15} src={infoicon} alt="infoicon2" />
+                <Image style={{ width: 15, height: 'auto' }} src={infoicon} alt="infoicon2" />
                 <span className="ml-4 text-[#E8E0F1]">{vault.age}</span>
               </div>
               <div className="flex items-center gap-x-1">
                 <p>Your deposit:</p>
-                <Image height={15} width={15} src={infoicon} alt="infoicon3" />
+                <Image style={{ width: 15, height: 'auto' }} src={infoicon} alt="infoicon3" />
                 <p className="ml-auto text-[#E8E0F1]">{vault.yourDeposit}</p>
               </div>
             </div>
-            {/* Actions */}
             <div className="mt-5 flex gap-2">
               {vault?.status === 'Open' ? (
                 <>

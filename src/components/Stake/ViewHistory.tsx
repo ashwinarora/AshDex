@@ -28,7 +28,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
   return (
     <div>
       <div onClick={() => handleBackClick()} className="flex items-center space-x-3 cursor-pointer">
-        <Image src={LaftArrow} height={18} width={18} alt="Back" />
+        <Image src={LaftArrow} style={{ width: 18, height: 'auto' }} alt="Back" />
         <span className="text-base font-medium">Back</span>
       </div>
       <div
@@ -50,7 +50,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
                                 backdrop-blur-[48.3px] items-center"
             >
               <div className="flex gap-x-2 items-center w-full">
-                <Image src={SearchIcon} height={18} width={18} alt="SearchIcon" />
+                <Image src={SearchIcon} style={{ width: 18, height: 'auto' }} alt="SearchIcon" />
                 <input
                   type="text"
                   placeholder="Search..."
@@ -78,8 +78,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
                         <Image
                           src={shortingicon}
                           alt="Sort"
-                          height={16}
-                          width={16}
+                          style={{ width: 16, height: 'auto' }}
                           className="w-3 h-3 cursor-pointer"
                         />
                       )}

@@ -178,8 +178,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Image
                 src={icons[assetKey]}
                 alt={assetKey}
-                width={32}
-                height={32}
+                style={{ width: 32, height: 32 }}
                 className="h-8 w-8 rounded-full mr-2"
               />
             ) : (

@@ -45,7 +45,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           </div>
         </div>
         <div className="flex flex-col items-center gap-y-2 mb-8">
-          <Image src={arbitrum} alt="test" width={50} height={50} />
+          <Image src={arbitrum} alt="test" style={{ width: 50, height: 'auto' }} />
           <p className="text-white tracking-normal font-medium">Withdrawal USDC from Arbitrum</p>
           <div className="text-sm text-[#8B8BA0] text-center font-normal">
             USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be
