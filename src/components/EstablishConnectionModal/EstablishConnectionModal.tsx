@@ -58,7 +58,16 @@ const EstablishConnectionModal = () => {
                 nonce: payload.message.nonce,
                 signature: splitSignature(sign)
               }
-              await hyperliquidAxios.post('/exchange', body)
+              const res = await hyperliquidAxios.post('/exchange', body)
+              if(res.data.status === "err") {
+                toast.update(toastId, {
+                  render: '❌' + res.data.response,
+                  type: 'error',
+                  isLoading: false,
+                  autoClose: 4000
+                })
+                return
+              }
               await refetchAgentApproval()
               setIsApproving(true)
               toast.update(toastId, {

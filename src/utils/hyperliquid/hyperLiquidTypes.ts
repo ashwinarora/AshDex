@@ -217,14 +217,14 @@ export type PlaceOrderAction = {
     s: string
     r: boolean
     t:
-      | { limit: { tif: 'Alo' | 'Ioc' | 'Gtc' } }
-      | {
-          trigger: {
-            isMarket: boolean
-            triggerPx: string
-            tpsl: 'tp' | 'sl'
-          }
-        }
+    | { limit: { tif: 'Alo' | 'Ioc' | 'Gtc' } }
+    | {
+      trigger: {
+        isMarket: boolean
+        triggerPx: string
+        tpsl: 'tp' | 'sl'
+      }
+    }
     c?: string
   }>
   grouping: 'na' | 'normalTpsl' | 'positionTpsl'
@@ -371,7 +371,10 @@ export interface ITradeHistory {
 }
 
 export type ReferralData = {
-  referredBy: string | null
+  referredBy: {
+    referrer: string
+    code: string
+  } | null
   cumVlm: string
   unclaimedRewards: string
   claimedRewards: string

@@ -35,7 +35,14 @@ export const BUILDER_ADDRESS =
     ? '0x6a181ef519f21f933884038952aabef02876dbcc' // Ahmed's address
     : '0x1710022f671b4032d6c7262107ba231f41f84ce8' // Ashwin's address
 
+export const NEXON_REFERRAL_CODE =
+  process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK === 'mainnet'
+    ? '' // Ahmed's referral code
+    : 'ASHWIN' // Ashwin's referral code
+
 export const BUILDER_FEE = '0.1%'
+
+
 
 export const HLP_VAULT_TESTNET = '0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0' // https://app.hyperliquid-testnet.xyz/vaults/0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0
 
