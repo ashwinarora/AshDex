@@ -147,53 +147,49 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="flex flex-col w-full rounded-md shadow-md">
           <div className="space-y-2">
-            <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
-              <label className="mb-1">
-                <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Start Price</span>
-                <div className="flex">
-                  <input
-                    type="text"
-                    value={startPrice ?? '0'}
-                    onChange={(e) =>
-                      setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-                    }
-                    className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
+              <label className="block text-xs font-medium text-gray-300 mb-0.5">Start Price</label>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={startPrice ?? '0'}
+                  onChange={(e) =>
+                    setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+                  }
+                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+                />
+                <span className="text-white flex items-center text-xs font-medium">
+                  <Image
+                    style={{ width: 45, height: 'auto' }}
+                    src={usdcicon}
+                    className="pr-1"
+                    alt="usdcicon"
                   />
-                  <span className="text-white flex items-center text-sm font-medium">
-                    <Image
-                      style={{ width: 45, height: 'auto' }}
-                      src={usdcicon}
-                      className="pr-1"
-                      alt="usdcicon"
-                    />
-                    USDC
-                  </span>
-                </div>
-              </label>
+                  USDC
+                </span>
+              </div>
             </div>
-            <div className="border-b px-4 mb-2 border-[#FFFFFF0F]">
-              <label className="mb-1">
-                <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">End Price</span>
-                <div className="flex ">
-                  <input
-                    type="text"
-                    value={endPrice ?? '0'}
-                    onChange={(e) =>
-                      setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-                    }
-                    className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
+              <label className="block text-xs font-medium text-gray-300 mb-0.5">End Price</label>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={endPrice ?? '0'}
+                  onChange={(e) =>
+                    setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+                  }
+                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+                />
+                <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-xs font-medium">
+                  <Image
+                    src={refreshpurpleIcon}
+                    style={{ width: 15, height: 'auto' }}
+                    alt="Refresh Icon"
+                    className="w-3.5 h-3.5"
                   />
-                  <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-sm font-medium">
-                    <Image
-                      src={refreshpurpleIcon}
-                      style={{ width: 15, height: 'auto' }}
-                      alt="Refresh Icon"
-                      className="w-3.5 h-3.5"
-                    />
-                    Last
-                  </span>
-                </div>
-              </label>
+                  Last
+                </span>
+              </div>
             </div>
 
             <div className="flex w-full mb-2 items-end px-4 border-b border-[#FFFFFF0F] pb-2">
@@ -235,52 +231,47 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </div>
 
-            <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-              <label className="mb-2">
-                <div className="flex mb-1 justify-between">
-                  <span className="block  text-sm font-medium text-[#8B8BA0]">Total Size</span>
-                  <span className="block text-sm font-medium text-[#8B8BA0]">
-                    Balance: {clearingHouseState?.withdrawable.toFixed(2)} USDC
-                  </span>
-                </div>
-                <div className="flex ">
-                  <input
-                    type="text"
-                    value={totalSize ?? '0'}
-                    onChange={(e) =>
-                      setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
-                    }
-                    className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
+              <div className="flex mb-1 justify-between">
+                <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
+                <span className="block text-xs font-medium text-[#8B8BA0]">
+                  Balance: {clearingHouseState?.withdrawable.toFixed(2)} USDC
+                </span>
+              </div>
+              <div className="flex">
+                <input
+                  type="text"
+                  value={totalSize ?? '0'}
+                  onChange={(e) =>
+                    setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+                  }
+                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+                />
+                <span className="text-white flex items-center text-xs font-medium">
+                  <Image
+                    src={usdcicon}
+                    style={{ width: 45, height: 'auto' }}
+                    className="pr-1"
+                    alt="usdcicon"
                   />
-                  <span className="text-white flex items-center text-sm font-medium">
-                    <Image
-                      src={usdcicon}
-                      style={{ width: 45, height: 'auto' }}
-                      className="pr-1"
-                      alt="usdcicon"
-                    />
-                    USDC
-                  </span>
-                </div>
-              </label>
+                  USDC
+                </span>
+              </div>
             </div>
-            <div className="border-b px-4 mb-3 border-[#FFFFFF0F]">
-              <span className="block mb-3 text-sm font-bold text-[#8B8BA0]">Scale Settings</span>
+            <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
+              <span className="block text-xs font-medium text-gray-300 mb-0.5">Scale Settings</span>
               <label className="mb-2">
-                <span className="block mb-2 text-sm font-medium text-[#8B8BA0]">
+                <span className="block text-xs font-medium text-gray-300 mb-0.5">
                   Number of Orders
                 </span>
-                <div className="flex items-center gap-2 mb-3 rounded-lg">
+                <div className="flex items-center gap-2 mb-1 rounded-lg">
                   <button
                     onClick={handleDecrease}
-                    className="rounded-md px-3 py-5 border border-white/10 bg-white/10 cursor-pointer"
+                    className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
                   >
                     <Image
                       src={minusicon}
-                      style={{
-                        width: 20,
-                        height: 'auto'
-                      }}
+                      style={{ width: 20, height: 20 }}
                       className="pr-1"
                       alt="minusicon"
                     />
@@ -289,15 +280,15 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                     type="text"
                     value={totalOrders}
                     onChange={handleChange}
-                    className="w-full text-center rounded-md px-3 py-[9px] border-2 border-white/10 bg-white/10 text-base font-medium focus:outline-none"
+                    className="w-full text-center rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
                   />
                   <button
                     onClick={handleIncrease}
-                    className="rounded-md px-3 py-4 border border-white/10 bg-white/10 cursor-pointer"
+                    className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
                   >
                     <Image
                       src={plusicon}
-                      style={{ width: 20, height: 'auto' }}
+                      style={{ width: 20, height: 20 }}
                       className="pr-1"
                       alt="plusicon"
                     />
@@ -306,8 +297,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </label>
             </div>
 
-            <label className="mb-2 px-4">
-              <span className="block mb-1 text-sm font-medium text-[#8B8BA0]">Size Skew</span>
+            <div className="px-4 border-b mb-1 pb-2 border-[#FFFFFF0F]">
+              <label className="block text-xs font-medium text-gray-300 mb-0.5">Size Skew</label>
               <input
                 type="text"
                 value={sizeSkew ?? ''}
@@ -315,16 +306,16 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)
                 }
                 placeholder="0.00"
-                className="w-full rounded-md text-white p-2 placeholder:text-lg placeholder:text-[#8B8BA0] focus:outline-none  focus:none focus:none text-lg font-medium"
+                className="w-full rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
               />
-            </label>
-            <label className="mb-4 mt-1 px-4 flex items-center">
+            </div>
+            <label className="mb-1 mt-1 px-4 flex items-center">
               <CheckBox
                 label=""
                 setIsChecked={(checked) => setIsReduceOnly(checked)}
                 isChecked={isReduceOnly}
               />
-              <span className="text-sm font-medium text-[#E8E0F1]">Reduce Only</span>
+              <span className="text-xs font-medium text-[#E8E0F1]">Reduce Only</span>
             </label>
           </div>
         </div>

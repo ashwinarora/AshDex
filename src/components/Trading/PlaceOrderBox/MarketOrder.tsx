@@ -10,6 +10,7 @@ import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
+import MarginMode from './components/MarginMode'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperLiquid()
@@ -31,7 +32,9 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     <div className="w-full h-full flex flex-col">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="space-y-2">
+        <div className="space-y-1">
+          <MarginMode isCross={isCross} setIsCross={setIsCross} />
+
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
@@ -59,26 +62,24 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
-              isCross={isCross}
-              setIsCross={setIsCross}
             />
           )}
-          <div className="grid grid-cols-2 gap-2 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-2 px-4">
+          <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
             {!isSpot && (
               <>
-                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
                 <CheckBox
                   label="Reduce Only"
                   setIsChecked={setIsReduceOnly}
                   isChecked={isReduceOnly}
                 />
+                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
             <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
       </div>
-      <div className="p-4 border-t border-white/10">
+      <div className="p-2 border-t border-white/10">
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}

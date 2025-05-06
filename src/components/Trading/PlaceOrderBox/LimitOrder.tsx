@@ -11,6 +11,7 @@ import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
+import MarginMode from './components/MarginMode'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -37,23 +38,24 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     <div className="w-full h-full flex flex-col">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="space-y-2">
-          <div className="px-4 border-b border-[#FFFFFF0F] mb-2">
-            <label className="block text-sm font-medium text-gray-300 mb-1">Limit price</label>
+        <div className="space-y-1">
+          <MarginMode isCross={isCross} setIsCross={setIsCross} />
+          <div className="px-4 border-b border-[#FFFFFF0F] mb-1">
+            <label className="block text-xs font-medium text-gray-300 mb-0.5">Limit price</label>
             <div className="relative">
               <input
                 type="text"
                 placeholder="0.0000"
                 value={limitPrice}
                 onChange={handleLimitPriceChange}
-                className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
+                className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
               />
-              <span className="absolute right-2 top-1/2 flex text-sm items-center gap-x-1.5 -translate-y-1/2 text-[#7D67FF] font-medium">
+              <span className="absolute right-2 top-1/2 flex text-xs items-center gap-x-1 -translate-y-1/2 text-[#7D67FF] font-medium">
                 <Image
                   src={refreshpurpleIcon}
-                  style={{ width: 15, height: 'auto' }}
+                  style={{ width: 12, height: 'auto' }}
                   alt="Refresh Icon"
-                  className="w-3.5 h-3.5"
+                  className="w-3 h-3"
                 />
                 Last
               </span>
@@ -86,26 +88,24 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
-              isCross={isCross}
-              setIsCross={setIsCross}
             />
           )}
-          <div className="grid grid-cols-2 gap-2 text-sm text-gray-400 border-b border-[#FFFFFF0F] pb-2 px-4">
+          <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
             {!isSpot && (
               <>
-                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
                 <CheckBox
                   label="Reduce Only"
                   setIsChecked={setIsReduceOnly}
                   isChecked={isReduceOnly}
                 />
+                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
             <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
       </div>
-      <div className="p-4 border-t border-white/10">
+      <div className="p-2 border-t border-white/10">
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
