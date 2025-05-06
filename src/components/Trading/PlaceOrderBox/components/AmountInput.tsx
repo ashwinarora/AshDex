@@ -8,10 +8,10 @@ import Slider1 from '@/assets/images/slider_value.svg'
 
 interface AmountInputProps {
   selectedAsset: string
-  amount: number
-  setAmount: React.Dispatch<React.SetStateAction<number>>
-  total: number
-  setTotal: React.Dispatch<React.SetStateAction<number>>
+  assetAmount: number
+  setAssetAmount: React.Dispatch<React.SetStateAction<number>>
+  usdAmount: number
+  setUsdAmount: React.Dispatch<React.SetStateAction<number>>
   limitPrice: number
   isReduceOnly: boolean
   isBuy: boolean
@@ -19,10 +19,10 @@ interface AmountInputProps {
 
 const AmountInput = ({
   selectedAsset,
-  amount,
-  setAmount,
-  total,
-  setTotal,
+  assetAmount,
+  setAssetAmount,
+  usdAmount,
+  setUsdAmount,
   limitPrice,
   isReduceOnly,
   isBuy
@@ -47,16 +47,16 @@ const AmountInput = ({
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newAmount = parseFloat(e.target.value) || 0
-    setAmount(newAmount)
-    setTotal(limitPrice * newAmount)
+    setAssetAmount(newAmount)
+    setUsdAmount(limitPrice * newAmount)
     setUsdPercent(((newAmount * limitPrice) / maxAllowedUsd) * 100)
   }
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newTotal = parseFloat(e.target.value) || 0
-    setTotal(newTotal)
-    setAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+    setUsdAmount(newTotal)
+    setAssetAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
     setUsdPercent((newTotal / maxAllowedUsd) * 100)
   }
 
@@ -64,8 +64,8 @@ const AmountInput = ({
     if (!clearingHouseState) return
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
-    setAmount((newUsdPercent * maxAllowedUsd) / 100 / limitPrice)
-    setTotal((newUsdPercent * maxAllowedUsd) / 100)
+    setAssetAmount((newUsdPercent * maxAllowedUsd) / 100 / limitPrice)
+    setUsdAmount((newUsdPercent * maxAllowedUsd) / 100)
   }
 
   return (
@@ -76,7 +76,7 @@ const AmountInput = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={amount}
+            value={assetAmount}
             onChange={handleAmountChange}
             className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
           />
@@ -92,7 +92,7 @@ const AmountInput = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={total}
+            value={usdAmount}
             onChange={handleTotalChange}
             className="w-full rounded-md p-2 focus:outline-none focus:none focus:none text-xl font-medium"
           />

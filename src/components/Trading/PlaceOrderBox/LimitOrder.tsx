@@ -15,8 +15,8 @@ import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<number>(0)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<number>(0)
+  const [usdAmount, setUsdAmount] = useState<number>(0)
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
@@ -30,7 +30,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0
     setLimitPrice(newLimitPrice)
-    setTotal(newLimitPrice * amount)
+    setUsdAmount(newLimitPrice * assetAmount)
   }
 
   return (
@@ -64,20 +64,20 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
               limitPrice={limitPrice}
               isBuy={isBuy}
             />
           ) : (
             <AmountInput
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
               limitPrice={limitPrice}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
@@ -112,7 +112,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isBuy={isBuy}
           selectedAsset={selectedAsset}
           limitPrice={limitPrice}
-          amount={amount}
+          assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}
           isPostOnly={isPostOnly}

@@ -7,10 +7,10 @@ import Slider1 from '@/assets/images/slider_value.svg'
 
 interface AmountInputSpotProps {
   selectedAsset: string
-  amount: number
-  setAmount: React.Dispatch<React.SetStateAction<number>>
-  total: number
-  setTotal: React.Dispatch<React.SetStateAction<number>>
+  assetAmount: number
+  setAssetAmount: React.Dispatch<React.SetStateAction<number>>
+  usdAmount: number
+  setUsdAmount: React.Dispatch<React.SetStateAction<number>>
   limitPrice: number
   isBuy: boolean
 }
@@ -19,10 +19,10 @@ const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('
 
 const AmountInputSpot = ({
   selectedAsset,
-  amount,
-  setAmount,
-  total,
-  setTotal,
+  assetAmount,
+  setAssetAmount,
+  usdAmount,
+  setUsdAmount,
   limitPrice,
   isBuy
 }: AmountInputSpotProps) => {
@@ -36,17 +36,17 @@ const AmountInputSpot = ({
       : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
 
-  const updateFromAmount = (newAmount: number) => {
-    setAmount(newAmount)
+  const updateFromAssetAmount = (newAmount: number) => {
+    setAssetAmount(newAmount)
     const newTotal = newAmount * limitPrice
-    setTotal(newTotal)
+    setUsdAmount(newTotal)
     setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
   }
 
-  const updateFromTotal = (newTotal: number) => {
-    setTotal(newTotal)
+  const updateFromUsdAmount = (newTotal: number) => {
+    setUsdAmount(newTotal)
     const newAmount = limitPrice > 0 ? newTotal / limitPrice : 0
-    setAmount(newAmount)
+    setAssetAmount(newAmount)
     setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
   }
 
@@ -54,12 +54,12 @@ const AmountInputSpot = ({
     setUsdPercent(percent)
     if (isBuy) {
       const newTotal = (percent / 100) * maxAllowed
-      setTotal(newTotal)
-      setAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+      setUsdAmount(newTotal)
+      setAssetAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
     } else {
       const newAmount = (percent / 100) * maxAllowed
-      setAmount(newAmount)
-      setTotal(newAmount * limitPrice)
+      setAssetAmount(newAmount)
+      setUsdAmount(newAmount * limitPrice)
     }
   }
 
@@ -71,8 +71,8 @@ const AmountInputSpot = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={amount}
-            onChange={(e) => updateFromAmount(parseFloat(e.target.value) || 0)}
+            value={assetAmount}
+            onChange={(e) => updateFromAssetAmount(parseFloat(e.target.value) || 0)}
             className="w-full rounded-md p-2 focus:outline-none text-xl font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
@@ -87,8 +87,8 @@ const AmountInputSpot = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={total}
-            onChange={(e) => updateFromTotal(parseFloat(e.target.value) || 0)}
+            value={usdAmount}
+            onChange={(e) => updateFromUsdAmount(parseFloat(e.target.value) || 0)}
             className="w-full rounded-md p-2 focus:outline-none text-xl font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">

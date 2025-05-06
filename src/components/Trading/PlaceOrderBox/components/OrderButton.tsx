@@ -24,7 +24,7 @@ type StopOrder = {
 type OrderButtonProps = {
   selectedAsset: string
   isBuy: boolean
-  amount: number
+  assetAmount: number
   limitPrice: number
   leverage: number
   isCross: boolean
@@ -43,7 +43,7 @@ const placePerpOrder = async ({
   isPostOnly,
   stopOrder,
   isBuy,
-  amount,
+  assetAmount,
   limitPrice,
   isReduceOnly,
   tpsl,
@@ -60,7 +60,7 @@ const placePerpOrder = async ({
   universe: MetaData[]
   isPostOnly: boolean
   isBuy: boolean
-  amount: number
+  assetAmount: number
   limitPrice: number
   isReduceOnly: boolean
   agentWallet: PrivateKeyAccount
@@ -74,7 +74,7 @@ const placePerpOrder = async ({
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
-  const formattedSize = parseFloat(amount.toFixed(szDecimals)).toString()
+  const formattedSize = parseFloat(assetAmount.toFixed(szDecimals)).toString()
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
@@ -192,7 +192,7 @@ const placeSpotOrder = async ({
   selectedAsset,
   isBuy,
   limitPrice,
-  amount,
+  assetAmount,
   isPostOnly
 }: {
   spotMeta: SpotMeta
@@ -203,7 +203,7 @@ const placeSpotOrder = async ({
   selectedAsset: string
   isBuy: boolean
   limitPrice: number
-  amount: number
+  assetAmount: number
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
@@ -220,7 +220,7 @@ const placeSpotOrder = async ({
           assetIndex: assetIndex,
           isBuy: isBuy,
           price: formatPrice(limitPrice, 4),
-          size: formatPrice(amount, tokenData.szDecimals),
+          size: formatPrice(assetAmount, tokenData.szDecimals),
           reduceOnly: false,
           orderType: {
             limit: {
@@ -261,7 +261,7 @@ const placeSpotOrder = async ({
 const OrderButton = ({
   selectedAsset,
   isBuy,
-  amount,
+  assetAmount,
   limitPrice,
   leverage,
   isCross,
@@ -324,7 +324,7 @@ const OrderButton = ({
             selectedAsset,
             isBuy,
             limitPrice,
-            amount,
+            assetAmount,
             isPostOnly
           })
         } else {
@@ -337,7 +337,7 @@ const OrderButton = ({
             isPostOnly,
             stopOrder,
             isBuy,
-            amount,
+            assetAmount,
             limitPrice,
             isReduceOnly,
             tpsl,
