@@ -11,15 +11,15 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [limitPrice, setLimitPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<number>(0)
+  const [usdAmount, setUsdAmount] = useState<number>(0)
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLimitPrice = parseFloat(e.target.value) || 0
     setLimitPrice(newLimitPrice)
-    setTotal(newLimitPrice * amount)
+    setUsdAmount(newLimitPrice * assetAmount)
   }
 
   return (
@@ -53,10 +53,10 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <AmountInput
             selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
             limitPrice={limitPrice}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
@@ -81,7 +81,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           leverage={leverage}
-          amount={amount}
+          assetAmount={assetAmount}
           limitPrice={limitPrice}
           stopOrder={{
             isMarket: false,

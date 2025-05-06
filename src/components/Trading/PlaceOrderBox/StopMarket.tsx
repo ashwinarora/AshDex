@@ -12,8 +12,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<number>(0)
+  const [usdAmount, setUsdAmount] = useState<number>(0)
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
 
@@ -35,10 +35,10 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <AmountInput
             selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
             limitPrice={allMids[selectedAsset]}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
@@ -63,7 +63,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           leverage={leverage}
-          amount={amount}
+          assetAmount={assetAmount}
           limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
           stopOrder={{
             isMarket: false,

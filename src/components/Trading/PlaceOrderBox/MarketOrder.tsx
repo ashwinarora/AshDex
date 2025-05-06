@@ -14,8 +14,8 @@ import TPSL, { TPSLType } from './components/TPSL'
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<number>(0)
+  const [usdAmount, setUsdAmount] = useState<number>(0)
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
@@ -37,20 +37,20 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
               limitPrice={allMids[selectedAsset]}
               isBuy={isBuy}
             />
           ) : (
             <AmountInput
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
               limitPrice={allMids[selectedAsset]}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
@@ -85,7 +85,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isBuy={isBuy}
           selectedAsset={selectedAsset}
           limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
-          amount={amount}
+          assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}
           isPostOnly={isPostOnly}
