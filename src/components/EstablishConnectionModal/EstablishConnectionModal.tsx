@@ -59,7 +59,7 @@ const EstablishConnectionModal = () => {
                 signature: splitSignature(sign)
               }
               const res = await hyperliquidAxios.post('/exchange', body)
-              if(res.data.status === "err") {
+              if (res.data.status === 'err') {
                 toast.update(toastId, {
                   render: '❌' + res.data.response,
                   type: 'error',

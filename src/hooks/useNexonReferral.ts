@@ -1,10 +1,10 @@
-import { useHyperLiquid } from "@/context/HyperLiquid"
-import { ReferralData } from "@/utils/hyperliquid/hyperLiquidTypes"
-import { useQuery } from "@tanstack/react-query"
-import { useEffect } from "react"
-import { useAccount } from "wagmi"
-import { NEXON_REFERRAL_CODE } from "@/utils/constants"
-import { useAgentApproval } from "@/context/EstablishConnection"
+import { useHyperLiquid } from '@/context/HyperLiquid'
+import { ReferralData } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { useQuery } from '@tanstack/react-query'
+import { useEffect } from 'react'
+import { useAccount } from 'wagmi'
+import { NEXON_REFERRAL_CODE } from '@/utils/constants'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 export const useNexonReferral = () => {
   const { hyperliquidAxios, clearingHouseState, sdk } = useHyperLiquid()
