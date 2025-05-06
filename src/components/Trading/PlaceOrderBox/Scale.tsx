@@ -143,9 +143,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="border-b border-white/10">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      </div>
+      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="flex flex-col w-full rounded-md shadow-md">
           <div className="space-y-2">
@@ -332,7 +330,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         </div>
       </div>
 
-      <div className="p-4 pb-0 border-t border-white/10">
+      <div className="p-4 pb-4 border-t border-white/10">
         {!isAgentApproved || currentFeeApproval === 0 ? (
           <button
             type="button"

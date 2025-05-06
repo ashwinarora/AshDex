@@ -35,9 +35,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="w-full h-full flex flex-col">
-      <div className="border-b border-white/10">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      </div>
+      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-2">
           <div className="px-4 border-b border-[#FFFFFF0F] mb-2">
