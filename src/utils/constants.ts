@@ -466,3 +466,5 @@ export const VAULT_ACTION_OPTIONS = [
     textColor: 'text-[#E2464A]'
   }
 ] as const
+
+export const TRADING_TABS = ['Chart', 'Order Book', 'Order'] as const

@@ -130,41 +130,41 @@ const AmountInputSpot = ({
 
   return (
     <>
-      <div className="px-4 border-b border-[#FFFFFF0F]">
-        <label className="block text-sm font-medium text-gray-300 mb-1">Amount</label>
+      <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
+        <label className="block text-xs font-medium text-gray-300 mb-0.5">Amount</label>
         <div className="relative">
           <input
             type="text"
             placeholder="0.0000"
             value={assetAmount}
             onChange={(e) => updateFromAssetAmount(e.target.value)}
-            className="w-full rounded-md p-2 focus:outline-none text-xl font-medium"
+            className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">
             {getCoinName(selectedAsset)}
           </span>
         </div>
       </div>
 
-      <div className="px-4 border-b border-[#FFFFFF0F]">
-        <label className="block text-sm font-medium text-gray-300 mb-1">TOTAL</label>
+      <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
+        <label className="block text-xs font-medium text-gray-300 mb-0.5">Total</label>
         <div className="relative">
           <input
             type="text"
             placeholder="0.0000"
             value={usdAmount}
             onChange={(e) => updateFromUsdAmount(e.target.value)}
-            className="w-full rounded-md p-2 focus:outline-none text-xl font-medium"
+            className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-sm">
+          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">
             USD
           </span>
         </div>
       </div>
 
-      <div className="flex w-full items-end px-4 border-b border-[#FFFFFF0F] pb-4">
-        <div className="w-5/6">
-          <label className="block text-sm font-medium text-gray-400">
+      <div className="flex items-end justify-between w-full px-4 border-b mb-1 border-[#FFFFFF0F] pb-2">
+        <div className="w-[70%]">
+          <label className="block text-xs font-medium text-gray-400">
             Balance = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
           </label>
           <input
@@ -174,13 +174,13 @@ const AmountInputSpot = ({
             step={1}
             value={usdPercent}
             onChange={(e) => updateFromPercent(parseFloat(e.target.value) || 0)}
-            className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+            className="w-full cursor-pointer appearance-none h-2 rounded-lg outline-none"
             style={{
               background: `linear-gradient(to right, #702DF5 0%, #702DF5 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
             }}
           />
-          <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
-          <div className="flex justify-between text-xs text-gray-500 mt-1">
+          <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-0.5" />
+          <div className="flex justify-between text-xs text-gray-500 mt-0.5">
             <span>0%</span>
             <span>25%</span>
             <span>50%</span>
@@ -192,11 +192,11 @@ const AmountInputSpot = ({
         <div className="relative pl-4">
           <input
             type="text"
-            className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2"
+            className="w-16 h-8 rounded-md border border-white/10 bg-white/10 outline-none px-2 py-1 text-xs"
             value={usdPercent}
             onChange={(e) => updateFromPercent(parseFloat(e.target.value) || 0)}
           />
-          <span className="absolute right-2 top-2.5 text-gray-500">%</span>
+          <span className="absolute right-2 top-1.5 text-gray-500 text-xs">%</span>
         </div>
       </div>
     </>

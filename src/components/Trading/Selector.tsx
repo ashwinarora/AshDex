@@ -235,7 +235,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-lg:pb-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="flex max-xl:py-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
               <div className="flex flex-col space-y-1 overflow-hidden">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
