@@ -12,7 +12,7 @@ interface AmountInputProps {
   setAssetAmount: React.Dispatch<React.SetStateAction<number>>
   usdAmount: number
   setUsdAmount: React.Dispatch<React.SetStateAction<number>>
-  limitPrice: number
+  limitPrice: string
   isReduceOnly: boolean
   isBuy: boolean
 }
@@ -39,7 +39,7 @@ const AmountInput = ({
     if (!existingPosition) return clearingHouseState.withdrawable
     if (existingPosition.position.szi > 0 && isBuy) return 0
     if (existingPosition.position.szi < 0 && !isBuy) return 0
-    const priceQuotient = limitPrice / existingPosition.position.entryPx
+    const priceQuotient = parseFloat(limitPrice) / existingPosition.position.entryPx
     const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
     return Math.min(maxAllowedUsd, clearingHouseState.withdrawable)
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice])
@@ -48,15 +48,15 @@ const AmountInput = ({
     if (!clearingHouseState) return
     const newAmount = parseFloat(e.target.value) || 0
     setAssetAmount(newAmount)
-    setUsdAmount(limitPrice * newAmount)
-    setUsdPercent(((newAmount * limitPrice) / maxAllowedUsd) * 100)
+    setUsdAmount(parseFloat(limitPrice) * newAmount)
+    setUsdPercent(((newAmount * parseFloat(limitPrice)) / maxAllowedUsd) * 100)
   }
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newTotal = parseFloat(e.target.value) || 0
     setUsdAmount(newTotal)
-    setAssetAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+    setAssetAmount(parseFloat(limitPrice) > 0 ? newTotal / parseFloat(limitPrice) : 0)
     setUsdPercent((newTotal / maxAllowedUsd) * 100)
   }
 
@@ -64,7 +64,7 @@ const AmountInput = ({
     if (!clearingHouseState) return
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
-    setAssetAmount((newUsdPercent * maxAllowedUsd) / 100 / limitPrice)
+    setAssetAmount((newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice))
     setUsdAmount((newUsdPercent * maxAllowedUsd) / 100)
   }
 

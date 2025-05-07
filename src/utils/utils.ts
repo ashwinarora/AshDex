@@ -1,6 +1,6 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
 import { MetaData } from './hyperliquid/hyperLiquidTypes'
-import { MAX_DECIMALS_PERP, TOOLTIP_CONTENTS } from './constants'
+import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, TOOLTIP_CONTENTS } from './constants'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -82,11 +82,22 @@ export const roundToSignificantFigures = (num: number, sigFigs: number = 5): num
   return Math.round(num * factor) / factor
 }
 
-export const formatPrice = (price: number, szDecimals: number): string => {
-  const sigPrice = roundToSignificantFigures(price)
-  const decimals = MAX_DECIMALS_PERP - szDecimals
-  const formattedPrice = sigPrice.toFixed(decimals)
-  return parseFloat(formattedPrice).toString()
+export const formatPrice = (price: number, szDecimals: number, isSpot: boolean = false): number => {
+  // Integer prices are always allowed regardless of number of significant figures
+  if (Number.isInteger(price)) {
+    return price;
+  }
+  
+  // For non-integer prices, enforce 5 significant figures limit
+  const sigFigsPrice = roundToSignificantFigures(price, 5);
+  
+  // Apply decimal places restriction: MAX_DECIMALS - szDecimals
+  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP;
+  const allowedDecimals = maxDecimals - szDecimals;
+  
+  // Format to the allowed number of decimal places
+  const formattedPrice = parseFloat(sigFigsPrice.toFixed(allowedDecimals));
+  return formattedPrice;
 }
 
 export const getTooltipContent = (key: string): string => {

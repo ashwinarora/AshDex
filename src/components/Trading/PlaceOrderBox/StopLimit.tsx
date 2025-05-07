@@ -8,7 +8,7 @@ import CheckBox from '@/components/common/CheckBox'
 
 const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
-  const [limitPrice, setLimitPrice] = useState(0)
+  const [limitPrice, setLimitPrice] = useState('')
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
   const [assetAmount, setAssetAmount] = useState<number>(0)
@@ -17,9 +17,10 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLimitPrice = parseFloat(e.target.value) || 0
-    setLimitPrice(newLimitPrice)
-    setUsdAmount(newLimitPrice * assetAmount)
+    const input = e.target.value;
+    setLimitPrice(input);
+    const numValue = parseFloat(input) || 0;
+    setUsdAmount(numValue * assetAmount);
   }
 
   return (

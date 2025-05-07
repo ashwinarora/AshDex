@@ -39,7 +39,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
             setAssetAmount={setAssetAmount}
             usdAmount={usdAmount}
             setUsdAmount={setUsdAmount}
-            limitPrice={allMids[selectedAsset]}
+            limitPrice={allMids[selectedAsset].toString()}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
           />
@@ -64,7 +64,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           isReduceOnly={isReduceOnly}
           leverage={leverage}
           assetAmount={assetAmount}
-          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
+          limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',

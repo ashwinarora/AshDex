@@ -195,6 +195,13 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       sdk.subscriptions.unsubscribeFromWebData2()
     }
   }, [sdk, address])
+
+  useEffect(() => {
+    console.log('spotMeta:', spotMeta)
+    console.log('spotAssetContext:', spotAssetContext)
+  }, [spotMeta, spotAssetContext])
+  
+
   return (
     <HyperLiquidContext.Provider
       value={{

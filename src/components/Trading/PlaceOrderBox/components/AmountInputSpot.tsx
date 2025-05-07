@@ -11,7 +11,7 @@ interface AmountInputSpotProps {
   setAssetAmount: React.Dispatch<React.SetStateAction<number>>
   usdAmount: number
   setUsdAmount: React.Dispatch<React.SetStateAction<number>>
-  limitPrice: number
+  limitPrice: string
   isBuy: boolean
 }
 
@@ -38,14 +38,14 @@ const AmountInputSpot = ({
 
   const updateFromAssetAmount = (newAmount: number) => {
     setAssetAmount(newAmount)
-    const newTotal = newAmount * limitPrice
+    const newTotal = newAmount * parseFloat(limitPrice)
     setUsdAmount(newTotal)
     setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
   }
 
   const updateFromUsdAmount = (newTotal: number) => {
     setUsdAmount(newTotal)
-    const newAmount = limitPrice > 0 ? newTotal / limitPrice : 0
+    const newAmount = parseFloat(limitPrice) > 0 ? newTotal / parseFloat(limitPrice) : 0
     setAssetAmount(newAmount)
     setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
   }
@@ -55,11 +55,11 @@ const AmountInputSpot = ({
     if (isBuy) {
       const newTotal = (percent / 100) * maxAllowed
       setUsdAmount(newTotal)
-      setAssetAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+      setAssetAmount(parseFloat(limitPrice) > 0 ? newTotal / parseFloat(limitPrice) : 0)
     } else {
       const newAmount = (percent / 100) * maxAllowed
       setAssetAmount(newAmount)
-      setUsdAmount(newAmount * limitPrice)
+      setUsdAmount(newAmount * parseFloat(limitPrice))
     }
   }
 

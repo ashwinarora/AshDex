@@ -25,7 +25,7 @@ type OrderButtonProps = {
   selectedAsset: string
   isBuy: boolean
   assetAmount: number
-  limitPrice: number
+  limitPrice: string
   leverage: number
   isCross: boolean
   isPostOnly: boolean
@@ -61,7 +61,7 @@ const placePerpOrder = async ({
   isPostOnly: boolean
   isBuy: boolean
   assetAmount: number
-  limitPrice: number
+  limitPrice: string
   isReduceOnly: boolean
   agentWallet: PrivateKeyAccount
   isTestnet: boolean
@@ -80,13 +80,13 @@ const placePerpOrder = async ({
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
-      price: formatPrice(limitPrice, szDecimals),
+      price: limitPrice,
       size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
         trigger: {
           isMarket: isMarket,
-          triggerPx: formatPrice(triggerPx, szDecimals),
+          triggerPx: formatPrice(triggerPx, szDecimals).toString(),
           tpsl: tpsl
         }
       }
@@ -95,7 +95,7 @@ const placePerpOrder = async ({
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
-      price: formatPrice(limitPrice, szDecimals),
+      price: limitPrice,
       size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
@@ -110,13 +110,13 @@ const placePerpOrder = async ({
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.stopLoss, szDecimals),
+        price: formatPrice(tpsl.stopLoss, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.stopLoss, szDecimals),
+            triggerPx: formatPrice(tpsl.stopLoss, szDecimals).toString(),
             tpsl: 'sl'
           }
         }
@@ -126,13 +126,13 @@ const placePerpOrder = async ({
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.takeProfit, szDecimals),
+        price: formatPrice(tpsl.takeProfit, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.takeProfit, szDecimals),
+            triggerPx: formatPrice(tpsl.takeProfit, szDecimals).toString(),
             tpsl: 'tp'
           }
         }
@@ -202,13 +202,12 @@ const placeSpotOrder = async ({
   hyperliquidAxios: AxiosInstance
   selectedAsset: string
   isBuy: boolean
-  limitPrice: number
+  limitPrice: string
   assetAmount: number
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
-  const assetIndex =
-    spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
+  const assetIndex = spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
   const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
   if (!tokenData) return
   const toastId = toast.loading('⏳ Loading…')
@@ -219,8 +218,8 @@ const placeSpotOrder = async ({
         {
           assetIndex: assetIndex,
           isBuy: isBuy,
-          price: formatPrice(limitPrice, 4),
-          size: formatPrice(assetAmount, tokenData.szDecimals),
+          price: limitPrice,
+          size: formatPrice(assetAmount, tokenData.szDecimals).toString(),
           reduceOnly: false,
           orderType: {
             limit: {
