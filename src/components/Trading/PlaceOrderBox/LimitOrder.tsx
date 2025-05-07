@@ -33,84 +33,84 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { universe, spotMeta } = useHyperLiquid()
 
   const szDecimals = useMemo(() => {
-    if(isSpot) {
+    if (isSpot) {
       const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
       return tokenData?.szDecimals || 0
     } else {
-      const assetIndex = getUniverseIndex(universe, selectedAsset);
-      if(assetIndex === -1) return 0
+      const assetIndex = getUniverseIndex(universe, selectedAsset)
+      if (assetIndex === -1) return 0
       return universe[assetIndex].szDecimals || 0
     }
   }, [universe, selectedAsset, isSpot, spotMeta])
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    
+    const input = e.target.value
+
     // Allow empty input or just a decimal point
     if (!input || input === '.') {
-      setLimitPrice(input);
-      setUsdAmount(0);
-      return;
+      setLimitPrice(input)
+      setUsdAmount(0)
+      return
     }
-    
+
     // Only allow numeric input with at most one decimal point
     if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
-      return;
+      return
     }
-    
-    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP;
-    const allowedDecimals = maxDecimals - szDecimals;
-    
+
+    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+    const allowedDecimals = maxDecimals - szDecimals
+
     // Check if input has more decimal places than allowed
-    const parts = input.split('.');
+    const parts = input.split('.')
     if (parts.length > 1 && parts[1].length > allowedDecimals) {
-      return;
+      return
     }
-    
+
     // Integer values are always allowed
     if (!input.includes('.')) {
-      setLimitPrice(input);
-      const numValue = parseFloat(input);
-      setUsdAmount(numValue * assetAmount);
-      return;
+      setLimitPrice(input)
+      const numValue = parseFloat(input)
+      setUsdAmount(numValue * assetAmount)
+      return
     }
-    
+
     // For non-integer values, enforce 5 significant digits
-    const numValue = parseFloat(input);
+    const numValue = parseFloat(input)
     if (!isNaN(numValue)) {
       // Check if input exceeds 5 significant figures
-      const sigFigsFormatted = roundToSignificantFigures(numValue, MAX_SIG_FIGS);
-      
+      const sigFigsFormatted = roundToSignificantFigures(numValue, MAX_SIG_FIGS)
+
       // If the input exceeds 5 significant figures, don't update
       if (sigFigsFormatted.toString() !== numValue.toString()) {
-        return;
+        return
       }
-      
+
       // Update price
-      setLimitPrice(input);
-      setUsdAmount(numValue * assetAmount);
+      setLimitPrice(input)
+      setUsdAmount(numValue * assetAmount)
     }
-  };
-  
+  }
+
   const handleBlur = () => {
     // When user leaves the field, format the price properly
     if (!limitPrice || limitPrice === '.') {
-      setLimitPrice('');
-      return;
+      setLimitPrice('')
+      return
     }
-    
-    const numValue = parseFloat(limitPrice);
-    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP;
-    const allowedDecimals = maxDecimals - szDecimals;
-    
+
+    const numValue = parseFloat(limitPrice)
+    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+    const allowedDecimals = maxDecimals - szDecimals
+
     // For integer values, keep them as is
     if (Number.isInteger(numValue)) {
-      setLimitPrice(numValue.toString());
+      setLimitPrice(numValue.toString())
     } else {
       // For decimal values, format with proper decimal places
-      setLimitPrice(numValue.toFixed(allowedDecimals));
+      setLimitPrice(numValue.toFixed(allowedDecimals))
     }
-  };
+  }
 
   return (
     <div className="w-full h-full flex flex-col">

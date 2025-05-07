@@ -17,10 +17,10 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value;
-    setLimitPrice(input);
-    const numValue = parseFloat(input) || 0;
-    setUsdAmount(numValue * assetAmount);
+    const input = e.target.value
+    setLimitPrice(input)
+    const numValue = parseFloat(input) || 0
+    setUsdAmount(numValue * assetAmount)
   }
 
   return (

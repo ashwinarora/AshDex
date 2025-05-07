@@ -207,7 +207,8 @@ const placeSpotOrder = async ({
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
-  const assetIndex = spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
+  const assetIndex =
+    spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
   const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
   if (!tokenData) return
   const toastId = toast.loading('⏳ Loading…')

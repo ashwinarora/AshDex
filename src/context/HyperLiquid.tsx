@@ -200,7 +200,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
     console.log('spotMeta:', spotMeta)
     console.log('spotAssetContext:', spotAssetContext)
   }, [spotMeta, spotAssetContext])
-  
 
   return (
     <HyperLiquidContext.Provider

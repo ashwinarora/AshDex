@@ -85,19 +85,19 @@ export const roundToSignificantFigures = (num: number, sigFigs: number = 5): num
 export const formatPrice = (price: number, szDecimals: number, isSpot: boolean = false): number => {
   // Integer prices are always allowed regardless of number of significant figures
   if (Number.isInteger(price)) {
-    return price;
+    return price
   }
-  
+
   // For non-integer prices, enforce 5 significant figures limit
-  const sigFigsPrice = roundToSignificantFigures(price, 5);
-  
+  const sigFigsPrice = roundToSignificantFigures(price, 5)
+
   // Apply decimal places restriction: MAX_DECIMALS - szDecimals
-  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP;
-  const allowedDecimals = maxDecimals - szDecimals;
-  
+  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+  const allowedDecimals = maxDecimals - szDecimals
+
   // Format to the allowed number of decimal places
-  const formattedPrice = parseFloat(sigFigsPrice.toFixed(allowedDecimals));
-  return formattedPrice;
+  const formattedPrice = parseFloat(sigFigsPrice.toFixed(allowedDecimals))
+  return formattedPrice
 }
 
 export const getTooltipContent = (key: string): string => {
