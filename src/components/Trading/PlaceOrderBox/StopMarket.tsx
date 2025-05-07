@@ -12,8 +12,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
-  const [assetAmount, setAssetAmount] = useState<number>(0)
-  const [usdAmount, setUsdAmount] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
 

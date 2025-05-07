@@ -14,8 +14,8 @@ import TPSL, { TPSLType } from './components/TPSL'
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
-  const [assetAmount, setAssetAmount] = useState<number>(0)
-  const [usdAmount, setUsdAmount] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
@@ -41,7 +41,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               setAssetAmount={setAssetAmount}
               usdAmount={usdAmount}
               setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset]}
+              limitPrice={allMids[selectedAsset].toString()}
               isBuy={isBuy}
             />
           ) : (
@@ -51,7 +51,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               setAssetAmount={setAssetAmount}
               usdAmount={usdAmount}
               setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset]}
+              limitPrice={allMids[selectedAsset].toString()}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
             />
@@ -84,7 +84,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
-          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
+          limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
           assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}

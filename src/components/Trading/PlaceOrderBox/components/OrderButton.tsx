@@ -24,7 +24,7 @@ type StopOrder = {
 type OrderButtonProps = {
   selectedAsset: string
   isBuy: boolean
-  assetAmount: number
+  assetAmount: string
   limitPrice: string
   leverage: number
   isCross: boolean
@@ -60,7 +60,7 @@ const placePerpOrder = async ({
   universe: MetaData[]
   isPostOnly: boolean
   isBuy: boolean
-  assetAmount: number
+  assetAmount: string
   limitPrice: string
   isReduceOnly: boolean
   agentWallet: PrivateKeyAccount
@@ -74,7 +74,7 @@ const placePerpOrder = async ({
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
-  const formattedSize = parseFloat(assetAmount.toFixed(szDecimals)).toString()
+  const formattedSize = assetAmount.replace(/\.?0+$/, '')
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
@@ -203,7 +203,7 @@ const placeSpotOrder = async ({
   selectedAsset: string
   isBuy: boolean
   limitPrice: string
-  assetAmount: number
+  assetAmount: string
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
@@ -220,7 +220,7 @@ const placeSpotOrder = async ({
           assetIndex: assetIndex,
           isBuy: isBuy,
           price: limitPrice,
-          size: formatPrice(assetAmount, tokenData.szDecimals).toString(),
+          size: assetAmount.replace(/\.?0+$/, ''),
           reduceOnly: false,
           orderType: {
             limit: {

@@ -18,8 +18,8 @@ import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/utils/cons
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
-  const [assetAmount, setAssetAmount] = useState<number>(0)
-  const [usdAmount, setUsdAmount] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
@@ -49,7 +49,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     // Allow empty input or just a decimal point
     if (!input || input === '.') {
       setLimitPrice(input)
-      setUsdAmount(0)
+      setUsdAmount('0')
       return
     }
 
@@ -71,7 +71,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     if (!input.includes('.')) {
       setLimitPrice(input)
       const numValue = parseFloat(input)
-      setUsdAmount(numValue * assetAmount)
+      setUsdAmount((numValue * parseFloat(assetAmount)).toString())
       return
     }
 
@@ -88,7 +88,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
       // Update price
       setLimitPrice(input)
-      setUsdAmount(numValue * assetAmount)
+      setUsdAmount((numValue * parseFloat(assetAmount)).toString())
     }
   }
 
@@ -105,10 +105,10 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
     // For integer values, keep them as is
     if (Number.isInteger(numValue)) {
-      setLimitPrice(numValue.toString())
+      setLimitPrice(numValue.toString().replace(/\.?0+$/, ''))
     } else {
       // For decimal values, format with proper decimal places
-      setLimitPrice(numValue.toFixed(allowedDecimals))
+      setLimitPrice(numValue.toFixed(allowedDecimals).replace(/\.?0+$/, ''))
     }
   }
 

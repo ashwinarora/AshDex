@@ -1,17 +1,17 @@
 'use client'
 
 import { useHyperLiquid } from '@/context/HyperLiquid'
-import { getCoinName } from '@/utils/utils'
+import { getCoinName, getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
 
 interface AmountInputProps {
   selectedAsset: string
-  assetAmount: number
-  setAssetAmount: React.Dispatch<React.SetStateAction<number>>
-  usdAmount: number
-  setUsdAmount: React.Dispatch<React.SetStateAction<number>>
+  assetAmount: string
+  setAssetAmount: React.Dispatch<React.SetStateAction<string>>
+  usdAmount: string
+  setUsdAmount: React.Dispatch<React.SetStateAction<string>>
   limitPrice: string
   isReduceOnly: boolean
   isBuy: boolean
@@ -27,8 +27,15 @@ const AmountInput = ({
   isReduceOnly,
   isBuy
 }: AmountInputProps) => {
-  const { clearingHouseState } = useHyperLiquid()
   const [usdPercent, setUsdPercent] = useState(0)
+
+  const { universe, clearingHouseState } = useHyperLiquid()
+
+  const szDecimals = useMemo(() => {
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    if (assetIndex === -1) return 0
+    return universe[assetIndex].szDecimals || 0
+  }, [universe, selectedAsset])
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
@@ -46,26 +53,71 @@ const AmountInput = ({
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
-    const newAmount = parseFloat(e.target.value) || 0
-    setAssetAmount(newAmount)
-    setUsdAmount(parseFloat(limitPrice) * newAmount)
-    setUsdPercent(((newAmount * parseFloat(limitPrice)) / maxAllowedUsd) * 100)
+    const input = e.target.value
+
+    // Allow empty input or just a decimal point
+    if (!input || input === '.') {
+      setAssetAmount(input)
+      setUsdAmount('')
+      setUsdPercent(0)
+      return
+    }
+
+    // Allow numeric input with at most one decimal point
+    if (!/^-?\d*\.?\d*$/.test(input)) {
+      return
+    }
+
+    // Check if input has more decimal places than allowed
+    const parts = input.split('.')
+    if (parts.length > 1 && parts[1].length > szDecimals) {
+      return
+    }
+
+    setAssetAmount(input)
+    const numValue = parseFloat(input)
+    if (!isNaN(numValue)) {
+      setUsdAmount((numValue * parseFloat(limitPrice)).toString())
+      setUsdPercent(((numValue * parseFloat(limitPrice)) / maxAllowedUsd) * 100)
+    }
   }
 
   const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
-    const newTotal = parseFloat(e.target.value) || 0
-    setUsdAmount(newTotal)
-    setAssetAmount(parseFloat(limitPrice) > 0 ? newTotal / parseFloat(limitPrice) : 0)
-    setUsdPercent((newTotal / maxAllowedUsd) * 100)
+    const input = e.target.value
+
+    // Allow empty input or just a decimal point
+    if (!input || input === '.') {
+      setUsdAmount(input)
+      setAssetAmount('')
+      setUsdPercent(0)
+      return
+    }
+
+    // Only allow numeric input with at most one decimal point
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      return
+    }
+
+    setUsdAmount(input)
+    if (parseFloat(limitPrice) > 0) {
+      const newAmount = parseFloat(input) / parseFloat(limitPrice)
+      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      setAssetAmount(formattedAmount)
+    } else {
+      setAssetAmount('')
+    }
+    setUsdPercent((parseFloat(input) / maxAllowedUsd) * 100)
   }
 
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
-    setAssetAmount((newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice))
-    setUsdAmount((newUsdPercent * maxAllowedUsd) / 100)
+    const rawAmount = (newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice)
+    const roundedAmount = rawAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+    setAssetAmount(roundedAmount)
+    setUsdAmount(((newUsdPercent * maxAllowedUsd) / 100).toString())
   }
 
   return (
