@@ -28,7 +28,6 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-2">
-
           <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Stop Price</label>
             <input

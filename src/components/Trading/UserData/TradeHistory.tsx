@@ -64,7 +64,7 @@ const columns = [
   columnHelper.accessor('time', {
     id: 'time',
     header: () => <HeaderWithIcons label="Time" />,
-    cell: (info) => new Date(info.getValue()).toLocaleString(),
+    cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
     enableSorting: true,
     sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time,
     meta: { label: 'Time' }

@@ -33,7 +33,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-1">
-
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}

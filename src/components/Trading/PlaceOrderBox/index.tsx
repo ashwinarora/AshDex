@@ -80,6 +80,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <CustomSelector
               options={availableOptions}
               selectedValue={activeTab}
+              customLabel="Advanced"
               onChange={(value) => {
                 setActiveTab(value as OrderTab)
               }}
