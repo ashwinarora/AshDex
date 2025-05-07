@@ -39,7 +39,6 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-1">
-          <MarginMode isCross={isCross} setIsCross={setIsCross} />
           <div className="px-4 border-b border-[#FFFFFF0F] mb-1">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Limit price</label>
             <div className="relative">
@@ -84,11 +83,14 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             />
           )}
           {!isSpot && (
-            <LeverageMargin
-              selectedAsset={selectedAsset}
-              leverage={leverage}
-              setLeverage={setLeverage}
-            />
+            <>
+              <LeverageMargin
+                selectedAsset={selectedAsset}
+                leverage={leverage}
+                setLeverage={setLeverage}
+              />
+              <MarginMode isCross={isCross} setIsCross={setIsCross} />
+            </>
           )}
           <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
             {!isSpot && (

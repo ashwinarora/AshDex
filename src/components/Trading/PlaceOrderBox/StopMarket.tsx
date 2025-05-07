@@ -23,7 +23,6 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-2">
-          <MarginMode isCross={isCross} setIsCross={setIsCross} />
 
           <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Stop Price</label>
@@ -49,6 +48,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
             leverage={leverage}
             setLeverage={setLeverage}
           />
+          <MarginMode isCross={isCross} setIsCross={setIsCross} />
+
           <div className="px-4 pb-1 text-xs text-gray-400">
             <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
           </div>
