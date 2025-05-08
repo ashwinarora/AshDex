@@ -6,6 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
+  output   = "../src/lib/prisma"
 }
 
 datasource db {
@@ -23,3 +24,4 @@ model User {
   updated_at            DateTime @updatedAt
   user_preferences      Json?
 }
+

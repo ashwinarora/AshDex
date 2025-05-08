@@ -1,24 +1,6 @@
-import { Prisma } from '@prisma/client'
-import { prisma } from '@/lib/prisma'
-
-interface UserPreferences {
-  popup_position?: number
-  sound_enabled?: boolean
-  order_updates?: boolean
-  liquidation_alerts?: boolean
-  new_feature_updates?: boolean
-  new_token_listings?: boolean
-  vaults_distribution_updates?: boolean
-  rewards_referrals_updates?: boolean
-  security_alerts?: boolean
-}
-
-interface UserData {
-  username?: string
-  avatar_url?: string
-  wallet_id: string
-  user_preferences?: UserPreferences
-}
+import prisma from '@/lib/prisma'
+import { User } from '@/lib/prisma/client'
+import { Prisma } from '@/lib/prisma/client'
 
 class UserManager {
   private static instance: UserManager
@@ -40,7 +22,7 @@ class UserManager {
     })
   }
 
-  async createOrUpdateUser(userData: UserData) {
+  async createOrUpdateUser(userData: User) {
     const existingUser = await this.findUserByWalletId(userData.wallet_id)
 
     if (existingUser) {
@@ -51,7 +33,7 @@ class UserManager {
         },
         data: {
           username: userData.username,
-          avatar_url: userData.avatar_url ? parseInt(userData.avatar_url) : undefined,
+          avatar_url: userData.avatar_url ? userData.avatar_url : undefined,
           user_preferences: userData.user_preferences as Prisma.InputJsonValue
         }
       })
@@ -63,21 +45,21 @@ class UserManager {
         data: {
           wallet_id: userData.wallet_id,
           username: userData.username || '',
-          avatar_url: userData.avatar_url ? parseInt(userData.avatar_url) : null,
+          avatar_url: userData.avatar_url ? userData.avatar_url : null,
           user_preferences: userData.user_preferences as Prisma.InputJsonValue
         }
       })
     }
   }
 
-  async updateUser(walletId: string, updateData: Partial<UserData>) {
+  async updateUser(walletId: string, updateData: Partial<User>) {
     await prisma.user.updateMany({
       where: {
         wallet_id: walletId
       },
       data: {
         ...(updateData.username !== undefined && { username: updateData.username }),
-        ...(updateData.avatar_url !== undefined && { avatar_url: parseInt(updateData.avatar_url) }),
+        ...(updateData.avatar_url !== undefined && { avatar_url: updateData.avatar_url }),
         ...(updateData.user_preferences !== undefined && {
           user_preferences: updateData.user_preferences as Prisma.InputJsonValue
         })
