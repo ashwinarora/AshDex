@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import userManager from '@/services/UserManager'
 
-
 // GET handler to retrieve users
 export async function GET(request: NextRequest) {
   try {
