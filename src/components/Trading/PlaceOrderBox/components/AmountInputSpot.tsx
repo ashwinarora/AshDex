@@ -7,11 +7,11 @@ import Slider1 from '@/assets/images/slider_value.svg'
 
 interface AmountInputSpotProps {
   selectedAsset: string
-  amount: number
-  setAmount: React.Dispatch<React.SetStateAction<number>>
-  total: number
-  setTotal: React.Dispatch<React.SetStateAction<number>>
-  limitPrice: number
+  assetAmount: string
+  setAssetAmount: React.Dispatch<React.SetStateAction<string>>
+  usdAmount: string
+  setUsdAmount: React.Dispatch<React.SetStateAction<string>>
+  limitPrice: string
   isBuy: boolean
 }
 
@@ -19,15 +19,20 @@ const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('
 
 const AmountInputSpot = ({
   selectedAsset,
-  amount,
-  setAmount,
-  total,
-  setTotal,
+  assetAmount,
+  setAssetAmount,
+  usdAmount,
+  setUsdAmount,
   limitPrice,
   isBuy
 }: AmountInputSpotProps) => {
-  const { spotState } = useHyperLiquid()
+  const { spotState, spotMeta } = useHyperLiquid()
   const [usdPercent, setUsdPercent] = useState(0)
+
+  const szDecimals = useMemo(() => {
+    const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+    return tokenData?.szDecimals || 0
+  }, [selectedAsset, spotMeta])
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
@@ -36,30 +41,78 @@ const AmountInputSpot = ({
       : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
 
-  const updateFromAmount = (newAmount: number) => {
-    setAmount(newAmount)
-    const newTotal = newAmount * limitPrice
-    setTotal(newTotal)
-    setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
+  const updateFromAssetAmount = (input: string) => {
+    // Allow empty input or just a decimal point
+    if (!input || input === '.') {
+      setAssetAmount(input)
+      setUsdAmount('')
+      setUsdPercent(0)
+      return
+    }
+
+    // Only allow numeric input with at most one decimal point
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      return
+    }
+
+    // Check if input has more decimal places than allowed
+    const parts = input.split('.')
+    if (parts.length > 1 && parts[1].length > szDecimals) {
+      return
+    }
+
+    setAssetAmount(input)
+    const numValue = parseFloat(input)
+    if (!isNaN(numValue)) {
+      const newTotal = numValue * parseFloat(limitPrice)
+      setUsdAmount(newTotal.toString())
+      setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
+    }
   }
 
-  const updateFromTotal = (newTotal: number) => {
-    setTotal(newTotal)
-    const newAmount = limitPrice > 0 ? newTotal / limitPrice : 0
-    setAmount(newAmount)
-    setUsdPercent(((isBuy ? newTotal : newAmount) / maxAllowed) * 100)
+  const updateFromUsdAmount = (input: string) => {
+    // Allow empty input or just a decimal point
+    if (!input || input === '.') {
+      setUsdAmount(input)
+      setAssetAmount('')
+      setUsdPercent(0)
+      return
+    }
+
+    // Only allow numeric input with at most one decimal point
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      return
+    }
+
+    setUsdAmount(input)
+    if (parseFloat(limitPrice) > 0) {
+      const newAmount = parseFloat(input) / parseFloat(limitPrice)
+      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      setAssetAmount(formattedAmount)
+      setUsdPercent(((isBuy ? parseFloat(input) : newAmount) / maxAllowed) * 100)
+    } else {
+      setAssetAmount('')
+      setUsdPercent(0)
+    }
   }
 
   const updateFromPercent = (percent: number) => {
     setUsdPercent(percent)
     if (isBuy) {
       const newTotal = (percent / 100) * maxAllowed
-      setTotal(newTotal)
-      setAmount(limitPrice > 0 ? newTotal / limitPrice : 0)
+      setUsdAmount(newTotal.toString())
+      if (parseFloat(limitPrice) > 0) {
+        const newAmount = newTotal / parseFloat(limitPrice)
+        const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+        setAssetAmount(formattedAmount)
+      } else {
+        setAssetAmount('')
+      }
     } else {
       const newAmount = (percent / 100) * maxAllowed
-      setAmount(newAmount)
-      setTotal(newAmount * limitPrice)
+      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      setAssetAmount(formattedAmount)
+      setUsdAmount((newAmount * parseFloat(limitPrice)).toString())
     }
   }
 
@@ -71,8 +124,8 @@ const AmountInputSpot = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={amount}
-            onChange={(e) => updateFromAmount(parseFloat(e.target.value) || 0)}
+            value={assetAmount}
+            onChange={(e) => updateFromAssetAmount(e.target.value)}
             className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">
@@ -87,8 +140,8 @@ const AmountInputSpot = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={total}
-            onChange={(e) => updateFromTotal(parseFloat(e.target.value) || 0)}
+            value={usdAmount}
+            onChange={(e) => updateFromUsdAmount(e.target.value)}
             className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">

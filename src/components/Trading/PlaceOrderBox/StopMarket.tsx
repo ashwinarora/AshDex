@@ -13,8 +13,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
 
@@ -23,7 +23,6 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-2">
-
           <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Stop Price</label>
             <input
@@ -35,11 +34,11 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <AmountInput
             selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
-            limitPrice={allMids[selectedAsset]}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
+            limitPrice={allMids[selectedAsset].toString()}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
           />
@@ -63,8 +62,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           leverage={leverage}
-          amount={amount}
-          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
+          assetAmount={assetAmount}
+          limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',

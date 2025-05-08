@@ -24,8 +24,8 @@ type StopOrder = {
 type OrderButtonProps = {
   selectedAsset: string
   isBuy: boolean
-  amount: number
-  limitPrice: number
+  assetAmount: string
+  limitPrice: string
   leverage: number
   isCross: boolean
   isPostOnly: boolean
@@ -43,7 +43,7 @@ const placePerpOrder = async ({
   isPostOnly,
   stopOrder,
   isBuy,
-  amount,
+  assetAmount,
   limitPrice,
   isReduceOnly,
   tpsl,
@@ -60,8 +60,8 @@ const placePerpOrder = async ({
   universe: MetaData[]
   isPostOnly: boolean
   isBuy: boolean
-  amount: number
-  limitPrice: number
+  assetAmount: string
+  limitPrice: string
   isReduceOnly: boolean
   agentWallet: PrivateKeyAccount
   isTestnet: boolean
@@ -74,19 +74,19 @@ const placePerpOrder = async ({
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
-  const formattedSize = parseFloat(amount.toFixed(szDecimals)).toString()
+  const formattedSize = assetAmount.replace(/\.?0+$/, '')
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
-      price: formatPrice(limitPrice, szDecimals),
+      price: limitPrice,
       size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
         trigger: {
           isMarket: isMarket,
-          triggerPx: formatPrice(triggerPx, szDecimals),
+          triggerPx: formatPrice(triggerPx, szDecimals).toString(),
           tpsl: tpsl
         }
       }
@@ -95,7 +95,7 @@ const placePerpOrder = async ({
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
-      price: formatPrice(limitPrice, szDecimals),
+      price: limitPrice,
       size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {
@@ -110,13 +110,13 @@ const placePerpOrder = async ({
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.stopLoss, szDecimals),
+        price: formatPrice(tpsl.stopLoss, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.stopLoss, szDecimals),
+            triggerPx: formatPrice(tpsl.stopLoss, szDecimals).toString(),
             tpsl: 'sl'
           }
         }
@@ -126,13 +126,13 @@ const placePerpOrder = async ({
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.takeProfit, szDecimals),
+        price: formatPrice(tpsl.takeProfit, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.takeProfit, szDecimals),
+            triggerPx: formatPrice(tpsl.takeProfit, szDecimals).toString(),
             tpsl: 'tp'
           }
         }
@@ -192,7 +192,7 @@ const placeSpotOrder = async ({
   selectedAsset,
   isBuy,
   limitPrice,
-  amount,
+  assetAmount,
   isPostOnly
 }: {
   spotMeta: SpotMeta
@@ -202,8 +202,8 @@ const placeSpotOrder = async ({
   hyperliquidAxios: AxiosInstance
   selectedAsset: string
   isBuy: boolean
-  limitPrice: number
-  amount: number
+  limitPrice: string
+  assetAmount: string
   isPostOnly: boolean
 }) => {
   if (!spotMeta.tokens) return
@@ -219,8 +219,8 @@ const placeSpotOrder = async ({
         {
           assetIndex: assetIndex,
           isBuy: isBuy,
-          price: formatPrice(limitPrice, 4),
-          size: formatPrice(amount, tokenData.szDecimals),
+          price: limitPrice,
+          size: assetAmount.replace(/\.?0+$/, ''),
           reduceOnly: false,
           orderType: {
             limit: {
@@ -261,7 +261,7 @@ const placeSpotOrder = async ({
 const OrderButton = ({
   selectedAsset,
   isBuy,
-  amount,
+  assetAmount,
   limitPrice,
   leverage,
   isCross,
@@ -324,7 +324,7 @@ const OrderButton = ({
             selectedAsset,
             isBuy,
             limitPrice,
-            amount,
+            assetAmount,
             isPostOnly
           })
         } else {
@@ -337,7 +337,7 @@ const OrderButton = ({
             isPostOnly,
             stopOrder,
             isBuy,
-            amount,
+            assetAmount,
             limitPrice,
             isReduceOnly,
             tpsl,

@@ -9,18 +9,19 @@ import MarginMode from './components/MarginMode'
 
 const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
-  const [limitPrice, setLimitPrice] = useState(0)
+  const [limitPrice, setLimitPrice] = useState('')
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newLimitPrice = parseFloat(e.target.value) || 0
-    setLimitPrice(newLimitPrice)
-    setTotal(newLimitPrice * amount)
+    const input = e.target.value
+    setLimitPrice(input)
+    const numValue = parseFloat(input) || 0
+    setUsdAmount((numValue * parseFloat(assetAmount)).toString())
   }
 
   return (
@@ -28,7 +29,6 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-2">
-
           <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Stop Price</label>
             <input
@@ -53,10 +53,10 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <AmountInput
             selectedAsset={selectedAsset}
-            amount={amount}
-            setAmount={setAmount}
-            total={total}
-            setTotal={setTotal}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
             limitPrice={limitPrice}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
@@ -81,7 +81,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           leverage={leverage}
-          amount={amount}
+          assetAmount={assetAmount}
           limitPrice={limitPrice}
           stopOrder={{
             isMarket: false,
