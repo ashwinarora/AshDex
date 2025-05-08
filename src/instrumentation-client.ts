@@ -5,9 +5,7 @@
 import * as Sentry from '@sentry/nextjs'
 if (process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true') {
   Sentry.init({
-    dsn: 'https://26e6f006235d537c7129de65f28f5575@o4509212957933568.ingest.de.sentry.io/4509212993060945',
-
-    // Add optional integrations for additional features
+    dsn: 'https://26e6f006235d537c7129de65f28f5575@o4509212957933568.ingest.de.sentry.io/4509212993060945', // Add optional integrations for additional features
     integrations: [Sentry.replayIntegration()],
 
     // Define how likely traces are sampled. Adjust this value in production, or use tracesSampler for greater control.
@@ -22,7 +20,8 @@ if (process.env.NEXT_PUBLIC_ENABLE_SENTRY === 'true') {
     replaysOnErrorSampleRate: 1.0,
 
     // Setting this option to true will print useful information to the console while you're setting up Sentry.
-    debug: false
+    debug: false,
+    denyUrls: ['localhost', '127.0.0.1']
   })
 }
 
