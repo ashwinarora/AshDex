@@ -232,7 +232,7 @@ const OpenOrders = () => {
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
         header: () => <HeaderWithIcons label="Timestamp" />,
-        cell: (info) => new Date(info.getValue()).toLocaleString(),
+        cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
         meta: { label: 'Timestamp' }
       }),
       columnHelper.accessor('origSz', {

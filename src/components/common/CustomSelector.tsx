@@ -7,6 +7,7 @@ interface CustomSelectorProps {
   selectedValue: string
   onChange: (value: string) => void
   className?: string
+  customLabel?: string
   isPadding?: boolean
 }
 
@@ -14,6 +15,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   options,
   selectedValue,
   onChange,
+  customLabel = 'Select',
   className = '',
   isPadding
 }) => {
@@ -30,11 +32,11 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
             className="w-4 h-4"
             width={16}
             height={16}
-            alt={options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
+            alt={options?.find((opt) => opt?.value === selectedValue)?.label || customLabel}
             src={options?.find((opt) => opt?.value === selectedValue)?.flag || ''}
           />
         )}
-        {options?.find((opt) => opt?.value === selectedValue)?.label || 'Select'}
+        {options?.find((opt) => opt?.value === selectedValue)?.label || customLabel}
         <Image src={DropDown} style={{ width: 20, height: 'auto' }} className="pl-1" alt="" />
       </div>
 
