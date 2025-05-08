@@ -64,7 +64,7 @@ const AmountInput = ({
     }
 
     // Allow numeric input with at most one decimal point
-    if (!/^-?\d*\.?\d*$/.test(input)) {
+    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
       return
     }
 

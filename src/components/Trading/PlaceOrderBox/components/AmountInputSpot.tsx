@@ -61,21 +61,9 @@ const AmountInputSpot = ({
       return
     }
 
-    // For non-decimal values, keep as is
-    if (!input.includes('.')) {
-      setAssetAmount(input)
-      const numValue = parseFloat(input)
-      const newTotal = numValue * parseFloat(limitPrice)
-      setUsdAmount(newTotal.toString())
-      setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
-      return
-    }
-
-    // For decimal values, format with proper decimal places and remove trailing zeros
+    setAssetAmount(input)
     const numValue = parseFloat(input)
     if (!isNaN(numValue)) {
-      const formattedValue = numValue.toFixed(szDecimals).replace(/\.?0+$/, '')
-      setAssetAmount(formattedValue)
       const newTotal = numValue * parseFloat(limitPrice)
       setUsdAmount(newTotal.toString())
       setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
