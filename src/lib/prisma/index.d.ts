@@ -18,6 +18,16 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  * 
  */
 export type User = $Result.DefaultSelection<Prisma.$UserPayload>
+/**
+ * Model Terms
+ * 
+ */
+export type Terms = $Result.DefaultSelection<Prisma.$TermsPayload>
+/**
+ * Model UserTermsSignature
+ * 
+ */
+export type UserTermsSignature = $Result.DefaultSelection<Prisma.$UserTermsSignaturePayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -153,6 +163,26 @@ export class PrismaClient<
     * ```
     */
   get user(): Prisma.UserDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.terms`: Exposes CRUD operations for the **Terms** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Terms
+    * const terms = await prisma.terms.findMany()
+    * ```
+    */
+  get terms(): Prisma.TermsDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userTermsSignature`: Exposes CRUD operations for the **UserTermsSignature** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserTermsSignatures
+    * const userTermsSignatures = await prisma.userTermsSignature.findMany()
+    * ```
+    */
+  get userTermsSignature(): Prisma.UserTermsSignatureDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -593,7 +623,9 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    User: 'User'
+    User: 'User',
+    Terms: 'Terms',
+    UserTermsSignature: 'UserTermsSignature'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -612,7 +644,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user"
+      modelProps: "user" | "terms" | "userTermsSignature"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -687,6 +719,154 @@ export namespace Prisma {
           count: {
             args: Prisma.UserCountArgs<ExtArgs>
             result: $Utils.Optional<UserCountAggregateOutputType> | number
+          }
+        }
+      }
+      Terms: {
+        payload: Prisma.$TermsPayload<ExtArgs>
+        fields: Prisma.TermsFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.TermsFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.TermsFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          findFirst: {
+            args: Prisma.TermsFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.TermsFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          findMany: {
+            args: Prisma.TermsFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>[]
+          }
+          create: {
+            args: Prisma.TermsCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          createMany: {
+            args: Prisma.TermsCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.TermsCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>[]
+          }
+          delete: {
+            args: Prisma.TermsDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          update: {
+            args: Prisma.TermsUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          deleteMany: {
+            args: Prisma.TermsDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.TermsUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.TermsUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>[]
+          }
+          upsert: {
+            args: Prisma.TermsUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$TermsPayload>
+          }
+          aggregate: {
+            args: Prisma.TermsAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateTerms>
+          }
+          groupBy: {
+            args: Prisma.TermsGroupByArgs<ExtArgs>
+            result: $Utils.Optional<TermsGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.TermsCountArgs<ExtArgs>
+            result: $Utils.Optional<TermsCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserTermsSignature: {
+        payload: Prisma.$UserTermsSignaturePayload<ExtArgs>
+        fields: Prisma.UserTermsSignatureFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserTermsSignatureFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserTermsSignatureFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          findFirst: {
+            args: Prisma.UserTermsSignatureFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserTermsSignatureFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          findMany: {
+            args: Prisma.UserTermsSignatureFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>[]
+          }
+          create: {
+            args: Prisma.UserTermsSignatureCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          createMany: {
+            args: Prisma.UserTermsSignatureCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserTermsSignatureCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>[]
+          }
+          delete: {
+            args: Prisma.UserTermsSignatureDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          update: {
+            args: Prisma.UserTermsSignatureUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          deleteMany: {
+            args: Prisma.UserTermsSignatureDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserTermsSignatureUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserTermsSignatureUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>[]
+          }
+          upsert: {
+            args: Prisma.UserTermsSignatureUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserTermsSignaturePayload>
+          }
+          aggregate: {
+            args: Prisma.UserTermsSignatureAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserTermsSignature>
+          }
+          groupBy: {
+            args: Prisma.UserTermsSignatureGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserTermsSignatureGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserTermsSignatureCountArgs<ExtArgs>
+            result: $Utils.Optional<UserTermsSignatureCountAggregateOutputType> | number
           }
         }
       }
@@ -775,6 +955,8 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     user?: UserOmit
+    terms?: TermsOmit
+    userTermsSignature?: UserTermsSignatureOmit
   }
 
   /* Types for Logging */
@@ -863,6 +1045,67 @@ export namespace Prisma {
    * Count Types
    */
 
+
+  /**
+   * Count Type UserCountOutputType
+   */
+
+  export type UserCountOutputType = {
+    terms_signatures: number
+  }
+
+  export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    terms_signatures?: boolean | UserCountOutputTypeCountTerms_signaturesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserCountOutputType
+     */
+    select?: UserCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTerms_signaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTermsSignatureWhereInput
+  }
+
+
+  /**
+   * Count Type TermsCountOutputType
+   */
+
+  export type TermsCountOutputType = {
+    signatures: number
+  }
+
+  export type TermsCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    signatures?: boolean | TermsCountOutputTypeCountSignaturesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * TermsCountOutputType without action
+   */
+  export type TermsCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the TermsCountOutputType
+     */
+    select?: TermsCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * TermsCountOutputType without action
+   */
+  export type TermsCountOutputTypeCountSignaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTermsSignatureWhereInput
+  }
 
 
   /**
@@ -1095,6 +1338,8 @@ export namespace Prisma {
     created_at?: boolean
     updated_at?: boolean
     user_preferences?: boolean
+    terms_signatures?: boolean | User$terms_signaturesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
   export type UserSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -1131,10 +1376,18 @@ export namespace Prisma {
   }
 
   export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "wallet_id" | "username" | "avatar_url" | "preferred_language_id" | "created_at" | "updated_at" | "user_preferences", ExtArgs["result"]["user"]>
+  export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    terms_signatures?: boolean | User$terms_signaturesArgs<ExtArgs>
+    _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type UserIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
 
   export type $UserPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "User"
-    objects: {}
+    objects: {
+      terms_signatures: Prisma.$UserTermsSignaturePayload<ExtArgs>[]
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: number
       wallet_id: string
@@ -1538,6 +1791,7 @@ export namespace Prisma {
    */
   export interface Prisma__UserClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    terms_signatures<T extends User$terms_signaturesArgs<ExtArgs> = {}>(args?: Subset<T, User$terms_signaturesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1592,6 +1846,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1610,6 +1868,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where: UserWhereUniqueInput
@@ -1627,6 +1889,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * Filter, which User to fetch.
      */
@@ -1676,6 +1942,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which User to fetch.
      */
     where?: UserWhereInput
@@ -1724,6 +1994,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter, which Users to fetch.
      */
     where?: UserWhereInput
@@ -1766,6 +2040,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to create a User.
      */
@@ -1814,6 +2092,10 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
     /**
      * The data needed to update a User.
      */
@@ -1881,6 +2163,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * The filter to search for the User to update in case it exists.
      */
     where: UserWhereUniqueInput
@@ -1907,6 +2193,10 @@ export namespace Prisma {
      */
     omit?: UserOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    /**
      * Filter which User to delete.
      */
     where: UserWhereUniqueInput
@@ -1927,6 +2217,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.terms_signatures
+   */
+  export type User$terms_signaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    where?: UserTermsSignatureWhereInput
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    cursor?: UserTermsSignatureWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTermsSignatureScalarFieldEnum | UserTermsSignatureScalarFieldEnum[]
+  }
+
+  /**
    * User without action
    */
   export type UserDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -1938,6 +2252,2192 @@ export namespace Prisma {
      * Omit specific fields from the User
      */
     omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model Terms
+   */
+
+  export type AggregateTerms = {
+    _count: TermsCountAggregateOutputType | null
+    _avg: TermsAvgAggregateOutputType | null
+    _sum: TermsSumAggregateOutputType | null
+    _min: TermsMinAggregateOutputType | null
+    _max: TermsMaxAggregateOutputType | null
+  }
+
+  export type TermsAvgAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TermsSumAggregateOutputType = {
+    id: number | null
+  }
+
+  export type TermsMinAggregateOutputType = {
+    id: number | null
+    content: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type TermsMaxAggregateOutputType = {
+    id: number | null
+    content: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type TermsCountAggregateOutputType = {
+    id: number
+    content: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type TermsAvgAggregateInputType = {
+    id?: true
+  }
+
+  export type TermsSumAggregateInputType = {
+    id?: true
+  }
+
+  export type TermsMinAggregateInputType = {
+    id?: true
+    content?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type TermsMaxAggregateInputType = {
+    id?: true
+    content?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type TermsCountAggregateInputType = {
+    id?: true
+    content?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type TermsAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Terms to aggregate.
+     */
+    where?: TermsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Terms to fetch.
+     */
+    orderBy?: TermsOrderByWithRelationInput | TermsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: TermsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Terms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Terms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Terms
+    **/
+    _count?: true | TermsCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: TermsAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: TermsSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: TermsMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: TermsMaxAggregateInputType
+  }
+
+  export type GetTermsAggregateType<T extends TermsAggregateArgs> = {
+        [P in keyof T & keyof AggregateTerms]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateTerms[P]>
+      : GetScalarType<T[P], AggregateTerms[P]>
+  }
+
+
+
+
+  export type TermsGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: TermsWhereInput
+    orderBy?: TermsOrderByWithAggregationInput | TermsOrderByWithAggregationInput[]
+    by: TermsScalarFieldEnum[] | TermsScalarFieldEnum
+    having?: TermsScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: TermsCountAggregateInputType | true
+    _avg?: TermsAvgAggregateInputType
+    _sum?: TermsSumAggregateInputType
+    _min?: TermsMinAggregateInputType
+    _max?: TermsMaxAggregateInputType
+  }
+
+  export type TermsGroupByOutputType = {
+    id: number
+    content: string
+    created_at: Date
+    updated_at: Date
+    _count: TermsCountAggregateOutputType | null
+    _avg: TermsAvgAggregateOutputType | null
+    _sum: TermsSumAggregateOutputType | null
+    _min: TermsMinAggregateOutputType | null
+    _max: TermsMaxAggregateOutputType | null
+  }
+
+  type GetTermsGroupByPayload<T extends TermsGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<TermsGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof TermsGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], TermsGroupByOutputType[P]>
+            : GetScalarType<T[P], TermsGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type TermsSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    signatures?: boolean | Terms$signaturesArgs<ExtArgs>
+    _count?: boolean | TermsCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["terms"]>
+
+  export type TermsSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["terms"]>
+
+  export type TermsSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    content?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["terms"]>
+
+  export type TermsSelectScalar = {
+    id?: boolean
+    content?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type TermsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "content" | "created_at" | "updated_at", ExtArgs["result"]["terms"]>
+  export type TermsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    signatures?: boolean | Terms$signaturesArgs<ExtArgs>
+    _count?: boolean | TermsCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type TermsIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type TermsIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $TermsPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Terms"
+    objects: {
+      signatures: Prisma.$UserTermsSignaturePayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: number
+      content: string
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["terms"]>
+    composites: {}
+  }
+
+  type TermsGetPayload<S extends boolean | null | undefined | TermsDefaultArgs> = $Result.GetResult<Prisma.$TermsPayload, S>
+
+  type TermsCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<TermsFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: TermsCountAggregateInputType | true
+    }
+
+  export interface TermsDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Terms'], meta: { name: 'Terms' } }
+    /**
+     * Find zero or one Terms that matches the filter.
+     * @param {TermsFindUniqueArgs} args - Arguments to find a Terms
+     * @example
+     * // Get one Terms
+     * const terms = await prisma.terms.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends TermsFindUniqueArgs>(args: SelectSubset<T, TermsFindUniqueArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Terms that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {TermsFindUniqueOrThrowArgs} args - Arguments to find a Terms
+     * @example
+     * // Get one Terms
+     * const terms = await prisma.terms.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends TermsFindUniqueOrThrowArgs>(args: SelectSubset<T, TermsFindUniqueOrThrowArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Terms that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsFindFirstArgs} args - Arguments to find a Terms
+     * @example
+     * // Get one Terms
+     * const terms = await prisma.terms.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends TermsFindFirstArgs>(args?: SelectSubset<T, TermsFindFirstArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Terms that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsFindFirstOrThrowArgs} args - Arguments to find a Terms
+     * @example
+     * // Get one Terms
+     * const terms = await prisma.terms.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends TermsFindFirstOrThrowArgs>(args?: SelectSubset<T, TermsFindFirstOrThrowArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Terms that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Terms
+     * const terms = await prisma.terms.findMany()
+     * 
+     * // Get first 10 Terms
+     * const terms = await prisma.terms.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const termsWithIdOnly = await prisma.terms.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends TermsFindManyArgs>(args?: SelectSubset<T, TermsFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Terms.
+     * @param {TermsCreateArgs} args - Arguments to create a Terms.
+     * @example
+     * // Create one Terms
+     * const Terms = await prisma.terms.create({
+     *   data: {
+     *     // ... data to create a Terms
+     *   }
+     * })
+     * 
+     */
+    create<T extends TermsCreateArgs>(args: SelectSubset<T, TermsCreateArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Terms.
+     * @param {TermsCreateManyArgs} args - Arguments to create many Terms.
+     * @example
+     * // Create many Terms
+     * const terms = await prisma.terms.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends TermsCreateManyArgs>(args?: SelectSubset<T, TermsCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Terms and returns the data saved in the database.
+     * @param {TermsCreateManyAndReturnArgs} args - Arguments to create many Terms.
+     * @example
+     * // Create many Terms
+     * const terms = await prisma.terms.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Terms and only return the `id`
+     * const termsWithIdOnly = await prisma.terms.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends TermsCreateManyAndReturnArgs>(args?: SelectSubset<T, TermsCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Terms.
+     * @param {TermsDeleteArgs} args - Arguments to delete one Terms.
+     * @example
+     * // Delete one Terms
+     * const Terms = await prisma.terms.delete({
+     *   where: {
+     *     // ... filter to delete one Terms
+     *   }
+     * })
+     * 
+     */
+    delete<T extends TermsDeleteArgs>(args: SelectSubset<T, TermsDeleteArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Terms.
+     * @param {TermsUpdateArgs} args - Arguments to update one Terms.
+     * @example
+     * // Update one Terms
+     * const terms = await prisma.terms.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends TermsUpdateArgs>(args: SelectSubset<T, TermsUpdateArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Terms.
+     * @param {TermsDeleteManyArgs} args - Arguments to filter Terms to delete.
+     * @example
+     * // Delete a few Terms
+     * const { count } = await prisma.terms.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends TermsDeleteManyArgs>(args?: SelectSubset<T, TermsDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Terms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Terms
+     * const terms = await prisma.terms.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends TermsUpdateManyArgs>(args: SelectSubset<T, TermsUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Terms and returns the data updated in the database.
+     * @param {TermsUpdateManyAndReturnArgs} args - Arguments to update many Terms.
+     * @example
+     * // Update many Terms
+     * const terms = await prisma.terms.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Terms and only return the `id`
+     * const termsWithIdOnly = await prisma.terms.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends TermsUpdateManyAndReturnArgs>(args: SelectSubset<T, TermsUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Terms.
+     * @param {TermsUpsertArgs} args - Arguments to update or create a Terms.
+     * @example
+     * // Update or create a Terms
+     * const terms = await prisma.terms.upsert({
+     *   create: {
+     *     // ... data to create a Terms
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Terms we want to update
+     *   }
+     * })
+     */
+    upsert<T extends TermsUpsertArgs>(args: SelectSubset<T, TermsUpsertArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Terms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsCountArgs} args - Arguments to filter Terms to count.
+     * @example
+     * // Count the number of Terms
+     * const count = await prisma.terms.count({
+     *   where: {
+     *     // ... the filter for the Terms we want to count
+     *   }
+     * })
+    **/
+    count<T extends TermsCountArgs>(
+      args?: Subset<T, TermsCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], TermsCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Terms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends TermsAggregateArgs>(args: Subset<T, TermsAggregateArgs>): Prisma.PrismaPromise<GetTermsAggregateType<T>>
+
+    /**
+     * Group by Terms.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {TermsGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends TermsGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: TermsGroupByArgs['orderBy'] }
+        : { orderBy?: TermsGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, TermsGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetTermsGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Terms model
+   */
+  readonly fields: TermsFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Terms.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__TermsClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    signatures<T extends Terms$signaturesArgs<ExtArgs> = {}>(args?: Subset<T, Terms$signaturesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Terms model
+   */
+  interface TermsFieldRefs {
+    readonly id: FieldRef<"Terms", 'Int'>
+    readonly content: FieldRef<"Terms", 'String'>
+    readonly created_at: FieldRef<"Terms", 'DateTime'>
+    readonly updated_at: FieldRef<"Terms", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Terms findUnique
+   */
+  export type TermsFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter, which Terms to fetch.
+     */
+    where: TermsWhereUniqueInput
+  }
+
+  /**
+   * Terms findUniqueOrThrow
+   */
+  export type TermsFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter, which Terms to fetch.
+     */
+    where: TermsWhereUniqueInput
+  }
+
+  /**
+   * Terms findFirst
+   */
+  export type TermsFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter, which Terms to fetch.
+     */
+    where?: TermsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Terms to fetch.
+     */
+    orderBy?: TermsOrderByWithRelationInput | TermsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Terms.
+     */
+    cursor?: TermsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Terms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Terms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Terms.
+     */
+    distinct?: TermsScalarFieldEnum | TermsScalarFieldEnum[]
+  }
+
+  /**
+   * Terms findFirstOrThrow
+   */
+  export type TermsFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter, which Terms to fetch.
+     */
+    where?: TermsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Terms to fetch.
+     */
+    orderBy?: TermsOrderByWithRelationInput | TermsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Terms.
+     */
+    cursor?: TermsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Terms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Terms.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Terms.
+     */
+    distinct?: TermsScalarFieldEnum | TermsScalarFieldEnum[]
+  }
+
+  /**
+   * Terms findMany
+   */
+  export type TermsFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter, which Terms to fetch.
+     */
+    where?: TermsWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Terms to fetch.
+     */
+    orderBy?: TermsOrderByWithRelationInput | TermsOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Terms.
+     */
+    cursor?: TermsWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Terms from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Terms.
+     */
+    skip?: number
+    distinct?: TermsScalarFieldEnum | TermsScalarFieldEnum[]
+  }
+
+  /**
+   * Terms create
+   */
+  export type TermsCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Terms.
+     */
+    data: XOR<TermsCreateInput, TermsUncheckedCreateInput>
+  }
+
+  /**
+   * Terms createMany
+   */
+  export type TermsCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Terms.
+     */
+    data: TermsCreateManyInput | TermsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Terms createManyAndReturn
+   */
+  export type TermsCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * The data used to create many Terms.
+     */
+    data: TermsCreateManyInput | TermsCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Terms update
+   */
+  export type TermsUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Terms.
+     */
+    data: XOR<TermsUpdateInput, TermsUncheckedUpdateInput>
+    /**
+     * Choose, which Terms to update.
+     */
+    where: TermsWhereUniqueInput
+  }
+
+  /**
+   * Terms updateMany
+   */
+  export type TermsUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Terms.
+     */
+    data: XOR<TermsUpdateManyMutationInput, TermsUncheckedUpdateManyInput>
+    /**
+     * Filter which Terms to update
+     */
+    where?: TermsWhereInput
+    /**
+     * Limit how many Terms to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Terms updateManyAndReturn
+   */
+  export type TermsUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * The data used to update Terms.
+     */
+    data: XOR<TermsUpdateManyMutationInput, TermsUncheckedUpdateManyInput>
+    /**
+     * Filter which Terms to update
+     */
+    where?: TermsWhereInput
+    /**
+     * Limit how many Terms to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Terms upsert
+   */
+  export type TermsUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Terms to update in case it exists.
+     */
+    where: TermsWhereUniqueInput
+    /**
+     * In case the Terms found by the `where` argument doesn't exist, create a new Terms with this data.
+     */
+    create: XOR<TermsCreateInput, TermsUncheckedCreateInput>
+    /**
+     * In case the Terms was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<TermsUpdateInput, TermsUncheckedUpdateInput>
+  }
+
+  /**
+   * Terms delete
+   */
+  export type TermsDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+    /**
+     * Filter which Terms to delete.
+     */
+    where: TermsWhereUniqueInput
+  }
+
+  /**
+   * Terms deleteMany
+   */
+  export type TermsDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Terms to delete
+     */
+    where?: TermsWhereInput
+    /**
+     * Limit how many Terms to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Terms.signatures
+   */
+  export type Terms$signaturesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    where?: UserTermsSignatureWhereInput
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    cursor?: UserTermsSignatureWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserTermsSignatureScalarFieldEnum | UserTermsSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * Terms without action
+   */
+  export type TermsDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Terms
+     */
+    select?: TermsSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Terms
+     */
+    omit?: TermsOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: TermsInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserTermsSignature
+   */
+
+  export type AggregateUserTermsSignature = {
+    _count: UserTermsSignatureCountAggregateOutputType | null
+    _avg: UserTermsSignatureAvgAggregateOutputType | null
+    _sum: UserTermsSignatureSumAggregateOutputType | null
+    _min: UserTermsSignatureMinAggregateOutputType | null
+    _max: UserTermsSignatureMaxAggregateOutputType | null
+  }
+
+  export type UserTermsSignatureAvgAggregateOutputType = {
+    user_id: number | null
+    terms_id: number | null
+  }
+
+  export type UserTermsSignatureSumAggregateOutputType = {
+    user_id: number | null
+    terms_id: number | null
+  }
+
+  export type UserTermsSignatureMinAggregateOutputType = {
+    user_id: number | null
+    terms_id: number | null
+    signature: string | null
+    signed_at: Date | null
+  }
+
+  export type UserTermsSignatureMaxAggregateOutputType = {
+    user_id: number | null
+    terms_id: number | null
+    signature: string | null
+    signed_at: Date | null
+  }
+
+  export type UserTermsSignatureCountAggregateOutputType = {
+    user_id: number
+    terms_id: number
+    signature: number
+    signed_at: number
+    _all: number
+  }
+
+
+  export type UserTermsSignatureAvgAggregateInputType = {
+    user_id?: true
+    terms_id?: true
+  }
+
+  export type UserTermsSignatureSumAggregateInputType = {
+    user_id?: true
+    terms_id?: true
+  }
+
+  export type UserTermsSignatureMinAggregateInputType = {
+    user_id?: true
+    terms_id?: true
+    signature?: true
+    signed_at?: true
+  }
+
+  export type UserTermsSignatureMaxAggregateInputType = {
+    user_id?: true
+    terms_id?: true
+    signature?: true
+    signed_at?: true
+  }
+
+  export type UserTermsSignatureCountAggregateInputType = {
+    user_id?: true
+    terms_id?: true
+    signature?: true
+    signed_at?: true
+    _all?: true
+  }
+
+  export type UserTermsSignatureAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTermsSignature to aggregate.
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTermsSignatures to fetch.
+     */
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserTermsSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTermsSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTermsSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserTermsSignatures
+    **/
+    _count?: true | UserTermsSignatureCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserTermsSignatureAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserTermsSignatureSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserTermsSignatureMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserTermsSignatureMaxAggregateInputType
+  }
+
+  export type GetUserTermsSignatureAggregateType<T extends UserTermsSignatureAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserTermsSignature]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserTermsSignature[P]>
+      : GetScalarType<T[P], AggregateUserTermsSignature[P]>
+  }
+
+
+
+
+  export type UserTermsSignatureGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserTermsSignatureWhereInput
+    orderBy?: UserTermsSignatureOrderByWithAggregationInput | UserTermsSignatureOrderByWithAggregationInput[]
+    by: UserTermsSignatureScalarFieldEnum[] | UserTermsSignatureScalarFieldEnum
+    having?: UserTermsSignatureScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserTermsSignatureCountAggregateInputType | true
+    _avg?: UserTermsSignatureAvgAggregateInputType
+    _sum?: UserTermsSignatureSumAggregateInputType
+    _min?: UserTermsSignatureMinAggregateInputType
+    _max?: UserTermsSignatureMaxAggregateInputType
+  }
+
+  export type UserTermsSignatureGroupByOutputType = {
+    user_id: number
+    terms_id: number
+    signature: string
+    signed_at: Date
+    _count: UserTermsSignatureCountAggregateOutputType | null
+    _avg: UserTermsSignatureAvgAggregateOutputType | null
+    _sum: UserTermsSignatureSumAggregateOutputType | null
+    _min: UserTermsSignatureMinAggregateOutputType | null
+    _max: UserTermsSignatureMaxAggregateOutputType | null
+  }
+
+  type GetUserTermsSignatureGroupByPayload<T extends UserTermsSignatureGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserTermsSignatureGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserTermsSignatureGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserTermsSignatureGroupByOutputType[P]>
+            : GetScalarType<T[P], UserTermsSignatureGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserTermsSignatureSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    user_id?: boolean
+    terms_id?: boolean
+    signature?: boolean
+    signed_at?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTermsSignature"]>
+
+  export type UserTermsSignatureSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    user_id?: boolean
+    terms_id?: boolean
+    signature?: boolean
+    signed_at?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTermsSignature"]>
+
+  export type UserTermsSignatureSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    user_id?: boolean
+    terms_id?: boolean
+    signature?: boolean
+    signed_at?: boolean
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userTermsSignature"]>
+
+  export type UserTermsSignatureSelectScalar = {
+    user_id?: boolean
+    terms_id?: boolean
+    signature?: boolean
+    signed_at?: boolean
+  }
+
+  export type UserTermsSignatureOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"user_id" | "terms_id" | "signature" | "signed_at", ExtArgs["result"]["userTermsSignature"]>
+  export type UserTermsSignatureInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }
+  export type UserTermsSignatureIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }
+  export type UserTermsSignatureIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    User?: boolean | UserDefaultArgs<ExtArgs>
+    Terms?: boolean | TermsDefaultArgs<ExtArgs>
+  }
+
+  export type $UserTermsSignaturePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserTermsSignature"
+    objects: {
+      User: Prisma.$UserPayload<ExtArgs>
+      Terms: Prisma.$TermsPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      user_id: number
+      terms_id: number
+      signature: string
+      signed_at: Date
+    }, ExtArgs["result"]["userTermsSignature"]>
+    composites: {}
+  }
+
+  type UserTermsSignatureGetPayload<S extends boolean | null | undefined | UserTermsSignatureDefaultArgs> = $Result.GetResult<Prisma.$UserTermsSignaturePayload, S>
+
+  type UserTermsSignatureCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserTermsSignatureFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserTermsSignatureCountAggregateInputType | true
+    }
+
+  export interface UserTermsSignatureDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserTermsSignature'], meta: { name: 'UserTermsSignature' } }
+    /**
+     * Find zero or one UserTermsSignature that matches the filter.
+     * @param {UserTermsSignatureFindUniqueArgs} args - Arguments to find a UserTermsSignature
+     * @example
+     * // Get one UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserTermsSignatureFindUniqueArgs>(args: SelectSubset<T, UserTermsSignatureFindUniqueArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserTermsSignature that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserTermsSignatureFindUniqueOrThrowArgs} args - Arguments to find a UserTermsSignature
+     * @example
+     * // Get one UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserTermsSignatureFindUniqueOrThrowArgs>(args: SelectSubset<T, UserTermsSignatureFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserTermsSignature that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureFindFirstArgs} args - Arguments to find a UserTermsSignature
+     * @example
+     * // Get one UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserTermsSignatureFindFirstArgs>(args?: SelectSubset<T, UserTermsSignatureFindFirstArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserTermsSignature that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureFindFirstOrThrowArgs} args - Arguments to find a UserTermsSignature
+     * @example
+     * // Get one UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserTermsSignatureFindFirstOrThrowArgs>(args?: SelectSubset<T, UserTermsSignatureFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserTermsSignatures that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserTermsSignatures
+     * const userTermsSignatures = await prisma.userTermsSignature.findMany()
+     * 
+     * // Get first 10 UserTermsSignatures
+     * const userTermsSignatures = await prisma.userTermsSignature.findMany({ take: 10 })
+     * 
+     * // Only select the `user_id`
+     * const userTermsSignatureWithUser_idOnly = await prisma.userTermsSignature.findMany({ select: { user_id: true } })
+     * 
+     */
+    findMany<T extends UserTermsSignatureFindManyArgs>(args?: SelectSubset<T, UserTermsSignatureFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserTermsSignature.
+     * @param {UserTermsSignatureCreateArgs} args - Arguments to create a UserTermsSignature.
+     * @example
+     * // Create one UserTermsSignature
+     * const UserTermsSignature = await prisma.userTermsSignature.create({
+     *   data: {
+     *     // ... data to create a UserTermsSignature
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserTermsSignatureCreateArgs>(args: SelectSubset<T, UserTermsSignatureCreateArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserTermsSignatures.
+     * @param {UserTermsSignatureCreateManyArgs} args - Arguments to create many UserTermsSignatures.
+     * @example
+     * // Create many UserTermsSignatures
+     * const userTermsSignature = await prisma.userTermsSignature.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserTermsSignatureCreateManyArgs>(args?: SelectSubset<T, UserTermsSignatureCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserTermsSignatures and returns the data saved in the database.
+     * @param {UserTermsSignatureCreateManyAndReturnArgs} args - Arguments to create many UserTermsSignatures.
+     * @example
+     * // Create many UserTermsSignatures
+     * const userTermsSignature = await prisma.userTermsSignature.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserTermsSignatures and only return the `user_id`
+     * const userTermsSignatureWithUser_idOnly = await prisma.userTermsSignature.createManyAndReturn({
+     *   select: { user_id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserTermsSignatureCreateManyAndReturnArgs>(args?: SelectSubset<T, UserTermsSignatureCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserTermsSignature.
+     * @param {UserTermsSignatureDeleteArgs} args - Arguments to delete one UserTermsSignature.
+     * @example
+     * // Delete one UserTermsSignature
+     * const UserTermsSignature = await prisma.userTermsSignature.delete({
+     *   where: {
+     *     // ... filter to delete one UserTermsSignature
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserTermsSignatureDeleteArgs>(args: SelectSubset<T, UserTermsSignatureDeleteArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserTermsSignature.
+     * @param {UserTermsSignatureUpdateArgs} args - Arguments to update one UserTermsSignature.
+     * @example
+     * // Update one UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserTermsSignatureUpdateArgs>(args: SelectSubset<T, UserTermsSignatureUpdateArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserTermsSignatures.
+     * @param {UserTermsSignatureDeleteManyArgs} args - Arguments to filter UserTermsSignatures to delete.
+     * @example
+     * // Delete a few UserTermsSignatures
+     * const { count } = await prisma.userTermsSignature.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserTermsSignatureDeleteManyArgs>(args?: SelectSubset<T, UserTermsSignatureDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserTermsSignatures.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserTermsSignatures
+     * const userTermsSignature = await prisma.userTermsSignature.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserTermsSignatureUpdateManyArgs>(args: SelectSubset<T, UserTermsSignatureUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserTermsSignatures and returns the data updated in the database.
+     * @param {UserTermsSignatureUpdateManyAndReturnArgs} args - Arguments to update many UserTermsSignatures.
+     * @example
+     * // Update many UserTermsSignatures
+     * const userTermsSignature = await prisma.userTermsSignature.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserTermsSignatures and only return the `user_id`
+     * const userTermsSignatureWithUser_idOnly = await prisma.userTermsSignature.updateManyAndReturn({
+     *   select: { user_id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserTermsSignatureUpdateManyAndReturnArgs>(args: SelectSubset<T, UserTermsSignatureUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserTermsSignature.
+     * @param {UserTermsSignatureUpsertArgs} args - Arguments to update or create a UserTermsSignature.
+     * @example
+     * // Update or create a UserTermsSignature
+     * const userTermsSignature = await prisma.userTermsSignature.upsert({
+     *   create: {
+     *     // ... data to create a UserTermsSignature
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserTermsSignature we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserTermsSignatureUpsertArgs>(args: SelectSubset<T, UserTermsSignatureUpsertArgs<ExtArgs>>): Prisma__UserTermsSignatureClient<$Result.GetResult<Prisma.$UserTermsSignaturePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserTermsSignatures.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureCountArgs} args - Arguments to filter UserTermsSignatures to count.
+     * @example
+     * // Count the number of UserTermsSignatures
+     * const count = await prisma.userTermsSignature.count({
+     *   where: {
+     *     // ... the filter for the UserTermsSignatures we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserTermsSignatureCountArgs>(
+      args?: Subset<T, UserTermsSignatureCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserTermsSignatureCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserTermsSignature.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserTermsSignatureAggregateArgs>(args: Subset<T, UserTermsSignatureAggregateArgs>): Prisma.PrismaPromise<GetUserTermsSignatureAggregateType<T>>
+
+    /**
+     * Group by UserTermsSignature.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserTermsSignatureGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserTermsSignatureGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserTermsSignatureGroupByArgs['orderBy'] }
+        : { orderBy?: UserTermsSignatureGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserTermsSignatureGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserTermsSignatureGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserTermsSignature model
+   */
+  readonly fields: UserTermsSignatureFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserTermsSignature.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserTermsSignatureClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    User<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    Terms<T extends TermsDefaultArgs<ExtArgs> = {}>(args?: Subset<T, TermsDefaultArgs<ExtArgs>>): Prisma__TermsClient<$Result.GetResult<Prisma.$TermsPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserTermsSignature model
+   */
+  interface UserTermsSignatureFieldRefs {
+    readonly user_id: FieldRef<"UserTermsSignature", 'Int'>
+    readonly terms_id: FieldRef<"UserTermsSignature", 'Int'>
+    readonly signature: FieldRef<"UserTermsSignature", 'String'>
+    readonly signed_at: FieldRef<"UserTermsSignature", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserTermsSignature findUnique
+   */
+  export type UserTermsSignatureFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTermsSignature to fetch.
+     */
+    where: UserTermsSignatureWhereUniqueInput
+  }
+
+  /**
+   * UserTermsSignature findUniqueOrThrow
+   */
+  export type UserTermsSignatureFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTermsSignature to fetch.
+     */
+    where: UserTermsSignatureWhereUniqueInput
+  }
+
+  /**
+   * UserTermsSignature findFirst
+   */
+  export type UserTermsSignatureFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTermsSignature to fetch.
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTermsSignatures to fetch.
+     */
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTermsSignatures.
+     */
+    cursor?: UserTermsSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTermsSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTermsSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTermsSignatures.
+     */
+    distinct?: UserTermsSignatureScalarFieldEnum | UserTermsSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * UserTermsSignature findFirstOrThrow
+   */
+  export type UserTermsSignatureFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTermsSignature to fetch.
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTermsSignatures to fetch.
+     */
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserTermsSignatures.
+     */
+    cursor?: UserTermsSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTermsSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTermsSignatures.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserTermsSignatures.
+     */
+    distinct?: UserTermsSignatureScalarFieldEnum | UserTermsSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * UserTermsSignature findMany
+   */
+  export type UserTermsSignatureFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter, which UserTermsSignatures to fetch.
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserTermsSignatures to fetch.
+     */
+    orderBy?: UserTermsSignatureOrderByWithRelationInput | UserTermsSignatureOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserTermsSignatures.
+     */
+    cursor?: UserTermsSignatureWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserTermsSignatures from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserTermsSignatures.
+     */
+    skip?: number
+    distinct?: UserTermsSignatureScalarFieldEnum | UserTermsSignatureScalarFieldEnum[]
+  }
+
+  /**
+   * UserTermsSignature create
+   */
+  export type UserTermsSignatureCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserTermsSignature.
+     */
+    data: XOR<UserTermsSignatureCreateInput, UserTermsSignatureUncheckedCreateInput>
+  }
+
+  /**
+   * UserTermsSignature createMany
+   */
+  export type UserTermsSignatureCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserTermsSignatures.
+     */
+    data: UserTermsSignatureCreateManyInput | UserTermsSignatureCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserTermsSignature createManyAndReturn
+   */
+  export type UserTermsSignatureCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserTermsSignatures.
+     */
+    data: UserTermsSignatureCreateManyInput | UserTermsSignatureCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserTermsSignature update
+   */
+  export type UserTermsSignatureUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserTermsSignature.
+     */
+    data: XOR<UserTermsSignatureUpdateInput, UserTermsSignatureUncheckedUpdateInput>
+    /**
+     * Choose, which UserTermsSignature to update.
+     */
+    where: UserTermsSignatureWhereUniqueInput
+  }
+
+  /**
+   * UserTermsSignature updateMany
+   */
+  export type UserTermsSignatureUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserTermsSignatures.
+     */
+    data: XOR<UserTermsSignatureUpdateManyMutationInput, UserTermsSignatureUncheckedUpdateManyInput>
+    /**
+     * Filter which UserTermsSignatures to update
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * Limit how many UserTermsSignatures to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserTermsSignature updateManyAndReturn
+   */
+  export type UserTermsSignatureUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * The data used to update UserTermsSignatures.
+     */
+    data: XOR<UserTermsSignatureUpdateManyMutationInput, UserTermsSignatureUncheckedUpdateManyInput>
+    /**
+     * Filter which UserTermsSignatures to update
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * Limit how many UserTermsSignatures to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserTermsSignature upsert
+   */
+  export type UserTermsSignatureUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserTermsSignature to update in case it exists.
+     */
+    where: UserTermsSignatureWhereUniqueInput
+    /**
+     * In case the UserTermsSignature found by the `where` argument doesn't exist, create a new UserTermsSignature with this data.
+     */
+    create: XOR<UserTermsSignatureCreateInput, UserTermsSignatureUncheckedCreateInput>
+    /**
+     * In case the UserTermsSignature was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserTermsSignatureUpdateInput, UserTermsSignatureUncheckedUpdateInput>
+  }
+
+  /**
+   * UserTermsSignature delete
+   */
+  export type UserTermsSignatureDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
+    /**
+     * Filter which UserTermsSignature to delete.
+     */
+    where: UserTermsSignatureWhereUniqueInput
+  }
+
+  /**
+   * UserTermsSignature deleteMany
+   */
+  export type UserTermsSignatureDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserTermsSignatures to delete
+     */
+    where?: UserTermsSignatureWhereInput
+    /**
+     * Limit how many UserTermsSignatures to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserTermsSignature without action
+   */
+  export type UserTermsSignatureDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserTermsSignature
+     */
+    select?: UserTermsSignatureSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserTermsSignature
+     */
+    omit?: UserTermsSignatureOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserTermsSignatureInclude<ExtArgs> | null
   }
 
 
@@ -1967,6 +4467,26 @@ export namespace Prisma {
   };
 
   export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+  export const TermsScalarFieldEnum: {
+    id: 'id',
+    content: 'content',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type TermsScalarFieldEnum = (typeof TermsScalarFieldEnum)[keyof typeof TermsScalarFieldEnum]
+
+
+  export const UserTermsSignatureScalarFieldEnum: {
+    user_id: 'user_id',
+    terms_id: 'terms_id',
+    signature: 'signature',
+    signed_at: 'signed_at'
+  };
+
+  export type UserTermsSignatureScalarFieldEnum = (typeof UserTermsSignatureScalarFieldEnum)[keyof typeof UserTermsSignatureScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -2100,6 +4620,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     user_preferences?: JsonNullableFilter<"User">
+    terms_signatures?: UserTermsSignatureListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -2111,6 +4632,7 @@ export namespace Prisma {
     created_at?: SortOrder
     updated_at?: SortOrder
     user_preferences?: SortOrderInput | SortOrder
+    terms_signatures?: UserTermsSignatureOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -2125,6 +4647,7 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"User"> | Date | string
     updated_at?: DateTimeFilter<"User"> | Date | string
     user_preferences?: JsonNullableFilter<"User">
+    terms_signatures?: UserTermsSignatureListRelationFilter
   }, "id" | "wallet_id">
 
   export type UserOrderByWithAggregationInput = {
@@ -2157,6 +4680,114 @@ export namespace Prisma {
     user_preferences?: JsonNullableWithAggregatesFilter<"User">
   }
 
+  export type TermsWhereInput = {
+    AND?: TermsWhereInput | TermsWhereInput[]
+    OR?: TermsWhereInput[]
+    NOT?: TermsWhereInput | TermsWhereInput[]
+    id?: IntFilter<"Terms"> | number
+    content?: StringFilter<"Terms"> | string
+    created_at?: DateTimeFilter<"Terms"> | Date | string
+    updated_at?: DateTimeFilter<"Terms"> | Date | string
+    signatures?: UserTermsSignatureListRelationFilter
+  }
+
+  export type TermsOrderByWithRelationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    signatures?: UserTermsSignatureOrderByRelationAggregateInput
+  }
+
+  export type TermsWhereUniqueInput = Prisma.AtLeast<{
+    id?: number
+    AND?: TermsWhereInput | TermsWhereInput[]
+    OR?: TermsWhereInput[]
+    NOT?: TermsWhereInput | TermsWhereInput[]
+    content?: StringFilter<"Terms"> | string
+    created_at?: DateTimeFilter<"Terms"> | Date | string
+    updated_at?: DateTimeFilter<"Terms"> | Date | string
+    signatures?: UserTermsSignatureListRelationFilter
+  }, "id">
+
+  export type TermsOrderByWithAggregationInput = {
+    id?: SortOrder
+    content?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: TermsCountOrderByAggregateInput
+    _avg?: TermsAvgOrderByAggregateInput
+    _max?: TermsMaxOrderByAggregateInput
+    _min?: TermsMinOrderByAggregateInput
+    _sum?: TermsSumOrderByAggregateInput
+  }
+
+  export type TermsScalarWhereWithAggregatesInput = {
+    AND?: TermsScalarWhereWithAggregatesInput | TermsScalarWhereWithAggregatesInput[]
+    OR?: TermsScalarWhereWithAggregatesInput[]
+    NOT?: TermsScalarWhereWithAggregatesInput | TermsScalarWhereWithAggregatesInput[]
+    id?: IntWithAggregatesFilter<"Terms"> | number
+    content?: StringWithAggregatesFilter<"Terms"> | string
+    created_at?: DateTimeWithAggregatesFilter<"Terms"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"Terms"> | Date | string
+  }
+
+  export type UserTermsSignatureWhereInput = {
+    AND?: UserTermsSignatureWhereInput | UserTermsSignatureWhereInput[]
+    OR?: UserTermsSignatureWhereInput[]
+    NOT?: UserTermsSignatureWhereInput | UserTermsSignatureWhereInput[]
+    user_id?: IntFilter<"UserTermsSignature"> | number
+    terms_id?: IntFilter<"UserTermsSignature"> | number
+    signature?: StringFilter<"UserTermsSignature"> | string
+    signed_at?: DateTimeFilter<"UserTermsSignature"> | Date | string
+    User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Terms?: XOR<TermsScalarRelationFilter, TermsWhereInput>
+  }
+
+  export type UserTermsSignatureOrderByWithRelationInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+    signature?: SortOrder
+    signed_at?: SortOrder
+    User?: UserOrderByWithRelationInput
+    Terms?: TermsOrderByWithRelationInput
+  }
+
+  export type UserTermsSignatureWhereUniqueInput = Prisma.AtLeast<{
+    user_id_terms_id?: UserTermsSignatureUser_idTerms_idCompoundUniqueInput
+    AND?: UserTermsSignatureWhereInput | UserTermsSignatureWhereInput[]
+    OR?: UserTermsSignatureWhereInput[]
+    NOT?: UserTermsSignatureWhereInput | UserTermsSignatureWhereInput[]
+    user_id?: IntFilter<"UserTermsSignature"> | number
+    terms_id?: IntFilter<"UserTermsSignature"> | number
+    signature?: StringFilter<"UserTermsSignature"> | string
+    signed_at?: DateTimeFilter<"UserTermsSignature"> | Date | string
+    User?: XOR<UserScalarRelationFilter, UserWhereInput>
+    Terms?: XOR<TermsScalarRelationFilter, TermsWhereInput>
+  }, "user_id_terms_id">
+
+  export type UserTermsSignatureOrderByWithAggregationInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+    signature?: SortOrder
+    signed_at?: SortOrder
+    _count?: UserTermsSignatureCountOrderByAggregateInput
+    _avg?: UserTermsSignatureAvgOrderByAggregateInput
+    _max?: UserTermsSignatureMaxOrderByAggregateInput
+    _min?: UserTermsSignatureMinOrderByAggregateInput
+    _sum?: UserTermsSignatureSumOrderByAggregateInput
+  }
+
+  export type UserTermsSignatureScalarWhereWithAggregatesInput = {
+    AND?: UserTermsSignatureScalarWhereWithAggregatesInput | UserTermsSignatureScalarWhereWithAggregatesInput[]
+    OR?: UserTermsSignatureScalarWhereWithAggregatesInput[]
+    NOT?: UserTermsSignatureScalarWhereWithAggregatesInput | UserTermsSignatureScalarWhereWithAggregatesInput[]
+    user_id?: IntWithAggregatesFilter<"UserTermsSignature"> | number
+    terms_id?: IntWithAggregatesFilter<"UserTermsSignature"> | number
+    signature?: StringWithAggregatesFilter<"UserTermsSignature"> | string
+    signed_at?: DateTimeWithAggregatesFilter<"UserTermsSignature"> | Date | string
+  }
+
   export type UserCreateInput = {
     wallet_id: string
     username: string
@@ -2165,6 +4796,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     user_preferences?: NullableJsonNullValueInput | InputJsonValue
+    terms_signatures?: UserTermsSignatureCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -2176,6 +4808,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     user_preferences?: NullableJsonNullValueInput | InputJsonValue
+    terms_signatures?: UserTermsSignatureUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -2186,6 +4819,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_preferences?: NullableJsonNullValueInput | InputJsonValue
+    terms_signatures?: UserTermsSignatureUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -2197,6 +4831,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_preferences?: NullableJsonNullValueInput | InputJsonValue
+    terms_signatures?: UserTermsSignatureUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -2229,6 +4864,103 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user_preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type TermsCreateInput = {
+    content: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    signatures?: UserTermsSignatureCreateNestedManyWithoutTermsInput
+  }
+
+  export type TermsUncheckedCreateInput = {
+    id?: number
+    content: string
+    created_at?: Date | string
+    updated_at?: Date | string
+    signatures?: UserTermsSignatureUncheckedCreateNestedManyWithoutTermsInput
+  }
+
+  export type TermsUpdateInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    signatures?: UserTermsSignatureUpdateManyWithoutTermsNestedInput
+  }
+
+  export type TermsUncheckedUpdateInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    signatures?: UserTermsSignatureUncheckedUpdateManyWithoutTermsNestedInput
+  }
+
+  export type TermsCreateManyInput = {
+    id?: number
+    content: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type TermsUpdateManyMutationInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TermsUncheckedUpdateManyInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureCreateInput = {
+    signature: string
+    signed_at?: Date | string
+    User: UserCreateNestedOneWithoutTerms_signaturesInput
+    Terms: TermsCreateNestedOneWithoutSignaturesInput
+  }
+
+  export type UserTermsSignatureUncheckedCreateInput = {
+    user_id: number
+    terms_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureUpdateInput = {
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutTerms_signaturesNestedInput
+    Terms?: TermsUpdateOneRequiredWithoutSignaturesNestedInput
+  }
+
+  export type UserTermsSignatureUncheckedUpdateInput = {
+    user_id?: IntFieldUpdateOperationsInput | number
+    terms_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureCreateManyInput = {
+    user_id: number
+    terms_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureUpdateManyMutationInput = {
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureUncheckedUpdateManyInput = {
+    user_id?: IntFieldUpdateOperationsInput | number
+    terms_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -2302,9 +5034,19 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type UserTermsSignatureListRelationFilter = {
+    every?: UserTermsSignatureWhereInput
+    some?: UserTermsSignatureWhereInput
+    none?: UserTermsSignatureWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
+  }
+
+  export type UserTermsSignatureOrderByRelationAggregateInput = {
+    _count?: SortOrder
   }
 
   export type UserCountOrderByAggregateInput = {
@@ -2440,6 +5182,95 @@ export namespace Prisma {
     _max?: NestedJsonNullableFilter<$PrismaModel>
   }
 
+  export type TermsCountOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type TermsAvgOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type TermsMaxOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type TermsMinOrderByAggregateInput = {
+    id?: SortOrder
+    content?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type TermsSumOrderByAggregateInput = {
+    id?: SortOrder
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type TermsScalarRelationFilter = {
+    is?: TermsWhereInput
+    isNot?: TermsWhereInput
+  }
+
+  export type UserTermsSignatureUser_idTerms_idCompoundUniqueInput = {
+    user_id: number
+    terms_id: number
+  }
+
+  export type UserTermsSignatureCountOrderByAggregateInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+    signature?: SortOrder
+    signed_at?: SortOrder
+  }
+
+  export type UserTermsSignatureAvgOrderByAggregateInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+  }
+
+  export type UserTermsSignatureMaxOrderByAggregateInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+    signature?: SortOrder
+    signed_at?: SortOrder
+  }
+
+  export type UserTermsSignatureMinOrderByAggregateInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+    signature?: SortOrder
+    signed_at?: SortOrder
+  }
+
+  export type UserTermsSignatureSumOrderByAggregateInput = {
+    user_id?: SortOrder
+    terms_id?: SortOrder
+  }
+
+  export type UserTermsSignatureCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput> | UserTermsSignatureCreateWithoutUserInput[] | UserTermsSignatureUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutUserInput | UserTermsSignatureCreateOrConnectWithoutUserInput[]
+    createMany?: UserTermsSignatureCreateManyUserInputEnvelope
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+  }
+
+  export type UserTermsSignatureUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput> | UserTermsSignatureCreateWithoutUserInput[] | UserTermsSignatureUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutUserInput | UserTermsSignatureCreateOrConnectWithoutUserInput[]
+    createMany?: UserTermsSignatureCreateManyUserInputEnvelope
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -2456,12 +5287,110 @@ export namespace Prisma {
     set?: Date | string
   }
 
+  export type UserTermsSignatureUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput> | UserTermsSignatureCreateWithoutUserInput[] | UserTermsSignatureUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutUserInput | UserTermsSignatureCreateOrConnectWithoutUserInput[]
+    upsert?: UserTermsSignatureUpsertWithWhereUniqueWithoutUserInput | UserTermsSignatureUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTermsSignatureCreateManyUserInputEnvelope
+    set?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    disconnect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    delete?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    update?: UserTermsSignatureUpdateWithWhereUniqueWithoutUserInput | UserTermsSignatureUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTermsSignatureUpdateManyWithWhereWithoutUserInput | UserTermsSignatureUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type UserTermsSignatureUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput> | UserTermsSignatureCreateWithoutUserInput[] | UserTermsSignatureUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutUserInput | UserTermsSignatureCreateOrConnectWithoutUserInput[]
+    upsert?: UserTermsSignatureUpsertWithWhereUniqueWithoutUserInput | UserTermsSignatureUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserTermsSignatureCreateManyUserInputEnvelope
+    set?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    disconnect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    delete?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    update?: UserTermsSignatureUpdateWithWhereUniqueWithoutUserInput | UserTermsSignatureUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserTermsSignatureUpdateManyWithWhereWithoutUserInput | UserTermsSignatureUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+  }
+
+  export type UserTermsSignatureCreateNestedManyWithoutTermsInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput> | UserTermsSignatureCreateWithoutTermsInput[] | UserTermsSignatureUncheckedCreateWithoutTermsInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutTermsInput | UserTermsSignatureCreateOrConnectWithoutTermsInput[]
+    createMany?: UserTermsSignatureCreateManyTermsInputEnvelope
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+  }
+
+  export type UserTermsSignatureUncheckedCreateNestedManyWithoutTermsInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput> | UserTermsSignatureCreateWithoutTermsInput[] | UserTermsSignatureUncheckedCreateWithoutTermsInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutTermsInput | UserTermsSignatureCreateOrConnectWithoutTermsInput[]
+    createMany?: UserTermsSignatureCreateManyTermsInputEnvelope
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+  }
+
+  export type UserTermsSignatureUpdateManyWithoutTermsNestedInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput> | UserTermsSignatureCreateWithoutTermsInput[] | UserTermsSignatureUncheckedCreateWithoutTermsInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutTermsInput | UserTermsSignatureCreateOrConnectWithoutTermsInput[]
+    upsert?: UserTermsSignatureUpsertWithWhereUniqueWithoutTermsInput | UserTermsSignatureUpsertWithWhereUniqueWithoutTermsInput[]
+    createMany?: UserTermsSignatureCreateManyTermsInputEnvelope
+    set?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    disconnect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    delete?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    update?: UserTermsSignatureUpdateWithWhereUniqueWithoutTermsInput | UserTermsSignatureUpdateWithWhereUniqueWithoutTermsInput[]
+    updateMany?: UserTermsSignatureUpdateManyWithWhereWithoutTermsInput | UserTermsSignatureUpdateManyWithWhereWithoutTermsInput[]
+    deleteMany?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+  }
+
+  export type UserTermsSignatureUncheckedUpdateManyWithoutTermsNestedInput = {
+    create?: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput> | UserTermsSignatureCreateWithoutTermsInput[] | UserTermsSignatureUncheckedCreateWithoutTermsInput[]
+    connectOrCreate?: UserTermsSignatureCreateOrConnectWithoutTermsInput | UserTermsSignatureCreateOrConnectWithoutTermsInput[]
+    upsert?: UserTermsSignatureUpsertWithWhereUniqueWithoutTermsInput | UserTermsSignatureUpsertWithWhereUniqueWithoutTermsInput[]
+    createMany?: UserTermsSignatureCreateManyTermsInputEnvelope
+    set?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    disconnect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    delete?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    connect?: UserTermsSignatureWhereUniqueInput | UserTermsSignatureWhereUniqueInput[]
+    update?: UserTermsSignatureUpdateWithWhereUniqueWithoutTermsInput | UserTermsSignatureUpdateWithWhereUniqueWithoutTermsInput[]
+    updateMany?: UserTermsSignatureUpdateManyWithWhereWithoutTermsInput | UserTermsSignatureUpdateManyWithWhereWithoutTermsInput[]
+    deleteMany?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutTerms_signaturesInput = {
+    create?: XOR<UserCreateWithoutTerms_signaturesInput, UserUncheckedCreateWithoutTerms_signaturesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTerms_signaturesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type TermsCreateNestedOneWithoutSignaturesInput = {
+    create?: XOR<TermsCreateWithoutSignaturesInput, TermsUncheckedCreateWithoutSignaturesInput>
+    connectOrCreate?: TermsCreateOrConnectWithoutSignaturesInput
+    connect?: TermsWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutTerms_signaturesNestedInput = {
+    create?: XOR<UserCreateWithoutTerms_signaturesInput, UserUncheckedCreateWithoutTerms_signaturesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTerms_signaturesInput
+    upsert?: UserUpsertWithoutTerms_signaturesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTerms_signaturesInput, UserUpdateWithoutTerms_signaturesInput>, UserUncheckedUpdateWithoutTerms_signaturesInput>
+  }
+
+  export type TermsUpdateOneRequiredWithoutSignaturesNestedInput = {
+    create?: XOR<TermsCreateWithoutSignaturesInput, TermsUncheckedCreateWithoutSignaturesInput>
+    connectOrCreate?: TermsCreateOrConnectWithoutSignaturesInput
+    upsert?: TermsUpsertWithoutSignaturesInput
+    connect?: TermsWhereUniqueInput
+    update?: XOR<XOR<TermsUpdateToOneWithWhereWithoutSignaturesInput, TermsUpdateWithoutSignaturesInput>, TermsUncheckedUpdateWithoutSignaturesInput>
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -2617,6 +5546,240 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type UserTermsSignatureCreateWithoutUserInput = {
+    signature: string
+    signed_at?: Date | string
+    Terms: TermsCreateNestedOneWithoutSignaturesInput
+  }
+
+  export type UserTermsSignatureUncheckedCreateWithoutUserInput = {
+    terms_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureCreateOrConnectWithoutUserInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    create: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTermsSignatureCreateManyUserInputEnvelope = {
+    data: UserTermsSignatureCreateManyUserInput | UserTermsSignatureCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTermsSignatureUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    update: XOR<UserTermsSignatureUpdateWithoutUserInput, UserTermsSignatureUncheckedUpdateWithoutUserInput>
+    create: XOR<UserTermsSignatureCreateWithoutUserInput, UserTermsSignatureUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserTermsSignatureUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    data: XOR<UserTermsSignatureUpdateWithoutUserInput, UserTermsSignatureUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserTermsSignatureUpdateManyWithWhereWithoutUserInput = {
+    where: UserTermsSignatureScalarWhereInput
+    data: XOR<UserTermsSignatureUpdateManyMutationInput, UserTermsSignatureUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserTermsSignatureScalarWhereInput = {
+    AND?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+    OR?: UserTermsSignatureScalarWhereInput[]
+    NOT?: UserTermsSignatureScalarWhereInput | UserTermsSignatureScalarWhereInput[]
+    user_id?: IntFilter<"UserTermsSignature"> | number
+    terms_id?: IntFilter<"UserTermsSignature"> | number
+    signature?: StringFilter<"UserTermsSignature"> | string
+    signed_at?: DateTimeFilter<"UserTermsSignature"> | Date | string
+  }
+
+  export type UserTermsSignatureCreateWithoutTermsInput = {
+    signature: string
+    signed_at?: Date | string
+    User: UserCreateNestedOneWithoutTerms_signaturesInput
+  }
+
+  export type UserTermsSignatureUncheckedCreateWithoutTermsInput = {
+    user_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureCreateOrConnectWithoutTermsInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    create: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput>
+  }
+
+  export type UserTermsSignatureCreateManyTermsInputEnvelope = {
+    data: UserTermsSignatureCreateManyTermsInput | UserTermsSignatureCreateManyTermsInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserTermsSignatureUpsertWithWhereUniqueWithoutTermsInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    update: XOR<UserTermsSignatureUpdateWithoutTermsInput, UserTermsSignatureUncheckedUpdateWithoutTermsInput>
+    create: XOR<UserTermsSignatureCreateWithoutTermsInput, UserTermsSignatureUncheckedCreateWithoutTermsInput>
+  }
+
+  export type UserTermsSignatureUpdateWithWhereUniqueWithoutTermsInput = {
+    where: UserTermsSignatureWhereUniqueInput
+    data: XOR<UserTermsSignatureUpdateWithoutTermsInput, UserTermsSignatureUncheckedUpdateWithoutTermsInput>
+  }
+
+  export type UserTermsSignatureUpdateManyWithWhereWithoutTermsInput = {
+    where: UserTermsSignatureScalarWhereInput
+    data: XOR<UserTermsSignatureUpdateManyMutationInput, UserTermsSignatureUncheckedUpdateManyWithoutTermsInput>
+  }
+
+  export type UserCreateWithoutTerms_signaturesInput = {
+    wallet_id: string
+    username: string
+    avatar_url?: number | null
+    preferred_language_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type UserUncheckedCreateWithoutTerms_signaturesInput = {
+    id?: number
+    wallet_id: string
+    username: string
+    avatar_url?: number | null
+    preferred_language_id?: number | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user_preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type UserCreateOrConnectWithoutTerms_signaturesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTerms_signaturesInput, UserUncheckedCreateWithoutTerms_signaturesInput>
+  }
+
+  export type TermsCreateWithoutSignaturesInput = {
+    content: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type TermsUncheckedCreateWithoutSignaturesInput = {
+    id?: number
+    content: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type TermsCreateOrConnectWithoutSignaturesInput = {
+    where: TermsWhereUniqueInput
+    create: XOR<TermsCreateWithoutSignaturesInput, TermsUncheckedCreateWithoutSignaturesInput>
+  }
+
+  export type UserUpsertWithoutTerms_signaturesInput = {
+    update: XOR<UserUpdateWithoutTerms_signaturesInput, UserUncheckedUpdateWithoutTerms_signaturesInput>
+    create: XOR<UserCreateWithoutTerms_signaturesInput, UserUncheckedCreateWithoutTerms_signaturesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTerms_signaturesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTerms_signaturesInput, UserUncheckedUpdateWithoutTerms_signaturesInput>
+  }
+
+  export type UserUpdateWithoutTerms_signaturesInput = {
+    wallet_id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableIntFieldUpdateOperationsInput | number | null
+    preferred_language_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type UserUncheckedUpdateWithoutTerms_signaturesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    wallet_id?: StringFieldUpdateOperationsInput | string
+    username?: StringFieldUpdateOperationsInput | string
+    avatar_url?: NullableIntFieldUpdateOperationsInput | number | null
+    preferred_language_id?: NullableIntFieldUpdateOperationsInput | number | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user_preferences?: NullableJsonNullValueInput | InputJsonValue
+  }
+
+  export type TermsUpsertWithoutSignaturesInput = {
+    update: XOR<TermsUpdateWithoutSignaturesInput, TermsUncheckedUpdateWithoutSignaturesInput>
+    create: XOR<TermsCreateWithoutSignaturesInput, TermsUncheckedCreateWithoutSignaturesInput>
+    where?: TermsWhereInput
+  }
+
+  export type TermsUpdateToOneWithWhereWithoutSignaturesInput = {
+    where?: TermsWhereInput
+    data: XOR<TermsUpdateWithoutSignaturesInput, TermsUncheckedUpdateWithoutSignaturesInput>
+  }
+
+  export type TermsUpdateWithoutSignaturesInput = {
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type TermsUncheckedUpdateWithoutSignaturesInput = {
+    id?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureCreateManyUserInput = {
+    terms_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureUpdateWithoutUserInput = {
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    Terms?: TermsUpdateOneRequiredWithoutSignaturesNestedInput
+  }
+
+  export type UserTermsSignatureUncheckedUpdateWithoutUserInput = {
+    terms_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureUncheckedUpdateManyWithoutUserInput = {
+    terms_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureCreateManyTermsInput = {
+    user_id: number
+    signature: string
+    signed_at?: Date | string
+  }
+
+  export type UserTermsSignatureUpdateWithoutTermsInput = {
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    User?: UserUpdateOneRequiredWithoutTerms_signaturesNestedInput
+  }
+
+  export type UserTermsSignatureUncheckedUpdateWithoutTermsInput = {
+    user_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserTermsSignatureUncheckedUpdateManyWithoutTermsInput = {
+    user_id?: IntFieldUpdateOperationsInput | number
+    signature?: StringFieldUpdateOperationsInput | string
+    signed_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
 

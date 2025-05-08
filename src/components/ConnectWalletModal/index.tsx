@@ -11,6 +11,7 @@ import WalletRules from './WalletRules'
 import nexticon from '@/assets/images/next_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import { useWalletModal } from '@/context/WalletModalContext'
+import { useTermsSignature } from '@/hooks/useTermsSignature'
 
 interface WalletConnectProvider {
   id: string
@@ -25,6 +26,9 @@ const ConnectWalletModal: React.FC = () => {
   const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(null)
   const [hasAgreedToRules, setHasAgreedToRules] = useState(false)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
+
+  // Check if user has signed latest terms
+  const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
 
   const handleClose = () => {
     toggleConnectWalletModal()
@@ -52,6 +56,10 @@ const ConnectWalletModal: React.FC = () => {
 
   const handleAgreeToRules = () => setHasAgreedToRules(true)
 
+  // Show rules if wallet is connected and terms are not signed
+  const shouldShowRules =
+    isWalletConnected && !hasAgreedToRules && !isTermsLoading && !termsData?.signed
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -64,7 +72,7 @@ const ConnectWalletModal: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-medium text-white">
-            {isWalletConnected && !hasAgreedToRules ? 'Rules' : 'Connect Wallet'}
+            {shouldShowRules ? 'Rules' : 'Connect Wallet'}
           </h3>
           <button onClick={handleClose} className="p-2 bg-[#322944] rounded-full">
             <Image src={menuClose} alt="Close" width={16} height={16} />
@@ -72,7 +80,7 @@ const ConnectWalletModal: React.FC = () => {
         </div>
 
         {/* Content */}
-        {isWalletConnected && !hasAgreedToRules ? (
+        {shouldShowRules ? (
           <WalletRules onAgree={handleAgreeToRules} onClose={handleClose} />
         ) : selectedConnector ? (
           <WalletDisplay
@@ -111,7 +119,7 @@ const ConnectWalletModal: React.FC = () => {
               </button>
             ))}
             <div className="mt-6 text-center">
-              <p className="text-sm text-white mb-2">Don’t have a wallet?</p>
+              <p className="text-sm text-white mb-2">Don&apos;t have a wallet?</p>
               <button className="px-6 py-3 bg-[#1c1624] text-white font-bold rounded-xl hover:bg-[#36303b]">
                 Create
               </button>

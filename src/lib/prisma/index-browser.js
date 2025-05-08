@@ -131,6 +131,20 @@ exports.Prisma.UserScalarFieldEnum = {
   user_preferences: 'user_preferences'
 };
 
+exports.Prisma.TermsScalarFieldEnum = {
+  id: 'id',
+  content: 'content',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.UserTermsSignatureScalarFieldEnum = {
+  user_id: 'user_id',
+  terms_id: 'terms_id',
+  signature: 'signature',
+  signed_at: 'signed_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -159,7 +173,9 @@ exports.Prisma.NullsOrder = {
 
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  User: 'User',
+  Terms: 'Terms',
+  UserTermsSignature: 'UserTermsSignature'
 };
 
 /**
