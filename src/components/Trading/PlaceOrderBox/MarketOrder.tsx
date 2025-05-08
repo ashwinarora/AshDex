@@ -15,8 +15,8 @@ import MarginMode from './components/MarginMode'
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperLiquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
-  const [amount, setAmount] = useState<number>(0)
-  const [total, setTotal] = useState<number>(0)
+  const [assetAmount, setAssetAmount] = useState<string>('')
+  const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
@@ -36,21 +36,21 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
-              limitPrice={allMids[selectedAsset]}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
+              limitPrice={allMids[selectedAsset].toString()}
               isBuy={isBuy}
             />
           ) : (
             <AmountInput
               selectedAsset={selectedAsset}
-              amount={amount}
-              setAmount={setAmount}
-              total={total}
-              setTotal={setTotal}
-              limitPrice={allMids[selectedAsset]}
+              assetAmount={assetAmount}
+              setAssetAmount={setAssetAmount}
+              usdAmount={usdAmount}
+              setUsdAmount={setUsdAmount}
+              limitPrice={allMids[selectedAsset].toString()}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
             />
@@ -84,8 +84,8 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
-          limitPrice={allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)}
-          amount={amount}
+          limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
+          assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}
           isPostOnly={isPostOnly}

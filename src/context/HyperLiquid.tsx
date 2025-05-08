@@ -144,9 +144,11 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         enableWs: boolean
         walletAddress?: string
         privateKey?: string
+        vaultAddress: string | null
       } = {
         testnet: isTestnet,
-        enableWs: true
+        enableWs: true,
+        vaultAddress: null
       }
       if (address) {
         config.walletAddress = address
@@ -195,6 +197,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       sdk.subscriptions.unsubscribeFromWebData2()
     }
   }, [sdk, address])
+
   return (
     <HyperLiquidContext.Provider
       value={{
