@@ -279,14 +279,6 @@ export const WALLETS = [
   { id: 'other', name: 'Other wallets', icon: '' }
 ] as const
 
-export const WALLET_RULES = `
-Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat elit sed augue porttitor, vel consequat diam bibendum. Nullam rhoncus eros nec ante aliquet, nec euismod libero molestie. Duis tortor tortor, viverra nec ante in, malesuada luctus massa. Donec rhoncus ex non consectetur congue. Duis lorem dui, tincidunt id mauris sit amet, venenatis laoreet eros. Praesent convallis metus sed leo condimentum pharetra. 
-
-Donec ultricies enim sed magna efficitur posuere. Praesent rhoncus velit odio, a pellentesque massa porta ac. Donec porttitor ex sit amet urna porta ultrices. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat elit sed augue porttitor, vel consequat diam bibendum. Nullam rhoncus eros nec ante aliquet, nec euismod libero molestie. Duis tortor tortor, viverra nec ante in, malesuada luctus massa. Donec rhoncus ex non consectetur congue. Duis lorem dui, tincidunt id mauris sit amet, venenatis laoreet eros. Praesent convallis metus sed leo condimentum pharetra. 
-
-Praesent rhoncus velit odio, a pellentesque massa porta ac. Donec porttitor ex sit amet urna porta ultrices. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer consequat elit sed augue porttitor, vel consequat diam bibendum. Nullam rhoncus eros nec ante aliquet, nec euismod libero molestie. Duis tortor tortor, viverra nec ante in, malesuada luctus massa. Donec rhoncus ex non consectetur congue. Duis lorem dui, tincidunt id mauris sit amet, venenatis laoreet eros. Praesent convallis metus sed leo condimentum pharetra. Donec ultricies enim sed magna efficitur posuere. Praesent rhoncus velit odio, a pellentesque massa porta ac. Donec porttitor ex sit amet urna porta ultrices.
-`
-
 export const INFOTAB_DESC = `
 Bitcoin (BTC) is a peer-to-peer cryptocurrency that aims to function as a means of exchange that is independent of any central authority. BTC can be transferred electronically in a secure, verifiable, and immutable way.
 
