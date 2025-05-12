@@ -80,7 +80,7 @@ const Positions = () => {
               assetIndex: assetIndex,
               isBuy: isBuy,
               reduceOnly: true,
-              price: formatPrice(price, szDecimals),
+              price: formatPrice(price, szDecimals).toString(),
               size: Math.abs(position.szi).toString(),
               orderType: {
                 limit: {

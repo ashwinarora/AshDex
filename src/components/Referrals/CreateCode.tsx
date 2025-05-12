@@ -29,7 +29,7 @@ function CreateCode() {
           </p>
           <p className="text-white text-base font-bold">
             {eligibleAmount
-              ? `$${Number(eligibleAmount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+              ? `$${Number(eligibleAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
               : '$0.00'}
           </p>
         </div>
