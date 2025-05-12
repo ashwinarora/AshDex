@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { useConnect } from 'wagmi'
+import { useConnect, useDisconnect } from 'wagmi'
 import { TrustWallet } from '@trustwallet/web3-react-trust-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { WALLETS } from '@/utils/constants'
@@ -12,6 +12,7 @@ import nexticon from '@/assets/images/next_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
+import { toast } from 'react-toastify'
 
 interface WalletConnectProvider {
   id: string
@@ -22,19 +23,21 @@ interface WalletConnectProvider {
 const ConnectWalletModal: React.FC = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
+  const { disconnect } = useDisconnect()
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(null)
-  const [hasAgreedToRules, setHasAgreedToRules] = useState(false)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
 
-  // Check if user has signed latest terms
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
 
   const handleClose = () => {
+    if (!termsData?.signed) {
+      disconnect()
+      toast.error('Please sign the latest terms to connect your wallet.')
+    }
     toggleConnectWalletModal()
     setSelectedConnector(null)
     setIsWalletConnected(null)
-    setHasAgreedToRules(false)
     reset()
   }
 
@@ -54,11 +57,8 @@ const ConnectWalletModal: React.FC = () => {
     }
   }
 
-  const handleAgreeToRules = () => setHasAgreedToRules(true)
-
   // Show rules if wallet is connected and terms are not signed
-  const shouldShowRules =
-    isWalletConnected && !hasAgreedToRules && !isTermsLoading && !termsData?.signed
+  const shouldShowRules = isWalletConnected && !isTermsLoading && !termsData?.signed
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -81,7 +81,7 @@ const ConnectWalletModal: React.FC = () => {
 
         {/* Content */}
         {shouldShowRules ? (
-          <WalletRules onAgree={handleAgreeToRules} onClose={handleClose} />
+          <WalletRules onClose={handleClose} />
         ) : selectedConnector ? (
           <WalletDisplay
             onBack={() => {
@@ -93,7 +93,7 @@ const ConnectWalletModal: React.FC = () => {
             name={selectedConnector.name}
             icon={selectedConnector.icon}
             isWalletConnected={isWalletConnected}
-            hasAgreedToRules={hasAgreedToRules}
+            hasAgreedToRules={!!termsData?.signed}
           />
         ) : (
           <div className="space-y-4">

@@ -13,7 +13,7 @@ export const useTermsSignature = () => {
     queryKey: ['termsSignature', address],
     queryFn: async () => {
       const { data } = await axios.get('/api/user-terms', {
-        data: { wallet_id: address }
+        params: { wallet_id: address }
       })
       return data
     },

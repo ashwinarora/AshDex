@@ -21,12 +21,6 @@ class TermsManager {
     })
   }
 
-  public async getTermsById(id: number): Promise<Terms | null> {
-    return this.prisma.terms.findUnique({
-      where: { id }
-    })
-  }
-
   public async hasUserSignedLatestTerms(wallet_id: string): Promise<boolean> {
     // Find the latest terms
     const latestTerms = await this.prisma.terms.findFirst({
@@ -55,6 +49,26 @@ class TermsManager {
     })
 
     return !!signature
+  }
+
+  public async createUserTermsSignature(wallet_id: string, terms_id: number, signature: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { wallet_id }
+    })
+
+    if (!user) {
+      throw new Error('User not found')
+    }
+
+    const res = await this.prisma.userTermsSignature.create({
+      data: {
+        user_id: user.id,
+        terms_id: terms_id,
+        signature: signature
+      }
+    })
+
+    return res
   }
 }
 
