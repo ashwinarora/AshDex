@@ -1,12 +1,10 @@
-import { PrismaClient, Terms } from '@/lib/prisma/client'
+import { Terms } from '@prisma/client'
+import { prisma } from '@/lib/prisma'
 
 class TermsManager {
   private static instance: TermsManager
-  private prisma: PrismaClient
 
-  private constructor() {
-    this.prisma = new PrismaClient()
-  }
+  private constructor() {}
 
   public static getInstance(): TermsManager {
     if (!TermsManager.instance) {
@@ -16,14 +14,14 @@ class TermsManager {
   }
 
   public async getLatestTerms(): Promise<Terms | null> {
-    return this.prisma.terms.findFirst({
+    return prisma.terms.findFirst({
       orderBy: { created_at: 'desc' }
     })
   }
 
   public async hasUserSignedLatestTerms(wallet_id: string): Promise<boolean> {
     // Find the latest terms
-    const latestTerms = await this.prisma.terms.findFirst({
+    const latestTerms = await prisma.terms.findFirst({
       orderBy: { created_at: 'desc' }
     })
     if (!latestTerms) {
@@ -31,7 +29,7 @@ class TermsManager {
     }
 
     // Find the user by wallet_id
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { wallet_id }
     })
     if (!user) {
@@ -39,7 +37,7 @@ class TermsManager {
     }
 
     // Check if the user has a signature for the latest terms
-    const signature = await this.prisma.userTermsSignature.findUnique({
+    const signature = await prisma.userTermsSignature.findUnique({
       where: {
         user_id_terms_id: {
           user_id: user.id,
@@ -52,7 +50,7 @@ class TermsManager {
   }
 
   public async createUserTermsSignature(wallet_id: string, terms_id: number, signature: string) {
-    const user = await this.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { wallet_id }
     })
 
@@ -60,7 +58,7 @@ class TermsManager {
       throw new Error('User not found')
     }
 
-    const res = await this.prisma.userTermsSignature.create({
+    const res = await prisma.userTermsSignature.create({
       data: {
         user_id: user.id,
         terms_id: terms_id,

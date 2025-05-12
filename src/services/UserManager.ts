@@ -1,6 +1,5 @@
-import prisma from '@/lib/prisma'
-import { User } from '@/lib/prisma/client'
-import { Prisma } from '@/lib/prisma/client'
+import { prisma } from '@/lib/prisma'
+import { User, Prisma } from '@prisma/client'
 
 class UserManager {
   private static instance: UserManager
