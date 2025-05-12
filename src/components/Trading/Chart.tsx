@@ -150,8 +150,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       tooltipRef.current.style.display = 'block'
 
       const isMobile = window.innerWidth <= 770
-      tooltipRef.current.style.left = isMobile ? '1rem' : '3.5rem'
-      tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
+      tooltipRef.current.style.left = isMobile ? '1rem' : '2rem'
+      tooltipRef.current.style.top = isMobile ? '10rem' : '7rem'
 
       const formattedDate = new Date((seriesData?.time as number) * 1000).toLocaleDateString(
         'en-US'
