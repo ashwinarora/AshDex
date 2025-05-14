@@ -371,7 +371,10 @@ export interface ITradeHistory {
 }
 
 export type ReferralData = {
-  referredBy: string | null
+  referredBy: {
+    referrer: string
+    code: string
+  } | null
   cumVlm: string
   unclaimedRewards: string
   claimedRewards: string
