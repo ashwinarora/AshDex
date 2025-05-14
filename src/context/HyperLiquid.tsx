@@ -194,7 +194,7 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       setSpotState(spotState)
     })
     return () => {
-      sdk.subscriptions.unsubscribeFromWebData2()
+      sdk.subscriptions.unsubscribeFromWebData2(userAddress)
     }
   }, [sdk, address])
 

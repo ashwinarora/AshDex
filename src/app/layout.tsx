@@ -15,6 +15,7 @@ import './globals.css'
 import '@/styles/table.css'
 import OnboardingModal from '@/components/common/Onboarding'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
+import { HyperLiquidInitializer } from './HyperliquidInitializer'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -49,6 +50,7 @@ export default function RootLayout({
       >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <Provider>
+          <HyperLiquidInitializer />
           <HyperLiquidProvider>
             <WalletModalProvider>
               <EstablishConnectionProvider>

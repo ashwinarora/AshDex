@@ -106,7 +106,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
     // For integer values, keep them as is
     if (Number.isInteger(numValue)) {
-      setLimitPrice(numValue.toString().replace(/\.?0+$/, ''))
+      setLimitPrice(numValue.toString())
     } else {
       // For decimal values, format with proper decimal places
       setLimitPrice(numValue.toFixed(allowedDecimals).replace(/\.?0+$/, ''))
