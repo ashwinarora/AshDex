@@ -29,7 +29,7 @@ import menuClose from '@/assets/images/close_icon.svg'
 import helpicon from '@/assets/images/help_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import disconnecticon from '@/assets/images/disconnect_icon.svg'
-
+import { useNexonReferral } from '@/hooks/useNexonReferral'
 type MenuItem = {
   name: string
   path: string
@@ -51,6 +51,7 @@ const Header: FC = () => {
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  useNexonReferral()
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/' },
