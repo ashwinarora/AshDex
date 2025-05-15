@@ -3,31 +3,21 @@ import {
   IconChevronDown,
   IconLoader2,
   IconSearch,
-  IconX,
-  IconExternalLink,
-  IconTransferVertical,
-  IconWallet,
-  IconCheck
+  IconX
 } from '@tabler/icons-react'
-import React, { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { toast } from 'react-toastify'
-import { useAccount, useWalletClient, useBalance, useWriteContract } from 'wagmi'
+import { useAccount, useWalletClient, useBalance } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
+import { useDisconnect } from 'wagmi'
 import { config } from '@/config/wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useBridge } from '@/context/BridgeContext'
-import {
-  Messenger,
-  FeePaymentMethod,
-  TokenWithChainDetails,
-  ChainSymbol,
-  RawEvmTransaction
-} from '@allbridge/bridge-core-sdk'
+import { Messenger, FeePaymentMethod, RawEvmTransaction } from '@allbridge/bridge-core-sdk'
 import Switch from '@/components/common/Switch'
-import { erc20Abi } from 'viem'
-import { USDC_ARBITRUM, HYPERLIQUID_DEPOSIT } from '@/utils/constants'
-
+import { formatSolanaAddress } from '@/utils/format'
+import { useTronTransfer } from './TronProvider'
 // Import all logos
 import ethereumLogo from '@/assets/logos/ethereum-eth-logo.svg'
 import bnbLogo from '@/assets/logos/bnb-bnb-logo.svg'
@@ -50,15 +40,28 @@ import nexonLogo from '@/assets/images/logo.svg'
 import allbridgeLogo from '@/assets/logos/allbridge-logo.svg'
 import wormholeLogo from '@/assets/logos/wormhole-w-logo.svg'
 import cctpLogo from '@/assets/logos/circle-icon.svg'
-// CCTP logo is missing, we'll use a placeholder for now
+import ConnectTronWallet from '../ConnectWalletModal/TronWallet'
 
-type ChainOption = {
+import { useTronWallet } from '@/utils/tronWalletAdapter'
+
+import { useSolanaWallet } from './SolanaButton'
+import { useHandleSolanaTransfer } from './SolanaButton'
+
+import { ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
+import { useWallet as useSuiWallet, ConnectModal as SuiConnectModal } from '@suiet/wallet-kit'
+import Avatar from '../common/Avatar'
+import StellarProvider from './StellarProvider'
+import BridgeWalletModal from './BridgeWalletModal'
+import Accordion from '../common/Accordion'
+import TransactionsCard from './TransactionsCard'
+// Remove the Transaction interface since we're using BridgeTransaction from context
+interface ChainOption {
   name: string
   logo: string
   supportedTokens: string[]
 }
 
-type Token = {
+interface Token {
   symbol: string
   name: string
   decimals: number
@@ -71,7 +74,7 @@ type Token = {
   lpRate: string
 }
 
-type Chain = {
+interface Chain {
   name: string
   chainSymbol: string
   chainType: string
@@ -80,178 +83,183 @@ type Chain = {
   tokens: Token[]
 }
 
-interface Transaction {
-  hash: string
-  messenger: Messenger
-  timestamp: number
-  amount: string
-  sourceToken: string
-  destinationToken: string
-  sourceChain: string
-  destinationChain: string
-  status?: 'pending' | 'source_complete' | 'complete'
-}
-
-// Add ProgressBar component
-const ProgressBar = ({
-  sourceChain,
-  destinationChain,
-  status,
-  getLogoPath
-}: {
-  sourceChain: string
-  destinationChain: string
-  status: 'pending' | 'source_complete' | 'complete'
-  getLogoPath: (symbol: string) => string
-}) => {
-  return (
-    <div className="flex items-center justify-between w-full mt-3 align-middle px-2">
-      {/* Source Chain Step */}
-      <div className="flex flex-col items-center">
-        <div
-          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/5`}
-        >
-          <Image
-            src={getLogoPath(sourceChain)}
-            alt={sourceChain}
-            width={16}
-            height={16}
-            className="w-4 h-4"
-          />
-        </div>
-        <span
-          className={`text-xs mt-1 transition-colors duration-300 relative items-center gap-1 ${
-            status === 'pending' ? 'text-white' : 'text-white/50'
-          }`}
-        >
-          Source{' '}
-          <IconCheck
-            className={`w-4 h-4 transition-colors duration-300  absolute  -translate-y-[100%]  -right-4 rounded-full p-0.5 ${
-              status === 'source_complete' || status === 'complete'
-                ? 'text-green-500 block'
-                : 'hidden'
-            }`}
-          />
-          <IconLoader2
-            className={`w-4 h-4 transition-colors duration-300  absolute  -translate-y-[100%]  -right-4 rounded-full p-0.5 animate-spin ${
-              status === 'pending' ? 'text-white block' : 'hidden'
-            }`}
-          />
-        </span>
-      </div>
-      <div className="flex-1 h-1 mx-2 relative mb-4">
-        <div className="absolute top-0 left-0 h-full bg-white/5 w-full rounded-full" />
-        <div
-          className={`absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-500 ${
-            status === 'pending'
-              ? 'w-0'
-              : (status === 'source_complete' || status === 'complete') && 'w-full'
-          }`}
-        />
-      </div>
-      {/* Destination Chain Step */}
-      <div className="flex flex-col items-center">
-        <div
-          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/5`}
-        >
-          <Image
-            src={getLogoPath(destinationChain)}
-            alt={destinationChain}
-            width={16}
-            height={16}
-            className="w-4 h-4"
-          />
-        </div>
-        <span
-          className={`text-xs mt-1 transition-colors duration-300 relative items-center gap-1 ${
-            status === 'source_complete' ? 'text-white' : 'text-white/50'
-          }`}
-        >
-          Destination{' '}
-          <IconCheck
-            className={`w-4 h-4 transition-colors duration-300  absolute  -translate-y-[100%]  -right-4 rounded-full p-0.5 ${
-              status === 'complete' ? 'text-green-500 block' : 'hidden'
-            }`}
-          />
-          <IconLoader2
-            className={`w-4 h-4 transition-colors duration-300  absolute  -translate-y-[100%]  -right-4 rounded-full p-0.5 animate-spin ${
-              status === 'source_complete' ? 'text-white block' : 'hidden'
-            }`}
-          />
-        </span>
-      </div>
-      <div className="flex-1 h-1 mx-2 relative mb-4">
-        <div className="absolute top-0 left-0 h-full bg-white/5 w-full rounded-full" />
-        <div
-          className={`absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-500 ${
-            status === 'complete' ? 'w-full' : 'w-0'
-          }`}
-        />
-      </div>
-      {/* Wallet Step */}
-      <div className="flex flex-col items-center">
-        <div
-          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/5`}
-        >
-          <IconWallet
-            className={`w-4 h-4 transition-colors duration-300 ${
-              status === 'complete' ? 'text-white' : 'text-white/50'
-            }`}
-          />
-        </div>
-        <span
-          className={`text-xs mt-1 transition-colors duration-300 relative items-center gap-1 ${
-            status === 'complete' ? 'text-primary' : 'text-white/50'
-          }`}
-        >
-          Wallet
-          <IconCheck
-            className={`w-4 h-4 transition-colors duration-300  absolute  -translate-y-[100%]  -right-4 rounded-full p-0.5 ${
-              status === 'complete' ? 'text-green-500 block' : 'hidden'
-            }`}
-          />
-        </span>
-      </div>
-    </div>
-  )
-}
-
 function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  // Wallet hooks
+  const {
+    publicKey: solanaAddress,
+    connected: isSolanaConnected,
+    disconnect: disconnectSolana
+  } = useSolanaWallet()
   const { address, isConnected } = useAccount()
   const { toggleConnectWalletModal } = useWalletModal()
+  const { isTronConnected, tronAddress, disconnectTron } = useTronWallet()
+  const { data: walletClient } = useWalletClient()
+  const { disconnect } = useDisconnect()
+  const {
+    connected: isSuiConnected,
+    account: suiAddress,
+    disconnect: disconnectSui
+  } = useSuiWallet()
+  const { handleTronTransfer, checkTronAllowance } = useTronTransfer()
+
+  // Bridge context
   const {
     chains,
     sourceChain,
     destinationChain,
     sourceToken,
     destinationToken,
+    setSourceChain,
+    setDestinationChain,
     setSourceToken,
     setDestinationToken,
     isLoading,
-    initiateBridge,
     getGasFeeOptions,
     getAverageTransferTime,
-    sdk
+    setAmount,
+    amount,
+    sdk,
+    setUseNativeTokenForGas,
+    useNativeTokenForGas,
+    isTronAllowanceApproved,
+    selectedMessenger,
+    setSelectedMessenger,
+    showWalletsModal,
+    setShowWalletsModal,
+    transactions,
+
+    addTransaction
   } = useBridge()
-  const [amount, setAmount] = useState('')
-  const [useNativeTokenForGas, setUseNativeTokenForGas] = useState(true)
+
+  const stellarKit = StellarProvider()
+
+  // Refs
+  const swappingRef = useRef(false)
+  const statusCheckIntervalRef = useRef<NodeJS.Timeout | null>(null)
+
+  // UI state
+  const [isFromChainOpen, setIsFromChainOpen] = useState(false)
+  const [isToChainOpen, setIsToChainOpen] = useState(false)
+  const [isFromTokenOpen, setIsFromTokenOpen] = useState(false)
+  const [isToTokenOpen, setIsToTokenOpen] = useState(false)
+  const [isMessengerOpen, setIsMessengerOpen] = useState(false)
+  const [isSwapping, setIsSwapping] = useState(false)
   const [gasFee, setGasFee] = useState<string | null>(null)
-  const [selectedMessenger, setSelectedMessenger] = useState<Messenger>(Messenger.ALLBRIDGE)
   const [supportedMessengers, setSupportedMessengers] = useState<Set<Messenger>>(new Set())
-  const { data: walletClient } = useWalletClient()
   const [sourceTokenBalance, setSourceTokenBalance] = useState<string>('0')
   const [estimatedReceiveAmount, setEstimatedReceiveAmount] = useState<string>('0')
-
   const [isLoadingEstimate, setIsLoadingEstimate] = useState(false)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
-  const { writeContractAsync } = useWriteContract()
-  const [selectedToChain, setSelectedToChain] = useState(destinationChain?.name || 'Ethereum')
 
-  const [isSwapping, setIsSwapping] = useState(false)
-  // Inside your component
-  const swappingRef = useRef(false)
-  // Add transaction receipt hook
-  const statusCheckIntervalRef = useRef<NodeJS.Timeout | null>(null)
+  const [stellarAddress, setStellarAddress] = useState<string | null>(null)
+  const [showSuiModal, setShowSuiModal] = useState(false)
+
+  // Chain and token selection state
+  const [selectedFromChain, setSelectedFromChain] = useState(sourceChain?.name || '')
+  const [selectedToChain, setSelectedToChain] = useState(destinationChain?.name || '')
+  const [selectedFromToken, setSelectedFromToken] = useState(sourceToken?.symbol || '')
+  const [selectedToToken, setSelectedToToken] = useState(destinationToken?.symbol || '')
+
+  // Update local state when context values change
+  useEffect(() => {
+    if (sourceChain) {
+      setSelectedFromChain(sourceChain.name)
+    }
+    if (destinationChain) {
+      setSelectedToChain(destinationChain.name)
+    }
+    if (sourceToken) {
+      setSelectedFromToken(sourceToken.symbol)
+    }
+    if (destinationToken) {
+      setSelectedToToken(destinationToken.symbol)
+    }
+  }, [sourceChain, destinationChain, sourceToken, destinationToken])
+
+  // Update context when local chain selection changes
+  const handleFromChainChange = async (chainName: string) => {
+    // Prevent duplicate updates
+    if (chainName === selectedFromChain) return
+
+    setSelectedFromChain(chainName)
+    const newChain = Object.values(chains).find((chain) => chain.name === chainName)
+    if (newChain) {
+      setSourceChain(newChain)
+      // Reset token if it's not supported in the new chain
+      if (sourceToken && !newChain.tokens.some((t) => t.symbol === sourceToken.symbol)) {
+        setSourceToken(null)
+        setSelectedFromToken('')
+      }
+
+      // If Arbitrum is selected as source chain, set Nexon as destination
+      if (chainName === 'Arbitrum') {
+        // Find Arbitrum chain from the chains object
+        const arbitrumChain = Object.values(chains).find((chain) => chain.name === 'Arbitrum')
+        if (arbitrumChain) {
+          // Set Arbitrum as the actual destination chain for bridge operations
+          setDestinationChain(arbitrumChain)
+          // Set Nexon as the display name in UI
+          setSelectedToChain('Nexon')
+          // Set USDC as the destination token
+          const usdcToken = arbitrumChain.tokens.find((token) => token.symbol === 'USDC')
+          if (usdcToken) {
+            setDestinationToken(usdcToken)
+            setSelectedToToken('USDC')
+          }
+        }
+      }
+
+      // Handle network switching
+      if (isConnected && !['Tron', 'Solana', 'Sui', 'Stellar'].includes(chainName)) {
+        await switchToNetwork(chainName)
+      }
+
+      // Handle Tron allowance check
+      if (chainName === 'Tron' && sourceToken && amount && tronAddress) {
+        checkTronAllowance(sourceToken, amount, tronAddress)
+      }
+    }
+  }
+
+  const handleToChainChange = (chainName: string) => {
+    setSelectedToChain(chainName)
+    const newChain = Object.values(chains).find((chain) => chain.name === chainName)
+    if (newChain) {
+      setDestinationChain(newChain)
+      // Reset token if it's not supported in the new chain
+      if (destinationToken && !newChain.tokens.some((t) => t.symbol === destinationToken.symbol)) {
+        setDestinationToken(null)
+        setSelectedToToken('')
+      }
+    }
+  }
+
+  // Update context when local token selection changes
+  const handleFromTokenChange = (tokenSymbol: string) => {
+    setSelectedFromToken(tokenSymbol)
+    if (sourceChain) {
+      const newToken = sourceChain.tokens.find((t) => t.symbol === tokenSymbol)
+      if (newToken) {
+        setSourceToken(newToken)
+      }
+    }
+  }
+
+  const handleToTokenChange = (tokenSymbol: string) => {
+    setSelectedToToken(tokenSymbol)
+    if (destinationChain) {
+      const newToken = destinationChain.tokens.find((t) => t.symbol === tokenSymbol)
+      if (newToken) {
+        setDestinationToken(newToken)
+      }
+    }
+  }
+
+  // Reset swap state after chain updates
+  useEffect(() => {
+    if (isSwapping) {
+      setIsSwapping(false)
+    }
+  }, [selectedFromChain, selectedToChain])
 
   // Get token balances using wagmi's useBalance hook
   const { data: sourceTokenBalanceData } = useBalance({
@@ -294,7 +302,9 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     if (!fee || !sourceToken) return '–'
     // Limit to 6 decimal places
     const formattedFee = parseFloat(fee).toFixed(6)
-    return formattedFee
+    // Add the token symbol based on the payment method
+    const tokenSymbol = useNativeTokenForGas ? sourceToken.chainSymbol : sourceToken.symbol
+    return `${formattedFee} ${tokenSymbol}`
   }
 
   // Function to get logo path for a chain or token
@@ -455,23 +465,32 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const fetchGasFeeOptions = async () => {
     if (!sdk || !sourceToken || !destinationToken || !selectedMessenger) {
       setGasFee(null)
-
       return
     }
 
     try {
-      const feeOptions = await sdk.getGasFeeOptions(
-        sourceToken,
-        destinationToken,
-        selectedMessenger
-      )
+      const feeOptions = await getGasFeeOptions(sourceToken, destinationToken, selectedMessenger)
 
-      if (useNativeTokenForGas && feeOptions?.native) {
-        setGasFee(feeOptions.native.float)
-      } else if (!useNativeTokenForGas && feeOptions?.stablecoin) {
-        setGasFee(feeOptions.stablecoin.float)
-      } else {
+      if (!feeOptions) {
         setGasFee(null)
+        return
+      }
+
+      // Update gas fee based on the selected payment method
+      if (useNativeTokenForGas) {
+        if (feeOptions.native) {
+          setGasFee(feeOptions.native.float)
+        } else {
+          setGasFee(null)
+          toast.error('Native token payment not available for this transfer')
+        }
+      } else {
+        if (feeOptions.stablecoin) {
+          setGasFee(feeOptions.stablecoin.float)
+        } else {
+          setGasFee(null)
+          toast.error('Stablecoin payment not available for this transfer')
+        }
       }
     } catch (error) {
       console.error('Error fetching gas fee options:', error)
@@ -484,83 +503,71 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     fetchGasFeeOptions()
   }, [sourceToken, destinationToken, selectedMessenger, useNativeTokenForGas])
 
-  // Fetch transfer time and gas fee when source/destination tokens or chains change
+  // Calculate estimated receive amount when relevant values change
   useEffect(() => {
-    const fetchTransferDetails = async () => {
-      // Reset states when dependencies change
-      setGasFee(null)
+    // Add a small delay to ensure gas fee is updated before calculating receive amount
+    const timer = setTimeout(() => {
+      calculateEstimatedReceiveAmount()
+    }, 100)
+    return () => clearTimeout(timer)
+  }, [amount, sourceToken, destinationToken, useNativeTokenForGas, selectedMessenger, gasFee])
 
-      // Validate required parameters
-      if (!sourceToken || !destinationToken || !selectedMessenger) {
-        return
-      }
-
-      // Validate token properties
-      if (!sourceToken.chainSymbol || !destinationToken.chainSymbol) {
-        console.error('Missing chainSymbol in tokens:', {
-          sourceToken: sourceToken.chainSymbol,
-          destinationToken: destinationToken.chainSymbol
-        })
-        toast.error('Invalid token configuration. Missing chain information.')
-        return
-      }
-
-      // Validate chain and token combinations
-      if (sourceToken.chainSymbol === destinationToken.chainSymbol) {
-        console.log('Source and destination chains are the same')
-        return
-      }
-
-      try {
-        // Convert Messenger enum to number
-        const messengerValue = Number(selectedMessenger)
-
-        // Get fee options
-        const feeOptions = await getGasFeeOptions(sourceToken, destinationToken, messengerValue)
-
-        // Set only native fee
-        if (feeOptions?.native) {
-          setGasFee(feeOptions.native.float)
-        }
-      } catch (err: unknown) {
-        console.error('Error fetching transfer details:', err)
-
-        // Log detailed error information
-        if (err && typeof err === 'object' && 'response' in err) {
-          const errorResponse = err.response as {
-            status?: number
-            data?: { message?: string }
-            headers?: unknown
-          }
-          console.error('Error response:', {
-            status: errorResponse.status,
-            data: errorResponse.data,
-            headers: errorResponse.headers
-          })
-
-          // Show user-friendly error message
-          if (errorResponse.status === 400) {
-            const errorMessage = errorResponse.data?.message || 'Invalid chain or token combination'
-            toast.error(`Bridge error: ${errorMessage}. Please try a different pair.`)
-          } else {
-            toast.error('Failed to fetch transfer details. Please try again.')
-          }
-        } else {
-          toast.error('Failed to fetch transfer details. Please try again.')
-        }
-      }
+  // Function to calculate estimated receive amount
+  const calculateEstimatedReceiveAmount = async () => {
+    if (!sdk || !sourceToken || !destinationToken || !amount) {
+      setEstimatedReceiveAmount('0')
+      return
     }
 
-    fetchTransferDetails()
-  }, [
-    sourceToken,
-    destinationToken,
-    sourceChain,
-    destinationChain,
-    selectedMessenger,
-    getAverageTransferTime,
-    getGasFeeOptions
-  ])
+    try {
+      setIsLoadingEstimate(true)
+
+      if (Number(amount) <= 0) {
+        setEstimatedReceiveAmount('0')
+        setIsLoadingEstimate(false)
+        return
+      }
+
+      // Calculate total amount to be sent (including gas fee)
+      let totalAmountToSend = amount
+      if (gasFee) {
+        if (!useNativeTokenForGas) {
+          // If using stablecoin for gas, subtract the gas fee from the amount
+          const amountFloat = parseFloat(amount)
+          const gasFeeFloat = parseFloat(gasFee)
+          // Ensure we don't go below 0 and limit to 6 decimal places for USDC
+          const result = Math.max(0, amountFloat - gasFeeFloat)
+          totalAmountToSend = result.toFixed(6)
+
+          // If the amount after gas fee is 0, return early
+          if (totalAmountToSend === '0.000000') {
+            setEstimatedReceiveAmount('0')
+            setIsLoadingEstimate(false)
+            return
+          }
+        }
+      }
+
+      // Get the amount to be received
+      const amountToBeReceived = await sdk.getAmountToBeReceived(
+        totalAmountToSend,
+        sourceToken,
+        destinationToken
+      )
+
+      // Only update if we got a valid response
+      if (amountToBeReceived) {
+        setEstimatedReceiveAmount(amountToBeReceived)
+      } else {
+        setEstimatedReceiveAmount('0')
+      }
+    } catch (error) {
+      console.error('Error calculating estimated receive amount:', error)
+      setEstimatedReceiveAmount('0')
+    } finally {
+      setIsLoadingEstimate(false)
+    }
+  }
 
   // Function to switch to the selected network
   const switchToNetwork = async (chainName: string) => {
@@ -613,109 +620,10 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
       return false
     }
   }
-
-  // Add a ref to track if deposit has been initiated
-  const depositInitiatedRef = useRef<boolean>(false)
-
-  const checkTransferStatus = async (txId: string, chainSymbol: ChainSymbol) => {
-    if (!sdk) {
-      console.error('SDK not initialized')
-      return
-    }
-
-    try {
-      const transferStatus = await sdk.getTransferStatus(chainSymbol, txId)
-      console.log('Transfer Status:', transferStatus)
-
-      // Handle different stages of the transaction
-      if (!transferStatus) {
-        // Stage 1: Transaction not found yet
-        return 'pending'
-      } else if (typeof transferStatus === 'object') {
-        if (transferStatus.receive === null) {
-          // Stage 2: Transaction completed on source chain
-          return 'source_complete'
-        } else if (transferStatus.receive) {
-          // Stage 3: Transaction completed on destination chain
-          // If destination is Nexon, initiate deposit
-          if (selectedToChain === 'Nexon' && !depositInitiatedRef.current) {
-            depositInitiatedRef.current = true
-            const handleNexonDeposit = async () => {
-              try {
-                // Switch to Arbitrum network
-                await switchChain(config, { chainId: 42161 })
-
-                toast.success('Switched to Arbitrum network')
-                // Convert amount to bigint for the contract call
-                const amountBigInt = BigInt(Math.floor(parseFloat(amount) * 1e6)) // Assuming 6 decimals for USDC
-
-                // Deposit to Hyperliquid using writeContractAsync
-                const depositHash = await writeContractAsync({
-                  address: USDC_ARBITRUM,
-                  abi: erc20Abi,
-                  functionName: 'transfer',
-                  args: [HYPERLIQUID_DEPOSIT, amountBigInt]
-                })
-
-                console.log('Deposit to Hyperliquid hash:', depositHash)
-
-                // Add deposit transaction to list
-                const depositTransaction: Transaction = {
-                  hash: depositHash,
-                  messenger: Messenger.ALLBRIDGE,
-                  timestamp: Date.now(),
-                  amount,
-                  sourceToken: 'USDC',
-                  destinationToken: 'USDC',
-                  sourceChain: 'ARB',
-                  destinationChain: 'NEXON',
-                  status: 'complete'
-                }
-
-                setTransactions((prev) => [depositTransaction, ...prev])
-                toast.success('Deposit to Nexon completed!')
-              } catch (error) {
-                console.error('Deposit to Nexon failed:', error)
-                toast.error('Failed to deposit to Nexon. Please try again.')
-              }
-            }
-
-            await handleNexonDeposit()
-          }
-
-          toast.success('Transaction completed successfully!')
-          // Clear the interval since transaction is complete
-          if (statusCheckIntervalRef.current) {
-            clearInterval(statusCheckIntervalRef.current)
-            statusCheckIntervalRef.current = null
-          }
-          return 'complete'
-        }
-      }
-      return null
-    } catch (error) {
-      console.error('Error checking transfer status:', error)
-      return null
-    }
-  }
-
-  // Add cleanup for depositInitiatedRef when component unmounts
-  useEffect(() => {
-    return () => {
-      if (statusCheckIntervalRef.current) {
-        clearInterval(statusCheckIntervalRef.current)
-        statusCheckIntervalRef.current = null
-      }
-      depositInitiatedRef.current = false
-    }
-  }, [])
-
   // Modify handleTransfer to check status periodically
   const handleTransfer = async () => {
     if (!isConnected) {
-      toast.error('Please connect your wallet')
-      onClose()
-      toggleConnectWalletModal()
+      toast.error('Please connect your wallet first')
       return
     }
 
@@ -743,6 +651,24 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     }
 
     try {
+      // Get fee options to validate payment method
+      const feeOptions = await getGasFeeOptions(sourceToken, destinationToken, selectedMessenger)
+
+      if (!feeOptions) {
+        toast.error('Failed to get fee options')
+        return
+      }
+
+      // Validate that the selected payment method is available
+      if (useNativeTokenForGas && !feeOptions.native) {
+        toast.error('Native token payment not available for this transfer')
+        return
+      }
+      if (!useNativeTokenForGas && !feeOptions.stablecoin) {
+        toast.error('Stablecoin payment not available for this transfer')
+        return
+      }
+
       // Create sendParams object
       const sendParams = {
         amount,
@@ -756,7 +682,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         messenger: selectedMessenger
       }
 
-      const owner = address?.split('0x')[1].toString()
+      const owner = address
       //check if sending tokens already approved
       if (owner) {
         if (
@@ -787,38 +713,26 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
         console.log('Bridge rawTx:', rawTx)
 
         // Continue with the bridge transaction
-        const hash = await initiateBridge(sendParams)
+        const hash = await walletClient?.sendTransaction(rawTx)
 
-        // Add transaction to list
-        const newTransaction: Transaction = {
-          hash,
-          messenger: selectedMessenger,
-          timestamp: Date.now(),
-          amount,
-          sourceToken: sourceToken.symbol,
-          destinationToken: destinationToken.symbol,
-          sourceChain: sourceToken.chainSymbol,
-          destinationChain: destinationToken.chainSymbol,
-          status: 'pending'
+        if (hash) {
+          // Add transaction to list using context function
+          addTransaction({
+            hash,
+            messenger: selectedMessenger,
+            timestamp: Date.now(),
+            amount,
+            sourceToken: sourceToken.symbol,
+            destinationToken: destinationToken.symbol,
+            sourceChain: sourceToken.chainSymbol,
+            destinationChain: destinationToken.chainSymbol,
+            transferTime: messengerTransferTimes.get(selectedMessenger) || null
+          })
+
+          console.log('Bridge transaction hash:', hash)
+
+          toast.success('Transaction initiated successfully!')
         }
-
-        console.log('New transaction:', newTransaction)
-        setTransactions((prev) => [newTransaction, ...prev])
-        console.log('Bridge transaction hash:', hash)
-
-        // Start checking status every 5 seconds
-        statusCheckIntervalRef.current = setInterval(async () => {
-          const status = await checkTransferStatus(hash, sourceToken.chainSymbol as ChainSymbol)
-          if (status) {
-            // Update transaction status in the list
-            setTransactions((prev) => prev.map((tx) => (tx.hash === hash ? { ...tx, status } : tx)))
-            if (status === 'complete') {
-              return
-            }
-          }
-        }, 1000)
-
-        toast.success('Transaction initiated successfully!')
       }
     } catch (err) {
       console.error('Transfer failed:', err)
@@ -831,217 +745,206 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     }
   }
 
-  const getExplorerUrl = (hash: string, messenger: Messenger) => {
-    switch (messenger) {
-      case Messenger.ALLBRIDGE:
-        return `https://core.allbridge.io/explorer/transfer/${hash}`
-      case Messenger.WORMHOLE:
-        return `https://wormholescan.io/#/tx/${hash}`
-      default:
-        return `https://core.allbridge.io/explorer/transfer/${hash}`
+  // const { connection } = useAppKitConnection()
+
+  //Stellar
+  const handleStellarTransfer = async () => {
+    if (!stellarKit) {
+      toast.error('Stellar SDK not initialized')
+      return
     }
+    await stellarKit.openModal({
+      onWalletSelected: async (option: ISupportedWallet) => {
+        stellarKit.setWallet(option.id)
+        const { address } = await stellarKit.getAddress()
+        // Do something else
+        console.log('Stellar address:', address)
+        setStellarAddress(address)
+      }
+    })
   }
-
-  const [selectedToToken, setSelectedToToken] = useState(destinationToken?.symbol || 'USDC')
-  const [isToChainOpen, setIsToChainOpen] = useState(false)
-
-  const [selectedFromChain, setSelectedFromChain] = useState(sourceChain?.name || 'Polygon')
-  const [selectedFromToken, setSelectedFromToken] = useState(sourceToken?.symbol || 'USDC')
-
-  const [isFromChainOpen, setIsFromChainOpen] = useState(false)
-  const [isFromTokenOpen, setIsFromTokenOpen] = useState(false)
-  const [isToTokenOpen, setIsToTokenOpen] = useState(false)
-  const [isMessengerOpen, setIsMessengerOpen] = useState(false)
-
-  // Update sourceToken when selectedFromChain or selectedFromToken changes
-  useEffect(() => {
-    if (selectedFromChain && selectedFromToken) {
-      const chainData = Object.values(chains).find(
-        (chain: Chain) => chain.name === selectedFromChain
-      )
-      if (chainData) {
-        const tokenData = chainData.tokens.find(
-          (token: Token) => token.symbol === selectedFromToken
-        )
-        if (tokenData) {
-          // Convert Token to TokenWithChainDetails
-          const tokenWithChainDetails: TokenWithChainDetails = {
-            ...tokenData,
-            chainSymbol: chainData.chainSymbol as ChainSymbol,
-            chainId: chainData.allbridgeChainId.toString()
-          }
-          setSourceToken(tokenWithChainDetails)
-
-          // If user is connected, try to switch to the selected network
-        }
-      }
-    }
-  }, [selectedFromChain, selectedFromToken, chains, setSourceToken, isConnected])
-
-  // Update destinationToken when selectedToChain or selectedToToken changes
-  useEffect(() => {
-    if (selectedToChain && selectedToToken) {
-      const chainData = Object.values(chains).find((chain: Chain) => chain.name === selectedToChain)
-      if (chainData) {
-        const tokenData = chainData.tokens.find((token: Token) => token.symbol === selectedToToken)
-        if (tokenData) {
-          // Convert Token to TokenWithChainDetails
-          const tokenWithChainDetails: TokenWithChainDetails = {
-            ...tokenData,
-            chainSymbol:
-              selectedToChain === 'Nexon'
-                ? ChainSymbol.ARB
-                : (chainData.chainSymbol as ChainSymbol),
-            chainId: selectedToChain === 'Nexon' ? '42161' : chainData.allbridgeChainId.toString()
-          }
-          setDestinationToken(tokenWithChainDetails)
-        }
-      }
-    }
-  }, [selectedToChain, selectedToToken, chains, setDestinationToken])
 
   // Track if this is the initial load
   const [isInitialLoad, setIsInitialLoad] = useState(true)
 
   // Modify token dropdown open useEffects
   useEffect(() => {
-    if (!isInitialLoad && !swappingRef.current) {
-      if (selectedFromChain) {
-        setIsFromTokenOpen(true)
-      }
+    // Only open dropdown if not swapping and not initial load
+    if (!isInitialLoad && !swappingRef.current && !isSwapping && selectedFromChain) {
+      setIsFromTokenOpen(true)
     }
-    if (isConnected) {
-      switchToNetwork(selectedFromChain)
-    }
-  }, [selectedFromChain])
+  }, [selectedFromChain, isSwapping, swappingRef.current])
 
   useEffect(() => {
-    if (!isInitialLoad && !swappingRef.current) {
-      if (selectedToChain) {
-        setIsToTokenOpen(true)
-      }
+    // Only open dropdown if not swapping and not initial load
+    if (!isInitialLoad && !swappingRef.current && !isSwapping && selectedToChain) {
+      setIsToTokenOpen(true)
     }
-  }, [selectedToChain])
-
-  // Reset swap ref after chain updates
-  useEffect(() => {
-    if (isSwapping) {
-      swappingRef.current = false
-      setIsSwapping(false)
-    }
-  }, [selectedFromChain, selectedToChain])
+  }, [selectedToChain, isSwapping, swappingRef.current])
 
   // Set isInitialLoad to false after the first render
   useEffect(() => {
     setIsInitialLoad(false)
   }, [])
 
-  // Function to calculate estimated receive amount
-  const calculateEstimatedReceiveAmount = async () => {
-    if (!sdk || !sourceToken || !destinationToken || !amount) {
-      setEstimatedReceiveAmount('0')
-      return
-    }
-
-    try {
-      setIsLoadingEstimate(true)
-      // Get gas fee options first
-      const feeOptions = await sdk.getGasFeeOptions(
-        sourceToken,
-        destinationToken,
-        selectedMessenger
-      )
-
-      // Calculate total amount to be sent (including gas fee)
-      let totalAmountToSend = amount
-      if (feeOptions) {
-        if (useNativeTokenForGas && feeOptions.native) {
-          // If using native token for gas, the amount stays the same
-          totalAmountToSend = amount
-        } else if (!useNativeTokenForGas && feeOptions.stablecoin) {
-          // If using stablecoin for gas, subtract the gas fee from the amount
-          const amountFloat = parseFloat(amount)
-          const gasFeeFloat = parseFloat(feeOptions.stablecoin.float)
-          totalAmountToSend = Math.max(0, amountFloat - gasFeeFloat).toString()
-        }
-      }
-
-      const amountToBeReceived = await sdk.getAmountToBeReceived(
-        totalAmountToSend,
-        sourceToken,
-        destinationToken
-      )
-      setEstimatedReceiveAmount(amountToBeReceived)
-    } catch (error) {
-      console.error('Error calculating estimated receive amount:', error)
-      setEstimatedReceiveAmount('0')
-    } finally {
-      setIsLoadingEstimate(false)
-    }
-  }
-
-  // Calculate estimated amount when relevant values change
-  useEffect(() => {
-    calculateEstimatedReceiveAmount()
-  }, [amount, sourceToken, destinationToken, useNativeTokenForGas, selectedMessenger])
-
-  const formatTime = (timestamp: number) => {
-    const date = new Date(timestamp)
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  }
+  const handleSolanaTransfer = useHandleSolanaTransfer()
 
   return (
     <div
       className={`${isOpen ? 'block' : 'hidden'} absolute top-0 left-0 w-full h-full bg-black/50`}
     >
-      <div className="min-h-screen flex items-center justify-center bg-secondary/50 backdrop-blur-3xl filter  p-6">
-        <div className="flex flex-col bg-secondary  max-w-full min-w-lg p-6 rounded-3xl border-2 border-white/5 gap-4">
+      <div className="flex justify-center items-center bg-secondary/50 backdrop-blur-3xl p-6 min-h-screen filter">
+        <div className="flex flex-col gap-4 bg-secondary p-6 border-2 border-white/5 rounded-3xl min-w-lg max-w-full">
           {/* Header */}
-          <div className="flex justify-between items-center ">
-            <h2 className="text-white text-2xl  ">Bridging</h2>
+          <BridgeWalletModal isOpen={showWalletsModal} onClose={() => setShowWalletsModal(false)} />
+          <div className="flex justify-between items-center">
+            <h2 className="text-white text-2xl">Bridging</h2>
             <button onClick={onClose} className="text-gray-400 hover:text-white">
-              <IconX className="w-8 h-8 p-1.5 cursor-pointer rounded-full bg-white/5" />
+              <IconX className="bg-white/5 p-1.5 rounded-full w-8 h-8 cursor-pointer" />
             </button>
           </div>
 
-          <div className="flex flex-col border-2 border-white/5   bg-white/5 rounded-2xl">
+          <div className="flex items-center gap-2 px-2">
+            <Image
+              src={getLogoPath(
+                Object.values(chains).find((chain: Chain) => chain.name === selectedFromChain)
+                  ?.chainSymbol || 'ARB'
+              )}
+              alt="Logo"
+              width={20}
+              height={20}
+            />
+            {(() => {
+              switch (sourceToken?.chainSymbol) {
+                case 'TRX':
+                  if (isTronConnected) {
+                    return (
+                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
+                        <Avatar avatar={'1'} className="w-4 h-4" /> {tronAddress?.slice(0, 6)}...
+                        {tronAddress?.slice(-4)}
+                        <button
+                          onClick={disconnectTron}
+                          className="text-gray-400 hover:text-red-300 cursor-pointer"
+                        >
+                          <IconX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                  }
+                  return 'Not Connected'
+
+                case 'SOL':
+                  if (isSolanaConnected) {
+                    return (
+                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
+                        <Avatar avatar={'1'} className="w-4 h-4" />
+                        {solanaAddress && formatSolanaAddress(solanaAddress.toString())}
+                        <button
+                          onClick={() => disconnectSolana()}
+                          className="text-gray-400 hover:text-red-300 cursor-pointer"
+                        >
+                          <IconX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                  }
+                  return 'Not Connected'
+                case 'SUI':
+                  if (isSuiConnected) {
+                    return (
+                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
+                        <Avatar avatar={'1'} className="w-4 h-4" />{' '}
+                        {suiAddress?.address.slice(0, 6)}...{suiAddress?.address.slice(-4)}
+                        <button
+                          onClick={() => disconnectSui()}
+                          className="text-gray-400 hover:text-red-300 cursor-pointer"
+                        >
+                          <IconX className="w-4 h-4" />
+                        </button>
+                      </div>
+                    )
+                  }
+                  return 'Not Connected'
+
+                case 'SRB':
+                  return (
+                    <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
+                      {stellarAddress ? (
+                        <>
+                          <Avatar avatar={'1'} className="w-4 h-4" />
+                          {stellarAddress?.slice(0, 6)}...{stellarAddress?.slice(-4)}
+                          <button className="text-gray-400 hover:text-red-300 cursor-pointer">
+                            <IconX className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        'Not Connected'
+                      )}
+                    </div>
+                  )
+                default:
+                  return (
+                    <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
+                      {isConnected ? (
+                        <>
+                          <Avatar avatar={'1'} className="w-4 h-4" /> {address?.slice(0, 6)}...
+                          {address?.slice(-4)}
+                          <button
+                            onClick={() => disconnect()}
+                            className="text-gray-400 hover:text-red-300 cursor-pointer"
+                          >
+                            <IconX className="w-4 h-4" />
+                          </button>
+                        </>
+                      ) : (
+                        <span>Not Connected</span>
+                      )}
+                    </div>
+                  )
+              }
+            })()}
+          </div>
+          <div className="flex flex-col bg-white/5 border-2 border-white/5 rounded-2xl">
             {/* Pay Section */}
-            <div className="  p-4">
+            <div className="p-4">
               <div className="flex justify-between items-center">
-                <p className="text-white text-sm mb-2">You Pay</p>
-                <p className="text-right text-white/30 text-sm font-light">
+                <p className="mb-2 text-white text-sm">You Pay</p>
+                <p className="font-light text-white/30 text-sm text-right">
                   Balance: {sourceTokenBalance} {sourceToken?.symbol}
                 </p>
               </div>
 
-              <div className="flex items-center   mb-2 gap-2">
+              <div className="flex items-center gap-2 mb-2">
                 <div
                   onClick={() => setIsFromChainOpen(!isFromChainOpen)}
-                  className=" flex items-center gap-2 cursor-pointer p-2 rounded-md bg-white/5 border-2 border-white/5  "
+                  className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md cursor-pointer"
                 >
                   <DynamicDropdown
                     selectedValue={selectedFromChain}
-                    setSelectedValue={setSelectedFromChain}
+                    setSelectedValue={handleFromChainChange}
                     isOpen={isFromChainOpen}
                     setIsOpen={setIsFromChainOpen}
                     type="chain"
                     getLogoPath={getLogoPath}
+                    selectedChain={selectedToChain}
+                    isSource={true}
                   />
                   <IconChevronDown className="w-4 h-4" />
                 </div>
-                <div className=" flex items-center gap-2 cursor-pointer px-2 rounded-md bg-white/5 border-2 border-white/5  ">
+                <div className="flex items-center gap-2 bg-white/5 px-2 border-2 border-white/5 rounded-md cursor-pointer">
                   <div
                     onClick={() => setIsFromTokenOpen(!isFromTokenOpen)}
-                    className="flex items-center gap-2  h-full  px-2"
+                    className="flex items-center gap-2 px-2 h-full"
                   >
                     <DynamicDropdown
                       selectedValue={selectedFromToken}
-                      setSelectedValue={setSelectedFromToken}
+                      setSelectedValue={handleFromTokenChange}
                       isOpen={isFromTokenOpen}
                       setIsOpen={setIsFromTokenOpen}
                       type="token"
                       selectedChain={selectedFromChain}
                       getLogoPath={getLogoPath}
+                      isSource={true}
                     />
                     <IconChevronDown className="w-4 h-4" />
                   </div>
@@ -1049,13 +952,13 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   <input
                     type="number"
                     placeholder="0"
-                    value={amount}
+                    value={amount || ''}
                     onChange={(e) => setAmount(e.target.value)}
-                    className="border-l-2 px-4 border-white/5 flex-1 outline-none  rounded-none ring-0 active:outline-none  active:ring-offset-0  text-left text-white p-2  placeholder-white/30"
+                    className="flex-1 p-2 px-4 border-white/5 border-l-2 rounded-none outline-none active:outline-none ring-0 active:ring-offset-0 text-white text-left placeholder-white/30"
                   />
                   <button
                     onClick={handleMaxClick}
-                    className="border bg-white/5 border-white/20 rounded-md p-2 py-1 text-white/50 hover:bg-white/10 cursor-pointer text-xs text-center items-center justify-center"
+                    className="justify-center items-center bg-white/5 hover:bg-white/10 p-2 py-1 border border-white/20 rounded-md text-white/50 text-xs text-center cursor-pointer"
                   >
                     MAX
                   </button>
@@ -1065,62 +968,52 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
             <div className="relative">
               <hr className="border-white/5" />
+              {/* Swap button commented out
               <button
-                onClick={() => {
-                  swappingRef.current = true
-
-                  // Swap chains
-                  const tempChain = selectedFromChain
-                  setSelectedFromChain(selectedToChain)
-                  setSelectedToChain(tempChain)
-
-                  // Swap tokens
-                  const tempToken = selectedFromToken
-                  setSelectedFromToken(selectedToToken)
-                  setSelectedToToken(tempToken)
-
-                  // Optional for UI effect
-                  setIsSwapping(true)
-                }}
-                className="active:rotate-180  transform absolute cursor-pointer left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary border-2 border-white/5 rounded-full p-2 hover:bg-white/5 transition-all duration-300"
+                onClick={handleChainSwap}
+                className="left-1/2 absolute bg-secondary hover:bg-white/5 p-2 border-2 border-white/5 rounded-full active:rotate-180 transition-all -translate-x-1/2 -translate-y-1/2 duration-300 cursor-pointer transform"
               >
-                <IconTransferVertical className={`w-4 h-4 transition-transform  `} />
+                <IconTransferVertical className={`w-4 h-4 transition-transform`} />
               </button>
+              */}
             </div>
             {/* Receive Section */}
-            <div className="  p-4">
+            <div className="p-4">
               <div className="flex justify-between items-center">
-                <p className="text-white text-sm mb-2">You Receive</p>
+                <p className="mb-2 text-white text-sm">You Receive</p>
               </div>
 
-              <div className="flex items-center   mb-2 gap-2 w-full">
+              <div className="flex items-center gap-2 mb-2 w-full">
                 <div
                   onClick={() => setIsToChainOpen(!isToChainOpen)}
-                  className=" flex items-center gap-2 cursor-pointer p-2 rounded-md bg-white/5 border-2 border-white/5   "
+                  className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md cursor-pointer"
                 >
                   <DynamicDropdown
                     selectedValue={selectedToChain}
-                    setSelectedValue={setSelectedToChain}
+                    setSelectedValue={handleToChainChange}
                     isOpen={isToChainOpen}
                     setIsOpen={setIsToChainOpen}
                     type="chain"
                     getLogoPath={getLogoPath}
+                    selectedChain={selectedFromChain}
+                    isSource={false}
                   />
                   <IconChevronDown className="w-4 h-4" />
                 </div>
-                <div className=" flex items-center gap-2 cursor-pointer px-2 rounded-md bg-white/5 border-2 border-white/5  flex-1 w-max">
+                <div className="flex flex-1 items-center gap-2 bg-white/5 px-2 border-2 border-white/5 rounded-md w-max cursor-pointer">
                   <div
                     onClick={() => setIsToTokenOpen(!isToTokenOpen)}
-                    className="flex items-center gap-2  h-full  px-2"
+                    className="flex items-center gap-2 px-2 h-full"
                   >
                     <DynamicDropdown
                       selectedValue={selectedToToken}
-                      setSelectedValue={setSelectedToToken}
+                      setSelectedValue={handleToTokenChange}
                       isOpen={isToTokenOpen}
                       setIsOpen={setIsToTokenOpen}
                       type="token"
                       selectedChain={selectedToChain}
                       getLogoPath={getLogoPath}
+                      isSource={false}
                     />
                     <IconChevronDown className="w-4 h-4" />
                   </div>
@@ -1130,17 +1023,17 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                     placeholder="0"
                     value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}
                     readOnly
-                    className="border-l-2 px-4 border-white/5 flex-1 outline-none font-dm-mono  rounded-none ring-0 active:outline-none  active:ring-offset-0  text-left text-white p-2  placeholder-white/30"
+                    className="flex-1 p-2 px-4 border-white/5 border-l-2 rounded-none outline-none active:outline-none ring-0 active:ring-offset-0 font-dm-mono text-white text-left placeholder-white/30"
                   />
                 </div>
               </div>
             </div>
           </div>
           {/* Info Section */}
-          <div className="flex justify-between items-center text-white/30 text-sm rounded-2xl bg-white/5 border-2 border-white/5 ">
-            <div className="flex gap-2 w-full justify-around items-center align-middle p-4">
+          <div className="flex justify-between items-center bg-white/5 border-2 border-white/5 rounded-2xl text-white/30 text-sm">
+            <div className="flex justify-around items-center gap-2 p-4 w-full align-middle">
               {/* Messenger Selection */}
-              <div className="flex w-max gap-2 items-center text-white/50   p-2   relative">
+              <div className="relative flex items-center gap-2 p-2 w-max text-white/50">
                 <div
                   className="flex items-center gap-2 cursor-pointer"
                   onClick={() => setIsMessengerOpen(!isMessengerOpen)}
@@ -1161,7 +1054,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   </span>
                   {supportedMessengers.has(selectedMessenger) &&
                     messengerTransferTimes.get(selectedMessenger) && (
-                      <span className="text-xs text-white/50">
+                      <span className="text-white/50 text-xs">
                         ≈{' '}
                         {formatTransferTime(messengerTransferTimes.get(selectedMessenger) || null)}
                       </span>
@@ -1170,7 +1063,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                 </div>
 
                 {isMessengerOpen && (
-                  <div className="absolute w-max top-full left-0 right-0 mt-1 p-2 gap-2 flex flex-col bg-secondary border-2 border-white/5 rounded-2xl overflow-hidden z-50">
+                  <div className="top-full right-0 left-0 z-50 absolute flex flex-col gap-2 bg-secondary mt-1 p-2 border-2 border-white/5 rounded-2xl w-max overflow-hidden">
                     {messengerOptions.map((option) => (
                       <div
                         key={option.messenger}
@@ -1200,7 +1093,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                         </div>
                         {supportedMessengers.has(option.messenger) &&
                           messengerTransferTimes.get(option.messenger) && (
-                            <span className="text-xs text-white/50">
+                            <span className="text-white/50 text-xs">
                               ≈{' '}
                               {formatTransferTime(
                                 messengerTransferTimes.get(option.messenger) || null
@@ -1222,11 +1115,15 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                     alt={sourceToken?.chainSymbol || 'ETH'}
                     width={16}
                     height={16}
-                    className="w-4 h-4 "
+                    className="w-4 h-4"
                   />
                   <Switch
                     isChecked={!useNativeTokenForGas}
-                    setIsChecked={(isChecked) => setUseNativeTokenForGas(!isChecked)}
+                    setIsChecked={(isChecked) => {
+                      setUseNativeTokenForGas(!isChecked)
+                      // Immediately fetch new gas fee options when switch changes
+                      setTimeout(fetchGasFeeOptions, 0)
+                    }}
                     label=""
                   />
                   <Image
@@ -1234,7 +1131,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                     alt={sourceToken?.symbol || 'USDC'}
                     width={16}
                     height={16}
-                    className="w-4 h-4 "
+                    className="w-4 h-4"
                   />
                 </div>
               </div>
@@ -1242,77 +1139,149 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           </div>
 
           {/* Confirm Button */}
-          <button
-            onClick={() => {
-              if (isConnected) {
+          <div
+            onClick={(e) => {
+              if (sourceToken?.chainSymbol === 'TRX' && !isTronConnected) {
+                e.preventDefault()
+                return
+              }
+              if (sourceToken?.chainSymbol === 'SOL' && !isSolanaConnected) {
+                e.preventDefault()
+                setShowWalletsModal(true)
+                return
+              }
+
+              if (sourceToken?.chainSymbol === 'TRX' && isTronConnected) {
+                handleTronTransfer()
+              } else if (sourceToken?.chainSymbol === 'SOL') {
+                handleSolanaTransfer()
+              } else if (sourceToken?.chainSymbol === 'SRB') {
+                handleStellarTransfer()
+              } else if (sourceToken?.chainSymbol === 'SUI' && isSuiConnected) {
+                // handleSuiTransfer()
+              } else if (sourceToken?.chainSymbol === 'SUI' && !isSuiConnected) {
+                return
+              } else if (
+                !['TRX', 'SOL', 'SRB', 'SUI'].includes(sourceToken?.chainSymbol as string) &&
+                isConnected
+              ) {
                 handleTransfer()
               } else {
                 toggleConnectWalletModal()
                 onClose()
               }
             }}
-            disabled={isLoading && isConnected}
-            className="w-full nexon-button nexon-primary text-center flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex justify-center items-center gap-2 disabled:opacity-50 w-full text-center nexon-button nexon-primary"
           >
-            {!isConnected ? (
-              'Connect Wallet'
-            ) : isLoading ? (
-              <>
-                Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-              </>
-            ) : (
-              <>
-                Send <IconArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+            {(() => {
+              switch (sourceToken?.chainSymbol) {
+                case 'TRX':
+                  if (!isTronConnected) {
+                    return <ConnectTronWallet />
+                  }
+                  if (isLoading) {
+                    return (
+                      <>
+                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                      </>
+                    )
+                  }
+                  return isTronAllowanceApproved ? (
+                    <>
+                      Send <IconArrowRight className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      Approve {sourceToken?.symbol} <IconArrowRight className="w-4 h-4" />
+                    </>
+                  )
+
+                case 'SOL':
+                  if (!isSolanaConnected) {
+                    return 'Connect Solana Wallet'
+                  }
+                  if (isLoading) {
+                    return (
+                      <>
+                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      Send <IconArrowRight className="w-4 h-4" />
+                    </>
+                  )
+
+                case 'SRB':
+                  if (!stellarAddress) {
+                    return `Connect ${sourceToken?.chainSymbol} Wallet`
+                  }
+                  if (isLoading) {
+                    return (
+                      <>
+                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      Send <IconArrowRight className="w-4 h-4" />
+                    </>
+                  )
+
+                case 'SUI':
+                  if (!isSuiConnected)
+                    return (
+                      <SuiConnectModal
+                        open={showSuiModal}
+                        onOpenChange={(open) => setShowSuiModal(open)}
+                      >
+                        <button>Connect Wallet</button>
+                      </SuiConnectModal>
+                    )
+
+                  if (isLoading) {
+                    return (
+                      <>
+                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      Send <IconArrowRight className="w-4 h-4" />
+                    </>
+                  )
+                default:
+                  if (!isConnected) {
+                    return 'Connect Wallet'
+                  }
+                  if (isLoading) {
+                    return (
+                      <>
+                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                      </>
+                    )
+                  }
+                  return (
+                    <>
+                      Send <IconArrowRight className="w-4 h-4" />
+                    </>
+                  )
+              }
+            })()}
+          </div>
 
           {/* Transaction List */}
           {transactions.length > 0 && (
-            <div className="mt-4 border-t border-white/5 pt-4">
-              <h3 className="text-white text-sm mb-2">Recent Transactions</h3>
+            <Accordion title="Recent Transactions" defaultOpen={true}>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {transactions.map((tx) => (
-                  <a
-                    key={tx.hash}
-                    href={getExplorerUrl(tx.hash, tx.messenger)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex flex-col p-3 rounded-lg bg-white/5 hover:bg-white/10 transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Image
-                          src={getLogoPath(tx.sourceToken)}
-                          alt={tx.sourceToken}
-                          width={24}
-                          height={24}
-                          className="w-6 h-6"
-                        />
-                        <div className="flex flex-col">
-                          <span className="text-white text-sm">
-                            {tx.amount} {tx.sourceToken} → {tx.destinationToken}
-                          </span>
-                          <span className="text-white/50 text-xs">
-                            {tx.sourceChain} → {tx.destinationChain}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-white/50 text-xs">{formatTime(tx.timestamp)}</span>
-                        <IconExternalLink className="w-4 h-4 text-white/50" />
-                      </div>
-                    </div>
-                    <ProgressBar
-                      sourceChain={tx.sourceChain}
-                      destinationChain={tx.destinationChain}
-                      status={tx.status || 'pending'}
-                      getLogoPath={getLogoPath}
-                    />
-                  </a>
+                  <TransactionsCard key={tx.hash} transaction={tx} getLogoPath={getLogoPath} />
                 ))}
               </div>
-            </div>
+            </Accordion>
           )}
         </div>
       </div>
@@ -1320,15 +1289,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   )
 }
 
-const DynamicDropdown = ({
-  selectedValue,
-  setSelectedValue,
-  isOpen,
-  setIsOpen,
-  type,
-  selectedChain,
-  getLogoPath
-}: {
+const DynamicDropdown: React.FC<{
   selectedValue: string
   setSelectedValue: (value: string) => void
   isOpen: boolean
@@ -1336,11 +1297,31 @@ const DynamicDropdown = ({
   type: 'chain' | 'token'
   selectedChain?: string
   getLogoPath: (symbol: string) => string
+  isSource: boolean
+}> = ({
+  selectedValue,
+  setSelectedValue,
+  isOpen,
+  setIsOpen,
+  type,
+  selectedChain,
+  getLogoPath,
+  isSource
 }) => {
   const { chains } = useBridge()
 
   const getOptions = (): (ChainOption | string)[] => {
     if (type === 'chain') {
+      // If this is the destination chain dropdown, only show Nexon
+      if (!isSource) {
+        return [
+          {
+            name: 'Nexon',
+            logo: getLogoPath('Nexon'),
+            supportedTokens: ['USDC']
+          }
+        ]
+      }
       // Convert chains object to array of chain options
       const options = Object.values(chains).map((chain: Chain) => {
         return {
@@ -1350,31 +1331,32 @@ const DynamicDropdown = ({
         }
       })
 
-      // Add Nexon as a destination chain option
-      options.push({
-        name: 'Nexon',
-        logo: getLogoPath('Nexon'),
-        supportedTokens: ['USDC']
-      })
+      // Filter out the currently selected chain from the other dropdown
+      if (selectedChain) {
+        return options.filter(
+          (option) => typeof option === 'object' && option.name !== selectedChain
+        )
+      }
 
       return options
     } else {
-      // For tokens, filter based on selected chain
+      // For tokens, if it's the destination, only return USDC
+      if (!isSource) {
+        return ['USDC']
+      }
+
+      // For source tokens, filter based on selected chain
       const selectedChainData = Object.values(chains).find(
         (chain: Chain) => chain.name === selectedChain
       )
-
-      // If the selected chain is Nexon, only return USDC
-      if (selectedChain === 'Nexon') {
-        return ['USDC']
-      }
 
       return selectedChainData ? selectedChainData.tokens.map((token: Token) => token.symbol) : []
     }
   }
 
   const getTitle = () => {
-    return type === 'chain' ? 'Select Source Chain' : 'Select Token'
+    const prefix = isSource ? 'Source' : 'Destination'
+    return type === 'chain' ? `Select ${prefix} Chain` : `Select ${prefix} Token`
   }
 
   const getDisplayValue = (option: ChainOption | string) => {
@@ -1384,15 +1366,26 @@ const DynamicDropdown = ({
   // Get chain symbol for the selected chain
   const getSelectedChainSymbol = () => {
     if (type === 'chain') {
-      // Special handling for Nexon
-      if (selectedValue === 'Nexon') {
+      // Always return Nexon for destination chain
+      if (!isSource) {
         return 'Nexon'
       }
-
       const selectedChainData = Object.values(chains).find(
         (chain: Chain) => chain.name === selectedValue
       )
       return selectedChainData?.chainSymbol || 'ETH'
+    }
+    return selectedValue
+  }
+
+  // Get display name for the selected chain
+  const getSelectedChainName = () => {
+    if (type === 'chain') {
+      // Always return Nexon for destination chain
+      if (!isSource) {
+        return 'Nexon'
+      }
+      return selectedValue
     }
     return selectedValue
   }
@@ -1402,52 +1395,61 @@ const DynamicDropdown = ({
       <div className="flex items-center gap-2">
         <Image
           src={getLogoPath(getSelectedChainSymbol())}
-          alt={selectedValue}
-          className=" w-4 h-4"
+          alt={getSelectedChainName()}
+          className="w-4 h-4"
           width={16}
           height={16}
         />{' '}
-        {selectedValue}
+        {getSelectedChainName()}
       </div>
       {isOpen && (
-        <div className="  z-50 bg-secondary/50 backdrop-blur  w-full h-full absolute top-0 left-0">
+        <div className="top-0 left-0 z-50 absolute bg-secondary/50 backdrop-blur w-full h-full">
           <dialog
             open={isOpen}
             onClick={(e) => e.stopPropagation()}
-            className="flex flex-col gap-2 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-secondary  
-            border-2 border-white/5 rounded-md p-4"
+            className="top-1/2 left-1/2 absolute flex flex-col gap-2 bg-secondary p-4 border-2 border-white/5 rounded-md -translate-x-1/2 -translate-y-1/2"
           >
             <div className="flex justify-between items-center">
-              <p className="text-white  ">{getTitle()}</p>
+              <p className="text-white">{getTitle()}</p>
               <IconX
-                className="w-6 h-6 bg-white/5 rounded-full p-1 text-white/50 cursor-pointer"
+                className="bg-white/5 p-1 rounded-full w-6 h-6 text-white/50 cursor-pointer"
                 onClick={() => setIsOpen(false)}
               />
             </div>
-            <div className="flex gap-2 items-center text-white/50 border-2 border-white/5 rounded-md p-2 bg-white/5">
-              <IconSearch className="w-4 h-4 " />
+            <div className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md text-white/50">
+              <IconSearch className="w-4 h-4" />
               <input
                 type="text"
                 placeholder="Search"
-                className="bg-transparent text-white outline-none font-proxima-nova"
+                className="bg-transparent outline-none font-proxima-nova text-white"
               />
             </div>
             {getOptions().map((option) => (
               <div
                 onClick={() => {
-                  setSelectedValue(getDisplayValue(option))
+                  const newValue = getDisplayValue(option)
+                  // Prevent selecting the same chain
+                  if (type === 'chain' && selectedChain === newValue) {
+                    return
+                  }
+                  // If selecting Nexon as destination, actually set Arbitrum
+                  if (!isSource && newValue === 'Nexon') {
+                    setSelectedValue('Arbitrum')
+                  } else {
+                    setSelectedValue(newValue)
+                  }
                   setIsOpen(false)
                 }}
-                className="flex items-center gap-2 max-h-60 overflow-y-auto text-nowrap hover:bg-white/5 cursor-pointer p-2 rounded-md text-white/50 hover:text-white  "
+                className="flex items-center gap-2 hover:bg-white/5 p-2 rounded-md max-h-60 overflow-y-auto text-white/50 hover:text-white text-nowrap cursor-pointer"
                 key={getDisplayValue(option)}
               >
                 {type === 'chain' ? (
                   <Image
-                    src={(option as ChainOption).logo}
-                    alt={(option as ChainOption).name}
+                    src={!isSource ? getLogoPath('Nexon') : (option as ChainOption).logo}
+                    alt={!isSource ? 'Nexon' : (option as ChainOption).name}
                     width={24}
                     height={24}
-                    className=" w-4 h-4"
+                    className="w-4 h-4"
                   />
                 ) : (
                   <Image
@@ -1455,10 +1457,14 @@ const DynamicDropdown = ({
                     alt={getDisplayValue(option)}
                     width={24}
                     height={24}
-                    className=" w-4 h-4"
+                    className="w-4 h-4"
                   />
                 )}
-                {getDisplayValue(option)}
+                {type === 'chain'
+                  ? !isSource
+                    ? 'Nexon'
+                    : getDisplayValue(option)
+                  : getDisplayValue(option)}
               </div>
             ))}
           </dialog>
