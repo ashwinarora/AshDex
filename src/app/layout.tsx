@@ -49,22 +49,22 @@ export default function RootLayout({
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <Provider>
           <HyperLiquidInitializer />
-            <WalletModalProvider>
-              <EstablishConnectionProvider>
-                <UserProvider>
-                  <ToastProvider>
-                    <FavoritesProvider>
-                      <Header />
-                      <OnboardingModal />
-                      {children}
-                      <div className="py-8 px-4 md:px-9   col-span-full">
-                        <Footer />
-                      </div>
-                    </FavoritesProvider>
-                  </ToastProvider>
-                </UserProvider>
-              </EstablishConnectionProvider>
-            </WalletModalProvider>
+          <WalletModalProvider>
+            <EstablishConnectionProvider>
+              <UserProvider>
+                <ToastProvider>
+                  <FavoritesProvider>
+                    <Header />
+                    <OnboardingModal />
+                    {children}
+                    <div className="py-8 px-4 md:px-9   col-span-full">
+                      <Footer />
+                    </div>
+                  </FavoritesProvider>
+                </ToastProvider>
+              </UserProvider>
+            </EstablishConnectionProvider>
+          </WalletModalProvider>
         </Provider>
       </body>
     </html>

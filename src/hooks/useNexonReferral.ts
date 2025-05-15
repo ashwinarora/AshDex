@@ -8,7 +8,7 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 
 export const useNexonReferral = () => {
-  const { clearingHouseState, sdk } = useHyperliquid()  
+  const { clearingHouseState, sdk } = useHyperliquid()
   const { isConnected, address } = useAccount()
   const { isAgentApproved } = useAgentApproval()
 
