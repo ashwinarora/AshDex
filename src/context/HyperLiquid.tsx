@@ -7,7 +7,7 @@ import type { AxiosInstance } from 'axios'
 import { useQuery } from '@tanstack/react-query'
 import { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AGENT_PRIVATE_KEY } from '@/utils/constants'
-import { mainnetAxios, testnetAxios } from '@/config/axios'
+import { hyperliquidAxios } from '@/config/axios'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 interface HyperLiquidContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -31,7 +31,7 @@ const initialValue: HyperLiquidContextProps = {
   isSdkConnected: false,
   allMids: {},
   agentWallet: undefined,
-  hyperliquidAxios: mainnetAxios,
+  hyperliquidAxios: hyperliquidAxios,
   universe: [],
   clearingHouseState: undefined,
   openOrders: [],
@@ -111,8 +111,6 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
       universe: []
     }
   })
-
-  const hyperliquidAxios = useMemo(() => (isTestnet ? testnetAxios : mainnetAxios), [isTestnet])
 
   // effect to load the Hyperliquid SDK
   useEffect(() => {

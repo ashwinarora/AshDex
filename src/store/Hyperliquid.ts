@@ -2,9 +2,9 @@ import { create } from 'zustand'
 import { devtools } from 'zustand/middleware'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
-import { mainnetAxios, testnetAxios } from '@/config/axios'
 import type { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import type { IWebData2 } from '@/utils/hyperliquid/webData2Types'
+import type { AxiosInstance } from 'axios'
 
 interface HyperLiquidState {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -20,19 +20,19 @@ interface HyperLiquidState {
   universe: MetaData[]
   spotMeta: SpotMeta
   isTestnet: boolean
-  hyperliquidAxios: typeof mainnetAxios
+  hyperliquidAxios: AxiosInstance
   privateKey?: Hex
   agentWallet?: PrivateKeyAccount
 }
 
 interface HyperLiquidActions {
   loadSdkScript: () => void
-  generateAgentWallet: (address?: string) => void
-  initSdk: (address?: string) => Promise<void>
+  generateAgentWallet: (address?: Hex) => void
+  initSdk: (address?: Hex) => Promise<void>
   subscribeAllMids: () => void
   unsubscribeAllMids: () => void
-  subscribeWebData2: (address?: string) => void
-  unsubscribeWebData2: (address?: string) => void
+  subscribeWebData2: (address?: Hex) => void
+  unsubscribeWebData2: (address?: Hex) => void
 }
 
 type HyperLiquidStore = HyperLiquidState & HyperLiquidActions
@@ -40,7 +40,6 @@ type HyperLiquidStore = HyperLiquidState & HyperLiquidActions
 export const useHyperLiquidStore = create<HyperLiquidStore>()(
   devtools((set, get: () => HyperLiquidStore) => {
     const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
-    const hyperliquidAxios = isTestnet ? testnetAxios : mainnetAxios
 
     let scriptTag: HTMLScriptElement | null = null
 
@@ -58,7 +57,6 @@ export const useHyperLiquidStore = create<HyperLiquidStore>()(
       universe: [],
       spotMeta: { tokens: [], universe: [] },
       isTestnet,
-      hyperliquidAxios,
       privateKey: undefined,
       agentWallet: undefined,
 
@@ -72,7 +70,7 @@ export const useHyperLiquidStore = create<HyperLiquidStore>()(
         document.head.appendChild(scriptTag)
       },
 
-      generateAgentWallet: (address: Hex) => {
+      generateAgentWallet: (address?: Hex) => {
         if (!address) return
         const storageKey = `AGENT_PRIVATE_KEY_${address}`
         const stored = localStorage.getItem(storageKey)
@@ -82,7 +80,7 @@ export const useHyperLiquidStore = create<HyperLiquidStore>()(
         set({ privateKey: priv, agentWallet: wallet })
       },
 
-      initSdk: async (address: Hex) => {
+      initSdk: async (address?: Hex) => {
         const { isSdkScriptLoaded, privateKey, isTestnet } = get()
         if (!isSdkScriptLoaded) return
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -125,7 +123,7 @@ export const useHyperLiquidStore = create<HyperLiquidStore>()(
         sdk.subscriptions.unsubscribeFromAllMids()
       },
 
-      subscribeWebData2: (address: Hex) => {
+      subscribeWebData2: (address?: Hex) => {
         const sdk = get().sdk
         if (!sdk) return
         const user = address || zeroAddress
@@ -139,7 +137,7 @@ export const useHyperLiquidStore = create<HyperLiquidStore>()(
           })
         })
       },
-      unsubscribeWebData2: (address: Hex) => {
+      unsubscribeWebData2: (address?: Hex) => {
         const sdk = get().sdk
         if (!sdk) return
         const user = address || zeroAddress
