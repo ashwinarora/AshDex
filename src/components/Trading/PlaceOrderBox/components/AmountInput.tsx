@@ -1,10 +1,11 @@
 'use client'
 
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getCoinName, getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -29,7 +30,8 @@ const AmountInput = ({
 }: AmountInputProps) => {
   const [usdPercent, setUsdPercent] = useState(0)
 
-  const { universe, clearingHouseState } = useHyperLiquid()
+  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState } = useHyperliquid()
 
   const szDecimals = useMemo(() => {
     const assetIndex = getUniverseIndex(universe, selectedAsset)

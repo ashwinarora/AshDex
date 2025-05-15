@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
 import CheckBox from '@/components/common/CheckBox'
@@ -11,9 +10,10 @@ import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids } = useHyperLiquid()
+  const { allMids } = useHyperliquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')

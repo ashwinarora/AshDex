@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import { DM_Mono } from 'next/font/google'
-import { HyperLiquidProvider } from '@/context/HyperLiquid'
 import Header from '@/components/Header'
 import { Provider } from './provider'
 import Footer from '@/components/Footer'
@@ -9,7 +8,6 @@ import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
 import { ToastProvider } from '../context/ToastContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
-
 import { FavoritesProvider } from '@/context/FavoritesContext'
 import './globals.css'
 import '@/styles/table.css'
@@ -51,7 +49,6 @@ export default function RootLayout({
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <Provider>
           <HyperLiquidInitializer />
-          <HyperLiquidProvider>
             <WalletModalProvider>
               <EstablishConnectionProvider>
                 <UserProvider>
@@ -68,7 +65,6 @@ export default function RootLayout({
                 </UserProvider>
               </EstablishConnectionProvider>
             </WalletModalProvider>
-          </HyperLiquidProvider>
         </Provider>
       </body>
     </html>

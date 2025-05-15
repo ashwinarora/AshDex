@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getCoinName } from '@/utils/utils'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
@@ -14,6 +13,9 @@ import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { hyperliquidAxios } from '@/config/axios'
 
 interface Order {
   price: number
@@ -54,7 +56,8 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, hyperliquidAxios, spotState, spotAssetContext, spotMeta } = useHyperLiquid()
+  const { agentWallet, spotState, spotAssetContext } = useHyperliquid()
+  const { data: spotMeta } = useSpotMeta()
   const { chain } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()

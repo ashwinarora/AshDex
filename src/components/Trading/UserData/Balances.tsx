@@ -1,6 +1,5 @@
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { BALANCE_FUTURES_COLUMNS, BALANCE_SPOT__COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
@@ -9,6 +8,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { useEffect, useState } from 'react'
 import TransferModal from './TransferModal'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 type ColumnType = {
   key: string
@@ -23,7 +23,7 @@ type RenderRowProps = {
 
 const Balances = () => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperLiquid()
+  const { clearingHouseState, spotState } = useHyperliquid()
   const isSpot = useIsSpot()
   const [isClient, setIsClient] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)

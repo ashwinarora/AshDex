@@ -1,20 +1,22 @@
 import React, { useState } from 'react'
 import { REFERRALS_CREATECODE_DESC } from '@/utils/constants'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useAccount } from 'wagmi'
 import { splitSignature } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import { agentTypes, getActionHash, phantomDomain } from '@/utils/hyperliquid/PlaceOrder'
 import { Hex } from 'viem'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { data: referral } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { chainId } = useAccount()
-  const { agentWallet, hyperliquidAxios, isTestnet } = useHyperLiquid()
+  const { agentWallet } = useHyperliquid()
 
   if (referral?.referrerState.stage === 'needToTrade') {
     const eligibleAmount = referral.referrerState.data.required

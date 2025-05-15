@@ -1,7 +1,7 @@
 import { AGENT_PRIVATE_KEY, isTestnet } from '@/utils/constants'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
-import { Hex } from 'viem'
-import { generatePrivateKey, privateKeyToAccount, type Account } from 'viem/accounts'
+import type { Hex, PrivateKeyAccount } from 'viem'
+import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
@@ -13,7 +13,7 @@ interface PriceMap {
 interface HyperliquidState {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any | null
-  agentWallet: Account | null
+  agentWallet: PrivateKeyAccount | null
   allMids: PriceMap
   clearingHouseState?: IWebData2['clearinghouseState']
   perpAssetContext: IWebData2['assetCtxs']
@@ -43,6 +43,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
   },
   (set, get) => ({
     initSdk: async (address: Hex) => {
+      if (typeof window === 'undefined') return
       if (!address) return
       const privateKey = (() => {
         const storageKey = AGENT_PRIVATE_KEY + '_' + address
@@ -134,6 +135,7 @@ export const useHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
       sdk: state.sdk,
+      agentWallet: state.agentWallet,
       allMids: state.allMids,
       clearingHouseState: state.clearingHouseState,
       perpAssetContext: state.perpAssetContext,

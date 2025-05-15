@@ -1,7 +1,6 @@
 'use client'
 import Image from 'next/image'
 import { Loader2 } from 'lucide-react'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import exporticon from '@/assets/images/export_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { useMemo } from 'react'
@@ -9,16 +8,17 @@ import { useCoinData } from '@/hooks/useCoinData'
 import { useCoins } from '@/hooks/useCoins'
 import { usePerpetualData } from '@/hooks/usePerpetualData'
 import { useTokenDetails } from '@/hooks/useTokenDetails'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 interface IInfoTabProps {
   selectedAsset: string
 }
 
 const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
-  const { sdk, isSdkConnected } = useHyperLiquid()
+  const { sdk } = useHyperliquid()
   const { data: allCoins = [] } = useCoins()
   const { coinData, coinInfo, isLoading } = useCoinData(allCoins, selectedAsset)
-  const { data: tokens = [] } = usePerpetualData(sdk, isSdkConnected)
+  const { data: tokens = [] } = usePerpetualData()
   const safeTokens = useMemo(
     () =>
       tokens?.map((token) => ({

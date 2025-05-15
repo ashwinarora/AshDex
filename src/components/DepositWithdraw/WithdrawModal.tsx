@@ -2,11 +2,13 @@ import React, { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { ChevronDown, X } from 'lucide-react'
 import Image from 'next/image'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
 import Modal from '../common/Modal'
 import arbitrum from '@/assets/images/arbitrum.svg'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -16,7 +18,7 @@ interface WithdrawModalProps {
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState, isTestnet, hyperliquidAxios } = useHyperLiquid()
+  const { clearingHouseState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
 
   return (
