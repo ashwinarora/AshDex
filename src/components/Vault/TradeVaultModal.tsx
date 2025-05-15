@@ -27,8 +27,8 @@ const TradeVaultModal: React.FC<TradeVaultModalProps> = ({ isVaultModal, openVau
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={menuClose}
               alt="menuclose"
               className="w-[13px] h-[13px]"
@@ -37,7 +37,7 @@ const TradeVaultModal: React.FC<TradeVaultModalProps> = ({ isVaultModal, openVau
         </div>
         <div className="flex flex-col items-center text-center">
           <div className="w-[48px] h-[48px] mb-4">
-            <Image src={erroryellowicon} alt="Error Icon" width={48} height={48} />
+            <Image src={erroryellowicon} alt="Error Icon" style={{ width: 48, height: 'auto' }} />
           </div>
           <h2 className="text-white text-base font-medium mb-1 tracking-normal">
             Trading for a Vault works as a separate account with managed funds.{' '}

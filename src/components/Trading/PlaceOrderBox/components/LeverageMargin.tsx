@@ -3,24 +3,15 @@ import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useEffect, useMemo } from 'react'
-import CustomSelector from '../../../common/CustomSelector'
 import Slider1 from '@/assets/images/slider_value.svg'
 
 interface LeverageMarginProps {
   selectedAsset: string
   leverage: number
   setLeverage: React.Dispatch<React.SetStateAction<number>>
-  isCross: boolean
-  setIsCross: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const LeverageMargin = ({
-  selectedAsset,
-  leverage,
-  setLeverage,
-  isCross,
-  setIsCross
-}: LeverageMarginProps) => {
+const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
   const { universe } = useHyperLiquid()
 
   const maxLeverage = useMemo(() => {
@@ -38,10 +29,10 @@ const LeverageMargin = ({
 
   return (
     <div>
-      <div className="mb-4 px-4">
-        <label className="block text-sm font-medium text-gray-400">Leverage</label>
+      <div className="mb-1 px-4">
+        <label className="block text-xs font-medium text-gray-400">Leverage</label>
         <div className="flex justify-between items-center">
-          <div className="w-4/6">
+          <div className="w-[70%]">
             <input
               type="range"
               min={1}
@@ -49,17 +40,17 @@ const LeverageMargin = ({
               step={1}
               value={leverage}
               onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
-              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none
+              className="w-full cursor-pointer appearance-none h-2 rounded-lg outline-none
     [&::-webkit-slider-thumb]:appearance-none
-    [&::-webkit-slider-thumb]:h-4
-    [&::-webkit-slider-thumb]:w-4
+    [&::-webkit-slider-thumb]:h-3
+    [&::-webkit-slider-thumb]:w-3
     [&::-webkit-slider-thumb]:rounded-full
     [&::-webkit-slider-thumb]:bg-white
     [&::-webkit-slider-thumb]:cursor-pointer
     [&::-webkit-slider-thumb]:border-none
     [&::-moz-range-thumb]:appearance-none
-    [&::-moz-range-thumb]:h-4
-    [&::-moz-range-thumb]:w-4
+    [&::-moz-range-thumb]:h-3
+    [&::-moz-range-thumb]:w-3
     [&::-moz-range-thumb]:rounded-full
     [&::-moz-range-thumb]:bg-white
     [&::-moz-range-thumb]:cursor-pointer
@@ -72,8 +63,8 @@ const LeverageMargin = ({
               }}
               disabled={maxLeverage <= 1}
             />
-            <Image src={Slider1} alt="" width={20} height={20} className="w-full mt-1" />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-0.5" />
+            <div className="flex justify-between text-xs text-gray-500 mt-0.5">
               <span>1x</span>
               <span>{1 + (maxLeverage - 1) * 0.25}x</span>
               <span>{1 + (maxLeverage - 1) * 0.5}x</span>
@@ -81,34 +72,21 @@ const LeverageMargin = ({
               <span>{maxLeverage}x</span>
             </div>
           </div>
-          <div className="flex items-center pl-4 space-x-1">
+          <div className="flex items-center gap-1">
             <button
               onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
-              className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
+              className="w-6 h-8 rounded-md border border-white/10 bg-white/10 p-1 flex items-center justify-center text-white text-md"
             >
               -
             </button>
-            <span className="text-xl font-medium w-[40px] text-center">{leverage}x</span>
+            <span className="text-sm font-medium w-8 text-center">{leverage}x</span>
             <button
               onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))}
-              className="w-8 h-[58px] rounded-lg border border-white/10 bg-white/10 p-2 flex items-center justify-center text-white"
+              className="w-6 h-8 rounded-md border border-white/10 bg-white/10 p-1 flex items-center justify-center text-white text-md"
             >
               +
             </button>
           </div>
-        </div>
-      </div>
-      <div className="px-4 border-b border-[#FFFFFF0F]">
-        <div className="flex w-full justify-between items-center mb-4 px-4 border border-white/10 bg-white/10 rounded-md py-2">
-          <p className="text-[#8B8BA0]">Margin Mode</p>
-          <CustomSelector
-            options={[
-              { value: 'cross', label: 'Cross' },
-              { value: 'isolated', label: 'Isolated' }
-            ]}
-            selectedValue={isCross ? 'cross' : 'isolated'}
-            onChange={(value) => setIsCross(value === 'cross')}
-          />
         </div>
       </div>
     </div>

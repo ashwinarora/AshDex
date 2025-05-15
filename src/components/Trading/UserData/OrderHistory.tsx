@@ -136,7 +136,7 @@ const OrderHistoryTable: React.FC = () => {
         enableSorting: true,
         meta: { label: 'Order ID' }
       }),
-      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString(), {
+      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
         id: 'timestamp',
         header: () => <HeaderWithIcons label="Timestamp" />,
         cell: (info) => info.getValue(),
@@ -150,7 +150,7 @@ const OrderHistoryTable: React.FC = () => {
         enableSorting: true,
         meta: { label: 'Status' }
       }),
-      columnHelper.accessor((row) => new Date(row.statusTimestamp).toLocaleString(), {
+      columnHelper.accessor((row) => new Date(row.statusTimestamp).toLocaleString('en-US'), {
         id: 'statusTs',
         header: () => <HeaderWithIcons label="Status Time" />,
         cell: (info) => info.getValue(),

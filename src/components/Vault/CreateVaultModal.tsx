@@ -87,8 +87,8 @@ export const CreateVaultModal = ({ createVaultModal, handleCreateVault }: Props)
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={menuClose}
               alt="menuclose"
               className="w-[13px] h-[13px]"
@@ -97,7 +97,12 @@ export const CreateVaultModal = ({ createVaultModal, handleCreateVault }: Props)
         </div>
         {isSuccess ? (
           <div className="pt-10 flex flex-col items-center">
-            <Image src={successicon} width={70} height={70} className="pr-2" alt="successicon" />
+            <Image
+              src={successicon}
+              style={{ width: 70, height: 'auto' }}
+              className="pr-2"
+              alt="successicon"
+            />
             <div className="pt-6 pb-10">
               <div className="text-center pb-2 text-xl font-bold text-white">
                 Vault Created Successfully!

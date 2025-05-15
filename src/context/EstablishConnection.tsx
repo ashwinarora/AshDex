@@ -63,8 +63,6 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
     initialData: 0
   })
 
-  console.log('currentFeeApproval', currentFeeApproval)
-
   return (
     <ConnectionContext.Provider
       value={{

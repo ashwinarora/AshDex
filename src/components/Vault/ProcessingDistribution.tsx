@@ -103,8 +103,8 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
               className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
             >
               <Image
-                height={20}
                 width={20}
+                height={20}
                 src={menuClose}
                 alt="menuclose"
                 className="w-[13px] h-[13px]"
@@ -116,7 +116,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
             {/* Step 1 */}
             <div className="flex w-1/4 flex-col items-center relative">
               <div className="absolute -right-14 min-lg:-right-18 top-2.5 w-full border-t border-[#FFFFFF29]" />
-              <Image height={20} width={20} src={successicon} alt="successicon" />
+              <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
               <p className="text-sm text-[#2FA766] mt-2 font-semibold">Pending</p>
             </div>
 
@@ -124,7 +124,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
             <div className="flex w-1/4 flex-col items-center relative">
               <div className="absolute -right-14 min-lg:-right-18 top-2.5 w-full border-t border-[#FFFFFF29]" />
               {step >= 2 ? (
-                <Image height={20} width={20} src={successicon} alt="successicon" />
+                <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
               ) : (
                 <div className="bg-white/10 border font-medium border-white/10 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs z-10">
                   02
@@ -142,7 +142,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
             {/* Step 3 */}
             <div className="flex flex-col items-center relative">
               {step >= 3 ? (
-                <Image height={20} width={20} src={successicon} alt="successicon" />
+                <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
               ) : (
                 <div className="bg-white/10 border font-medium border-white/10 text-[#8B8BA0] w-6 h-6 flex items-center justify-center rounded-full text-xs">
                   03

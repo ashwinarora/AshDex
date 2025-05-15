@@ -79,7 +79,7 @@ function ListViewVaults() {
       <div onClick={() => onRowClick(index)} className="flex flex-col gap-2 text-white text-sm">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
-            <Image src={lidoicon} alt="lidoicon" width={30} height={30} />
+            <Image src={lidoicon} alt="lidoicon" style={{ width: 30, height: 'auto' }} />
             <div className="flex flex-col">
               <span className="font-medium">{item?.name}</span>
               <span className="text-xs text-[#8B8BA0]">{item?.description}</span>
@@ -146,9 +146,19 @@ function ListViewVaults() {
                   <div className="flex justify-start items-center gap-1">
                     {col?.label ? (
                       <>
-                        <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                        <Image
+                          src={shortingicon}
+                          style={{ width: 12, height: 'auto' }}
+                          alt="Sort"
+                          className="w-3 h-3 cursor-pointer"
+                        />
                         <span className="text-nowrap">{col?.label}</span>
-                        <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                        <Image
+                          src={infoicon}
+                          alt="Info"
+                          style={{ width: 16, height: 'auto' }}
+                          className="w-4 h-4 cursor-pointer"
+                        />
                       </>
                     ) : null}
                   </div>
@@ -166,8 +176,7 @@ function ListViewVaults() {
                 <td className="py-3 pr-7 text-white opacity-80 font-normal text-sm ">
                   <div className="flex items-center gap-1">
                     <Image
-                      width={30}
-                      height={30}
+                      style={{ width: 30, height: 'auto' }}
                       src={lidoicon}
                       alt="Lidoicon"
                       className="mx-1 cursor-pointer"

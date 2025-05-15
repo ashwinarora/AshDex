@@ -18,10 +18,20 @@ const Toaster = () => {
           `}
         >
           {toast?.type === 'success' && (
-            <Image src={successicon} width={33} height={33} className="pr-2" alt="successicon" />
+            <Image
+              src={successicon}
+              style={{ width: 33, height: 'auto' }}
+              className="pr-2"
+              alt="successicon"
+            />
           )}
           {toast?.type === 'error' && (
-            <Image src={erroricon} width={33} height={33} className="pr-2" alt="erroricon" />
+            <Image
+              src={erroricon}
+              style={{ width: 33, height: 'auto' }}
+              className="pr-2"
+              alt="erroricon"
+            />
           )}
           <div>
             <p className="font-medium text-lg text-white">{toast?.title}</p>

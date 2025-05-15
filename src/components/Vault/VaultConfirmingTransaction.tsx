@@ -73,8 +73,8 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
                 className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
               >
                 <Image
-                  height={20}
                   width={20}
+                  height={20}
                   src={menuClose}
                   alt="menuclose"
                   className="w-[13px] h-[13px]"
@@ -91,8 +91,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
                 <Image
                   src={erroryellowicon}
                   alt="warning"
-                  width={25}
-                  height={25}
+                  style={{ width: 25, height: 'auto' }}
                   className={step >= 2 ? 'filter grayscale brightness-200 opacity-60' : ''}
                 />
                 <div>
@@ -119,7 +118,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
               {/* Step 1 */}
               <div className="flex flex-col items-center relative">
                 <div className="absolute -right-12 min-lg:-right-18 top-2.5 w-[80%] min-lg:w-full border-t border-[#FFFFFF29]" />
-                <Image height={20} width={20} src={successicon} alt="successicon" />
+                <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
                 <p className="text-sm text-[#2FA766] mt-2 font-semibold">Pending {activeTab}</p>
               </div>
 
@@ -127,7 +126,11 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
               <div className="flex flex-col items-center relative">
                 <div className="absolute -right-10 min-lg:-right-16 top-2.5 w-[80%] min-lg:w-full border-t border-[#FFFFFF29]" />
                 {step >= 2 ? (
-                  <Image height={20} width={20} src={successicon} alt="successicon" />
+                  <Image
+                    style={{ width: 20, height: 'auto' }}
+                    src={successicon}
+                    alt="successicon"
+                  />
                 ) : (
                   <div className="bg-white/10 border font-medium border-white/10 text-white w-6 h-6 flex items-center justify-center rounded-full text-xs z-10">
                     02
@@ -145,7 +148,11 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
               {/* Step 3 */}
               <div className="flex flex-col items-center relative">
                 {step >= 3 ? (
-                  <Image height={20} width={20} src={successicon} alt="successicon" />
+                  <Image
+                    style={{ width: 20, height: 'auto' }}
+                    src={successicon}
+                    alt="successicon"
+                  />
                 ) : (
                   <div className="bg-white/10 border font-medium border-white/10 text-[#8B8BA0] w-6 h-6 flex items-center justify-center rounded-full text-xs">
                     03

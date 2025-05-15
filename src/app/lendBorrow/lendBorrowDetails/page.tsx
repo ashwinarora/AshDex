@@ -22,11 +22,21 @@ function LendBorrowDetails() {
         <div className="flex items-center text-[#8B8BA0] text-sm font-medium px-2 gap-x-2.5">
           <span>Market</span>
           <span>
-            <Image className="opacity-70" src={nexticon} alt="nexticon" width={5} height={5} />
+            <Image
+              className="opacity-70"
+              src={nexticon}
+              alt="nexticon"
+              style={{ width: 5, height: 'auto' }}
+            />
           </span>
           <span>/Linea</span>
           <span>
-            <Image className="opacity-70" src={nexticon} alt="nexticon" width={5} height={5} />
+            <Image
+              className="opacity-70"
+              src={nexticon}
+              alt="nexticon"
+              style={{ width: 5, height: 'auto' }}
+            />
           </span>{' '}
           <span className="text-white">WETH</span>
         </div>
@@ -35,7 +45,7 @@ function LendBorrowDetails() {
             {/* Header */}
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4 p-4">
-                <Image src={wethicon} alt="WETH" width={35} height={35} />
+                <Image src={wethicon} alt="WETH" style={{ width: 35, height: 'auto' }} />
                 <div>
                   <h2 className="text-base text-white font-bold">{'WETH'}</h2>
                   <p className="text-sm text-[#8B8BA0] font-medium">{'Wrapped ETH'}</p>
@@ -44,8 +54,7 @@ function LendBorrowDetails() {
                   className="opacity-70 cursor-pointer"
                   src={exporticon}
                   alt="WETH"
-                  width={15}
-                  height={15}
+                  style={{ width: 15, height: 'auto' }}
                 />
               </div>
               <div className="flex flex-wrap gap-x-3">
@@ -62,8 +71,7 @@ function LendBorrowDetails() {
                           className="opacity-80 cursor-pointer"
                           src={infoicon}
                           alt="infoicon"
-                          width={15}
-                          height={15}
+                          style={{ width: 15, height: 'auto' }}
                         />
                       </div>
                       <p className="text-white flex items-center justify-center gap-x-2 font-medium text-xl">
@@ -73,8 +81,7 @@ function LendBorrowDetails() {
                             className="opacity-60 cursor-pointer"
                             src={exporticon}
                             alt="exporticon"
-                            width={13}
-                            height={13}
+                            style={{ width: 13, height: 'auto' }}
                           />
                         )}
                       </p>
@@ -101,8 +108,7 @@ function LendBorrowDetails() {
                           className="opacity-80 cursor-pointer"
                           src={infoicon}
                           alt="infoicon"
-                          width={15}
-                          height={15}
+                          style={{ width: 15, height: 'auto' }}
                         />
                       </div>
                       <p className="text-white flex items-center justify-start font-medium text-xl">
@@ -134,8 +140,7 @@ function LendBorrowDetails() {
                           className="opacity-80 cursor-pointer"
                           src={infoicon}
                           alt="infoicon"
-                          width={15}
-                          height={15}
+                          style={{ width: 15, height: 'auto' }}
                         />
                       </div>
                       <p className="text-white flex items-center justify-start font-medium text-xl">

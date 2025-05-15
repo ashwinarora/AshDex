@@ -23,6 +23,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
+  const sellsContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!isSdkConnected || !selectedAsset) return
@@ -50,10 +51,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const sells = useMemo(() => processOrders(rawSells.slice(0, 25)), [rawSells])
   const buys = useMemo(() => processOrders(rawBuys.slice(0, 25)), [rawBuys])
 
-  // const bestAsk = sells.length ? sells[0].px : 0
-  // const bestBid = buys.length ? buys[0].px : 0
-  // const spread = bestAsk && bestBid ? Number(bestAsk) - Number(bestBid) : 0
-  // const spreadPercent = bestAsk ? (spread / Number(bestAsk)) * 100 : 0
+  useEffect(() => {
+    if (!isLoading && sellsContainerRef.current) {
+      sellsContainerRef.current.scrollTop = sellsContainerRef.current.scrollHeight
+    }
+  }, [isLoading])
 
   const maxSellCumulative = sells[sells.length - 1]?.cumulative ?? 0
   const maxBuyCumulative = buys[buys.length - 1]?.cumulative ?? 0
@@ -96,14 +98,34 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
       <div className="flex px-4 py-2 justify-between">
         <p className="text-lg text-white font-semi-bold ">Order Book</p>
         <div className="flex items-center">
-          <Image src={ThreeDot} alt="" width={20} height={20} className="w-5 h-5" />
+          <Image
+            src={ThreeDot}
+            alt="ThreeDot"
+            style={{ width: 20, height: 20 }}
+            className="w-5 h-5"
+          />
         </div>
       </div>
       {/* <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
         <div className="flex items-center">
-          <Image src={Filter1} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter2} alt="" className="w-5 h-5 mx-1" />
-          <Image src={Filter3} alt="" className="w-5 h-5 mx-1" />
+          <Image
+            src={Filter1}
+            alt="Filter1"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
+          <Image
+            src={Filter2}
+            alt="Filter2"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
+          <Image
+            src={Filter3}
+            alt="Filter3"
+            style={{ width: 20, height: 'auto' }}
+            className="w-5 h-5 mx-1"
+          />
         </div>
         <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">
           <option value="0.01">0.01</option>
@@ -124,7 +146,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
       <div className="overflow-hidden h-full flex flex-col">
         {/* Top - Sells */}
-        <div className="overflow-y-auto flex-col no-scrollbar h-[50%]">
+        <div ref={sellsContainerRef} className="overflow-y-auto flex-col no-scrollbar h-[50%]">
           {isLoading
             ? Array(10)
                 .fill(0)

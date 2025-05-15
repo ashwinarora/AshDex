@@ -202,7 +202,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <IconStar size={16} className="mr-1" />
             )}
           </button>
-          <Image src={bitcoinlogo} alt="Bitcoin Logo" width={32} height={32} />
+          <Image src={bitcoinlogo} alt="Bitcoin Logo" style={{ width: 32, height: 'auto' }} />
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
@@ -217,8 +217,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               </span>
             </div>
             <Image
-              height={20}
               width={20}
+              height={20}
               src={arrowdownicon}
               alt="arrowdown"
               className="w-3 h-3 mx-2 max-2xl:mr-5 max-xl:mx-2"
@@ -235,7 +235,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-lg:pb-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="flex max-xl:py-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
             >
               <div className="flex flex-col space-y-1 overflow-hidden">
                 <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
@@ -256,14 +256,24 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             onClick={() => setIsSettingsOpen((prev) => !prev)}
             className="mx-2 cursor-pointer"
           >
-            <Image src={settingicon} alt="Settings" className="w-6 h-6" width={24} height={24} />
+            <Image
+              src={settingicon}
+              alt="Settings"
+              style={{ width: 24, height: 'auto' }}
+              className="w-6 h-6"
+            />
           </button>
         </div>
         <button
           onClick={() => setIsSettingsOpen((prev) => !prev)}
           className="mx-2 max-lg:block hidden absolute -top-12 right-0 cursor-pointer"
         >
-          <Image src={settingicon} alt="Settings" className="w-5 h-5" width={24} height={24} />
+          <Image
+            src={settingicon}
+            alt="Settings"
+            className="w-5 h-5"
+            style={{ width: 24, height: 'auto' }}
+          />
         </button>
       </div>
       {/* Settings Dropdown */}

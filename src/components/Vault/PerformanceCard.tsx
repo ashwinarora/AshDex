@@ -20,8 +20,7 @@ export const PerformanceCard: React.FC<PerformanceCardProps> = ({
           className="opacity-80 cursor-pointer w-[15px] h-[15px] max-sm:w-[25px] max-sm:h-[25px]"
           src={infoicon}
           alt="infoicon"
-          width={15}
-          height={15}
+          style={{ width: 15, height: 'auto' }}
         />
       </div>
       <div className="flex items-baseline gap-x-1 flex-wrap">

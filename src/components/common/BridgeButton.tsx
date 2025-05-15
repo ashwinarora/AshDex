@@ -17,8 +17,7 @@ const BridgeButton = () => {
         className="flex items-center gap-2 nexon-button nexon-ghost"
       >
         <Image
-          height={20}
-          width={20}
+          style={{ width: 20, height: 'auto' }}
           src={bridgingbtnlogo}
           alt="bridgingbtnlogo"
           className="w-5 h-5"

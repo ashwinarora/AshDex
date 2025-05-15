@@ -60,7 +60,7 @@ const formatPriceChange = (currentPrice: number, prevDayPrice: number): string =
   const changeAmount = currentPrice - prevDayPrice
   const changePercent = (changeAmount / prevDayPrice) * 100
 
-  const formattedAmount = changeAmount.toLocaleString(undefined, {
+  const formattedAmount = changeAmount.toLocaleString('en-US', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })
@@ -145,7 +145,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
           ? spotAssetContext[assetIndex].prevDayPx
           : perpAssetContext[assetIndex].prevDayPx
         const newPrice = allMids[favorite.index]
-          ? `$${allMids[favorite.index].toLocaleString(undefined, {
+          ? `$${allMids[favorite.index].toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             })}`

@@ -41,7 +41,7 @@ function EnterCode() {
       return (
         <div className="flex flex-col pt-12 gap-y-5 pb-3">
           <div className="flex justify-center">
-            <Image src={successicon} alt="Success" width={48} height={48} />
+            <Image src={successicon} alt="Success" style={{ width: 48, height: 'auto' }} />
           </div>
           <p className="text-white text-center text-base font-semibold">
             The code has been successfully applied

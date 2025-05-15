@@ -113,9 +113,19 @@ const Balances = () => {
                   className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
                 >
                   <div className="flex justify-start items-center gap-1">
-                    <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                    <Image
+                      src={shortingicon}
+                      alt="Sort"
+                      style={{ width: 12, height: 'auto' }}
+                      className="w-3 h-3 cursor-pointer"
+                    />
                     <span>{col?.label}</span>
-                    <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                    <Image
+                      src={infoicon}
+                      alt="Info"
+                      style={{ width: 16, height: 'auto' }}
+                      className="w-4 h-4 cursor-pointer"
+                    />
                   </div>
                 </th>
               ))}
@@ -165,9 +175,19 @@ const Balances = () => {
                   className="pt-3 pb-2.5 max-md:px-5 max-lg:pr-2 px-7 text-sm font-normal text-[#8B8BA0] text-left"
                 >
                   <div className="flex justify-start items-center gap-1">
-                    <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                    <Image
+                      src={shortingicon}
+                      alt="Sort"
+                      style={{ width: 12, height: 'auto' }}
+                      className="w-3 h-3 cursor-pointer"
+                    />
                     <span>{col.label}</span>
-                    <Image src={infoicon} alt="Info" className="w-4 h-4 cursor-pointer" />
+                    <Image
+                      src={infoicon}
+                      alt="Info"
+                      style={{ width: 16, height: 'auto' }}
+                      className="w-4 h-4 cursor-pointer"
+                    />
                   </div>
                 </th>
               ))}

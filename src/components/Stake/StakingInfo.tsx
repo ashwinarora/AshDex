@@ -33,7 +33,12 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
         >
           <p className="text-[#8B8BA0] mb-1 font-medium tracking-normal text-sm">Total staked</p>
           <p className="text-xl font-medium tracking-normal text-white flex items-center gap-2">
-            <Image src={hyperliquidicon} alt="hyperliquidicon" className="w-5 h-5 cursor-pointer" />
+            <Image
+              src={hyperliquidicon}
+              alt="hyperliquidicon"
+              style={{ width: 20, height: 'auto' }}
+              className="w-5 h-5 cursor-pointer"
+            />
             1,498,283.92 HYPE
           </p>
         </div>
@@ -51,7 +56,12 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
             className="w-full text-sm my-3 bg-primary cursor-pointer text-white py-2.5 rounded-xl font-bold flex justify-center items-center gap-2"
           >
             Spot{' '}
-            <Image src={arrowsorticon} alt="arrowsorticon" className="w-3.5 h-3.5 cursor-pointer" />
+            <Image
+              src={arrowsorticon}
+              alt="arrowsorticon"
+              style={{ width: 15, height: 'auto' }}
+              className="w-3.5 h-3.5 cursor-pointer"
+            />
             Staking Transfer
           </button>
           <div
@@ -67,6 +77,7 @@ const StakingInfo: React.FC<StakingInfoProps> = ({ setIsViewHistory }) => {
                 src={hyperliquidicon}
                 alt="hyperliquidicon"
                 className="w-4 h-4 cursor-pointer"
+                style={{ width: 16, height: 'auto' }}
               />
               5,849.00 HYPE
             </p>

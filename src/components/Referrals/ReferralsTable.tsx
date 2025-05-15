@@ -43,7 +43,7 @@ const ReferralsTable = () => {
       <div className="flex flex-col gap-2 text-white text-sm">
         <div className="flex justify-between">
           <div className="flex items-center gap-2">
-            <Image src={bitcoinicon} alt="BTC" width={30} height={30} />
+            <Image src={bitcoinicon} alt="BTC" style={{ width: 30, height: 'auto' }} />
             <div className="flex flex-col">
               <span className="font-medium">{item?.coin}</span>
               <span className="text-sm text-[#FFFFFF]">{item?.address}</span>
@@ -81,7 +81,12 @@ const ReferralsTable = () => {
                 className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
               >
                 <div className="flex justify-start items-center gap-1">
-                  <Image src={shortingicon} alt="Sort" className="w-3 h-3 cursor-pointer" />
+                  <Image
+                    src={shortingicon}
+                    alt="Sort"
+                    style={{ width: 12, height: 'auto' }}
+                    className="w-3 h-3 cursor-pointer"
+                  />
                   <span>{col?.label}</span>
                 </div>
               </th>
@@ -98,8 +103,7 @@ const ReferralsTable = () => {
                       <Image
                         src={bitcoinicon}
                         alt="Bitcoin"
-                        width={27}
-                        height={27}
+                        style={{ width: 27, height: 'auto' }}
                         className="mx-1 cursor-pointer"
                       />
                       <div className="flex justify-between flex-col">{item?.user} </div>

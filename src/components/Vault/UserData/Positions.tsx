@@ -47,7 +47,12 @@ const Positions = () => {
         <div className="flex justify-between">
           <div className="flex items-center gap-1">
             <span className={`w-[4px] h-[30px] rounded-sm ${'bg-[#2FA766]'}`}></span>
-            <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+            <Image
+              src={bitcoinicon}
+              alt="Bitcoin"
+              style={{ width: 24, height: 'auto' }}
+              className="w-6 h-6 mx-1 cursor-pointer"
+            />
             {item?.position?.coin}{' '}
             <span className="text-[#7D67FF] ml-1 px-1.5 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-xs">
               {item?.position?.leverage?.value}
@@ -110,7 +115,12 @@ const Positions = () => {
             {true ? (
               <div className="flex items-center gap-x-1">
                 <span className="w-17 break-words overflow-hidden">Dummy</span>
-                <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
+                <Image
+                  src={editicon}
+                  alt="Edit"
+                  style={{ width: 16, height: 'auto' }}
+                  className="w-4 h-4 cursor-pointer"
+                />
               </div>
             ) : (
               '-/-'
@@ -135,16 +145,14 @@ const Positions = () => {
                   <Image
                     src={shortingicon}
                     alt="Sort"
-                    height={16}
-                    width={16}
+                    style={{ width: 12, height: 'auto' }}
                     className="w-3 h-3 cursor-pointer"
                   />
                   <span>{col.label}</span>
                   <Image
                     src={infoicon}
                     alt="Info"
-                    height={16}
-                    width={16}
+                    style={{ width: 16, height: 'auto' }}
                     className="w-4 h-4 cursor-pointer"
                   />
                 </div>
@@ -158,16 +166,14 @@ const Positions = () => {
                 <Image
                   src={shortingicon}
                   alt="Sort"
-                  height={16}
-                  width={16}
+                  style={{ width: 12, height: 'auto' }}
                   className="w-3 h-3 cursor-pointer"
                 />
                 <span>{'TP/SL for position'}</span>
                 <Image
                   src={infoicon}
                   alt="Info"
-                  height={16}
-                  width={16}
+                  style={{ width: 16, height: 'auto' }}
                   className="w-4 h-4 cursor-pointer"
                 />
               </div>
@@ -185,7 +191,12 @@ const Positions = () => {
                       index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
                     }`}
                   ></span>
-                  <Image src={bitcoinicon} alt="Bitcoin" className="w-6 h-6 mx-1 cursor-pointer" />
+                  <Image
+                    src={bitcoinicon}
+                    alt="Bitcoin"
+                    style={{ width: 24, height: 'auto' }}
+                    className="w-6 h-6 mx-1 cursor-pointer"
+                  />
                   {position.position.coin}{' '}
                   <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
                     {position.position.leverage.value}
@@ -232,7 +243,12 @@ const Positions = () => {
                 {true ? (
                   <div className="flex items-center gap-2">
                     <span className="w-17 break-words overflow-hidden">Dummy</span>
-                    <Image src={editicon} alt="Edit" className="w-4 h-4 cursor-pointer" />
+                    <Image
+                      src={editicon}
+                      alt="Edit"
+                      style={{ width: 16, height: 'auto' }}
+                      className="w-4 h-4 cursor-pointer"
+                    />
                   </div>
                 ) : (
                   '-/-'

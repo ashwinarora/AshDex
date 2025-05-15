@@ -81,8 +81,8 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
             className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
           >
             <Image
-              height={20}
               width={20}
+              height={20}
               src={menuClose}
               alt="menuclose"
               className="w-[13px] h-[13px]"
@@ -112,7 +112,12 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
                       MAX
                     </button>
                     <span className="ml-3 text-white flex items-center text-sm font-medium">
-                      <Image src={ethicon} width={30} height={30} className="pr-2" alt="ethicon" />
+                      <Image
+                        src={ethicon}
+                        style={{ width: 30, height: 30 }}
+                        className="pr-2"
+                        alt="ethicon"
+                      />
                       ETH
                     </span>
                   </div>
@@ -147,7 +152,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
                       <div className="w-5/6 mr-3">
                         <Image
                           src={Slider1}
-                          alt=""
+                          alt="Slider1"
                           width={20}
                           height={20}
                           className="w-full mt-1"

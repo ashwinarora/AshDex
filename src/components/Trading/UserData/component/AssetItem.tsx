@@ -136,7 +136,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
     const numPrice = typeof price === 'string' ? parseFloat(price) : price
     if (isNaN(numPrice)) return '-'
 
-    return numPrice.toLocaleString(undefined, {
+    return numPrice.toLocaleString('en-US', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
     })
@@ -178,8 +178,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
               <Image
                 src={icons[assetKey]}
                 alt={assetKey}
-                width={32}
-                height={32}
+                style={{ width: 32, height: 32 }}
                 className="h-8 w-8 rounded-full mr-2"
               />
             ) : (

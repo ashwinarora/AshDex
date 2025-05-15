@@ -9,7 +9,6 @@ import { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AGENT_PRIVATE_KEY } from '@/utils/constants'
 import { mainnetAxios, testnetAxios } from '@/config/axios'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
-
 interface HyperLiquidContextProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any
@@ -145,9 +144,11 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
         enableWs: boolean
         walletAddress?: string
         privateKey?: string
+        vaultAddress: string | null
       } = {
         testnet: isTestnet,
-        enableWs: true
+        enableWs: true,
+        vaultAddress: null
       }
       if (address) {
         config.walletAddress = address
@@ -155,10 +156,16 @@ export const HyperLiquidProvider: React.FC<{ children: ReactNode }> = ({ childre
           config.privateKey = privateKey
         }
       }
-      const sdkInstance = new windowHyperliquid.Hyperliquid(config)
-      await sdkInstance.connect()
-      setSdk(sdkInstance)
-      setIsSdkConnected(true)
+      try {
+        // throw new Error('Simulated SDK failure')
+        const sdkInstance = new windowHyperliquid.Hyperliquid(config)
+        await sdkInstance.connect()
+        setSdk(sdkInstance)
+        setIsSdkConnected(true)
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        console.error('SDK connection error:', err)
+      }
     }
     initSdk()
   }, [isSdkScriptLoaded, privateKey, address, isTestnet])

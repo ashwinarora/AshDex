@@ -54,7 +54,7 @@ export default function VaultActionButtons({
               handleVaultAction(action?.key)
             }}
           >
-            <Image src={action?.icon} alt={dynamicLabel} width={15} height={15} />
+            <Image src={action?.icon} alt={dynamicLabel} style={{ width: 15, height: 'auto' }} />
             {dynamicLabel}
           </button>
         )

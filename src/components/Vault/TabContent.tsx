@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import usdcicon from '../../assets/images/usdc_icon.svg'
 
@@ -20,6 +21,7 @@ const TabContent: React.FC<ITabContentProps> = ({
   openConfirmingModal
 }) => {
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
   const [amount, setAmount] = useState('')
 
@@ -36,6 +38,8 @@ const TabContent: React.FC<ITabContentProps> = ({
     setAmount('')
     setIsLoading(false)
   }, [activeTab])
+
+  if (!isRendered) return null
 
   return (
     <>
@@ -64,8 +68,7 @@ const TabContent: React.FC<ITabContentProps> = ({
               <span className="2xl:ml-3 max-lg:ml-2 text-white flex items-center text-sm font-medium">
                 <Image
                   src={usdcicon}
-                  width={30}
-                  height={30}
+                  style={{ width: 30, height: 'auto' }}
                   className="2xl:pr-2 max-lg:pr-1"
                   alt="usdcicon"
                 />

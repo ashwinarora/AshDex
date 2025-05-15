@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { VAULTS_TAB } from '../../utils/constants'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import ListViewVaults from './ListViewVaults'
 import EnableTrading from './EnableTrading'
 import BoardViewVaults from './BoardViewVaults'
@@ -18,6 +19,7 @@ import searchnormalicon from '@/assets/images/search-normal.svg'
 const Vaults = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { isConnected } = useAccount()
+  const isRendered = useComponentRendered()
   const [viewMode, setViewMode] = useState<'list' | 'board'>('list')
   const [enableModal, setEnableModal] = useState(false)
   const [createVaultModal, setCreateVaultModal] = useState(false)
@@ -31,6 +33,8 @@ const Vaults = () => {
   const handleCreateVault = () => {
     setCreateVaultModal((p) => !p)
   }
+
+  if (!isRendered) return null
 
   return (
     <>
@@ -58,12 +62,12 @@ const Vaults = () => {
                   }}
                 >
                   <div className="w-10 h-10 flex items-center justify-center bg-white/10 rounded-lg">
-                    <Image src={chartIcon} alt="chart" width={20} height={20} />
+                    <Image src={chartIcon} alt="chart" style={{ width: 20, height: 'auto' }} />
                   </div>
                   <div>
                     <div className="flex items-center gap-1 text-sm text-[#8B8BA0] font-medium">
                       Total Value
-                      <Image src={infoIcon} alt="info" width={15} height={15} />
+                      <Image src={infoIcon} alt="info" style={{ width: 15, height: 'auto' }} />
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-2xl font-medium text-white tracking-wide">$534 753 940</p>
@@ -89,8 +93,7 @@ const Vaults = () => {
                   >
                     {!isConnected && (
                       <Image
-                        height={20}
-                        width={20}
+                        style={{ width: 20, height: 'auto' }}
                         src={walleticon}
                         alt="walleticon"
                         className="w-5 h-5 mr-2"
@@ -120,13 +123,13 @@ const Vaults = () => {
                   className={`p-4 rounded cursor-pointer ${viewMode === 'list' ? 'bg-[#FFFFFF0F]' : ''}`}
                   onClick={() => setViewMode('list')}
                 >
-                  <Image src={listicon} alt="list" width={16} height={16} />
+                  <Image src={listicon} alt="list" style={{ width: 16, height: 'auto' }} />
                 </button>
                 <button
                   className={`p-4 rounded cursor-pointer ${viewMode === 'board' ? 'bg-[#FFFFFF0F]' : ''}`}
                   onClick={() => setViewMode('board')}
                 >
-                  <Image src={boardicon} alt="board" width={16} height={16} />
+                  <Image src={boardicon} alt="board" style={{ width: 16, height: 'auto' }} />
                 </button>
               </div>
             </div>
@@ -153,7 +156,11 @@ const Vaults = () => {
               {/* Search Input */}
               <div className="relative w-full md:w-[25%]">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                  <Image src={searchnormalicon} alt="search" width={18} height={18} />
+                  <Image
+                    src={searchnormalicon}
+                    alt="search"
+                    style={{ width: 18, height: 'auto' }}
+                  />
                 </div>
                 <input
                   type="text"

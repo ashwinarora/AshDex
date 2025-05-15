@@ -146,22 +146,27 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         tooltipRef.current.style.display = 'none'
         return
       }
+
       tooltipRef.current.style.display = 'block'
 
       const isMobile = window.innerWidth <= 770
-      tooltipRef.current.style.left = isMobile ? '1rem' : '3.5rem'
-      tooltipRef.current.style.top = isMobile ? '14rem' : '8.3rem'
+      tooltipRef.current.style.left = isMobile ? '1rem' : '2rem'
+      tooltipRef.current.style.top = isMobile ? '10rem' : '7rem'
 
+      const formattedDate = new Date((seriesData?.time as number) * 1000).toLocaleDateString(
+        'en-US'
+      )
       tooltipRef.current.innerHTML = `
-        <div className="  font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
-      <span>${new Date((seriesData?.time as number) * 1000).toLocaleDateString()}</span>
-          <span{{color: '#F00'}}>Open: <span className="">${seriesData?.open?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>High: <span className="text-white">${seriesData?.high?.toFixed(2)}</span></span>
-          <span{{color: '#0F0'}}>Low: <span className="text-white">${seriesData?.low?.toFixed(2)}</span></span>
-          <span{{color: '#00F'}}>Close: <span className="text-white">${seriesData?.close?.toFixed(2)}<span></span>
+        <div class="font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
+          <span>${formattedDate}</span>
+          <span style="color: #F00;">Open: <span>${seriesData?.open?.toFixed(2)}</span></span>
+          <span style="color: #00F;">High: <span class="text-white">${seriesData?.high?.toFixed(2)}</span></span>
+          <span style="color: #0F0;">Low: <span class="text-white">${seriesData?.low?.toFixed(2)}</span></span>
+          <span style="color: #00F;">Close: <span class="text-white">${seriesData?.close?.toFixed(2)}</span></span>
         </div>
       `
     })
+
     const handleResize = () => {
       if (chartRef.current) {
         chart.resize(chartRef.current.clientWidth, chartRef.current.clientHeight)
@@ -209,7 +214,8 @@ const Chart = ({ selectedAsset }: IChartProps) => {
                   <Image
                     src={icon}
                     alt={`icon-${index}`}
-                    className="max-sm:w-[16px] max-sm:h-[16px] w-[19px] h-[19px]"
+                    style={{ width: 19, height: 'auto' }}
+                    className="max-sm:w-4 max-sm:h-4 w-4.5 h-4.5"
                   />
                 </button>
               ))}

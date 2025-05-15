@@ -62,7 +62,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
           <div
             className={`rounded-lg py-4 px-3 flex items-center gap-y-1 gap-x-3 mb-6 ${'bg-[#FFA90A14]'}`}
           >
-            <Image src={erroryellowicon} alt="warning" width={25} height={25} />
+            <Image src={erroryellowicon} alt="warning" style={{ width: 25, height: 'auto' }} />
             <p className={`font-normal text-sm ${'text-[#FFA90A]'}`}>
               {'Closing Vault is irreversible. Make sure all users have withdrawn their funds.'}
             </p>
