@@ -1,17 +1,20 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
-import DeBridgeModal from './DeBridgeModal'
+import BridgeModal from '../Bridge/BridgeModal'
+import { SolanaWalletProvider } from '../Bridge/SolanaButton'
+import { TronWalletProvider } from '../Bridge/TronProvider'
+// Create a singleton instance of AppKit
 
 const BridgeButton = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   return (
-    <>
+    <div>
       <button
         onClick={() => setIsModalOpen(true)}
-        className="nexon-button nexon-ghost flex items-center gap-2"
+        className="flex items-center gap-2 nexon-button nexon-ghost"
       >
         <Image
           style={{ width: 20, height: 'auto' }}
@@ -21,9 +24,12 @@ const BridgeButton = () => {
         />
         Bridge
       </button>
-
-      <DeBridgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    </>
+      <SolanaWalletProvider>
+        <TronWalletProvider>
+          <BridgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+        </TronWalletProvider>
+      </SolanaWalletProvider>
+    </div>
   )
 }
 
