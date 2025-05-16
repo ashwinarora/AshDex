@@ -1,6 +1,6 @@
 import { ReferralData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useQuery } from '@tanstack/react-query'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -11,6 +11,7 @@ export const useNexonReferral = () => {
   const { clearingHouseState, sdk } = useHyperliquid()
   const { isConnected, address } = useAccount()
   const { isAgentApproved } = useAgentApproval()
+  const [isReferralSet, setIsReferralSet] = useState(false)
 
   const { data: referralData } = useQuery<ReferralData>({
     queryKey: ['referralsDetails', address],
@@ -31,11 +32,11 @@ export const useNexonReferral = () => {
     if (!clearingHouseState.withdrawable) return
     if (referralData.referredBy) return
     if (referralData.referrerState.stage === 'needToCreateCode') return
-
+    if (isReferralSet) return
+    
     const setNexonReferral = async () => {
-      console.log('setting nexon referral')
-      const res = await sdk.exchange.setReferrer(NEXON_REFERRAL_CODE)
-      console.log(res)
+      await sdk.exchange.setReferrer(NEXON_REFERRAL_CODE)
+      setIsReferralSet(true)
     }
 
     setNexonReferral()

@@ -83,7 +83,7 @@ const OpenOrders = () => {
         Cancel All
       </button>
     )
-  }, [sdk])
+  }, [sdk, isAgentApproved, currentFeeApproval, openAgentModal])
 
   const renderCancelButton = useCallback(
     (rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })) => {

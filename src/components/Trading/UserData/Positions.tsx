@@ -257,7 +257,7 @@ const Positions = () => {
         meta: { label: 'TP/SL for position' }
       })
     ],
-    [helper, closePosition]
+    [helper, closePosition, isAgentApproved, currentFeeApproval, openAgentModal]
   )
 
   const tableData = useMemo(() => {
