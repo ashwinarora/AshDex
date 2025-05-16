@@ -1,5 +1,4 @@
 'use client'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
@@ -14,6 +13,11 @@ import { PrivateKeyAccount } from 'viem'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
 
 type StopOrder = {
   isMarket: boolean
@@ -272,8 +276,9 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, hyperliquidAxios, universe, sdk, isTestnet, spotAssetContext, spotMeta } =
-    useHyperLiquid()
+  const { agentWallet, sdk, spotAssetContext } = useHyperliquid()
+  const { data: universe } = usePerpsUniverse()
+  const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const isSpot = useIsSpot()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()

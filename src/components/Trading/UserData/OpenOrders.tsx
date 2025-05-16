@@ -1,7 +1,6 @@
 'use client'
 import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useAccount } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import useIsSpot from '@/hooks/useIsSpot'
 import {
   createColumnHelper,
@@ -18,6 +17,7 @@ import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 type ColumnType = {
   key: string
@@ -40,7 +40,7 @@ const columnHelper = createColumnHelper<IOpenOrder & { meta?: { label: string } 
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdk, openOrders } = useHyperLiquid()
+  const { sdk, openOrders } = useHyperliquid()
   const isSpot = useIsSpot()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
@@ -83,7 +83,7 @@ const OpenOrders = () => {
         Cancel All
       </button>
     )
-  }, [sdk])
+  }, [sdk, isAgentApproved, currentFeeApproval, openAgentModal])
 
   const renderCancelButton = useCallback(
     (rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })) => {

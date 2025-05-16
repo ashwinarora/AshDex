@@ -67,6 +67,18 @@
 .font-proxima-nova {
   font-family: var(--font-proxima-nova), Arial, Helvetica, sans-serif;
 }
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type='number'] {
+  -moz-appearance: textfield;
+}
 body {
   color: var(--foreground);
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
@@ -191,8 +203,8 @@ input {
   @apply bg-transparent;
   @apply hover:bg-white/10;
 }
-.nexon-button:active {
-  @apply scale-95 hover:scale-95 opacity-80;
+button:active {
+  @apply scale-95;
 }
 .nexon-button:disabled {
   @apply opacity-50 cursor-not-allowed;

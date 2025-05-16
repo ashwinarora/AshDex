@@ -1,12 +1,12 @@
 import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import Pagination from '../../common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 const columns = [
   { key: 'coin', label: 'Position' },
@@ -32,7 +32,7 @@ type RenderRowProps = {
 }
 
 const Positions = () => {
-  const { clearingHouseState } = useHyperLiquid()
+  const { clearingHouseState } = useHyperliquid()
   const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / 10)

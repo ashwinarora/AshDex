@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
-import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IPlaceOrderProps } from '.'
 import CheckBox from '@/components/common/CheckBox'
 
 const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { sdk } = useHyperLiquid()
+  const { sdk } = useHyperliquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [size, setSize] = useState<number>(0)
   const [minutes, setMinutes] = useState<number>(0)

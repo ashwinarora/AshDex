@@ -3,7 +3,6 @@
 import React, { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import {
   createColumnHelper,
   useReactTable,
@@ -18,6 +17,7 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 type ColumnType = {
   key: string
@@ -32,7 +32,7 @@ type RenderRowProps = {
 
 const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const { sdk } = useHyperLiquid()
+  const { sdk } = useHyperliquid()
   const [mounted, setMounted] = useState(false)
 
   // Use useEffect to set mounted to true after hydration
