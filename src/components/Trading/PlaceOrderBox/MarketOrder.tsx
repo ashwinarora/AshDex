@@ -49,13 +49,13 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
     const rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
-    
+
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')
-    
+
     // Count significant figures in integer part
     const intSigFigs = intPart.replace(/^0+/, '').length
-    
+
     // If integer part has 5 or more significant figures, return just the integer part
     if (intSigFigs >= 5) {
       return intPart
@@ -81,7 +81,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
   }
 
-  console.log({szDecimals})
+  console.log({ szDecimals })
 
   return (
     <div className="w-full h-full flex flex-col">

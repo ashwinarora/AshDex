@@ -33,7 +33,7 @@ export const useNexonReferral = () => {
     if (referralData.referredBy) return
     if (referralData.referrerState.stage === 'needToCreateCode') return
     if (isReferralSet) return
-    
+
     const setNexonReferral = async () => {
       await sdk.exchange.setReferrer(NEXON_REFERRAL_CODE)
       setIsReferralSet(true)
