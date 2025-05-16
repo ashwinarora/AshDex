@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { ORDER_INTERVALS, VAULTS_DETAILS_TAB } from '@/utils/constants'
 import VaultFilterBar from '@/components/Vault/UserData/VaultFilterBar'
 import Balances from '@/components/Vault/UserData/Balances'
@@ -13,9 +12,10 @@ import FundingHistory from '@/components/Vault/UserData/FundingHistory'
 import DepositsAndWithdrawals from '@/components/Vault/UserData/DepositsAndWithdrawals'
 import Depositors from '@/components/Vault/UserData/Depositors'
 import CustomSelector from '@/components/common/CustomSelector'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 function UserData() {
-  const { clearingHouseState, openOrders } = useHyperLiquid()
+  const { clearingHouseState, openOrders } = useHyperliquid()
   const [searchValue, setSearchValue] = useState('')
   const [activeTab, setActiveTab] = useState<number>(1)
   const positionsCount = clearingHouseState?.assetPositions?.length || 0

@@ -1,9 +1,10 @@
 'use client'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getCoinName } from '@/utils/utils'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface AmountInputSpotProps {
   selectedAsset: string
@@ -26,7 +27,8 @@ const AmountInputSpot = ({
   limitPrice,
   isBuy
 }: AmountInputSpotProps) => {
-  const { spotState, spotMeta } = useHyperLiquid()
+  const { spotState } = useHyperliquid()
+  const { data: spotMeta } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
 
   const szDecimals = useMemo(() => {

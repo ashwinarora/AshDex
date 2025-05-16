@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { CHART_INTERVALS } from '../../utils/constants'
 import type { Candle } from '../../utils/hyperliquid/hyperLiquidTypes'
-import { useHyperLiquid } from '@/context/HyperLiquid'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import ChartTabs from '../common/ChartTabs'
 import IntervalSelector from '../common/IntervalSelector'
 import InfoTab from '../common/InfoTab'
@@ -28,7 +28,7 @@ interface IChartProps {
 const tabs = ['Price', 'Depth', 'Info'] as string[]
 
 const Chart = ({ selectedAsset }: IChartProps) => {
-  const { sdk, isSdkConnected } = useHyperLiquid()
+  const { sdk } = useHyperliquid()
   const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('5m')
   const chartRef = useRef<HTMLDivElement>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
@@ -45,7 +45,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
       )
       return response
     },
-    enabled: isSdkConnected && selectedAsset?.length > 0
+    enabled: !!sdk && selectedAsset?.length > 0
   })
 
   useEffect(() => {
@@ -55,11 +55,11 @@ const Chart = ({ selectedAsset }: IChartProps) => {
   }, [initialCandles])
 
   useEffect(() => {
-    if (!isSdkConnected || !selectedAsset || !selectedInterval) return
+    if (!sdk || !selectedAsset || !selectedInterval) return
     let unsubscribe: (() => void) | null = null
     const subscribeToCandles = async () => {
       try {
-        unsubscribe = await sdk?.subscriptions?.subscribeToCandle(
+        unsubscribe = await sdk.subscriptions.subscribeToCandle(
           selectedAsset,
           selectedInterval,
           (newCandles: Candle | Candle[]) => {
@@ -79,7 +79,7 @@ const Chart = ({ selectedAsset }: IChartProps) => {
         unsubscribe()
       }
     }
-  }, [isSdkConnected, selectedAsset, selectedInterval, sdk?.subscriptions])
+  }, [selectedAsset, selectedInterval, sdk?.subscriptions])
 
   useEffect(() => {
     if (activeTab !== 0 || isLoading || !candlestickData.length || !chartRef.current) return

@@ -1,9 +1,9 @@
 'use client'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useEffect, useMemo } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -12,7 +12,7 @@ interface LeverageMarginProps {
 }
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
-  const { universe } = useHyperLiquid()
+  const { data: universe } = usePerpsUniverse()
 
   const maxLeverage = useMemo(() => {
     if (!universe.length) return 1

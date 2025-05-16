@@ -1,3 +1,4 @@
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useQuery } from '@tanstack/react-query'
 
 interface Token {
@@ -13,7 +14,8 @@ interface Sdk {
   }
 }
 
-export const usePerpetualData = (sdk: Sdk | null, isSdkConnected: boolean) => {
+export const usePerpetualData = () => {
+  const { sdk } = useHyperliquid()
   const fetchPerpetualData = async (sdk: Sdk): Promise<Token[]> => {
     if (!sdk) return []
     try {
@@ -26,9 +28,9 @@ export const usePerpetualData = (sdk: Sdk | null, isSdkConnected: boolean) => {
   }
 
   return useQuery({
-    queryKey: ['perpetualData', isSdkConnected],
+    queryKey: ['perpetualData'],
     queryFn: () => fetchPerpetualData(sdk!),
-    enabled: Boolean(sdk && isSdkConnected),
+    enabled: Boolean(sdk),
     staleTime: 1000 * 60 * 5
   })
 }

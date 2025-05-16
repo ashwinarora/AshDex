@@ -1,17 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { X } from 'lucide-react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
-import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE } from '@/utils/constants'
+import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE, isTestnet } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
 import { toast } from 'react-toastify'
 import { splitSignature } from '@/utils/utils'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { hyperliquidAxios } from '@/config/axios'
 
 const EstablishConnectionModal = () => {
   const { chainId } = useAccount()
-  const { agentWallet, hyperliquidAxios, isTestnet } = useHyperLiquid()
+  const { agentWallet } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
   const [isApproving, setIsApproving] = useState(false)
   const {

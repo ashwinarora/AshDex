@@ -1,5 +1,5 @@
-import Stakes from '../../components/Stake/Stakes'
+import Stakes from '@/components/Stake/Stakes'
 
-export default function Vault() {
+export default function Stake() {
   return <Stakes />
 }

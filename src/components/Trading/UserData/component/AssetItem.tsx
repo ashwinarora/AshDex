@@ -1,7 +1,6 @@
 'use client'
 import React, { useMemo } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import {
   IconStar,
   IconStarFilled,
@@ -9,6 +8,8 @@ import {
   IconTriangleInvertedFilled
 } from '@tabler/icons-react'
 import { useFavorites } from '@/context/FavoritesContext'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 
 interface AssetItemProps {
   assetKey: string
@@ -32,7 +33,8 @@ const AssetItem: React.FC<AssetItemProps> = ({
   change24h: propChange24h,
   type
 }) => {
-  const { universe, perpAssetContext } = useHyperLiquid()
+  const { perpAssetContext } = useHyperliquid()
+  const { data: universe } = usePerpsUniverse()
   const { isFavorite, toggleFavorite } = useFavorites()
 
   // Find the asset context for this asset

@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import {
   useReactTable,
   getCoreRowModel,
@@ -16,6 +15,7 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+import { hyperliquidAxios } from '@/config/axios'
 
 type ColumnType = {
   key: string
@@ -95,7 +95,6 @@ const columns = [
 
 const TradeHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const { hyperliquidAxios } = useHyperLiquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
 

@@ -5,11 +5,11 @@ import LeverageMargin from './components/LeverageMargin'
 import AmountInput from './components/AmountInput'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import MarginMode from './components/MarginMode'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids } = useHyperLiquid()
+  const { allMids } = useHyperliquid()
   const [stopPrice, setStopPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)

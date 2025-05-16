@@ -2,7 +2,6 @@ import { useAccount } from 'wagmi'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
@@ -14,7 +13,9 @@ import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { IPlaceOrderProps } from '.'
 import CheckBox from '@/components/common/CheckBox'
 import { useAgentApproval } from '@/context/EstablishConnection'
-
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { hyperliquidAxios } from '@/config/axios'
 interface Order {
   price: number
   size: number
@@ -52,8 +53,9 @@ function calculateScaleOrders(
 }
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { universe, agentWallet, hyperliquidAxios, clearingHouseState } = useHyperLiquid()
+  const { agentWallet, clearingHouseState } = useHyperliquid()
   const { chain } = useAccount()
+  const { data: universe } = usePerpsUniverse()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
