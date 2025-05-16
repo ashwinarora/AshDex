@@ -125,7 +125,7 @@ const OpenOrders = () => {
         </button>
       )
     },
-    [sdk]
+    [sdk, isAgentApproved, currentFeeApproval, openAgentModal]
   )
 
   const getCellClass = (columnId: string, cellValue: unknown): string => {
