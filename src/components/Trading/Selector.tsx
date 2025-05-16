@@ -1,22 +1,21 @@
 'use client'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { useHyperLiquid } from '../../context/HyperLiquid'
 import bitcoinlogo from '@/assets/images/bitcoin_logo.svg'
 import settingicon from '@/assets/images/setting_icon.svg'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-
 import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import ValueIndicator from '../common/ValueIndicator'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
-
 // Crypto icons imports
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
 import Skeleton from '../common/Skeleton'
 import { IconArrowsSort, IconStar, IconStarFilled } from '@tabler/icons-react'
 import CheckBox from '../common/CheckBox'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 
 // Crypto icon mapping - only include Bitcoin which we know exists
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
@@ -29,7 +28,8 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
+  const { allMids, perpAssetContext, spotAssetContext } = useHyperliquid()
+  const { data: universe } = usePerpsUniverse()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)

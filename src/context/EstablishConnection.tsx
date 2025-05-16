@@ -2,10 +2,11 @@
 import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query'
 import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
-import { useHyperLiquid } from './HyperLiquid'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
 import dynamic from 'next/dynamic'
 import { BUILDER_ADDRESS } from '@/utils/constants'
+import { hyperliquidAxios } from '@/config/axios'
 
 const EstablishConnectionModal = dynamic(
   () => import('@/components/EstablishConnectionModal/EstablishConnectionModal'),
@@ -30,7 +31,7 @@ const ConnectionContext = createContext<ConnectionContextType | undefined>(undef
 export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
-  const { hyperliquidAxios, agentWallet } = useHyperLiquid()
+  const { agentWallet } = useHyperliquid()
 
   const { data: isAgentApproved, refetch: refetchAgentApproval } = useQuery({
     queryKey: ['extraAgents'],

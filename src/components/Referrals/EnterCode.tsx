@@ -4,13 +4,13 @@ import Image from 'next/image'
 import successicon from '@/assets/images/success_icon.svg'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useMutation } from '@tanstack/react-query'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 function EnterCode() {
   const [code, setCode] = useState('')
   const { data: referral } = useReferralsInfo()
-  const { sdk } = useHyperLiquid()
+  const { sdk } = useHyperliquid()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 

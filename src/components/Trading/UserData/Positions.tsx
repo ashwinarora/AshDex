@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import editicon from '@/assets/images/edit_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
@@ -21,6 +20,10 @@ import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
 
 type ColumnType = {
   key: string
@@ -35,8 +38,9 @@ type RenderRowProps = {
 
 const Positions = () => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, universe, sdk, agentWallet, isTestnet, hyperliquidAxios, allMids } =
-    useHyperLiquid()
+  const { clearingHouseState, agentWallet, allMids } = useHyperliquid()
+  const { data: universe } = usePerpsUniverse()
+  const { sdk } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
 
@@ -253,7 +257,7 @@ const Positions = () => {
         meta: { label: 'TP/SL for position' }
       })
     ],
-    [helper, closePosition]
+    [helper, closePosition, isAgentApproved, currentFeeApproval, openAgentModal]
   )
 
   const tableData = useMemo(() => {

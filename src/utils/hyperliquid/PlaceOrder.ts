@@ -1,7 +1,7 @@
 'use client'
 import { encode } from '@msgpack/msgpack'
 import { AxiosInstance } from 'axios'
-import { Hex, keccak256, PrivateKeyAccount, toBytes } from 'viem'
+import { type Hex, keccak256, type PrivateKeyAccount, toBytes } from 'viem'
 import { splitSignature } from '../utils'
 
 type orderData = {

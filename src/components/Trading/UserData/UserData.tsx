@@ -1,4 +1,3 @@
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useMemo, useState } from 'react'
 import Balances from './Balances'
@@ -6,9 +5,10 @@ import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 const UserData = () => {
-  const { clearingHouseState, openOrders } = useHyperLiquid()
+  const { clearingHouseState, openOrders } = useHyperliquid()
   const isSpot = useIsSpot()
 
   const positionsCount = useMemo(() => {

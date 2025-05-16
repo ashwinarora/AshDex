@@ -11,10 +11,11 @@ import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/utils/constants'
 import MarginMode from './components/MarginMode'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -31,7 +32,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { universe, spotMeta } = useHyperLiquid()
+  const { data: universe } = usePerpsUniverse()
+  const { data: spotMeta } = useSpotMeta()
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
@@ -106,7 +108,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
     // For integer values, keep them as is
     if (Number.isInteger(numValue)) {
-      setLimitPrice(numValue.toString().replace(/\.?0+$/, ''))
+      setLimitPrice(numValue.toString())
     } else {
       // For decimal values, format with proper decimal places
       setLimitPrice(numValue.toFixed(allowedDecimals).replace(/\.?0+$/, ''))

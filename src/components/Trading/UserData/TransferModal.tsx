@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom'
 import Image from 'next/image'
 import { X } from 'lucide-react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
 import { splitSignature } from '@/utils/utils'
 import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
 
 interface ITransferModal {
   isOpen: boolean
@@ -17,7 +19,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
-  const { clearingHouseState, spotState, isTestnet, hyperliquidAxios } = useHyperLiquid()
+  const { clearingHouseState, spotState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
 
   if (!isOpen) return null

@@ -1,10 +1,11 @@
 'use client'
 
-import { useHyperLiquid } from '@/context/HyperLiquid'
 import { getCoinName, getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
 import { useMemo, useState } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -29,7 +30,8 @@ const AmountInput = ({
 }: AmountInputProps) => {
   const [usdPercent, setUsdPercent] = useState(0)
 
-  const { universe, clearingHouseState } = useHyperLiquid()
+  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState } = useHyperliquid()
 
   const szDecimals = useMemo(() => {
     const assetIndex = getUniverseIndex(universe, selectedAsset)
@@ -51,7 +53,7 @@ const AmountInput = ({
     return Math.min(maxAllowedUsd, clearingHouseState.withdrawable)
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice])
 
-  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAssetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const input = e.target.value
 
@@ -82,7 +84,7 @@ const AmountInput = ({
     }
   }
 
-  const handleTotalChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUSDChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const input = e.target.value
 
@@ -129,7 +131,7 @@ const AmountInput = ({
             type="text"
             placeholder="0.0000"
             value={assetAmount}
-            onChange={handleAmountChange}
+            onChange={handleAssetChange}
             className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-xs">
@@ -145,7 +147,7 @@ const AmountInput = ({
             type="text"
             placeholder="0.0000"
             value={usdAmount}
-            onChange={handleTotalChange}
+            onChange={handleUSDChange}
             className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
           />
           <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-xs">

@@ -1,7 +1,8 @@
 'use client'
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
-import { useHyperLiquid } from './HyperLiquid'
 import useIsSpot from '@/hooks/useIsSpot'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 interface FavoriteAsset {
   name: string
   value: string
@@ -73,7 +74,8 @@ const formatPriceChange = (currentPrice: number, prevDayPrice: number): string =
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<FavoritesData>({ spot: [], perp: [] })
-  const { allMids, perpAssetContext, universe, spotAssetContext } = useHyperLiquid()
+  const { allMids, perpAssetContext, spotAssetContext } = useHyperliquid()
+  const { data: universe } = usePerpsUniverse()
   const isInitialized = useRef(false)
   const isSpot = useIsSpot()
   // Load favorites from localStorage on initial render

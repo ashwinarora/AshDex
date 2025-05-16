@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react'
 import Image from 'next/image'
-import { useHyperLiquid } from '../../context/HyperLiquid'
 import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
 import ThreeDot from '../../assets/images/three_dot.svg'
 // import Filter1 from '../../assets/images/filter_1.svg'
@@ -11,6 +10,7 @@ import ThreeDot from '../../assets/images/three_dot.svg'
 import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
 import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -18,7 +18,7 @@ interface IOrderBookProps {
 }
 
 const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
-  const { sdk, isSdkConnected, allMids } = useHyperLiquid()
+  const { sdk, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<WsBook>()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
@@ -26,7 +26,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const sellsContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!isSdkConnected || !selectedAsset) return
+    if (!sdk || !selectedAsset) return
 
     setIsLoading(true)
     sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook) => {
@@ -36,7 +36,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     return () => {
       sdk.subscriptions.unsubscribeFromL2Book(selectedAsset)
     }
-  }, [selectedAsset, isSdkConnected, sdk])
+  }, [selectedAsset, sdk])
 
   const processOrders = (orders: WsLevel[]) => {
     let runningTotal = 0
