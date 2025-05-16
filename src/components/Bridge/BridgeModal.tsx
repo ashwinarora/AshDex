@@ -114,6 +114,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setSourceToken,
     setDestinationToken,
     isLoading,
+    setIsLoading,
     getGasFeeOptions,
     getAverageTransferTime,
     setAmount,
@@ -127,7 +128,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     showWalletsModal,
     setShowWalletsModal,
     transactions,
-
+    nativeBalance,
     addTransaction
   } = useBridge()
 
@@ -266,7 +267,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     address,
     token: sourceToken?.tokenAddress as `0x${string}`,
     query: {
-      refetchInterval: 5000 // Refetch every 5 seconds
+      refetchInterval: 10000 // Refetch every 5 seconds
     }
   })
 
@@ -651,6 +652,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     }
 
     try {
+      setIsLoading(true)
       // Get fee options to validate payment method
       const feeOptions = await getGasFeeOptions(sourceToken, destinationToken, selectedMessenger)
 
@@ -737,6 +739,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     } catch (err) {
       console.error('Transfer failed:', err)
       toast.error('Transaction failed. Please try again.')
+      setIsLoading(false)
       // Clear interval on error
       if (statusCheckIntervalRef.current) {
         clearInterval(statusCheckIntervalRef.current)
@@ -903,6 +906,17 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
                   )
               }
             })()}
+            {nativeBalance &&
+              useNativeTokenForGas &&
+              Number(nativeBalance) < Number(gasFee) &&
+              isConnected &&
+              !['TRX', 'SOL', 'SRB', 'SUI'].includes(sourceToken?.chainSymbol as string) && (
+                <div
+                  className={`flex   items-center gap-2 p-2 border    rounded-md text-sm text-center bg-red-800/10 border-red-900 visible' `}
+                >
+                  Not enough Gas Fees
+                </div>
+              )}
           </div>
           <div className="flex flex-col bg-white/5 border-2 border-white/5 rounded-2xl">
             {/* Pay Section */}
@@ -1141,6 +1155,10 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
           {/* Confirm Button */}
           <div
             onClick={(e) => {
+              if (isLoading) {
+                e.preventDefault()
+                return
+              }
               if (sourceToken?.chainSymbol === 'TRX' && !isTronConnected) {
                 e.preventDefault()
                 return

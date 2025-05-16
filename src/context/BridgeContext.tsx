@@ -10,7 +10,7 @@ import {
 } from '@allbridge/bridge-core-sdk'
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react'
 import { toast } from 'react-toastify'
-import { useAccount } from 'wagmi'
+import { useAccount, useBalance } from 'wagmi'
 import { WalletProvider as SuiWalletProvider } from '@suiet/wallet-kit'
 import '@suiet/wallet-kit/style.css'
 import { SuietWallet, SuiWallet, EthosWallet } from '@suiet/wallet-kit'
@@ -89,6 +89,7 @@ interface BridgeContextProps {
   getExplorerUrl: (hash: string, messenger: Messenger | string) => string
   formatTime: (timestamp: number) => string
   pendingDeposits: Map<string, { hash: string; destinationChain: string }>
+  nativeBalance: string | null
 }
 
 const BridgeContext = createContext<BridgeContextProps | undefined>(undefined)
@@ -129,6 +130,19 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   const [pendingDeposits, setPendingDeposits] = useState<
     Map<string, { hash: string; destinationChain: string }>
   >(new Map())
+  const [nativeBalance, setNativeBalance] = useState<string | null>(null)
+
+  const { data: balanceData } = useBalance({
+    address
+  })
+
+  useEffect(() => {
+    if (balanceData) {
+      setNativeBalance(balanceData.formatted)
+    } else {
+      setNativeBalance(null)
+    }
+  }, [balanceData])
 
   // Save transactions to localStorage whenever they change
   useEffect(() => {
@@ -170,7 +184,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
         setTokens(tokenList)
 
         // Set default chains and tokens
-        const defaultSourceChain = chainDetails[ChainSymbol.TRX]
+        const defaultSourceChain = chainDetails[ChainSymbol.POL]
         const defaultDestinationChain = chainDetails[ChainSymbol.ARB]
 
         if (!mounted) return
@@ -192,7 +206,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           if (!mounted) return
           setDestinationToken(defaultDestinationToken || null)
         }
-
+        setIsLoading(false)
         if (!mounted) return
         setError(null)
       } catch (err) {
@@ -281,6 +295,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
   // Function to handle Nexon deposit
   const handleNexonDeposit = async (txId: string) => {
     try {
+      setIsLoading(true)
       // Find the transaction to get its amount
       const transaction = transactions.find((tx) => tx.hash === txId)
       if (!transaction) {
@@ -328,6 +343,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       console.error('Deposit to Nexon failed:', error)
       toast.error('Failed to deposit to Nexon. Please try again.')
       depositInitiatedTransactions.delete(txId)
+      setIsLoading(false)
     }
   }
 
@@ -344,6 +360,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
 
     try {
       if (destinationChain !== ('NEXON' as ChainSymbol)) {
+        setIsLoading(true)
         console.log('Checking transfer status for:', txId, chainSymbol)
         const transferStatus = await sdk.getTransferStatus(chainSymbol, txId)
         console.log('Transfer Status:', transferStatus)
@@ -361,6 +378,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
               // Call handleNexonDeposit
               handleNexonDeposit(txId)
             }
+            setIsLoading(false)
             return 'complete'
           }
         }
@@ -370,7 +388,18 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
     } catch (error) {
       console.error('Error checking transfer status:', error)
-      return null
+      if (
+        error &&
+        typeof error === 'object' &&
+        'response' in error &&
+        error.response &&
+        typeof error.response === 'object' &&
+        'status' in error.response &&
+        error.response.status !== 404
+      ) {
+        setIsLoading(false)
+        return null
+      }
     }
   }
 
@@ -497,7 +526,8 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     setIsTronAllowanceApproved,
     getExplorerUrl,
     formatTime,
-    pendingDeposits
+    pendingDeposits,
+    nativeBalance
   }
 
   return (

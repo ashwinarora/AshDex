@@ -3,8 +3,8 @@ import { BridgeTransaction } from '@/context/BridgeContext'
 import Image from 'next/image'
 import { IconExternalLink } from '@tabler/icons-react'
 import ProgressBar from './ProgressBar'
-import { useWaitForTransactionReceipt } from 'wagmi'
 import { useEffect } from 'react'
+import { useTransactionReceipt } from 'wagmi'
 
 function TransactionsCard({
   transaction,
@@ -13,9 +13,16 @@ function TransactionsCard({
   transaction: BridgeTransaction
   getLogoPath: (token: string) => string
 }) {
-  const { updateTransactionStatus } = useBridge()
-  const { data, isLoading, isSuccess, isError } = useWaitForTransactionReceipt({
-    hash: transaction.hash as `0x${string}`
+  const { updateTransactionStatus,   setIsLoading } = useBridge()
+  const {
+    data,
+    isLoading: isLoadingReceipt,
+    isSuccess,
+    isError,
+    isFetching
+  } = useTransactionReceipt({
+    hash: transaction.hash as `0x${string}`,
+    query: { enabled: transaction.status !== 'complete' }
   })
   useEffect(() => {
     if (transaction.destinationChain === 'NEXON' && transaction.status !== 'complete') {
@@ -25,7 +32,12 @@ function TransactionsCard({
         updateTransactionStatus(transaction.hash, 'pending')
       }
     }
-  }, [isLoading, isSuccess, isError, data])
+    if (isFetching) {
+      setIsLoading(true)
+    } else {
+      setIsLoading(false)
+    }
+  }, [isSuccess, isError, data, isLoadingReceipt, isFetching])
   const { getExplorerUrl, formatTime } = useBridge()
   return (
     <div>
