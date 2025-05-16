@@ -13,7 +13,7 @@ function TransactionsCard({
   transaction: BridgeTransaction
   getLogoPath: (token: string) => string
 }) {
-  const { updateTransactionStatus,   setIsLoading } = useBridge()
+  const { updateTransactionStatus, setIsLoading } = useBridge()
   const {
     data,
     isLoading: isLoadingReceipt,
