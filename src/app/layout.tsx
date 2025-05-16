@@ -12,6 +12,7 @@ import { FavoritesProvider } from '@/context/FavoritesContext'
 import './globals.css'
 import '@/styles/table.css'
 import OnboardingModal from '@/components/common/Onboarding'
+import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import { HyperLiquidInitializer } from './HyperliquidInitializer'
 
@@ -50,20 +51,22 @@ export default function RootLayout({
         <Provider>
           <HyperLiquidInitializer />
           <WalletModalProvider>
-            <EstablishConnectionProvider>
-              <UserProvider>
-                <ToastProvider>
-                  <FavoritesProvider>
-                    <Header />
-                    <OnboardingModal />
-                    {children}
-                    <div className="py-8 px-4 md:px-9   col-span-full">
-                      <Footer />
-                    </div>
-                  </FavoritesProvider>
-                </ToastProvider>
-              </UserProvider>
-            </EstablishConnectionProvider>
+            <BridgeProvider>
+              <EstablishConnectionProvider>
+                <UserProvider>
+                  <ToastProvider>
+                    <FavoritesProvider>
+                      <Header />
+                      <OnboardingModal />
+                      {children}
+                      <div className="py-8 px-4 md:px-9   col-span-full">
+                        <Footer />
+                      </div>
+                    </FavoritesProvider>
+                  </ToastProvider>
+                </UserProvider>
+              </EstablishConnectionProvider>
+            </BridgeProvider>
           </WalletModalProvider>
         </Provider>
       </body>
