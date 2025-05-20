@@ -2,7 +2,7 @@ import Image from 'next/image'
 import React, { useMemo, useState } from 'react'
 import CheckBox from '../common/CheckBox'
 import Pagination from '../common/Pagination'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
 import SearchIcon from '@/assets/images/search_normal.svg'
 
 const columns = [
@@ -66,7 +66,7 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
                   <div className="flex justify-start items-center gap-1">
                     {col.label === 'Time' && (
                       <Image
-                        src={sortingIcon}
+                        src={shortingicon}
                         alt="Sort"
                         style={{ width: 16, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"

@@ -1,23 +1,21 @@
 'use client'
 import infoicon from '@/assets/images/info_icon.svg'
-import sorting_icon from '@/assets/images/sorting_icon.svg'
-import MemoizedIcon from './MemoizedIcon'
+import sorting_icon from '@/assets/images/shorting_icon.svg'
+import Image from 'next/image'
 
 const HeaderWithIcons = ({ label }: { label: string }) => (
   <div className="flex justify-start items-center gap-1">
-    <MemoizedIcon
+    <Image
       src={sorting_icon}
       alt="Sort"
-      width={12}
-      height="auto"
+      style={{ width: 12, height: 'auto' }}
       className="cursor-pointer"
     />
-      <span>{label}</span>
-    <MemoizedIcon
+    <span>{label}</span>
+    <Image
       src={infoicon}
       alt="Info"
-      width={16}
-      height="auto"
+      style={{ width: 16, height: 'auto' }}
       className="cursor-pointer"
     />
   </div>

@@ -1,6 +1,6 @@
 'use client'
 import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query'
-import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
+import React, { createContext, useContext, useState, ReactNode } from 'react'
 import { useAccount } from 'wagmi'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
@@ -64,14 +64,11 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
     initialData: 0
   })
 
-  const closeModal = useCallback(() => setIsModalOpen(false), [])
-  const openModal = useCallback(() => setIsModalOpen(true), [])
-
   return (
     <ConnectionContext.Provider
       value={{
-        closeModal,
-        openModal,
+        closeModal: () => setIsModalOpen(false),
+        openModal: () => setIsModalOpen(true),
         refetchAgentApproval,
         isAgentApproved,
         currentFeeApproval,

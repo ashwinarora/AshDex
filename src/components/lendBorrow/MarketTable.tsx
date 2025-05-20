@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Pagination from '../common/Pagination'
 import lendBorrowData from '@/utils/lendBorrow.json'
 import infoicon from '@/assets/images/info_icon.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 
 const columns = [
@@ -42,7 +42,7 @@ const MarketTable = () => {
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image
-                    src={sortingIcon}
+                    src={shortingicon}
                     alt="Sort"
                     style={{ width: 16, height: 'auto' }}
                     className="w-3 h-3 cursor-pointer"

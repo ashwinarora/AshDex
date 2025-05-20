@@ -4,7 +4,7 @@ import { TWAP_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 
 export const vaultsTwap = Array.from({ length: 10 }, (_, index) => {
@@ -116,7 +116,7 @@ function Twap() {
                   {col?.label ? (
                     <>
                       <Image
-                        src={sortingIcon}
+                        src={shortingicon}
                         alt="Sort"
                         style={{ width: 12, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"

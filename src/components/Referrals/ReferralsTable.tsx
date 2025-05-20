@@ -6,7 +6,7 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { REFERRALS_COLUMNS } from '@/utils/constants'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 
 type ColumnType = {
@@ -82,7 +82,7 @@ const ReferralsTable = () => {
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image
-                    src={sortingIcon}
+                    src={shortingicon}
                     alt="Sort"
                     style={{ width: 12, height: 'auto' }}
                     className="w-3 h-3 cursor-pointer"

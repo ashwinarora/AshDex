@@ -4,7 +4,7 @@ import { DEPOSIT_WITHDRAWALS_VAULTS_COLUMNS } from '@/utils/constants'
 import Pagination from '@/components/common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import infoicon from '@/assets/images/info_icon.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import shortingicon from '@/assets/images/shorting_icon.svg'
 import exporticon from '../../../assets/images/export_icon.svg'
 
 export const vaultsDepositAndWIthdrawals = Array.from({ length: 10 }, (_, index) => {
@@ -80,7 +80,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
                   {col?.label ? (
                     <>
                       <Image
-                        src={sortingIcon}
+                        src={shortingicon}
                         alt="Sort"
                         style={{ width: 13, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"
