@@ -2,7 +2,7 @@
 import React from 'react'
 import Image from 'next/image'
 import infoicon from '@/assets/images/info_icon.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 import arrowdownfillicon from '@/assets/images/arrowdownfill_icon.svg'
 
 interface Column {
@@ -53,7 +53,7 @@ const ResponsiveDataCard: React.FC<ResponsiveDataCardProps> = ({
             <span className="text-sm font-semibold text-[#7D67FF] mr-3">Close all positions</span>
           )}
           <Image
-            src={shortingicon}
+            src={sortingIcon}
             alt="Sort"
             style={{ width: 20, height: 'auto' }}
             className="w-5 h-5 cursor-pointer"

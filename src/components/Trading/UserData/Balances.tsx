@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { BALANCE_FUTURES_COLUMNS, BALANCE_SPOT__COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useEffect, useState } from 'react'
 import TransferModal from './TransferModal'
@@ -114,7 +114,7 @@ const Balances = () => {
                 >
                   <div className="flex justify-start items-center gap-1">
                     <Image
-                      src={shortingicon}
+                      src={sortingIcon}
                       alt="Sort"
                       style={{ width: 12, height: 'auto' }}
                       className="w-3 h-3 cursor-pointer"
@@ -176,7 +176,7 @@ const Balances = () => {
                 >
                   <div className="flex justify-start items-center gap-1">
                     <Image
-                      src={shortingicon}
+                      src={sortingIcon}
                       alt="Sort"
                       style={{ width: 12, height: 'auto' }}
                       className="w-3 h-3 cursor-pointer"

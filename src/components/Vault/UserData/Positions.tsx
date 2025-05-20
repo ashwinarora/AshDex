@@ -4,7 +4,7 @@ import Pagination from '../../common/Pagination'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 
@@ -143,7 +143,7 @@ const Positions = () => {
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image
-                    src={shortingicon}
+                    src={sortingIcon}
                     alt="Sort"
                     style={{ width: 12, height: 'auto' }}
                     className="w-3 h-3 cursor-pointer"
@@ -164,7 +164,7 @@ const Positions = () => {
             <th className="pt-3 pb-1 pl-2 pr-10 text-left text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
                 <Image
-                  src={shortingicon}
+                  src={sortingIcon}
                   alt="Sort"
                   style={{ width: 12, height: 'auto' }}
                   className="w-3 h-3 cursor-pointer"
