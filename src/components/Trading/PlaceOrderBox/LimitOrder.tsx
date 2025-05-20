@@ -1,6 +1,5 @@
 'use client'
 import React, { useMemo, useState } from 'react'
-import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -10,12 +9,12 @@ import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
-import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/utils/constants'
 import MarginMode from './components/MarginMode'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import SetLastPrice from './components/SetLastPrice'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -131,15 +130,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 onBlur={handleBlur}
                 className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
               />
-              <span className="absolute right-2 top-1/2 flex text-xs items-center gap-x-1 -translate-y-1/2 text-[#7D67FF] font-medium">
-                <Image
-                  src={refreshpurpleIcon}
-                  style={{ width: 12, height: 'auto' }}
-                  alt="Refresh Icon"
-                  className="w-3 h-3"
-                />
-                Last
-              </span>
+              <SetLastPrice selectedAsset={selectedAsset} setPrice={setLimitPrice} />
             </div>
           </div>
           {isSpot ? (
