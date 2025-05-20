@@ -55,6 +55,12 @@ const AmountInput = ({
     return Math.min(maxAllowedUsd, clearingHouseState.withdrawable * leverage)
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
 
+  useEffect(() => {
+    if (!clearingHouseState) return
+    if (usdAmount === '') return
+    setUsdPercent((parseFloat(usdAmount) / maxAllowedUsd) * 100)
+  }, [clearingHouseState, usdAmount, maxAllowedUsd])
+
   const handleAssetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const input = e.target.value
@@ -113,11 +119,6 @@ const AmountInput = ({
     }
     setUsdPercent((parseFloat(input) / maxAllowedUsd) * 100)
   }
-
-  useEffect(() => {
-    if (!clearingHouseState) return
-    setUsdPercent((parseFloat(usdAmount) / maxAllowedUsd) * 100)
-  }, [clearingHouseState, usdAmount, maxAllowedUsd])
 
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return

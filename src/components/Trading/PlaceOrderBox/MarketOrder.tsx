@@ -81,8 +81,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
   }
 
-  console.log({ szDecimals })
-
   return (
     <div className="w-full h-full flex flex-col">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
