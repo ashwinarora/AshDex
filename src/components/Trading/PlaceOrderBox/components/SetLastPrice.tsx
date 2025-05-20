@@ -30,11 +30,11 @@ const SetLastPrice = ({ selectedAsset, setPrice }: ISetLastPriceProps) => {
       return universe[assetIndex].szDecimals || 0
     }
   }, [universe, selectedAsset, isSpot, spotMeta])
-  
+
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
-    const rawPrice = (allMids[selectedAsset]).toString()
+    const rawPrice = allMids[selectedAsset].toString()
 
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')

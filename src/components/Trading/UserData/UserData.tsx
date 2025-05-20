@@ -72,11 +72,7 @@ const UserData = () => {
         </nav>
       </div>
       <div className="mt-3 mb-6 w-full">
-        {tabs[activeTab] && (
-          <div>
-            {tabs[activeTab].element}
-          </div>
-        )}
+        {tabs[activeTab] && <div>{tabs[activeTab].element}</div>}
       </div>
     </div>
   )

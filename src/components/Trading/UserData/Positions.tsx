@@ -146,7 +146,7 @@ const Positions = () => {
   )
 
   const allMidsRef = useRef(allMids)
-  
+
   useEffect(() => {
     allMidsRef.current = allMids
   }, [allMids])
@@ -214,7 +214,6 @@ const Positions = () => {
     },
     [agentWallet, universe, sdk, isTestnet, hyperliquidAxios]
   )
-
 
   const columns = useMemo(
     () => [
@@ -371,7 +370,6 @@ const Positions = () => {
     enableSorting: true
   })
 
-  
   if (!mounted) {
     return <div className="overflow-x-auto w-full px-3 lg:px-4 h-40"></div>
   }

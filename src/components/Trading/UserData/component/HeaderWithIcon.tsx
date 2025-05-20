@@ -12,14 +12,8 @@ const HeaderWithIcons = ({ label }: { label: string }) => (
       height="auto"
       className="cursor-pointer"
     />
-      <span>{label}</span>
-    <MemoizedIcon
-      src={infoicon}
-      alt="Info"
-      width={16}
-      height="auto"
-      className="cursor-pointer"
-    />
+    <span>{label}</span>
+    <MemoizedIcon src={infoicon} alt="Info" width={16} height="auto" className="cursor-pointer" />
   </div>
 )
 
