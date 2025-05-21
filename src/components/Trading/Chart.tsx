@@ -1,7 +1,7 @@
-'use client';
-import { useEffect, useRef } from 'react';
-import { useHyperliquid } from '@/store/HyperliquidStore';
-import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes';
+'use client'
+import { useEffect, useRef } from 'react'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 interface BarData {
   time: number
