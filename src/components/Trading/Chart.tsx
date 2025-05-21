@@ -1,241 +1,462 @@
-'use client'
-import { CandlestickSeries, createChart, Time, CandlestickData } from 'lightweight-charts'
-import { useEffect, useRef, useState } from 'react'
-import { Loader2 } from 'lucide-react'
-import { useQuery } from '@tanstack/react-query'
-import { CHART_INTERVALS } from '../../utils/constants'
-import type { Candle } from '../../utils/hyperliquid/hyperLiquidTypes'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import ChartTabs from '../common/ChartTabs'
-import IntervalSelector from '../common/IntervalSelector'
-import InfoTab from '../common/InfoTab'
-// import unionicon from '@/assets/images/union_icon.svg'
-// import union11icon from '@/assets/images/union11_icon.svg'
-// import union12icon from '@/assets/images/union12_icon.svg'
-// import union13icon from '@/assets/images/union13_icon.svg'
-// import union14icon from '@/assets/images/union14_icon.svg'
-// import union15icon from '@/assets/images/union15_icon.svg'
-// import union16icon from '@/assets/images/union16_icon.svg'
-// import union17icon from '@/assets/images/union17_icon.svg'
-// import union18icon from '@/assets/images/union18_icon.svg'
-// import union19icon from '@/assets/images/union19_icon.svg'
-// import union20icon from '@/assets/images/union20_icon.svg'
-// import union21icon from '@/assets/images/union21_icon.svg'
+'use client';
+import { useEffect, useRef } from 'react';
+import { useHyperliquid } from '@/store/HyperliquidStore';
+import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes';
 
-interface IChartProps {
-  selectedAsset: string
+interface BarData {
+  time: number
+  open: number
+  high: number
+  low: number
+  close: number
+  volume: number
 }
-const tabs = ['Price', 'Depth', 'Info'] as string[]
 
-const Chart = ({ selectedAsset }: IChartProps) => {
-  const { sdk } = useHyperliquid()
-  const [selectedInterval, setSelectedInterval] = useState<(typeof CHART_INTERVALS)[number]>('5m')
+const INTERVALS = ['1', '5', '15', '30', '60', '240', 'D', 'W', 'M'] as const
+type IntervalType = (typeof INTERVALS)[number]
+
+const getIntervalMinutes = (res: IntervalType): number => {
+  const map: Record<IntervalType, number> = {
+    '1': 1,
+    '5': 5,
+    '15': 15,
+    '30': 30,
+    '60': 60,
+    '240': 240,
+    D: 1440,
+    W: 10080,
+    M: 43200
+  }
+  return map[res]
+}
+
+interface TradingViewWidget {
+  new (config: TradingViewWidgetConfig): TradingViewWidgetInstance
+}
+
+interface TradingViewWidgetInstance {
+  remove(): void
+  onChartReady(callback: () => void): void
+}
+
+interface ThemeColors {
+  color1: string[]
+  color2: string[]
+  color3: string[]
+}
+
+interface CustomThemes {
+  dark: ThemeColors
+  light: ThemeColors
+}
+
+interface TradingViewWidgetConfig {
+  debug: boolean
+  symbol: string
+  interval: string
+  timeframe: string
+  container: HTMLElement | null
+  datafeed: Datafeed
+  library_path: string
+  locale: string
+  theme: string
+  autosize: boolean
+  disabled_features: string[]
+  overrides: Record<string, string>
+  custom_themes: CustomThemes
+}
+
+interface Datafeed {
+  onReady: (callback: DatafeedCallback) => void
+  resolveSymbol: (symbolName: string, onResolve: (symbolInfo: SymbolInfo) => void) => void
+  getBars: (
+    symbolInfo: SymbolInfo,
+    resolution: IntervalType,
+    periodParams: PeriodParams,
+    onHistoryCallback: HistoryCallback,
+    onErrorCallback: ErrorCallback
+  ) => void
+  subscribeBars: (
+    symbolInfo: SymbolInfo,
+    resolution: IntervalType,
+    onRealtimeCallback: RealtimeCallback,
+    subscriberUID: string
+  ) => void
+  unsubscribeBars: (subscriberUID: string) => void
+}
+
+declare global {
+  interface Window {
+    TradingView: {
+      widget: TradingViewWidget
+    }
+  }
+}
+
+interface DatafeedCallback {
+  (data: { supported_resolutions: readonly string[] }): void
+}
+
+interface SymbolInfo {
+  name: string
+  full_name: string
+  ticker: string
+  description: string
+  exchange: string
+  type: string
+  session: string
+  timezone: string
+  supported_resolutions: readonly string[]
+  pricescale: number
+  minmov: number
+  has_intraday: boolean
+  has_daily: boolean
+  has_weekly_and_monthly: boolean
+}
+
+interface PeriodParams {
+  from: number
+  to: number
+}
+
+interface HistoryCallback {
+  (bars: BarData[], meta: { noData: boolean }): void
+}
+
+interface ErrorCallback {
+  (error: string): void
+}
+
+interface RealtimeCallback {
+  (bar: BarData): void
+}
+
+const TradingViewChart = ({
+  selectedAsset,
+  selectedInterval = '30'
+}: {
+  selectedAsset: string
+  selectedInterval: IntervalType
+}) => {
   const chartRef = useRef<HTMLDivElement>(null)
-  const tooltipRef = useRef<HTMLDivElement>(null)
-  const [activeTab, setActiveTab] = useState(0)
-  const [candlestickData, setCandlestickData] = useState<Candle[]>([])
-  const { data: initialCandles, isLoading } = useQuery<Candle[]>({
-    queryKey: ['candles', selectedAsset, selectedInterval],
-    queryFn: async () => {
-      const response = await sdk.info.getCandleSnapshot(
-        selectedAsset,
-        selectedInterval,
-        0,
-        Date.now()
-      )
-      return response
-    },
-    enabled: !!sdk && selectedAsset?.length > 0
+  const widgetRef = useRef<TradingViewWidgetInstance | null>(null)
+  const barsCache = useRef<Record<IntervalType, Map<number, BarData>>>({
+    '1': new Map(),
+    '5': new Map(),
+    '15': new Map(),
+    '30': new Map(),
+    '60': new Map(),
+    '240': new Map(),
+    D: new Map(),
+    W: new Map(),
+    M: new Map()
   })
+  const intervalStr = selectedInterval.endsWith('D')
+    ? '1d'
+    : selectedInterval.endsWith('W')
+      ? '1w'
+      : selectedInterval.endsWith('M')
+        ? '1mo'
+        : Number(selectedInterval) >= 60
+          ? `${Number(selectedInterval) / 60}h`
+          : `${Number(selectedInterval)}m`
+  const { sdk } = useHyperliquid()
+  // const { data: initialCandles } = useQuery<Candle[]>({
+  //   queryKey: ['candles', selectedAsset, selectedInterval],
+  //   queryFn: async () => {
+  //     const response = await sdk.info.getCandleSnapshot(
+  //       selectedAsset,
+  //       intervalStr,
+  //       Date.now() - 7 * 24 * 60 * 60 * 1000,
+  //       Date.now()
+  //     )
+  //     return response
+  //   },
+  //   enabled: !!sdk && selectedAsset?.length > 0
+  // })
 
   useEffect(() => {
-    if (initialCandles) {
-      setCandlestickData(initialCandles)
-    }
-  }, [initialCandles])
+    if (!chartRef.current || widgetRef.current) return
 
-  useEffect(() => {
-    if (!sdk || !selectedAsset || !selectedInterval) return
-    let unsubscribe: (() => void) | null = null
-    const subscribeToCandles = async () => {
-      try {
-        unsubscribe = await sdk.subscriptions.subscribeToCandle(
-          selectedAsset,
-          selectedInterval,
-          (newCandles: Candle | Candle[]) => {
-            setCandlestickData((prevData) => {
-              const newData = Array.isArray(newCandles) ? newCandles : [newCandles]
-              return [...prevData, ...newData].slice(-100)
-            })
-          }
-        )
-      } catch (error) {
-        console.error('Error subscribing to candle updates:', error)
-      }
-    }
-    subscribeToCandles()
-    return () => {
-      if (unsubscribe) {
-        unsubscribe()
-      }
-    }
-  }, [selectedAsset, selectedInterval, sdk?.subscriptions])
+    const scriptId = 'tv-widget-script'
+    const existingScript = document.getElementById(scriptId)
 
-  useEffect(() => {
-    if (activeTab !== 0 || isLoading || !candlestickData.length || !chartRef.current) return
-
-    const chartOptions = {
-      width: chartRef.current.clientWidth,
-      height: chartRef.current.clientHeight,
-      layout: {
-        textColor: '#8B8BA0',
-        fontSize: 12,
-        fontWeight: 400,
-        background: { color: 'transparent' }
-      },
-      grid: {
-        vertLines: { color: '#23262F' },
-        horzLines: { color: 'rgba(75, 67, 84, 0.1)' }
-      },
-      crosshair: {
-        mode: 0
-      }
-    }
-
-    const chart = createChart(chartRef.current, chartOptions)
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#26A69A',
-      downColor: '#EF5350',
-      borderUpColor: '#26A69A',
-      borderDownColor: '#EF5350',
-      wickUpColor: '#26A69A',
-      wickDownColor: '#EF5350'
-    })
-
-    const validCandlestickData = candlestickData || []
-
-    const formattedData = validCandlestickData
-      ?.map((candle: Candle) => ({
-        time: Math.floor(candle?.T / 1000) as Time,
-        open: candle?.o,
-        high: candle?.h,
-        low: candle?.l,
-        close: candle?.c
-      }))
-      ?.sort((a, b) => (a?.time as number) - (b?.time as number))
-
-    const uniqueData = formattedData?.filter(
-      (candle, index, self) => index === 0 || candle?.time !== self[index - 1]?.time
-    )
-
-    candlestickSeries.setData(uniqueData)
-
-    chart.timeScale().applyOptions({
-      timeVisible: true,
-      secondsVisible: false,
-      borderColor: '#444'
-    })
-    // chart.timeScale().fitContent()
-
-    chart.subscribeCrosshairMove((param) => {
-      if (!tooltipRef.current) return
-      const hoveredPoint = param?.point
-      const seriesData = param?.seriesData?.get(candlestickSeries) as CandlestickData | undefined
-
-      if (!hoveredPoint || !seriesData) {
-        tooltipRef.current.style.display = 'none'
+    const initWidget = () => {
+      if (!window.TradingView || typeof window.TradingView.widget !== 'function') {
+        setTimeout(initWidget, 100)
         return
       }
 
-      tooltipRef.current.style.display = 'block'
+      const datafeed: Datafeed = {
+        onReady: (cb: DatafeedCallback) =>
+          setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
 
-      const isMobile = window.innerWidth <= 770
-      tooltipRef.current.style.left = isMobile ? '1rem' : '2rem'
-      tooltipRef.current.style.top = isMobile ? '10rem' : '7rem'
+        resolveSymbol: (_: string, onResolve: (symbolInfo: SymbolInfo) => void) => {
+          setTimeout(() => {
+            onResolve({
+              name: selectedAsset,
+              full_name: selectedAsset,
+              ticker: selectedAsset,
+              description: `${selectedAsset} on Hyperliquid`,
+              exchange: 'Hyperliquid',
+              type: 'crypto',
+              session: '24x7',
+              timezone: 'Etc/UTC',
+              supported_resolutions: INTERVALS,
+              pricescale: 100,
+              minmov: 1,
+              has_intraday: true,
+              has_daily: true,
+              has_weekly_and_monthly: true
+            })
+          }, 0)
+        },
 
-      const formattedDate = new Date((seriesData?.time as number) * 1000).toLocaleDateString(
-        'en-US'
-      )
-      tooltipRef.current.innerHTML = `
-        <div class="font-normal text-xs flex max-lg:gap-[10px] gap-[16px] max-lg:flex-col">
-          <span>${formattedDate}</span>
-          <span style="color: #F00;">Open: <span>${seriesData?.open?.toFixed(2)}</span></span>
-          <span style="color: #00F;">High: <span class="text-white">${seriesData?.high?.toFixed(2)}</span></span>
-          <span style="color: #0F0;">Low: <span class="text-white">${seriesData?.low?.toFixed(2)}</span></span>
-          <span style="color: #00F;">Close: <span class="text-white">${seriesData?.close?.toFixed(2)}</span></span>
-        </div>
-      `
-    })
+        getBars: (() => {
+          let lastCall = 0
+          return async (
+            symbolInfo: SymbolInfo,
+            resolution: IntervalType,
+            periodParams: PeriodParams,
+            onHistoryCallback: HistoryCallback,
+            onErrorCallback: ErrorCallback
+          ) => {
+            if (!sdk || !selectedAsset || !selectedInterval) {
+              onErrorCallback('SDK or asset not available')
+              return
+            }
 
-    const handleResize = () => {
-      if (chartRef.current) {
-        chart.resize(chartRef.current.clientWidth, chartRef.current.clientHeight)
+            const nowTime = Date.now()
+            if (nowTime - lastCall < 1000) return
+            lastCall = nowTime
+
+            try {
+              const now = Math.floor(Date.now() / 1000)
+              const intervalSeconds = getIntervalMinutes(resolution) * 60
+              const fallbackFrom = now - 300 * intervalSeconds
+              const rawFrom = periodParams.from
+              const rawTo = periodParams.to
+
+              const from = rawFrom < 1000000000 ? fallbackFrom : rawFrom
+              const to = rawTo < 1000000000 || rawTo < from ? now : rawTo
+
+              const _bars = await sdk.info.getCandleSnapshot(
+                selectedAsset,
+                intervalStr,
+                from * 1000,
+                to * 1000
+              )
+
+              const bars = _bars.map((bar: Candle) => ({
+                time: Number(Math.floor(Number(bar.t) / 1000)),
+                open: parseFloat(bar.o.toString()),
+                high: parseFloat(bar.h.toString()),
+                low: parseFloat(bar.l.toString()),
+                close: parseFloat(bar.c.toString()),
+                volume: parseFloat(bar.v.toString())
+              }))
+              console.log('[TV getBars - BARS]', bars)
+              if (!barsCache.current[resolution]) {
+                barsCache.current[resolution] = new Map()
+              }
+
+              const cache = barsCache.current[resolution]
+              bars.forEach((bar: BarData) => cache.set(bar.time, bar)) // merge & deduplicate
+
+              const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
+              console.log('✅ Sample bar to send:', mergedBars[0])
+              console.log('📦 All bars length:', mergedBars.length)
+              onHistoryCallback(bars, {
+                noData: mergedBars.length === 0
+              })
+            } catch (err) {
+              console.error('Error fetching bars:', err)
+              onErrorCallback('Data error')
+            }
+          }
+        })(),
+
+        subscribeBars: (
+          symbolInfo: SymbolInfo,
+          resolution: IntervalType,
+          onRealtimeCallback: RealtimeCallback,
+          subscriberUID: string
+        ) => {
+          console.warn('[TV subscribeBars] called — no real-time updates implemented', {
+            symbolInfo,
+            resolution,
+            subscriberUID
+          })
+        },
+
+        unsubscribeBars: (subscriberUID: string) => {
+          console.warn('[TV unsubscribeBars] called', { subscriberUID })
+        }
+      }
+
+      widgetRef.current = new window.TradingView.widget({
+        debug: true,
+        symbol: selectedAsset,
+        interval: '5',
+        timeframe: '1W',
+        container: chartRef.current,
+        datafeed,
+        library_path: '/lib/',
+        locale: 'en',
+        theme: 'dark',
+        autosize: true,
+        disabled_features: ['use_localstorage_for_settings', 'timeframes_toolbar'],
+        overrides: {
+          'paneProperties.background': '#0F0816',
+          'mainSeriesProperties.candleStyle.upColor': '#0ECB81',
+          'mainSeriesProperties.candleStyle.downColor': '#F6465D'
+        },
+        custom_themes: {
+          dark: {
+            color1: [
+              '#fbefea',
+              '#f7dfd5',
+              '#f3cfc0',
+              '#efbfaa',
+              '#ebaf95',
+              '#e89f80',
+              '#e48f6b',
+              '#e07f56',
+              '#dc6f41',
+              '#d85f2b',
+              '#d03f01',
+              '#bf3a01',
+              '#ad3501',
+              '#9c2f01',
+              '#8b2a01',
+              '#792501',
+              '#682001',
+              '#571a00',
+              '#451500',
+              '#341000'
+            ],
+            color2: [
+              '#e4e4e5',
+              '#d7d6d8',
+              '#cac8cb',
+              '#bcbabe',
+              '#afadb1',
+              '#a29fa4',
+              '#949197',
+              '#87848a',
+              '#7a767e',
+              '#6c6871',
+              '#5f5a64',
+              '#524d57',
+              '#443f4a',
+              '#37313d',
+              '#2a2330',
+              '#0f0816',
+              '#0f0816',
+              '#0F0816',
+              '#0a050f',
+              '#050307'
+            ],
+            color3: [
+              '#fff0f0',
+              '#ffe1e1',
+              '#ffd3d3',
+              '#ffc4c4',
+              '#ffb5b5',
+              '#ffa6a6',
+              '#ff9797',
+              '#ff8888'
+            ]
+          },
+          light: {
+            color1: [
+              '#fbefea',
+              '#f7dfd5',
+              '#f3cfc0',
+              '#efbfaa',
+              '#ebaf95',
+              '#e89f80',
+              '#e48f6b',
+              '#e07f56',
+              '#dc6f41',
+              '#d85f2b',
+              '#d03f01',
+              '#bf3a01',
+              '#ad3501',
+              '#9c2f01',
+              '#8b2a01',
+              '#792501',
+              '#682001',
+              '#571a00',
+              '#451500',
+              '#341000'
+            ],
+            color2: [
+              '#e4e4e5',
+              '#d7d6d8',
+              '#cac8cb',
+              '#bcbabe',
+              '#afadb1',
+              '#a29fa4',
+              '#949197',
+              '#87848a',
+              '#7a767e',
+              '#6c6871',
+              '#5f5a64',
+              '#524d57',
+              '#443f4a',
+              '#37313d',
+              '#2a2330',
+              '#1c1623',
+              '#0f0816',
+              '#0F0816',
+              '#0a050f',
+              '#050307'
+            ],
+            color3: [
+              '#fff0f0',
+              '#ffe1e1',
+              '#ffd3d3',
+              '#ffc4c4',
+              '#ffb5b5',
+              '#ffa6a6',
+              '#ff9797',
+              '#ff8888'
+            ]
+          }
+        }
+      })
+
+      widgetRef.current.onChartReady(() => {
+        console.log('[TV] Chart is ready')
+        // Additional logic to expand view if needed
+      })
+    }
+
+    if (!existingScript) {
+      const script = document.createElement('script')
+      script.id = scriptId
+      script.src = '/lib/charting_library.standalone.js'
+      script.async = true
+      script.onload = initWidget
+      document.head.appendChild(script)
+    } else {
+      initWidget()
+    }
+
+    return () => {
+      if (widgetRef.current) {
+        widgetRef.current.remove()
+        widgetRef.current = null
       }
     }
-    window.addEventListener('resize', handleResize)
-    return () => {
-      window.removeEventListener('resize', handleResize)
-      chart.remove()
-    }
-  }, [candlestickData, activeTab, isLoading])
-
-  // const sidebarIcons = [
-  //   unionicon,
-  //   union11icon,
-  //   union12icon,
-  //   union13icon,
-  //   union14icon,
-  //   union15icon,
-  //   union16icon,
-  //   union17icon,
-  //   union18icon,
-  //   union19icon,
-  //   union20icon,
-  //   union21icon
-  // ]
+  }, [selectedAsset, selectedInterval, sdk])
 
   return (
-    <div className="relative h-full">
-      <ChartTabs tabs={tabs as string[]} activeTab={activeTab} setActiveTab={setActiveTab} />
-      {activeTab === 0 ? (
-        <>
-          <IntervalSelector
-            selectedInterval={selectedInterval}
-            setSelectedInterval={setSelectedInterval}
-            intervals={Array.from(CHART_INTERVALS)}
-          />
-          <div className="flex max-lg:block flex-1 h-[80%]">
-            {/* <div className="w-auto max-lg:w-full max-lg:py-3 max-lg:px-4 px-3 py-6 flex flex-col max-lg:flex-row max-lg:gap-4 max-xl:gap-7 gap-10 items-center max-lg:justify-between min-lg:border-r-2 max-lg:border-b border-white/10">
-              {sidebarIcons?.map((icon, index) => (
-                <button
-                  key={index}
-                  className="hover:opacity-100 opacity-70 transition-opacity cursor-pointer"
-                >
-                  <Image
-                    src={icon}
-                    alt={`icon-${index}`}
-                    style={{ width: 19, height: 'auto' }}
-                    className="max-sm:w-4 max-sm:h-4 w-4.5 h-4.5"
-                  />
-                </button>
-              ))}
-            </div> */}
-            {isLoading ? (
-              <div className="flex justify-center items-center w-full">
-                <Loader2 className="animate-spin text-[#E8E0F1] text-8xl" />
-              </div>
-            ) : (
-              <div ref={chartRef} className="w-full h-full" />
-            )}
-          </div>
-          <div
-            ref={tooltipRef}
-            className="absolute z-50 bg-[#33293B] max-lg:p-3 p-[14px] rounded-lg shadow-md hidden"
-          />
-        </>
-      ) : null}
-      {activeTab === 2 && <InfoTab selectedAsset={selectedAsset} />}
+    <div className="w-full h-[600px]">
+      <div ref={chartRef} className="rounded-b-md w-full h-full" />
     </div>
   )
 }
-export default Chart
+
+export default TradingViewChart

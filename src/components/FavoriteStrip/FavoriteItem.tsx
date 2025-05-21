@@ -1,7 +1,4 @@
 'use client'
-
-import Image from 'next/image'
-import starticon from '@/assets/images/star_icon.svg'
 import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react'
 
 interface FavoriteItemProps {
@@ -68,16 +65,16 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
   return (
     <div
       onClick={() => setSelectedAsset(favorite.name)}
-      className="flex items-center justify-center gap-1 h-full hover:bg-white/5  p-2 px-6 cursor-pointer"
+      className="flex justify-center items-center gap-1 hover:bg-white/5 px-3 pt-1 pb-2 h-full cursor-pointer"
     >
-      <Image
+      {/* <Image
         src={starticon}
         alt="staricon"
         style={{ width: 20, height: 'auto' }}
-        className="w-4 h-4 my-auto flex-shrink-0"
-      />
-      <span className="font-medium text-sm text-[#E8E0F1] my-auto">{favorite.name}</span>
-      {/* <span className="text-[12px] text-gray-400 my-auto">
+        className="flex-shrink-0 my-auto w-4 h-4"
+      /> */}
+      <span className="my-auto font-medium text-[#E8E0F1] text-sm">{favorite.name}</span>
+      {/* <span className="my-auto text-[12px] text-gray-400">
         {favorite.price
           ? typeof favorite.price === 'string'
             ? favorite.price

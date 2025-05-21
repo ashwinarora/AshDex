@@ -158,7 +158,6 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (!mounted) return
 
       try {
-        toast.success('Initializing bridge...')
         setIsLoading(true)
 
         // Initialize SDK with custom RPC URLs
