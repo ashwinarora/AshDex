@@ -541,7 +541,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           // ...
         ]}
       >
-        {children}
+        {children as JSX.Element}
       </SuiWalletProvider>
     </BridgeContext.Provider>
   )

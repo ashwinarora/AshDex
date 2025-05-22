@@ -32,6 +32,10 @@ const SetPrice = ({
   const [priceInitialized, setPriceInitialized] = useState(false)
 
   useEffect(() => {
+    if (priceInitialized) setPriceInitialized(false)
+  }, [selectedAsset])
+
+  useEffect(() => {
     if (allMids[selectedAsset] && !limitPrice && !priceInitialized) {
       const formattedPrice = getFormattedPrice()
       setLimitPrice(formattedPrice)
