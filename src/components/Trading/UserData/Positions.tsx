@@ -24,6 +24,8 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import LimitCloseModal from './component/LimitCloseModal'
+import MarketCloseModal from './component/MarketCloseModal'
 
 type ColumnType = {
   key: string
@@ -133,6 +135,9 @@ const Positions = () => {
   const { sdk } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
+  const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
+  const [isMarketCloseModalOpen, setIsMarketCloseModalOpen] = useState(false)
+  const [closingAsset, setClosingAsset] = useState<string | null>(null)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
@@ -243,6 +248,12 @@ const Positions = () => {
         },
         meta: { label: 'Coin' }
       }),
+      helper.accessor('positionValue', {
+        id: 'positionValue',
+        header: () => <HeaderWithIcons label="Position Value" />,
+        meta: { label: 'Position Value' },
+        cell: (info) => `$${info.getValue().toFixed(2)}`
+      }),
       helper.accessor('entryPx', {
         id: 'entryPx',
         header: () => <HeaderWithIcons label="Entry Price" />,
@@ -287,33 +298,50 @@ const Positions = () => {
       }),
       helper.display({
         id: 'actions',
-        header: () => <HeaderWithIcons label="Actions" />,
+        header: () =>
+          !isAgentApproved || currentFeeApproval === 0 ? (
+            <button
+              className="text-sm font-medium text-[#8B8BA0] underline hover:text-indigo-300"
+              onClick={openAgentModal}
+            >
+              Connect
+            </button>
+          ) : (
+            <span className="text-sm font-medium text-[#8B8BA0]">Close All</span>
+          ),
         cell: (info) => {
           const position = info.row.original
           return (
             <div className="flex items-center gap-2">
               {!isAgentApproved || currentFeeApproval === 0 ? (
                 <button
-                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
+                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
                   onClick={openAgentModal}
                 >
                   Connect
                 </button>
               ) : (
-                <button
-                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-2 mr-2 hover:underline"
-                  onClick={() => closePosition(position)}
-                >
-                  Close
-                </button>
+                <div>
+                  <button
+                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    onClick={() => {
+                      setClosingAsset(position.coin)
+                      setIsLimitCloseModalOpen(true)
+                    }}
+                  >
+                    Limit
+                  </button>
+                  <button
+                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    onClick={() => {
+                      setClosingAsset(position.coin)
+                      setIsMarketCloseModalOpen(true)
+                    }}
+                  >
+                    Market
+                  </button>
+                </div>
               )}
-              <span className="px-3 font-medium py-2">Limit</span>
-              <span className="px-3 py-2 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
-                dummy
-              </span>
-              <span className="px-3 text-sm py-2 bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
-                dummy
-              </span>
             </div>
           )
         },
@@ -432,6 +460,20 @@ const Positions = () => {
         )}
         positionTab={true}
       />
+      {isLimitCloseModalOpen && closingAsset && (
+        <LimitCloseModal
+          isOpen={isLimitCloseModalOpen}
+          onClose={() => setIsLimitCloseModalOpen(false)}
+          closingAsset={closingAsset}
+        />
+      )}
+      {isMarketCloseModalOpen && closingAsset && (
+        <MarketCloseModal
+          isOpen={isMarketCloseModalOpen}
+          onClose={() => setIsMarketCloseModalOpen(false)}
+          closingAsset={closingAsset}
+        />
+      )}
     </div>
   )
 }

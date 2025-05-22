@@ -6,7 +6,7 @@ import infoicon from '@/assets/images/info_icon.svg'
 import sortingIcon from '@/assets/images/sorting_icon.svg'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useEffect, useState } from 'react'
-import TransferModal from './TransferModal'
+import TransferModal from './component/TransferModal'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 
