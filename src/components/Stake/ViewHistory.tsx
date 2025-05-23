@@ -6,7 +6,7 @@ import { STAKE_VIEWHISTORY_COLUMN } from '../../utils/constants'
 import stake from '@/utils/stake.json'
 import LaftArrow from '@/assets/images/arrow_laft.svg'
 import SearchIcon from '@/assets/images/search_normal.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 
 type ViewHistoryProps = {
   setIsViewHistory?: (value: boolean) => void
@@ -76,7 +76,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
                     <div className="flex justify-start items-center gap-1">
                       {col.label === 'Time' && (
                         <Image
-                          src={shortingicon}
+                          src={sortingIcon}
                           alt="Sort"
                           style={{ width: 16, height: 'auto' }}
                           className="w-3 h-3 cursor-pointer"

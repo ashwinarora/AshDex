@@ -39,6 +39,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
             usdAmount={usdAmount}
             setUsdAmount={setUsdAmount}
             limitPrice={allMids[selectedAsset].toString()}
+            leverage={leverage}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
           />
