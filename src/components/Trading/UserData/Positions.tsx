@@ -43,7 +43,7 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
     <div className="flex flex-col gap-2 text-white text-sm">
       <div className="flex justify-between">
         <div className="flex items-center gap-1">
-          <span className={`w-[4px] h-[30px] rounded-sm ${'bg-[#2FA766]'}`}></span>
+          <span className={`w-[4px] h-[30px] rounded-sm bg-[#2FA766]`}></span>
           <Image
             src={bitcoinicon}
             alt="Bitcoin"

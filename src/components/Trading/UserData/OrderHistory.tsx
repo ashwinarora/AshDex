@@ -47,6 +47,7 @@ const OrderHistoryTable: React.FC = () => {
     initialData: []
   })
 
+
   const [sorting, setSorting] = useState<SortingState>([])
   const [{ pageIndex, pageSize }, setPagination] = useState({
     pageIndex: 0,
