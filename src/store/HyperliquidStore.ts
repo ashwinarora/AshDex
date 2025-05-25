@@ -99,6 +99,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const sdk = get().sdk
       if (!sdk) return
       sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
+        console.log('webdata2', data)
         set({
           clearingHouseState: data.clearinghouseState,
           openOrders: data.openOrders,

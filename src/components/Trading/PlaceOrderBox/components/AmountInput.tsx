@@ -2,7 +2,7 @@
 
 import { getCoinName, getUniverseIndex } from '@/utils/utils'
 import Image from 'next/image'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Slider1 from '@/assets/images/slider_value.svg'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -14,6 +14,7 @@ interface AmountInputProps {
   usdAmount: string
   setUsdAmount: React.Dispatch<React.SetStateAction<string>>
   limitPrice: string
+  leverage: number
   isReduceOnly: boolean
   isBuy: boolean
 }
@@ -25,10 +26,12 @@ const AmountInput = ({
   usdAmount,
   setUsdAmount,
   limitPrice,
+  leverage,
   isReduceOnly,
   isBuy
 }: AmountInputProps) => {
   const [usdPercent, setUsdPercent] = useState(0)
+  const [isInputUsd, setIsInputUsd] = useState(false)
 
   const { data: universe } = usePerpsUniverse()
   const { clearingHouseState } = useHyperliquid()
@@ -41,7 +44,7 @@ const AmountInput = ({
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return clearingHouseState.withdrawable
+    if (!isReduceOnly) return clearingHouseState.withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
@@ -50,8 +53,14 @@ const AmountInput = ({
     if (existingPosition.position.szi < 0 && !isBuy) return 0
     const priceQuotient = parseFloat(limitPrice) / existingPosition.position.entryPx
     const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
-    return Math.min(maxAllowedUsd, clearingHouseState.withdrawable)
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice])
+    return Math.min(maxAllowedUsd, clearingHouseState.withdrawable * leverage)
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
+
+  useEffect(() => {
+    if (!clearingHouseState) return
+    if (usdAmount === '') return
+    setUsdPercent((parseFloat(usdAmount) / maxAllowedUsd) * 100)
+  }, [clearingHouseState, usdAmount, maxAllowedUsd])
 
   const handleAssetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
@@ -126,40 +135,32 @@ const AmountInput = ({
     <>
       <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
         <label className="block text-xs font-medium text-[#8B8BA0] mb-0.5">Amount</label>
-        <div className="relative">
+        <div className="relative flex items-center">
           <input
             type="text"
             placeholder="0.0000"
-            value={assetAmount}
-            onChange={handleAssetChange}
+            value={isInputUsd ? usdAmount : assetAmount}
+            onChange={isInputUsd ? handleUSDChange : handleAssetChange}
             className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-xs">
-            {getCoinName(selectedAsset)}
-          </span>
-        </div>
-      </div>
-
-      <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
-        <label className="block text-xs font-medium text-[#8B8BA0] mb-0.5">Total</label>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="0.0000"
-            value={usdAmount}
-            onChange={handleUSDChange}
-            className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-          />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[#8B8BA0] text-xs">
-            USD
-          </span>
+          <select
+            value={isInputUsd ? 'usd' : 'asset'}
+            onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent text-[#8B8BA0] text-xs border-none focus:outline-none cursor-pointer"
+          >
+            <option value="asset">{getCoinName(selectedAsset)}</option>
+            <option value="usd">USD</option>
+          </select>
         </div>
       </div>
 
       <div className="flex items-end justify-between w-full px-4 border-b mb-1 border-[#FFFFFF0F] pb-2">
         <div className="w-[70%]">
           <label className="block text-xs font-medium text-gray-400">
-            Balance = {clearingHouseState?.withdrawable.toFixed(2)} USD
+            Max ={' '}
+            {isInputUsd
+              ? `${maxAllowedUsd.toFixed(2)} USD`
+              : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
           </label>
           <input
             type="range"

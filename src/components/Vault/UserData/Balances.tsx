@@ -8,7 +8,7 @@ import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { BALANCE_VAULTS_COLUMNS } from '@/utils/constants'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import infoicon from '@/assets/images/info_icon.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 
 const vaultsBalance = Array.from({ length: 10 }, (_, index) => ({
   coin: 'Bitcoin',
@@ -94,7 +94,7 @@ const Balances = () => {
                   >
                     <div className="flex justify-start items-center gap-1">
                       <Image
-                        src={shortingicon}
+                        src={sortingIcon}
                         alt="Sort"
                         style={{ width: 13, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"

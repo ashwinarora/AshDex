@@ -30,6 +30,7 @@ const AmountInputSpot = ({
   const { spotState } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
+  const [isInputUsd, setIsInputUsd] = useState(false)
 
   const szDecimals = useMemo(() => {
     const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
@@ -122,33 +123,26 @@ const AmountInputSpot = ({
     <>
       <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
         <label className="block text-xs font-medium text-gray-300 mb-0.5">Amount</label>
-        <div className="relative">
+        <div className="relative flex items-center">
           <input
             type="text"
             placeholder="0.0000"
-            value={assetAmount}
-            onChange={(e) => updateFromAssetAmount(e.target.value)}
+            value={isInputUsd ? usdAmount : assetAmount}
+            onChange={(e) =>
+              isInputUsd
+                ? updateFromUsdAmount(e.target.value)
+                : updateFromAssetAmount(e.target.value)
+            }
             className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
           />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">
-            {getCoinName(selectedAsset)}
-          </span>
-        </div>
-      </div>
-
-      <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
-        <label className="block text-xs font-medium text-gray-300 mb-0.5">Total</label>
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="0.0000"
-            value={usdAmount}
-            onChange={(e) => updateFromUsdAmount(e.target.value)}
-            className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium"
-          />
-          <span className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-300 text-xs">
-            USD
-          </span>
+          <select
+            value={isInputUsd ? 'usd' : 'asset'}
+            onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent text-gray-300 text-xs border-none focus:outline-none"
+          >
+            <option value="asset">{getCoinName(selectedAsset)}</option>
+            <option value="usd">USD</option>
+          </select>
         </div>
       </div>
 

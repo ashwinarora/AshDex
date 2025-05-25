@@ -1,6 +1,5 @@
 'use client'
-import React, { useMemo, useState } from 'react'
-import Image from 'next/image'
+import React, { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -10,12 +9,8 @@ import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
-import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
-import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
-import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, MAX_SIG_FIGS } from '@/utils/constants'
 import MarginMode from './components/MarginMode'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { useSpotMeta } from '@/hooks/useSpotMeta'
+import SetPrice from './components/SetPrice'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -32,88 +27,6 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { data: universe } = usePerpsUniverse()
-  const { data: spotMeta } = useSpotMeta()
-
-  const szDecimals = useMemo(() => {
-    if (isSpot) {
-      const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
-      return tokenData?.szDecimals || 0
-    } else {
-      const assetIndex = getUniverseIndex(universe, selectedAsset)
-      if (assetIndex === -1) return 0
-      return universe[assetIndex].szDecimals || 0
-    }
-  }, [universe, selectedAsset, isSpot, spotMeta])
-
-  const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const input = e.target.value
-
-    // Allow empty input or just a decimal point
-    if (!input || input === '.') {
-      setLimitPrice(input)
-      setUsdAmount('0')
-      return
-    }
-
-    // Only allow numeric input with at most one decimal point
-    if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
-      return
-    }
-
-    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
-    const allowedDecimals = maxDecimals - szDecimals
-
-    // Check if input has more decimal places than allowed
-    const parts = input.split('.')
-    if (parts.length > 1 && parts[1].length > allowedDecimals) {
-      return
-    }
-
-    // Integer values are always allowed
-    if (!input.includes('.')) {
-      setLimitPrice(input)
-      const numValue = parseFloat(input)
-      setUsdAmount((numValue * parseFloat(assetAmount)).toString())
-      return
-    }
-
-    // For non-integer values, enforce 5 significant digits
-    const numValue = parseFloat(input)
-    if (!isNaN(numValue)) {
-      // Check if input exceeds 5 significant figures
-      const sigFigsFormatted = roundToSignificantFigures(numValue, MAX_SIG_FIGS)
-
-      // If the input exceeds 5 significant figures, don't update
-      if (sigFigsFormatted.toString() !== numValue.toString()) {
-        return
-      }
-
-      // Update price
-      setLimitPrice(input)
-      setUsdAmount((numValue * parseFloat(assetAmount)).toString())
-    }
-  }
-
-  const handleBlur = () => {
-    // When user leaves the field, format the price properly
-    if (!limitPrice || limitPrice === '.') {
-      setLimitPrice('')
-      return
-    }
-
-    const numValue = parseFloat(limitPrice)
-    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
-    const allowedDecimals = maxDecimals - szDecimals
-
-    // For integer values, keep them as is
-    if (Number.isInteger(numValue)) {
-      setLimitPrice(numValue.toString())
-    } else {
-      // For decimal values, format with proper decimal places
-      setLimitPrice(numValue.toFixed(allowedDecimals).replace(/\.?0+$/, ''))
-    }
-  }
 
   return (
     <div className="w-full h-full flex flex-col">
@@ -122,25 +35,13 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <div className="space-y-1">
           <div className="px-4 border-b border-[#FFFFFF0F] mb-1">
             <label className="block text-xs font-medium text-gray-300 mb-0.5">Limit price</label>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="0"
-                value={limitPrice}
-                onChange={handleLimitPriceChange}
-                onBlur={handleBlur}
-                className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-              />
-              <span className="absolute right-2 top-1/2 flex text-xs items-center gap-x-1 -translate-y-1/2 text-[#7D67FF] font-medium">
-                <Image
-                  src={refreshpurpleIcon}
-                  style={{ width: 12, height: 'auto' }}
-                  alt="Refresh Icon"
-                  className="w-3 h-3"
-                />
-                Last
-              </span>
-            </div>
+            <SetPrice
+              selectedAsset={selectedAsset}
+              limitPrice={limitPrice}
+              setLimitPrice={setLimitPrice}
+              setUsdAmount={setUsdAmount}
+              assetAmount={assetAmount}
+            />
           </div>
           {isSpot ? (
             <AmountInputSpot
@@ -160,6 +61,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               usdAmount={usdAmount}
               setUsdAmount={setUsdAmount}
               limitPrice={limitPrice}
+              leverage={leverage}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
             />
