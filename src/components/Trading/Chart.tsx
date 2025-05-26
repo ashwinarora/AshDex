@@ -43,6 +43,12 @@ interface ThemeColors {
   color1: string[]
   color2: string[]
   color3: string[]
+  color4: string[]
+  color5: string[]
+  color6: string[]
+  color7: string[]
+  white: string
+  black: string
 }
 
 interface CustomThemes {
@@ -51,8 +57,8 @@ interface CustomThemes {
 }
 
 interface TradingViewWidgetConfig {
-  debug: boolean
   symbol: string
+  debug: boolean
   interval: string
   timeframe: string
   container: HTMLElement | null
@@ -64,6 +70,11 @@ interface TradingViewWidgetConfig {
   disabled_features: string[]
   overrides: Record<string, string>
   custom_themes: CustomThemes
+}
+
+interface PeriodParams {
+  countBack: number
+  firstDataRequest: boolean
 }
 
 interface Datafeed {
@@ -98,10 +109,7 @@ interface DatafeedCallback {
 }
 
 interface SymbolInfo {
-  name: string
-  full_name: string
-  ticker: string
-  description: string
+  symbol: string
   exchange: string
   type: string
   session: string
@@ -151,29 +159,20 @@ const TradingViewChart = ({
     W: new Map(),
     M: new Map()
   })
-  const intervalStr = selectedInterval.endsWith('D')
-    ? '1d'
-    : selectedInterval.endsWith('W')
-      ? '1w'
-      : selectedInterval.endsWith('M')
-        ? '1mo'
-        : Number(selectedInterval) >= 60
-          ? `${Number(selectedInterval) / 60}h`
-          : `${Number(selectedInterval)}m`
+
+  const convertedResolutionToInterval = (resolution: IntervalType) => {
+    return resolution.endsWith('D')
+      ? '1d'
+      : resolution.endsWith('W')
+        ? '1w'
+        : resolution.endsWith('M')
+          ? '1m'
+          : Number(resolution) >= 60
+            ? `${Number(resolution) / 60}h`
+            : `${Number(resolution)}m`
+  }
+  const intervalStr = convertedResolutionToInterval(selectedInterval)
   const { sdk } = useHyperliquid()
-  // const { data: initialCandles } = useQuery<Candle[]>({
-  //   queryKey: ['candles', selectedAsset, selectedInterval],
-  //   queryFn: async () => {
-  //     const response = await sdk.info.getCandleSnapshot(
-  //       selectedAsset,
-  //       intervalStr,
-  //       Date.now() - 7 * 24 * 60 * 60 * 1000,
-  //       Date.now()
-  //     )
-  //     return response
-  //   },
-  //   enabled: !!sdk && selectedAsset?.length > 0
-  // })
 
   useEffect(() => {
     if (!chartRef.current || widgetRef.current) return
@@ -186,95 +185,98 @@ const TradingViewChart = ({
         setTimeout(initWidget, 100)
         return
       }
+      const tvSubscribers: Record<string, () => void> = {}
 
       const datafeed: Datafeed = {
         onReady: (cb: DatafeedCallback) =>
           setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
 
         resolveSymbol: (_: string, onResolve: (symbolInfo: SymbolInfo) => void) => {
-          setTimeout(() => {
-            onResolve({
-              name: selectedAsset,
-              full_name: selectedAsset,
-              ticker: selectedAsset,
-              description: `${selectedAsset} on Hyperliquid`,
-              exchange: 'Hyperliquid',
-              type: 'crypto',
-              session: '24x7',
-              timezone: 'Etc/UTC',
-              supported_resolutions: INTERVALS,
-              pricescale: 100,
-              minmov: 1,
-              has_intraday: true,
-              has_daily: true,
-              has_weekly_and_monthly: true
-            })
-          }, 0)
+          setTimeout(
+            () =>
+              onResolve({
+                symbol: selectedAsset,
+                exchange: 'Hyperliquid',
+                type: 'crypto',
+                session: '24x7',
+                timezone: 'Etc/UTC',
+                supported_resolutions: INTERVALS,
+                pricescale: 100,
+                minmov: 1,
+                has_intraday: true,
+                has_daily: true,
+                has_weekly_and_monthly: true
+              }),
+            0
+          )
         },
 
-        getBars: (() => {
-          let lastCall = 0
-          return async (
-            symbolInfo: SymbolInfo,
-            resolution: IntervalType,
-            periodParams: PeriodParams,
-            onHistoryCallback: HistoryCallback,
-            onErrorCallback: ErrorCallback
-          ) => {
+        getBars(
+          symbolInfo: SymbolInfo,
+          resolution: IntervalType,
+          periodParams: PeriodParams,
+          onHistoryCallback: HistoryCallback,
+          onErrorCallback: ErrorCallback
+        ) {
+          setTimeout(async () => {
             if (!sdk || !selectedAsset || !selectedInterval) {
               onErrorCallback('SDK or asset not available')
               return
             }
 
-            const nowTime = Date.now()
-            if (nowTime - lastCall < 1000) return
-            lastCall = nowTime
-
             try {
-              const now = Math.floor(Date.now() / 1000)
               const intervalSeconds = getIntervalMinutes(resolution) * 60
-              const fallbackFrom = now - 300 * intervalSeconds
-              const rawFrom = periodParams.from
-              const rawTo = periodParams.to
+              const now = Math.floor(Date.now() / 1000)
 
-              const from = rawFrom < 1000000000 ? fallbackFrom : rawFrom
-              const to = rawTo < 1000000000 || rawTo < from ? now : rawTo
+              const to = periodParams.to || now
+              const countBack = periodParams?.countBack || 300
+              const from = to - countBack * intervalSeconds
+              const interval = convertedResolutionToInterval(resolution)
 
-              const _bars = await sdk.info.getCandleSnapshot(
+              const rawCandles = await sdk.info.getCandleSnapshot(
                 selectedAsset,
-                intervalStr,
+                interval,
                 from * 1000,
                 to * 1000
               )
 
-              const bars = _bars.map((bar: Candle) => ({
-                time: Number(Math.floor(Number(bar.t) / 1000)),
+              const bars = rawCandles.map((bar: Candle) => ({
+                time: Number(Math.floor(Number(bar.t))),
                 open: parseFloat(bar.o.toString()),
                 high: parseFloat(bar.h.toString()),
                 low: parseFloat(bar.l.toString()),
                 close: parseFloat(bar.c.toString()),
                 volume: parseFloat(bar.v.toString())
               }))
-              console.log('[TV getBars - BARS]', bars)
+
               if (!barsCache.current[resolution]) {
                 barsCache.current[resolution] = new Map()
               }
 
               const cache = barsCache.current[resolution]
-              bars.forEach((bar: BarData) => cache.set(bar.time, bar)) // merge & deduplicate
+              bars.forEach((bar: BarData) => cache.set(bar.time, bar))
 
               const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
-              console.log('✅ Sample bar to send:', mergedBars[0])
-              console.log('📦 All bars length:', mergedBars.length)
-              onHistoryCallback(bars, {
-                noData: mergedBars.length === 0
+              const responseBars = mergedBars.filter(
+                (bar) => bar.time >= from * 1000 && bar.time < to * 1000
+              )
+
+              const finalBars =
+                responseBars.length >= 2 ? responseBars : mergedBars.slice(-countBack)
+
+              const outputBars = periodParams?.firstDataRequest
+                ? finalBars
+                : finalBars.slice(-countBack) // ✅ fixed reverse call
+
+              onHistoryCallback(outputBars, {
+                noData: outputBars.length === 0
               })
             } catch (err) {
               console.error('Error fetching bars:', err)
               onErrorCallback('Data error')
             }
-          }
-        })(),
+          }, 50)
+        },
 
         subscribeBars: (
           symbolInfo: SymbolInfo,
@@ -282,22 +284,70 @@ const TradingViewChart = ({
           onRealtimeCallback: RealtimeCallback,
           subscriberUID: string
         ) => {
-          console.warn('[TV subscribeBars] called — no real-time updates implemented', {
-            symbolInfo,
-            resolution,
-            subscriberUID
-          })
+          try {
+            const coin = symbolInfo
+            const interval = convertedResolutionToInterval(resolution) // e.g., "5m", "1h", etc.
+
+            const ws = sdk?.ws
+            if (!ws) {
+              console.warn('Hyperliquid WebSocket not available')
+              return
+            }
+            let lastBar: BarData | undefined
+
+            const candleHandler = (payload: Candle[] | Candle) => {
+              // The SDK sometimes sends an array (snapshot) and sometimes a single candle (update)
+              const candles = Array.isArray(payload) ? payload : [payload]
+
+              candles.forEach((c) => {
+                const bar: BarData = {
+                  time: Number(c.t), // milliseconds
+                  open: +c.o,
+                  high: +c.h,
+                  low: +c.l,
+                  close: +c.c,
+                  volume: +c.v
+                }
+
+                // de-dupe / update logic
+                if (lastBar && bar.time === lastBar.time) {
+                  lastBar = {
+                    ...bar,
+                    open: lastBar.open, // opening price stays
+                    high: Math.max(lastBar.high, bar.high),
+                    low: Math.min(lastBar.low, bar.low),
+                    volume: lastBar.volume + bar.volume
+                  }
+                  onRealtimeCallback(lastBar)
+                } else {
+                  lastBar = bar
+                  onRealtimeCallback(bar)
+                }
+              })
+            }
+
+            // 👉  ***THE IMPORTANT BIT – pass the callback*** 👈
+            sdk.subscriptions.subscribeToCandle(selectedAsset, interval, candleHandler)
+
+            // Save a function that TradingView will call later
+            tvSubscribers[subscriberUID] = () => {
+              sdk.subscriptions.unsubscribeFromCandle(coin, interval)
+            }
+          } catch (e) {
+            console.log(e)
+          }
         },
 
         unsubscribeBars: (subscriberUID: string) => {
           console.warn('[TV unsubscribeBars] called', { subscriberUID })
+          sdk.subscriptions.unsubscribeFromCandle(selectedAsset, selectedInterval)
         }
       }
 
       widgetRef.current = new window.TradingView.widget({
-        debug: true,
         symbol: selectedAsset,
-        interval: '5',
+        debug: false,
+        interval: '60',
         timeframe: '1W',
         container: chartRef.current,
         datafeed,
@@ -305,7 +355,11 @@ const TradingViewChart = ({
         locale: 'en',
         theme: 'dark',
         autosize: true,
-        disabled_features: ['use_localstorage_for_settings', 'timeframes_toolbar'],
+        disabled_features: [
+          'use_localstorage_for_settings',
+          'header_symbol_search',
+          'compare_symbols'
+        ],
         overrides: {
           'paneProperties.background': '#0F0816',
           'mainSeriesProperties.candleStyle.upColor': '#0ECB81',
@@ -366,7 +420,97 @@ const TradingViewChart = ({
               '#ffa6a6',
               '#ff9797',
               '#ff8888'
-            ]
+            ],
+            color4: [
+              '#f2fffb',
+              '#e6fff7',
+              '#d9fff2',
+              '#ccffee',
+              '#bfffea',
+              '#b3ffe6',
+              '#a6ffe1',
+              '#99ffdd',
+              '#8cffd9',
+              '#80ffd5',
+              '#66ffcc',
+              '#5eeabb',
+              '#55d5aa',
+              '#4dbf99',
+              '#44aa88',
+              '#3c9577',
+              '#338066',
+              '#2b6a55',
+              '#225544',
+              '#1a4033'
+            ],
+            color5: [
+              '#fffff0',
+              '#ffffe0',
+              '#feffd1',
+              '#feffc2',
+              '#feffb2',
+              '#feffa3',
+              '#fdff94',
+              '#fdff84',
+              '#fdff75',
+              '#fdff66',
+              '#fcff47',
+              '#e7ea41',
+              '#d2d53b',
+              '#bdbf35',
+              '#a8aa2f',
+              '#939529',
+              '#7e8024',
+              '#696a1e',
+              '#545518',
+              '#3f4012'
+            ],
+            color6: [
+              '#fff1ff',
+              '#ffe2ff',
+              '#ffd4ff',
+              '#ffc5ff',
+              '#ffb7ff',
+              '#ffa9ff',
+              '#ff9aff',
+              '#ff8cff',
+              '#ff7dff',
+              '#ff6fff',
+              '#ff52ff',
+              '#ea4bea',
+              '#d544d5',
+              '#bf3ebf',
+              '#aa37aa',
+              '#953095',
+              '#802980',
+              '#6a226a',
+              '#551b55',
+              '#401540'
+            ],
+            color7: [
+              '#eff8ff',
+              '#dff1ff',
+              '#cfeaff',
+              '#bee3ff',
+              '#aedcff',
+              '#9ed5ff',
+              '#8eceff',
+              '#7ec7ff',
+              '#6ec0ff',
+              '#5db9ff',
+              '#3dabff',
+              '#389dea',
+              '#338fd5',
+              '#2e80bf',
+              '#2972aa',
+              '#246495',
+              '#1f5680',
+              '#19476a',
+              '#143955',
+              '#0f2b40'
+            ],
+            white: '#ffffff',
+            black: '#000000'
           },
           light: {
             color1: [
@@ -422,7 +566,100 @@ const TradingViewChart = ({
               '#ffa6a6',
               '#ff9797',
               '#ff8888'
-            ]
+            ],
+            color4: [
+              '#f2fdf8',
+              '#e5faf0',
+              '#d7f8e9',
+              '#caf5e1',
+              '#bdf3da',
+              '#b0f1d2',
+              '#a2eecb',
+              '#95ecc3',
+              '#88e9bc',
+              '#7be7b4',
+              '#60e2a5',
+              '#58cf97',
+              '#50bc8a',
+              '#48aa7c',
+              '#40976e',
+              '#388460',
+              '#307153',
+              '#285e45',
+              '#204b37',
+              '#183929'
+            ],
+            // Color that overrides orange
+            color5: [
+              '#fef5ea',
+              '#fdecd5',
+              '#fbe2bf',
+              '#fad9aa',
+              '#f9cf95',
+              '#f8c680',
+              '#f6bc6a',
+              '#f5b255',
+              '#f4a940',
+              '#f39f2b',
+              '#f08c00',
+              '#dc8000',
+              '#c87500',
+              '#b46900',
+              '#a05d00',
+              '#8c5200',
+              '#784600',
+              '#643a00',
+              '#502f00',
+              '#3c2300'
+            ],
+            // Color that overrides purple
+            color6: [
+              '#feeafe',
+              '#fcd5fc',
+              '#fbbffb',
+              '#f9aaf9',
+              '#f895f8',
+              '#f780f7',
+              '#f56af5',
+              '#f455f4',
+              '#f240f2',
+              '#f12bf1',
+              '#ee00ee',
+              '#da00da',
+              '#c600c6',
+              '#b300b3',
+              '#9f009f',
+              '#8b008b',
+              '#770077',
+              '#630063',
+              '#4f004f',
+              '#3c003c'
+            ],
+            // Color that overrides yellow
+            color7: [
+              '#fefeea',
+              '#fcfcd5',
+              '#fbfbbf',
+              '#f9f9aa',
+              '#f8f895',
+              '#f7f780',
+              '#f5f56a',
+              '#f4f455',
+              '#f2f240',
+              '#f1f12b',
+              '#eeee00',
+              '#dada00',
+              '#c6c600',
+              '#b3b300',
+              '#9f9f00',
+              '#8b8b00',
+              '#777700',
+              '#636300',
+              '#4f4f00',
+              '#3c3c00'
+            ],
+            white: '#f2e6ff',
+            black: '#421b50'
           }
         }
       })
@@ -450,13 +687,9 @@ const TradingViewChart = ({
         widgetRef.current = null
       }
     }
-  }, [selectedAsset, selectedInterval, sdk])
+  }, [selectedAsset, selectedInterval, sdk, intervalStr])
 
-  return (
-    <div className="w-full h-[600px]">
-      <div ref={chartRef} className="rounded-b-md w-full h-full" />
-    </div>
-  )
+  return <div ref={chartRef} className="w-full h-full rounded-b-md" />
 }
 
 export default TradingViewChart
