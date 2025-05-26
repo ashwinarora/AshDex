@@ -529,7 +529,10 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
           // ...
         ]}
       >
-        {children}
+        {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          children as any
+        }
       </SuiWalletProvider>
     </BridgeContext.Provider>
   )

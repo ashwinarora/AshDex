@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { OPEN_ORDERS_SPOT_COLUMNS } from '@/utils/constants'
 import infoicon from '@/assets/images/info_icon.svg'
-import shortingicon from '@/assets/images/shorting_icon.svg'
+import sortingIcon from '@/assets/images/sorting_icon.svg'
 import noordericon from '@/assets/images/noorder_icon.svg'
 import deleteicon from '@/assets/images/delete_icon.svg'
 
@@ -67,7 +67,7 @@ const OpenOrdersSpot = () => {
                   {col?.label && (
                     <>
                       <Image
-                        src={shortingicon}
+                        src={sortingIcon}
                         alt="Sort"
                         style={{ width: 12, height: 'auto' }}
                         className="w-3 h-3 cursor-pointer"
