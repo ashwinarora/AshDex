@@ -104,3 +104,30 @@ export const getTooltipContent = (key: string): string => {
   const tooltipItem = TOOLTIP_CONTENTS?.find((item) => item?.key === key)
   return tooltipItem ? tooltipItem?.content : ''
 }
+interface FormatPriceOptions {
+  price: number
+  isSpot: boolean
+  szDecimals: number
+}
+
+export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOptions): string {
+  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+  const allowedDecimals = maxDecimals - szDecimals
+
+  const raw = price.toString()
+  const [intPart, decPart = ''] = raw.split('.')
+  const intSig = intPart.replace(/^0+/, '').length
+
+  if (intSig >= 5 || !decPart) {
+    return intPart
+  }
+
+  const totalSig = intSig + decPart.length
+  if (totalSig > 5) {
+    const keep = 5 - intSig
+    return keep > 0 ? `${intPart}.${decPart.slice(0, keep)}` : intPart
+  }
+
+  const fracKeep = Math.min(allowedDecimals, decPart.length)
+  return fracKeep > 0 ? `${intPart}.${decPart.slice(0, fracKeep)}` : intPart
+}
