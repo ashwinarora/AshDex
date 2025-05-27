@@ -22,7 +22,7 @@ const endpoint = 'https://solana-mainnet.g.alchemy.com/v2/eOWqQ4wfz-PlNuiSE0ZFrG
 export const useSolanaWallet = () => useWallet()
 
 export const useHandleSolanaTransfer = () => {
-  const { connected, publicKey, signTransaction, connecting, wallets } = useSolanaWallet()
+  const { connected, publicKey, signTransaction, connecting } = useSolanaWallet()
   const {
     sdk,
     sourceToken,
@@ -51,10 +51,6 @@ export const useHandleSolanaTransfer = () => {
       setIsLoading(true)
     }
   }, [connecting])
-
-  useEffect(() => {
-    console.log('Solana wallets:', wallets)
-  }, [wallets])
 
   return async () => {
     if (!connected || !publicKey) {

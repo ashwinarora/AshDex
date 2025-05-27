@@ -1,0 +1,34 @@
+/* TradingView custom styling */
+.chart-page, 
+.chart-container,
+.chart-markup-table,
+#loading-indicator,
+.tv-spinner {
+  background-color: #0F0816 !important;
+}
+
+.apply-common-tooltip {
+  background-color: #1e1e1e !important;
+  color: #f2f2f2 !important;
+}
+
+/* Force dark colors on candlesticks */
+.tv-candlestick-up {
+  color: #0ECB81 !important;
+  border-color: #0ECB81 !important;
+}
+
+.tv-candlestick-down {
+  color: #F6465D !important;
+  border-color: #F6465D !important;
+}
+
+/* Ensure timestamp and scales have proper background */
+.chart-page .chart-container .group-wWM3zP_M- {
+  background-color: #0F0816 !important;
+}
+
+/* Remove grid lines */
+.chart-page .chart-container .grid-line {
+  opacity: 0.2 !important;
+} 

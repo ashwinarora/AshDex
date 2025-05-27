@@ -158,7 +158,6 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       if (!mounted) return
 
       try {
-        toast.success('Initializing bridge...')
         setIsLoading(true)
 
         // Initialize SDK with custom RPC URLs
@@ -403,10 +402,6 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     }
   }
 
-  useEffect(() => {
-    console.log('transactions', transactions)
-  }, [transactions])
-
   // Effect to check status of pending transactions
   useEffect(() => {
     let isChecking = false // Flag to prevent concurrent checks
@@ -482,13 +477,6 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
     const date = new Date(timestamp)
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   }
-
-  useEffect(() => {
-    console.log('sourceChain', sourceChain)
-    console.log('destinationChain', destinationChain)
-    console.log('sourceToken', sourceToken)
-    console.log('destinationToken', destinationToken)
-  }, [sourceChain, destinationChain, sourceToken, destinationToken])
 
   const value = {
     sdk,
