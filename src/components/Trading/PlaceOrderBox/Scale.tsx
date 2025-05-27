@@ -1,10 +1,9 @@
-import { useAccount } from 'wagmi'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
-import { BUILDER_ADDRESS } from '@/utils/constants'
+import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
@@ -54,7 +53,6 @@ function calculateScaleOrders(
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState } = useHyperliquid()
-  const { chain } = useAccount()
   const { data: universe } = usePerpsUniverse()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -120,7 +118,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         }
       }
     }))
-    const res = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
+    const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
       orders: ordersData,
       grouping: 'na',
       builder: {
