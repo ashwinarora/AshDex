@@ -180,20 +180,14 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className={`relative w-full my-0 rounded-2xl max-xl:block flex items-center shadow-md border-2 border-white/10 backdrop-blur-[40px] ${
-        isOpen || isSettingsOpen ? 'z-50' : ''
-      }`}
-      style={{
-        background:
-          'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
-      }}
+      className={`  flex items-center   ${isOpen || isSettingsOpen ? 'z-50' : ''} nexon-card`}
     >
       {/* Left Side */}
-      <div className="flex max-xl:border-b max-xl:border-white/10 max-xl:w-full">
-        <div className="flex items-center max-sm:px-2 max-lg:px-6 px-1 2xl:p-4 gap-x-3 2xl:gap-x-3 border-r-1 border-white/10">
+      <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
+        <div className="flex items-center gap-x-3 2xl:gap-x-3 2xl:p-4 px-1 max-sm:px-2 max-lg:px-6 border-white/10 border-r-1">
           <button
             onClick={handleToggleFavorite}
-            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer   md:static absolute -top-2 -left-2 h-5 w-5"
+            className="-top-2 -left-2 md:static absolute focus:outline-none w-5 h-5 text-yellow-500 hover:text-yellow-600 cursor-pointer"
             aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
           >
             {isFavorite(selectedAsset, type) ? (
@@ -206,13 +200,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
-            className="text-lg text-white flex items-center gap-x-2 focus:outline-none cursor-pointer"
+            className="flex items-center gap-x-2 focus:outline-none text-white text-lg cursor-pointer"
           >
             <div className="flex flex-col">
-              <span className="text-white font-bold text-base text-nowrap">
+              <span className="font-bold text-white text-base text-nowrap">
                 {selectedAsset || 'Select an asset'}
               </span>
-              <span className="text-[#E8E0F1] text-left opacity-60 text-[13px] font-medium hidden">
+              <span className="hidden opacity-60 font-medium text-[#E8E0F1] text-[13px] text-left">
                 Bitcoin price
               </span>
             </div>
@@ -221,24 +215,24 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               height={20}
               src={arrowdownicon}
               alt="arrowdown"
-              className="w-3 h-3 mx-2 max-2xl:mr-5 max-xl:mx-2"
+              className="mx-2 max-xl:mx-2 max-2xl:mr-5 w-3 h-3"
             />
           </button>
         </div>
-        <div className="flex flex-col max-lg:pl-3 items-center p-4 px-3 2xl:px-5 max-sm:border-r-0 border-r border-white/10 min-w-32">
-          <ValueIndicator value={selectedAssetContext?.midPx} className="text-xl font-normal" />
+        <div className="flex flex-col items-center p-4 px-3 2xl:px-5 max-lg:pl-3 border-white/10 border-r max-sm:border-r-0 min-w-32">
+          <ValueIndicator value={selectedAssetContext?.midPx} className="font-normal text-xl" />
         </div>
       </div>
 
-      <div className="flex items-center relative max-xl:w-full w-[80%] justify-between">
-        <div className="flex flex-wrap text-white text-sm divide-x max-lg:divide-y divide-white/10 divide">
+      <div className="relative flex justify-between items-center w-[80%] max-xl:w-full">
+        <div className="flex flex-wrap divide-x max-lg:divide-y divide-white/10 text-white text-sm divide">
           {marketData?.map((item, index) => (
             <div
               key={index}
-              className="flex max-xl:py-2 flex-wrap flex-1 max-lg:px-2 px-4 flex-col justify-center space-y-2 relative"
+              className="relative flex flex-col flex-wrap flex-1 justify-center space-y-2 px-4 max-lg:px-2 max-xl:py-2"
             >
               <div className="flex flex-col space-y-1 overflow-hidden">
-                <div className="opacity-60 font-medium text-xs text-[#E8E0F1] text-nowrap">
+                <div className="opacity-60 font-medium text-[#E8E0F1] text-xs text-nowrap">
                   {item.label}
                 </div>
                 <div
@@ -251,7 +245,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           ))}
         </div>
 
-        <div ref={settingsRef} className="relative block max-lg:hidden pr-4">
+        <div ref={settingsRef} className="max-lg:hidden block relative pr-4">
           <button
             onClick={() => setIsSettingsOpen((prev) => !prev)}
             className="mx-2 cursor-pointer"
@@ -266,7 +260,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
         <button
           onClick={() => setIsSettingsOpen((prev) => !prev)}
-          className="mx-2 max-lg:block hidden absolute -top-12 right-0 cursor-pointer"
+          className="hidden max-lg:block -top-12 right-0 absolute mx-2 cursor-pointer"
         >
           <Image
             src={settingicon}
@@ -278,12 +272,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
       {/* Settings Dropdown */}
       {isSettingsOpen && (
-        <div className="absolute -right-3 border-2 border-white/10 top-12 mt-2 w-48 bg-secondary rounded-2xl shadow-lg">
+        <div className="top-12 -right-3 absolute bg-secondary shadow-lg mt-2 border-2 border-white/10 rounded-2xl w-48">
           <ul className="p-2 text-white">
             {settingsOptions?.map((option, index) => (
               <li
                 key={index}
-                className="flex items-center p-2 font-medium text-base cursor-pointer hover:bg-[#322944] rounded"
+                className="flex items-center hover:bg-[#322944] p-2 rounded font-medium text-base cursor-pointer"
               >
                 <CheckBox label="" setIsChecked={() => {}} isChecked={option.checked} />
                 <span className="ml-1">{option.label}</span>
@@ -293,10 +287,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         </div>
       )}
       {isOpen && (
-        <div className="absolute left-0 top-12  z-50 w-[800px] max-w-[95vw] bg-secondary rounded-xl shadow-xl overflow-hidden mt-8 -ml-1 border-2 border-white/5 ">
+        <div className="top-12 left-0 z-50 absolute bg-secondary shadow-xl mt-8 -ml-1 border-2 border-white/5 rounded-xl w-[800px] max-w-[95vw] overflow-hidden">
           {/* Search Input */}
           <div className="p-4">
-            <div className="border-2 border-[#FFFFFF15] bg-[#FFFFFF08] rounded-md flex items-center px-4 py-2">
+            <div className="flex items-center bg-[#FFFFFF08] px-4 py-2 border-[#FFFFFF15] border-2 rounded-md">
               <svg
                 width="24"
                 height="24"
@@ -324,13 +318,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 placeholder='e.g. "BTC" or "Bitcoin"'
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full p-2 text-white placeholder-gray-400 bg-transparent focus:outline-none text-sm"
+                className="bg-transparent p-2 focus:outline-none w-full text-white text-sm placeholder-gray-400"
               />
             </div>
           </div>
 
           {/* Category Tabs */}
-          <div className="flex px-4 pb-3 space-x-3">
+          <div className="flex space-x-3 px-4 pb-3">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -348,32 +342,32 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
           {/* Table Headers */}
           <div className="overflow-auto">
-            <div className="flex text-left px-4 py-3 border-t border-b border-[#FFFFFF10] bg-secondary text-[#8B8BA0] sticky top-0 text-sm font-medium">
+            <div className="top-0 sticky flex bg-secondary px-4 py-3 border-[#FFFFFF10] border-t border-b font-medium text-[#8B8BA0] text-sm text-left">
               <div className="w-1/12"></div> {/* Checkbox column */}
               <div className="w-3/12">Market</div>
-              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+              <div className="flex justify-center items-center w-2/12 text-right whitespace-nowrap cursor-pointer">
                 <IconArrowsSort className="w-4 h-4" /> Leverage
               </div>
-              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+              <div className="flex justify-center items-center w-2/12 text-right whitespace-nowrap cursor-pointer">
                 <IconArrowsSort className="w-4 h-4" /> Price
               </div>
-              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+              <div className="flex justify-center items-center w-2/12 text-right whitespace-nowrap cursor-pointer">
                 <IconArrowsSort className="w-4 h-4" /> 24h Change
               </div>
-              <div className="w-2/12 text-right cursor-pointer whitespace-nowrap flex items-center justify-center">
+              <div className="flex justify-center items-center w-2/12 text-right whitespace-nowrap cursor-pointer">
                 <IconArrowsSort className="w-4 h-4" /> Volume
               </div>
-              <div className="w-2/12 text-right pr-4 cursor-pointer whitespace-nowrap flex items-center justify-end">
+              <div className="flex justify-end items-center pr-4 w-2/12 text-right whitespace-nowrap cursor-pointer">
                 <IconArrowsSort className="w-4 h-4" /> Market Cap
               </div>
             </div>
 
             {/* Asset List */}
-            <div className="max-h-[400px] gap-2 flex flex-col p-2 overflow-y-auto">
+            <div className="flex flex-col gap-2 p-2 max-h-[400px] overflow-y-auto">
               {filteredAssets.length > 0 ? (
                 <>
                   {/* Favorite Assets Section */}
-                  <div className="  flex flex-col gap-y-2">
+                  <div className="flex flex-col gap-y-2">
                     {filteredAssets
                       .filter(([key]) => isFavorite(key, type))
                       .map(([key, value]) => {
@@ -447,13 +441,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   </div>
                 </>
               ) : (
-                <div className="p-6 text-center text-gray-400">No assets found.</div>
+                <div className="p-6 text-gray-400 text-center">No assets found.</div>
               )}
             </div>
           </div>
 
           {/* Apply Button */}
-          <div className="p-4 bg-secondary hidden">
+          <div className="hidden bg-secondary p-4">
             <button
               onClick={() => {
                 // Handle selection confirmation
@@ -463,7 +457,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 setIsOpen(false)
                 setSearchTerm('')
               }}
-              className="w-full py-3 bg-[#6366F1] text-white font-medium text-lg rounded-lg hover:bg-[#5558EA] transition-colors"
+              className="bg-[#6366F1] hover:bg-[#5558EA] py-3 rounded-lg w-full font-medium text-white text-lg transition-colors"
             >
               Apply
             </button>

@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, FC, useEffect, useRef } from 'react'
+import { useState, FC, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useBalance, useDisconnect } from 'wagmi'
 import Image from 'next/image'
@@ -128,18 +128,11 @@ const Header: FC = () => {
 
   return (
     <>
-      <header
-        className="
-    w-full h-20 sticky top-0 z-55
-      backdrop-blur-xl backdrop-filter
-    sm:px-9 flex border-b border-white/10
-    items-center justify-between
-  "
-      >
-        <div className="flex items-center justify-center space-x-4 align-middle">
+      <header className="top-0 z-55 sticky flex justify-between items-center backdrop-filter backdrop-blur-xl sm:px-9 border-white/10 border-b w-full h-max">
+        <div className="flex justify-center items-center space-x-4 align-middle">
           <h1
             onClick={() => router.push('/')}
-            className="flex items-center mr-6 lg:mr-6  gap-2 px-3 py-2 text-[#E8E0F1] text-2xl rounded-md font-semibold cursor-pointer"
+            className="flex items-center gap-2 mr-6 lg:mr-6 px-3 py-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
           >
             <Image
               style={{ width: 20, height: 'auto' }}
@@ -149,7 +142,7 @@ const Header: FC = () => {
             />
             Nexon
           </h1>
-          <nav className="xl:flex hidden text-[#8B8BA0] text-sm xl:text-base  items-center xl:gap-2 ">
+          <nav className="hidden xl:flex items-center xl:gap-2 text-[#8B8BA0] text-sm xl:text-base">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}
@@ -166,84 +159,80 @@ const Header: FC = () => {
               className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative hover:text-white`}
             >
               More
-              <span className="text-xs text-white bg-primary  rounded  group-hover:opacity-100 opacity-0 transition-all duration-300  flex items-center justify-center text-nowrap px-1">
+              <span className="flex justify-center items-center bg-primary opacity-0 group-hover:opacity-100 px-1 rounded text-white text-xs text-nowrap transition-all duration-300">
                 Coming Soon!
               </span>
             </button>
           </nav>
         </div>
-        <div className="flex items-center space-x-3 2xl:space-x-4 justify-end">
+        <div className="flex justify-end items-center space-x-3 2xl:space-x-4">
           <BridgeButton />
-          <button className="p-1 xl:block hidden  hover:text-white text-gray-400">
+          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
             <IconMoonFilled size={24} />
           </button>
-          <button className="p-1 xl:block hidden  hover:text-white text-gray-400">
+          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
             <IconHelp size={24} />
           </button>
-          <button className="relative p-1  hover:text-white text-gray-400">
+          <button className="relative p-1 text-gray-400 hover:text-white">
             <IconBell size={24} />
 
             {notificationCount > 0 && (
-              <span
-                className="absolute -top-1 right-0 2xl:-right-0 flex items-center justify-center w-[18px] h-[17px] 
-                bg-primary text-white 
-                rounded-[12px]"
-              >
+              <span className="-top-1 right-0 2xl:-right-0 absolute flex justify-center items-center bg-primary rounded-[12px] w-[18px] h-[17px] text-white">
                 {notificationCount}
               </span>
             )}
           </button>
 
           {isConnected && isRendered ? (
-            <div className="relative 2xl:w-[45%] xl:w-2/3 w-1/6 ">
+            <div className="relative w-1/6 2xl:w-[45%] xl:w-2/3">
               <button
                 ref={buttonRef}
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="flex w-auto relative hover:bg-white/10 items-center p-[10px]   cursor-pointer rounded-lg overflow-hidden "
+                className="relative flex items-center hover:bg-white/10 p-[10px] rounded-lg w-auto overflow-hidden cursor-pointer"
               >
-                <Avatar className="w-6 h-6 mr-2" avatar={currentUser?.avatar_url || '0'} />
-                <span className="text-sm max-[1025px]:hidden flex font-medium truncate text-[#E8E0F1]">
+                <Avatar className="mr-2 w-6 h-6" avatar={currentUser?.avatar_url || '0'} />
+                <span className="max-[1025px]:hidden flex font-medium text-[#E8E0F1] text-sm truncate">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="border-l max-xl:hidden flex border-gray-600 h-4 mx-2"></span>
-                <span className="font-medium max-xl:hidden flex truncate">
+                <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span>
+                <span className="max-xl:hidden flex font-medium truncate">
                   {truncateAddress(address!)}
                 </span>
                 <Image
                   style={{ width: 16, height: 'auto' }}
                   src={arrowdownicon}
                   alt="arrowdown"
-                  className="w-3 h-3 ml-2"
+                  className="ml-2 w-3 h-3"
                 />
               </button>
 
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
-                  className="absolute top-full z-[999] right-0 mt-2 w-[270px] bg-secondary border border-white/10 rounded-2xl shadow-lg py-4 px-2"
+                  className="top-full right-0 z-[999] absolute bg-secondary shadow-lg mt-2 px-2 py-4 border border-white/10 rounded-2xl w-[270px]"
                 >
-                  <div className="flex items-start text-[#E8E0F1] gap-2 px-2">
+                  <div className="flex items-start gap-2 px-2 text-[#E8E0F1]">
                     <div className="flex flex-col">
-                      <span className="truncate flex items-center">
+                      <span className="flex items-center truncate">
                         {truncateAddress(address!)}
                         <button
                           onClick={handleCopy}
-                          className="px-3 py-1 opacity-70 cursor-pointer hover:opacity-100 transition-all duration-300"
+                          className="opacity-70 hover:opacity-100 px-3 py-1 transition-all duration-300 cursor-pointer"
                         >
-                          <IconCopy className="h-4 w-4" />
+                          <IconCopy className="w-4 h-4" />
                         </button>
                       </span>
-                      <div className="text-sm text-[#E8E0F1]">
+                      <div className="text-[#E8E0F1] text-sm">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                         {balanceData?.symbol}
                       </div>
                     </div>
                   </div>
-                  <div className="flex cursor-pointer items-center mt-3 text-[#E8E0F1] gap-2 px-2">
+                  <div className="flex items-center gap-2 mt-3 px-2 text-[#E8E0F1] cursor-pointer">
                     <div className="flex flex-col">
-                      <span className="text-xs text-[#E8E0F1]">Vault Trading Account</span>
-                      <div className="text-sm text-[#E8E0F1]">
+                      <span className="text-[#E8E0F1] text-xs">Vault Trading Account</span>
+                      <div className="text-[#E8E0F1] text-sm">
                         {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                         {balanceData?.symbol}
                       </div>
@@ -251,39 +240,39 @@ const Header: FC = () => {
                   </div>
                   <button
                     onClick={toggleConnectWalletModal}
-                    className="flex text-base items-center w-full mt-3  px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-white/10 cursor-pointer"
+                    className="flex items-center hover:bg-white/10 mt-3 px-2 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
                   >
                     <IconSwitch3 size={24} className="mr-3" />
                     Switch Wallet
                   </button>
                   <Link
                     href="/settings"
-                    className="flex text-base items-center w-full mt-3 px-2 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-white/10 cursor-pointer"
+                    className="flex items-center hover:bg-white/10 mt-3 px-2 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
                   >
                     <IconSettings size={24} className="mr-3" />
                     Settings
                   </Link>
                   <button
                     onClick={() => setIsDepositOpen(true)}
-                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex items-center hover:bg-[#322944] mt-3 px-3 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
                   >
                     Deposit
                   </button>
                   <button
                     onClick={() => setIsWithdrawOpen(true)}
-                    className="flex text-base items-center w-full mt-3 px-3 py-2 font-medium rounded-md text-[#E8E0F1] hover:bg-[#322944] cursor-pointer"
+                    className="flex items-center hover:bg-[#322944] mt-3 px-3 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
                   >
                     Withdraw
                   </button>
                   <button
                     onClick={() => disconnect()}
-                    className="flex items-center text-base w-full mt-2 px-3 py-2 text-[#E2464A] font-medium rounded-md text-md hover:bg-white/10 cursor-pointer"
+                    className="flex items-center hover:bg-white/10 mt-2 px-3 py-2 rounded-md w-full font-medium text-[#E2464A] text-md text-base cursor-pointer"
                   >
                     <Image
                       style={{ width: 20, height: 'auto' }}
                       src={disconnecticon}
                       alt="Disconnect"
-                      className="w-5 h-5 mr-3"
+                      className="mr-3 w-5 h-5"
                     />
                     Disconnect
                   </button>
@@ -293,7 +282,7 @@ const Header: FC = () => {
           ) : (
             <button
               onClick={toggleConnectWalletModal}
-              className="2xl:px-[20px] px-[11px] ml:1 md:ml-4 flex items-center py-[10px] bg-primary font-bold text-white text-sm rounded-md md:rounded-xl cursor-pointer"
+              className="flex items-center bg-primary md:ml-4 px-[11px] 2xl:px-[20px] py-2 rounded-md md:rounded-xl font-bold text-white text-sm cursor-pointer ml:1"
             >
               <Image
                 style={{ width: 20, height: 'auto' }}
@@ -301,12 +290,12 @@ const Header: FC = () => {
                 alt="walleticon"
                 className="w-5 h-5"
               />
-              <span className="ml-2 hidden 2xl:block">Connect Wallet</span>
+              <span className="hidden 2xl:block ml-2">Connect Wallet</span>
             </button>
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="p-1 min-xl:hidden block hover:text-blue-400 text-white"
+            className="min-xl:hidden block p-1 text-white hover:text-blue-400"
           >
             <Image
               width={20}
@@ -320,9 +309,9 @@ const Header: FC = () => {
       </header>
       {/* Sidebar Menu */}
       {isOpen && (
-        <div className="fixed z-55 left-0 top-20 w-full  bg-[#1a1027] px-3 py-4 shadow-lg">
-          <div className="flex mb-3 ml-1 gap-2">
-            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
+        <div className="top-20 left-0 z-55 fixed bg-[#1a1027] shadow-lg px-3 py-4 w-full">
+          <div className="flex gap-2 mb-3 ml-1">
+            <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
               <Image
                 style={{ width: 20, height: 'auto' }}
                 src={helpicon}
@@ -330,16 +319,16 @@ const Header: FC = () => {
                 className="w-5 h-5"
               />
             </button>
-            <button className="md:px-[20px] px-[10px] py-[10px] flex items-center  bg-white/10 font-bold text-white text-sm rounded-md cursor-pointer">
+            <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
               <Image
                 style={{ width: 20, height: 'auto' }}
                 src={moonicon}
                 alt="moonicon"
-                className="w-4 h-4 md:mr-2"
+                className="md:mr-2 w-4 h-4"
               />
             </button>
           </div>
-          <nav className="flex flex-start flex-col text-[#8B8BA0] text-sm items-center">
+          <nav className="flex flex-col flex-start items-center text-[#8B8BA0] text-sm">
             {mobileMenu?.map(({ name, path }) => (
               <Link
                 key={name}

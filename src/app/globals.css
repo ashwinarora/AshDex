@@ -82,15 +82,7 @@ input[type='number'] {
 body {
   color: var(--foreground);
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background:
-    radial-gradient(
-      1100px circle at 30% top,
-      #1e0d31 0%,
-      rgba(30, 13, 49, 0.5) 40%,
-      rgba(30, 13, 49, 0.1) 80%,
-      transparent 100%
-    ),
-    #0f0816;
+  background: #09030f;
 
   height: 100%;
   width: 100%;
@@ -166,12 +158,8 @@ input {
 }
 
 .nexon-card {
-  background: linear-gradient(
-    179.1deg,
-    rgba(255, 255, 255, 0.05) -10.66%,
-    rgba(153, 153, 153, 0.05) 67.22%
-  );
-  @apply border-2 border-white/5 backdrop-blur-2xl rounded-3xl shadow-md w-full;
+  background: #0f0816;
+  @apply shadow-md backdrop-blur-2xl rounded-lg w-full;
 
   @apply max-h-min;
 }
@@ -211,12 +199,12 @@ button:active {
 }
 
 .nexon-primary {
-  @apply bg-primary text-white py-2 px-4 transition-colors duration-200 cursor-pointer rounded-xl;
+  @apply bg-primary px-4 py-2 rounded-xl text-white transition-colors duration-200 cursor-pointer;
   @apply hover:bg-primary/60;
 }
 
 .tab-btn {
-  @apply w-full text-white/50 py-2 rounded-full transition-colors duration-200 cursor-pointer;
+  @apply w-full text-white/50   rounded-full transition-colors duration-200 cursor-pointer;
 }
 
 .tab-btn:hover {
@@ -224,7 +212,8 @@ button:active {
 }
 
 .tab-btn-active {
-  @apply bg-[#FFFFFF0F] text-white font-semibold;
+  @apply font-semibold text-primary;
+  @apply hover:text-primary;
 }
 
 .tab-btn-disabled {
