@@ -26,6 +26,9 @@ import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import LimitCloseModal from './component/LimitCloseModal'
 import MarketCloseModal from './component/MarketCloseModal'
+import MarkPxDisplay from './component/MarkPxDisplay'
+import TPSL_Cell from './component/TPSL_Cell'
+import TPSL_Modal from './component/TPSL_Modal'
 
 type ColumnType = {
   key: string
@@ -138,6 +141,8 @@ const Positions = () => {
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
   const [isMarketCloseModalOpen, setIsMarketCloseModalOpen] = useState(false)
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
+  const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
+  const [tpslAsset, setTpslAsset] = useState<IPositionData>()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
@@ -259,6 +264,12 @@ const Positions = () => {
         header: () => <HeaderWithIcons label="Entry Price" />,
         meta: { label: 'Entry Price' }
       }),
+      helper.display({
+        id: 'markPx',
+        header: () => <HeaderWithIcons label="Mark Price" />,
+        meta: { label: 'Mark Price' },
+        cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
+      }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
         header: () => <HeaderWithIcons label="Funding P&L" />,
@@ -315,15 +326,15 @@ const Positions = () => {
             <div className="flex items-center gap-2">
               {!isAgentApproved || currentFeeApproval === 0 ? (
                 <button
-                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                  className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
                   onClick={openAgentModal}
                 >
                   Connect
                 </button>
               ) : (
-                <div>
+                <div className="flex items-center gap-2">
                   <button
-                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
                     onClick={() => {
                       setClosingAsset(position.coin)
                       setIsLimitCloseModalOpen(true)
@@ -332,7 +343,7 @@ const Positions = () => {
                     Limit
                   </button>
                   <button
-                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
                     onClick={() => {
                       setClosingAsset(position.coin)
                       setIsMarketCloseModalOpen(true)
@@ -349,31 +360,19 @@ const Positions = () => {
       }),
       helper.display({
         id: 'tp_sl',
-        header: () => <HeaderWithIcons label="TP/SL for position" />,
+        header: () => <HeaderWithIcons label="TP/SL" />,
         cell: ({ row }) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { tp_sl } = row.original as any
-          const tp = tp_sl?.tp
-          const sl = tp_sl?.sl
           return (
-            <div className="flex items-center gap-2">
-              {tp && sl ? (
-                <span className="w-17 break-words overflow-hidden">
-                  {tp}/{sl}
-                </span>
-              ) : (
-                '-/-'
-              )}
-              <Image
-                src={editicon}
-                alt="Edit"
-                style={{ width: 16, height: 'auto' }}
-                className="w-4 h-4 cursor-pointer"
-              />
-            </div>
+            <TPSL_Cell
+              asset={row.original.coin}
+              openModal={() => {
+                setTpslAsset(row.original)
+                setIsTPSLModalOpen(true)
+              }}
+            />
           )
         },
-        meta: { label: 'TP/SL for position' }
+        meta: { label: 'TP/SL' }
       })
     ],
     [helper, closePosition, isAgentApproved, currentFeeApproval, openAgentModal]
@@ -472,6 +471,13 @@ const Positions = () => {
           isOpen={isMarketCloseModalOpen}
           onClose={() => setIsMarketCloseModalOpen(false)}
           closingAsset={closingAsset}
+        />
+      )}
+      {isTPSLModalOpen && tpslAsset && (
+        <TPSL_Modal
+          isOpen={isTPSLModalOpen}
+          onClose={() => setIsTPSLModalOpen(false)}
+          tpslAsset={tpslAsset}
         />
       )}
     </div>
