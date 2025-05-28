@@ -44,4 +44,4 @@ const SmallModal: React.FC<SmallModalProps> = ({ isOpen, onClose, heading, child
   )
 }
 
-export default SmallModal 
+export default SmallModal

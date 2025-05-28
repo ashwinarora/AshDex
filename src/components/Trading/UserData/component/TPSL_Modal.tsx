@@ -419,12 +419,12 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
           Confirm
         </button>
         <div className="text-xs text-[#E8E0F1] mt-4 opacity-70">
-          By default take-profit and stop-loss orders apply to the entire position. Take-profit
-          and stop-loss automatically cancel after closing the position. A market order is
-          triggered when the stop loss or take profit price is reached.
+          By default take-profit and stop-loss orders apply to the entire position. Take-profit and
+          stop-loss automatically cancel after closing the position. A market order is triggered
+          when the stop loss or take profit price is reached.
           <br />
-          If the order size is configured above, the TP/SL order will be for that size no matter
-          how the position changes in the future.
+          If the order size is configured above, the TP/SL order will be for that size no matter how
+          the position changes in the future.
         </div>
       </div>
     </SmallModal>
