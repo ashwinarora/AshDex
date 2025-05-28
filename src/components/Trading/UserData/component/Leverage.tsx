@@ -106,7 +106,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
                 isLoading: false,
                 autoClose: 2000
               })
-              onClose && onClose()
+              onClose()
             } catch (error) {
               console.error('Error updating leverage:', error)
               toast.update(toastId, {

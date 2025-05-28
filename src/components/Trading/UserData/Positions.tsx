@@ -234,7 +234,7 @@ const Positions = () => {
         header: 'Position',
         cell: (info) => {
           const coin = info.getValue()
-          const { szi, leverage } = info.row.original
+          const { leverage } = info.row.original
           return (
             <div className="flex items-center gap-1">
               {(coin || '').split('-')[0]}{' '}
