@@ -66,7 +66,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
             type="text"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className={`rounded-md py-1 ${parseFloat(amount) > 100 ? 'text-[#E2464A]' : 'text-white'} focus:outline-none focus:none focus:none text-base font-semibold`}
+            className={`rounded-md py-1 ${parseFloat(amount) > 100 ? 'text-red' : 'text-white'} focus:outline-none focus:none focus:none text-base font-semibold`}
           />
           <div className="flex">
             <button className="text-sm font-medium p-[8px] text-white bg-white/10 rounded-lg">
@@ -85,7 +85,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
         </div>
         <p className="text-sm font-medium text-[#8B8BA0] mt-2">
           {parseFloat(amount) > 100 ? (
-            <span className={`${parseFloat(amount) > 100 ? 'text-[#E2464A]' : ''}`}>
+            <span className={`${parseFloat(amount) > 100 ? 'text-red' : ''}`}>
               {isChecked
                 ? `You can ${activeTab?.toLowerCase()} a maximum of 100 ETH.`
                 : `You can ${activeTab?.toLowerCase()} a maximum of 100 WETH.`}

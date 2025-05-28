@@ -65,8 +65,8 @@ function Twap() {
                     <span
                       className={`${
                         item?.reduceOnly === 'Yes'
-                          ? 'text-[#2FA766] bg-[#1F1F30]'
-                          : 'text-[#E2464A] bg-[#1F1F30]'
+                          ? 'text-green bg-[#1F1F30]'
+                          : 'text-red bg-[#1F1F30]'
                       } text-sm px-2 py-0.5 w-fit font-semibold rounded-lg`}
                     >
                       {item?.reduceOnly}
@@ -83,7 +83,7 @@ function Twap() {
                 <span
                   className={
                     col?.key === 'pnl'
-                      ? 'text-[#2FA766] font-medium'
+                      ? 'text-green font-medium'
                       : col?.key === 'contract'
                         ? 'truncate'
                         : ''
@@ -169,7 +169,7 @@ function Twap() {
                 </td>
                 <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-normal text-sm">
                   <span
-                    className={`${order?.reduceOnly === 'Yes' ? 'text-[#2FA766] bg-[#1F1F30]' : 'text-[#E2464A] bg-[#1F1F30]'}  ml-1 px-1.5 py-1 rounded-lg  font-semibold text-sm`}
+                    className={`${order?.reduceOnly === 'Yes' ? 'text-green bg-[#1F1F30]' : 'text-red bg-[#1F1F30]'}  ml-1 px-1.5 py-1 rounded-lg  font-semibold text-sm`}
                   >
                     {order?.reduceOnly}
                   </span>

@@ -316,7 +316,7 @@ const TradingViewChart = ({
                     open: lastBar.open, // opening price stays
                     high: Math.max(lastBar.high, bar.high),
                     low: Math.min(lastBar.low, bar.low),
-                    volume: lastBar.volume + bar.volume
+                    volume: bar.volume
                   }
                   onRealtimeCallback(lastBar)
                 } else {
@@ -362,7 +362,7 @@ const TradingViewChart = ({
         ],
         overrides: {
           'paneProperties.background': '#0F0816',
-          'mainSeriesProperties.candleStyle.upColor': '#0ECB81',
+          'mainSeriesProperties.candleStyle.upColor': '#2fa766',
           'mainSeriesProperties.candleStyle.downColor': '#F6465D'
         },
         custom_themes: {
@@ -412,36 +412,49 @@ const TradingViewChart = ({
               '#050307'
             ],
             color3: [
-              '#fff0f0',
-              '#ffe1e1',
-              '#ffd3d3',
-              '#ffc4c4',
-              '#ffb5b5',
-              '#ffa6a6',
-              '#ff9797',
-              '#ff8888'
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a',
+              '#e2464a'
             ],
+            // Color that overrides green
             color4: [
-              '#f2fffb',
-              '#e6fff7',
-              '#d9fff2',
-              '#ccffee',
-              '#bfffea',
-              '#b3ffe6',
-              '#a6ffe1',
-              '#99ffdd',
-              '#8cffd9',
-              '#80ffd5',
-              '#66ffcc',
-              '#5eeabb',
-              '#55d5aa',
-              '#4dbf99',
-              '#44aa88',
-              '#3c9577',
-              '#338066',
-              '#2b6a55',
-              '#225544',
-              '#1a4033'
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766',
+              '#2fa766'
             ],
             color5: [
               '#fffff0',
@@ -689,7 +702,7 @@ const TradingViewChart = ({
     }
   }, [selectedAsset, selectedInterval, sdk, intervalStr])
 
-  return <div ref={chartRef} className="w-full h-full rounded-b-md" />
+  return <div ref={chartRef} className="w-full h-full rounded-md" />
 }
 
 export default TradingViewChart

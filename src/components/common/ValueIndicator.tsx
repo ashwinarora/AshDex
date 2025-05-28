@@ -12,19 +12,19 @@ const ValueIndicator: React.FC<ValueIndicatorProps> = ({ value, className = '' }
   useEffect(() => {
     if (value === undefined) return
     if (value > prevValueRef.current) {
-      setColorClass('text-[#2FA766]')
+      setColorClass('text-green')
     } else if (value < prevValueRef.current) {
-      setColorClass('text-[#E2464A]')
+      setColorClass('text-red')
     }
     prevValueRef.current = value
   }, [value])
 
   return (
-    <div className={`${colorClass} ${className}  md:text-lg text-sm font-semibold`}>
+    <div className={`${colorClass} ${className}   font-semibold`}>
       {value !== undefined ? (
         `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)}`
       ) : (
-        <div className="animate-pulse h-6 w-16 bg-white/10 rounded" />
+        <div className="w-16 h-6 rounded animate-pulse bg-white/10" />
       )}
     </div>
   )

@@ -52,7 +52,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       showToast(
         'success',
         'Deposit confirmed. Balance will update on the next block.',
-        `<span className="text-[#2FA766]">Arbiscan Link</span>`
+        `<span className="text-green">Arbiscan Link</span>`
       )
     } catch (error) {
       console.error('Deposit error:', error)

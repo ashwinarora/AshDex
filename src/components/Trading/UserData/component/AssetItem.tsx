@@ -1,6 +1,6 @@
 'use client'
 import React, { useMemo } from 'react'
-import Image, { StaticImageData } from 'next/image'
+import { StaticImageData } from 'next/image'
 import {
   IconStar,
   IconStarFilled,
@@ -27,7 +27,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
   assetKey,
   value,
   setSelectedAsset,
-  icons = {},
+
   isInSelectorDropdown = false,
   price: propPrice,
   change24h: propChange24h,
@@ -76,7 +76,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
           const isPositive = !changeValue.startsWith('-')
           return {
             value: changeValue,
-            className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+            className: isPositive ? 'text-green' : 'text-red',
             raw: parseFloat(changeValue) || 0,
             isPositive
           }
@@ -90,7 +90,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
       const isPositive = Number(changeValue) >= 0
       return {
         value: `${isPositive ? '+' : ''}${Number(changeValue).toFixed(1)}%`,
-        className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+        className: isPositive ? 'text-green' : 'text-red',
         raw: Number(changeValue),
         isPositive
       }
@@ -109,7 +109,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
     return {
       value: `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`,
-      className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+      className: isPositive ? 'text-green' : 'text-red',
       raw: percentageChange,
       isPositive
     }
@@ -147,58 +147,44 @@ const AssetItem: React.FC<AssetItemProps> = ({
   // Render UI based on whether it's in the selector dropdown or not
   if (isInSelectorDropdown) {
     return (
-      <div
+      <tr
+        onClick={handleClick}
         key={assetKey}
-        className="bg-white/5 cursor-pointer rounded-lg border-white/5 last:border-b-0"
+        className="transition-colors duration-150 cursor-pointer hover:bg-white/5"
       >
-        <div onClick={handleClick} className="flex items-center px-4 py-3 text-white gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation()
-              toggleFavorite(
-                {
-                  name: assetKey,
-                  value: price.toString(),
-                  index: assetKey,
-                  price: price,
-                  change24h: priceChangeData.value
-                },
-                type
-              )
-            }}
-            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer    h-5 w-5"
-            aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
-          >
-            {isFavorite(assetKey, type) ? (
-              <IconStarFilled size={16} className="mr-1" />
-            ) : (
-              <IconStar size={16} className="mr-1" />
-            )}
-          </button>
-          <div className="w-3/12 flex items-center">
-            {icons[assetKey] ? (
-              <Image
-                src={icons[assetKey]}
-                alt={assetKey}
-                style={{ width: 32, height: 32 }}
-                className="h-8 w-8 rounded-full mr-2"
-              />
-            ) : (
-              <div
-                className={`rounded-full bg-[#6366F1] w-8 h-8 mr-2 flex items-center justify-center text-white font-bold`}
-              >
-                {assetKey.substring(0, 1)}
-              </div>
-            )}
-            <span className="font-medium">{assetKey}</span>
+        {/* Market + Star */}
+        <td className="px-6 py-2 font-medium whitespace-nowrap">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                toggleFavorite(
+                  {
+                    name: assetKey,
+                    value: price.toString(),
+                    index: assetKey,
+                    price: price,
+                    change24h: priceChangeData.value
+                  },
+                  type
+                )
+              }}
+              className="w-5 h-5 text-yellow-500 hover:text-yellow-600 focus:outline-none"
+              aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
+            >
+              {isFavorite(assetKey, type) ? <IconStarFilled size={16} /> : <IconStar size={16} />}
+            </button>
+            {assetKey}
+            <p className="px-2">{universe[assetIndex]?.maxLeverage || 50}×</p>
           </div>
-          <div className="w-1/12 text-right font-medium text-gray-300">
-            {universe[assetIndex]?.maxLeverage || 50}×
-          </div>
-          <div className="w-2/12 text-right font-medium font-dm-mono">${formattedPrice}</div>
-          <div
-            className={`w-2/12 text-right font-medium ${priceChangeData.className} flex items-center justify-end font-dm-mono`}
-          >
+        </td>
+
+        {/* Price */}
+        <td className="px-6 py-2 text-right">${formattedPrice}</td>
+
+        {/* 24h Change */}
+        <td className={`px-6 py-2 text-right ${priceChangeData.className}`}>
+          <div className="flex items-center justify-end">
             {priceChangeData.isPositive ? (
               <IconTriangleFilled size={14} className="mr-1" />
             ) : (
@@ -206,12 +192,14 @@ const AssetItem: React.FC<AssetItemProps> = ({
             )}
             {priceChangeData.value}
           </div>
-          <div className="w-2/12 text-right font-medium text-gray-300 font-mono">{volumeValue}</div>
-          <div className="w-2/12 text-right font-medium text-gray-300 font-mono pr-4">
-            {marketCap}
-          </div>
-        </div>
-      </div>
+        </td>
+
+        {/* Volume */}
+        <td className="px-6 py-2 text-right">{volumeValue}</td>
+
+        {/* Market Cap */}
+        <td className="px-6 py-2 text-right">{marketCap}</td>
+      </tr>
     )
   }
 }

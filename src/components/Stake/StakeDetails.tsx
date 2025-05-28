@@ -141,7 +141,7 @@ const StakeDetails = () => {
                 backdrop-blur-[48.3px] min-w-[22.7%]"
               >
                 <p className="text-[#8B8BA0] text-base font-medium mb-2">Status</p>
-                <p className="text-base font-medium text-[#2FA766] bg-[#1F1F30] p-1 rounded-[8px] w-fit">
+                <p className="text-base font-medium text-green bg-[#1F1F30] p-1 rounded-[8px] w-fit">
                   Active
                 </p>
               </div>

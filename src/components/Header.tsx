@@ -128,8 +128,8 @@ const Header: FC = () => {
 
   return (
     <>
-      <header className="top-0 z-55 sticky flex justify-between items-center backdrop-filter backdrop-blur-xl sm:px-9 border-white/10 border-b w-full h-max">
-        <div className="flex justify-center items-center space-x-4 align-middle">
+      <header className="sticky top-0 flex items-center justify-between w-full px-2 z-55 backdrop-filter backdrop-blur-xl h-max bg-secondary">
+        <div className="flex items-center justify-center space-x-4 align-middle">
           <h1
             onClick={() => router.push('/')}
             className="flex items-center gap-2 mr-6 lg:mr-6 px-3 py-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
@@ -159,18 +159,18 @@ const Header: FC = () => {
               className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative hover:text-white`}
             >
               More
-              <span className="flex justify-center items-center bg-primary opacity-0 group-hover:opacity-100 px-1 rounded text-white text-xs text-nowrap transition-all duration-300">
+              <span className="flex items-center justify-center px-1 text-xs text-white transition-all duration-300 rounded opacity-0 bg-primary group-hover:opacity-100 text-nowrap">
                 Coming Soon!
               </span>
             </button>
           </nav>
         </div>
-        <div className="flex justify-end items-center space-x-3 2xl:space-x-4">
+        <div className="flex items-center justify-end space-x-3 2xl:space-x-4">
           <BridgeButton />
-          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
+          <button className="hidden p-1 text-gray-400 xl:block hover:text-white">
             <IconMoonFilled size={24} />
           </button>
-          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
+          <button className="hidden p-1 text-gray-400 xl:block hover:text-white">
             <IconHelp size={24} />
           </button>
           <button className="relative p-1 text-gray-400 hover:text-white">
@@ -190,20 +190,20 @@ const Header: FC = () => {
                 onClick={() => setIsDropdownOpen((prev) => !prev)}
                 className="relative flex items-center hover:bg-white/10 p-[10px] rounded-lg w-auto overflow-hidden cursor-pointer"
               >
-                <Avatar className="mr-2 w-6 h-6" avatar={currentUser?.avatar_url || '0'} />
+                <Avatar className="w-6 h-6 mr-2" avatar={currentUser?.avatar_url || '0'} />
                 <span className="max-[1025px]:hidden flex font-medium text-[#E8E0F1] text-sm truncate">
                   {toHumanNumber(balanceData?.value, balanceData?.decimals, 4)}{' '}
                   {balanceData?.symbol}
                 </span>
-                <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span>
-                <span className="max-xl:hidden flex font-medium truncate">
+                <span className="flex h-4 mx-2 border-l border-gray-600 max-xl:hidden"></span>
+                <span className="flex font-medium truncate max-xl:hidden">
                   {truncateAddress(address!)}
                 </span>
                 <Image
                   style={{ width: 16, height: 'auto' }}
                   src={arrowdownicon}
                   alt="arrowdown"
-                  className="ml-2 w-3 h-3"
+                  className="w-3 h-3 ml-2"
                 />
               </button>
 
@@ -218,7 +218,7 @@ const Header: FC = () => {
                         {truncateAddress(address!)}
                         <button
                           onClick={handleCopy}
-                          className="opacity-70 hover:opacity-100 px-3 py-1 transition-all duration-300 cursor-pointer"
+                          className="px-3 py-1 transition-all duration-300 cursor-pointer opacity-70 hover:opacity-100"
                         >
                           <IconCopy className="w-4 h-4" />
                         </button>
@@ -266,13 +266,13 @@ const Header: FC = () => {
                   </button>
                   <button
                     onClick={() => disconnect()}
-                    className="flex items-center hover:bg-white/10 mt-2 px-3 py-2 rounded-md w-full font-medium text-[#E2464A] text-md text-base cursor-pointer"
+                    className="flex items-center w-full px-3 py-2 mt-2 text-base font-medium rounded-md cursor-pointer hover:bg-white/10 text-red text-md"
                   >
                     <Image
                       style={{ width: 20, height: 'auto' }}
                       src={disconnecticon}
                       alt="Disconnect"
-                      className="mr-3 w-5 h-5"
+                      className="w-5 h-5 mr-3"
                     />
                     Disconnect
                   </button>
@@ -282,7 +282,7 @@ const Header: FC = () => {
           ) : (
             <button
               onClick={toggleConnectWalletModal}
-              className="flex items-center bg-primary md:ml-4 px-[11px] 2xl:px-[20px] py-2 rounded-md md:rounded-xl font-bold text-white text-sm cursor-pointer ml:1"
+              className="flex items-center bg-primary md:ml-4 px-[11px] 2xl:px-[20px] py-2 rounded-md   font-bold text-white text-sm cursor-pointer ml:1"
             >
               <Image
                 style={{ width: 20, height: 'auto' }}
@@ -290,12 +290,12 @@ const Header: FC = () => {
                 alt="walleticon"
                 className="w-5 h-5"
               />
-              <span className="hidden 2xl:block ml-2">Connect Wallet</span>
+              <span className="hidden ml-2 2xl:block">Connect Wallet</span>
             </button>
           )}
           <button
             onClick={() => setIsOpen((prev) => !prev)}
-            className="min-xl:hidden block p-1 text-white hover:text-blue-400"
+            className="block p-1 text-white min-xl:hidden hover:text-blue-400"
           >
             <Image
               width={20}
@@ -324,7 +324,7 @@ const Header: FC = () => {
                 style={{ width: 20, height: 'auto' }}
                 src={moonicon}
                 alt="moonicon"
-                className="md:mr-2 w-4 h-4"
+                className="w-4 h-4 md:mr-2"
               />
             </button>
           </div>

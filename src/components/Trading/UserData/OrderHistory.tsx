@@ -59,14 +59,14 @@ const OrderHistoryTable: React.FC = () => {
     if (columnId === 'status') {
       customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
       if (cellValue === 'Filled') {
-        customClass += ' bg-[#28283e] text-[#2FA766]'
+        customClass += ' bg-[#28283e] text-green'
       } else if (cellValue === 'Rejected') {
-        customClass += ' bg-[#27273b] text-[#E2464A]'
+        customClass += ' bg-[#27273b] text-red'
       } else if (cellValue === 'Cancelled') {
         customClass += ' bg-[#505061] text-[#FFFFFF]'
       }
     } else if (columnId === 'side') {
-      customClass += ' text-[#2FA766]'
+      customClass += ' text-green'
     } else {
       customClass += ' text-[#FFFFFF]'
     }
@@ -84,10 +84,10 @@ const OrderHistoryTable: React.FC = () => {
               <span
                 className={`flex ${
                   col?.key === 'status'
-                    ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-[#2FA766]' : ''}
-                          ${item?.status === 'Rejected' ? 'bg-[#27273b] text-[#E2464A]' : ''}
+                    ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
+                          ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
                           ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
-                    : `${col?.key === 'side' ? 'text-[#2FA766]' : ''}`
+                    : `${col?.key === 'side' ? 'text-green' : ''}`
                 } item-center gap-x-2`}
               >
                 {item[col?.key] ?? '-'}

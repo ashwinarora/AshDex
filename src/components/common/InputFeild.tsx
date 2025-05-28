@@ -34,7 +34,7 @@ const InputFeild: React.FC<InputProps> = ({
           placeholder={placeholder}
           className={`w-full px-3 py-4 rounded-md bg-[#FFFFFF0F] text-white text-base font-medium border-2 ${error ? 'border-[#E2464A29]' : 'border-[#FFFFFF0F]'} focus:outline-none`}
         />
-        {error && <p className="text-[#E2464A] text-sm mt-1">{error}</p>}
+        {error && <p className="text-red text-sm mt-1">{error}</p>}
       </div>
     </div>
   )

@@ -20,7 +20,7 @@ const Trading = () => {
   ]
   return (
     <>
-      <div className="flex flex-col h-full gap-2 p-2 bg-transparent">
+      <div className="flex flex-col h-full gap-2 p-1 bg-transparent">
         {/* Top Bar for Asset Selector */}
 
         {/* Mobile view tabs */}
@@ -38,10 +38,10 @@ const Trading = () => {
           ))}
         </nav>
         {/* Main Trading Layout */}
-        <div className="flex flex-col flex-1 gap-2">
-          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-6 2xl:grid-cols-5 h-[60vh]`}>
+        <div className="flex flex-col flex-1 gap-1">
+          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-18  h-[80vh]`}>
             {/* Chart on top in mobile, middle in desktop */}
-            <div className="order-1 hidden gap-1 overflow-hidden rounded-lg xl:flex xl:flex-col xl:order-1 xl:col-span-3">
+            <div className="order-1 hidden gap-1 overflow-hidden rounded-lg xl:flex xl:flex-col xl:order-1 xl:col-span-11">
               <FavoriteStrip setSelectedAsset={setSelectedAsset} />
               <div className="relative flex items-center justify-between">
                 <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
@@ -50,12 +50,12 @@ const Trading = () => {
             </div>
 
             {/* OrderBook: Left on desktop, middle in mobile */}
-            <div className="order-2 hidden overflow-hidden xl:block xl:order-2 xl:col-span-1 nexon-card">
+            <div className="order-2 hidden overflow-hidden xl:block xl:order-2 xl:col-span-3 nexon-card">
               <OrderBook selectedAsset={selectedAsset} />
             </div>
 
             {/* PlaceOrder: Right on desktop, bottom in mobile */}
-            <div className="order-3 hidden overflow-hidden xl:block xl:order-3 2xl:col-span-1 xl:col-span-2 nexon-card">
+            <div className="order-3 hidden overflow-hidden xl:block xl:order-3 2xl:col-span-1 xl:col-span-4 nexon-card">
               <PlaceOrder selectedAsset={selectedAsset} />
             </div>
             {/* Mobile view active tab */}

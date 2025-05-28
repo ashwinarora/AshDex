@@ -10,9 +10,10 @@
   }
 }
 :root {
-  --background: #0a0a0a;
+  --background: #f00;
   --foreground: #ededed;
-
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   --tw-color-aggrid-background: #1f2937;
 
   --tw-color-aggrid-text: #e5e7eb;
@@ -27,6 +28,8 @@
   --color-primary: #5f46f9; /* Primary brand color */
   --color-secondary: #0f0816; /* Secondary brand color */
   --color-brand: #10b981; /* Brand accent color */
+  --color-green: #2fa766; /* Brand green */
+  --color-red: #e2464a; /* Brand Red */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -47,7 +50,7 @@
     rgba(255, 255, 255, 0.05) -10.66%,
     rgba(153, 153, 153, 0.05) 67.22%
   );
-  @apply border-2 border-white/5 backdrop-blur-2xl   shadow-md w-full;
+  @apply w-full border-2 shadow-md border-white/5 backdrop-blur-2xl;
 
   @apply max-h-min;
 }
@@ -82,8 +85,9 @@ input[type='number'] {
 body {
   color: var(--foreground);
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background: #09030f;
-
+  background: #1a0b2a;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -159,7 +163,7 @@ input {
 
 .nexon-card {
   background: #0f0816;
-  @apply shadow-md backdrop-blur-2xl rounded-lg w-full;
+  @apply w-full rounded-lg shadow-md backdrop-blur-2xl;
 
   @apply max-h-min;
 }
@@ -181,7 +185,7 @@ input {
 }
 
 .nexon-button {
-  @apply bg-white/5 flex py-2 px-4 rounded-xl transition-colors duration-200 cursor-pointer;
+  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/5 rounded-xl;
   @apply overflow-clip;
   @apply max-h-min;
   backdrop-filter: blur(16px);
@@ -199,12 +203,12 @@ button:active {
 }
 
 .nexon-primary {
-  @apply bg-primary px-4 py-2 rounded-xl text-white transition-colors duration-200 cursor-pointer;
+  @apply px-4 py-2 text-white transition-colors duration-200 cursor-pointer bg-primary rounded-xl;
   @apply hover:bg-primary/60;
 }
 
 .tab-btn {
-  @apply w-full text-white/50   rounded-full transition-colors duration-200 cursor-pointer;
+  @apply w-full transition-colors duration-200 rounded-full cursor-pointer text-white/50;
 }
 
 .tab-btn:hover {

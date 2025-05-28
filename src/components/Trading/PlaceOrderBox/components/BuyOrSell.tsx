@@ -7,22 +7,22 @@ interface BuyOrSellProps {
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
   return (
-    <div className="flex border-b border-[#FFFFFF0F] mb-4 px-4">
+    <div className="flex p-1 m-3 rounded-md bg-white/5 ">
       <button
-        className={`flex-1 text-center border-b-4 py-2 font-medium transition-colors cursor-pointer ${
-          isBuy ? 'text-white  border-primary' : 'text-gray-300 border-transparent'
+        className={`flex-1 text-center  py-1 font-bold  transition-colors cursor-pointer rounded-md text-sm duration-100 ${
+          isBuy ? 'text-white  bg-green' : 'text-gray-300'
         }`}
         onClick={() => setIsBuy(true)}
       >
-        BUY
+        Buy
       </button>
       <button
-        className={`flex-1 text-center py-2 border-b-4 font-medium transition-colors cursor-pointer ${
-          !isBuy ? 'text-white border-primary' : 'text-gray-300  border-transparent'
+        className={`flex-1 text-center py-1  font-bold  transition-colors cursor-pointer rounded-md  text-sm duration-100 ${
+          !isBuy ? 'text-white bg-red' : 'text-gray-300 '
         }`}
         onClick={() => setIsBuy(false)}
       >
-        SELL
+        Sell
       </button>
     </div>
   )

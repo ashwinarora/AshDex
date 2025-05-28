@@ -15,16 +15,16 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
   }
 
   return (
-    <div className="relative bg-secondary rounded-lg w-full overflow-hidden">
+    <div className="relative flex w-full px-1 pt-1 pb-3 overflow-hidden rounded-md bg-secondary">
       <Splide
-        className=" "
+        className=""
         aria-label="My Favorite Tokens"
         options={{
           drag: true,
           pagination: false,
           arrows: false,
           rewind: true,
-          gap: 4,
+
           autoWidth: true
         }}
       >
@@ -34,8 +34,6 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           </SplideSlide>
         ))}
       </Splide>
-
-      <div className="top-0 right-0 z-10 absolute bg-gradient-to-r from-transparent via-50% via-secondary to-secondary w-12 xl:w-24 h-full"></div>
     </div>
   )
 }

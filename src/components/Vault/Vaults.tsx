@@ -71,7 +71,7 @@ const Vaults = () => {
                     </div>
                     <div className="flex items-center gap-2 mt-1">
                       <p className="text-2xl font-medium text-white tracking-wide">$534 753 940</p>
-                      <span className="text-sm text-[#2FA766] font-semibold">+ $0.1</span>
+                      <span className="text-sm text-green font-semibold">+ $0.1</span>
                       <span className="text-xs text-[#8B8BA0]">24h</span>
                     </div>
                   </div>

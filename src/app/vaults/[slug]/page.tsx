@@ -182,14 +182,14 @@ export default function VaultDetails() {
                     {vault?.name}
                     {isDepositsDisabled && (
                       <span
-                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#f139391a] text-[#E2464A]`}
+                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#f139391a] text-red`}
                       >
                         Deposits Disabled
                       </span>
                     )}
                     {isAutoCloseWithdraw && (
                       <span
-                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#1F1F30] text-[#2FA766]`}
+                        className={`rounded-lg text-sm py-0.5 px-1.5 font-medium flex items-center bg-[#1F1F30] text-green`}
                       >
                         Auto-Close Enabled
                       </span>

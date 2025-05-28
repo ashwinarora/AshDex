@@ -103,7 +103,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
                   <span className="text-[#E8E0F1] flex text-sm font-medium">
                     {value}{' '}
                     {change && (
-                      <span className="ml-2 flex xl:hidden 2xl:flex text-[#2FA766]">{change}</span>
+                      <span className="ml-2 flex xl:hidden 2xl:flex text-green">{change}</span>
                     )}
                   </span>
                 </p>

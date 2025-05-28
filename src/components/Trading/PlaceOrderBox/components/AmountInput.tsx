@@ -1,11 +1,10 @@
 'use client'
 
 import { getCoinName, getUniverseIndex } from '@/utils/utils'
-import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
-import Slider1 from '@/assets/images/slider_value.svg'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { IconPercentage } from '@tabler/icons-react'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -132,44 +131,44 @@ const AmountInput = ({
   }
 
   return (
-    <>
-      <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
-        <label className="block text-xs font-medium text-[#8B8BA0] mb-0.5">Amount</label>
+    <div className="flex flex-col gap-2 mx-3">
+      {' '}
+      <label className="block text-xs font-medium text-gray-400">
+        Max ={' '}
+        {isInputUsd
+          ? `${maxAllowedUsd.toFixed(2)} USD`
+          : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
+      </label>
+      <div className="flex items-center px-3 align-middle border rounded-md border-white/10">
+        <p className="text-xs font-medium text-white/50 whitespace-nowrap">Position Size</p>
         <div className="relative flex items-center">
           <input
             type="text"
             placeholder="0.0000"
             value={isInputUsd ? usdAmount : assetAmount}
             onChange={isInputUsd ? handleUSDChange : handleAssetChange}
-            className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+            className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium text-right"
           />
           <select
             value={isInputUsd ? 'usd' : 'asset'}
             onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
-            className="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent text-[#8B8BA0] text-xs border-none focus:outline-none cursor-pointer"
+            className=" bg-transparent text-[#8B8BA0] text-xs border-none focus:outline-none cursor-pointer"
           >
             <option value="asset">{getCoinName(selectedAsset)}</option>
             <option value="usd">USD</option>
           </select>
         </div>
       </div>
-
-      <div className="flex items-end justify-between w-full px-4 border-b mb-1 border-[#FFFFFF0F] pb-2">
+      <div className="flex items-end justify-between w-full pb-1">
         <div className="w-[70%]">
-          <label className="block text-xs font-medium text-gray-400">
-            Max ={' '}
-            {isInputUsd
-              ? `${maxAllowedUsd.toFixed(2)} USD`
-              : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
-          </label>
           <input
             type="range"
             min={0}
             max={100}
             step={1}
-            value={usdPercent}
-            onChange={handleUsdPercentChange}
-            className="w-full cursor-pointer appearance-none h-2 rounded-lg outline-none
+            value={Number(usdPercent) || 0}
+            onChange={(e) => handleUsdPercentChange(e)}
+            className="w-full cursor-pointer appearance-none h-0.5 rounded-lg outline-none
             [&::-webkit-slider-thumb]:appearance-none
             [&::-webkit-slider-thumb]:h-3
             [&::-webkit-slider-thumb]:w-3
@@ -185,10 +184,9 @@ const AmountInput = ({
             [&::-moz-range-thumb]:cursor-pointer
             [&::-moz-range-thumb]:border-none"
             style={{
-              background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${usdPercent}%, #2A1B3D ${usdPercent}%, #2A1B3D 100%)`
+              background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${Number(usdPercent)}%, #2A1B3D ${Number(usdPercent)}%, #2A1B3D 100%)`
             }}
           />
-          <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-0.5" />
           <div className="flex justify-between text-xs text-gray-500 mt-0.5">
             <span>0%</span>
             <span>25%</span>
@@ -197,18 +195,21 @@ const AmountInput = ({
             <span>100%</span>
           </div>
         </div>
-
-        <div className="relative pl-4">
+        <div className="flex items-center border rounded-md border-white/10 ">
           <input
-            type="string"
-            className="w-16 h-8 rounded-md border border-white/10 bg-white/10 outline-none px-2 py-1 text-xs"
-            value={usdPercent}
-            onChange={handleUsdPercentChange}
+            type="number"
+            max={100}
+            min={0}
+            maxLength={3}
+            minLength={1}
+            readOnly={true}
+            className="w-10 h-8 px-2 py-1 text-xs text-right outline-none"
+            value={Number(usdPercent) || 0}
           />
-          <span className="absolute right-2 top-1.5 text-gray-500 text-xs">%</span>
+          <IconPercentage className="w-4 h-4 mr-2" />
         </div>
       </div>
-    </>
+    </div>
   )
 }
 

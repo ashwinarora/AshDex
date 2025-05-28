@@ -55,7 +55,7 @@ function TradeHistory({ showExportButton }: TradeHistoryProps) {
             <span
               className={
                 col?.key === 'buysell'
-                  ? 'text-[#E2464A] font-medium'
+                  ? 'text-red font-medium'
                   : col?.key === 'contract'
                     ? 'truncate'
                     : ''
@@ -125,7 +125,7 @@ function TradeHistory({ showExportButton }: TradeHistoryProps) {
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
                   {order?.symbol}
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#E2464A] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-red font-medium text-sm">
                   {order?.buysell}
                 </td>
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">

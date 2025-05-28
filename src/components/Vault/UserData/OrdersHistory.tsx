@@ -64,10 +64,10 @@ function OrdersHistory() {
                 <span
                   className={`flex ${
                     col?.key === 'status'
-                      ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-[#2FA766]' : ''}
-                        ${item?.status === 'Rejected' ? 'bg-[#27273b] text-[#E2464A]' : ''}
+                      ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
+                        ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
                         ${item?.status === 'Cancelled' ? 'bg-[#505061] text-white' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
-                      : `${col?.key === 'buysell' ? 'text-[#2FA766]' : ''}`
+                      : `${col?.key === 'buysell' ? 'text-green' : ''}`
                   } item-center gap-x-2`}
                 >
                   {item[col?.key] ?? '-'}
@@ -128,7 +128,7 @@ function OrdersHistory() {
                     </span>
                   </div>
                 </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
+                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-green font-medium text-sm">
                   {order?.buysell}
                 </td>
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
@@ -153,8 +153,8 @@ function OrdersHistory() {
                   <span
                     className={`
                         rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block
-                        ${order?.status === 'Filled' ? 'bg-[#28283e] text-[#2FA766]' : ''}
-                        ${order?.status === 'Rejected' ? 'bg-[#27273b] text-[#E2464A]' : ''}
+                        ${order?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
+                        ${order?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
                         ${order?.status === 'Cancelled' ? 'bg-[#505061] text-white' : ''}
                        `}
                   >

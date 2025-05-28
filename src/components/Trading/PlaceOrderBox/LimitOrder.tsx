@@ -19,7 +19,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-  const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
+  const isPostOnly = false
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const isSpot = useIsSpot()
   const [tpsl, setTpsl] = useState<TPSLType>({
@@ -29,12 +29,23 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   })
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="space-y-1">
-          <div className="px-4 border-b border-[#FFFFFF0F] mb-1">
-            <label className="block text-xs font-medium text-gray-300 mb-0.5">Limit price</label>
+      <div className="flex-1 no-scrollbar">
+        <div className="flex flex-col gap-2 ">
+          {!isSpot && (
+            <>
+              <MarginMode isCross={isCross} setIsCross={setIsCross} />
+              <LeverageMargin
+                selectedAsset={selectedAsset}
+                leverage={leverage}
+                setLeverage={setLeverage}
+              />
+            </>
+          )}
+          <hr className=" border-white/10" />
+          <div className="flex items-center px-3 mx-3 align-middle border rounded-md border-white/10">
+            <p className="text-xs font-medium text-white/50 whitespace-nowrap">Limit price (USD)</p>
             <SetPrice
               selectedAsset={selectedAsset}
               limitPrice={limitPrice}
@@ -66,28 +77,18 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               isBuy={isBuy}
             />
           )}
-          {!isSpot && (
-            <>
-              <LeverageMargin
-                selectedAsset={selectedAsset}
-                leverage={leverage}
-                setLeverage={setLeverage}
-              />
-              <MarginMode isCross={isCross} setIsCross={setIsCross} />
-            </>
-          )}
-          <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
+          <div className="mx-3 text-xs">
+            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+          </div>
+          <hr className=" border-white/10" />
+
+          <div className="grid grid-cols-1 gap-2 px-3 text-xs text-gray-400">
             {!isSpot && (
               <>
-                <CheckBox
-                  label="Reduce Only"
-                  setIsChecked={setIsReduceOnly}
-                  isChecked={isReduceOnly}
-                />
                 <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
-            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
+            {/* <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} /> */}
           </div>
         </div>
       </div>

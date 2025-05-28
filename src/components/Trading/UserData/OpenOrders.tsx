@@ -50,7 +50,7 @@ const OpenOrders = () => {
     if (!isAgentApproved || currentFeeApproval <= 0) {
       return (
         <button
-          className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
+          className="bg-[#27273b] text-red font-bold py-1 px-2.5 rounded cursor-pointer"
           onClick={openAgentModal}
         >
           Connect
@@ -59,7 +59,7 @@ const OpenOrders = () => {
     }
     return (
       <button
-        className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
+        className="bg-[#27273b] text-red font-bold py-1 px-2.5 rounded cursor-pointer"
         onClick={async () => {
           const toastId = toast.loading('Cancelling all orders...')
           try {
@@ -91,7 +91,7 @@ const OpenOrders = () => {
       if (!isAgentApproved || currentFeeApproval <= 0) {
         return (
           <button
-            className="bg-[#27273b] text-[#E2464A] font-bold py-1 px-2.5 rounded cursor-pointer"
+            className="bg-[#27273b] text-red font-bold py-1 px-2.5 rounded cursor-pointer"
             onClick={openAgentModal}
           >
             Connect
@@ -100,7 +100,7 @@ const OpenOrders = () => {
       }
       return (
         <button
-          className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-[#E2464A] font-bold rounded"
+          className="py-0.5 text-sm px-2 cursor-pointer bg-[#27273b] text-red font-bold rounded"
           onClick={async () => {
             const toastId = toast.loading('Cancelling order...')
             try {
@@ -133,9 +133,9 @@ const OpenOrders = () => {
     if (columnId === 'side') {
       const value = (cellValue as string)?.toLowerCase()
       if (value === 'buy') {
-        return `${baseClass} text-[#2FA766]`
+        return `${baseClass} text-green`
       } else if (value === 'sell') {
-        return `${baseClass} text-[#E2464A]`
+        return `${baseClass} text-red`
       }
     }
     return `${baseClass} text-[#FFFFFF]`
@@ -163,9 +163,9 @@ const OpenOrders = () => {
                       ${
                         col?.key === 'side'
                           ? item[col?.key]?.toLowerCase() === 'buy'
-                            ? 'text-[#2FA766]'
+                            ? 'text-green'
                             : item[col?.key]?.toLowerCase() === 'sell'
-                              ? 'text-[#E2464A]'
+                              ? 'text-red'
                               : ''
                           : ''
                       }

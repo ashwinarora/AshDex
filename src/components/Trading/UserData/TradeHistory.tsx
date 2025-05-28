@@ -131,17 +131,17 @@ const TradeHistoryTable: React.FC = () => {
     if (columnId === 'crossed') {
       customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
       if (cellValue === true) {
-        customClass += ' bg-[#28283e] text-[#2FA766]'
+        customClass += ' bg-[#28283e] text-green'
       } else if (cellValue === false) {
-        customClass += ' bg-[#27273b] text-[#E2464A]'
+        customClass += ' bg-[#27273b] text-red'
       }
     } else if (columnId === 'side') {
       customClass += ' text-sm font-normal'
       const value = (cellValue as string)?.toLowerCase()
       if (value === 'buy') {
-        customClass += ' text-[#2FA766]'
+        customClass += ' text-green'
       } else if (value === 'sell') {
-        customClass += ' text-[#E2464A]'
+        customClass += ' text-red'
       }
     } else {
       customClass += ' text-[#FFFFFF]'
@@ -165,9 +165,9 @@ const TradeHistoryTable: React.FC = () => {
               <span
                 className={`flex items-center gap-x-2 ${
                   col?.key === 'crossed'
-                    ? `${item?.crossed ? 'bg-[#28283e] text-[#2FA766]' : 'bg-[#27273b] text-[#E2464A]'} px-1.5 py-1 w-fit rounded-lg font-medium`
+                    ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
                     : col?.key === 'side'
-                      ? 'text-[#E2464A]'
+                      ? 'text-red'
                       : ''
                 }`}
               >

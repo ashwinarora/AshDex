@@ -56,8 +56,8 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
         : false
 
   const priceChangeClass = isPositiveChange
-    ? 'text-[#2FA766]' // green for positive
-    : 'text-[#E2464A]' // red for negative
+    ? 'text-green' // green for positive
+    : 'text-red' // red for negative
 
   // Get just the percentage part
   const percentageOnly = getPercentageOnly(favorite.change24h)

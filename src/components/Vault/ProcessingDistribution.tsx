@@ -117,7 +117,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
             <div className="flex w-1/4 flex-col items-center relative">
               <div className="absolute -right-14 min-lg:-right-18 top-2.5 w-full border-t border-[#FFFFFF29]" />
               <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
-              <p className="text-sm text-[#2FA766] mt-2 font-semibold">Pending</p>
+              <p className="text-sm text-green mt-2 font-semibold">Pending</p>
             </div>
 
             {/* Step 2 */}
@@ -132,7 +132,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
               )}
               <p
                 className={`text-sm ${
-                  step >= 2 ? 'text-[#2FA766]' : 'text-[#8B8BA0]'
+                  step >= 2 ? 'text-green' : 'text-[#8B8BA0]'
                 }  mt-2 font-semibold`}
               >
                 Confirming
@@ -150,7 +150,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
               )}
               <p
                 className={`text-sm ${
-                  step >= 3 ? 'text-[#2FA766]' : 'text-[#8B8BA0]'
+                  step >= 3 ? 'text-green' : 'text-[#8B8BA0]'
                 }  mt-2 font-semibold`}
               >
                 Distributed
