@@ -260,7 +260,7 @@ export interface IPositionData {
   entryPx: number
   leverage: {
     rawUsd: number
-    type: number
+    type: 'cross' | 'isolated'
     value: number
   }
   liquidationPx: number
