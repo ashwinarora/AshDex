@@ -30,6 +30,8 @@ import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
 import LeverageModal from './component/Leverage'
+import { IconPencil } from '@tabler/icons-react'
+import IsolatedMarginModal from './component/IsolatedMarginModal'
 
 type ColumnType = {
   key: string
@@ -147,6 +149,8 @@ const Positions = () => {
   const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
   const [leverageAsset, setLeverageAsset] = useState<IPositionData>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
+  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
 
   useEffect(() => {
     setMounted(true)
@@ -292,7 +296,24 @@ const Positions = () => {
       helper.accessor('marginUsed', {
         id: 'marginUsed',
         header: () => <HeaderWithIcons label="Margin" />,
-        meta: { label: 'Margin' }
+        meta: { label: 'Margin' },
+        cell: (info) => {
+          return (
+            <span className="text-sm font-medium">
+              ${info.getValue().toFixed(2)}
+              {info.row.original.leverage.type === 'isolated' && `(isolated)`}
+              <button
+                className="ml-2 cursor-pointer"
+                onClick={() => {
+                  setIsolatedMarginAsset(info.row.original)
+                  setIsIsolatedMarginModalOpen(true)
+                }}
+              >
+                <IconPencil className="w-4 h-4" />
+              </button>
+            </span>
+          )
+        }
       }),
       helper.display({
         id: 'status',
@@ -484,6 +505,13 @@ const Positions = () => {
           isOpen={isLeverageModalOpen}
           onClose={() => setIsLeverageModalOpen(false)}
           asset={leverageAsset}
+        />
+      )}
+      {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+        <IsolatedMarginModal
+          isOpen={isIsolatedMarginModalOpen}
+          onClose={() => setIsIsolatedMarginModalOpen(false)}
+          asset={isolatedMarginAsset}
         />
       )}
     </div>
