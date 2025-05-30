@@ -29,6 +29,9 @@ import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
+import LeverageModal from './component/Leverage'
+import { IconPencil } from '@tabler/icons-react'
+import IsolatedMarginModal from './component/IsolatedMarginModal'
 
 type ColumnType = {
   key: string
@@ -143,8 +146,11 @@ const Positions = () => {
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
   const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
   const [tpslAsset, setTpslAsset] = useState<IPositionData>()
-
+  const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
+  const [leverageAsset, setLeverageAsset] = useState<IPositionData>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
+  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
 
   useEffect(() => {
     setMounted(true)
@@ -232,22 +238,19 @@ const Positions = () => {
         header: 'Position',
         cell: (info) => {
           const coin = info.getValue()
-          const { szi, leverage } = info.row.original
+          const { leverage } = info.row.original
           return (
             <div className="flex items-center gap-1">
-              <span
-                className={`w-[4px] h-[36px] rounded-sm ${szi < 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'}`}
-              ></span>
-              <Image
-                src={bitcoinicon}
-                alt="Bitcoin"
-                style={{ width: 24, height: 'auto' }}
-                className="w-6 h-6 mx-1 cursor-pointer"
-              />
-              {coin}{' '}
-              <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
+              {(coin || '').split('-')[0]}{' '}
+              <button
+                className="text-[#7D67FF] cursor-pointer ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm"
+                onClick={() => {
+                  setLeverageAsset(info.row.original)
+                  setIsLeverageModalOpen(true)
+                }}
+              >
                 {leverage.value}x
-              </span>
+              </button>
             </div>
           )
         },
@@ -293,7 +296,24 @@ const Positions = () => {
       helper.accessor('marginUsed', {
         id: 'marginUsed',
         header: () => <HeaderWithIcons label="Margin" />,
-        meta: { label: 'Margin' }
+        meta: { label: 'Margin' },
+        cell: (info) => {
+          return (
+            <span className="text-sm font-medium">
+              ${info.getValue().toFixed(2)}
+              {info.row.original.leverage.type === 'isolated' && `(isolated)`}
+              <button
+                className="ml-2 cursor-pointer"
+                onClick={() => {
+                  setIsolatedMarginAsset(info.row.original)
+                  setIsIsolatedMarginModalOpen(true)
+                }}
+              >
+                <IconPencil className="w-4 h-4" />
+              </button>
+            </span>
+          )
+        }
       }),
       helper.display({
         id: 'status',
@@ -478,6 +498,20 @@ const Positions = () => {
           isOpen={isTPSLModalOpen}
           onClose={() => setIsTPSLModalOpen(false)}
           tpslAsset={tpslAsset}
+        />
+      )}
+      {isLeverageModalOpen && leverageAsset && (
+        <LeverageModal
+          isOpen={isLeverageModalOpen}
+          onClose={() => setIsLeverageModalOpen(false)}
+          asset={leverageAsset}
+        />
+      )}
+      {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+        <IsolatedMarginModal
+          isOpen={isIsolatedMarginModalOpen}
+          onClose={() => setIsIsolatedMarginModalOpen(false)}
+          asset={isolatedMarginAsset}
         />
       )}
     </div>
