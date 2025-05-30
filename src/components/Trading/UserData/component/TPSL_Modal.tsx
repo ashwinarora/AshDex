@@ -8,6 +8,7 @@ import { getFormattedPrice, getUniverseIndex } from '@/utils/utils'
 import { hyperliquidAxios } from '@/config/axios'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import SmallModal from '../../../common/SmallModal'
+import { toast } from 'react-toastify'
 
 interface TPSLModalProps {
   isOpen: boolean
@@ -405,15 +406,32 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
                 }
               })
             }
-            const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-              orders: orders,
-              grouping: 'positionTpsl',
-              builder: {
-                address: BUILDER_ADDRESS,
-                fee: currentFeeApproval
-              }
-            })
-            console.log(res)
+            const toastId = toast.loading('Placing TP/SL order...')
+            try {
+              const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+                orders: orders,
+                grouping: 'positionTpsl',
+                builder: {
+                  address: BUILDER_ADDRESS,
+                  fee: currentFeeApproval
+                }
+              })
+              console.log(res)
+              toast.update(toastId, {
+                render: '✅ TP/SL order placed successfully',
+                type: 'success',
+                isLoading: false,
+                autoClose: 2000
+              })
+            } catch (error) {
+              console.error(error)
+              toast.update(toastId, {
+                render: '❌ ' + error,
+                type: 'error',
+                isLoading: false,
+                autoClose: 2000
+              })
+            }
           }}
         >
           Confirm
