@@ -53,9 +53,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     const allowedDecimals = maxDecimals - szDecimals
     let rawPrice: string
     if (isSpot) {
-      const slippageMultiplier = isBuy
-        ? 1 + slippage / 100
-        : 1 - slippage / 100
+      const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
       rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
     } else {
       rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
