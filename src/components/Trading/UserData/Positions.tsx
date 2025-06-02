@@ -301,16 +301,18 @@ const Positions = () => {
           return (
             <span className="text-sm font-medium">
               ${info.getValue().toFixed(2)}
-              {info.row.original.leverage.type === 'isolated' && `(isolated)`}
-              <button
-                className="ml-2 cursor-pointer"
-                onClick={() => {
-                  setIsolatedMarginAsset(info.row.original)
-                  setIsIsolatedMarginModalOpen(true)
-                }}
-              >
-                <IconPencil className="w-4 h-4" />
-              </button>
+              ({info.row.original.leverage.type})
+              {info.row.original.leverage.type === 'isolated' && (
+                <button
+                  className="ml-2 cursor-pointer"
+                  onClick={() => {
+                    setIsolatedMarginAsset(info.row.original)
+                    setIsIsolatedMarginModalOpen(true)
+                  }}
+                >
+                  <IconPencil className="w-4 h-4" />
+                </button>
+              )}
             </span>
           )
         }
