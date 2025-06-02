@@ -32,6 +32,7 @@ import TPSL_Modal from './component/TPSL_Modal'
 import LeverageModal from './component/Leverage'
 import { IconPencil } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
+import CloseAllModal from './component/CloseAllModal'
 
 type ColumnType = {
   key: string
@@ -151,6 +152,7 @@ const Positions = () => {
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
+  const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -339,7 +341,13 @@ const Positions = () => {
               Connect
             </button>
           ) : (
-            <span className="text-sm font-medium text-[#8B8BA0]">Close All</span>
+            <button
+              className="text-sm font-medium text-[#8B8BA0] hover:text-indigo-300 rounded transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              onClick={() => setIsCloseAllModalOpen(true)}
+              type="button"
+            >
+              Close All
+            </button>
           ),
         cell: (info) => {
           const position = info.row.original
@@ -514,6 +522,9 @@ const Positions = () => {
           onClose={() => setIsIsolatedMarginModalOpen(false)}
           asset={isolatedMarginAsset}
         />
+      )}
+      {isCloseAllModalOpen && (
+        <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
       )}
     </div>
   )
