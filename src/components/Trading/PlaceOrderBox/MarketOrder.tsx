@@ -24,7 +24,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-  const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [slippage, setSlippage] = useState<number>(1) // Default 1% slippage
   const [isSlippageModalOpen, setIsSlippageModalOpen] = useState<boolean>(false)
@@ -139,7 +138,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
-            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
       </div>
@@ -160,7 +158,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}
-          isPostOnly={isPostOnly}
+          isPostOnly={false}
           isReduceOnly={isReduceOnly}
         />
       </div>
