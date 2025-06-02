@@ -42,25 +42,25 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   }, [clearingHouseState, closingAsset])
 
   function trimDecimals(value: string, decimals: number) {
-    if (!value) return value;
+    if (!value) return value
     const [int, dec] = value.split('.')
-    if (!decimals || !dec) return value;
-    return `${int}.${dec.slice(0, decimals)}`;
+    if (!decimals || !dec) return value
+    return `${int}.${dec.slice(0, decimals)}`
   }
 
   // Update size when percent changes
   useEffect(() => {
     if (lastChanged === 'percent' && position) {
       const absSzi = Math.abs(position.szi)
-      const assetIndex = universe ? getUniverseIndex(universe, position.coin) : 0;
-      const szDecimals = universe ? universe[assetIndex].szDecimals : 8;
+      const assetIndex = universe ? getUniverseIndex(universe, position.coin) : 0
+      const szDecimals = universe ? universe[assetIndex].szDecimals : 8
       if (sizeType === 'asset') {
-        const newSize = (percent / 100) * absSzi;
-        setSize(trimDecimals(newSize.toString(), szDecimals));
+        const newSize = (percent / 100) * absSzi
+        setSize(trimDecimals(newSize.toString(), szDecimals))
       } else if (sizeType === 'usd' && price) {
-        const px = parseFloat(price);
-        const usdValue = (percent / 100) * absSzi * px;
-        setSize(trimDecimals(usdValue.toString(), szDecimals));
+        const px = parseFloat(price)
+        const usdValue = (percent / 100) * absSzi * px
+        setSize(trimDecimals(usdValue.toString(), szDecimals))
       }
     }
   }, [percent, position, sizeType, price, lastChanged, universe])
@@ -76,7 +76,8 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       } else if (sizeType === 'usd' && price) {
         const px = parseFloat(price)
         const usdNum = parseFloat(size)
-        const newPercent = absSzi > 0 && px > 0 ? Math.min(100, Math.max(0, (usdNum / (absSzi * px)) * 100)) : 0
+        const newPercent =
+          absSzi > 0 && px > 0 ? Math.min(100, Math.max(0, (usdNum / (absSzi * px)) * 100)) : 0
         setPercent(Number.isNaN(newPercent) ? 0 : newPercent)
       }
     }
@@ -89,7 +90,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const entryPx = position.entryPx
       const closePx = parseFloat(price)
       const isLong = position.szi > 0
-      const pnlPerUnit = isLong ? (closePx - entryPx) : (entryPx - closePx)
+      const pnlPerUnit = isLong ? closePx - entryPx : entryPx - closePx
       return closeSize * pnlPerUnit
     }
     return null
@@ -187,10 +188,10 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
               type="number"
               value={size}
               onChange={(e) => {
-                const assetIndex = universe ? getUniverseIndex(universe, closingAsset) : 0;
-                const szDecimals = universe ? universe[assetIndex].szDecimals : 8;
-                setSize(trimDecimals(e.target.value, szDecimals));
-                setLastChanged('size');
+                const assetIndex = universe ? getUniverseIndex(universe, closingAsset) : 0
+                const szDecimals = universe ? universe[assetIndex].szDecimals : 8
+                setSize(trimDecimals(e.target.value, szDecimals))
+                setLastChanged('size')
               }}
               className="flex-1 bg-[#322944] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#7D67FF]"
               placeholder="Enter size"
@@ -229,11 +230,17 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         {estPnl !== null && (
           <div className="text-sm mt-2">
             Estimated closed PnL (without fees):
-            <span className={
-              'ml-1 font-semibold ' +
-              (estPnl > 0 ? 'text-[#3FE17C]' : estPnl < 0 ? 'text-[#FF5A5A]' : 'text-white')
-            }>
-              {estPnl > 0 ? '+' : ''}${estPnl.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+            <span
+              className={
+                'ml-1 font-semibold ' +
+                (estPnl > 0 ? 'text-[#3FE17C]' : estPnl < 0 ? 'text-[#FF5A5A]' : 'text-white')
+              }
+            >
+              {estPnl > 0 ? '+' : ''}$
+              {estPnl.toLocaleString(undefined, {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })}
             </span>
           </div>
         )}

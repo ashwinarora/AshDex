@@ -300,8 +300,7 @@ const Positions = () => {
         cell: (info) => {
           return (
             <span className="text-sm font-medium">
-              ${info.getValue().toFixed(2)}
-              ({info.row.original.leverage.type})
+              ${info.getValue().toFixed(2)}({info.row.original.leverage.type})
               {info.row.original.leverage.type === 'isolated' && (
                 <button
                   className="ml-2 cursor-pointer"
