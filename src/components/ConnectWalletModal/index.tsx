@@ -83,18 +83,25 @@ const ConnectWalletModal: React.FC = () => {
         {shouldShowRules ? (
           <WalletRules onClose={handleClose} />
         ) : selectedConnector ? (
-          <WalletDisplay
-            onBack={() => {
-              setIsWalletConnected(null)
-              setSelectedConnector(null)
-              reset()
-            }}
-            onClose={handleClose}
-            name={selectedConnector.name}
-            icon={selectedConnector.icon}
-            isWalletConnected={isWalletConnected}
-            hasAgreedToRules={!!termsData?.signed}
-          />
+          isWalletConnected && isTermsLoading ? (
+            <div className="flex flex-col items-center justify-center py-8">
+              <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
+              <p className="text-white mt-4">Loading terms...</p>
+            </div>
+          ) : (
+            <WalletDisplay
+              onBack={() => {
+                setIsWalletConnected(null)
+                setSelectedConnector(null)
+                reset()
+              }}
+              onClose={handleClose}
+              name={selectedConnector.name}
+              icon={selectedConnector.icon}
+              isWalletConnected={isWalletConnected}
+              hasAgreedToRules={!!termsData?.signed}
+            />
+          )
         ) : (
           <div className="space-y-4">
             {WALLETS.map((wallet) => (
