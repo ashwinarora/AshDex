@@ -37,6 +37,7 @@ type OrderButtonProps = {
   isReduceOnly: boolean
   tpsl?: TPSLType
   stopOrder?: StopOrder
+  isInvalid: boolean
 }
 
 const placePerpOrder = async ({
@@ -55,7 +56,8 @@ const placePerpOrder = async ({
   agentWallet,
   isTestnet,
   hyperliquidAxios,
-  currentFeeApproval
+  currentFeeApproval,
+  isInvalid
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any
@@ -74,12 +76,17 @@ const placePerpOrder = async ({
   currentFeeApproval: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
+  isInvalid: boolean
 }) => {
   const assetIndex = getUniverseIndex(universe, selectedAsset)
   const szDecimals = universe[assetIndex].szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
   const formattedSize = assetAmount.replace(/\.?0+$/, '')
+
+  if (isInvalid) {
+    return
+  }
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
@@ -198,7 +205,8 @@ const placeSpotOrder = async ({
   isBuy,
   limitPrice,
   assetAmount,
-  isPostOnly
+  isPostOnly,
+  isInvalid
 }: {
   spotMeta: SpotMeta
   spotAssetContext: IWebData2['spotAssetCtxs']
@@ -210,7 +218,11 @@ const placeSpotOrder = async ({
   limitPrice: string
   assetAmount: string
   isPostOnly: boolean
+  isInvalid: boolean
 }) => {
+  if (isInvalid) {
+    return
+  }
   if (!spotMeta.tokens) return
   const assetIndex =
     spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
@@ -273,7 +285,8 @@ const OrderButton = ({
   isPostOnly,
   isReduceOnly,
   tpsl,
-  stopOrder
+  stopOrder,
+  isInvalid
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
@@ -290,7 +303,7 @@ const OrderButton = ({
   if (!isWalletConnected) {
     return (
       <div
-        className="flex items-center justify-center w-full gap-2 py-2 text-white rounded-md cursor-pointer bg-primary hover:bg-purple-600"
+        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
         onClick={() => {
           toggleConnectWalletModal()
         }}
@@ -302,7 +315,7 @@ const OrderButton = ({
   if (!isAgentApproved || currentFeeApproval === 0) {
     return (
       <div
-        className="flex items-center justify-center w-full gap-2 py-2 text-white rounded-md cursor-pointer bg-primary hover:bg-purple-600"
+        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
         onClick={async () => openAgentModal()}
       >
         Enable Trading
@@ -312,9 +325,14 @@ const OrderButton = ({
   return (
     <button
       type="button"
-      className={
-        'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
-      }
+      className={`py-2 rounded-md w-full  font-semibold text-white cursor-pointer ${
+        isInvalid
+          ? 'bg-white/10 hover:cursor-not-allowed '
+          : isBuy
+            ? 'bg-green hover:bg-green/80 '
+            : 'bg-red hover:bg-red/80 '
+      }`}
+      disabled={isInvalid}
       onClick={async () => {
         if (!agentWallet) return
         if (!currentFeeApproval) return
@@ -329,7 +347,8 @@ const OrderButton = ({
             isBuy,
             limitPrice,
             assetAmount,
-            isPostOnly
+            isPostOnly,
+            isInvalid
           })
         } else {
           await placePerpOrder({
@@ -348,12 +367,13 @@ const OrderButton = ({
             agentWallet,
             isTestnet,
             hyperliquidAxios,
-            currentFeeApproval
+            currentFeeApproval,
+            isInvalid
           })
         }
       }}
     >
-      {isBuy ? 'Buy' : 'Sell'}
+      {isSpot ? (isBuy ? 'Buy' : 'Sell') : isBuy ? 'Buy/Long' : 'Sell/Short'}
     </button>
   )
 }

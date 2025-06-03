@@ -159,17 +159,17 @@ const SetPrice = ({
   }
 
   return (
-    <div className="flex ">
+    <div className="flex w-full">
       <input
         type="text"
         placeholder="0"
         value={limitPrice}
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
-        className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium   text-right"
+        className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
       />
       <button
-        className="  cursor-pointer text-xs items-center  flex align-middle gap-1 text-[#7D67FF] font-medium"
+        className="flex items-center gap-1 ml-auto font-medium text-[#7D67FF] text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}
       >
         <IconRefresh style={{ width: 12, height: 'auto' }} className="w-3 h-3" />

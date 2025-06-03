@@ -20,11 +20,11 @@ const Trading = () => {
   ]
   return (
     <>
-      <div className="flex flex-col h-full gap-2 p-1 bg-transparent">
+      <div className="flex flex-col gap-2 bg-transparent p-1 h-full">
         {/* Top Bar for Asset Selector */}
 
         {/* Mobile view tabs */}
-        <nav className="flex-wrap hidden w-full mb-2 border-b max-xl:flex justify-evenly max-sm:justify-between gap-x-5 border-white/10">
+        <nav className="hidden max-xl:flex flex-wrap justify-evenly max-sm:justify-between gap-x-5 mb-2 border-white/10 border-b w-full">
           {TRADING_TABS?.map((tab, index) => (
             <button
               key={tab}
@@ -39,27 +39,27 @@ const Trading = () => {
         </nav>
         {/* Main Trading Layout */}
         <div className="flex flex-col flex-1 gap-1">
-          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-18  h-[80vh]`}>
+          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-18  h-[80vh] xl:h-[70vh]`}>
             {/* Chart on top in mobile, middle in desktop */}
-            <div className="order-1 hidden gap-1 overflow-hidden rounded-lg xl:flex xl:flex-col xl:order-1 xl:col-span-11">
+            <div className="hidden xl:flex xl:flex-col gap-1 order-1 xl:order-1 xl:col-span-11 rounded-lg overflow-hidden">
               <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-              <div className="relative flex items-center justify-between">
+              <div className="relative flex justify-between items-center">
                 <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
               </div>
               <Chart selectedAsset={selectedAsset} selectedInterval="30" />
             </div>
 
             {/* OrderBook: Left on desktop, middle in mobile */}
-            <div className="order-2 hidden overflow-hidden xl:block xl:order-2 xl:col-span-3 nexon-card">
+            <div className="hidden xl:block order-2 xl:order-2 xl:col-span-3 overflow-hidden nexon-card">
               <OrderBook selectedAsset={selectedAsset} />
             </div>
 
             {/* PlaceOrder: Right on desktop, bottom in mobile */}
-            <div className="order-3 hidden overflow-hidden xl:block xl:order-3 2xl:col-span-1 xl:col-span-4 nexon-card">
+            <div className="hidden xl:block order-3 xl:order-3 xl:col-span-4 overflow-hidden nexon-card">
               <PlaceOrder selectedAsset={selectedAsset} />
             </div>
             {/* Mobile view active tab */}
-            <div className="block overflow-hidden xl:hidden nexon-card">
+            <div className="xl:hidden block overflow-hidden nexon-card">
               {components[activeTab]}
             </div>
           </div>

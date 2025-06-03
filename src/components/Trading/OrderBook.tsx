@@ -26,6 +26,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
   const sellsContainerRef = useRef<HTMLDivElement>(null)
+  const buysContainerRef = useRef<HTMLDivElement>(null)
+  const [visibleRows, setVisibleRows] = useState<{ sells: number; buys: number }>({
+    sells: 10,
+    buys: 9
+  })
   const [selectedLayoutType, setSelectedLayouttype] = useState<1 | 2 | 3>(1)
   const [selectedPrecision, setSelectedPrecision] = useState<string>('1')
   const [showPrecisionSelector, setShowPrecisionSelector] = useState<boolean>(false)
@@ -76,12 +81,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [rawBuys, rawSells] = l2Book?.levels ?? [[], []]
 
   const sells = useMemo(
-    () => processOrders(rawSells.slice(0, selectedLayoutType === 1 ? 10 : 21)),
-    [rawSells, selectedLayoutType]
+    () => processOrders(rawSells.slice(0, visibleRows.sells)),
+    [rawSells, visibleRows.sells]
   )
   const buys = useMemo(
-    () => processOrders(rawBuys.slice(0, selectedLayoutType === 1 ? 9 : 21)),
-    [rawBuys, selectedLayoutType]
+    () => processOrders(rawBuys.slice(0, visibleRows.buys)),
+    [rawBuys, visibleRows.buys]
   )
 
   useEffect(() => {
@@ -100,7 +105,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const renderSkeletonRow = (isSell: boolean, index: number) => {
     const widthClass = isSell ? sellWidths[index] : buyWidths[index]
     return (
-      <div className="relative flex justify-between px-4 py-0.5 ">
+      <div className="relative flex justify-between px-4 py-0.5">
         <Skeleton
           className="ml-auto rounded-none"
           size={widthClass as SkeletonSize}
@@ -137,10 +142,45 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     setSelectedPrecision(precision)
     setShowPrecisionSelector(false)
   }
+
+  // Add resize observer to calculate visible rows
+  useEffect(() => {
+    if (!sellsContainerRef.current || !buysContainerRef.current) return
+
+    const calculateVisibleRows = () => {
+      const rowHeight = 22 // Updated: py-1 (16px) + my-[1px] (2px) = 26px total per row
+      const headerHeight = 64 // Reduced from 80 to 64 (more precise measurement)
+      const priceDisplayHeight = 32 // Reduced from 40 to 32 (more precise measurement)
+
+      const containerHeight = sellsContainerRef.current?.parentElement?.clientHeight || 0
+      const availableHeight = containerHeight - headerHeight - priceDisplayHeight
+
+      // Calculate rows for each section based on layout type
+      if (selectedLayoutType === 1) {
+        // Calculate total possible rows and ensure even distribution
+        const totalRows = Math.floor(availableHeight / rowHeight)
+        // Ensure even number of rows for equal distribution
+        const rowsPerSection = Math.floor(totalRows / 2)
+        setVisibleRows({ sells: rowsPerSection, buys: rowsPerSection })
+      } else {
+        // Use Math.ceil to ensure we use all available space
+        const rows = Math.ceil(availableHeight / rowHeight)
+        setVisibleRows({ sells: rows, buys: rows })
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(calculateVisibleRows)
+    resizeObserver.observe(sellsContainerRef.current.parentElement!)
+
+    calculateVisibleRows() // Initial calculation
+
+    return () => resizeObserver.disconnect()
+  }, [selectedLayoutType])
+
   return (
-    <div className="flex flex-col w-full h-full text-sm text-gray-200">
-      <div className="flex items-center justify-between px-3 py-2">
-        <p className="text-xs text-white font-semi-bold">Order Book</p>
+    <div className="flex flex-col w-full h-full text-gray-200 text-sm">
+      <div className="flex justify-between items-center px-3 py-2">
+        <p className="font-semi-bold text-white text-xs">Order Book</p>
         <div className="flex gap-2 text-white">
           <Image
             className={`${selectedLayoutType === 1 ? 'bg-white/10 ' : 'opacity-50'} rounded-md cursor-pointer p-1 h-6 w-6`}
@@ -168,7 +208,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
             alt=""
           />
         </div>
-        <div className="items-center hidden ">
+        <div className="hidden items-center">
           <IconDotsVertical className="w-4 h-4" />
         </div>
       </div>
@@ -180,16 +220,16 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
               e.preventDefault()
               setShowPrecisionSelector((prev) => !prev)
             }}
-            className="flex items-center gap-1 px-2 py-0.5 rounded-md cursor-pointer text-white/50 hover:bg-white/10 hover:text-white"
+            className="flex items-center gap-1 hover:bg-white/10 px-2 py-0.5 rounded-md text-white/50 hover:text-white cursor-pointer"
           >
-            <p className="text-xs text-white">{selectedPrecision}</p>
+            <p className="text-white text-xs">{selectedPrecision}</p>
             <IconChevronDown className="w-4 h-4" />
           </div>
 
           {/* Dropdown */}
           {showPrecisionSelector && (
             <div
-              className="absolute left-0 top-6 z-50 flex flex-col w-max min-w-[4rem] rounded-md bg-secondary shadow-xl p-1 border border-white/10"
+              className="top-6 left-0 z-50 absolute flex flex-col bg-secondary shadow-xl p-1 border border-white/10 rounded-md w-max min-w-[4rem]"
               onClick={(e) => e.stopPropagation()} // prevent bubbling
             >
               <RadioGroup
@@ -212,9 +252,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
           {/* Toggle button */}
           <div
             onClick={() => setShowPriceInUSDSelector((prev) => !prev)}
-            className="flex items-center gap-1 p-0.5 px-2 text-center align-middle rounded-md cursor-pointer hover:bg-white/10 text-white/50 hover:text-white"
+            className="flex items-center gap-1 hover:bg-white/10 p-0.5 px-2 rounded-md text-white/50 hover:text-white text-center align-middle cursor-pointer"
           >
-            <p className="text-xs text-white">
+            <p className="text-white text-xs">
               {showPriceInUSD ? 'USD' : getCoinName(selectedAsset)}
             </p>
             <IconChevronDown className="w-4 h-4" />
@@ -223,7 +263,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
           {/* Dropdown */}
           {showPriceInUSDSelector && (
             <div
-              className="absolute z-50 min-w-full py-1 border rounded-md shadow-lg -left-5 top-6 w-max border-white/10 bg-secondary"
+              className="top-6 -left-5 z-50 absolute bg-secondary shadow-lg py-1 border border-white/10 rounded-md w-max min-w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <RadioGroup
@@ -244,25 +284,25 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
       </div>
 
       {showTotalColumn && (
-        <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-3 py-1 my-1">
-          <p className="text-xs font-medium text-left">Price </p>
-          <p className="text-xs font-medium">
+        <div className="flex justify-between my-1 px-3 py-1 w-full font-medium text-[#E8E0F1]">
+          <p className="font-medium text-xs text-left">Price </p>
+          <p className="font-medium text-xs">
             Amount ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
           </p>
-          <p className="text-xs font-medium text-right">
+          <p className="font-medium text-xs text-right">
             Total ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
           </p>
         </div>
       )}
 
-      <div className="flex flex-col flex-1 h-full overflow-clip ">
+      <div className="flex flex-col flex-1 h-full overflow-hidden">
         {/* Top - Sells */}
         <div
           ref={sellsContainerRef}
           className={`flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 2 ? 'hidden' : 'flex h-[50%] order-1'}`}
         >
           {isLoading
-            ? Array(10)
+            ? Array(visibleRows.sells)
                 .fill(0)
                 .map((_, i) => <div key={i}>{renderSkeletonRow(true, i)}</div>)
             : (selectedLayoutType !== 3 ? [...sells].reverse() : sells).map((order, index) => {
@@ -270,13 +310,13 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 return (
                   <div
                     key={`sell-${index}`}
-                    className=" grid grid-cols-7 justify-between px-3 py-1 my-[2px]"
+                    className="justify-between grid grid-cols-7 my-[1px] px-3 py-1"
                     style={{
                       background: `linear-gradient(to left, rgba(239,68,68,0.1) ${pct}%, transparent ${pct}%)`
                     }}
                   >
-                    <p className="flex col-span-2 text-xs font-medium text-red">{order.px}</p>
-                    <p className="flex col-span-2 ml-auto text-xs text-white opacity-90">
+                    <p className="flex col-span-2 font-medium text-red text-xs">{order.px}</p>
+                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD
                         ? new Intl.NumberFormat('en-US', {
                             minimumFractionDigits: 0,
@@ -285,7 +325,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                         : order.sz}
                     </p>
                     {showTotalColumn && (
-                      <p className="flex col-span-3 ml-auto text-xs text-white opacity-90">
+                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
                           <>
                             {new Intl.NumberFormat('en-US', {
@@ -308,7 +348,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
           <div
             className={`z-10 bg-white/5 py-2 my-0.5 pointer-events-none ${selectedLayoutType === 1 ? 'order-2' : 'order-1'}`}
           >
-            <div className="flex items-center justify-between px-3 rounded-md pointer-events-auto">
+            <div className="flex justify-between items-center px-3 rounded-md pointer-events-auto">
               <p
                 className={`text-sm font-semibold font-proxima-nova items-center flex ${
                   priceChange === 'up'
@@ -333,10 +373,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
         {/* Bottom - Buys */}
         <div
-          className={`    flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 3 ? 'hidden' : 'flex h-[50%] order-3'}`}
+          ref={buysContainerRef}
+          className={`flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 3 ? 'hidden' : 'flex h-[50%] order-3'}`}
         >
           {isLoading
-            ? Array(10)
+            ? Array(visibleRows.buys)
                 .fill(0)
                 .map((_, i) => <div key={i}>{renderSkeletonRow(false, i)}</div>)
             : buys.map((order, index) => {
@@ -344,13 +385,13 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 return (
                   <div
                     key={`buy-${index}`}
-                    className="grid grid-cols-7 justify-between px-3 py-1 my-[2px]"
+                    className="justify-between grid grid-cols-7 my-[1px] px-3 py-1"
                     style={{
                       background: `linear-gradient(to left, rgba(34,197,94,0.1) ${pct}%, transparent ${pct}%)`
                     }}
                   >
-                    <p className="flex col-span-2 text-xs font-medium text-green">{order.px}</p>
-                    <p className="flex col-span-2 ml-auto text-xs text-white opacity-90">
+                    <p className="flex col-span-2 font-medium text-green text-xs">{order.px}</p>
+                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD
                         ? new Intl.NumberFormat('en-US', {
                             minimumFractionDigits: 0,
@@ -359,7 +400,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                         : order.sz}
                     </p>
                     {showTotalColumn && (
-                      <p className="flex col-span-3 ml-auto text-xs text-white opacity-90">
+                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
                           <>
                             {new Intl.NumberFormat('en-US', {

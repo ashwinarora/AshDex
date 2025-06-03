@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -33,6 +33,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const { data: universe } = usePerpsUniverse()
+  const [isInvalid, setIsInvalid] = useState<boolean>(false)
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
@@ -81,11 +82,85 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
   }
 
+  useEffect(() => {
+    const formattedLimitPrice = getFormattedPrice().replace(/\.?0+$/, '')
+    const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+
+    // Check if TPSL is enabled and both values are empty/zero
+    const isTpslInvalid =
+      tpsl.isTpsl && Number(tpsl.takeProfit) === 0 && Number(tpsl.stopLoss) === 0
+
+    if (
+      formattedLimitPrice === '0' ||
+      formattedLimitPrice === '' ||
+      formattedAssetAmount === '0' ||
+      formattedAssetAmount === '' ||
+      isTpslInvalid ||
+      Number(usdAmount) < 10
+    ) {
+      setIsInvalid(true)
+    } else {
+      setIsInvalid(false)
+    }
+  }, [getFormattedPrice(), assetAmount, tpsl])
+
+  const calculateLiquidationPrice = () => {
+    if (
+      !getFormattedPrice() ||
+      !assetAmount ||
+      Number(getFormattedPrice()) === 0 ||
+      Number(assetAmount) === 0
+    ) {
+      return 0
+    }
+
+    const entryPrice = Number(getFormattedPrice())
+    const positionSize = Number(assetAmount)
+    const leverageUsed = leverage
+    const orderValue = entryPrice * positionSize
+
+    // Initial margin required
+    const initialMargin = orderValue / leverageUsed
+
+    // Maintenance margin is half of initial margin
+    const maintenanceMargin = initialMargin / 2
+
+    // Margin available = Account value - maintenance margin (assuming full balance used)
+    const accountValue = initialMargin // Cross margin assumption: full margin used
+    const marginAvailable = accountValue - maintenanceMargin
+
+    const side = isBuy ? 1 : -1
+    const l = 1 / 40 // MAINTENANCE_LEVERAGE is 40 for 40x max leverage asset
+
+    const denom = positionSize * (1 - l * side)
+
+    if (denom === 0) return 0
+
+    const liqPrice = entryPrice - side * (marginAvailable / denom)
+    if (Number(usdAmount) < 10) {
+      return 'N/A'
+    }
+    return Number(liqPrice).toFixed(2)
+  }
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="space-y-1">
+        <div className="flex flex-col gap-2">
+          {!isSpot && (
+            <>
+              {' '}
+              <MarginMode isCross={isCross} setIsCross={setIsCross} />
+              <LeverageMargin
+                selectedAsset={selectedAsset}
+                leverage={leverage}
+                setLeverage={setLeverage}
+              />
+            </>
+          )}
+          <hr className="border-white/10" />
+
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
@@ -109,32 +184,29 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               isBuy={isBuy}
             />
           )}
-          {!isSpot && (
-            <>
-              <LeverageMargin
-                selectedAsset={selectedAsset}
-                leverage={leverage}
-                setLeverage={setLeverage}
-              />
-              <MarginMode isCross={isCross} setIsCross={setIsCross} />
-            </>
-          )}
-          <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
+
+          <div className="mx-3 text-xs">
+            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+          </div>
+          <hr className="border-white/10" />
+
+          <div className="gap-2 grid grid-cols-1 px-3 text-gray-400 text-xs">
             {!isSpot && (
               <>
-                <CheckBox
-                  label="Reduce Only"
-                  setIsChecked={setIsReduceOnly}
-                  isChecked={isReduceOnly}
+                <TPSL
+                  limitPrice={getFormattedPrice()}
+                  isBuy={isBuy}
+                  leverage={leverage}
+                  tpsl={tpsl}
+                  setTpsl={setTpsl}
                 />
-                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
             <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
       </div>
-      <div className="p-2 border-t border-white/10">
+      <div className="p-2 border-white/10 border-t">
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
@@ -144,7 +216,23 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isCross={isCross}
           isPostOnly={isPostOnly}
           isReduceOnly={isReduceOnly}
+          isInvalid={isInvalid}
         />
+      </div>
+      <div className="flex flex-col p-3 text-sm">
+        <div className="flex justify-between">
+          <p className="text-white/50">Liquidation Price</p>
+          <p className="text-white"> {calculateLiquidationPrice()}</p>
+        </div>
+
+        <div className="flex justify-between">
+          <p className="text-white/50">Order Value</p>
+          <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+        </div>
+        <div className="flex justify-between">
+          <p className="text-white/50">Fees</p>
+          <p className="text-white">0.0% / 0.0%</p>
+        </div>
       </div>
     </div>
   )
