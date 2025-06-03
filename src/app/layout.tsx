@@ -15,6 +15,7 @@ import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import { HyperLiquidInitializer } from './HyperliquidInitializer'
 import FooterCompact from '@/components/FooterCompact'
+import SnackBar from '@/components/common/SnackBar'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -57,6 +58,7 @@ export default function RootLayout({
                   <ToastProvider>
                     <FavoritesProvider>
                       <Header />
+                      <SnackBar />
                       <OnboardingModal />
                       {children}
                       <FooterCompact />

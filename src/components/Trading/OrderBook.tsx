@@ -11,6 +11,8 @@ import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
 import { IconArrowDown, IconArrowUp, IconChevronDown, IconDotsVertical } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { getCoinName } from '@/utils/utils'
+import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -25,20 +27,43 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const prevPriceRef = useRef<number | null>(null)
   const sellsContainerRef = useRef<HTMLDivElement>(null)
   const [selectedLayoutType, setSelectedLayouttype] = useState<1 | 2 | 3>(1)
-  const [selectedPrecision, setSelectedPrecision] = useState<number>(1)
+  const [selectedPrecision, setSelectedPrecision] = useState<string>('1')
   const [showPrecisionSelector, setShowPrecisionSelector] = useState<boolean>(false)
+  const [spread, setSpread] = useState<number>(0.0)
+  const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
+  const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
+  // function usePrevious<T>(value: T): T | undefined {
+  //   const ref = useRef<T>()
+  //   useEffect(() => {
+  //     ref.current = value
+  //   }, [value])
+  //   return ref.current
+  // }
+
+  //const prevPrecision = usePrevious(selectedPrecision)
+
   useEffect(() => {
     if (!sdk || !selectedAsset) return
 
-    setIsLoading(true)
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook) => {
+    const coin = selectedAsset // ✅ must match what you use in subscribe
+    const nSigFigs = Number(selectedPrecision)
+    const mantissa = null
+    const handler = (data: WsBook) => {
       setL2Book(data)
       setIsLoading(false)
-    })
-    return () => {
-      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset)
     }
-  }, [selectedAsset, sdk])
+
+    setIsLoading(true)
+    sdk.subscriptions.subscribeToL2Book(selectedAsset, handler)
+    console.log('SUBSCRIBE ->', { coin, nSigFigs, mantissa })
+
+    // ✅ Cleanup is guaranteed to run BEFORE next effect
+    return () => {
+      //const prevNSigFigs = Number(prevPrecision ?? selectedPrecision)
+      sdk.subscriptions.unsubscribeFromL2Book('BTC')
+      console.log('UNSUBSCRIBE ->', { coin, nSigFigs, mantissa })
+    }
+  }, [sdk, selectedAsset, selectedPrecision])
 
   const processOrders = (orders: WsLevel[]) => {
     let runningTotal = 0
@@ -55,7 +80,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     [rawSells, selectedLayoutType]
   )
   const buys = useMemo(
-    () => processOrders(rawBuys.slice(0, selectedLayoutType === 1 ? 11 : 21)),
+    () => processOrders(rawBuys.slice(0, selectedLayoutType === 1 ? 9 : 21)),
     [rawBuys, selectedLayoutType]
   )
 
@@ -99,22 +124,23 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     }
   }, [allMids, selectedAsset])
 
+  useEffect(() => {
+    const _spread = (Number(sells[0]?.px) - Number(buys[0]?.px)).toFixed(4)
+
+    setSpread(Number(_spread))
+    return () => {}
+  }, [buys, sells])
+
   const showTotalColumn = layout === 'vertical'
   //const showMobileHeaders = layout === 'horizontal'
-
-  const handlePrecision = (precision: number) => {
+  const handlePrecision = (precision: string) => {
     setSelectedPrecision(precision)
     setShowPrecisionSelector(false)
   }
   return (
     <div className="flex flex-col w-full h-full text-sm text-gray-200">
-      <div className="flex justify-between px-4 py-2">
+      <div className="flex items-center justify-between px-3 py-2">
         <p className="text-xs text-white font-semi-bold">Order Book</p>
-        <div className="flex items-center">
-          <IconDotsVertical className="w-4 h-4" />
-        </div>
-      </div>
-      <div className="flex justify-between px-4">
         <div className="flex gap-2 text-white">
           <Image
             className={`${selectedLayoutType === 1 ? 'bg-white/10 ' : 'opacity-50'} rounded-md cursor-pointer p-1 h-6 w-6`}
@@ -142,79 +168,90 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
             alt=""
           />
         </div>
-        <div
-          onClick={() => setShowPrecisionSelector(!showPrecisionSelector)}
-          className="relative flex items-center gap-1 p-0.5 px-2 text-center align-middle rounded-md cursor-pointer hover:bg-white/10 text-white/50 hover:text-white"
-        >
-          <p>{selectedPrecision}</p>
-          <IconChevronDown className="w-4 h-4" />
+        <div className="items-center hidden ">
+          <IconDotsVertical className="w-4 h-4" />
+        </div>
+      </div>
+      <div className="flex justify-between px-3">
+        <div className="relative">
+          {/* Toggle button only */}
+          <div
+            onClick={(e) => {
+              e.preventDefault()
+              setShowPrecisionSelector((prev) => !prev)
+            }}
+            className="flex items-center gap-1 px-2 py-0.5 rounded-md cursor-pointer text-white/50 hover:bg-white/10 hover:text-white"
+          >
+            <p className="text-xs text-white">{selectedPrecision}</p>
+            <IconChevronDown className="w-4 h-4" />
+          </div>
+
+          {/* Dropdown */}
           {showPrecisionSelector && (
-            <div className="absolute left-0 z-50 w-full border rounded-md border-white/5 top-8 bg-secondary overflow-clip">
-              <ol className="flex flex-col gap-1 ">
-                <li
-                  onClick={() => handlePrecision(1)}
-                  className="w-full hover:bg-white/5 text-white/50 hover:text-white"
-                >
-                  1
-                </li>
-                <li
-                  onClick={() => handlePrecision(2)}
-                  className="w-full hover:bg-white/5 text-white/50 hover:text-white"
-                >
-                  2
-                </li>
-                <li
-                  onClick={() => handlePrecision(3)}
-                  className="w-full hover:bg-white/5 text-white/50 hover:text-white"
-                >
-                  3
-                </li>
-                <li
-                  onClick={() => handlePrecision(4)}
-                  className="w-full hover:bg-white/5 text-white/50 hover:text-white"
-                >
-                  4
-                </li>
-              </ol>
+            <div
+              className="absolute left-0 top-6 z-50 flex flex-col w-max min-w-[4rem] rounded-md bg-secondary shadow-xl p-1 border border-white/10"
+              onClick={(e) => e.stopPropagation()} // prevent bubbling
+            >
+              <RadioGroup
+                name="precision"
+                value={selectedPrecision}
+                onChange={(val) => {
+                  handlePrecision(val)
+                  setShowPrecisionSelector(false) // close AFTER change
+                }}
+                className="flex flex-col text-xs"
+              >
+                <RadioGroupItem value="1" label="0.1" />
+                <RadioGroupItem value="2" label="0.01" />
+                <RadioGroupItem value="3" label="0.001" />
+              </RadioGroup>
+            </div>
+          )}
+        </div>
+        <div className="relative">
+          {/* Toggle button */}
+          <div
+            onClick={() => setShowPriceInUSDSelector((prev) => !prev)}
+            className="flex items-center gap-1 p-0.5 px-2 text-center align-middle rounded-md cursor-pointer hover:bg-white/10 text-white/50 hover:text-white"
+          >
+            <p className="text-xs text-white">
+              {showPriceInUSD ? 'USD' : getCoinName(selectedAsset)}
+            </p>
+            <IconChevronDown className="w-4 h-4" />
+          </div>
+
+          {/* Dropdown */}
+          {showPriceInUSDSelector && (
+            <div
+              className="absolute z-50 min-w-full py-1 border rounded-md shadow-lg -left-5 top-6 w-max border-white/10 bg-secondary"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <RadioGroup
+                name="priceType"
+                value={showPriceInUSD ? 'usd' : 'coin'}
+                onChange={(val) => {
+                  setShowPriceInUSD(val === 'usd')
+                  setShowPriceInUSDSelector(false)
+                }}
+                className="flex flex-col gap-1 px-1 text-xs"
+              >
+                <RadioGroupItem value="usd" label="USD" />
+                <RadioGroupItem value="coin" label={getCoinName(selectedAsset)} />
+              </RadioGroup>
             </div>
           )}
         </div>
       </div>
-      {/* <div className="flex justify-between px-3 pt-2 my-1 text-gray-300 border-t border-white/10">
-        <div className="flex items-center">
-          <Image
-            src={Filter1}
-            alt="Filter1"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
-          <Image
-            src={Filter2}
-            alt="Filter2"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
-          <Image
-            src={Filter3}
-            alt="Filter3"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
-        </div>
-        <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">
-          <option value="0.01">0.01</option>
-          <option value="0.1">0.1</option>
-          <option value="1">1</option>
-          <option value="10">10</option>
-          <option value="100">100</option>
-        </select>
-      </div> */}
 
       {showTotalColumn && (
-        <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-4 py-1 my-1">
-          <span className="text-xs font-medium">Price (USDC)</span>
-          <span className="text-xs font-medium">Amount (BTC)</span>
-          <span className="text-xs font-medium">Total</span>
+        <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-3 py-1 my-1">
+          <p className="text-xs font-medium text-left">Price </p>
+          <p className="text-xs font-medium">
+            Amount ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+          </p>
+          <p className="text-xs font-medium text-right">
+            Total ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+          </p>
         </div>
       )}
 
@@ -233,17 +270,33 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 return (
                   <div
                     key={`sell-${index}`}
-                    className="relative flex justify-between px-3 py-1 m-[1px]"
+                    className=" grid grid-cols-7 justify-between px-3 py-1 my-[2px]"
                     style={{
                       background: `linear-gradient(to left, rgba(239,68,68,0.1) ${pct}%, transparent ${pct}%)`
                     }}
                   >
-                    <span className="text-xs font-medium text-red">{order.px}</span>
-                    <span className="text-xs text-white opacity-90">{order.sz}</span>
+                    <p className="flex col-span-2 text-xs font-medium text-red">{order.px}</p>
+                    <p className="flex col-span-2 ml-auto text-xs text-white opacity-90">
+                      {showPriceInUSD
+                        ? new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          }).format(Number(order.px) * Number(order.sz))
+                        : order.sz}
+                    </p>
                     {showTotalColumn && (
-                      <span className="text-xs text-white opacity-90">
-                        {order.cumulative.toFixed(2)}
-                      </span>
+                      <p className="flex col-span-3 ml-auto text-xs text-white opacity-90">
+                        {showPriceInUSD ? (
+                          <>
+                            {new Intl.NumberFormat('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(order.cumulative * Number(order.px))}
+                          </>
+                        ) : (
+                          <>{order.cumulative.toFixed(4)}</>
+                        )}
+                      </p>
                     )}
                   </div>
                 )
@@ -253,11 +306,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         {/* Middle - Fixed Price */}
         {allMids[selectedAsset] && (
           <div
-            className={`z-10 pointer-events-none ${selectedLayoutType === 1 ? 'order-2' : 'order-1'}`}
+            className={`z-10 bg-white/5 py-2 my-0.5 pointer-events-none ${selectedLayoutType === 1 ? 'order-2' : 'order-1'}`}
           >
             <div className="flex items-center justify-between px-3 rounded-md pointer-events-auto">
               <p
-                className={`text-lg font-semibold font-proxima-nova ${
+                className={`text-sm font-semibold font-proxima-nova items-center flex ${
                   priceChange === 'up'
                     ? 'text-green'
                     : priceChange === 'down'
@@ -272,6 +325,8 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                   <IconArrowDown className="inline w-4 h-4" />
                 )}
               </p>
+              <p>{spread}</p>
+              <p className="text-right">{((spread / allMids[selectedAsset]) * 100).toFixed(3)}%</p>
             </div>
           </div>
         )}
@@ -289,17 +344,33 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 return (
                   <div
                     key={`buy-${index}`}
-                    className="relative flex justify-between px-3 py-1 m-[1px]"
+                    className="grid grid-cols-7 justify-between px-3 py-1 my-[2px]"
                     style={{
                       background: `linear-gradient(to left, rgba(34,197,94,0.1) ${pct}%, transparent ${pct}%)`
                     }}
                   >
-                    <span className="text-xs font-medium text-green">{order.px}</span>
-                    <span className="text-xs text-white opacity-90">{order.sz}</span>
+                    <p className="flex col-span-2 text-xs font-medium text-green">{order.px}</p>
+                    <p className="flex col-span-2 ml-auto text-xs text-white opacity-90">
+                      {showPriceInUSD
+                        ? new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          }).format(Number(order.px) * Number(order.sz))
+                        : order.sz}
+                    </p>
                     {showTotalColumn && (
-                      <span className="text-xs text-white opacity-90">
-                        {order.cumulative.toFixed(2)}
-                      </span>
+                      <p className="flex col-span-3 ml-auto text-xs text-white opacity-90">
+                        {showPriceInUSD ? (
+                          <>
+                            {new Intl.NumberFormat('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(order.cumulative * Number(order.px))}
+                          </>
+                        ) : (
+                          <>{order.cumulative.toFixed(4)}</>
+                        )}
+                      </p>
                     )}
                   </div>
                 )

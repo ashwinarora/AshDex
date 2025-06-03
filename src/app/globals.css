@@ -21,12 +21,12 @@
   --tw-color-aggrid-hover: #374151;
   --tw-color-aggrid-pagination: #1f2937;
   --tw-color-aggrid-paginationtext: #ffffff;
-  --toastify-toast-background: #1c1725;
+  --toastify-toast-background: #0f0816;
 }
 
 @theme inline {
-  --color-primary: #5f46f9; /* Primary brand color */
-  --color-secondary: #0f0816; /* Secondary brand color */
+  --color-primary: #5f46f9;
+  --color-secondary: #140b1e; /* recommend 22162d*/
   --color-brand: #10b981; /* Brand accent color */
   --color-green: #2fa766; /* Brand green */
   --color-red: #e2464a; /* Brand Red */
@@ -85,7 +85,7 @@ input[type='number'] {
 body {
   color: var(--foreground);
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background: #1a0b2a;
+  background: #28163b;
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: 100%;
@@ -162,8 +162,7 @@ input {
 }
 
 .nexon-card {
-  background: #0f0816;
-  @apply w-full rounded-lg shadow-md backdrop-blur-2xl;
+  @apply w-full rounded-lg shadow-md backdrop-blur-2xl bg-secondary;
 
   @apply max-h-min;
 }
@@ -208,7 +207,7 @@ button:active {
 }
 
 .tab-btn {
-  @apply w-full transition-colors duration-200 rounded-full cursor-pointer text-white/50;
+  @apply w-full transition-colors duration-200 cursor-pointer text-white/50;
 }
 
 .tab-btn:hover {
@@ -216,8 +215,7 @@ button:active {
 }
 
 .tab-btn-active {
-  @apply font-semibold text-primary;
-  @apply hover:text-primary;
+  @apply py-3 font-extrabold text-white border-b-3 border-primary bg-primary/10;
 }
 
 .tab-btn-disabled {

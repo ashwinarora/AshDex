@@ -105,6 +105,16 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           tpsl={tpsl}
         />
       </div>
+      <div className="flex flex-col p-3 text-sm">
+        <div className="flex justify-between">
+          <p className="text-white/50">Order Value</p>
+          <p className="text-white">0.0 USD / 0.0 BTC</p>
+        </div>
+        <div className="flex justify-between">
+          <p className="text-white/50">Fees</p>
+          <p className="text-white">0.0% / 0.0%</p>
+        </div>
+      </div>
     </div>
   )
 }

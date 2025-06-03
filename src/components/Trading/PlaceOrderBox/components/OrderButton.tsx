@@ -18,6 +18,7 @@ import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import { IconWallet } from '@tabler/icons-react'
 
 type StopOrder = {
   isMarket: boolean
@@ -288,26 +289,24 @@ const OrderButton = ({
 
   if (!isWalletConnected) {
     return (
-      <button
-        type="button"
-        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+      <div
+        className="flex items-center justify-center w-full gap-2 py-2 text-white rounded-md cursor-pointer bg-primary hover:bg-purple-600"
         onClick={() => {
           toggleConnectWalletModal()
         }}
       >
-        Connect Wallet
-      </button>
+        <IconWallet className="w-4 h-4" /> Connect Wallet
+      </div>
     )
   }
   if (!isAgentApproved || currentFeeApproval === 0) {
     return (
-      <button
-        type="button"
-        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+      <div
+        className="flex items-center justify-center w-full gap-2 py-2 text-white rounded-md cursor-pointer bg-primary hover:bg-purple-600"
         onClick={async () => openAgentModal()}
       >
-        Establish Connection
-      </button>
+        Enable Trading
+      </div>
     )
   }
   return (

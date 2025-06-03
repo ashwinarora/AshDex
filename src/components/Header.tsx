@@ -132,7 +132,7 @@ const Header: FC = () => {
         <div className="flex items-center justify-center space-x-4 align-middle">
           <h1
             onClick={() => router.push('/')}
-            className="flex items-center gap-2 mr-6 lg:mr-6 px-3 py-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
+            className="flex items-center gap-2 mr-6 lg:mr-6 px-3  rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
           >
             <Image
               style={{ width: 20, height: 'auto' }}
@@ -142,7 +142,7 @@ const Header: FC = () => {
             />
             Nexon
           </h1>
-          <nav className="hidden xl:flex items-center xl:gap-2 text-[#8B8BA0] text-sm xl:text-base">
+          <nav className="hidden xl:flex items-center xl:gap-2 text-[#8B8BA0] text-sm  ">
             {desktopMenu?.map(({ name, path }) => (
               <Link
                 key={name}

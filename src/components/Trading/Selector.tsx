@@ -9,7 +9,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
 import Skeleton from '../common/Skeleton'
-import { IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
+import { IconSearch, IconSelector, IconStar, IconStarFilled } from '@tabler/icons-react'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
@@ -167,15 +167,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       className={`flex items-center ${isOpen || isSettingsOpen ? 'z-50' : ''} nexon-card`}
     >
       <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
-        <div className="flex items-center px-1 gap-x-3 2xl:gap-x-3 2xl:p-4 max-sm:px-2 max-lg:px-6 ">
+        <div className="flex items-center px-3 gap-x-3 ">
           <button
             onClick={handleToggleFavorite}
-            className="w-5 h-5 text-yellow-500 cursor-pointer focus:outline-none hover:text-yellow-600"
+            className="w-5 h-5 cursor-pointer text-primary focus:outline-none hover:scale-105 "
           >
             {isFavorite(selectedAsset, type) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
-              <IconStar size={16} className="mr-1" />
+              <IconStar size={16} className="mr-1 text-white opacity-50" />
             )}
           </button>
           <button
@@ -199,15 +199,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </button>
         </div>
         <div className="flex flex-col p-4">
-          <p className="text-xs text-white/70">Mark Price</p>
-          <ValueIndicator value={selectedAssetContext?.midPx} className="text-xs font-normal" />
+          <p className="text-sm text-white/70">Mark Price</p>
+          <ValueIndicator value={selectedAssetContext?.midPx} className="text-sm font-normal" />
         </div>
       </div>
 
       <div className="flex text-sm text-white">
         {marketData?.map((item, index) => (
-          <div key={index} className="flex flex-col flex-wrap justify-center px-4 ">
-            <div className="text-xs text-white/70">{item.label}</div>
+          <div key={index} className="flex flex-col flex-wrap justify-center px-2 ">
+            <div className="text-sm text-white/70">{item.label}</div>
             <div className={`font-medium text-xs ${item.color || 'text-white'}`}>{item.value}</div>
           </div>
         ))}
@@ -323,29 +323,50 @@ const AssetTable = ({
       <table className="min-w-full text-sm text-white">
         <thead className="sticky top-0 z-10 bg-secondary text-white/70">
           <tr>
-            <th className="px-6 py-3 text-left cursor-pointer" onClick={() => handleSort('market')}>
-              Market
-            </th>
-            <th className="px-6 py-3 text-right cursor-pointer" onClick={() => handleSort('price')}>
-              Price
+            <th
+              className="px-4 py-3 text-left cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              onClick={() => handleSort('market')}
+            >
+              <div className="flex items-center gap-1">
+                Market
+                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+              </div>
             </th>
             <th
-              className="px-6 py-3 text-right cursor-pointer"
+              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              onClick={() => handleSort('price')}
+            >
+              <div className="flex items-center justify-end gap-1">
+                Price
+                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+              </div>
+            </th>
+            <th
+              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
               onClick={() => handleSort('change')}
             >
-              24h Change
+              <div className="flex items-center justify-end gap-1">
+                24h Change
+                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+              </div>
             </th>
             <th
-              className="px-6 py-3 text-right cursor-pointer"
+              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
               onClick={() => handleSort('volume')}
             >
-              Volume
+              <div className="flex items-center justify-end gap-1">
+                Volume
+                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+              </div>
             </th>
             <th
-              className="px-6 py-3 text-right cursor-pointer"
+              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
               onClick={() => handleSort('marketCap')}
             >
-              Market Cap
+              <div className="flex items-center justify-end gap-1">
+                Market Cap
+                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+              </div>
             </th>
           </tr>
         </thead>

@@ -56,7 +56,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex border-b border-white/10 p-1.5 mb-0.5 items-center justify-start w-full">
+      <div className="flex border-b border-white/10   mb-0.5 items-center justify-start w-full">
         <div className="flex w-full space-x-2">
           <button
             onClick={() => setActiveTab('LIMIT')}

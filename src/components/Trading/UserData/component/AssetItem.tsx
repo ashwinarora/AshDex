@@ -169,15 +169,22 @@ const AssetItem: React.FC<AssetItemProps> = ({
                   type
                 )
               }}
-              className="w-5 h-5 text-yellow-500 hover:text-yellow-600 focus:outline-none"
+              className="w-5 h-5 cursor-pointer text-primary hover:scale-105 focus:outline-none"
               aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
             >
-              {isFavorite(assetKey, type) ? <IconStarFilled size={16} /> : <IconStar size={16} />}
+              {isFavorite(assetKey, type) ? (
+                <IconStarFilled size={16} />
+              ) : (
+                <IconStar size={16} className="text-white opacity-50" />
+              )}
             </button>
             {assetKey}
-            <p className="px-2">{universe[assetIndex]?.maxLeverage || 50}×</p>
+            <p className="px-2 text-xs rounded-md bg-primary/40">
+              {universe[assetIndex]?.maxLeverage || 50}×
+            </p>
           </div>
         </td>
+        {/* <td className="px-6 py-2 text-right">{universe[assetIndex]?.maxLeverage || 50}×</td> */}
 
         {/* Price */}
         <td className="px-6 py-2 text-right">${formattedPrice}</td>
@@ -186,9 +193,9 @@ const AssetItem: React.FC<AssetItemProps> = ({
         <td className={`px-6 py-2 text-right ${priceChangeData.className}`}>
           <div className="flex items-center justify-end">
             {priceChangeData.isPositive ? (
-              <IconTriangleFilled size={14} className="mr-1" />
+              <IconTriangleFilled size={8} className="mr-1" />
             ) : (
-              <IconTriangleInvertedFilled size={14} className="mr-1" />
+              <IconTriangleInvertedFilled size={8} className="mr-1" />
             )}
             {priceChangeData.value}
           </div>
