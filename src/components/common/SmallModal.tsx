@@ -24,7 +24,7 @@ const SmallModal: React.FC<SmallModalProps> = ({ isOpen, onClose, heading, child
       onClick={handleBackdropClick}
     >
       <div
-        className="bg-[#18122B] border border-white/10 rounded-2xl shadow-lg w-full max-w-md max-md:max-w-sm p-6 max-md:p-4 relative"
+        className="bg-[#18122B] border border-white/10 rounded-2xl shadow-lg w-full max-w-xl max-md:max-w-lg p-6 max-md:p-4 relative"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between mb-4">

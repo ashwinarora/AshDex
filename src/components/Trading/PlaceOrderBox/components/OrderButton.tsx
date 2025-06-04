@@ -169,12 +169,17 @@ const placePerpOrder = async ({
         autoClose: 3000
       })
     } else {
-      toast.update(toastId, {
-        render: '✅ Order placed successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
-      })
+      const filled = status.filled
+      if (filled) {
+        const action = isBuy ? 'long' : 'short'
+        const assetName = selectedAsset.split('-')[0]
+        toast.update(toastId, {
+          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      }
     }
   } catch (error) {
     console.error('Error placing perp order:', error)
