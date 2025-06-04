@@ -15,8 +15,6 @@ export async function GET(request: NextRequest) {
     // Check if the user has signed the latest terms
     const hasSigned = await TermsManager.hasUserSignedLatestTerms(wallet_id)
 
-    console.log('hasSigned', hasSigned)
-
     return NextResponse.json({ signed: hasSigned })
   } catch (error) {
     console.error('Error checking user terms signature:', error)

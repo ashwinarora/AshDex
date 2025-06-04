@@ -26,6 +26,13 @@ import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import LimitCloseModal from './component/LimitCloseModal'
 import MarketCloseModal from './component/MarketCloseModal'
+import MarkPxDisplay from './component/MarkPxDisplay'
+import TPSL_Cell from './component/TPSL_Cell'
+import TPSL_Modal from './component/TPSL_Modal'
+import LeverageModal from './component/Leverage'
+import { IconPencil } from '@tabler/icons-react'
+import IsolatedMarginModal from './component/IsolatedMarginModal'
+import CloseAllModal from './component/CloseAllModal'
 
 type ColumnType = {
   key: string
@@ -48,58 +55,58 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
             src={bitcoinicon}
             alt="Bitcoin"
             style={{ width: 24, height: 'auto' }}
-            className="w-6 h-6 mx-1 cursor-pointer"
+            className="mx-1 w-6 h-6 cursor-pointer"
           />
           {item?.coin}{' '}
-          <span className="text-[#7D67FF] ml-1 px-1.5 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-xs">
+          <span className="bg-[#5F46F91A] ml-1 px-1.5 py-1 rounded-lg font-semibold text-[#7D67FF] text-xs">
             {item?.leverage?.value + 'x'}
           </span>
         </div>
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Entry Price</span>{' '}
-        <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Mark Price</span>{' '}
-        <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Funding P&L</span>{' '}
-        <span className="text-sm font-medium">{item?.cumFunding?.allTime}</span>{' '}
+        <span className="font-medium text-sm">{item?.cumFunding?.allTime}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Size</span>{' '}
-        <span className="text-sm font-medium">{item?.szi}</span>{' '}
+        <span className="font-medium text-sm">{item?.szi}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Unrealized PnL</span>{' '}
-        <span className="text-sm font-medium">{item?.unrealizedPnl}</span>{' '}
+        <span className="font-medium text-sm">{item?.unrealizedPnl}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Liq. Price</span>{' '}
-        <span className="text-sm text-red font-medium">{item?.liquidationPx}</span>{' '}
+        <span className="font-medium text-red text-sm">{item?.liquidationPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Margin</span>{' '}
-        <span className="text-sm font-medium">{item?.liquidationPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.liquidationPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Status</span>{' '}
-        <span className="bg-[#1F1F30] text-sm font-medium text-green px-1.5 py-0.5 rounded-lg">
+        <span className="bg-[#1F1F30] px-1.5 py-0.5 rounded-lg font-medium text-green text-sm">
           {'Open'}
         </span>{' '}
       </div>
       <div className="flex justify-between gap-1">
-        <div className="flex font-medium items-center text-[#7D67FF] text-sm">
-          <span className="pr-3 py-2">Market</span>
+        <div className="flex items-center font-medium text-[#7D67FF] text-sm">
+          <span className="py-2 pr-3">Market</span>
           <span className="px-3 py-2">Limit</span>
         </div>
         <div className="flex items-center">
-          <span className="px-3 py-1 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
             dummy
           </span>
-          <span className="px-3 text-sm py-1.5 bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1.5 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
             dummy
           </span>
         </div>
@@ -109,7 +116,7 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
         <span>
           {item?.tp_sl?.tp && item?.tp_sl?.sl ? (
             <div className="flex items-center gap-x-1">
-              <span className="w-17 break-words overflow-hidden">
+              <span className="w-17 overflow-hidden break-words">
                 {item.tp_sl.tp}/{item.tp_sl.sl}
               </span>
               <Image
@@ -138,8 +145,14 @@ const Positions = () => {
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
   const [isMarketCloseModalOpen, setIsMarketCloseModalOpen] = useState(false)
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
-
+  const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
+  const [tpslAsset, setTpslAsset] = useState<IPositionData>()
+  const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
+  const [leverageAsset, setLeverageAsset] = useState<IPositionData>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
+  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
+  const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -227,22 +240,19 @@ const Positions = () => {
         header: 'Position',
         cell: (info) => {
           const coin = info.getValue()
-          const { szi, leverage } = info.row.original
+          const { leverage } = info.row.original
           return (
             <div className="flex items-center gap-1">
-              <span
-                className={`w-[4px] h-[36px] rounded-sm ${szi < 0 ? 'bg-red' : 'bg-green'}`}
-              ></span>
-              <Image
-                src={bitcoinicon}
-                alt="Bitcoin"
-                style={{ width: 24, height: 'auto' }}
-                className="w-6 h-6 mx-1 cursor-pointer"
-              />
-              {coin}{' '}
-              <span className="text-[#7D67FF] ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm">
+              {(coin || '').split('-')[0]}{' '}
+              <button
+                className="bg-[#5F46F91A] ml-1 px-1 py-1 rounded-lg font-semibold text-[#7D67FF] text-sm cursor-pointer"
+                onClick={() => {
+                  setLeverageAsset(info.row.original)
+                  setIsLeverageModalOpen(true)
+                }}
+              >
                 {leverage.value}x
-              </span>
+              </button>
             </div>
           )
         },
@@ -258,6 +268,12 @@ const Positions = () => {
         id: 'entryPx',
         header: () => <HeaderWithIcons label="Entry Price" />,
         meta: { label: 'Entry Price' }
+      }),
+      helper.display({
+        id: 'markPx',
+        header: () => <HeaderWithIcons label="Mark Price" />,
+        meta: { label: 'Mark Price' },
+        cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
@@ -282,14 +298,32 @@ const Positions = () => {
       helper.accessor('marginUsed', {
         id: 'marginUsed',
         header: () => <HeaderWithIcons label="Margin" />,
-        meta: { label: 'Margin' }
+        meta: { label: 'Margin' },
+        cell: (info) => {
+          return (
+            <span className="font-medium text-sm">
+              ${info.getValue().toFixed(2)}({info.row.original.leverage.type})
+              {info.row.original.leverage.type === 'isolated' && (
+                <button
+                  className="ml-2 cursor-pointer"
+                  onClick={() => {
+                    setIsolatedMarginAsset(info.row.original)
+                    setIsIsolatedMarginModalOpen(true)
+                  }}
+                >
+                  <IconPencil className="w-4 h-4" />
+                </button>
+              )}
+            </span>
+          )
+        }
       }),
       helper.display({
         id: 'status',
         header: () => <HeaderWithIcons label="Status" />,
         cell: () => {
           return (
-            <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-green rounded-lg">
+            <span className="bg-[#1F1F30] px-2 py-1 rounded-lg font-medium text-green text-sm">
               Open
             </span>
           )
@@ -301,13 +335,19 @@ const Positions = () => {
         header: () =>
           !isAgentApproved || currentFeeApproval === 0 ? (
             <button
-              className="text-sm font-medium text-[#8B8BA0] underline hover:text-indigo-300"
+              className="font-medium text-[#8B8BA0] hover:text-indigo-300 text-sm underline"
               onClick={openAgentModal}
             >
               Connect
             </button>
           ) : (
-            <span className="text-sm font-medium text-[#8B8BA0]">Close All</span>
+            <button
+              className="rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 font-medium text-[#8B8BA0] hover:text-indigo-300 text-sm transition-colors cursor-pointer"
+              onClick={() => setIsCloseAllModalOpen(true)}
+              type="button"
+            >
+              Close All
+            </button>
           ),
         cell: (info) => {
           const position = info.row.original
@@ -315,15 +355,15 @@ const Positions = () => {
             <div className="flex items-center gap-2">
               {!isAgentApproved || currentFeeApproval === 0 ? (
                 <button
-                  className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                  className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                   onClick={openAgentModal}
                 >
                   Connect
                 </button>
               ) : (
-                <div>
+                <div className="flex items-center gap-2">
                   <button
-                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
                       setClosingAsset(position.coin)
                       setIsLimitCloseModalOpen(true)
@@ -332,7 +372,7 @@ const Positions = () => {
                     Limit
                   </button>
                   <button
-                    className="px-3 cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
                       setClosingAsset(position.coin)
                       setIsMarketCloseModalOpen(true)
@@ -349,31 +389,19 @@ const Positions = () => {
       }),
       helper.display({
         id: 'tp_sl',
-        header: () => <HeaderWithIcons label="TP/SL for position" />,
+        header: () => <HeaderWithIcons label="TP/SL" />,
         cell: ({ row }) => {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const { tp_sl } = row.original as any
-          const tp = tp_sl?.tp
-          const sl = tp_sl?.sl
           return (
-            <div className="flex items-center gap-2">
-              {tp && sl ? (
-                <span className="w-17 break-words overflow-hidden">
-                  {tp}/{sl}
-                </span>
-              ) : (
-                '-/-'
-              )}
-              <Image
-                src={editicon}
-                alt="Edit"
-                style={{ width: 16, height: 'auto' }}
-                className="w-4 h-4 cursor-pointer"
-              />
-            </div>
+            <TPSL_Cell
+              asset={row.original.coin}
+              openModal={() => {
+                setTpslAsset(row.original)
+                setIsTPSLModalOpen(true)
+              }}
+            />
           )
         },
-        meta: { label: 'TP/SL for position' }
+        meta: { label: 'TP/SL' }
       })
     ],
     [helper, closePosition, isAgentApproved, currentFeeApproval, openAgentModal]
@@ -399,7 +427,7 @@ const Positions = () => {
   })
 
   if (!mounted) {
-    return <div className="overflow-x-auto w-full px-3 lg:px-4 h-40"></div>
+    return <div className="px-3 lg:px-4 w-full h-40 overflow-x-auto"></div>
   }
 
   if (!isConnected) {
@@ -407,15 +435,15 @@ const Positions = () => {
   }
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full hidden lg:table text-white">
+    <div className="px-3 w-full overflow-x-auto">
+      <table className="hidden lg:table w-full text-white">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-5 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                  className="px-5 pt-3 pb-1 font-normal text-[#8B8BA0] text-sm text-left cursor-pointer"
                   onClick={
                     header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
                   }
@@ -430,11 +458,11 @@ const Positions = () => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-white/10">
+            <tr key={row.id} className="border-white/10 border-b">
               {row.getVisibleCells().map((cell) => (
                 <td
                   key={cell.id}
-                  className="py-4 px-5 opacity-80 text-[#FFFFFF] font-normal text-sm"
+                  className="opacity-80 px-5 py-4 font-normal text-[#FFFFFF] text-sm"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
@@ -473,6 +501,30 @@ const Positions = () => {
           onClose={() => setIsMarketCloseModalOpen(false)}
           closingAsset={closingAsset}
         />
+      )}
+      {isTPSLModalOpen && tpslAsset && (
+        <TPSL_Modal
+          isOpen={isTPSLModalOpen}
+          onClose={() => setIsTPSLModalOpen(false)}
+          tpslAsset={tpslAsset}
+        />
+      )}
+      {isLeverageModalOpen && leverageAsset && (
+        <LeverageModal
+          isOpen={isLeverageModalOpen}
+          onClose={() => setIsLeverageModalOpen(false)}
+          asset={leverageAsset}
+        />
+      )}
+      {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+        <IsolatedMarginModal
+          isOpen={isIsolatedMarginModalOpen}
+          onClose={() => setIsIsolatedMarginModalOpen(false)}
+          asset={isolatedMarginAsset}
+        />
+      )}
+      {isCloseAllModalOpen && (
+        <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
       )}
     </div>
   )

@@ -7,7 +7,6 @@ import { zeroAddress } from 'viem'
 
 export const HyperLiquidInitializer = () => {
   const { address } = useAccount()
-
   const {
     initSdk,
     sdk,
@@ -19,17 +18,24 @@ export const HyperLiquidInitializer = () => {
 
   useEffect(() => {
     initSdk(address ?? zeroAddress)
-  }, [address])
+  }, [address, initSdk])
 
   useEffect(() => {
     if (!sdk) return
+
     subscribeToAllMids()
-    subscribeWebData2(address ?? zeroAddress)
     return () => {
       unsubscribeFromAllMids()
+    }
+  }, [sdk, subscribeToAllMids, unsubscribeFromAllMids])
+
+  useEffect(() => {
+    if (!sdk) return
+    subscribeWebData2(address ?? zeroAddress)
+    return () => {
       unsubscribeWebData2(address ?? zeroAddress)
     }
-  }, [sdk, address])
+  }, [sdk, address, subscribeWebData2, unsubscribeWebData2])
 
   return null
 }

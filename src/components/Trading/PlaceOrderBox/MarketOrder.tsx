@@ -15,6 +15,7 @@ import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getUniverseIndex } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import SlippageModal from './components/SlippageModal'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperliquid()
@@ -23,8 +24,9 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-  const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
+  const [slippage, setSlippage] = useState<number>(1) // Default 1% slippage
+  const [isSlippageModalOpen, setIsSlippageModalOpen] = useState<boolean>(false)
   const [tpsl, setTpsl] = useState<TPSLType>({
     isTpsl: false,
     takeProfit: 0,
@@ -49,7 +51,13 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
-    const rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
+    let rawPrice: string
+    if (isSpot) {
+      const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
+      rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
+    } else {
+      rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
+    }
 
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')
@@ -168,7 +176,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               setAssetAmount={setAssetAmount}
               usdAmount={usdAmount}
               setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset].toString()}
+              limitPrice={allMids[selectedAsset]?.toString() || '0'}
               isBuy={isBuy}
             />
           ) : (
@@ -178,7 +186,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               setAssetAmount={setAssetAmount}
               usdAmount={usdAmount}
               setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset]?.toString()}
+              limitPrice={allMids[selectedAsset]?.toString() || '0'}
               leverage={leverage}
               isReduceOnly={isReduceOnly}
               isBuy={isBuy}
@@ -202,11 +210,19 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 />
               </>
             )}
-            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
           </div>
         </div>
       </div>
       <div className="p-2 border-white/10 border-t">
+        {isSpot && (
+          <button
+            onClick={() => setIsSlippageModalOpen(true)}
+            className="flex items-center gap-2 mb-2 px-2 text-gray-400 hover:text-white text-xs transition-colors cursor-pointer"
+          >
+            <span>Slippage</span>
+            <span className="text-white">{slippage}%</span>
+          </button>
+        )}
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
@@ -214,7 +230,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           assetAmount={assetAmount}
           leverage={leverage}
           isCross={isCross}
-          isPostOnly={isPostOnly}
+          isPostOnly={false}
           isReduceOnly={isReduceOnly}
           isInvalid={isInvalid}
         />
@@ -234,6 +250,12 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <p className="text-white">0.0% / 0.0%</p>
         </div>
       </div>
+      <SlippageModal
+        isOpen={isSlippageModalOpen}
+        onClose={() => setIsSlippageModalOpen(false)}
+        slippage={slippage}
+        setSlippage={setSlippage}
+      />
     </div>
   )
 }

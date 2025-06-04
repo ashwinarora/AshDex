@@ -63,7 +63,10 @@ const OpenOrders = () => {
         onClick={async () => {
           const toastId = toast.loading('Cancelling all orders...')
           try {
-            await sdk.exchange.cancelAllOrders()
+            const allOrders = openOrders
+              .filter((order) => order.coin.includes(isSpot ? 'SPOT' : 'PERP'))
+              .map((order) => ({ coin: order.coin, o: order.oid }))
+            await sdk.exchange.cancelOrder(allOrders)
             toast.update(toastId, {
               render: 'All orders cancelled',
               type: 'success',
@@ -83,7 +86,7 @@ const OpenOrders = () => {
         Cancel All
       </button>
     )
-  }, [sdk, isAgentApproved, currentFeeApproval, openAgentModal])
+  }, [sdk, isAgentApproved, currentFeeApproval, openAgentModal, openOrders, isSpot])
 
   const renderCancelButton = useCallback(
     (rowOrOrder: RenderCancelButtonProps['row'] | (IOpenOrder & { meta?: { label: string } })) => {

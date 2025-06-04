@@ -34,7 +34,7 @@ export interface IOpenOrder {
   children: unknown[]
   isPositionTpsl: boolean
   reduceOnly: boolean
-  orderType: string
+  orderType: 'Limit' | 'Stop Limit' | 'Take Profit Limit'
   origSz: number
   tif: string
   cloid: string | null

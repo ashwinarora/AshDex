@@ -104,3 +104,58 @@ export const getTooltipContent = (key: string): string => {
   const tooltipItem = TOOLTIP_CONTENTS?.find((item) => item?.key === key)
   return tooltipItem ? tooltipItem?.content : ''
 }
+interface FormatPriceOptions {
+  price: number
+  isSpot: boolean
+  szDecimals: number
+}
+
+export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOptions): string {
+  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+  const allowedDecimals = maxDecimals - szDecimals
+
+  const raw = price.toString()
+  const [intPart, decPart = ''] = raw.split('.')
+  const intSig = intPart.replace(/^0+/, '').length
+
+  if (intSig >= 5 || !decPart) {
+    return intPart
+  }
+
+  const totalSig = intSig + decPart.length
+  if (totalSig > 5) {
+    const keep = 5 - intSig
+    return keep > 0 ? `${intPart}.${decPart.slice(0, keep)}` : intPart
+  }
+
+  const fracKeep = Math.min(allowedDecimals, decPart.length)
+  return fracKeep > 0 ? `${intPart}.${decPart.slice(0, fracKeep)}` : intPart
+}
+
+export function getLeverageTicks(maxLeverage: number, t: number): number[] {
+  const low = 1
+  const high = maxLeverage
+
+  // No interior values possible when maxLeverage ≤ 2
+  if (high <= 2) {
+    return []
+  }
+
+  // Determine how many interior ticks we want
+  const count =
+    high < 6
+      ? high - 2 // e.g. maxLeverage=5 → count=3 (ticks: 2,3,4)
+      : t
+
+  const ticks = new Set<number>()
+
+  for (let i = 1; i <= count; i++) {
+    // place at fraction i/(count+1) of the way from low → high
+    const raw = low + (high - low) * (i / (count + 1))
+    ticks.add(Math.floor(raw)) // bias down to avoid overshooting
+  }
+
+  return Array.from(ticks)
+    .filter((n) => n > low && n < high) // drop any accidental endpoints
+    .sort((a, b) => a - b)
+}

@@ -109,7 +109,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         <Skeleton
           className="ml-auto rounded-none"
           size={widthClass as SkeletonSize}
-          color={isSell ? 'bg-red/10' : 'bg-green/10'}
+          color={isSell ? 'bg-red/30' : 'bg-green/30'}
         />
       </div>
     )
