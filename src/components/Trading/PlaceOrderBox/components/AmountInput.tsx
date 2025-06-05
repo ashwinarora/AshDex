@@ -132,7 +132,6 @@ const AmountInput = ({
 
   return (
     <div className="flex flex-col gap-2 mx-3">
-      {' '}
       <label className="block font-medium text-gray-400 text-xs">
         Max ={' '}
         {isInputUsd

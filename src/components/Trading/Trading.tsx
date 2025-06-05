@@ -39,7 +39,7 @@ const Trading = () => {
         </nav>
         {/* Main Trading Layout */}
         <div className="flex flex-col flex-1 gap-1">
-          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-18  h-[80vh] xl:h-[70vh]`}>
+          <div className={`w-full gap-1 grid grid-cols-1 xl:grid-cols-18  h-[80vh] xl:h-[75vh]`}>
             {/* Chart on top in mobile, middle in desktop */}
             <div className="hidden xl:flex xl:flex-col gap-1 order-1 xl:order-1 xl:col-span-11 rounded-lg overflow-hidden">
               <FavoriteStrip setSelectedAsset={setSelectedAsset} />

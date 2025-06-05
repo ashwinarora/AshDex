@@ -117,14 +117,12 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
   // Get volume and market data
   const volumeValue = useMemo(() => {
-    return assetCtx?.dayNtlVlm ? `$${(assetCtx.dayNtlVlm / 1000000000).toFixed(1)}B` : '-'
+    return assetCtx?.dayNtlVlm ? `$${assetCtx.dayNtlVlm.toFixed(0)}` : '-'
   }, [assetCtx])
 
   // Market cap is estimated/placeholder
   const marketCap = useMemo(() => {
-    return assetCtx?.midPx
-      ? `$${((assetCtx.midPx * (assetCtx.openInterest || 1)) / 1000000000).toFixed(1)}B`
-      : '-'
+    return assetCtx?.midPx ? `$${(assetCtx.midPx * (assetCtx.openInterest || 1)).toFixed(0)}` : '-'
   }, [assetCtx])
 
   const handleClick = () => {
@@ -150,7 +148,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
       <tr
         onClick={handleClick}
         key={assetKey}
-        className="transition-colors duration-150 cursor-pointer hover:bg-white/5"
+        className="hover:bg-white/5 transition-colors duration-150 cursor-pointer"
       >
         {/* Market + Star */}
         <td className="px-6 py-2 font-medium whitespace-nowrap">
@@ -169,17 +167,17 @@ const AssetItem: React.FC<AssetItemProps> = ({
                   type
                 )
               }}
-              className="w-5 h-5 cursor-pointer text-primary hover:scale-105 focus:outline-none"
+              className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
               aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
             >
               {isFavorite(assetKey, type) ? (
                 <IconStarFilled size={16} />
               ) : (
-                <IconStar size={16} className="text-white opacity-50" />
+                <IconStar size={16} className="opacity-50 text-white" />
               )}
             </button>
             {assetKey}
-            <p className="px-2 text-xs rounded-md bg-primary/40">
+            <p className="bg-primary/40 px-2 rounded-md text-xs">
               {universe[assetIndex]?.maxLeverage || 50}×
             </p>
           </div>
@@ -191,7 +189,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
         {/* 24h Change */}
         <td className={`px-6 py-2 text-right ${priceChangeData.className}`}>
-          <div className="flex items-center justify-end">
+          <div className="flex justify-end items-center">
             {priceChangeData.isPositive ? (
               <IconTriangleFilled size={8} className="mr-1" />
             ) : (

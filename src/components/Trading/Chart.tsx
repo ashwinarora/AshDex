@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes'
 
@@ -37,6 +37,9 @@ interface TradingViewWidget {
 interface TradingViewWidgetInstance {
   remove(): void
   onChartReady(callback: () => void): void
+  activeChart(): {
+    setSymbol: (symbol: string, interval: string) => void
+  }
 }
 
 interface ThemeColors {
@@ -148,18 +151,13 @@ const TradingViewChart = ({
 }) => {
   const chartRef = useRef<HTMLDivElement>(null)
   const widgetRef = useRef<TradingViewWidgetInstance | null>(null)
-  const barsCache = useRef<Record<IntervalType, Map<number, BarData>>>({
-    '1': new Map(),
-    '5': new Map(),
-    '15': new Map(),
-    '30': new Map(),
-    '60': new Map(),
-    '240': new Map(),
-    D: new Map(),
-    W: new Map(),
-    M: new Map()
-  })
+  const tvSubscribersRef = useRef<Record<string, () => void>>({})
+  const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
+  const selectedAssetRef = useRef(selectedAsset)
+  const { sdk } = useHyperliquid()
+  const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
+  // Convert TradingView resolution to Hyperliquid interval
   const convertedResolutionToInterval = (resolution: IntervalType) => {
     return resolution.endsWith('D')
       ? '1d'
@@ -171,11 +169,222 @@ const TradingViewChart = ({
             ? `${Number(resolution) / 60}h`
             : `${Number(resolution)}m`
   }
-  const intervalStr = convertedResolutionToInterval(selectedInterval)
-  const { sdk } = useHyperliquid()
 
+  // Get current timezone offset
+  const getEtcGMTTimezone = () => {
+    const offsetMinutes = new Date().getTimezoneOffset()
+    const totalMinutes = -offsetMinutes
+
+    const sign = totalMinutes >= 0 ? '-' : '+'
+    const absMinutes = Math.abs(totalMinutes)
+    const hours = String(Math.floor(absMinutes / 60)).padStart(2, '0')
+    const minutes = String(absMinutes % 60).padStart(2, '0')
+
+    return `Etc/GMT${sign}${hours}:${minutes}`
+  }
+
+  // Update asset ref and initialize cache when asset changes
   useEffect(() => {
-    if (!chartRef.current || widgetRef.current) return
+    selectedAssetRef.current = selectedAsset
+
+    // Initialize cache for new asset if it doesn't exist
+    if (!barsCache.current[selectedAsset]) {
+      barsCache.current[selectedAsset] = {
+        '1': new Map(),
+        '5': new Map(),
+        '15': new Map(),
+        '30': new Map(),
+        '60': new Map(),
+        '240': new Map(),
+        D: new Map(),
+        W: new Map(),
+        M: new Map()
+      }
+    }
+  }, [selectedAsset])
+
+  // Create datafeed once when SDK is available
+  useEffect(() => {
+    if (!sdk) return
+
+    const datafeed: Datafeed = {
+      onReady: (cb: DatafeedCallback) =>
+        setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
+
+      resolveSymbol: (_, onResolve) => {
+        setTimeout(
+          () =>
+            onResolve({
+              symbol: selectedAssetRef.current,
+              exchange: 'Hyperliquid',
+              type: 'crypto',
+              session: '24x7',
+              timezone: 'Etc/GMT+4',
+              supported_resolutions: INTERVALS,
+              pricescale: 100,
+              minmov: 1,
+              has_intraday: true,
+              has_daily: true,
+              has_weekly_and_monthly: true
+            }),
+          0
+        )
+      },
+
+      getBars: async (
+        symbolInfo: SymbolInfo,
+        resolution: IntervalType,
+        periodParams: PeriodParams,
+        onHistoryCallback: HistoryCallback,
+        onErrorCallback: ErrorCallback
+      ) => {
+        try {
+          const currentAsset = selectedAssetRef.current
+          if (!sdk || !currentAsset) {
+            onErrorCallback('SDK or asset not available')
+            return
+          }
+
+          const intervalSeconds = getIntervalMinutes(resolution) * 60
+          const now = Math.floor(Date.now() / 1000)
+
+          const to = periodParams.to || now
+          const countBack = periodParams?.countBack || 300
+          const from = to - countBack * intervalSeconds
+          const interval = convertedResolutionToInterval(resolution)
+
+          const rawCandles = await sdk.info.getCandleSnapshot(
+            currentAsset,
+            interval,
+            from * 1000,
+            to * 1000
+          )
+
+          const bars = rawCandles.map((bar: Candle) => ({
+            time: Number(Math.floor(Number(bar.t))),
+            open: parseFloat(bar.o.toString()),
+            high: parseFloat(bar.h.toString()),
+            low: parseFloat(bar.l.toString()),
+            close: parseFloat(bar.c.toString()),
+            volume: parseFloat(bar.v.toString())
+          }))
+
+          // Initialize cache for asset if not exists
+          if (!barsCache.current[currentAsset]) {
+            barsCache.current[currentAsset] = {
+              '1': new Map(),
+              '5': new Map(),
+              '15': new Map(),
+              '30': new Map(),
+              '60': new Map(),
+              '240': new Map(),
+              D: new Map(),
+              W: new Map(),
+              M: new Map()
+            }
+          }
+
+          const cache = barsCache.current[currentAsset][resolution]
+          bars.forEach((bar: BarData) => cache.set(bar.time, bar))
+
+          const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
+          const responseBars = mergedBars.filter(
+            (bar) => bar.time >= from * 1000 && bar.time < to * 1000
+          )
+
+          const finalBars = responseBars.length >= 2 ? responseBars : mergedBars.slice(-countBack)
+
+          const outputBars = periodParams?.firstDataRequest
+            ? finalBars
+            : finalBars.slice(-countBack)
+
+          onHistoryCallback(outputBars, {
+            noData: outputBars.length === 0
+          })
+        } catch (err) {
+          console.error('Error fetching bars:', err)
+          onErrorCallback('Data error')
+        }
+      },
+
+      subscribeBars: (
+        symbolInfo: SymbolInfo,
+        resolution: IntervalType,
+        onRealtimeCallback: RealtimeCallback,
+        subscriberUID: string
+      ) => {
+        try {
+          const currentAsset = selectedAssetRef.current
+          if (!sdk || !currentAsset) return
+
+          const interval = convertedResolutionToInterval(resolution)
+          let lastBar: BarData | undefined
+
+          const candleHandler = (payload: Candle[] | Candle) => {
+            const candles = Array.isArray(payload) ? payload : [payload]
+
+            candles.forEach((c) => {
+              const bar: BarData = {
+                time: Number(c.t),
+                open: +c.o,
+                high: +c.h,
+                low: +c.l,
+                close: +c.c,
+                volume: +c.v
+              }
+
+              if (lastBar && bar.time === lastBar.time) {
+                lastBar = {
+                  ...bar,
+                  open: lastBar.open,
+                  high: Math.max(lastBar.high, bar.high),
+                  low: Math.min(lastBar.low, bar.low),
+                  volume: bar.volume
+                }
+                onRealtimeCallback(lastBar)
+              } else {
+                lastBar = bar
+                onRealtimeCallback(bar)
+              }
+
+              // Update cache
+              if (barsCache.current[currentAsset]?.[resolution]) {
+                barsCache.current[currentAsset][resolution].set(bar.time, bar)
+              }
+            })
+          }
+
+          sdk.subscriptions.subscribeToCandle(currentAsset, interval, candleHandler)
+
+          // Store cleanup callback
+          tvSubscribersRef.current[subscriberUID] = () => {
+            sdk.subscriptions.unsubscribeFromCandle(currentAsset, interval)
+          }
+        } catch (e) {
+          console.error('Subscription error:', e)
+        }
+      },
+
+      unsubscribeBars: (subscriberUID: string) => {
+        const cleanup = tvSubscribersRef.current[subscriberUID]
+        if (cleanup) {
+          cleanup()
+          delete tvSubscribersRef.current[subscriberUID]
+        }
+      }
+    }
+
+    setDatafeed(datafeed)
+    return () => {
+      // Cleanup any active subscriptions
+      Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
+      tvSubscribersRef.current = {}
+    }
+  }, [sdk])
+
+  // Initialize TradingView widget
+  useEffect(() => {
+    if (!chartRef.current || !datafeed || widgetRef.current) return
 
     const scriptId = 'tv-widget-script'
     const existingScript = document.getElementById(scriptId)
@@ -185,169 +394,11 @@ const TradingViewChart = ({
         setTimeout(initWidget, 100)
         return
       }
-      const tvSubscribers: Record<string, () => void> = {}
-
-      const datafeed: Datafeed = {
-        onReady: (cb: DatafeedCallback) =>
-          setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
-
-        resolveSymbol: (_: string, onResolve: (symbolInfo: SymbolInfo) => void) => {
-          setTimeout(
-            () =>
-              onResolve({
-                symbol: selectedAsset,
-                exchange: 'Hyperliquid',
-                type: 'crypto',
-                session: '24x7',
-                timezone: 'Etc/UTC',
-                supported_resolutions: INTERVALS,
-                pricescale: 100,
-                minmov: 1,
-                has_intraday: true,
-                has_daily: true,
-                has_weekly_and_monthly: true
-              }),
-            0
-          )
-        },
-
-        getBars(
-          symbolInfo: SymbolInfo,
-          resolution: IntervalType,
-          periodParams: PeriodParams,
-          onHistoryCallback: HistoryCallback,
-          onErrorCallback: ErrorCallback
-        ) {
-          setTimeout(async () => {
-            if (!sdk || !selectedAsset || !selectedInterval) {
-              onErrorCallback('SDK or asset not available')
-              return
-            }
-
-            try {
-              const intervalSeconds = getIntervalMinutes(resolution) * 60
-              const now = Math.floor(Date.now() / 1000)
-
-              const to = periodParams.to || now
-              const countBack = periodParams?.countBack || 300
-              const from = to - countBack * intervalSeconds
-              const interval = convertedResolutionToInterval(resolution)
-
-              const rawCandles = await sdk.info.getCandleSnapshot(
-                selectedAsset,
-                interval,
-                from * 1000,
-                to * 1000
-              )
-
-              const bars = rawCandles.map((bar: Candle) => ({
-                time: Number(Math.floor(Number(bar.t))),
-                open: parseFloat(bar.o.toString()),
-                high: parseFloat(bar.h.toString()),
-                low: parseFloat(bar.l.toString()),
-                close: parseFloat(bar.c.toString()),
-                volume: parseFloat(bar.v.toString())
-              }))
-
-              if (!barsCache.current[resolution]) {
-                barsCache.current[resolution] = new Map()
-              }
-
-              const cache = barsCache.current[resolution]
-              bars.forEach((bar: BarData) => cache.set(bar.time, bar))
-
-              const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
-              const responseBars = mergedBars.filter(
-                (bar) => bar.time >= from * 1000 && bar.time < to * 1000
-              )
-
-              const finalBars =
-                responseBars.length >= 2 ? responseBars : mergedBars.slice(-countBack)
-
-              const outputBars = periodParams?.firstDataRequest
-                ? finalBars
-                : finalBars.slice(-countBack) // ✅ fixed reverse call
-
-              onHistoryCallback(outputBars, {
-                noData: outputBars.length === 0
-              })
-            } catch (err) {
-              console.error('Error fetching bars:', err)
-              onErrorCallback('Data error')
-            }
-          }, 50)
-        },
-
-        subscribeBars: (
-          symbolInfo: SymbolInfo,
-          resolution: IntervalType,
-          onRealtimeCallback: RealtimeCallback,
-          subscriberUID: string
-        ) => {
-          try {
-            const coin = symbolInfo
-            const interval = convertedResolutionToInterval(resolution) // e.g., "5m", "1h", etc.
-
-            const ws = sdk?.ws
-            if (!ws) {
-              console.warn('Hyperliquid WebSocket not available')
-              return
-            }
-            let lastBar: BarData | undefined
-
-            const candleHandler = (payload: Candle[] | Candle) => {
-              // The SDK sometimes sends an array (snapshot) and sometimes a single candle (update)
-              const candles = Array.isArray(payload) ? payload : [payload]
-
-              candles.forEach((c) => {
-                const bar: BarData = {
-                  time: Number(c.t), // milliseconds
-                  open: +c.o,
-                  high: +c.h,
-                  low: +c.l,
-                  close: +c.c,
-                  volume: +c.v
-                }
-
-                // de-dupe / update logic
-                if (lastBar && bar.time === lastBar.time) {
-                  lastBar = {
-                    ...bar,
-                    open: lastBar.open, // opening price stays
-                    high: Math.max(lastBar.high, bar.high),
-                    low: Math.min(lastBar.low, bar.low),
-                    volume: bar.volume
-                  }
-                  onRealtimeCallback(lastBar)
-                } else {
-                  lastBar = bar
-                  onRealtimeCallback(bar)
-                }
-              })
-            }
-
-            // 👉  ***THE IMPORTANT BIT – pass the callback*** 👈
-            sdk.subscriptions.subscribeToCandle(selectedAsset, interval, candleHandler)
-
-            // Save a function that TradingView will call later
-            tvSubscribers[subscriberUID] = () => {
-              sdk.subscriptions.unsubscribeFromCandle(coin, interval)
-            }
-          } catch (e) {
-            console.log(e)
-          }
-        },
-
-        unsubscribeBars: (subscriberUID: string) => {
-          console.warn('[TV unsubscribeBars] called', { subscriberUID })
-          sdk.subscriptions.unsubscribeFromCandle(selectedAsset, selectedInterval)
-        }
-      }
 
       widgetRef.current = new window.TradingView.widget({
-        symbol: selectedAsset,
+        symbol: selectedAssetRef.current,
         debug: false,
-        interval: '60',
+        interval: selectedInterval,
         timeframe: '1W',
         container: chartRef.current,
         datafeed,
@@ -363,7 +414,8 @@ const TradingViewChart = ({
         overrides: {
           'paneProperties.background': '#0F0816',
           'mainSeriesProperties.candleStyle.upColor': '#2fa766',
-          'mainSeriesProperties.candleStyle.downColor': '#F6465D'
+          'mainSeriesProperties.candleStyle.downColor': '#F6465D',
+          timezone: getEtcGMTTimezone()
         },
         custom_themes: {
           dark: {
@@ -433,7 +485,6 @@ const TradingViewChart = ({
               '#e2464a',
               '#e2464a'
             ],
-            // Color that overrides green
             color4: [
               '#2fa766',
               '#2fa766',
@@ -602,7 +653,6 @@ const TradingViewChart = ({
               '#204b37',
               '#183929'
             ],
-            // Color that overrides orange
             color5: [
               '#fef5ea',
               '#fdecd5',
@@ -625,7 +675,6 @@ const TradingViewChart = ({
               '#502f00',
               '#3c2300'
             ],
-            // Color that overrides purple
             color6: [
               '#feeafe',
               '#fcd5fc',
@@ -648,7 +697,6 @@ const TradingViewChart = ({
               '#4f004f',
               '#3c003c'
             ],
-            // Color that overrides yellow
             color7: [
               '#fefeea',
               '#fcfcd5',
@@ -678,8 +726,7 @@ const TradingViewChart = ({
       })
 
       widgetRef.current.onChartReady(() => {
-        console.log('[TV] Chart is ready')
-        // Additional logic to expand view if needed
+        console.log('TradingView chart ready')
       })
     }
 
@@ -700,9 +747,21 @@ const TradingViewChart = ({
         widgetRef.current = null
       }
     }
-  }, [selectedAsset, selectedInterval, sdk, intervalStr])
+  }, [datafeed])
 
-  return <div ref={chartRef} className="w-full h-full rounded-md" />
+  // Update chart when asset or interval changes
+  useEffect(() => {
+    if (widgetRef.current) {
+      try {
+        widgetRef.current.activeChart().setSymbol(selectedAsset, selectedInterval)
+        // toast.info(`Switched to ${selectedAsset} ${selectedInterval}`)
+      } catch (e) {
+        console.error('Chart update error:', e)
+      }
+    }
+  }, [selectedAsset, selectedInterval])
+
+  return <div ref={chartRef} className="rounded-md w-full h-full" />
 }
 
 export default TradingViewChart

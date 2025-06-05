@@ -1,15 +1,29 @@
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useQuery } from '@tanstack/react-query'
 
-interface Token {
+export interface Token {
   name: string
   tokenId: string
+  index: number
+}
+
+export interface SpotMeta {
+  tokens: Token[]
+  universe: Array<{
+    tokens: number[]
+    index: number
+  }>
+}
+
+export interface SpotAssetCtx {
+  coin: string
+  price: number
 }
 
 interface Sdk {
   info: {
     spot: {
-      getSpotMetaAndAssetCtxs: () => Promise<{ tokens: Token[] }[]>
+      getSpotMetaAndAssetCtxs: () => Promise<[SpotMeta, SpotAssetCtx[]]>
     }
   }
 }
@@ -30,6 +44,27 @@ export const usePerpetualData = () => {
   return useQuery({
     queryKey: ['perpetualData'],
     queryFn: () => fetchPerpetualData(sdk!),
+    enabled: Boolean(sdk),
+    staleTime: 1000 * 60 * 5
+  })
+}
+
+export const useSpotData = () => {
+  const { sdk } = useHyperliquid()
+  const fetchSpotData = async (sdk: Sdk): Promise<[SpotMeta, SpotAssetCtx[]]> => {
+    if (!sdk) return [{ tokens: [], universe: [] }, []]
+    try {
+      const data = await sdk.info.spot.getSpotMetaAndAssetCtxs()
+      return data
+    } catch (error) {
+      console.error('Error fetching perpetual data:', error)
+      return [{ tokens: [], universe: [] }, []]
+    }
+  }
+
+  return useQuery({
+    queryKey: ['spotData'],
+    queryFn: () => fetchSpotData(sdk!),
     enabled: Boolean(sdk),
     staleTime: 1000 * 60 * 5
   })

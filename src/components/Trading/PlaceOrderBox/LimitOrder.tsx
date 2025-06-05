@@ -30,6 +30,9 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isInvalid, setIsInvalid] = useState<boolean>(false)
 
   useEffect(() => {
+    if (isSpot) {
+      return
+    }
     const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
     const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
 
@@ -134,9 +137,15 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               isBuy={isBuy}
             />
           )}
-          <div className="mx-3 text-xs">
-            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
-          </div>
+          {!isSpot && (
+            <div className="mx-3 text-xs">
+              <CheckBox
+                label="Reduce Only"
+                setIsChecked={setIsReduceOnly}
+                isChecked={isReduceOnly}
+              />
+            </div>
+          )}
           <hr className="border-white/10" />
 
           <div className="gap-2 grid grid-cols-1 px-3 text-gray-400 text-xs">

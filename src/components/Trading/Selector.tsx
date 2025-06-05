@@ -9,10 +9,21 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
 import btcIcon from '@/assets/images/bitcoin_logo.svg'
 import Skeleton from '../common/Skeleton'
-import { IconSearch, IconSelector, IconStar, IconStarFilled } from '@tabler/icons-react'
+import {
+  IconExternalLink,
+  IconSearch,
+  IconSelector,
+  IconStar,
+  IconStarFilled
+} from '@tabler/icons-react'
+import { SpotMeta, SpotAssetCtx, Token } from '@/hooks/usePerpetualData'
+import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
+import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useSpotData } from '@/hooks/usePerpetualData'
 
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
   'BTC-PERP': btcIcon
@@ -36,16 +47,33 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const settingsRef = useRef<HTMLDivElement>(null)
   const isSpot = useIsSpot()
   const type = isSpot ? 'spot' : 'perp'
-
+  const { data: spotData = [] } = useSpotData()
+  const [tokenContract, setTokenContract] = useState<string>()
   const { isFavorite, toggleFavorite } = useFavorites()
 
   const selectedAssetContext = useMemo(() => {
-    if (isSpot) {
-      return spotAssetContext.find((a) => a.coin.includes(selectedAsset))
+    const coin = selectedAsset.split('-')[0]
+
+    if (isSpot && spotData.length > 0) {
+      const spotMeta = spotData[0] as SpotMeta
+      const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
+      if (!spotAsset) return null
+
+      const spotUniverse = spotMeta.universe.find(
+        (a: { tokens: number[]; index: number }) => a.tokens[0] === spotAsset.index
+      )
+      if (!spotUniverse) return null
+
+      setTokenContract(spotAsset.tokenId)
+      const spotToken = (spotData[1] as SpotAssetCtx[])[spotUniverse.index]
+      if (!spotToken) return null
+
+      const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
+      return coinDetails || null
     }
     const idx = getUniverseIndex(universe, selectedAsset)
-    return perpAssetContext[idx]
-  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot])
+    return perpAssetContext[idx] || null
+  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotData])
 
   const categoryMap: Record<string, string> = {
     'BTC-PERP': 'defi',
@@ -67,7 +95,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         .filter(([key]) => key.includes(isSpot ? 'SPOT' : 'PERP'))
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase()))
         .filter(([key]) => selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase()),
-    [allMids, searchTerm, isSpot]
+    [allMids, searchTerm, isSpot, categoryMap, selectedTab]
   )
 
   const marketData = useMemo(() => {
@@ -82,10 +110,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     }
 
     const changeString = calculate24hChange()
-    const data = [
+    let data = [
       {
         label: 'Oracle',
-        value: changeString ?? <Skeleton size="md" />,
+        value:
+          'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
+            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(selectedAssetContext.oraclePx!)}`
+          ) : (
+            <Skeleton size="md" />
+          ),
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
@@ -95,24 +128,84 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       },
       {
         label: '24h Volume',
-        value: selectedAssetContext?.dayNtlVlm?.toFixed(2) ?? <Skeleton size="md" />
+        value: selectedAssetContext?.dayNtlVlm ? (
+          `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(selectedAssetContext?.dayNtlVlm)}`
+        ) : (
+          <Skeleton size="md" />
+        )
       },
       {
         label: 'Open Interest',
-        value: selectedAssetContext?.dayNtlVlm?.toFixed(2) ?? <Skeleton size="md" />
+        value:
+          'openInterest' in selectedAssetContext &&
+          selectedAssetContext.openInterest &&
+          selectedAssetContext.oraclePx ? (
+            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(selectedAssetContext.openInterest! * selectedAssetContext.oraclePx!)}`
+          ) : (
+            <Skeleton size="md" />
+          )
       }
     ]
-
-    if ('funding' in selectedAssetContext) {
+    if (isSpot) {
+      data = [
+        {
+          label: '24h Change',
+          value: changeString ?? <Skeleton size="md" />,
+          color: changeString?.includes('+') ? 'text-green' : 'text-red'
+        },
+        {
+          label: '24h Volume',
+          value: selectedAssetContext?.dayNtlVlm ? (
+            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(selectedAssetContext?.dayNtlVlm)}`
+          ) : (
+            <Skeleton size="md" />
+          )
+        },
+        {
+          label: 'Market Cap',
+          value: selectedAssetContext?.midPx ? (
+            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format((selectedAssetContext as WebDataSpotAssetCtx).circulatingSupply * selectedAssetContext.midPx)}`
+          ) : (
+            <Skeleton size="md" />
+          )
+        },
+        {
+          label: 'Contract',
+          value: tokenContract ? (
+            <div className="group flex gap-1 cursor-pointer">
+              <a
+                href={`https://app.hyperliquid.xyz/explorer/token/${tokenContract}`}
+                target="_blank"
+                className="text-white text-sm"
+              >
+                {tokenContract.slice(0, 6)}...{tokenContract.slice(-4)}
+              </a>{' '}
+              <IconExternalLink className="w-4 h-4 text-white/50 group-hover:text-primary" />
+            </div>
+          ) : (
+            <Skeleton size="md" />
+          )
+        }
+      ]
+    }
+    if ('funding' in selectedAssetContext && selectedAssetContext.funding !== undefined) {
       data.splice(data.length - 1, 0, {
         label: 'Funding/Countdown',
-        value: selectedAssetContext.funding.toString() ?? <Skeleton size="md" />,
+        value: selectedAssetContext.funding!.toString() ?? <Skeleton size="md" />,
         color: 'text-green'
       })
     }
 
     return data
-  }, [selectedAssetContext])
+  }, [
+    perpAssetContext,
+    spotAssetContext,
+    isSpot,
+    selectedAssetContext,
+    allMids,
+    selectedAsset,
+    tokenContract
+  ])
 
   const handleSort = (key: string) => {
     if (sortKey === key) {
@@ -121,12 +214,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       setSortKey(key)
       setSortOrder('asc')
     }
-  }
-
-  const handleAssetSelect = (assetKey: string) => {
-    setSelectedAsset(assetKey)
-    setIsOpen(false)
-    setSearchTerm('')
   }
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
@@ -167,54 +254,54 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       className={`flex items-center ${isOpen || isSettingsOpen ? 'z-50' : ''} nexon-card`}
     >
       <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
-        <div className="flex items-center px-3 gap-x-3 ">
+        <div className="flex items-center px-2">
           <button
             onClick={handleToggleFavorite}
-            className="w-5 h-5 cursor-pointer text-primary focus:outline-none hover:scale-105 "
+            className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
           >
             {isFavorite(selectedAsset, type) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
-              <IconStar size={16} className="mr-1 text-white opacity-50" />
+              <IconStar size={16} className="opacity-50 mr-1 text-white" />
             )}
           </button>
           <button
             type="button"
             onClick={() => setIsOpen((prev) => !prev)}
-            className="flex items-center text-lg text-white cursor-pointer gap-x-2"
+            className="flex items-center gap-x-2 text-white text-lg cursor-pointer"
           >
             <div className="flex flex-col">
-              <span className="text-white text-nowrap">{selectedAsset || 'Select an asset'}</span>
-              <span className="hidden opacity-60 font-medium text-[#E8E0F1] text-[13px] text-left">
-                Bitcoin price
+              <span className="text-white text-sm text-nowrap">
+                {selectedAsset || 'Select an asset'}
               </span>
             </div>
-            <Image
-              width={20}
-              height={20}
-              src={arrowdownicon}
-              alt="arrowdown"
-              className="w-3 h-3 mx-2"
-            />
+            <Image width={20} height={20} src={arrowdownicon} alt="arrowdown" className="w-3 h-3" />
           </button>
         </div>
-        <div className="flex flex-col p-4">
-          <p className="text-sm text-white/70">Mark Price</p>
-          <ValueIndicator value={selectedAssetContext?.midPx} className="text-sm font-normal" />
-        </div>
+        {!isSpot ? (
+          <div className="flex flex-col p-4">
+            <p className="text-white/70 text-xs">Mark Price</p>
+            <ValueIndicator value={selectedAssetContext?.midPx} className="text-xs" />
+          </div>
+        ) : (
+          <div className="flex flex-col p-4">
+            <p className="text-white/70 text-xs">Price</p>
+            <ValueIndicator value={allMids[selectedAsset]} className="text-xs" />
+          </div>
+        )}
       </div>
 
-      <div className="flex text-sm text-white">
+      <div className="flex gap-4 text-white text-xs">
         {marketData?.map((item, index) => (
-          <div key={index} className="flex flex-col flex-wrap justify-center px-2 ">
-            <div className="text-sm text-white/70">{item.label}</div>
+          <div key={index} className="flex flex-col flex-wrap justify-center">
+            <div className="text-white/70 text-xs">{item.label}</div>
             <div className={`font-medium text-xs ${item.color || 'text-white'}`}>{item.value}</div>
           </div>
         ))}
       </div>
 
       {isOpen && (
-        <div className="absolute top-9 left-2 z-50 bg-secondary shadow-xl mt-8 border-2 border-white/5 rounded-xl w-[800px] max-w-[95vw] p-4 flex flex-col gap-3">
+        <div className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-secondary shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[800px] max-w-[95vw]">
           {/* Search */}
           <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md">
             <IconSearch className="w-4 h-4 text-white/60" />
@@ -223,10 +310,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               placeholder='e.g. "BTC" or "Bitcoin"'
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full p-2 text-sm text-white bg-transparent focus:outline-none"
+              className="bg-transparent p-2 focus:outline-none w-full text-white text-sm"
             />
           </div>
-          <div className="flex gap-2 px-3 py-2 rounded-md bg-white/2 w-max">
+          <div className="flex gap-2 bg-white/2 px-3 py-2 rounded-md w-max">
             {tabs.map((tab) => (
               <button
                 key={tab}
@@ -247,7 +334,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             isFavorite={isFavorite}
             selectedAsset={selectedAsset}
             setSelectedAsset={setSelectedAsset}
-            handleAssetSelect={handleAssetSelect}
             type={type}
             sortKey={sortKey}
             sortOrder={sortOrder}
@@ -264,6 +350,19 @@ export default Selector
 // ----------------------------------
 // 🧩 Separated Table Component Below
 // ----------------------------------
+interface AssetTableProps {
+  filteredAssets: [string, number][]
+  universe: MetaData[]
+  perpAssetContext: AssetCtx[]
+  isFavorite: (key: string, type: 'spot' | 'perp') => boolean
+  selectedAsset: string
+  setSelectedAsset: (asset: string) => void
+  type: 'spot' | 'perp'
+  sortKey: string
+  sortOrder: 'asc' | 'desc'
+  handleSort: (key: string) => void
+}
+
 const AssetTable = ({
   filteredAssets,
   universe,
@@ -275,8 +374,8 @@ const AssetTable = ({
   sortKey,
   sortOrder,
   handleSort
-}) => {
-  const getSortValue = (key, ctx, assetKey) => {
+}: AssetTableProps) => {
+  const getSortValue = (key: string, ctx: AssetCtx | undefined, assetKey: string) => {
     if (!ctx) return 0
 
     switch (key) {
@@ -295,10 +394,10 @@ const AssetTable = ({
     }
   }
 
-  const sortAssets = (assets) =>
+  const sortAssets = (assets: [string, number][]) =>
     [...assets].sort(([aKey], [bKey]) => {
-      const ctxA = perpAssetContext[universe.findIndex((a) => a.name === aKey)]
-      const ctxB = perpAssetContext[universe.findIndex((a) => a.name === bKey)]
+      const ctxA = perpAssetContext[universe.findIndex((a: MetaData) => a.name === aKey)]
+      const ctxB = perpAssetContext[universe.findIndex((a: MetaData) => a.name === bKey)]
 
       let a = getSortValue(sortKey, ctxA, aKey)
       let b = getSortValue(sortKey, ctxB, bKey)
@@ -309,7 +408,7 @@ const AssetTable = ({
         return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a)
       }
 
-      return sortOrder === 'asc' ? a - b : b - a
+      return sortOrder === 'asc' ? Number(a) - Number(b) : Number(b) - Number(a)
     })
 
   const favoriteAssets = filteredAssets.filter(([key]) => isFavorite(key, type))
@@ -320,11 +419,11 @@ const AssetTable = ({
 
   return (
     <div className="h-[300px] overflow-y-auto">
-      <table className="min-w-full text-sm text-white">
-        <thead className="sticky top-0 z-10 bg-secondary text-white/70">
+      <table className="min-w-full text-white text-sm">
+        <thead className="top-0 z-10 sticky bg-secondary text-white/70">
           <tr>
             <th
-              className="px-4 py-3 text-left cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              className="group px-4 py-3 w-[20%] active:text-white text-left whitespace-nowrap cursor-pointer"
               onClick={() => handleSort('market')}
             >
               <div className="flex items-center gap-1">
@@ -333,37 +432,37 @@ const AssetTable = ({
               </div>
             </th>
             <th
-              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              className="group px-4 py-3 w-[20%] active:text-white text-right whitespace-nowrap cursor-pointer"
               onClick={() => handleSort('price')}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex justify-end items-center gap-1">
                 Price
                 <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
               </div>
             </th>
             <th
-              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              className="group px-4 py-3 w-[20%] active:text-white text-right whitespace-nowrap cursor-pointer"
               onClick={() => handleSort('change')}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex justify-end items-center gap-1">
                 24h Change
                 <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
               </div>
             </th>
             <th
-              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              className="group px-4 py-3 w-[20%] active:text-white text-right whitespace-nowrap cursor-pointer"
               onClick={() => handleSort('volume')}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex justify-end items-center gap-1">
                 Volume
                 <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
               </div>
             </th>
             <th
-              className="px-4 py-3 text-right cursor-pointer group active:text-white whitespace-nowrap w-[20%]"
+              className="group px-4 py-3 w-[20%] active:text-white text-right whitespace-nowrap cursor-pointer"
               onClick={() => handleSort('marketCap')}
             >
-              <div className="flex items-center justify-end gap-1">
+              <div className="flex justify-end items-center gap-1">
                 Market Cap
                 <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
               </div>
@@ -372,7 +471,7 @@ const AssetTable = ({
         </thead>
         <tbody>
           {[...sortedFavorites, ...sortedNonFavorites].map(([key, value]) => {
-            const assetIndex = universe.findIndex((a) => a.name === key)
+            const assetIndex = universe.findIndex((a: MetaData) => a.name === key)
             const ctx = assetIndex !== -1 ? perpAssetContext[assetIndex] : null
 
             let change24h = '0.00%'

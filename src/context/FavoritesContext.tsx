@@ -30,7 +30,7 @@ const FavoritesContext = createContext<FavoritesContextType | undefined>(undefin
 // Define default assets for each market type
 const DEFAULT_ASSETS = {
   perp: ['BTC-PERP', 'ETH-PERP', 'HYPE-PERP', 'PURR-PERP'],
-  spot: ['BTC-SPOT', 'ETH-SPOT', 'HYPE-SPOT', 'PURR-SPOT']
+  spot: ['UBTC-SPOT', 'UETH-SPOT', 'HYPE-SPOT', 'PURR-SPOT']
 }
 
 // Create default favorites dynamically

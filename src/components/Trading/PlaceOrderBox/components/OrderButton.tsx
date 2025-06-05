@@ -118,33 +118,33 @@ const placePerpOrder = async ({
     })
   }
   if (tpsl?.isTpsl) {
-    if (tpsl.stopLoss > 0) {
+    if (Number(tpsl.stopLoss) > 0) {
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.stopLoss, szDecimals).toString(),
+        price: formatPrice(Number(tpsl.stopLoss), szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.stopLoss, szDecimals).toString(),
+            triggerPx: formatPrice(Number(tpsl.stopLoss), szDecimals).toString(),
             tpsl: 'sl'
           }
         }
       })
     }
-    if (tpsl.takeProfit > 0) {
+    if (Number(tpsl.takeProfit) > 0) {
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.takeProfit, szDecimals).toString(),
+        price: formatPrice(Number(tpsl.takeProfit), szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.takeProfit, szDecimals).toString(),
+            triggerPx: formatPrice(Number(tpsl.takeProfit), szDecimals).toString(),
             tpsl: 'tp'
           }
         }

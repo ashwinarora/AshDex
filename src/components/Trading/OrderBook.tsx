@@ -32,40 +32,138 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     buys: 9
   })
   const [selectedLayoutType, setSelectedLayouttype] = useState<1 | 2 | 3>(1)
-  const [selectedPrecision, setSelectedPrecision] = useState<string>('1')
+  const [selectedPrecision, setSelectedPrecision] = useState<string>('4')
   const [showPrecisionSelector, setShowPrecisionSelector] = useState<boolean>(false)
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
-  // function usePrevious<T>(value: T): T | undefined {
-  //   const ref = useRef<T>()
-  //   useEffect(() => {
-  //     ref.current = value
-  //   }, [value])
-  //   return ref.current
-  // }
 
-  //const prevPrecision = usePrevious(selectedPrecision)
+  // Function to generate precision labels based on market price
+  const generatePrecisionLabels = (marketPrice: number) => {
+    const price = Math.abs(marketPrice)
+
+    const ranges: { threshold: number; labels: { value: string; label: string }[] }[] = [
+      {
+        threshold: 100000,
+        labels: [
+          { value: '2', label: '10000' },
+          { value: '3', label: '1000' },
+          { value: '4', label: '100' },
+          { value: '5', label: '50' },
+          { value: '6', label: '20' },
+          { value: '7', label: '10' },
+          { value: 'null', label: '1' }
+        ]
+      },
+      {
+        threshold: 1000,
+        labels: [
+          { value: '2', label: '100' },
+          { value: '3', label: '10' },
+          { value: '4', label: '1' },
+          { value: '5', label: '0.5' },
+          { value: '6', label: '0.2' },
+          { value: 'null', label: '0.1' }
+        ]
+      },
+      {
+        threshold: 100,
+        labels: [
+          { value: '2', label: '10' },
+          { value: '3', label: '1' },
+          { value: '4', label: '0.1' },
+          { value: '5', label: '0.05' },
+          { value: '6', label: '0.02' },
+          { value: 'null', label: '0.01' }
+        ]
+      },
+      {
+        threshold: 10,
+        labels: [
+          { value: '2', label: '1' },
+          { value: '3', label: '0.1' },
+          { value: '4', label: '0.01' },
+          { value: '5', label: '0.005' },
+          { value: '6', label: '0.002' },
+          { value: 'null', label: '0.001' }
+        ]
+      },
+      {
+        threshold: 1,
+        labels: [
+          { value: '2', label: '0.1' },
+          { value: '3', label: '0.01' },
+          { value: '4', label: '0.001' },
+          { value: '5', label: '0.0005' },
+          { value: '6', label: '0.0002' },
+          { value: 'null', label: '0.0001' }
+        ]
+      },
+      {
+        threshold: 0.1,
+        labels: [
+          { value: '2', label: '0.01' },
+          { value: '3', label: '0.001' },
+          { value: '4', label: '0.0001' },
+          { value: '5', label: '0.00005' },
+          { value: '6', label: '0.00002' },
+          { value: 'null', label: '0.00001' }
+        ]
+      },
+      {
+        threshold: 0.01,
+        labels: [
+          { value: '2', label: '0.001' },
+          { value: '3', label: '0.0001' },
+          { value: '4', label: '0.00001' },
+          { value: '5', label: '0.000005' },
+          { value: '6', label: '0.000002' },
+          { value: 'null', label: '0.000001' }
+        ]
+      },
+      {
+        threshold: 0.001,
+        labels: [
+          { value: '2', label: '0.0001' },
+          { value: '3', label: '0.00001' },
+          { value: '4', label: '0.000001' }
+        ]
+      }
+    ]
+
+    // Find the first matching range
+    const matched = ranges.find((r) => price >= r.threshold)
+
+    // Fallback: smallest range if no match
+    return matched ? matched.labels : ranges[ranges.length - 1].labels
+  }
 
   useEffect(() => {
     if (!sdk || !selectedAsset) return
 
     const coin = selectedAsset // ✅ must match what you use in subscribe
     const nSigFigs = Number(selectedPrecision)
-    const mantissa = null
+    let mantissa = null
     const handler = (data: WsBook) => {
       setL2Book(data)
       setIsLoading(false)
     }
 
     setIsLoading(true)
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, handler)
+    if (nSigFigs === 5) {
+      mantissa = 5
+    } else if (nSigFigs === 6) {
+      mantissa = 2
+    } else if (nSigFigs === 7) {
+      mantissa = null
+    }
+    sdk.subscriptions.subscribeToL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa, handler)
     console.log('SUBSCRIBE ->', { coin, nSigFigs, mantissa })
 
     // ✅ Cleanup is guaranteed to run BEFORE next effect
     return () => {
       //const prevNSigFigs = Number(prevPrecision ?? selectedPrecision)
-      sdk.subscriptions.unsubscribeFromL2Book('BTC')
+      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
       console.log('UNSUBSCRIBE ->', { coin, nSigFigs, mantissa })
     }
   }, [sdk, selectedAsset, selectedPrecision])
@@ -130,7 +228,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   }, [allMids, selectedAsset])
 
   useEffect(() => {
-    const _spread = (Number(sells[0]?.px) - Number(buys[0]?.px)).toFixed(4)
+    const _spread = (Number(sells[0]?.px) - Number(buys[0]?.px)).toFixed(8)
 
     setSpread(Number(_spread))
     return () => {}
@@ -241,9 +339,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 }}
                 className="flex flex-col text-xs"
               >
-                <RadioGroupItem value="1" label="0.1" />
-                <RadioGroupItem value="2" label="0.01" />
-                <RadioGroupItem value="3" label="0.001" />
+                {generatePrecisionLabels(allMids[selectedAsset] || 0).map((level) => (
+                  <RadioGroupItem key={level.value} value={level.value} label={level.label} />
+                ))}
               </RadioGroup>
             </div>
           )}
@@ -302,7 +400,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
           className={`flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 2 ? 'hidden' : 'flex h-[50%] order-1'}`}
         >
           {isLoading
-            ? Array(visibleRows.sells)
+            ? Array(visibleRows?.sells)
                 .fill(0)
                 .map((_, i) => <div key={i}>{renderSkeletonRow(true, i)}</div>)
             : (selectedLayoutType !== 3 ? [...sells].reverse() : sells).map((order, index) => {
@@ -331,7 +429,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                             {new Intl.NumberFormat('en-US', {
                               minimumFractionDigits: 2,
                               maximumFractionDigits: 2
-                            }).format(order.cumulative * Number(order.px))}
+                            }).format(Number((order.cumulative * Number(order.px)).toFixed(2)))}
                           </>
                         ) : (
                           <>{order.cumulative.toFixed(4)}</>
