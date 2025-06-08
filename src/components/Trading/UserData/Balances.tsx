@@ -1,4 +1,4 @@
-"use client"
+'use client'
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo } from 'react'
@@ -39,9 +39,7 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
       {columns?.map((col) => (
         <div key={col?.key} className="flex justify-between">
           <span className="text-[#8B8BA0]">{col?.label}</span>
-          <span className={col?.key === 'contract' ? 'truncate' : ''}>
-            {item[col?.key] ?? '-'}
-          </span>
+          <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
         </div>
       ))}
     </div>
@@ -97,7 +95,7 @@ const Balances = () => {
 
   const combinedData = useMemo(() => {
     if (!isConnected) return []
-    
+
     const perpData = {
       coin: 'USDC(Perps)',
       token: 'USDC',
@@ -106,13 +104,19 @@ const Balances = () => {
       entryNtl: '-'
     }
 
-    const spotData = spotState?.balances.map((state) => ({
-      ...state,
-      coin: (state.coin === 'USDC' ? 'USDC(Spot)' : state.coin).replace('PERP', 'SPOT')
-    })) || []
+    const spotData =
+      spotState?.balances.map((state) => ({
+        ...state,
+        coin: (state.coin === 'USDC' ? 'USDC(Spot)' : state.coin).replace('PERP', 'SPOT')
+      })) || []
 
     return [perpData, ...spotData]
-  }, [isConnected, clearingHouseState?.marginSummary?.accountValue, clearingHouseState?.withdrawable, spotState?.balances])
+  }, [
+    isConnected,
+    clearingHouseState?.marginSummary?.accountValue,
+    clearingHouseState?.withdrawable,
+    spotState?.balances
+  ])
 
   const table = useReactTable({
     data: combinedData,
@@ -123,22 +127,24 @@ const Balances = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const tableData = useMemo(() => 
-    table.getRowModel().rows.map((row) => {
-      const rowData: Record<string, unknown> = {}
-      row.getVisibleCells().forEach((cell) => {
-        rowData[cell.column.id] = cell.getValue()
-      })
-      return rowData
-    }),
+  const tableData = useMemo(
+    () =>
+      table.getRowModel().rows.map((row) => {
+        const rowData: Record<string, unknown> = {}
+        row.getVisibleCells().forEach((cell) => {
+          rowData[cell.column.id] = cell.getValue()
+        })
+        return rowData
+      }),
     [table.getRowModel().rows]
   )
 
-  const tableColumns = useMemo(() => 
-    columns.map((col) => ({
-      key: col.id as string,
-      label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-    })),
+  const tableColumns = useMemo(
+    () =>
+      columns.map((col) => ({
+        key: col.id as string,
+        label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+      })),
     [columns]
   )
 
