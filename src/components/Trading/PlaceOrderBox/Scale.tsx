@@ -63,8 +63,8 @@ function calculateScaleOrdersByAssetSize(
 ): Order[] {
   const orders: Order[] = []
   if (totalOrders === 1) {
-    orders.push({ price: startPrice, size: totalAssetSize });
-    return orders;
+    orders.push({ price: startPrice, size: totalAssetSize })
+    return orders
   }
   const prices: number[] = []
   for (let i = 0; i < totalOrders; i++) {
@@ -126,10 +126,28 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     if (!agentWallet) return
     if (!currentFeeApproval) return
     if (!totalUsd || !totalAssetSize) return
-    const orders = calculateScaleOrdersByUsd(totalUsd!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
-    const usdOrders = calculateScaleOrdersByUsd(totalUsd!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
-    const assetOrders = calculateScaleOrdersByAssetSize(totalAssetSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
-    console.log({usdOrders, assetOrders})
+    const orders = calculateScaleOrdersByUsd(
+      totalUsd!,
+      startPrice!,
+      endPrice!,
+      totalOrders!,
+      sizeSkew!
+    )
+    const usdOrders = calculateScaleOrdersByUsd(
+      totalUsd!,
+      startPrice!,
+      endPrice!,
+      totalOrders!,
+      sizeSkew!
+    )
+    const assetOrders = calculateScaleOrdersByAssetSize(
+      totalAssetSize!,
+      startPrice!,
+      endPrice!,
+      totalOrders!,
+      sizeSkew!
+    )
+    console.log({ usdOrders, assetOrders })
     const assetIndex = getUniverseIndex(universe, selectedAsset)
     const szDecimals = universe[assetIndex].szDecimals
     const ordersData: OrderData[] = orders.map((order) => ({
@@ -153,13 +171,13 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           address: BUILDER_ADDRESS,
           fee: currentFeeApproval
         }
-      });
+      })
       console.log(res)
-      if (res.data.status === "ok") {
+      if (res.data.status === 'ok') {
         toast.update(toastId, {
           render: 'Orders placed successfully!',
           type: 'success',
-          isLoading: false,
+          isLoading: false
         })
       } else {
         toast.update(toastId, {
@@ -170,11 +188,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         })
       }
     } catch (error) {
-      console.error('Error placing order:', error);
+      console.error('Error placing order:', error)
       toast.update(toastId, {
         render: 'Failed to place orders.',
         type: 'error',
-        isLoading: false,
+        isLoading: false
       })
     }
   }
@@ -207,11 +225,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     <div className="w-full h-full flex flex-col">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <MarginMode isCross={isCross} setIsCross={setIsCross} />
-      <LeverageMargin
-        selectedAsset={selectedAsset}
-        leverage={leverage}
-        setLeverage={setLeverage}
-      />
+      <LeverageMargin selectedAsset={selectedAsset} leverage={leverage} setLeverage={setLeverage} />
       <div className="flex-1 mt-6 overflow-y-auto no-scrollbar">
         <div className="flex flex-col w-full rounded-md shadow-md">
           <div className="space-y-2">
@@ -226,9 +240,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   }
                   className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
                 />
-                <span className="text-white flex items-center text-xs font-medium">
-                  USDC
-                </span>
+                <span className="text-white flex items-center text-xs font-medium">USDC</span>
               </div>
             </div>
             <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
@@ -297,7 +309,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               <div className="flex mb-1 justify-between">
                 <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
                 <span className="block text-xs font-medium text-[#8B8BA0]">
-                  Max: {isInputUsd
+                  Max:{' '}
+                  {isInputUsd
                     ? `${maxAllowedUsd.toFixed(2)} USDC`
                     : `${(maxAllowedUsd / (allMids[selectedAsset] || 1)).toFixed(2)} ${selectedAsset}`}
                 </span>
@@ -305,11 +318,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               <div className="flex relative">
                 <input
                   type="number"
-                  value={
-                    isInputUsd
-                      ? totalUsd ?? ''
-                      : totalAssetSize ?? ''
-                  }
+                  value={isInputUsd ? (totalUsd ?? '') : (totalAssetSize ?? '')}
                   onChange={(e) => {
                     if (isInputUsd) {
                       const totalUsd = parseFloat(e.target.value)
@@ -326,12 +335,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                     }
                   }}
                   className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium pr-20"
-                  placeholder={isInputUsd ? "0.00" : "0.0000"}
+                  placeholder={isInputUsd ? '0.00' : '0.0000'}
                 />
                 <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
                   <select
                     value={isInputUsd ? 'usd' : 'asset'}
-                    onChange={e => setIsInputUsd(e.target.value === 'usd')}
+                    onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
                     className="bg-transparent border-none outline-none text-[#8B8BA0] text-xs cursor-pointer"
                   >
                     <option value="usd">USDC</option>

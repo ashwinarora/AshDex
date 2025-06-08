@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { IPlaceOrderProps } from '.';
-import OrderButton from './components/OrderButton';
-import LeverageMargin from './components/LeverageMargin';
-import AmountInput from './components/AmountInput';
-import BuyOrSell from './components/BuyOrSell';
-import CheckBox from '@/components/common/CheckBox';
-import MarginMode from './components/MarginMode';
-import { useHyperliquid } from '@/store/HyperliquidStore';
+import { useState } from 'react'
+import { IPlaceOrderProps } from '.'
+import OrderButton from './components/OrderButton'
+import LeverageMargin from './components/LeverageMargin'
+import AmountInput from './components/AmountInput'
+import BuyOrSell from './components/BuyOrSell'
+import CheckBox from '@/components/common/CheckBox'
+import MarginMode from './components/MarginMode'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperliquid()

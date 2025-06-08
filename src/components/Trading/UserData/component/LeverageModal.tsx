@@ -13,7 +13,6 @@ interface LeverageModalProps {
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
-  
   const { data: universe } = usePerpsUniverse()
 
   const maxLeverage = useMemo(() => {
@@ -101,7 +100,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
                 leverage
               )
               console.log(res)
-              if(res.status === "err") {
+              if (res.status === 'err') {
                 toast.update(toastId, {
                   render: '❌ ' + res.response,
                   type: 'error',
