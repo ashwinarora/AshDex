@@ -16,14 +16,14 @@ import {
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
-import { SpotMeta, SpotAssetCtx, Token } from '@/hooks/usePerpetualData'
+import { Token } from '@/hooks/usePerpetualData'
 import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
 import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { useSpotData } from '@/hooks/usePerpetualData'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
   'BTC-PERP': btcIcon
@@ -47,15 +47,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const settingsRef = useRef<HTMLDivElement>(null)
   const isSpot = useIsSpot()
   const type = isSpot ? 'spot' : 'perp'
-  const { data: spotData = [] } = useSpotData()
   const [tokenContract, setTokenContract] = useState<string>()
   const { isFavorite, toggleFavorite } = useFavorites()
-
+  const { data: spotMeta } = useSpotMeta()
   const selectedAssetContext = useMemo(() => {
-    const coin = selectedAsset.split('-')[0]
+    const coin = selectedAsset
 
-    if (isSpot && spotData.length > 0) {
-      const spotMeta = spotData[0] as SpotMeta
+    if (isSpot && spotMeta && spotAssetContext) {
       const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
       if (!spotAsset) return null
 
@@ -65,7 +63,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       if (!spotUniverse) return null
 
       setTokenContract(spotAsset.tokenId)
-      const spotToken = (spotData[1] as SpotAssetCtx[])[spotUniverse.index]
+      const spotToken = spotAssetContext[spotUniverse.index]
       if (!spotToken) return null
 
       const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
@@ -73,7 +71,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     }
     const idx = getUniverseIndex(universe, selectedAsset)
     return perpAssetContext[idx] || null
-  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotData])
+  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   const categoryMap: Record<string, string> = {
     'BTC-PERP': 'defi',

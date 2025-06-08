@@ -7,7 +7,6 @@ import { formatPrice, getUniverseIndex } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
-import useIsSpot from '@/hooks/useIsSpot'
 import { AxiosInstance } from 'axios'
 import { PrivateKeyAccount } from 'viem'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
@@ -19,6 +18,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import { IconWallet } from '@tabler/icons-react'
+import { useMemo } from 'react'
 
 type StopOrder = {
   isMarket: boolean
@@ -37,7 +37,8 @@ type OrderButtonProps = {
   isReduceOnly: boolean
   tpsl?: TPSLType
   stopOrder?: StopOrder
-  isInvalid: boolean
+  usdAmount: string
+  isSpot: boolean
 }
 
 const placePerpOrder = async ({
@@ -296,7 +297,8 @@ const OrderButton = ({
   isReduceOnly,
   tpsl,
   stopOrder,
-  isInvalid
+  usdAmount,
+  isSpot
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
@@ -304,8 +306,39 @@ const OrderButton = ({
   const { data: universe } = usePerpsUniverse()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
-  const isSpot = useIsSpot()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+
+  // Validation logic moved from parent components
+  const isInvalid = useMemo(() => {
+    if (isSpot) {
+      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
+      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+
+      return (
+        formattedLimitPrice === '0' ||
+        formattedLimitPrice === '' ||
+        formattedAssetAmount === '0' ||
+        formattedAssetAmount === '' ||
+        Number(usdAmount) < 10
+      )
+    } else {
+      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
+      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+
+      // Check if TPSL is enabled and both values are empty/zero
+      const isTpslInvalid =
+        tpsl?.isTpsl && Number(tpsl.takeProfit) === 0 && Number(tpsl.stopLoss) === 0
+
+      return (
+        formattedLimitPrice === '0' ||
+        formattedLimitPrice === '' ||
+        formattedAssetAmount === '0' ||
+        formattedAssetAmount === '' ||
+        isTpslInvalid ||
+        Number(usdAmount) < 10
+      )
+    }
+  }, [limitPrice, assetAmount, tpsl, usdAmount, isSpot])
 
   // We handle the render logic after hooks are all set up
   if (!isRendered) return null

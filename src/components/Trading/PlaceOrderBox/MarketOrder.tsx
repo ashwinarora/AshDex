@@ -12,13 +12,13 @@ import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
-import { getUniverseIndex } from '@/utils/utils'
+import { getUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import SlippageModal from './components/SlippageModal'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids } = useHyperliquid()
+  const { allMids, clearingHouseState } = useHyperliquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
@@ -35,7 +35,11 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const { data: universe } = usePerpsUniverse()
-  const [isInvalid, setIsInvalid] = useState<boolean>(false)
+  const [crossAccountValue, setCrossAccountValue] = useState(0)
+
+  useEffect(() => {
+    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+  }, [clearingHouseState])
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
@@ -51,13 +55,9 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
-    let rawPrice: string
-    if (isSpot) {
-      const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
-      rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
-    } else {
-      rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
-    }
+
+    const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
+    const rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
 
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')
@@ -90,29 +90,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
   }
 
-  useEffect(() => {
-    const formattedLimitPrice = getFormattedPrice().replace(/\.?0+$/, '')
-    const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
-
-    // Check if TPSL is enabled and both values are empty/zero
-    const isTpslInvalid =
-      tpsl.isTpsl && Number(tpsl.takeProfit) === 0 && Number(tpsl.stopLoss) === 0
-
-    if (
-      formattedLimitPrice === '0' ||
-      formattedLimitPrice === '' ||
-      formattedAssetAmount === '0' ||
-      formattedAssetAmount === '' ||
-      isTpslInvalid ||
-      Number(usdAmount) < 10
-    ) {
-      setIsInvalid(true)
-    } else {
-      setIsInvalid(false)
-    }
-  }, [getFormattedPrice(), assetAmount, tpsl])
-
-  const calculateLiquidationPrice = () => {
+  const liquidationPrice = useMemo(() => {
     if (
       !getFormattedPrice() ||
       !assetAmount ||
@@ -122,34 +100,30 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const entryPrice = Number(getFormattedPrice())
-    const positionSize = Number(assetAmount)
-    const leverageUsed = leverage
-    const orderValue = entryPrice * positionSize
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    const maxLeverage = universe[assetIndex]?.maxLeverage || 1
 
-    // Initial margin required
-    const initialMargin = orderValue / leverageUsed
-
-    // Maintenance margin is half of initial margin
-    const maintenanceMargin = initialMargin / 2
-
-    // Margin available = Account value - maintenance margin (assuming full balance used)
-    const accountValue = initialMargin // Cross margin assumption: full margin used
-    const marginAvailable = accountValue - maintenanceMargin
-
-    const side = isBuy ? 1 : -1
-    const l = 1 / 40 // MAINTENANCE_LEVERAGE is 40 for 40x max leverage asset
-
-    const denom = positionSize * (1 - l * side)
-
-    if (denom === 0) return 0
-
-    const liqPrice = entryPrice - side * (marginAvailable / denom)
-    if (Number(usdAmount) < 10) {
-      return 'N/A'
-    }
-    return Number(liqPrice).toFixed(2)
-  }
+    return calculateLiquidationPrice({
+      entryPrice: Number(getFormattedPrice()),
+      positionSize: Number(assetAmount),
+      leverage,
+      isBuy,
+      usdAmount: Number(usdAmount),
+      isCross,
+      maxLeverage,
+      crossAccountValue
+    })
+  }, [
+    getFormattedPrice,
+    assetAmount,
+    leverage,
+    isBuy,
+    usdAmount,
+    isCross,
+    universe,
+    selectedAsset,
+    crossAccountValue
+  ])
 
   return (
     <div className="flex flex-col w-full h-full">
@@ -214,15 +188,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         </div>
       </div>
       <div className="p-2 border-white/10 border-t">
-        {isSpot && (
-          <button
-            onClick={() => setIsSlippageModalOpen(true)}
-            className="flex items-center gap-2 mb-2 px-2 text-gray-400 hover:text-white text-xs transition-colors cursor-pointer"
-          >
-            <span>Slippage</span>
-            <span className="text-white">{slippage}%</span>
-          </button>
-        )}
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
@@ -232,19 +197,38 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isCross={isCross}
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
-          isInvalid={isInvalid}
+          tpsl={tpsl}
+          usdAmount={usdAmount}
+          isSpot={isSpot}
         />
       </div>
       <div className="flex flex-col p-3 text-sm">
         <div className="flex justify-between">
           <p className="text-white/50">Liquidation Price</p>
-          <p className="text-white"> {calculateLiquidationPrice()}</p>
+          <p className="text-white">{liquidationPrice}</p>
         </div>
 
         <div className="flex justify-between">
           <p className="text-white/50">Order Value</p>
           <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
         </div>
+        <div className="flex justify-between">
+          <p className="text-white/50">Margin Required</p>
+          <p className="text-white">
+            ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
+          </p>
+        </div>
+        {
+          <div className="flex justify-between">
+            <p className="text-white/50">Slippage</p>
+            <p
+              onClick={() => setIsSlippageModalOpen(true)}
+              className="bg-primary/50 px-2 rounded-md text-white cursor-pointer"
+            >
+              Max. {slippage}%
+            </p>
+          </div>
+        }
         <div className="flex justify-between">
           <p className="text-white/50">Fees</p>
           <p className="text-white">0.0% / 0.0%</p>

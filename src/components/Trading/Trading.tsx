@@ -8,6 +8,7 @@ import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
 import useIsSpot from '@/hooks/useIsSpot'
+import OverviewBox from './OverviewBox'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -63,8 +64,13 @@ const Trading = () => {
               {components[activeTab]}
             </div>
           </div>
-          <div className="flex-1 min-h-[200px] nexon-card">
-            <UserData />
+          <div className="gap-1 grid grid-cols-18 min-h-[500px]">
+            <div className="flex-1 col-span-14 h-full nexon-card">
+              <UserData />
+            </div>
+            <div className="flex-1 col-span-4 h-full nexon-card">
+              <OverviewBox />
+            </div>
           </div>
         </div>
       </div>

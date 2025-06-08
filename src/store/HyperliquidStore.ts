@@ -20,6 +20,8 @@ interface HyperliquidState {
   spotAssetContext: IWebData2['spotAssetCtxs']
   spotState: IWebData2['spotState']
   openOrders: IWebData2['openOrders']
+  isWebSocketConnected: boolean
+  lastWebSocketUpdate: number
 }
 
 interface HyperliquidActions {
@@ -28,6 +30,8 @@ interface HyperliquidActions {
   unsubscribeFromAllMids: () => void
   subscribeWebData2: (address: Hex) => void
   unsubscribeWebData2: (address: Hex) => void
+  checkWebSocketStatus: () => void
+  getTimeSinceLastUpdate: () => string
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -39,7 +43,9 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     perpAssetContext: [],
     spotAssetContext: [],
     spotState: { balances: [] },
-    openOrders: []
+    openOrders: [],
+    isWebSocketConnected: false,
+    lastWebSocketUpdate: Date.now()
   },
   (set, get) => ({
     initSdk: async (address: Hex) => {
@@ -105,7 +111,9 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           openOrders: data.openOrders,
           perpAssetContext: data.assetCtxs,
           spotAssetContext: data.spotAssetCtxs,
-          spotState: data.spotState
+          spotState: data.spotState,
+          lastWebSocketUpdate: Date.now(),
+          isWebSocketConnected: true
         })
       })
     },
@@ -113,6 +121,27 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const sdk = get().sdk
       if (!sdk) return
       sdk.subscriptions.unsubscribeFromWebData2(address)
+    },
+    checkWebSocketStatus: () => {
+      const currentTime = Date.now()
+      const { lastWebSocketUpdate } = get()
+      const timeSinceLastUpdate = currentTime - lastWebSocketUpdate
+
+      // If no updates received in 10 seconds, consider connection lost
+      set({ isWebSocketConnected: timeSinceLastUpdate < 10000 })
+    },
+    getTimeSinceLastUpdate: () => {
+      const currentTime = Date.now()
+      const { lastWebSocketUpdate } = get()
+      const timeSinceLastUpdate = currentTime - lastWebSocketUpdate
+
+      if (timeSinceLastUpdate < 1000) {
+        return 'just now'
+      } else if (timeSinceLastUpdate < 60000) {
+        return `${Math.floor(timeSinceLastUpdate / 1000)}s ago`
+      } else {
+        return `${Math.floor(timeSinceLastUpdate / 60000)}m ago`
+      }
     }
   })
 )
@@ -127,7 +156,9 @@ export const useInitHyperliquid = () => {
       subscribeToAllMids: state.subscribeToAllMids,
       unsubscribeFromAllMids: state.unsubscribeFromAllMids,
       subscribeWebData2: state.subscribeWebData2,
-      unsubscribeWebData2: state.unsubscribeWebData2
+      unsubscribeWebData2: state.unsubscribeWebData2,
+      checkWebSocketStatus: state.checkWebSocketStatus,
+      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate
     }))
   )
 }
@@ -142,7 +173,9 @@ export const useHyperliquid = () => {
       perpAssetContext: state.perpAssetContext,
       spotAssetContext: state.spotAssetContext,
       spotState: state.spotState,
-      openOrders: state.openOrders
+      openOrders: state.openOrders,
+      isWebSocketConnected: state.isWebSocketConnected,
+      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate
     }))
   )
 }

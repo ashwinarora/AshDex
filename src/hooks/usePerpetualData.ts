@@ -48,24 +48,3 @@ export const usePerpetualData = () => {
     staleTime: 1000 * 60 * 5
   })
 }
-
-export const useSpotData = () => {
-  const { sdk } = useHyperliquid()
-  const fetchSpotData = async (sdk: Sdk): Promise<[SpotMeta, SpotAssetCtx[]]> => {
-    if (!sdk) return [{ tokens: [], universe: [] }, []]
-    try {
-      const data = await sdk.info.spot.getSpotMetaAndAssetCtxs()
-      return data
-    } catch (error) {
-      console.error('Error fetching perpetual data:', error)
-      return [{ tokens: [], universe: [] }, []]
-    }
-  }
-
-  return useQuery({
-    queryKey: ['spotData'],
-    queryFn: () => fetchSpotData(sdk!),
-    enabled: Boolean(sdk),
-    staleTime: 1000 * 60 * 5
-  })
-}

@@ -11,7 +11,7 @@ import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
 import { IconArrowDown, IconArrowUp, IconChevronDown, IconDotsVertical } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { getCoinName } from '@/utils/utils'
+import { getCoinName, generatePrecisionLabels } from '@/utils/utils'
 import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 
 interface IOrderBookProps {
@@ -37,106 +37,6 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
-
-  // Function to generate precision labels based on market price
-  const generatePrecisionLabels = (marketPrice: number) => {
-    const price = Math.abs(marketPrice)
-
-    const ranges: { threshold: number; labels: { value: string; label: string }[] }[] = [
-      {
-        threshold: 100000,
-        labels: [
-          { value: '2', label: '10000' },
-          { value: '3', label: '1000' },
-          { value: '4', label: '100' },
-          { value: '5', label: '50' },
-          { value: '6', label: '20' },
-          { value: '7', label: '10' },
-          { value: 'null', label: '1' }
-        ]
-      },
-      {
-        threshold: 1000,
-        labels: [
-          { value: '2', label: '100' },
-          { value: '3', label: '10' },
-          { value: '4', label: '1' },
-          { value: '5', label: '0.5' },
-          { value: '6', label: '0.2' },
-          { value: 'null', label: '0.1' }
-        ]
-      },
-      {
-        threshold: 100,
-        labels: [
-          { value: '2', label: '10' },
-          { value: '3', label: '1' },
-          { value: '4', label: '0.1' },
-          { value: '5', label: '0.05' },
-          { value: '6', label: '0.02' },
-          { value: 'null', label: '0.01' }
-        ]
-      },
-      {
-        threshold: 10,
-        labels: [
-          { value: '2', label: '1' },
-          { value: '3', label: '0.1' },
-          { value: '4', label: '0.01' },
-          { value: '5', label: '0.005' },
-          { value: '6', label: '0.002' },
-          { value: 'null', label: '0.001' }
-        ]
-      },
-      {
-        threshold: 1,
-        labels: [
-          { value: '2', label: '0.1' },
-          { value: '3', label: '0.01' },
-          { value: '4', label: '0.001' },
-          { value: '5', label: '0.0005' },
-          { value: '6', label: '0.0002' },
-          { value: 'null', label: '0.0001' }
-        ]
-      },
-      {
-        threshold: 0.1,
-        labels: [
-          { value: '2', label: '0.01' },
-          { value: '3', label: '0.001' },
-          { value: '4', label: '0.0001' },
-          { value: '5', label: '0.00005' },
-          { value: '6', label: '0.00002' },
-          { value: 'null', label: '0.00001' }
-        ]
-      },
-      {
-        threshold: 0.01,
-        labels: [
-          { value: '2', label: '0.001' },
-          { value: '3', label: '0.0001' },
-          { value: '4', label: '0.00001' },
-          { value: '5', label: '0.000005' },
-          { value: '6', label: '0.000002' },
-          { value: 'null', label: '0.000001' }
-        ]
-      },
-      {
-        threshold: 0.001,
-        labels: [
-          { value: '2', label: '0.0001' },
-          { value: '3', label: '0.00001' },
-          { value: '4', label: '0.000001' }
-        ]
-      }
-    ]
-
-    // Find the first matching range
-    const matched = ranges.find((r) => price >= r.threshold)
-
-    // Fallback: smallest range if no match
-    return matched ? matched.labels : ranges[ranges.length - 1].labels
-  }
 
   useEffect(() => {
     if (!sdk || !selectedAsset) return
@@ -258,11 +158,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         // Calculate total possible rows and ensure even distribution
         const totalRows = Math.floor(availableHeight / rowHeight)
         // Ensure even number of rows for equal distribution
-        const rowsPerSection = Math.floor(totalRows / 2)
+        const rowsPerSection = Math.max(1, Math.floor(totalRows / 2))
         setVisibleRows({ sells: rowsPerSection, buys: rowsPerSection })
       } else {
         // Use Math.ceil to ensure we use all available space
-        const rows = Math.ceil(availableHeight / rowHeight)
+        const rows = Math.max(1, Math.ceil(availableHeight / rowHeight))
         setVisibleRows({ sells: rows, buys: rows })
       }
     }
@@ -340,7 +240,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 className="flex flex-col text-xs"
               >
                 {generatePrecisionLabels(allMids[selectedAsset] || 0).map((level) => (
-                  <RadioGroupItem key={level.value} value={level.value} label={level.label} />
+                  <RadioGroupItem
+                    key={level.value ?? 'null'}
+                    value={(level.value ?? 'null').toString()}
+                    label={level.label}
+                  />
                 ))}
               </RadioGroup>
             </div>

@@ -53,17 +53,15 @@ const UserData = () => {
   const [activeTab, setActiveTab] = useState<number>(0)
 
   return (
-    <div className="w-full">
-      <div className="border-b w-full flex justify-between items-center border-white/10">
-        <nav className="flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+    <div className="w-full h-full">
+      <div className="flex justify-between items-center border-white/10 border-b w-full">
+        <nav className="flex">
           {tabs?.map((tab, index) => (
             <button
               key={tab.header}
               onClick={() => setActiveTab(index)}
-              className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
-                activeTab === index
-                  ? 'border-primary text-white rounded-xs'
-                  : 'border-transparent text-[#8B8BA0]'
+              className={`tab-btn xl:px-6 px-4  text-sm whitespace-nowrap ${
+                activeTab === index ? 'tab-btn-active' : 'border-transparent text-[#8B8BA0]'
               }`}
             >
               {tab.header}

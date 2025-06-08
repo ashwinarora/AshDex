@@ -11,9 +11,9 @@ import {
   getCoreRowModel,
   useReactTable,
   getSortedRowModel,
-  SortingState
+  SortingState,
+  Header
 } from '@tanstack/react-table'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
@@ -30,9 +30,10 @@ import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
 import LeverageModal from './component/Leverage'
-import { IconPencil } from '@tabler/icons-react'
+import { IconPencil, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
+import ReactiveText from '@/components/common/ReactiveText'
 
 type ColumnType = {
   key: string
@@ -131,6 +132,30 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
           )}
         </span>
       </div>
+    </div>
+  )
+}
+
+const SortableHeader = ({ header }: { header: Header<IPositionData & { meta?: { label: string } }, unknown> }) => {
+  const canSort = header.column.getCanSort()
+  const sortDirection = header.column.getIsSorted()
+
+  return (
+    <div className="flex items-center text-white/50">
+      {header.isPlaceholder
+        ? null
+        : flexRender(header.column.columnDef.header, header.getContext())}
+      {canSort && (
+        <span className="inline-block">
+          {sortDirection === 'asc' ? (
+            <IconChevronDown className="w-4 h-4" />
+          ) : sortDirection === 'desc' ? (
+            <IconChevronUp className="w-4 h-4" />
+          ) : (
+            <IconSelector className="w-4 h-4" />
+          )}
+        </span>
+      )}
     </div>
   )
 }
@@ -242,10 +267,10 @@ const Positions = () => {
           const coin = info.getValue()
           const { leverage } = info.row.original
           return (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 align-middle">
               {(coin || '').split('-')[0]}{' '}
               <button
-                className="bg-[#5F46F91A] ml-1 px-1 py-1 rounded-lg font-semibold text-[#7D67FF] text-sm cursor-pointer"
+                className="flex items-center bg-primary/10 ml-1 px-1 py-0.5 rounded-md font-semibold text-primary text-xs align-middle cursor-pointer"
                 onClick={() => {
                   setLeverageAsset(info.row.original)
                   setIsLeverageModalOpen(true)
@@ -260,70 +285,104 @@ const Positions = () => {
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: () => <HeaderWithIcons label="Position Value" />,
+        header: 'Position Value',
         meta: { label: 'Position Value' },
-        cell: (info) => `$${info.getValue().toFixed(2)}`
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
+      }),
+      helper.accessor('szi', {
+        id: 'szi',
+        header: 'Size',
+        meta: { label: 'Size' },
+        cell: (info) => (
+          <div className="flex items-center gap-1">
+            <ReactiveText
+              value={info.getValue()}
+              type="number"
+              precision={4}
+              isStatic={true}
+              suffix={info.row.original.coin}
+            />
+          </div>
+        )
       }),
       helper.accessor('entryPx', {
         id: 'entryPx',
-        header: () => <HeaderWithIcons label="Entry Price" />,
-        meta: { label: 'Entry Price' }
+        header: 'Entry Price',
+        meta: { label: 'Entry Price' },
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.display({
         id: 'markPx',
-        header: () => <HeaderWithIcons label="Mark Price" />,
+        header: 'Mark Price',
         meta: { label: 'Mark Price' },
         cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
-        header: () => <HeaderWithIcons label="Funding P&L" />,
+        header: 'Funding P&L',
         meta: { label: 'Funding P&L' }
       }),
-      helper.accessor('szi', {
-        id: 'szi',
-        header: () => <HeaderWithIcons label="Size" />,
-        meta: { label: 'Size' }
-      }),
+
       helper.accessor('unrealizedPnl', {
         id: 'unrealizedPnl',
-        header: () => <HeaderWithIcons label="Unrealized PnL" />,
-        meta: { label: 'Unrealized PnL' }
+        header: 'Unrealized PnL',
+        meta: { label: 'Unrealized PnL' },
+        cell: (info) => (
+          <ReactiveText
+            value={info.getValue()}
+            type="currency"
+            precision={2}
+            suffix={'USD'}
+            currency={''}
+            isStatic={true}
+          />
+        )
       }),
       helper.accessor('liquidationPx', {
         id: 'liquidationPx',
-        header: () => <HeaderWithIcons label="Liq. Price" />,
-        meta: { label: 'Liq. Price' }
+        header: 'Liq. Price',
+        meta: { label: 'Liq. Price' },
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-        header: () => <HeaderWithIcons label="Margin" />,
+        header: 'Margin',
         meta: { label: 'Margin' },
         cell: (info) => {
           return (
-            <span className="font-medium text-sm">
-              ${info.getValue().toFixed(2)}({info.row.original.leverage.type})
-              {info.row.original.leverage.type === 'isolated' && (
-                <button
-                  className="ml-2 cursor-pointer"
-                  onClick={() => {
-                    setIsolatedMarginAsset(info.row.original)
-                    setIsIsolatedMarginModalOpen(true)
-                  }}
-                >
-                  <IconPencil className="w-4 h-4" />
-                </button>
-              )}
-            </span>
+            <div className="flex flex-col font-medium text-sm">
+              <ReactiveText
+                value={info.getValue()}
+                type="currency"
+                precision={2}
+                currency={''}
+                suffix={'USD'}
+              />
+              <div className="flex items-center gap-1 -mt-1 text-white/50 text-xs capitalize">
+                {info.row.original.leverage.type}
+
+                {info.row.original.leverage.type === 'isolated' && (
+                  <button
+                    className="ml-2 cursor-pointer"
+                    onClick={() => {
+                      setIsolatedMarginAsset(info.row.original)
+                      setIsIsolatedMarginModalOpen(true)
+                    }}
+                  >
+                    <IconPencil className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           )
         }
       }),
       helper.display({
         id: 'status',
-        header: () => <HeaderWithIcons label="Status" />,
+        header: 'Status',
         cell: () => {
           return (
-            <span className="bg-[#1F1F30] px-2 py-1 rounded-lg font-medium text-green text-sm">
+            <span className="bg-[#1F1F30] px-2 py-1 rounded-md font-medium text-green text-xs">
               Open
             </span>
           )
@@ -389,7 +448,7 @@ const Positions = () => {
       }),
       helper.display({
         id: 'tp_sl',
-        header: () => <HeaderWithIcons label="TP/SL" />,
+        header: 'TP/SL',
         cell: ({ row }) => {
           return (
             <TPSL_Cell
@@ -437,20 +496,18 @@ const Positions = () => {
   return (
     <div className="px-3 w-full overflow-x-auto">
       <table className="hidden lg:table w-full text-white">
-        <thead>
+        <thead className=" ">
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="px-5 pt-3 pb-1 font-normal text-[#8B8BA0] text-sm text-left cursor-pointer"
+                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
                   onClick={
                     header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
                   }
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  <SortableHeader header={header} />
                 </th>
               ))}
             </tr>
@@ -458,12 +515,12 @@ const Positions = () => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-white/10 border-b">
+            <tr
+              key={row.id}
+              className={`border-white/10 border-l-5 py-1 ${row.original.szi < 0 ? 'border-l-red' : 'border-l-green'}`}
+            >
               {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="opacity-80 px-5 py-4 font-normal text-[#FFFFFF] text-sm"
-                >
+                <td key={cell.id} className="px-2 py-1 text-white text-sm align-middle">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}

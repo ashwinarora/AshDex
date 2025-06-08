@@ -13,7 +13,8 @@ export const HyperLiquidInitializer = () => {
     subscribeToAllMids,
     unsubscribeFromAllMids,
     subscribeWebData2,
-    unsubscribeWebData2
+    unsubscribeWebData2,
+    checkWebSocketStatus
   } = useInitHyperliquid()
 
   useEffect(() => {
@@ -36,6 +37,13 @@ export const HyperLiquidInitializer = () => {
       unsubscribeWebData2(address ?? zeroAddress)
     }
   }, [sdk, address, subscribeWebData2, unsubscribeWebData2])
+
+  useEffect(() => {
+    if (!sdk) return
+
+    const intervalId = setInterval(checkWebSocketStatus, 5000)
+    return () => clearInterval(intervalId)
+  }, [sdk, checkWebSocketStatus])
 
   return null
 }

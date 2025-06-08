@@ -130,7 +130,9 @@ const AmountInputSpot = ({
             <input
               type="text"
               placeholder="0.0000"
-              value={isInputUsd ? usdAmount : assetAmount}
+              value={
+                isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
+              }
               onChange={(e) =>
                 isInputUsd
                   ? updateFromUsdAmount(e.target.value)

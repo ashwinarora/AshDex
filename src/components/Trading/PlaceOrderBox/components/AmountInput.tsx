@@ -144,7 +144,9 @@ const AmountInput = ({
           <input
             type="text"
             placeholder="0.0000"
-            value={isInputUsd ? usdAmount : assetAmount}
+            value={
+              isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
+            }
             onChange={isInputUsd ? handleUSDChange : handleAssetChange}
             className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
           />
