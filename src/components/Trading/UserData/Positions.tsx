@@ -29,7 +29,7 @@ import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
-import LeverageModal from './component/Leverage'
+import LeverageModal from './component/LeverageModal'
 import { IconPencil } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
@@ -247,6 +247,7 @@ const Positions = () => {
               <button
                 className="bg-[#5F46F91A] ml-1 px-1 py-1 rounded-lg font-semibold text-[#7D67FF] text-sm cursor-pointer"
                 onClick={() => {
+                  if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                   setLeverageAsset(info.row.original)
                   setIsLeverageModalOpen(true)
                 }}
@@ -307,6 +308,7 @@ const Positions = () => {
                 <button
                   className="ml-2 cursor-pointer"
                   onClick={() => {
+                    if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                     setIsolatedMarginAsset(info.row.original)
                     setIsIsolatedMarginModalOpen(true)
                   }}
@@ -343,7 +345,10 @@ const Positions = () => {
           ) : (
             <button
               className="rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 font-medium text-[#8B8BA0] hover:text-indigo-300 text-sm transition-colors cursor-pointer"
-              onClick={() => setIsCloseAllModalOpen(true)}
+              onClick={() => {
+                if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
+                setIsCloseAllModalOpen(true)
+              }}
               type="button"
             >
               Close All
@@ -365,6 +370,7 @@ const Positions = () => {
                   <button
                     className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
+                      if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                       setClosingAsset(position.coin)
                       setIsLimitCloseModalOpen(true)
                     }}
@@ -374,6 +380,7 @@ const Positions = () => {
                   <button
                     className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
+                      if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                       setClosingAsset(position.coin)
                       setIsMarketCloseModalOpen(true)
                     }}
@@ -395,6 +402,7 @@ const Positions = () => {
             <TPSL_Cell
               asset={row.original.coin}
               openModal={() => {
+                if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                 setTpslAsset(row.original)
                 setIsTPSLModalOpen(true)
               }}

@@ -5,7 +5,6 @@ import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
 import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
-import usdcicon from '@/assets/images/usdc_icon.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
 import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
@@ -15,11 +14,15 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { hyperliquidAxios } from '@/config/axios'
+import MarginMode from './components/MarginMode'
+import LeverageMargin from './components/LeverageMargin'
+import { toast } from 'react-toastify'
 interface Order {
   price: number
   size: number
 }
-function calculateScaleOrders(
+
+function calculateScaleOrdersByUsd(
   totalUSD: number,
   startPrice: number,
   endPrice: number,
@@ -51,59 +54,82 @@ function calculateScaleOrders(
   return orders
 }
 
+function calculateScaleOrdersByAssetSize(
+  totalAssetSize: number,
+  startPrice: number,
+  endPrice: number,
+  totalOrders: number,
+  skew: number
+): Order[] {
+  const orders: Order[] = []
+  if (totalOrders === 1) {
+    orders.push({ price: startPrice, size: totalAssetSize });
+    return orders;
+  }
+  const prices: number[] = []
+  for (let i = 0; i < totalOrders; i++) {
+    const price = startPrice + (i * (endPrice - startPrice)) / (totalOrders - 1)
+    prices.push(price)
+  }
+  const adjustedSkew = skew * (endPrice / startPrice)
+  const weights: number[] = []
+  for (let i = 0; i < totalOrders; i++) {
+    const weight = 1 + (i * (adjustedSkew - 1)) / (totalOrders - 1)
+    weights.push(weight)
+  }
+  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
+  for (let i = 0; i < totalOrders; i++) {
+    const allocationSize = totalAssetSize * (weights[i] / totalWeight)
+    orders.push({
+      price: prices[i],
+      size: allocationSize
+    })
+  }
+  return orders
+}
+
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, clearingHouseState } = useHyperliquid()
+  const { agentWallet, clearingHouseState, allMids } = useHyperliquid()
   const { data: universe } = usePerpsUniverse()
-  const [totalSize, setTotalSize] = useState<number>()
+  const [totalUsd, setTotalUsd] = useState<number>()
+  const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
-  const [totalOrders, setTotalOrders] = useState<number>(10)
+  const [totalOrders, setTotalOrders] = useState<number>(2)
   const [sizeSkew, setSizeSkew] = useState<number>()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
-  const [usdPercent, setUsdPercent] = useState(0)
+  const [percent, setPercent] = useState(0)
+  const [isCross, setIsCross] = useState<boolean>(true)
+  const [leverage, setLeverage] = useState<number>(1)
+  const [isInputUsd, setIsInputUsd] = useState<boolean>(true)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return clearingHouseState.withdrawable
+    if (!isReduceOnly) return clearingHouseState.withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
-    if (!existingPosition) return clearingHouseState.withdrawable
+    if (!existingPosition) return 0
     if (existingPosition.position.szi > 0 && isBuy) return 0
     if (existingPosition.position.szi < 0 && !isBuy) return 0
-    let maxUsd = clearingHouseState.withdrawable
-    let totalUSD = 0
-    while (true) {
-      const orders = calculateScaleOrders(totalUSD, startPrice!, endPrice!, totalOrders!, sizeSkew!)
-      const totalSize = orders.reduce((sum, order) => sum + order.size, 0)
-      if (totalSize >= Math.abs(existingPosition.position.szi)) {
-        break
-      }
-      maxUsd = totalUSD
-      totalUSD += 1 // Increment totalUSD for the next iteration
-    }
-    return Math.min(maxUsd, clearingHouseState.withdrawable)
-  }, [
-    isReduceOnly,
-    clearingHouseState,
-    selectedAsset,
-    isBuy,
-    startPrice,
-    endPrice,
-    totalOrders,
-    sizeSkew
-  ])
+    const priceQuotient = allMids[selectedAsset] / existingPosition.position.entryPx
+    const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
+    return maxAllowedUsd
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!universe.length) return
     if (!agentWallet) return
     if (!currentFeeApproval) return
-    const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
-    console.log(orders)
+    if (!totalUsd || !totalAssetSize) return
+    const orders = calculateScaleOrdersByUsd(totalUsd!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
+    const usdOrders = calculateScaleOrdersByUsd(totalUsd!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
+    const assetOrders = calculateScaleOrdersByAssetSize(totalAssetSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
+    console.log({usdOrders, assetOrders})
     const assetIndex = getUniverseIndex(universe, selectedAsset)
     const szDecimals = universe[assetIndex].szDecimals
     const ordersData: OrderData[] = orders.map((order) => ({
@@ -118,22 +144,58 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         }
       }
     }))
-    const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-      orders: ordersData,
-      grouping: 'na',
-      builder: {
-        address: BUILDER_ADDRESS,
-        fee: currentFeeApproval
+    const toastId = toast.loading(`Placing ${totalOrders} orders...`)
+    try {
+      const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+        orders: ordersData,
+        grouping: 'na',
+        builder: {
+          address: BUILDER_ADDRESS,
+          fee: currentFeeApproval
+        }
+      });
+      console.log(res)
+      if (res.data.status === "ok") {
+        toast.update(toastId, {
+          render: 'Orders placed successfully!',
+          type: 'success',
+          isLoading: false,
+        })
+      } else {
+        toast.update(toastId, {
+          render: '❌' + res.data.response,
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
       }
-    })
-    console.log(res)
+    } catch (error) {
+      console.error('Error placing order:', error);
+      toast.update(toastId, {
+        render: 'Failed to place orders.',
+        type: 'error',
+        isLoading: false,
+      })
+    }
   }
-  const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+
+  const handlePercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
     const newUsdPercent = parseFloat(e.target.value) || 0
-    setUsdPercent(newUsdPercent)
-    setTotalSize((newUsdPercent * maxAllowedUsd) / 100)
+    setPercent(newUsdPercent)
+    if (isInputUsd) {
+      const totalUsd = (maxAllowedUsd * newUsdPercent) / 100
+      const totalAssetSize = totalUsd / (allMids[selectedAsset] || 1)
+      setTotalUsd(totalUsd)
+      setTotalAssetSize(totalAssetSize)
+    } else {
+      const totalAssetSize = (maxAllowedUsd / (allMids[selectedAsset] || 1)) * newUsdPercent
+      const totalUsd = totalAssetSize * (allMids[selectedAsset] || 1)
+      setTotalAssetSize(totalAssetSize)
+      setTotalUsd(totalUsd)
+    }
   }
+
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -144,7 +206,13 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="w-full h-full flex flex-col">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="flex-1 overflow-y-auto no-scrollbar">
+      <MarginMode isCross={isCross} setIsCross={setIsCross} />
+      <LeverageMargin
+        selectedAsset={selectedAsset}
+        leverage={leverage}
+        setLeverage={setLeverage}
+      />
+      <div className="flex-1 mt-6 overflow-y-auto no-scrollbar">
         <div className="flex flex-col w-full rounded-md shadow-md">
           <div className="space-y-2">
             <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
@@ -159,12 +227,6 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
                 />
                 <span className="text-white flex items-center text-xs font-medium">
-                  <Image
-                    style={{ width: 45, height: 'auto' }}
-                    src={usdcicon}
-                    className="pr-1"
-                    alt="usdcicon"
-                  />
                   USDC
                 </span>
               </div>
@@ -199,15 +261,15 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   min={0}
                   max={100}
                   step={1}
-                  value={usdPercent}
-                  onChange={handleUsdPercentChange}
+                  value={percent}
+                  onChange={handlePercentChange}
                   className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
                   style={{
                     background:
                       'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
-                      usdPercent +
+                      percent +
                       '%, #2A1B3D ' +
-                      usdPercent +
+                      percent +
                       '%, #2A1B3D 100%)'
                   }}
                 />
@@ -224,8 +286,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 <input
                   type="string"
                   className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2 flex justify-between"
-                  value={usdPercent}
-                  onChange={handleUsdPercentChange}
+                  value={percent}
+                  onChange={handlePercentChange}
                 />
                 <span className="absolute right-2 top-2.5 text-gray-500">%</span>
               </div>
@@ -235,27 +297,47 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               <div className="flex mb-1 justify-between">
                 <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
                 <span className="block text-xs font-medium text-[#8B8BA0]">
-                  Balance: {clearingHouseState?.withdrawable.toFixed(2)} USDC
+                  Max: {isInputUsd
+                    ? `${maxAllowedUsd.toFixed(2)} USDC`
+                    : `${(maxAllowedUsd / (allMids[selectedAsset] || 1)).toFixed(2)} ${selectedAsset}`}
                 </span>
               </div>
-              <div className="flex">
+              <div className="flex relative">
                 <input
-                  type="text"
-                  value={totalSize ?? '0'}
-                  onChange={(e) =>
-                    setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+                  type="number"
+                  value={
+                    isInputUsd
+                      ? totalUsd ?? ''
+                      : totalAssetSize ?? ''
                   }
-                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+                  onChange={(e) => {
+                    if (isInputUsd) {
+                      const totalUsd = parseFloat(e.target.value)
+                      const totalAssetSize = totalUsd / (allMids[selectedAsset] || 1)
+                      setTotalUsd(totalUsd)
+                      setTotalAssetSize(totalAssetSize)
+                      setPercent((totalUsd / maxAllowedUsd) * 100)
+                    } else {
+                      const totalAssetSize = parseFloat(e.target.value)
+                      const totalUsd = totalAssetSize * (allMids[selectedAsset] || 1)
+                      setTotalAssetSize(totalAssetSize)
+                      setTotalUsd(totalUsd)
+                      setPercent((totalUsd / maxAllowedUsd) * 100)
+                    }
+                  }}
+                  className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium pr-20"
+                  placeholder={isInputUsd ? "0.00" : "0.0000"}
                 />
-                <span className="text-white flex items-center text-xs font-medium">
-                  <Image
-                    src={usdcicon}
-                    style={{ width: 45, height: 'auto' }}
-                    className="pr-1"
-                    alt="usdcicon"
-                  />
-                  USDC
-                </span>
+                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+                  <select
+                    value={isInputUsd ? 'usd' : 'asset'}
+                    onChange={e => setIsInputUsd(e.target.value === 'usd')}
+                    className="bg-transparent border-none outline-none text-[#8B8BA0] text-xs cursor-pointer"
+                  >
+                    <option value="usd">USDC</option>
+                    <option value="asset">{selectedAsset}</option>
+                  </select>
+                </div>
               </div>
             </div>
             <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
@@ -334,7 +416,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           <button
             onClick={handleSubmit}
             type="submit"
-            disabled={totalSize! > maxAllowedUsd}
+            disabled={totalUsd! > maxAllowedUsd}
             className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
           >
             Scale Buy ({totalOrders} Orders)

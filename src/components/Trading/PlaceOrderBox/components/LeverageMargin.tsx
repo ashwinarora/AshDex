@@ -3,6 +3,7 @@ import { getUniverseIndex } from '@/utils/utils'
 
 import { useEffect, useMemo } from 'react'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -12,6 +13,17 @@ interface LeverageMarginProps {
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
   const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState } = useHyperliquid()
+
+  // set the leverage to the existing position leverage
+  useEffect(() => {
+    const existingPosition = clearingHouseState?.assetPositions.find((pos) => {
+      return pos.position.coin === selectedAsset
+    })
+    if (existingPosition) {
+      setLeverage(existingPosition.position.leverage.value)
+    }
+  }, [])
 
   const maxLeverage = useMemo(() => {
     if (!universe.length) return 1
