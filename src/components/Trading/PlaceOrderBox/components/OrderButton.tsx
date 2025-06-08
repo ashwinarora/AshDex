@@ -38,7 +38,7 @@ type OrderButtonProps = {
   tpsl?: TPSLType
   stopOrder?: StopOrder
   usdAmount: string
-  isSpot: boolean 
+  isSpot: boolean
 }
 
 const placePerpOrder = async ({
