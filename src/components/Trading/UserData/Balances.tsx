@@ -47,11 +47,11 @@ const Balances = () => {
       hold: clearingHouseState?.withdrawable || '-',
       entryNtl: '-'
     },
-    ...(spotState?.balances.map(state => {
-      const coinName = state.coin === "USDC" ? "USDC(Spot)" : state.coin
+    ...(spotState?.balances.map((state) => {
+      const coinName = state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
       return {
         ...state,
-        coin: coinName.replace('PERP', 'SPOT'),
+        coin: coinName.replace('PERP', 'SPOT')
       }
     }) || [])
   ]
