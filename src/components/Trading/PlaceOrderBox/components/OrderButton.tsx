@@ -39,6 +39,7 @@ type OrderButtonProps = {
   stopOrder?: StopOrder
   usdAmount: string
   isSpot: boolean
+  isInvalid?: boolean
 }
 
 const placePerpOrder = async ({

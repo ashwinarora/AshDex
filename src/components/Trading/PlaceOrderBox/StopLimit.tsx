@@ -6,6 +6,7 @@ import AmountInput from './components/AmountInput'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
 import MarginMode from './components/MarginMode'
+import useIsSpot from '@/hooks/useIsSpot'
 
 const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
@@ -16,7 +17,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-
+  const isSpot = useIsSpot()
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value
     setLimitPrice(input)
@@ -84,7 +85,8 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           leverage={leverage}
           assetAmount={assetAmount}
           limitPrice={limitPrice}
-          isInvalid={!assetAmount || !limitPrice || !stopPrice}
+          usdAmount={usdAmount}
+          isSpot={isSpot}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',

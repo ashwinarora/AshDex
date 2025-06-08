@@ -136,7 +136,11 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
   )
 }
 
-const SortableHeader = ({ header }: { header: Header<IPositionData & { meta?: { label: string } }, unknown> }) => {
+const SortableHeader = ({
+  header
+}: {
+  header: Header<IPositionData & { meta?: { label: string } }, unknown>
+}) => {
   const canSort = header.column.getCanSort()
   const sortDirection = header.column.getIsSorted()
 

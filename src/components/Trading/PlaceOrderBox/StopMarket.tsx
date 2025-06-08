@@ -7,6 +7,7 @@ import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
 import MarginMode from './components/MarginMode'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import useIsSpot from '@/hooks/useIsSpot'
 
 const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperliquid()
@@ -17,7 +18,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-
+  const isSpot = useIsSpot()
   return (
     <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
@@ -65,7 +66,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           leverage={leverage}
           assetAmount={assetAmount}
           limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
-          isInvalid={!assetAmount || !stopPrice}
+          usdAmount={usdAmount}
+          isSpot={isSpot}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',
