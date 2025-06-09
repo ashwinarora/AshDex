@@ -44,7 +44,7 @@ export const RadioGroup: React.FC<RadioGroupProps> = ({
   return (
     <RadioGroupContext.Provider value={{ value, onChange: handleChange, name }}>
       {label && <p className="text-base tracking-tight font-medium text-[#8B8BA0]">{label}</p>}
-      <div className={cn('flex flex-col gap-4', className)} role="radiogroup">
+      <div className={cn('flex flex-col gap-1', className)} role="radiogroup">
         {children}
       </div>
     </RadioGroupContext.Provider>

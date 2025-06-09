@@ -23,7 +23,7 @@ export interface IWebData2 {
 
 export interface IOpenOrder {
   coin: string
-  side: 'buy' | 'sell'
+  side: 'buy' | 'sell' | 'long' | 'short'
   limitPx: number
   sz: number
   oid: number
@@ -50,17 +50,15 @@ interface UniverseAsset {
   maxLeverage: number
 }
 
-interface AssetCtx {
-  funding: number
-  openInterest: number
+export interface AssetCtx {
+  midPx: number
   prevDayPx: number
   dayNtlVlm: number
-  premium: number
-  oraclePx: number
+  marketCap?: number
+  funding?: number
+  openInterest?: number
+  oraclePx?: number
   markPx: number
-  midPx: number
-  impactPxs: number[]
-  dayBaseVlm: number
 }
 
 interface SpotState {
@@ -75,7 +73,7 @@ interface Balance {
   entryNtl: number
 }
 
-interface SpotAssetCtx {
+export interface SpotAssetCtx {
   prevDayPx: number
   dayNtlVlm: number
   markPx: number

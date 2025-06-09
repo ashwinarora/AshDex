@@ -96,7 +96,7 @@ const ActionsHistory: React.FC<ActionsHistoryProps> = ({ actionHistoryData }) =>
                 </td>
                 <td className="py-4 md:px-0 px-7 opacity-80 text-white font-normal text-sm">
                   <span
-                    className={`font-medium  p-1.5 rounded-[8px] ${position.status === 'Success' ? 'text-[#2FA766] bg-[#213539]' : 'text-white bg-[#50505e]'}`}
+                    className={`font-medium  p-1.5 rounded-[8px] ${position.status === 'Success' ? 'text-green bg-[#213539]' : 'text-white bg-[#50505e]'}`}
                   >
                     {position.status}
                   </span>

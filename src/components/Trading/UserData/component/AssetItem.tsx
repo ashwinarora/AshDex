@@ -1,6 +1,5 @@
 'use client'
 import React, { useMemo } from 'react'
-import Image, { StaticImageData } from 'next/image'
 import {
   IconStar,
   IconStarFilled,
@@ -10,89 +9,78 @@ import {
 import { useFavorites } from '@/context/FavoritesContext'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import ReactiveText from '@/components/common/ReactiveText'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { getUniverseIndex } from '@/utils/utils'
+import useIsSpot from '@/hooks/useIsSpot'
 
 interface AssetItemProps {
   assetKey: string
-  value: string | number
+
   selectedAsset: string | null
   setSelectedAsset: (assetKey: string) => void
-  icons?: Record<string, StaticImageData>
-  isInSelectorDropdown?: boolean
-  price?: string | number
-  change24h?: string | number
-  type: 'spot' | 'perp'
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({
-  assetKey,
-  value,
-  setSelectedAsset,
-  icons = {},
-  isInSelectorDropdown = false,
-  price: propPrice,
-  change24h: propChange24h,
-  type
-}) => {
-  const { perpAssetContext } = useHyperliquid()
+const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => {
+  const { perpAssetContext, spotAssetContext } = useHyperliquid()
   const { data: universe } = usePerpsUniverse()
+  const { data: spotMeta } = useSpotMeta()
+  const { data: spotUniverse } = useSpotMeta()
   const { isFavorite, toggleFavorite } = useFavorites()
-
+  const isSpot = useIsSpot()
+  const type = isSpot ? 'spot' : 'perp'
   // Find the asset context for this asset
   const assetIndex = useMemo(() => {
-    return universe.findIndex((asset) => asset.name === assetKey)
-  }, [universe, assetKey])
-
-  const assetCtx = useMemo(() => {
-    return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
-  }, [assetIndex, perpAssetContext])
-
-  // Use price from props if available, otherwise calculate from context
-  const price = useMemo(() => {
-    // If price is provided as a prop, use that
-    if (propPrice !== undefined) return propPrice
-
-    // Otherwise, use value directly if it's a number
-    if (typeof value === 'number') return value
-
-    // If value is a string that could be a number, parse it
-    if (typeof value === 'string' && !isNaN(parseFloat(value))) {
-      return parseFloat(value)
+    if (isSpot) {
+      return spotUniverse.tokens.findIndex((asset) => asset.name === assetKey)
     }
 
-    // Last resort: try to get from asset context
-    return assetCtx?.midPx || 0
-  }, [propPrice, value, assetCtx])
+    return universe.findIndex((asset) => asset.name === assetKey)
+  }, [universe, assetKey, isSpot])
+
+  const assetCtx = useMemo(() => {
+    if (isSpot && assetIndex !== -1) {
+      return spotAssetContext[assetIndex]
+    }
+    return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
+  }, [assetIndex, perpAssetContext, spotAssetContext])
+
+  const selectedAssetContext = useMemo(() => {
+    const coin = assetKey
+
+    if (type === 'spot' && spotMeta && spotAssetContext) {
+      const spotAsset = spotMeta.tokens.find((a) => a.name === coin)
+      if (!spotAsset) return null
+
+      const spotUniverse = spotMeta.universe.find(
+        (a: { tokens: number[]; index: number }) => a.tokens[0] === spotAsset.index
+      )
+      if (!spotUniverse) return null
+
+      const spotToken = spotAssetContext[spotUniverse.index]
+      if (!spotToken) return null
+
+      const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
+      return coinDetails || null
+    }
+    const idx = getUniverseIndex(universe, assetKey)
+    return perpAssetContext[idx] || null
+  }, [assetKey, universe, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   // Calculate price change if context exists
   const priceChangeData = useMemo(() => {
     // If change24h is provided as a prop, use that
-    if (propChange24h !== undefined) {
-      let changeValue = propChange24h
+    if (selectedAssetContext?.markPx !== undefined) {
+      const changeValue =
+        ((selectedAssetContext?.markPx - selectedAssetContext?.prevDayPx) /
+          selectedAssetContext?.markPx) *
+        100
 
-      // Handle string formatting if needed
-      if (typeof changeValue === 'string') {
-        // If it's already formatted with %, just use it directly
-        if (changeValue.includes('%')) {
-          const isPositive = !changeValue.startsWith('-')
-          return {
-            value: changeValue,
-            className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
-            raw: parseFloat(changeValue) || 0,
-            isPositive
-          }
-        }
-
-        // Otherwise try to parse it as a number
-        changeValue = parseFloat(changeValue)
-      }
-
-      // Format the number
-      const isPositive = Number(changeValue) >= 0
       return {
-        value: `${isPositive ? '+' : ''}${Number(changeValue).toFixed(1)}%`,
-        className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
-        raw: Number(changeValue),
-        isPositive
+        value: changeValue,
+        className: changeValue >= 0 ? 'text-green' : 'text-red',
+        raw: changeValue,
+        isPositive: changeValue >= 0
       }
     }
 
@@ -109,22 +97,10 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
     return {
       value: `${isPositive ? '+' : ''}${percentageChange.toFixed(1)}%`,
-      className: isPositive ? 'text-[#2FA766]' : 'text-[#E2464A]',
+      className: isPositive ? 'text-green' : 'text-red',
       raw: percentageChange,
       isPositive
     }
-  }, [propChange24h, assetCtx])
-
-  // Get volume and market data
-  const volumeValue = useMemo(() => {
-    return assetCtx?.dayNtlVlm ? `$${(assetCtx.dayNtlVlm / 1000000000).toFixed(1)}B` : '-'
-  }, [assetCtx])
-
-  // Market cap is estimated/placeholder
-  const marketCap = useMemo(() => {
-    return assetCtx?.midPx
-      ? `$${((assetCtx.midPx * (assetCtx.openInterest || 1)) / 1000000000).toFixed(1)}B`
-      : '-'
   }, [assetCtx])
 
   const handleClick = () => {
@@ -133,87 +109,132 @@ const AssetItem: React.FC<AssetItemProps> = ({
 
   // Format price display
   const formattedPrice = useMemo(() => {
-    if (price === undefined || price === null || price === '') return '-'
+    const price = isSpot ? selectedAssetContext?.markPx : selectedAssetContext?.midPx
+    if (price === undefined || price === null) return '-'
 
     const numPrice = typeof price === 'string' ? parseFloat(price) : price
     if (isNaN(numPrice)) return '-'
 
     return numPrice.toLocaleString('en-US', {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2
+      maximumFractionDigits: 6
     })
-  }, [price])
+  }, [selectedAssetContext])
 
-  // Render UI based on whether it's in the selector dropdown or not
-  if (isInSelectorDropdown) {
-    return (
-      <div
-        key={assetKey}
-        className="bg-white/5 cursor-pointer rounded-lg border-white/5 last:border-b-0"
-      >
-        <div onClick={handleClick} className="flex items-center px-4 py-3 text-white gap-2">
+  return (
+    <tr
+      onClick={handleClick}
+      key={assetKey}
+      className="hover:bg-white/5 transition-colors duration-150 cursor-pointer"
+    >
+      {/* Market + Star */}
+      <td className="py-2 font-medium whitespace-nowrap">
+        <div className="flex items-center gap-2 pl-2">
           <button
             onClick={(e) => {
               e.stopPropagation()
               toggleFavorite(
                 {
                   name: assetKey,
-                  value: price.toString(),
+                  value: formattedPrice.toString(),
                   index: assetKey,
-                  price: price,
+                  price: formattedPrice,
                   change24h: priceChangeData.value
                 },
                 type
               )
             }}
-            className="text-yellow-500 hover:text-yellow-600 focus:outline-none cursor-pointer    h-5 w-5"
+            className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
             aria-label={isFavorite(assetKey, type) ? 'Remove from favorites' : 'Add to favorites'}
           >
             {isFavorite(assetKey, type) ? (
-              <IconStarFilled size={16} className="mr-1" />
+              <IconStarFilled size={16} />
             ) : (
-              <IconStar size={16} className="mr-1" />
+              <IconStar size={16} className="opacity-50 text-white" />
             )}
           </button>
-          <div className="w-3/12 flex items-center">
-            {icons[assetKey] ? (
-              <Image
-                src={icons[assetKey]}
-                alt={assetKey}
-                style={{ width: 32, height: 32 }}
-                className="h-8 w-8 rounded-full mr-2"
-              />
-            ) : (
-              <div
-                className={`rounded-full bg-[#6366F1] w-8 h-8 mr-2 flex items-center justify-center text-white font-bold`}
-              >
-                {assetKey.substring(0, 1)}
-              </div>
-            )}
-            <span className="font-medium">{assetKey}</span>
-          </div>
-          <div className="w-1/12 text-right font-medium text-gray-300">
-            {universe[assetIndex]?.maxLeverage || 50}×
-          </div>
-          <div className="w-2/12 text-right font-medium font-dm-mono">${formattedPrice}</div>
-          <div
-            className={`w-2/12 text-right font-medium ${priceChangeData.className} flex items-center justify-end font-dm-mono`}
-          >
-            {priceChangeData.isPositive ? (
-              <IconTriangleFilled size={14} className="mr-1" />
-            ) : (
-              <IconTriangleInvertedFilled size={14} className="mr-1" />
-            )}
-            {priceChangeData.value}
-          </div>
-          <div className="w-2/12 text-right font-medium text-gray-300 font-mono">{volumeValue}</div>
-          <div className="w-2/12 text-right font-medium text-gray-300 font-mono pr-4">
-            {marketCap}
-          </div>
+
+          {isSpot ? (
+            <p className="">{assetKey.split('-')[0]}/USDC</p>
+          ) : (
+            <p className="">{assetKey.split('-')[0]}-USDC</p>
+          )}
+          {!isSpot && (
+            <p className="bg-primary/40 px-2 rounded-md text-xs">
+              {universe[assetIndex]?.maxLeverage || 50}×
+            </p>
+          )}
         </div>
-      </div>
-    )
-  }
+      </td>
+
+      {/* Price */}
+      <td className="px-6 py-2 text-right">${formattedPrice}</td>
+
+      {/* 24h Change */}
+      <td className={`px-6 py-2 text-right ${priceChangeData.className}`}>
+        <div className="flex justify-end items-center">
+          {priceChangeData.isPositive ? (
+            <IconTriangleFilled size={8} className="mr-1" />
+          ) : (
+            <IconTriangleInvertedFilled size={8} className="mr-1" />
+          )}
+          {selectedAssetContext?.markPx !== undefined &&
+            selectedAssetContext?.prevDayPx !== undefined && (
+              <>
+                <ReactiveText
+                  precision={formattedPrice === '-' ? 2 : formattedPrice.split('.')[1]?.length || 2}
+                  value={selectedAssetContext.markPx - selectedAssetContext.prevDayPx}
+                  type="currency"
+                  isStatic={true}
+                />
+                (
+                {
+                  <ReactiveText
+                    precision={2}
+                    value={
+                      ((selectedAssetContext.markPx - selectedAssetContext.prevDayPx) /
+                        selectedAssetContext.markPx) *
+                      100
+                    }
+                    type="percentage"
+                    isStatic={true}
+                  />
+                }
+                )
+              </>
+            )}
+        </div>
+      </td>
+
+      {/* Volume */}
+      <td className="px-6 py-2 text-right">
+        <ReactiveText value={Number(selectedAssetContext?.dayNtlVlm || 0)} type="currency" />{' '}
+      </td>
+
+      {/* Market Cap */}
+      <td className="px-6 py-2 text-right">
+        {isSpot
+          ? selectedAssetContext?.markPx &&
+            'circulatingSupply' in selectedAssetContext && (
+              <ReactiveText
+                value={Number(
+                  selectedAssetContext.markPx * (selectedAssetContext.circulatingSupply || 1)
+                )}
+                type="currency"
+              />
+            )
+          : selectedAssetContext?.midPx &&
+            'openInterest' in selectedAssetContext && (
+              <ReactiveText
+                value={Number(
+                  selectedAssetContext.midPx * (selectedAssetContext.openInterest || 1)
+                )}
+                type="currency"
+              />
+            )}
+      </td>
+    </tr>
+  )
 }
 
 export default AssetItem

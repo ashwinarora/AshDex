@@ -12,42 +12,43 @@ const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
   const [randomize, setRandomize] = useState<boolean>(false)
 
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-1">
-          <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-            <label className="block mb-0.5 text-xs font-medium text-[#8B8BA0]">Size</label>
+          <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+            <label className="block mb-0.5 font-medium text-[#8B8BA0] text-xs">Size</label>
             <input
               type="text"
               value={size}
               onChange={(e) => setSize(Number(e.target.value))}
-              className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
             />
           </div>
-          <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-            <label className="block mb-0.5 text-xs font-medium text-[#8B8BA0]">Minutes</label>
+          <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+            <label className="block mb-0.5 font-medium text-[#8B8BA0] text-xs">Minutes</label>
             <input
               type="text"
               value={minutes}
               onChange={(e) => setMinutes(Number(e.target.value))}
-              className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
             />
           </div>
-          <label className="flex py-0.5 items-center px-4 mb-1">
+          <label className="flex items-center mb-1 px-4 py-0.5">
             <CheckBox
               label=""
               setIsChecked={(checked) => setRandomize(checked)}
               isChecked={randomize}
             />
-            <span className="text-xs font-medium text-[#E8E0F1]">Randomize</span>
+            <span className="font-medium text-[#E8E0F1] text-xs">Randomize</span>
           </label>
         </div>
       </div>
-      <div className="p-2 border-t border-white/10">
+      <div className="p-2 border-white/10 border-t">
         <button
-          className="py-2 px-4 font-bold rounded-xl w-full text-xs bg-[#5F46F9] text-white cursor-pointer"
+          className="bg-[#5F46F9] px-4 py-2 rounded-xl w-full font-bold text-white text-xs cursor-pointer"
           onClick={async () => {
+            if (!sdk) return
             const res = await sdk.exchange.placeTwapOrder({
               coin: selectedAsset,
               is_buy: isBuy,

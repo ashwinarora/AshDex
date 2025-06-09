@@ -1,5 +1,3 @@
-import Image from 'next/image'
-import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
 import { MAX_DECIMALS_PERP } from '@/utils/constants'
 import { MAX_DECIMALS_SPOT } from '@/utils/constants'
 import useIsSpot from '@/hooks/useIsSpot'
@@ -9,6 +7,7 @@ import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { useMemo, useEffect, useState } from 'react'
 import { MAX_SIG_FIGS } from '@/utils/constants'
+import { IconRefresh } from '@tabler/icons-react'
 
 interface ISetLastPriceProps {
   selectedAsset: string
@@ -160,25 +159,20 @@ const SetPrice = ({
   }
 
   return (
-    <div className="relative">
+    <div className="flex w-full">
       <input
         type="text"
         placeholder="0"
         value={limitPrice}
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
-        className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+        className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
       />
       <button
-        className="absolute inline-flex right-2 top-1/2 cursor-pointer text-xs items-center gap-x-1 -translate-y-1/2 text-[#7D67FF] font-medium"
+        className="flex items-center gap-1 ml-auto font-medium text-[#7D67FF] text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}
       >
-        <Image
-          src={refreshpurpleIcon}
-          style={{ width: 12, height: 'auto' }}
-          alt="Refresh Icon"
-          className="w-3 h-3"
-        />
+        <IconRefresh style={{ width: 12, height: 'auto' }} className="w-3 h-3" />
         Last
       </button>
     </div>

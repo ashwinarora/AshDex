@@ -109,7 +109,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
                 Auto-Close Status:
               </span>
               <span
-                className={`rounded-lg py-0.5 px-2 font-medium flex items-center gap-x-2 ${isAutoCloseWithdraw ? ' bg-[#1F1F30] text-[#2FA766]' : 'bg-[#FF3B3B1A] text-[#FF3B3B]'}`}
+                className={`rounded-lg py-0.5 px-2 font-medium flex items-center gap-x-2 ${isAutoCloseWithdraw ? ' bg-[#1F1F30] text-green' : 'bg-[#FF3B3B1A] text-[#FF3B3B]'}`}
               >
                 {isAutoCloseWithdraw ? 'Enabled' : 'Disabled'}
               </span>

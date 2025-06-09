@@ -192,8 +192,8 @@ function StakingTable() {
                       <span
                         className={`px-1.5 py-[3px] flex items-center tracking-tight text-sm font-semibold rounded-md ${
                           item.status === 'Active'
-                            ? 'bg-[#213539] text-[#2FA766]'
-                            : 'bg-[#422734] text-[#E2464A]'
+                            ? 'bg-[#213539] text-green'
+                            : 'bg-[#422734] text-red'
                         }`}
                       >
                         {item.status}

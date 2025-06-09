@@ -119,7 +119,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
               <div className="flex flex-col items-center relative">
                 <div className="absolute -right-12 min-lg:-right-18 top-2.5 w-[80%] min-lg:w-full border-t border-[#FFFFFF29]" />
                 <Image style={{ width: 20, height: 'auto' }} src={successicon} alt="successicon" />
-                <p className="text-sm text-[#2FA766] mt-2 font-semibold">Pending {activeTab}</p>
+                <p className="text-sm text-green mt-2 font-semibold">Pending {activeTab}</p>
               </div>
 
               {/* Step 2 */}
@@ -138,7 +138,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
                 )}
                 <p
                   className={`text-sm ${
-                    step >= 2 ? 'text-[#2FA766]' : 'text-[#8B8BA0]'
+                    step >= 2 ? 'text-green' : 'text-[#8B8BA0]'
                   }  mt-2 font-semibold`}
                 >
                   Confirming
@@ -160,7 +160,7 @@ const VaultConfirmingTransaction: React.FC<VaultConfirmingTransactionProps> = ({
                 )}
                 <p
                   className={`text-sm ${
-                    step >= 3 ? 'text-[#2FA766]' : 'text-[#8B8BA0]'
+                    step >= 3 ? 'text-green' : 'text-[#8B8BA0]'
                   }  mt-2 font-semibold`}
                 >
                   Sending

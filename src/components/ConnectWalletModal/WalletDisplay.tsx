@@ -62,7 +62,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
               {isWalletConnected === false && (
                 <>
                   <AlertCircle className="w-5 h-5 text-red-500" />
-                  <div className="text-[#E2464A] text-sm">Connection failed</div>
+                  <div className="text-red text-sm">Connection failed</div>
                 </>
               )}
             </div>

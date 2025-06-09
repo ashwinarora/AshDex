@@ -48,7 +48,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
             <span className="text-[#8B8BA0]">{col?.label}</span>
             <span className={col?.key === 'contract' ? 'truncate' : ''}>
               <span
-                className={`flex ${col?.key === 'status' ? 'text-[#2FA766] bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium ' : ''} item-center gap-x-2`}
+                className={`flex ${col?.key === 'status' ? 'text-green bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium ' : ''} item-center gap-x-2`}
               >
                 {item[col?.key] ?? '-'}
                 {col?.key === 'time' && (
@@ -115,7 +115,7 @@ function DepositsAndWithdrawals({ showExportButton }: DepositsAndWithdrawalsProp
                   </div>
                 </td>
                 <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
-                  <span className="text-[#2FA766] bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium text-sm">
+                  <span className="text-green bg-[#1F1F30] px-1.5 py-1 rounded-lg font-medium text-sm">
                     {order?.status}
                   </span>
                 </td>

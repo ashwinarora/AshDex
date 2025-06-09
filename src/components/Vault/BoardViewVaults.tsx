@@ -46,7 +46,7 @@ const BoardViewVaults = () => {
                 <span className="mr-1 text-sm text-[#8B8BA0] font-medium">Total funds:</span>
                 <div className="flex gap-x-1">
                   <span className="text-white text-sm font-normal">{vault.totalFunds}</span>
-                  <span className="text-[#2FA766] text-sm font-normal">+${'190.73'}</span>
+                  <span className="text-green text-sm font-normal">+${'190.73'}</span>
                 </div>
               </div>
               <div className="h-2 flex items-center justify-end mb-3">
@@ -61,7 +61,7 @@ const BoardViewVaults = () => {
                   <p className="text-sm font-normal text-[#8B8BA0]">Liquid staking</p>
                 </div>
               </div>
-              <span className="bg-[#28283d] text-[#2FA766] px-3 py-1 rounded-lg text-sm font-semibold">
+              <span className="bg-[#28283d] text-green px-3 py-1 rounded-lg text-sm font-semibold">
                 {vault.status}
               </span>
             </div>

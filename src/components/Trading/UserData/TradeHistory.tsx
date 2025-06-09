@@ -13,9 +13,10 @@ import {
 import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { hyperliquidAxios } from '@/config/axios'
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import ReactiveText from '@/components/common/ReactiveText'
 
 type ColumnType = {
   key: string
@@ -31,54 +32,51 @@ type RenderRowProps = {
 const columnHelper = createColumnHelper<ITradeHistory & { meta?: { label: string } }>()
 
 const columns = [
+  columnHelper.accessor('time', {
+    id: 'timestamp',
+    header: () => 'Time',
+    cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
+    enableSorting: false,
+    meta: { label: 'Time' }
+  }),
   columnHelper.accessor('coin', {
     id: 'coin',
-    header: () => <HeaderWithIcons label="Coin" />,
+    header: () => 'Coin',
     cell: (info) => info.getValue(),
     enableSorting: false,
     meta: { label: 'Coin' }
   }),
+  columnHelper.accessor('dir', {
+    id: 'dir',
+    header: () => 'Direction',
+    cell: (info) => (
+      <p className={`${info.getValue().includes('Close') ? 'text-green' : 'text-red'}`}>
+        {info.getValue()}
+      </p>
+    ),
+    enableSorting: false,
+    meta: { label: 'Direction' }
+  }),
   columnHelper.accessor('px', {
     id: 'px',
-    header: () => <HeaderWithIcons label="Price" />,
-    cell: (info) => info.getValue(),
+    header: () => 'Price',
+    cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
     enableSorting: true,
     sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
     meta: { label: 'Price' }
   }),
   columnHelper.accessor('sz', {
     id: 'sz',
-    header: () => <HeaderWithIcons label="Size" />,
+    header: () => 'Size',
     cell: (info) => info.getValue(),
     enableSorting: true,
     sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz),
     meta: { label: 'Size' }
   }),
-  columnHelper.accessor('side', {
-    id: 'side',
-    header: () => <HeaderWithIcons label="Side" />,
-    cell: (info) => info.getValue(),
-    enableSorting: false,
-    meta: { label: 'Side' }
-  }),
-  columnHelper.accessor('time', {
-    id: 'time',
-    header: () => <HeaderWithIcons label="Time" />,
-    cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
-    enableSorting: true,
-    sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time,
-    meta: { label: 'Time' }
-  }),
-  columnHelper.accessor('dir', {
-    id: 'dir',
-    header: () => <HeaderWithIcons label="Direction" />,
-    cell: (info) => info.getValue(),
-    enableSorting: false,
-    meta: { label: 'Direction' }
-  }),
+
   columnHelper.accessor('closedPnl', {
     id: 'closedPnl',
-    header: () => <HeaderWithIcons label="Closed PnL" />,
+    header: () => 'Closed PnL',
     cell: (info) => info.getValue(),
     enableSorting: true,
     sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
@@ -86,7 +84,7 @@ const columns = [
   }),
   columnHelper.accessor('crossed', {
     id: 'crossed',
-    header: () => <HeaderWithIcons label="Crossed" />,
+    header: () => 'Crossed',
     cell: (info) => (info.getValue() ? 'Yes' : 'No'),
     enableSorting: false,
     meta: { label: 'Crossed' }
@@ -129,19 +127,19 @@ const TradeHistoryTable: React.FC = () => {
   const getCellClass = (columnId: string, cellValue: unknown): string => {
     let customClass = 'opacity-80 font-normal text-sm'
     if (columnId === 'crossed') {
-      customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
+      customClass = 'rounded-lg px-2 py-0.5 text-xs font-medium w-fit inline-block'
       if (cellValue === true) {
-        customClass += ' bg-[#28283e] text-[#2FA766]'
+        customClass += ' bg-green/10 text-green'
       } else if (cellValue === false) {
-        customClass += ' bg-[#27273b] text-[#E2464A]'
+        customClass += ' bg-red/10 text-red'
       }
     } else if (columnId === 'side') {
       customClass += ' text-sm font-normal'
       const value = (cellValue as string)?.toLowerCase()
       if (value === 'buy') {
-        customClass += ' text-[#2FA766]'
+        customClass += ' text-green'
       } else if (value === 'sell') {
-        customClass += ' text-[#E2464A]'
+        customClass += ' text-red'
       }
     } else {
       customClass += ' text-[#FFFFFF]'
@@ -165,9 +163,9 @@ const TradeHistoryTable: React.FC = () => {
               <span
                 className={`flex items-center gap-x-2 ${
                   col?.key === 'crossed'
-                    ? `${item?.crossed ? 'bg-[#28283e] text-[#2FA766]' : 'bg-[#27273b] text-[#E2464A]'} px-1.5 py-1 w-fit rounded-lg font-medium`
+                    ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
                     : col?.key === 'side'
-                      ? 'text-[#E2464A]'
+                      ? 'text-red'
                       : ''
                 }`}
               >
@@ -186,46 +184,53 @@ const TradeHistoryTable: React.FC = () => {
 
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
-    return <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100 h-40"></div>
+    return <div className="dark:bg-gray-800 p-4 h-40 overflow-x-auto dark:text-gray-100"></div>
   }
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full hidden lg:table text-white">
+    <div className="px-3 w-full overflow-x-auto">
+      <table className="hidden lg:table w-full text-white border-collapse">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
+                  onClick={
+                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
+                  }
                 >
-                  {header.isPlaceholder ? null : (
-                    <button
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="flex items-center gap-1"
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: '▲',
-                        desc: '▼'
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </button>
-                  )}
+                  <div className="flex items-center text-white/50">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanSort() && (
+                      <span className="inline-block">
+                        {header.column.getIsSorted() === 'asc' ? (
+                          <IconChevronDown className="w-4 h-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconChevronUp className="w-4 h-4" />
+                        ) : (
+                          <IconSelector className="w-4 h-4" />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-transparent">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-white/10">
+            <tr key={row.id}>
               {row.getVisibleCells().map((cell) => {
                 const columnId = cell.column.id
                 const cellValue = cell.getValue()
                 const customClass = getCellClass(columnId, cellValue)
                 return (
-                  <td key={cell.id} className="py-4 px-7">
+                  <td key={cell.id} className="p-2 py-1 text-white text-sm align-middle">
                     <div className={customClass}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>

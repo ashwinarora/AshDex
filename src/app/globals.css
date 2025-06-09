@@ -10,9 +10,10 @@
   }
 }
 :root {
-  --background: #0a0a0a;
+  --background: #f00;
   --foreground: #ededed;
-
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   --tw-color-aggrid-background: #1f2937;
 
   --tw-color-aggrid-text: #e5e7eb;
@@ -20,13 +21,15 @@
   --tw-color-aggrid-hover: #374151;
   --tw-color-aggrid-pagination: #1f2937;
   --tw-color-aggrid-paginationtext: #ffffff;
-  --toastify-toast-background: #1c1725;
+  --toastify-toast-background: #0f0816;
 }
 
 @theme inline {
-  --color-primary: #5f46f9; /* Primary brand color */
-  --color-secondary: #0f0816; /* Secondary brand color */
+  --color-primary: #5f46f9;
+  --color-secondary: #140b1e; /* recommend 22162d*/
   --color-brand: #10b981; /* Brand accent color */
+  --color-green: #2fa766; /* Brand green */
+  --color-red: #e2464a; /* Brand Red */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -47,7 +50,7 @@
     rgba(255, 255, 255, 0.05) -10.66%,
     rgba(153, 153, 153, 0.05) 67.22%
   );
-  @apply border-2 border-white/5 backdrop-blur-2xl   shadow-md w-full;
+  @apply w-full border-2 shadow-md border-white/5 backdrop-blur-2xl;
 
   @apply max-h-min;
 }
@@ -82,8 +85,9 @@ input[type='number'] {
 body {
   color: var(--foreground);
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background: #09030f;
-
+  background: #28163b;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
   height: 100%;
   width: 100%;
   margin: 0;
@@ -158,8 +162,7 @@ input {
 }
 
 .nexon-card {
-  background: #0f0816;
-  @apply shadow-md backdrop-blur-2xl rounded-lg w-full;
+  @apply bg-secondary shadow-md backdrop-blur-2xl rounded-lg w-full;
 
   @apply max-h-min;
 }
@@ -181,7 +184,7 @@ input {
 }
 
 .nexon-button {
-  @apply bg-white/5 flex py-2 px-4 rounded-xl transition-colors duration-200 cursor-pointer;
+  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/5 rounded-md text-center items-center justify-center;
   @apply overflow-clip;
   @apply max-h-min;
   backdrop-filter: blur(16px);
@@ -199,12 +202,12 @@ button:active {
 }
 
 .nexon-primary {
-  @apply bg-primary px-4 py-2 rounded-xl text-white transition-colors duration-200 cursor-pointer;
+  @apply bg-primary text-white;
   @apply hover:bg-primary/60;
 }
 
 .tab-btn {
-  @apply w-full text-white/50   rounded-full transition-colors duration-200 cursor-pointer;
+  @apply w-full transition-colors duration-200 cursor-pointer text-white/50;
 }
 
 .tab-btn:hover {
@@ -212,8 +215,7 @@ button:active {
 }
 
 .tab-btn-active {
-  @apply font-semibold text-primary;
-  @apply hover:text-primary;
+  @apply py-3 font-extrabold text-white border-b-3 border-primary bg-primary/10;
 }
 
 .tab-btn-disabled {

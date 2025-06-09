@@ -31,16 +31,16 @@ const CheckBox: React.FC<CheckBoxProps> = ({
       {toggleStyle === 'pill' ? (
         <button
           type="button"
-          className={`relative w-5 h-5 rounded-full transition-colors duration-200 ${checked ? 'bg-primary' : 'bg-[#1A1332]'} border border-[#FFFFFF0F]`}
+          className={`relative w-5 h-5 rounded-full  transition-colors duration-200 ${checked ? 'bg-primary' : 'bg-[#1A1332]'} border border-[#FFFFFF0F]`}
           onClick={handleChange}
         >
           <span
-            className={`absolute left-0.5 top-0.5 w-4 h-4 rounded-full bg-white transition-transform duration-200 ${checked ? 'translate-x-1' : ''}`}
+            className={`absolute left-0.5 top-0.5 w-4 h-4 rounded-full  bg-white transition-transform duration-200 ${checked ? 'translate-x-1' : ''}`}
           />
         </button>
       ) : (
         <div
-          className={`h-4 w-4 rounded-md border border-[#ffffff0f] bg-[#0F081680] ${checked ? 'bg-primary' : ''} peer-checked:hidden flex items-center justify-center transition-all`}
+          className={`h-4 w-4 rounded  border border-[#ffffff0f] bg-[#0F081680] ${checked ? 'bg-primary' : ''} peer-checked:hidden flex items-center justify-center transition-all`}
           onClick={handleChange}
         >
           {checked && (
@@ -48,7 +48,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({
           )}
         </div>
       )}
-      <span className="checkbox-text text-[#E8E0F1]">{label}</span>
+      <span className="text-[#E8E0F1] checkbox-text">{label}</span>
     </label>
   )
 }

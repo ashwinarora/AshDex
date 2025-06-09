@@ -460,7 +460,7 @@ export const VAULT_ACTION_OPTIONS = [
     key: 'closeVault',
     label: 'Close Vault',
     icon: lockoutlineicon,
-    textColor: 'text-[#E2464A]'
+    textColor: 'text-red'
   }
 ] as const
 

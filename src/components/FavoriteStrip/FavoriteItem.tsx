@@ -1,5 +1,4 @@
 'use client'
-import { IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react'
 
 interface FavoriteItemProps {
   favorite?: {
@@ -56,8 +55,8 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
         : false
 
   const priceChangeClass = isPositiveChange
-    ? 'text-[#2FA766]' // green for positive
-    : 'text-[#E2464A]' // red for negative
+    ? 'text-green' // green for positive
+    : 'text-red' // red for negative
 
   // Get just the percentage part
   const percentageOnly = getPercentageOnly(favorite.change24h)
@@ -65,7 +64,7 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
   return (
     <div
       onClick={() => setSelectedAsset(favorite.name)}
-      className="flex justify-center items-center gap-1 hover:bg-white/5 px-3 pt-1 pb-2 h-full cursor-pointer"
+      className="flex justify-center items-center gap-1 hover:bg-white/5 px-3 py-1 h-full cursor-pointer"
     >
       {/* <Image
         src={starticon}
@@ -74,21 +73,22 @@ const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
         className="flex-shrink-0 my-auto w-4 h-4"
       /> */}
       <span className="my-auto font-medium text-[#E8E0F1] text-sm">{favorite.name}</span>
-      {/* <span className="my-auto text-[12px] text-gray-400">
+
+      <div className={`text-[12px] ${priceChangeClass} my-auto flex items-center`}>
+        {/* {isPositiveChange ? (
+          <IconTriangleFilled size={12} className="mr-1" />
+        ) : (
+          <IconTriangleInvertedFilled size={12} className="mr-1" />
+        )} */}
+        {percentageOnly}
+      </div>
+      <span className="my-auto text-[12px] text-gray-400">
         {favorite.price
           ? typeof favorite.price === 'string'
             ? favorite.price
             : `$${favorite.price}`
           : '-/-'}
-      </span> */}
-      <div className={`text-[12px] ${priceChangeClass} my-auto flex items-center`}>
-        {isPositiveChange ? (
-          <IconTriangleFilled size={12} className="mr-1" />
-        ) : (
-          <IconTriangleInvertedFilled size={12} className="mr-1" />
-        )}
-        {percentageOnly}
-      </div>
+      </span>
     </div>
   )
 }
