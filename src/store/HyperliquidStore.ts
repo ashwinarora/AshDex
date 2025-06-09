@@ -65,7 +65,8 @@ interface HyperliquidState {
       cancelOrder: (
         params: { coin: string; o: number } | Array<{ coin: string; o: number }>
       ) => Promise<void>
-      updateLeverage: (coin: string, type: string, value: number) => Promise<void>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      updateLeverage: (coin: string, type: string, value: number) => Promise<any>
       setReferrer: (code: string) => Promise<{ status: string }>
       placeTwapOrder: (params: {
         coin: string
@@ -76,6 +77,8 @@ interface HyperliquidState {
         reduce_only: boolean
       }) => Promise<unknown>
       updateIsolatedMargin: (coin: string, isBuy: boolean, amount: number) => Promise<unknown>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      usdTransfer: (destination: string, amount: number) => Promise<any>
     }
     connect: () => Promise<void>
   } | null

@@ -1,17 +1,21 @@
 import React, { useState } from 'react'
 import SmallModal from '../../../common/SmallModal'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { toast } from 'react-toastify'
 
 interface SendModalProps {
   isOpen: boolean
   onClose: () => void
-  maxAmount: number
 }
 
-const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, maxAmount }) => {
+const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose }) => {
   const [destination, setDestination] = useState('')
-  const [accountType, setAccountType] = useState('Spot Account')
+  const [accountType, setAccountType] = useState('')
   const [token, setToken] = useState('USDC')
   const [amount, setAmount] = useState('')
+
+  const { clearingHouseState, sdk } = useHyperliquid()
+  const maxAmount = clearingHouseState?.withdrawable || 0
 
   return (
     <SmallModal isOpen={isOpen} onClose={onClose} heading="Send Tokens">
@@ -47,7 +51,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, maxAmount }) => 
           <div className="flex justify-between text-xs text-[#E8E0F1] mb-1">
             <span>Amount</span>
             <span
-              className="text-[#00E0CA] cursor-pointer"
+              className="text-[#7A6FA7] cursor-pointer"
               onClick={() => setAmount(maxAmount.toString())}
             >
               MAX: {maxAmount.toLocaleString()} {token}
@@ -64,10 +68,29 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, maxAmount }) => 
           />
         </div>
         <button
-          className="w-full mt-2 py-2 bg-[#23404A] text-[#E8E0F1] font-semibold rounded-lg hover:bg-[#00bfae] hover:text-[#18122B] transition disabled:opacity-50"
+          className="w-full mt-2 py-2 bg-[#23404A] text-[#E8E0F1] font-semibold rounded-lg hover:bg-[#322944] hover:text-[#E8E0F1] transition disabled:opacity-50"
           disabled={!destination || !amount || Number(amount) <= 0 || Number(amount) > maxAmount}
-          onClick={() => {
-            /* send logic here */
+          onClick={async () => {
+            if (!sdk) return
+            const toastId = toast.loading('Sending...')
+            try {
+              const res = await sdk.exchange.usdTransfer(destination, Number(amount))
+              console.log(res)
+              toast.update(toastId, {
+                render: 'Send successful',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000
+              })
+            } catch (error) {
+              console.error('Send failed:', error)
+              toast.update(toastId, {
+                render: 'Send failed',
+                type: 'error',
+                isLoading: false,
+                autoClose: 3000
+              })
+            }
           }}
         >
           Send

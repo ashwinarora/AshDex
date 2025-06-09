@@ -2,9 +2,16 @@ import { useEffect, useState } from 'react'
 import DepositModal from '../DepositWithdraw/DepositModal'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import ReactiveText from '../common/ReactiveText'
+import WithdrawModal from '../DepositWithdraw/WithdrawModal'
+import TransferModal from './UserData/component/TransferModal'
+import SendModal from './UserData/component/SendModal'
+import { IconArrowsRightLeft } from '@tabler/icons-react'
 
 function OverviewBox() {
   const [isDepositOpen, setIsDepositOpen] = useState(false)
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const { clearingHouseState } = useHyperliquid()
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState(0)
 
@@ -34,23 +41,37 @@ function OverviewBox() {
   return (
     <>
       <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
+      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
+      <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
+      <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
       <div className="w-full h-full">
         <div className="flex flex-col justify-center gap-3 p-2 w-full">
-          <button onClick={() => setIsDepositOpen(true)} className="flex nexon-button">
-            Deposit
-          </button>
           <div className="flex gap-3">
             <button
               onClick={() => setIsDepositOpen(true)}
-              className="w-full nexon-button nexon-primary"
+              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
             >
-              Transfer
-            </button>{' '}
+              Deposit
+            </button>
             <button
-              onClick={() => setIsDepositOpen(true)}
-              className="w-full nexon-button nexon-primary"
+              onClick={() => setIsWithdrawOpen(true)}
+              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
             >
               Withdraw
+            </button>
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setIsTransferModalOpen(true)}
+              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+            >
+              Perps <IconArrowsRightLeft stroke={2} className="inline mx-2" /> Spot
+            </button>
+            <button
+              onClick={() => setIsSendModalOpen(true)}
+              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+            >
+              Send
             </button>
           </div>
         </div>

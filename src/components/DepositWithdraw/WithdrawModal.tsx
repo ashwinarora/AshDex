@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { ChevronDown, X } from 'lucide-react'
+import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
-import Modal from '../common/Modal'
+import SmallModal from '../common/SmallModal'
 import arbitrum from '@/assets/images/arbitrum.svg'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
@@ -22,21 +22,8 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { signTypedDataAsync } = useSignTypedData()
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div
-        className="w-full max-w-md max-md:max-w-sm border-white/10 border-[2px] bg-[#0F0816] max-md:p-3 p-6 rounded-2xl shadow-lg 
-          relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-start justify-between max-md:mb-0 mb-4 w-full">
-          <p className="text-lg text-[#FFFFFF] font-semibold tracking-[0em]">Withdraw to Wallet</p>
-          <button
-            onClick={onClose}
-            className="p-2 bg-white/10 rounded-full text-[#E8E0F1] hover:text-white cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+    <SmallModal isOpen={isOpen} onClose={onClose} heading="Withdraw to Wallet">
+      <div className="w-full">
         <div className="border-2 max-md:mt-4 border-white/10 rounded-md bg-[#FFFFFF0F] pl-4 py-3 text-white text-sm mb-6 flex items-center justify-between">
           <span className="text-[#8B8BA0] text-sm font-medium">Withdraw Cain</span>
           <div className="relative w-1/4 text-white tracking-normal flex items-center gap-x-1 text-sm font-medium">
@@ -125,7 +112,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           </button>
         </div>
       </div>
-    </Modal>
+    </SmallModal>
   )
 }
 
