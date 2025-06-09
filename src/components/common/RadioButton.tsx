@@ -29,7 +29,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
   return (
     <label
       className={cn(
-        'flex items-center gap-2 cursor-pointer',
+        'flex items-center gap-2 cursor-pointer hover:bg-primary/20 rounded-md p-1 px-2',
         className,
         isBackground && 'max-sm:bg-white/10 max-sm:rounded-lg max-sm:p-3'
       )}
@@ -46,19 +46,17 @@ const RadioButton: React.FC<RadioButtonProps> = ({
         />
         <div
           className={cn(
-            'h-5.5 w-5.5 rounded-full bg-[rgba(15,8,22,0.5)] border-2 border-[rgba(255,255,255,0.16)]',
+            'h-4 w-4 rounded-full bg-[rgba(15,8,22,0.5)] border-2 border-[rgba(255,255,255,0.16)]',
             'peer-checked:border-primary border-2',
             'transition-all duration-200'
           )}
         >
           {checked && (
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-primary rounded-full" />
+            <div className="absolute w-2 h-2 transform -translate-x-1/2 -translate-y-1/2 rounded-full top-1/2 left-1/2 bg-primary" />
           )}
         </div>
       </div>
-      {label && (
-        <span className="text-[#E8E0F1] text-base font-medium tracking-tight">{label}</span>
-      )}
+      {label && <span className="text-[#E8E0F1] text-xs font-medium tracking-tight">{label}</span>}
     </label>
   )
 }

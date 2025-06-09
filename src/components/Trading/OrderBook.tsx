@@ -3,14 +3,16 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import Image from 'next/image'
 import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
-import ThreeDot from '../../assets/images/three_dot.svg'
-// import Filter1 from '../../assets/images/filter_1.svg'
-// import Filter2 from '../../assets/images/filter_2.svg'
-// import Filter3 from '../../assets/images/filter_3.svg'
+import Filter1 from '../../assets/images/tabler-icon-layout-filled.svg'
+import Filter2 from '../../assets/images/tabler-icon-layout-filledAlt.svg'
+import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
+
 import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
-import { IconArrowDown, IconArrowUp } from '@tabler/icons-react'
+import { IconArrowDown, IconArrowUp, IconChevronDown, IconDotsVertical } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { getCoinName, generatePrecisionLabels } from '@/utils/utils'
+import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -24,19 +26,47 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
   const sellsContainerRef = useRef<HTMLDivElement>(null)
+  const buysContainerRef = useRef<HTMLDivElement>(null)
+  const [visibleRows, setVisibleRows] = useState<{ sells: number; buys: number }>({
+    sells: 10,
+    buys: 9
+  })
+  const [selectedLayoutType, setSelectedLayouttype] = useState<1 | 2 | 3>(1)
+  const [selectedPrecision, setSelectedPrecision] = useState<string>('4')
+  const [showPrecisionSelector, setShowPrecisionSelector] = useState<boolean>(false)
+  const [spread, setSpread] = useState<number>(0.0)
+  const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
+  const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
 
   useEffect(() => {
     if (!sdk || !selectedAsset) return
 
-    setIsLoading(true)
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, (data: WsBook) => {
+    const coin = selectedAsset // ✅ must match what you use in subscribe
+    const nSigFigs = Number(selectedPrecision)
+    let mantissa = null
+    const handler = (data: WsBook) => {
       setL2Book(data)
       setIsLoading(false)
-    })
-    return () => {
-      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset)
     }
-  }, [selectedAsset, sdk])
+
+    setIsLoading(true)
+    if (nSigFigs === 5) {
+      mantissa = 5
+    } else if (nSigFigs === 6) {
+      mantissa = 2
+    } else if (nSigFigs === 7) {
+      mantissa = null
+    }
+    sdk.subscriptions.subscribeToL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa, handler)
+    console.log('SUBSCRIBE ->', { coin, nSigFigs, mantissa })
+
+    // ✅ Cleanup is guaranteed to run BEFORE next effect
+    return () => {
+      //const prevNSigFigs = Number(prevPrecision ?? selectedPrecision)
+      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
+      console.log('UNSUBSCRIBE ->', { coin, nSigFigs, mantissa })
+    }
+  }, [sdk, selectedAsset, selectedPrecision])
 
   const processOrders = (orders: WsLevel[]) => {
     let runningTotal = 0
@@ -48,8 +78,14 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
   const [rawBuys, rawSells] = l2Book?.levels ?? [[], []]
 
-  const sells = useMemo(() => processOrders(rawSells.slice(0, 25)), [rawSells])
-  const buys = useMemo(() => processOrders(rawBuys.slice(0, 25)), [rawBuys])
+  const sells = useMemo(
+    () => processOrders(rawSells.slice(0, visibleRows.sells)),
+    [rawSells, visibleRows.sells]
+  )
+  const buys = useMemo(
+    () => processOrders(rawBuys.slice(0, visibleRows.buys)),
+    [rawBuys, visibleRows.buys]
+  )
 
   useEffect(() => {
     if (!isLoading && sellsContainerRef.current) {
@@ -67,10 +103,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const renderSkeletonRow = (isSell: boolean, index: number) => {
     const widthClass = isSell ? sellWidths[index] : buyWidths[index]
     return (
-      <div className="relative flex justify-between py-1 px-4">
+      <div className="relative flex justify-between px-4 py-0.5">
         <Skeleton
+          className="ml-auto rounded-none"
           size={widthClass as SkeletonSize}
-          color={isSell ? 'bg-red-500/20' : 'bg-green-500/20'}
+          color={isSell ? 'bg-red/30' : 'bg-green/30'}
         />
       </div>
     )
@@ -90,119 +127,259 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     }
   }, [allMids, selectedAsset])
 
+  useEffect(() => {
+    const _spread = (Number(sells[0]?.px) - Number(buys[0]?.px)).toFixed(8)
+
+    setSpread(Number(_spread))
+    return () => {}
+  }, [buys, sells])
+
   const showTotalColumn = layout === 'vertical'
   //const showMobileHeaders = layout === 'horizontal'
+  const handlePrecision = (precision: string) => {
+    setSelectedPrecision(precision)
+    setShowPrecisionSelector(false)
+  }
+
+  // Add resize observer to calculate visible rows
+  useEffect(() => {
+    if (!sellsContainerRef.current || !buysContainerRef.current) return
+
+    const calculateVisibleRows = () => {
+      const rowHeight = 22 // Updated: py-1 (16px) + my-[1px] (2px) = 26px total per row
+      const headerHeight = 64 // Reduced from 80 to 64 (more precise measurement)
+      const priceDisplayHeight = 32 // Reduced from 40 to 32 (more precise measurement)
+
+      const containerHeight = sellsContainerRef.current?.parentElement?.clientHeight || 0
+      const availableHeight = containerHeight - headerHeight - priceDisplayHeight
+
+      // Calculate rows for each section based on layout type
+      if (selectedLayoutType === 1) {
+        // Calculate total possible rows and ensure even distribution
+        const totalRows = Math.floor(availableHeight / rowHeight)
+        // Ensure even number of rows for equal distribution
+        const rowsPerSection = Math.max(1, Math.floor(totalRows / 2))
+        setVisibleRows({ sells: rowsPerSection, buys: rowsPerSection })
+      } else {
+        // Use Math.ceil to ensure we use all available space
+        const rows = Math.max(1, Math.ceil(availableHeight / rowHeight))
+        setVisibleRows({ sells: rows, buys: rows })
+      }
+    }
+
+    const resizeObserver = new ResizeObserver(calculateVisibleRows)
+    resizeObserver.observe(sellsContainerRef.current.parentElement!)
+
+    calculateVisibleRows() // Initial calculation
+
+    return () => resizeObserver.disconnect()
+  }, [selectedLayoutType])
 
   return (
-    <div className="w-full text-gray-200 text-sm h-full flex flex-col">
-      <div className="flex px-4 py-2 justify-between">
-        <p className="text-lg text-white font-semi-bold ">Order Book</p>
-        <div className="flex items-center">
+    <div className="flex flex-col w-full h-full text-gray-200 text-sm">
+      <div className="flex justify-between items-center px-3 py-2">
+        <p className="font-semi-bold text-white text-xs">Order Book</p>
+        <div className="flex gap-2 text-white">
           <Image
-            src={ThreeDot}
-            alt="ThreeDot"
-            style={{ width: 20, height: 20 }}
-            className="w-5 h-5"
+            className={`${selectedLayoutType === 1 ? 'bg-white/10 ' : 'opacity-50'} rounded-md cursor-pointer p-1 h-6 w-6`}
+            onClick={() => setSelectedLayouttype(1)}
+            src={Filter1}
+            height={12}
+            width={12}
+            alt=""
           />
+          <Image
+            className={`${selectedLayoutType === 2 ? 'bg-white/10 ' : 'opacity-50'} rounded-md cursor-pointer p-1 h-6 w-6`}
+            onClick={() => setSelectedLayouttype(2)}
+            src={Filter2}
+            height={12}
+            width={12}
+            alt=""
+          />
+
+          <Image
+            className={`${selectedLayoutType === 3 ? 'bg-white/10 ' : 'opacity-50'} rounded-md cursor-pointer p-1 h-6 w-6`}
+            onClick={() => setSelectedLayouttype(3)}
+            src={Filter3}
+            height={12}
+            width={12}
+            alt=""
+          />
+        </div>
+        <div className="hidden items-center">
+          <IconDotsVertical className="w-4 h-4" />
         </div>
       </div>
-      {/* <div className="flex justify-between text-gray-300 pt-2 px-3 border-t border-white/10 my-1">
-        <div className="flex items-center">
-          <Image
-            src={Filter1}
-            alt="Filter1"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
-          <Image
-            src={Filter2}
-            alt="Filter2"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
-          <Image
-            src={Filter3}
-            alt="Filter3"
-            style={{ width: 20, height: 'auto' }}
-            className="w-5 h-5 mx-1"
-          />
+      <div className="flex justify-between px-3">
+        <div className="relative">
+          {/* Toggle button only */}
+          <div
+            onClick={(e) => {
+              e.preventDefault()
+              setShowPrecisionSelector((prev) => !prev)
+            }}
+            className="flex items-center gap-1 hover:bg-white/10 px-2 py-0.5 rounded-md text-white/50 hover:text-white cursor-pointer"
+          >
+            <p className="text-white text-xs">{selectedPrecision}</p>
+            <IconChevronDown className="w-4 h-4" />
+          </div>
+
+          {/* Dropdown */}
+          {showPrecisionSelector && (
+            <div
+              className="top-6 left-0 z-50 absolute flex flex-col bg-secondary shadow-xl p-1 border border-white/10 rounded-md w-max min-w-[4rem]"
+              onClick={(e) => e.stopPropagation()} // prevent bubbling
+            >
+              <RadioGroup
+                name="precision"
+                value={selectedPrecision}
+                onChange={(val) => {
+                  handlePrecision(val)
+                  setShowPrecisionSelector(false) // close AFTER change
+                }}
+                className="flex flex-col text-xs"
+              >
+                {generatePrecisionLabels(allMids[selectedAsset] || 0).map((level) => (
+                  <RadioGroupItem
+                    key={level.value ?? 'null'}
+                    value={(level.value ?? 'null').toString()}
+                    label={level.label}
+                  />
+                ))}
+              </RadioGroup>
+            </div>
+          )}
         </div>
-        <select className="text-[#8B8BA0] text-xs font-medium p-2 rounded-lg">
-          <option value="0.01">0.01</option>
-          <option value="0.1">0.1</option>
-          <option value="1">1</option>
-          <option value="10">10</option>
-          <option value="100">100</option>
-        </select>
-      </div> */}
+        <div className="relative">
+          {/* Toggle button */}
+          <div
+            onClick={() => setShowPriceInUSDSelector((prev) => !prev)}
+            className="flex items-center gap-1 hover:bg-white/10 p-0.5 px-2 rounded-md text-white/50 hover:text-white text-center align-middle cursor-pointer"
+          >
+            <p className="text-white text-xs">
+              {showPriceInUSD ? 'USD' : getCoinName(selectedAsset)}
+            </p>
+            <IconChevronDown className="w-4 h-4" />
+          </div>
+
+          {/* Dropdown */}
+          {showPriceInUSDSelector && (
+            <div
+              className="top-6 -left-5 z-50 absolute bg-secondary shadow-lg py-1 border border-white/10 rounded-md w-max min-w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <RadioGroup
+                name="priceType"
+                value={showPriceInUSD ? 'usd' : 'coin'}
+                onChange={(val) => {
+                  setShowPriceInUSD(val === 'usd')
+                  setShowPriceInUSDSelector(false)
+                }}
+                className="flex flex-col gap-1 px-1 text-xs"
+              >
+                <RadioGroupItem value="usd" label="USD" />
+                <RadioGroupItem value="coin" label={getCoinName(selectedAsset)} />
+              </RadioGroup>
+            </div>
+          )}
+        </div>
+      </div>
 
       {showTotalColumn && (
-        <div className="flex w-full justify-between text-[#E8E0F1] font-medium px-4 py-3 my-1">
-          <span className="text-xs font-medium">Price (USDC)</span>
-          <span className="text-xs font-medium">Amount (BTC)</span>
-          <span className="text-xs font-medium">Total</span>
+        <div className="flex justify-between my-1 px-3 py-1 w-full font-medium text-[#E8E0F1]">
+          <p className="font-medium text-xs text-left">Price </p>
+          <p className="font-medium text-xs">
+            Amount ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+          </p>
+          <p className="font-medium text-xs text-right">
+            Total ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+          </p>
         </div>
       )}
 
-      <div className="overflow-hidden h-full flex flex-col">
+      <div className="flex flex-col flex-1 h-full overflow-hidden">
         {/* Top - Sells */}
-        <div ref={sellsContainerRef} className="overflow-y-auto flex-col no-scrollbar h-[50%]">
+        <div
+          ref={sellsContainerRef}
+          className={`flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 2 ? 'hidden' : 'flex h-[50%] order-1'}`}
+        >
           {isLoading
-            ? Array(10)
+            ? Array(visibleRows?.sells)
                 .fill(0)
                 .map((_, i) => <div key={i}>{renderSkeletonRow(true, i)}</div>)
-            : sells
-                .map((order, index) => {
-                  const pct = maxCumulative ? (order.cumulative / maxCumulative) * 100 : 0
-                  return (
-                    <div
-                      key={`sell-${index}`}
-                      className="relative flex justify-between py-1 px-4"
-                      style={{
-                        background: `linear-gradient(to left, rgba(239,68,68,0.2) ${pct}%, transparent ${pct}%)`
-                      }}
-                    >
-                      <span className="text-[#E2464A] font-medium text-xs">{order.px}</span>
-                      <span className="text-white text-xs opacity-90">{order.sz}</span>
-                      {showTotalColumn && (
-                        <span className="text-white text-xs opacity-90">
-                          {order.cumulative.toFixed(2)}
-                        </span>
-                      )}
-                    </div>
-                  )
-                })
-                .reverse()}
+            : (selectedLayoutType !== 3 ? [...sells].reverse() : sells).map((order, index) => {
+                const pct = maxCumulative ? (order.cumulative / maxCumulative) * 100 : 0
+                return (
+                  <div
+                    key={`sell-${index}`}
+                    className="justify-between grid grid-cols-7 my-[1px] px-3 py-1"
+                    style={{
+                      background: `linear-gradient(to left, rgba(239,68,68,0.1) ${pct}%, transparent ${pct}%)`
+                    }}
+                  >
+                    <p className="flex col-span-2 font-medium text-red text-xs">{order.px}</p>
+                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
+                      {showPriceInUSD
+                        ? new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          }).format(Number(order.px) * Number(order.sz))
+                        : order.sz}
+                    </p>
+                    {showTotalColumn && (
+                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
+                        {showPriceInUSD ? (
+                          <>
+                            {new Intl.NumberFormat('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(Number((order.cumulative * Number(order.px)).toFixed(2)))}
+                          </>
+                        ) : (
+                          <>{order.cumulative.toFixed(4)}</>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                )
+              })}
         </div>
 
         {/* Middle - Fixed Price */}
         {allMids[selectedAsset] && (
-          <div className="z-10 pointer-events-none">
-            <div className="flex justify-between items-center rounded-md px-4 py-2 pointer-events-auto">
+          <div
+            className={`z-10 bg-white/5 py-2 my-0.5 pointer-events-none ${selectedLayoutType === 1 ? 'order-2' : 'order-1'}`}
+          >
+            <div className="flex justify-between items-center px-3 rounded-md pointer-events-auto">
               <p
-                className={`text-lg font-semibold font-proxima-nova ${
+                className={`text-sm font-semibold font-proxima-nova items-center flex ${
                   priceChange === 'up'
-                    ? 'text-[#2FA766]'
+                    ? 'text-green'
                     : priceChange === 'down'
-                      ? 'text-[#E2464A]'
+                      ? 'text-red'
                       : 'text-white'
                 }`}
               >
                 ${allMids[selectedAsset]}
                 {priceChange === 'up' ? (
-                  <IconArrowUp className="w-4 h-4 inline" />
+                  <IconArrowUp className="inline w-4 h-4" />
                 ) : (
-                  <IconArrowDown className="w-4 h-4 inline" />
+                  <IconArrowDown className="inline w-4 h-4" />
                 )}
               </p>
+              <p>{spread}</p>
+              <p className="text-right">{((spread / allMids[selectedAsset]) * 100).toFixed(3)}%</p>
             </div>
           </div>
         )}
 
         {/* Bottom - Buys */}
-        <div className="overflow-y-auto no-scrollbar h-[50%]">
+        <div
+          ref={buysContainerRef}
+          className={`flex-col no-scrollbar h-full order-2 ${selectedLayoutType === 3 ? 'hidden' : 'flex h-[50%] order-3'}`}
+        >
           {isLoading
-            ? Array(10)
+            ? Array(visibleRows.buys)
                 .fill(0)
                 .map((_, i) => <div key={i}>{renderSkeletonRow(false, i)}</div>)
             : buys.map((order, index) => {
@@ -210,17 +387,33 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 return (
                   <div
                     key={`buy-${index}`}
-                    className="relative flex justify-between py-1 px-4"
+                    className="justify-between grid grid-cols-7 my-[1px] px-3 py-1"
                     style={{
-                      background: `linear-gradient(to left, rgba(34,197,94,0.2) ${pct}%, transparent ${pct}%)`
+                      background: `linear-gradient(to left, rgba(34,197,94,0.1) ${pct}%, transparent ${pct}%)`
                     }}
                   >
-                    <span className="text-[#2FA766] font-medium text-xs">{order.px}</span>
-                    <span className="text-white text-xs opacity-90">{order.sz}</span>
+                    <p className="flex col-span-2 font-medium text-green text-xs">{order.px}</p>
+                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
+                      {showPriceInUSD
+                        ? new Intl.NumberFormat('en-US', {
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0
+                          }).format(Number(order.px) * Number(order.sz))
+                        : order.sz}
+                    </p>
                     {showTotalColumn && (
-                      <span className="text-white text-xs opacity-90">
-                        {order.cumulative.toFixed(2)}
-                      </span>
+                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
+                        {showPriceInUSD ? (
+                          <>
+                            {new Intl.NumberFormat('en-US', {
+                              minimumFractionDigits: 2,
+                              maximumFractionDigits: 2
+                            }).format(order.cumulative * Number(order.px))}
+                          </>
+                        ) : (
+                          <>{order.cumulative.toFixed(4)}</>
+                        )}
+                      </p>
                     )}
                   </div>
                 )

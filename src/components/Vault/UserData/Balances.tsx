@@ -64,7 +64,7 @@ const Balances = () => {
               <span
                 className={
                   col?.key === 'pnl'
-                    ? 'text-[#2FA766] font-medium'
+                    ? 'text-green font-medium'
                     : col?.key === 'contract'
                       ? 'truncate'
                       : ''
@@ -142,7 +142,7 @@ const Balances = () => {
                         {item?.usdc}
                       </td>
                       <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
-                        <span className="text-[#2FA766]">{item?.pnl}</span>
+                        <span className="text-green">{item?.pnl}</span>
                       </td>
                       <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-white font-medium text-sm">
                         {item?.contract}

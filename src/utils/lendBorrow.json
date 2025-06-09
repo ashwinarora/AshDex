@@ -6,21 +6,21 @@
         "title": "Total Market Size",
         "value": "$242.41 Mn",
         "change": "+ $2.41",
-        "changeColor": "text-[#2FA766]"
+        "changeColor": "text-green"
       },
       {
         "icon": "wallet_icon_2",
         "title": "Total Available",
         "value": "$83.41 Mn",
         "change": "- $0.41",
-        "changeColor": "text-[#E2464A]"
+        "changeColor": "text-red"
       },
       {
         "icon": "mdi_bank",
         "title": "Total Borrowed",
         "value": "$242.41 Mn",
         "change": "+ $0.1",
-        "changeColor": "text-[#2FA766]"
+        "changeColor": "text-green"
       }
     ],
     "tableData": [

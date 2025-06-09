@@ -89,7 +89,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">Current Status:</span>
               <span
-                className={`rounded-lg py-0.5 px-2 font-medium flex items-center gap-x-2 ${isDepositsDisabled ? 'bg-[#FF3B3B1A] text-[#FF3B3B]' : 'bg-[#1F1F30] text-[#2FA766]'}`}
+                className={`rounded-lg py-0.5 px-2 font-medium flex items-center gap-x-2 ${isDepositsDisabled ? 'bg-[#FF3B3B1A] text-[#FF3B3B]' : 'bg-[#1F1F30] text-green'}`}
               >
                 {isDepositsDisabled ? 'Deposits Disabled' : 'Deposits Enabled'}
               </span>

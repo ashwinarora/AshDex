@@ -6,9 +6,9 @@ import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import { useMemo } from 'react'
 import { useCoinData } from '@/hooks/useCoinData'
 import { useCoins } from '@/hooks/useCoins'
-import { usePerpetualData } from '@/hooks/usePerpetualData'
 import { useTokenDetails } from '@/hooks/useTokenDetails'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface IInfoTabProps {
   selectedAsset: string
@@ -18,14 +18,14 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
   const { sdk } = useHyperliquid()
   const { data: allCoins = [] } = useCoins()
   const { coinData, coinInfo, isLoading } = useCoinData(allCoins, selectedAsset)
-  const { data: tokens = [] } = usePerpetualData()
+  const { data: spotMeta } = useSpotMeta()
   const safeTokens = useMemo(
     () =>
-      tokens?.map((token) => ({
-        name: token?.name,
-        tokenId: token?.tokenId
+      spotMeta?.tokens.map((token) => ({
+        name: token.name,
+        tokenId: token.tokenId
       })),
-    [tokens]
+    [spotMeta]
   )
   const { data: tokenDetails } = useTokenDetails(sdk, safeTokens, selectedAsset)
 
@@ -103,7 +103,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
                   <span className="text-[#E8E0F1] flex text-sm font-medium">
                     {value}{' '}
                     {change && (
-                      <span className="ml-2 flex xl:hidden 2xl:flex text-[#2FA766]">{change}</span>
+                      <span className="ml-2 flex xl:hidden 2xl:flex text-green">{change}</span>
                     )}
                   </span>
                 </p>

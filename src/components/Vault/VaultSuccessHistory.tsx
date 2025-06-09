@@ -62,14 +62,14 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
               <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
                 Confirmation time:
               </span>
-              <span className="text-[#2FA766] text-sm font-medium flex items-center gap-x-2">
+              <span className="text-green text-sm font-medium flex items-center gap-x-2">
                 00h 00m 02s{' '}
                 <Image src={checkIcon} alt="check" style={{ width: 14, height: 'auto' }} />
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
               <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">Total time:</span>
-              <span className="text-[#2FA766] text-sm font-medium flex items-center gap-x-2">
+              <span className="text-green text-sm font-medium flex items-center gap-x-2">
                 00h 00m 04s{' '}
                 <Image src={checkIcon} alt="check" style={{ width: 14, height: 'auto' }} />
               </span>
@@ -79,7 +79,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
           <>
             <div className="flex justify-between items-center text-[#E8E0F1]  text-sm font-normal">
               <span className="opacity-50">Reason:</span>
-              <span className="text-sm font-medium text-[#E2464A]">Network problem</span>
+              <span className="text-sm font-medium text-red">Network problem</span>
             </div>
             <p className="text-[#E8E0F1] opacity-50 text-sm font-normal">
               Please try again or come back later.

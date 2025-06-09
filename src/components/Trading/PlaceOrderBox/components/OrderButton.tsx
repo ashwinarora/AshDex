@@ -7,7 +7,6 @@ import { formatPrice, getUniverseIndex } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
-import useIsSpot from '@/hooks/useIsSpot'
 import { AxiosInstance } from 'axios'
 import { PrivateKeyAccount } from 'viem'
 import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
@@ -18,6 +17,9 @@ import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import { IconWallet } from '@tabler/icons-react'
+import { useMemo } from 'react'
+import useIsSpot from '@/hooks/useIsSpot'
 
 type StopOrder = {
   isMarket: boolean
@@ -79,6 +81,7 @@ const placePerpOrder = async ({
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
   const formattedSize = assetAmount.replace(/\.?0+$/, '')
+
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
@@ -110,33 +113,33 @@ const placePerpOrder = async ({
     })
   }
   if (tpsl?.isTpsl) {
-    if (tpsl.stopLoss > 0) {
+    if (Number(tpsl.stopLoss) > 0) {
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.stopLoss, szDecimals).toString(),
+        price: formatPrice(Number(tpsl.stopLoss), szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.stopLoss, szDecimals).toString(),
+            triggerPx: formatPrice(Number(tpsl.stopLoss), szDecimals).toString(),
             tpsl: 'sl'
           }
         }
       })
     }
-    if (tpsl.takeProfit > 0) {
+    if (Number(tpsl.takeProfit) > 0) {
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(tpsl.takeProfit, szDecimals).toString(),
+        price: formatPrice(Number(tpsl.takeProfit), szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
           trigger: {
             isMarket: true,
-            triggerPx: formatPrice(tpsl.takeProfit, szDecimals).toString(),
+            triggerPx: formatPrice(Number(tpsl.takeProfit), szDecimals).toString(),
             tpsl: 'tp'
           }
         }
@@ -145,6 +148,7 @@ const placePerpOrder = async ({
   }
   const toastId = toast.loading('⏳ Loading…')
   try {
+    if (!sdk) return
     const res = await sdk.exchange.updateLeverage(
       selectedAsset,
       isCross ? 'cross' : 'isolated',
@@ -169,12 +173,17 @@ const placePerpOrder = async ({
         autoClose: 3000
       })
     } else {
-      toast.update(toastId, {
-        render: '✅ Order placed successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
-      })
+      const filled = status.filled
+      if (filled) {
+        const action = isBuy ? 'long' : 'short'
+        const assetName = selectedAsset.split('-')[0]
+        toast.update(toastId, {
+          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      }
     }
   } catch (error) {
     console.error('Error placing perp order:', error)
@@ -285,45 +294,80 @@ const OrderButton = ({
   const { data: universe } = usePerpsUniverse()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
-  const isSpot = useIsSpot()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+  const isSpot = useIsSpot()
+  // Validation logic moved from parent components
+  const isInvalid = useMemo(() => {
+    if (isSpot) {
+      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
+      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+
+      return (
+        formattedLimitPrice === '0' ||
+        formattedLimitPrice === '' ||
+        formattedAssetAmount === '0' ||
+        formattedAssetAmount === ''
+      )
+    } else {
+      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
+      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+
+      // Check if TPSL is enabled and both values are empty/zero
+      const isTpslInvalid =
+        tpsl?.isTpsl && Number(tpsl.takeProfit) === 0 && Number(tpsl.stopLoss) === 0
+
+      return (
+        formattedLimitPrice === '0' ||
+        formattedLimitPrice === '' ||
+        formattedAssetAmount === '0' ||
+        formattedAssetAmount === '' ||
+        isTpslInvalid
+      )
+    }
+  }, [limitPrice, assetAmount, tpsl, isSpot])
 
   // We handle the render logic after hooks are all set up
   if (!isRendered) return null
 
   if (!isWalletConnected) {
     return (
-      <button
-        type="button"
-        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+      <div
+        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
         onClick={() => {
           toggleConnectWalletModal()
         }}
       >
-        Connect Wallet
-      </button>
+        <IconWallet className="w-4 h-4" /> Connect Wallet
+      </div>
     )
   }
   if (!isAgentApproved || currentFeeApproval === 0) {
     return (
-      <button
-        type="button"
-        className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+      <div
+        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
         onClick={async () => openAgentModal()}
       >
-        Establish Connection
-      </button>
+        Enable Trading
+      </div>
     )
   }
   return (
     <button
       type="button"
-      className={
-        'py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer'
-      }
+      className={`py-2 rounded-md w-full  font-semibold text-white cursor-pointer ${
+        isInvalid
+          ? 'bg-white/10 hover:cursor-not-allowed '
+          : isBuy
+            ? 'bg-green hover:bg-green/80 '
+            : 'bg-red hover:bg-red/80 '
+      }`}
+      disabled={isInvalid}
       onClick={async () => {
         if (!agentWallet) return
         if (!currentFeeApproval) return
+        if (isInvalid) {
+          return
+        }
         if (isSpot) {
           await placeSpotOrder({
             spotMeta,
@@ -359,7 +403,7 @@ const OrderButton = ({
         }
       }}
     >
-      {isBuy ? 'Buy' : 'Sell'}
+      {isSpot ? (isBuy ? 'Buy' : 'Sell') : isBuy ? 'Buy/Long' : 'Sell/Short'}
     </button>
   )
 }

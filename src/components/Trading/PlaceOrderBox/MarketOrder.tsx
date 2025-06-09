@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -12,19 +12,18 @@ import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
-import { getUniverseIndex } from '@/utils/utils'
+import { getUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import SlippageModal from './components/SlippageModal'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids } = useHyperliquid()
+  const { allMids, clearingHouseState } = useHyperliquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-  const [isPostOnly, setIsPostOnly] = useState<boolean>(false)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [slippage, setSlippage] = useState<number>(1) // Default 1% slippage
   const [isSlippageModalOpen, setIsSlippageModalOpen] = useState<boolean>(false)
@@ -36,6 +35,11 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const { data: universe } = usePerpsUniverse()
+  const [crossAccountValue, setCrossAccountValue] = useState(0)
+
+  useEffect(() => {
+    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+  }, [clearingHouseState])
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
@@ -51,13 +55,9 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
-    let rawPrice: string
-    if (isSpot) {
-      const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
-      rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
-    } else {
-      rawPrice = (allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()
-    }
+
+    const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
+    const rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
 
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')
@@ -90,11 +90,59 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
   }
 
+  const liquidationPrice = useMemo(() => {
+    if (
+      !getFormattedPrice() ||
+      !assetAmount ||
+      Number(getFormattedPrice()) === 0 ||
+      Number(assetAmount) === 0
+    ) {
+      return 0
+    }
+
+    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    const maxLeverage = universe[assetIndex]?.maxLeverage || 1
+
+    return calculateLiquidationPrice({
+      entryPrice: Number(getFormattedPrice()),
+      positionSize: Number(assetAmount),
+      leverage,
+      isBuy,
+      usdAmount: Number(usdAmount),
+      isCross,
+      maxLeverage,
+      crossAccountValue
+    })
+  }, [
+    getFormattedPrice,
+    assetAmount,
+    leverage,
+    isBuy,
+    usdAmount,
+    isCross,
+    universe,
+    selectedAsset,
+    crossAccountValue
+  ])
+
   return (
-    <div className="w-full h-full flex flex-col">
+    <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="space-y-1">
+        <div className="flex flex-col gap-2">
+          {!isSpot && (
+            <>
+              {' '}
+              <MarginMode isCross={isCross} setIsCross={setIsCross} />
+              <LeverageMargin
+                selectedAsset={selectedAsset}
+                leverage={leverage}
+                setLeverage={setLeverage}
+              />
+            </>
+          )}
+          <hr className="border-white/10" />
+
           {isSpot ? (
             <AmountInputSpot
               selectedAsset={selectedAsset}
@@ -118,52 +166,73 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               isBuy={isBuy}
             />
           )}
-          {!isSpot && (
-            <>
-              <LeverageMargin
-                selectedAsset={selectedAsset}
-                leverage={leverage}
-                setLeverage={setLeverage}
-              />
-              <MarginMode isCross={isCross} setIsCross={setIsCross} />
-            </>
-          )}
-          <div className="grid grid-cols-1 gap-1 text-xs text-gray-400 border-b border-[#FFFFFF0F] pb-1 px-4">
+
+          <div className="mx-3 text-xs">
+            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+          </div>
+          <hr className="border-white/10" />
+
+          <div className="gap-2 grid grid-cols-1 px-3 text-gray-400 text-xs">
             {!isSpot && (
               <>
-                <CheckBox
-                  label="Reduce Only"
-                  setIsChecked={setIsReduceOnly}
-                  isChecked={isReduceOnly}
+                <TPSL
+                  limitPrice={getFormattedPrice()}
+                  isBuy={isBuy}
+                  leverage={leverage}
+                  tpsl={tpsl}
+                  setTpsl={setTpsl}
                 />
-                <TPSL tpsl={tpsl} setTpsl={setTpsl} />
               </>
             )}
-            <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
+          </div>
+        </div>
+        <div className="p-2 border-white/10 border-t">
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={getFormattedPrice()}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={false}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+          />
+        </div>
+        <div className="flex flex-col px-3 pb-2 text-sm">
+          <div className="flex justify-between">
+            <p className="text-white/50">Liquidation Price</p>
+            <p className="text-white">{liquidationPrice}</p>
+          </div>
+
+          <div className="flex justify-between">
+            <p className="text-white/50">Order Value</p>
+            <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-white/50">Margin Required</p>
+            <p className="text-white">
+              ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
+            </p>
+          </div>
+          {
+            <div className="flex justify-between">
+              <p className="text-white/50">Slippage</p>
+              <p
+                onClick={() => setIsSlippageModalOpen(true)}
+                className="bg-primary/50 px-2 rounded-md text-white cursor-pointer"
+              >
+                Max. {slippage}%
+              </p>
+            </div>
+          }
+          <div className="flex justify-between">
+            <p className="text-white/50">Fees</p>
+            <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>
       </div>
-      <div className="p-2 border-t border-white/10">
-        {isSpot && (
-          <button
-            onClick={() => setIsSlippageModalOpen(true)}
-            className="flex mb-2 px-2 items-center gap-2 text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
-          >
-            <span>Slippage</span>
-            <span className="text-white">{slippage}%</span>
-          </button>
-        )}
-        <OrderButton
-          isBuy={isBuy}
-          selectedAsset={selectedAsset}
-          limitPrice={getFormattedPrice()}
-          assetAmount={assetAmount}
-          leverage={leverage}
-          isCross={isCross}
-          isPostOnly={isPostOnly}
-          isReduceOnly={isReduceOnly}
-        />
-      </div>
+
       <SlippageModal
         isOpen={isSlippageModalOpen}
         onClose={() => setIsSlippageModalOpen(false)}

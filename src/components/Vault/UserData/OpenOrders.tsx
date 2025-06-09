@@ -68,11 +68,11 @@ const OpenOrders = () => {
               <span
                 className={
                   col?.key === 'direction'
-                    ? 'text-[#2FA766] font-medium'
+                    ? 'text-green font-medium'
                     : col?.key === 'type'
                       ? 'bg-[#505061] text-sm font-medium text-white px-1.5 py-0.5 rounded-lg'
                       : col?.key === 'reduceOnly'
-                        ? 'bg-[#1F1F30] text-sm font-medium text-[#E2464A] px-2 py-0.5 rounded-lg'
+                        ? 'bg-[#1F1F30] text-sm font-medium text-red px-2 py-0.5 rounded-lg'
                         : ''
                 }
               >
@@ -158,7 +158,7 @@ const OpenOrders = () => {
                         </div>
                       </div>
                     </td>
-                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#2FA766] font-medium text-sm">
+                    <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-green font-medium text-sm">
                       {order?.direction}
                     </td>
                     <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-medium text-sm">
@@ -174,7 +174,7 @@ const OpenOrders = () => {
                       {order?.price}
                     </td>
                     <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-white font-normal text-sm">
-                      <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
+                      <span className="text-red ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                         {order?.reduceOnly}
                       </span>
                     </td>

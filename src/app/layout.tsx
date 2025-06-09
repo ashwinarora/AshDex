@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from 'next/font/google'
 import { DM_Mono } from 'next/font/google'
 import Header from '@/components/Header'
 import { Provider } from './provider'
-import Footer from '@/components/Footer'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
 import { ToastProvider } from '../context/ToastContext'
@@ -15,6 +14,8 @@ import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import { HyperLiquidInitializer } from './HyperliquidInitializer'
+import FooterCompact from '@/components/FooterCompact'
+import SnackBar from '@/components/common/SnackBar'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -45,7 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary`}
+        className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary no-scrollbar`}
       >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <Provider>
@@ -57,11 +58,11 @@ export default function RootLayout({
                   <ToastProvider>
                     <FavoritesProvider>
                       <Header />
+                      <SnackBar />
                       <OnboardingModal />
                       {children}
-                      <div className="py-8 px-4 md:px-9   col-span-full">
-                        <Footer />
-                      </div>
+                      <div className="h-6"></div>
+                      <FooterCompact />
                     </FavoritesProvider>
                   </ToastProvider>
                 </UserProvider>

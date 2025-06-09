@@ -389,7 +389,7 @@ const SettingsPage = () => {
                 </div>
                 <div className="nexon-rounded-xl max-md:items-center max-md:justify-between max-md:flex-row flex-col font-medium nexon-card p-4 py-2 hidden">
                   <p className="text-sm text-[#8B8BA0]">Security Level</p>
-                  <p className="text-lg text-[#E2464A]">Low</p>
+                  <p className="text-lg text-red">Low</p>
                 </div>
               </div>
               <div className="w-full sm:w-max">

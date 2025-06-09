@@ -26,8 +26,8 @@ export const PerformanceCard: React.FC<PerformanceCardProps> = ({
       <div className="flex items-baseline gap-x-1 flex-wrap">
         <span className="text-white text-xl max-sm:text-base font-medium">{value}</span>
         <div className="font-medium max-sm:text-xs text-base">
-          {changeProfit && <span className="text-[#2FA766]">{changeProfit}</span>}
-          {changeLost && <span className="text-[#E2464A]">{changeLost}</span>}
+          {changeProfit && <span className="text-green">{changeProfit}</span>}
+          {changeLost && <span className="text-red">{changeLost}</span>}
           {period && <span className="ps-1 text-[#8B8BA0]">{period}</span>}
         </div>
       </div>

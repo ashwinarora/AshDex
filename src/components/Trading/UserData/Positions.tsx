@@ -11,9 +11,9 @@ import {
   getCoreRowModel,
   useReactTable,
   getSortedRowModel,
-  SortingState
+  SortingState,
+  Header
 } from '@tanstack/react-table'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
@@ -29,9 +29,11 @@ import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
-import LeverageModal from './component/Leverage'
-import { IconPencil } from '@tabler/icons-react'
+import LeverageModal from './component/LeverageModal'
+import { IconPencil, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
+import CloseAllModal from './component/CloseAllModal'
+import ReactiveText from '@/components/common/ReactiveText'
 
 type ColumnType = {
   key: string
@@ -49,63 +51,63 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
     <div className="flex flex-col gap-2 text-white text-sm">
       <div className="flex justify-between">
         <div className="flex items-center gap-1">
-          <span className={`w-[4px] h-[30px] rounded-sm bg-[#2FA766]`}></span>
+          <span className={`w-[4px] h-[30px] rounded-sm bg-green`}></span>
           <Image
             src={bitcoinicon}
             alt="Bitcoin"
             style={{ width: 24, height: 'auto' }}
-            className="w-6 h-6 mx-1 cursor-pointer"
+            className="mx-1 w-6 h-6 cursor-pointer"
           />
           {item?.coin}{' '}
-          <span className="text-[#7D67FF] ml-1 px-1.5 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-xs">
+          <span className="bg-[#5F46F91A] ml-1 px-1.5 py-1 rounded-lg font-semibold text-[#7D67FF] text-xs">
             {item?.leverage?.value + 'x'}
           </span>
         </div>
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Entry Price</span>{' '}
-        <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Mark Price</span>{' '}
-        <span className="text-sm font-medium">{item?.entryPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Funding P&L</span>{' '}
-        <span className="text-sm font-medium">{item?.cumFunding?.allTime}</span>{' '}
+        <span className="font-medium text-sm">{item?.cumFunding?.allTime}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Size</span>{' '}
-        <span className="text-sm font-medium">{item?.szi}</span>{' '}
+        <span className="font-medium text-sm">{item?.szi}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Unrealized PnL</span>{' '}
-        <span className="text-sm font-medium">{item?.unrealizedPnl}</span>{' '}
+        <span className="font-medium text-sm">{item?.unrealizedPnl}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Liq. Price</span>{' '}
-        <span className="text-sm text-[#E2464A] font-medium">{item?.liquidationPx}</span>{' '}
+        <span className="font-medium text-red text-sm">{item?.liquidationPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Margin</span>{' '}
-        <span className="text-sm font-medium">{item?.liquidationPx}</span>{' '}
+        <span className="font-medium text-sm">{item?.liquidationPx}</span>{' '}
       </div>
       <div className="flex justify-between">
         <span className="text-[#8B8BA0]">Status</span>{' '}
-        <span className="bg-[#1F1F30] text-sm font-medium text-[#2FA766] px-1.5 py-0.5 rounded-lg">
+        <span className="bg-[#1F1F30] px-1.5 py-0.5 rounded-lg font-medium text-green text-sm">
           {'Open'}
         </span>{' '}
       </div>
       <div className="flex justify-between gap-1">
-        <div className="flex font-medium items-center text-[#7D67FF] text-sm">
-          <span className="pr-3 py-2">Market</span>
+        <div className="flex items-center font-medium text-[#7D67FF] text-sm">
+          <span className="py-2 pr-3">Market</span>
           <span className="px-3 py-2">Limit</span>
         </div>
         <div className="flex items-center">
-          <span className="px-3 py-1 text-sm bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
             dummy
           </span>
-          <span className="px-3 text-sm py-1.5 bg-[#322944] ml-2 text-white bg-opacity-10 border-2 border-white/10 border-opacity-10 rounded-md">
+          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1.5 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
             dummy
           </span>
         </div>
@@ -115,7 +117,7 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
         <span>
           {item?.tp_sl?.tp && item?.tp_sl?.sl ? (
             <div className="flex items-center gap-x-1">
-              <span className="w-17 break-words overflow-hidden">
+              <span className="w-17 overflow-hidden break-words">
                 {item.tp_sl.tp}/{item.tp_sl.sl}
               </span>
               <Image
@@ -130,6 +132,34 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
           )}
         </span>
       </div>
+    </div>
+  )
+}
+
+const SortableHeader = ({
+  header
+}: {
+  header: Header<IPositionData & { meta?: { label: string } }, unknown>
+}) => {
+  const canSort = header.column.getCanSort()
+  const sortDirection = header.column.getIsSorted()
+
+  return (
+    <div className="flex items-center text-white/50">
+      {header.isPlaceholder
+        ? null
+        : flexRender(header.column.columnDef.header, header.getContext())}
+      {canSort && (
+        <span className="inline-block">
+          {sortDirection === 'asc' ? (
+            <IconChevronDown className="w-4 h-4" />
+          ) : sortDirection === 'desc' ? (
+            <IconChevronUp className="w-4 h-4" />
+          ) : (
+            <IconSelector className="w-4 h-4" />
+          )}
+        </span>
+      )}
     </div>
   )
 }
@@ -151,6 +181,7 @@ const Positions = () => {
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
+  const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -169,7 +200,7 @@ const Positions = () => {
 
   const closePosition = useCallback(
     async (position: IPositionData) => {
-      if (!agentWallet) return
+      if (!agentWallet || !sdk) return
       const assetIndex = getUniverseIndex(universe, position.coin)
       const szDecimals = universe[assetIndex].szDecimals
       const tif = 'Gtc'
@@ -240,11 +271,12 @@ const Positions = () => {
           const coin = info.getValue()
           const { leverage } = info.row.original
           return (
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 align-middle">
               {(coin || '').split('-')[0]}{' '}
               <button
-                className="text-[#7D67FF] cursor-pointer ml-1 px-1 py-1 rounded-lg bg-[#5F46F91A] font-semibold text-sm"
+                className="flex items-center bg-primary/10 ml-1 px-1 py-0.5 rounded-md font-semibold text-primary text-xs align-middle cursor-pointer"
                 onClick={() => {
+                  if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                   setLeverageAsset(info.row.original)
                   setIsLeverageModalOpen(true)
                 }}
@@ -258,69 +290,104 @@ const Positions = () => {
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: () => <HeaderWithIcons label="Position Value" />,
+        header: 'Position Value',
         meta: { label: 'Position Value' },
-        cell: (info) => `$${info.getValue().toFixed(2)}`
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
+      }),
+      helper.accessor('szi', {
+        id: 'szi',
+        header: 'Size',
+        meta: { label: 'Size' },
+        cell: (info) => (
+          <div className="flex items-center gap-1">
+            <ReactiveText
+              value={info.getValue()}
+              type="number"
+              precision={4}
+              isStatic={true}
+              suffix={info.row.original.coin}
+            />
+          </div>
+        )
       }),
       helper.accessor('entryPx', {
         id: 'entryPx',
-        header: () => <HeaderWithIcons label="Entry Price" />,
-        meta: { label: 'Entry Price' }
+        header: 'Entry Price',
+        meta: { label: 'Entry Price' },
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.display({
         id: 'markPx',
-        header: () => <HeaderWithIcons label="Mark Price" />,
+        header: 'Mark Price',
         meta: { label: 'Mark Price' },
         cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
-        header: () => <HeaderWithIcons label="Funding P&L" />,
+        header: 'Funding P&L',
         meta: { label: 'Funding P&L' }
       }),
-      helper.accessor('szi', {
-        id: 'szi',
-        header: () => <HeaderWithIcons label="Size" />,
-        meta: { label: 'Size' }
-      }),
+
       helper.accessor('unrealizedPnl', {
         id: 'unrealizedPnl',
-        header: () => <HeaderWithIcons label="Unrealized PnL" />,
-        meta: { label: 'Unrealized PnL' }
+        header: 'Unrealized PnL',
+        meta: { label: 'Unrealized PnL' },
+        cell: (info) => (
+          <ReactiveText
+            value={info.getValue()}
+            type="currency"
+            precision={2}
+            suffix={'USD'}
+            currency={''}
+            isStatic={true}
+          />
+        )
       }),
       helper.accessor('liquidationPx', {
         id: 'liquidationPx',
-        header: () => <HeaderWithIcons label="Liq. Price" />,
-        meta: { label: 'Liq. Price' }
+        header: 'Liq. Price',
+        meta: { label: 'Liq. Price' },
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-        header: () => <HeaderWithIcons label="Margin" />,
+        header: 'Margin',
         meta: { label: 'Margin' },
         cell: (info) => {
           return (
-            <span className="text-sm font-medium">
-              ${info.getValue().toFixed(2)}
-              {info.row.original.leverage.type === 'isolated' && `(isolated)`}
-              <button
-                className="ml-2 cursor-pointer"
-                onClick={() => {
-                  setIsolatedMarginAsset(info.row.original)
-                  setIsIsolatedMarginModalOpen(true)
-                }}
-              >
-                <IconPencil className="w-4 h-4" />
-              </button>
-            </span>
+            <div className="flex flex-col font-medium text-sm">
+              <ReactiveText
+                value={info.getValue()}
+                type="currency"
+                precision={2}
+                currency={''}
+                suffix={'USD'}
+              />
+              <div className="flex items-center gap-1 -mt-1 text-white/50 text-xs capitalize">
+                {info.row.original.leverage.type}
+
+                {info.row.original.leverage.type === 'isolated' && (
+                  <button
+                    className="ml-2 cursor-pointer"
+                    onClick={() => {
+                      setIsolatedMarginAsset(info.row.original)
+                      setIsIsolatedMarginModalOpen(true)
+                    }}
+                  >
+                    <IconPencil className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           )
         }
       }),
       helper.display({
         id: 'status',
-        header: () => <HeaderWithIcons label="Status" />,
+        header: 'Status',
         cell: () => {
           return (
-            <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
+            <span className="bg-[#1F1F30] px-2 py-1 rounded-md font-medium text-green text-xs">
               Open
             </span>
           )
@@ -332,13 +399,22 @@ const Positions = () => {
         header: () =>
           !isAgentApproved || currentFeeApproval === 0 ? (
             <button
-              className="text-sm font-medium text-[#8B8BA0] underline hover:text-indigo-300"
+              className="font-medium text-[#8B8BA0] hover:text-indigo-300 text-sm underline"
               onClick={openAgentModal}
             >
               Connect
             </button>
           ) : (
-            <span className="text-sm font-medium text-[#8B8BA0]">Close All</span>
+            <button
+              className="rounded focus:outline-none focus:ring-2 focus:ring-indigo-400 font-medium text-[#8B8BA0] hover:text-indigo-300 text-sm transition-colors cursor-pointer"
+              onClick={() => {
+                if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
+                setIsCloseAllModalOpen(true)
+              }}
+              type="button"
+            >
+              Close All
+            </button>
           ),
         cell: (info) => {
           const position = info.row.original
@@ -346,7 +422,7 @@ const Positions = () => {
             <div className="flex items-center gap-2">
               {!isAgentApproved || currentFeeApproval === 0 ? (
                 <button
-                  className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                  className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                   onClick={openAgentModal}
                 >
                   Connect
@@ -354,8 +430,9 @@ const Positions = () => {
               ) : (
                 <div className="flex items-center gap-2">
                   <button
-                    className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
+                      if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                       setClosingAsset(position.coin)
                       setIsLimitCloseModalOpen(true)
                     }}
@@ -363,8 +440,9 @@ const Positions = () => {
                     Limit
                   </button>
                   <button
-                    className="cursor-pointer hover:text-indigo-300 font-medium py-1 mr-2 hover:underline"
+                    className="mr-2 py-1 font-medium hover:text-indigo-300 hover:underline cursor-pointer"
                     onClick={() => {
+                      if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                       setClosingAsset(position.coin)
                       setIsMarketCloseModalOpen(true)
                     }}
@@ -380,12 +458,13 @@ const Positions = () => {
       }),
       helper.display({
         id: 'tp_sl',
-        header: () => <HeaderWithIcons label="TP/SL" />,
+        header: 'TP/SL',
         cell: ({ row }) => {
           return (
             <TPSL_Cell
               asset={row.original.coin}
               openModal={() => {
+                if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                 setTpslAsset(row.original)
                 setIsTPSLModalOpen(true)
               }}
@@ -418,7 +497,7 @@ const Positions = () => {
   })
 
   if (!mounted) {
-    return <div className="overflow-x-auto w-full px-3 lg:px-4 h-40"></div>
+    return <div className="px-3 lg:px-4 w-full h-40 overflow-x-auto"></div>
   }
 
   if (!isConnected) {
@@ -426,22 +505,20 @@ const Positions = () => {
   }
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full hidden lg:table text-white">
+    <div className="px-3 w-full overflow-x-auto">
+      <table className="hidden lg:table w-full text-white">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-5 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
                   onClick={
                     header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
                   }
                 >
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(header.column.columnDef.header, header.getContext())}
+                  <SortableHeader header={header} />
                 </th>
               ))}
             </tr>
@@ -449,12 +526,12 @@ const Positions = () => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-white/10">
+            <tr
+              key={row.id}
+              className={`border-white/10 border-l-5 py-1 ${row.original.szi < 0 ? 'border-l-red' : 'border-l-green'}`}
+            >
               {row.getVisibleCells().map((cell) => (
-                <td
-                  key={cell.id}
-                  className="py-4 px-5 opacity-80 text-[#FFFFFF] font-normal text-sm"
-                >
+                <td key={cell.id} className="px-2 py-1 text-white text-sm align-middle">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
@@ -513,6 +590,9 @@ const Positions = () => {
           onClose={() => setIsIsolatedMarginModalOpen(false)}
           asset={isolatedMarginAsset}
         />
+      )}
+      {isCloseAllModalOpen && (
+        <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
       )}
     </div>
   )

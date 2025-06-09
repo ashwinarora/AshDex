@@ -8,6 +8,7 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import SmallModal from '../../../common/SmallModal'
+import { toast } from 'react-toastify'
 
 interface ITransferModal {
   isOpen: boolean
@@ -75,6 +76,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
         <button
           onClick={async () => {
             if (!chainId) return
+            const toastId = toast.loading('Transferring...')
             try {
               const payload = getUsdClassTransferPayload({
                 chainId: chainId,
@@ -98,9 +100,21 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
               }
               const res = await hyperliquidAxios.post('/exchange', body)
               console.log('Transfer response:', res.data)
+              toast.update(toastId, {
+                render: 'Transfer successful',
+                type: 'success',
+                isLoading: false,
+                autoClose: 3000
+              })
               onClose()
             } catch (error) {
               console.error('Transfer failed:', error)
+              toast.update(toastId, {
+                render: 'Transfer failed',
+                type: 'error',
+                isLoading: false,
+                autoClose: 3000
+              })
             }
           }}
           className="w-full bg-primary cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold"

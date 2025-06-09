@@ -30,7 +30,7 @@ function ListViewVaults() {
 
   function StatusRenderer(params: { value: string }) {
     return (
-      <span className="bg-[#28283d] text-[#2FA766] px-2 py-1 rounded-lg text-sm font-semibold">
+      <span className="bg-[#28283d] text-green px-2 py-1 rounded-lg text-sm font-semibold">
         {params.value}
       </span>
     )
@@ -100,7 +100,7 @@ function ListViewVaults() {
               {col?.key === 'totalFunds' ? (
                 <span className="flex items-center gap-x-2">
                   {item?.totalFunds}{' '}
-                  <span className="text-[#2FA766] pt-0.5 font-normal text-xs">{'+$190,73'}</span>
+                  <span className="text-green pt-0.5 font-normal text-xs">{'+$190,73'}</span>
                 </span>
               ) : (
                 <span className={col?.key === 'contract' ? 'truncate' : ''}>
@@ -196,7 +196,7 @@ function ListViewVaults() {
                 <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">
                   <div className="flex items-center space-x-2">
                     <p>{position?.totalFunds}</p>
-                    <p className="text-[#2FA766]">${'+$190,73'}</p>
+                    <p className="text-green">${'+$190,73'}</p>
                   </div>
                 </td>
                 <td className="py-3 pr-7 opacity-80 text-white font-normal text-sm">

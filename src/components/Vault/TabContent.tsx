@@ -59,7 +59,7 @@ const TabContent: React.FC<ITabContentProps> = ({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className={`rounded-md py-1 placeholder:text-[#8B8BA0] placeholder:opacity-70 ${parseFloat(amount) <= 0 ? 'text-[#E2464A]' : 'text-white'} focus:outline-none focus:none focus:none text-base font-semibold`}
+              className={`rounded-md py-1 placeholder:text-[#8B8BA0] placeholder:opacity-70 ${parseFloat(amount) <= 0 ? 'text-red' : 'text-white'} focus:outline-none focus:none focus:none text-base font-semibold`}
             />
             <div className="flex">
               <button className="text-sm font-medium p-[8px] text-white bg-white/10 rounded-lg">
@@ -79,7 +79,7 @@ const TabContent: React.FC<ITabContentProps> = ({
           <p className="text-sm font-medium text-[#8B8BA0] mt-1 mb-3">
             {activeTab === 'Deposit' ? (
               parseFloat(amount) <= 0 ? (
-                <span className="text-[#E2464A]">Please enter an amount greater than 0 USDC</span>
+                <span className="text-red">Please enter an amount greater than 0 USDC</span>
               ) : (
                 <span>
                   Available to deposit: <span className="text-white">14.20 USDC</span>

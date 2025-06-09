@@ -16,16 +16,15 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.filter((o) =>
-      o.coin.includes(isSpot ? 'SPOT' : 'PERP')
-    ).length
+    const openOrdersLength = openOrders.length
     const tabs = [
       {
         header: 'Balances',
         element: <Balances />
       },
       {
-        header: `Open Orders (${openOrdersLength})`,
+        header: `Open Orders`,
+        count: openOrdersLength,
         element: <OpenOrders />
       },
       {
@@ -39,7 +38,8 @@ const UserData = () => {
     ]
     if (!isSpot) {
       tabs.splice(1, 0, {
-        header: `Positions (${positionsCount})`,
+        header: `Positions `,
+        count: positionsCount,
         element: <Positions />
       })
       tabs.push({
@@ -53,20 +53,23 @@ const UserData = () => {
   const [activeTab, setActiveTab] = useState<number>(0)
 
   return (
-    <div className="w-full">
-      <div className="border-b w-full flex justify-between items-center border-white/10">
-        <nav className="flex flex-wrap max-[770px]:gap-x-2 gap-x-6 px-3 -mb-px overflow-x-auto">
+    <div className="w-full h-full">
+      <div className="flex justify-between items-center border-white/10 border-b w-full">
+        <nav className="flex">
           {tabs?.map((tab, index) => (
             <button
               key={tab.header}
               onClick={() => setActiveTab(index)}
-              className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
-                activeTab === index
-                  ? 'border-primary text-white rounded-xs'
-                  : 'border-transparent text-[#8B8BA0]'
+              className={`tab-btn xl:px-6 px-4  text-xs font-normal whitespace-nowrap flex items-center gap-x-2 ${
+                activeTab === index ? 'tab-btn-active' : 'border-transparent text-[#8B8BA0]'
               }`}
             >
               {tab.header}
+              {tab.count && Number(tab.count) > 0 ? (
+                <p className="flex justify-center items-center bg-primary rounded-full w-4 h-4 aspect-square text-white text-xs">
+                  {tab.count}
+                </p>
+              ) : null}
             </button>
           ))}
         </nav>

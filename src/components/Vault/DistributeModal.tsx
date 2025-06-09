@@ -174,7 +174,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                       : index === 1
                         ? 'text-[#FFA90A]'
                         : index === 2
-                          ? 'text-[#2FA766]'
+                          ? 'text-green'
                           : 'text-white'
                   }`}
                 >

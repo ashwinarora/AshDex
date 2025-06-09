@@ -46,7 +46,7 @@ const Positions = () => {
       <div className="flex flex-col gap-2 text-white text-sm">
         <div className="flex justify-between">
           <div className="flex items-center gap-1">
-            <span className={`w-[4px] h-[30px] rounded-sm ${'bg-[#2FA766]'}`}></span>
+            <span className={`w-[4px] h-[30px] rounded-sm ${'bg-green'}`}></span>
             <Image
               src={bitcoinicon}
               alt="Bitcoin"
@@ -81,9 +81,7 @@ const Positions = () => {
         </div>
         <div className="flex justify-between">
           <span className="text-[#8B8BA0]">Liq. Price</span>{' '}
-          <span className="text-sm text-[#E2464A] font-medium">
-            {item?.position?.liquidationPx}
-          </span>{' '}
+          <span className="text-sm text-red font-medium">{item?.position?.liquidationPx}</span>{' '}
         </div>
         <div className="flex justify-between">
           <span className="text-[#8B8BA0]">Margin</span>{' '}
@@ -91,7 +89,7 @@ const Positions = () => {
         </div>
         <div className="flex justify-between">
           <span className="text-[#8B8BA0]">Status</span>{' '}
-          <span className="bg-[#1F1F30] text-sm font-medium text-[#2FA766] px-1.5 py-0.5 rounded-lg">
+          <span className="bg-[#1F1F30] text-sm font-medium text-green px-1.5 py-0.5 rounded-lg">
             {'Open'}
           </span>{' '}
         </div>
@@ -188,7 +186,7 @@ const Positions = () => {
                   <span
                     // fix later
                     className={`w-[4px] h-[36px] rounded-sm ${
-                      index % 2 === 0 ? 'bg-[#E2464A]' : 'bg-[#2FA766]'
+                      index % 2 === 0 ? 'bg-red' : 'bg-green'
                     }`}
                   ></span>
                   <Image
@@ -218,14 +216,14 @@ const Positions = () => {
               <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.unrealizedPnl}
               </td>
-              <td className="py-4 px-7 opacity-80 text-[#E2464A] font-normal text-sm">
+              <td className="py-4 px-7 opacity-80 text-red font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
               <td className="py-4 px-7 opacity-80 text-white font-normal text-sm">
                 {position.position.liquidationPx}
               </td>
               <td className="py-4 px-7 opacity-80 text-white ">
-                <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-[#2FA766] rounded-lg">
+                <span className="bg-[#1F1F30] font-medium text-sm px-2 py-1 text-green rounded-lg">
                   Open
                 </span>
               </td>

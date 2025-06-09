@@ -114,12 +114,12 @@ const OpenOrdersSpot = () => {
                 {order.filled}
               </td>
               <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
-                <span className="text-[#E2464A] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
+                <span className="text-red ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                   {order.reduceOnly}
                 </span>
               </td>
               <td className="py-2.5 pr-7 max-[1025px]:px-7 opacity-80 text-white font-normal text-sm">
-                <span className="text-[#2FA766] ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
+                <span className="text-green ml-1 px-1.5 py-1 rounded-lg bg-[#1F1F30] font-semibold text-sm">
                   {order.postOnly}
                 </span>
               </td>
