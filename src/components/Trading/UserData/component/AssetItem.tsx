@@ -11,7 +11,6 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import ReactiveText from '@/components/common/ReactiveText'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { Token } from '@/hooks/usePerpetualData'
 import { getUniverseIndex } from '@/utils/utils'
 import useIsSpot from '@/hooks/useIsSpot'
 
@@ -49,8 +48,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
   const selectedAssetContext = useMemo(() => {
     const coin = assetKey
 
-    if (isSpot && spotMeta && spotAssetContext) {
-      const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
+    if (type === 'spot' && spotMeta && spotAssetContext) {
+      const spotAsset = spotMeta.tokens.find((a) => a.name === coin)
       if (!spotAsset) return null
 
       const spotUniverse = spotMeta.universe.find(

@@ -1,12 +1,11 @@
 import { AGENT_PRIVATE_KEY, isTestnet } from '@/utils/constants'
-import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
+import { IWebData2, SpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
 import type { Hex, PrivateKeyAccount } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
-import { Candle, WsBook, HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { SpotMeta, SpotAssetCtx } from '@/hooks/usePerpetualData'
+import { Candle, WsBook, HistoricOrder, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 interface TokenDetails {
   name: string
