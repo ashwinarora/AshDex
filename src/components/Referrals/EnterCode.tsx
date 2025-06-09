@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 import successicon from '@/assets/images/success_icon.svg'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
@@ -16,10 +16,11 @@ function EnterCode() {
 
   const { mutate, isSuccess } = useMutation({
     mutationFn: async () => {
+      if (!sdk) return
       const res = await sdk.exchange.setReferrer(code)
       console.log(res)
       if (res.status === 'err') {
-        throw new Error(res)
+        throw new Error(res.status)
       }
       return res
     }
@@ -31,7 +32,7 @@ function EnterCode() {
   ) {
     return (
       <div className="flex flex-col justify-center gap-y-4 py-12">
-        <p className="text-white text-center text-base font-medium">
+        <p className="font-medium text-white text-base text-center">
           You cannot enter a code after exceeding $10,000 in volume.
         </p>
       </div>
@@ -39,11 +40,11 @@ function EnterCode() {
   } else {
     if (isSuccess) {
       return (
-        <div className="flex flex-col pt-12 gap-y-5 pb-3">
+        <div className="flex flex-col gap-y-5 pt-12 pb-3">
           <div className="flex justify-center">
             <Image src={successicon} alt="Success" style={{ width: 48, height: 'auto' }} />
           </div>
-          <p className="text-white text-center text-base font-semibold">
+          <p className="font-semibold text-white text-base text-center">
             The code has been successfully applied
           </p>
         </div>
@@ -51,7 +52,7 @@ function EnterCode() {
     } else {
       return (
         <div>
-          <span className="font-medium mb-6 opacity-90 max-sm:text-sm text-base text-[#8B8BA0]">
+          <span className="opacity-90 mb-6 font-medium text-[#8B8BA0] max-sm:text-sm text-base">
             This will allow you to earn bonuses or other rewards offered by the program. Simply copy
             and paste the code into this field.
           </span>

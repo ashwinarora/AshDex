@@ -17,7 +17,6 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
-
   return (
     <div className="flex flex-col w-full h-full">
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
@@ -65,7 +64,8 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           leverage={leverage}
           assetAmount={assetAmount}
           limitPrice={(allMids[selectedAsset] * (isBuy ? 1.1 : 0.9)).toString()}
-          isInvalid={!assetAmount || !stopPrice}
+          usdAmount={usdAmount}
+          isSpot={false}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',

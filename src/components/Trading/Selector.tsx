@@ -16,14 +16,15 @@ import {
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
-import { SpotMeta, SpotAssetCtx, Token } from '@/hooks/usePerpetualData'
+import { Token } from '@/hooks/usePerpetualData'
 import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
 import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { useSpotData } from '@/hooks/usePerpetualData'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import ReactiveText from '../common/ReactiveText'
 
 const CRYPTO_ICONS: Record<string, StaticImageData> = {
   'BTC-PERP': btcIcon
@@ -43,19 +44,18 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [selectedTab, setSelectedTab] = useState('All')
   const [sortKey, setSortKey] = useState('market')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+  const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
   const isSpot = useIsSpot()
   const type = isSpot ? 'spot' : 'perp'
-  const { data: spotData = [] } = useSpotData()
   const [tokenContract, setTokenContract] = useState<string>()
   const { isFavorite, toggleFavorite } = useFavorites()
-
+  const { data: spotMeta } = useSpotMeta()
   const selectedAssetContext = useMemo(() => {
-    const coin = selectedAsset.split('-')[0]
+    const coin = selectedAsset
 
-    if (isSpot && spotData.length > 0) {
-      const spotMeta = spotData[0] as SpotMeta
+    if (isSpot && spotMeta && spotAssetContext) {
       const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
       if (!spotAsset) return null
 
@@ -65,7 +65,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       if (!spotUniverse) return null
 
       setTokenContract(spotAsset.tokenId)
-      const spotToken = (spotData[1] as SpotAssetCtx[])[spotUniverse.index]
+      const spotToken = spotAssetContext[spotUniverse.index]
       if (!spotToken) return null
 
       const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
@@ -73,7 +73,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     }
     const idx = getUniverseIndex(universe, selectedAsset)
     return perpAssetContext[idx] || null
-  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotData])
+  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   const categoryMap: Record<string, string> = {
     'BTC-PERP': 'defi',
@@ -115,11 +115,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Oracle',
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
-            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(selectedAssetContext.oraclePx!)}`
+            <ReactiveText
+              className="text-xs"
+              precision={2}
+              value={Number(selectedAssetContext.oraclePx!)}
+              type="currency"
+            />
           ) : (
             <Skeleton size="md" />
-          ),
-        color: changeString?.includes('+') ? 'text-green' : 'text-red'
+          )
       },
       {
         label: '24h Change',
@@ -129,7 +133,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       {
         label: '24h Volume',
         value: selectedAssetContext?.dayNtlVlm ? (
-          `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(selectedAssetContext?.dayNtlVlm)}`
+          <ReactiveText
+            className="text-xs"
+            precision={0}
+            value={Number(selectedAssetContext?.dayNtlVlm)}
+            type="currency"
+          />
         ) : (
           <Skeleton size="md" />
         )
@@ -140,7 +149,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           'openInterest' in selectedAssetContext &&
           selectedAssetContext.openInterest &&
           selectedAssetContext.oraclePx ? (
-            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(selectedAssetContext.openInterest! * selectedAssetContext.oraclePx!)}`
+            <ReactiveText
+              className="text-xs"
+              precision={0}
+              value={Number(selectedAssetContext.openInterest! * selectedAssetContext.oraclePx!)}
+              type="currency"
+            />
           ) : (
             <Skeleton size="md" />
           )
@@ -156,7 +170,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         {
           label: '24h Volume',
           value: selectedAssetContext?.dayNtlVlm ? (
-            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format(selectedAssetContext?.dayNtlVlm)}`
+            <ReactiveText
+              className="text-xs"
+              precision={0}
+              value={Number(selectedAssetContext?.dayNtlVlm)}
+              type="currency"
+            />
           ) : (
             <Skeleton size="md" />
           )
@@ -164,7 +183,15 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         {
           label: 'Market Cap',
           value: selectedAssetContext?.midPx ? (
-            `$${new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 3 }).format((selectedAssetContext as WebDataSpotAssetCtx).circulatingSupply * selectedAssetContext.midPx)}`
+            <ReactiveText
+              className="text-xs"
+              precision={0}
+              value={Number(
+                (selectedAssetContext as WebDataSpotAssetCtx).circulatingSupply *
+                  selectedAssetContext.midPx
+              )}
+              type="currency"
+            />
           ) : (
             <Skeleton size="md" />
           )
@@ -176,7 +203,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <a
                 href={`https://app.hyperliquid.xyz/explorer/token/${tokenContract}`}
                 target="_blank"
-                className="text-white text-sm"
+                className="text-white text-xs"
               >
                 {tokenContract.slice(0, 6)}...{tokenContract.slice(-4)}
               </a>{' '}
@@ -301,18 +328,44 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
 
       {isOpen && (
-        <div className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-secondary shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[800px] max-w-[95vw]">
-          {/* Search */}
-          <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md">
-            <IconSearch className="w-4 h-4 text-white/60" />
-            <input
-              type="text"
-              placeholder='e.g. "BTC" or "Bitcoin"'
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="bg-transparent p-2 focus:outline-none w-full text-white text-sm"
-            />
+        <div className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md w-full">
+              <IconSearch className="w-4 h-4 text-white/60" />
+              <input
+                type="text"
+                placeholder='e.g. "BTC" or "Bitcoin"'
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="bg-transparent p-2 focus:outline-none w-full text-white text-sm"
+              />
+            </div>
+            <div className="relative flex justify-between bg-white/5 m-3 p-1 py-3 rounded-md w-1/4 h-10 overflow-hidden">
+              {/* Sliding background */}
+              <div
+                className={`absolute top-0 left-0 z-10 h-[100%]  w-1/2 rounded-md transition-all duration-200 ${
+                  isStrict ? 'translate-x-0 bg-green' : 'translate-x-full bg-red'
+                }`}
+              ></div>
+
+              {/* Buy Button */}
+              <p
+                className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
+                onClick={() => setIsStrict(true)}
+              >
+                Strict
+              </p>
+
+              {/* Sell Button */}
+              <p
+                className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
+                onClick={() => setIsStrict(false)}
+              >
+                All
+              </p>
+            </div>
           </div>
+
           <div className="flex gap-2 bg-white/2 px-3 py-2 rounded-md w-max">
             {tabs.map((tab) => (
               <button
@@ -338,6 +391,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             sortKey={sortKey}
             sortOrder={sortOrder}
             handleSort={handleSort}
+            selectedAssetContext={selectedAssetContext}
           />
         </div>
       )}
@@ -361,6 +415,7 @@ interface AssetTableProps {
   sortKey: string
   sortOrder: 'asc' | 'desc'
   handleSort: (key: string) => void
+  selectedAssetContext: AssetCtx | null
 }
 
 const AssetTable = ({
@@ -373,7 +428,8 @@ const AssetTable = ({
   type,
   sortKey,
   sortOrder,
-  handleSort
+  handleSort,
+  selectedAssetContext
 }: AssetTableProps) => {
   const getSortValue = (key: string, ctx: AssetCtx | undefined, assetKey: string) => {
     if (!ctx) return 0
@@ -418,7 +474,7 @@ const AssetTable = ({
   const sortedNonFavorites = sortAssets(nonFavoriteAssets)
 
   return (
-    <div className="h-[300px] overflow-y-auto">
+    <div className="h-[300px] overflow-y-auto no-scrollbar">
       <table className="min-w-full text-white text-sm">
         <thead className="top-0 z-10 sticky bg-secondary text-white/70">
           <tr>
@@ -463,7 +519,7 @@ const AssetTable = ({
               onClick={() => handleSort('marketCap')}
             >
               <div className="flex justify-end items-center gap-1">
-                Market Cap
+                {type === 'spot' ? 'Market Cap' : 'Open Interest'}
                 <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
               </div>
             </th>
@@ -493,6 +549,7 @@ const AssetTable = ({
                 price={value}
                 change24h={change24h}
                 type={type}
+                selectedAssetContext={selectedAssetContext}
               />
             )
           })}

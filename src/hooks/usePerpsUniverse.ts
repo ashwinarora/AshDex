@@ -7,6 +7,7 @@ export const usePerpsUniverse = () => {
   return useQuery<MetaData[]>({
     queryKey: ['universe'],
     queryFn: async () => {
+      if (!sdk) return []
       const res = await sdk.info.perpetuals.getMeta()
       return res.universe as MetaData[]
     },

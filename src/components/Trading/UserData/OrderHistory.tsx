@@ -15,9 +15,10 @@ import {
 import { HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import ReactiveText from '@/components/common/ReactiveText'
 
 type ColumnType = {
   key: string
@@ -42,7 +43,10 @@ const OrderHistoryTable: React.FC = () => {
 
   const { data: orderHistory = [] } = useQuery<HistoricOrder[]>({
     queryKey: ['orderHistory', address],
-    queryFn: async () => sdk.info.getHistoricalOrders(address),
+    queryFn: async () => {
+      if (!sdk?.info.getHistoricalOrders || !address) return []
+      return sdk.info.getHistoricalOrders(address)
+    },
     enabled: !!address && !!sdk,
     initialData: []
   })
@@ -52,6 +56,10 @@ const OrderHistoryTable: React.FC = () => {
     pageIndex: 0,
     pageSize: 10
   })
+
+  useEffect(() => {
+    console.log('orderHistory', orderHistory)
+  }, [orderHistory])
 
   const columnHelper = createColumnHelper<HistoricOrder & { meta?: { label: string } }>()
   const getCellClass = (columnId: string, cellValue: unknown): string => {
@@ -101,61 +109,107 @@ const OrderHistoryTable: React.FC = () => {
 
   const columns = useMemo(
     () => [
+      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
+        id: 'timestamp',
+        header: () => 'Time',
+        cell: (info) => info.getValue(),
+        enableSorting: true,
+        meta: { label: 'Time' }
+      }),
       columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
-        header: () => <HeaderWithIcons label="Coin" />,
+        header: () => 'Coin',
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
       columnHelper.accessor((row) => row.order.side, {
         id: 'side',
-        header: () => <HeaderWithIcons label="Side" />,
-        cell: (info) => info.getValue(),
+        header: () => 'Direction',
+        cell: (info) => (
+          <p className={`${info.getValue()?.toLowerCase() === 'buy' ? 'text-green' : 'text-red'}`}>
+            {info.getValue()}
+          </p>
+        ),
         enableSorting: true,
-        meta: { label: 'Side' }
+        meta: { label: 'Direction' }
       }),
       columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
-        header: () => <HeaderWithIcons label="Limit Price" />,
-        cell: (info) => info.getValue().toFixed(2),
+        header: () => 'Price',
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
         enableSorting: true,
-        meta: { label: 'Limit Price' }
+        meta: { label: 'Price' }
       }),
       columnHelper.accessor((row) => row.order.sz, {
-        id: 'size',
-        header: () => <HeaderWithIcons label="Size" />,
-        cell: (info) => info.getValue(),
+        id: 'sz',
+        header: () => 'Size',
+        cell: (info) => (
+          <>
+            {info.row.original.order.origSz === info.getValue() ? (
+              <ReactiveText value={info.getValue()} type="number" precision={5} />
+            ) : (
+              '--'
+            )}
+          </>
+        ),
         enableSorting: true,
         meta: { label: 'Size' }
       }),
-      columnHelper.accessor((row) => row.order.oid, {
-        id: 'orderId',
-        header: () => <HeaderWithIcons label="Order ID" />,
-        cell: (info) => info.getValue().toString(),
+      columnHelper.accessor((row) => row.order.origSz, {
+        id: 'origSz',
+        header: () => 'Filled Size',
+        cell: (info) => (
+          <>
+            {info.row.original.order.sz !== info.getValue() ? (
+              <ReactiveText value={info.getValue()} type="number" precision={5} />
+            ) : (
+              '--'
+            )}
+          </>
+        ),
         enableSorting: true,
-        meta: { label: 'Order ID' }
+        meta: { label: 'Size' }
       }),
-      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
-        id: 'timestamp',
-        header: () => <HeaderWithIcons label="Timestamp" />,
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-        meta: { label: 'Timestamp' }
+      columnHelper.accessor((row) => row.order.reduceOnly, {
+        id: 'reduceOnly',
+        header: () => 'Reduce Only',
+        cell: (info) => (info.row.original.order.reduceOnly ? 'Yes' : 'No'),
+        enableSorting: false,
+        meta: { label: 'Reduce Only' }
       }),
       columnHelper.accessor('status', {
         id: 'status',
-        header: () => <HeaderWithIcons label="Status" />,
-        cell: (info) => info.getValue(),
+        header: () => 'Status',
+        cell: (info) => {
+          if (info.getValue() === 'filled') {
+            return <p className="bg-green/10 px-2 py-0.5 rounded-lg text-green text-xs">Filled</p>
+          } else if (info.getValue() === 'perpMarginRejected') {
+            return <p className="bg-red/10 px-2 py-0.5 rounded-lg text-red text-xs">Rejected</p>
+          } else if (info.getValue() === 'canceled') {
+            return (
+              <p className="bg-gray-500/10 px-2 py-0.5 rounded-lg text-gray-500 text-xs">
+                Canceled
+              </p>
+            )
+          } else if (info.getValue() === 'open') {
+            return (
+              <p className="bg-yellow-500/10 px-2 py-0.5 rounded-lg text-yellow-500 text-xs">
+                Open
+              </p>
+            )
+          }
+          return <p className=" ">{info.getValue()}</p>
+        },
         enableSorting: true,
         meta: { label: 'Status' }
       }),
-      columnHelper.accessor((row) => new Date(row.statusTimestamp).toLocaleString('en-US'), {
-        id: 'statusTs',
-        header: () => <HeaderWithIcons label="Status Time" />,
-        cell: (info) => info.getValue(),
+      columnHelper.accessor((row) => row.order.oid, {
+        id: 'orderId',
+        header: () => 'Order ID',
+        cell: (info) => info.getValue().toString(),
         enableSorting: true,
-        meta: { label: 'Status Time' }
+        meta: { label: 'Order ID' }
       })
     ],
     [columnHelper]
@@ -178,46 +232,53 @@ const OrderHistoryTable: React.FC = () => {
 
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
-    return <div className="overflow-x-auto p-4 dark:bg-gray-800 dark:text-gray-100 h-40"></div>
+    return <div className="dark:bg-gray-800 p-4 h-40 overflow-x-auto dark:text-gray-100"></div>
   }
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full hidden lg:table text-white">
+    <div className="px-3 w-full overflow-auto">
+      <table className="hidden lg:table w-full text-white border-collapse">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left cursor-pointer"
+                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
+                  onClick={
+                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
+                  }
                 >
-                  {header.isPlaceholder ? null : (
-                    <button
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="flex items-center gap-1"
-                    >
-                      {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: '▲',
-                        desc: '▼'
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </button>
-                  )}
+                  <div className="flex items-center text-white/50">
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.getCanSort() && (
+                      <span className="inline-block">
+                        {header.column.getIsSorted() === 'asc' ? (
+                          <IconChevronDown className="w-4 h-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconChevronUp className="w-4 h-4" />
+                        ) : (
+                          <IconSelector className="w-4 h-4" />
+                        )}
+                      </span>
+                    )}
+                  </div>
                 </th>
               ))}
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-transparent">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row?.id} className="border-b border-white/10">
+            <tr key={row.id} className=" ">
               {row.getVisibleCells().map((cell) => {
-                const columnId = cell?.column?.id
-                const cellValue = cell?.getValue()
+                const columnId = cell.column.id
+                const cellValue = cell.getValue()
                 const customClass = getCellClass(columnId, cellValue)
                 return (
-                  <td key={cell?.id} className="py-4 px-7">
+                  <td key={cell.id} className="px-2 py-0.5 text-white text-sm align-middle">
                     <div className={customClass}>
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
                     </div>

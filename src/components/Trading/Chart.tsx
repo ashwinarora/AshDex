@@ -154,7 +154,7 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdk } = useHyperliquid()
+  const { sdk, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
@@ -354,11 +354,11 @@ const TradingViewChart = ({
             })
           }
 
-          sdk.subscriptions.subscribeToCandle(currentAsset, interval, candleHandler)
+          subscribeToCandle(currentAsset, interval, candleHandler)
 
           // Store cleanup callback
           tvSubscribersRef.current[subscriberUID] = () => {
-            sdk.subscriptions.unsubscribeFromCandle(currentAsset, interval)
+            unsubscribeFromCandle(currentAsset, interval)
           }
         } catch (e) {
           console.error('Subscription error:', e)

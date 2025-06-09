@@ -162,7 +162,7 @@ input {
 }
 
 .nexon-card {
-  @apply w-full rounded-lg shadow-md backdrop-blur-2xl bg-secondary;
+  @apply bg-secondary shadow-md backdrop-blur-2xl rounded-lg w-full;
 
   @apply max-h-min;
 }
@@ -184,7 +184,7 @@ input {
 }
 
 .nexon-button {
-  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/5 rounded-xl;
+  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/5 rounded-md text-center items-center justify-center;
   @apply overflow-clip;
   @apply max-h-min;
   backdrop-filter: blur(16px);
@@ -202,7 +202,7 @@ button:active {
 }
 
 .nexon-primary {
-  @apply px-4 py-2 text-white transition-colors duration-200 cursor-pointer bg-primary rounded-xl;
+  @apply bg-primary text-white;
   @apply hover:bg-primary/60;
 }
 
