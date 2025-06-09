@@ -16,16 +16,15 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.filter((o) =>
-      o.coin.includes(isSpot ? 'SPOT' : 'PERP')
-    ).length
+    const openOrdersLength = openOrders.length
     const tabs = [
       {
         header: 'Balances',
         element: <Balances />
       },
       {
-        header: `Open Orders (${openOrdersLength})`,
+        header: `Open Orders`,
+        count: openOrdersLength,
         element: <OpenOrders />
       },
       {
@@ -39,7 +38,8 @@ const UserData = () => {
     ]
     if (!isSpot) {
       tabs.splice(1, 0, {
-        header: `Positions (${positionsCount})`,
+        header: `Positions `,
+        count: positionsCount,
         element: <Positions />
       })
       tabs.push({
@@ -60,11 +60,16 @@ const UserData = () => {
             <button
               key={tab.header}
               onClick={() => setActiveTab(index)}
-              className={`tab-btn xl:px-6 px-4  text-sm whitespace-nowrap ${
+              className={`tab-btn xl:px-6 px-4  text-xs font-normal whitespace-nowrap flex items-center gap-x-2 ${
                 activeTab === index ? 'tab-btn-active' : 'border-transparent text-[#8B8BA0]'
               }`}
             >
               {tab.header}
+              {tab.count && Number(tab.count) > 0 ? (
+                <p className="flex justify-center items-center bg-primary rounded-full w-4 h-4 aspect-square text-white text-xs">
+                  {tab.count}
+                </p>
+              ) : null}
             </button>
           ))}
         </nav>

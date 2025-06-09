@@ -106,6 +106,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
 
     const toastId = toast.loading('Closing position...')
     try {
+      if (!sdk) return
       const res = await sdk.exchange.updateLeverage(
         position.coin,
         position.leverage.type,
@@ -163,7 +164,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     <SmallModal isOpen={isOpen} onClose={onClose} heading="Market Close">
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-[#8B8BA0] mb-1">Size</label>
+          <label className="block mb-1 font-medium text-[#8B8BA0] text-sm">Size</label>
           <div className="flex gap-2">
             <input
               type="number"
@@ -174,13 +175,13 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                 setSize(trimDecimals(e.target.value, szDecimals))
                 setLastChanged('size')
               }}
-              className="flex-1 bg-[#322944] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#7D67FF]"
+              className="flex-1 bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none text-white"
               placeholder="Enter size"
             />
             <select
               value={sizeType}
               onChange={(e) => setSizeType(e.target.value as 'asset' | 'usd')}
-              className="bg-[#322944] border border-white/10 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-[#7D67FF]"
+              className="bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none text-white"
             >
               <option value="asset">{closingAsset}</option>
               <option value="usd">USD</option>
@@ -199,16 +200,16 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                     setPercent(Number(e.target.value))
                     setLastChanged('percent')
                   }}
-                  className="w-full accent-[#7D67FF] h-2 bg-[#231B36] rounded-lg appearance-none focus:outline-none slider-thumb"
+                  className="bg-[#231B36] rounded-lg focus:outline-none w-full h-2 accent-[#7D67FF] appearance-none slider-thumb"
                   style={{ accentColor: '#7D67FF' }}
                 />
-                <div className="ml-4 px-4 py-2 bg-[#231B36] rounded-lg border border-white/10 text-white text-lg font-medium min-w-[90px] text-center flex items-center justify-center whitespace-nowrap">
+                <div className="flex justify-center items-center bg-[#231B36] ml-4 px-4 py-2 border border-white/10 rounded-lg min-w-[90px] font-medium text-white text-lg text-center whitespace-nowrap">
                   {percent.toFixed(2)} %
                 </div>
               </div>
               {/* Estimated PnL */}
               {estPnl !== null && (
-                <div className="text-sm mt-2">
+                <div className="mt-2 text-sm">
                   Estimated closed PnL (without fees):
                   <span
                     className={
@@ -229,7 +230,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
         </div>
         <button
           onClick={handleClosePosition}
-          className="w-full bg-[#7D67FF] text-white py-2 rounded-lg font-medium hover:bg-[#6B57E6] transition"
+          className="bg-[#7D67FF] hover:bg-[#6B57E6] py-2 rounded-lg w-full font-medium text-white transition"
         >
           Close Position
         </button>

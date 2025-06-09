@@ -35,22 +35,22 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
           Max position size decreases the higher your leverage.
         </p>
         <div className="mt-6 mb-2">
-          <div className="relative bg-[#18122B] rounded-lg px-4 py-3">
+          <div className="relative bg-[#18122B] px-4 py-3 rounded-lg">
             <div className="flex items-center gap-3">
-              <span className="text-xs text-[#8B8BA0]">Leverage</span>
-              <div className="flex items-center ml-auto gap-1">
+              <span className="text-[#8B8BA0] text-xs">Leverage</span>
+              <div className="flex items-center gap-1 ml-auto">
                 <button
-                  className="w-7 h-7 rounded bg-[#251B3A] text-[#B8AEE0] hover:bg-[#322944] flex items-center justify-center text-lg font-bold"
+                  className="flex justify-center items-center bg-[#251B3A] hover:bg-[#322944] rounded w-7 h-7 font-bold text-[#B8AEE0] text-lg"
                   onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
                   aria-label="Decrease leverage"
                 >
                   -
                 </button>
-                <span className="w-12 text-center text-base font-semibold text-white">
+                <span className="w-12 font-semibold text-white text-base text-center">
                   {leverage}x
                 </span>
                 <button
-                  className="w-7 h-7 rounded bg-[#251B3A] text-[#B8AEE0] hover:bg-[#322944] flex items-center justify-center text-lg font-bold"
+                  className="flex justify-center items-center bg-[#251B3A] hover:bg-[#322944] rounded w-7 h-7 font-bold text-[#B8AEE0] text-lg"
                   onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))}
                   aria-label="Increase leverage"
                 >
@@ -66,7 +66,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
                 step={1}
                 value={leverage}
                 onChange={(e) => setLeverage(Number(e.target.value))}
-                className="w-full h-2 bg-[#251B3A] rounded-lg appearance-none focus:outline-none"
+                className="bg-[#251B3A] rounded-lg focus:outline-none w-full h-2 appearance-none"
                 style={{
                   background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #251B3A ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #251B3A 100%)`
                 }}
@@ -85,15 +85,16 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             </div>
           </div>
         </div>
-        <div className="mt-2 mb-6 text-xs text-yellow-400 text-center">
+        <div className="mt-2 mb-6 text-yellow-400 text-xs text-center">
           Note that setting a higher leverage increases the risk of liquidation.
         </div>
         <button
-          className="w-full py-3 cursor-pointer rounded-xl bg-[#6C4DF6] hover:bg-[#5F46F9] text-white text-lg font-semibold transition mt-2"
+          className="bg-[#6C4DF6] hover:bg-[#5F46F9] mt-2 py-3 rounded-xl w-full font-semibold text-white text-lg transition cursor-pointer"
           onClick={async () => {
             if (!asset) return
             const toastId = toast.loading('⏳ Updating leverage...')
             try {
+              if (!sdk) return
               const res = await sdk.exchange.updateLeverage(
                 asset.coin,
                 asset.leverage.type,

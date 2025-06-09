@@ -200,7 +200,7 @@ const Positions = () => {
 
   const closePosition = useCallback(
     async (position: IPositionData) => {
-      if (!agentWallet) return
+      if (!agentWallet || !sdk) return
       const assetIndex = getUniverseIndex(universe, position.coin)
       const szDecimals = universe[assetIndex].szDecimals
       const tif = 'Gtc'
@@ -500,7 +500,7 @@ const Positions = () => {
   return (
     <div className="px-3 w-full overflow-x-auto">
       <table className="hidden lg:table w-full text-white">
-        <thead className=" ">
+        <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (

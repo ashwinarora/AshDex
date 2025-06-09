@@ -13,7 +13,30 @@ const FooterContent: FC = () => {
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquid()
-  const [timeSinceUpdate, setTimeSinceUpdate] = useState('')
+  const [timeSinceUpdate, setTimeSinceUpdate] = useState({
+    allMids: '',
+    webData2: '',
+    candles: ''
+  })
+
+  // Helper function to get color based on time string
+  const getFreshnessColor = (timeStr: string): string => {
+    if (timeStr === 'No candle data') return 'bg-gray-600'
+
+    if (timeStr.includes('ms')) return 'bg-green-600'
+    if (timeStr.includes('s')) {
+      const seconds = parseInt(timeStr)
+      if (seconds < 10) return 'bg-green-600'
+      if (seconds < 30) return 'bg-yellow-600'
+      return 'bg-red-600'
+    }
+    if (timeStr.includes('m')) {
+      const minutes = parseInt(timeStr)
+      if (minutes < 1) return 'bg-yellow-600'
+      return 'bg-red-600'
+    }
+    return 'bg-red-600'
+  }
 
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
@@ -25,7 +48,11 @@ const FooterContent: FC = () => {
     if (!mounted) return
 
     const updateTime = () => {
-      setTimeSinceUpdate(getTimeSinceLastUpdate())
+      setTimeSinceUpdate({
+        allMids: getTimeSinceLastUpdate('allMids'),
+        webData2: getTimeSinceLastUpdate('webData2'),
+        candles: getTimeSinceLastUpdate('candles')
+      })
     }
 
     // Update immediately
@@ -61,22 +88,46 @@ const FooterContent: FC = () => {
     >
       <div className="flex justify-between px-4">
         <div className="flex items-center gap-4">
-          <div
-            className={`flex gap-2 text-xs group ${isWebSocketConnected ? 'text-green-600' : 'text-red-600'}`}
-          >
-            {isWebSocketConnected ? (
-              <>
-                <IconCellSignal5 className="w-4 h-4" />
-                Stable Connection
-              </>
-            ) : (
-              <>
-                <IconCellSignalOff className="w-4 h-4" />
-                Connection Lost
-              </>
-            )}
-            <div className="hidden group-hover:block text-white/60 group-hover:text-white text-xs">
-              Last update: {timeSinceUpdate}
+          <div className="group relative cursor-pointer">
+            <div
+              className={`flex gap-2 text-xs ${isWebSocketConnected ? 'text-green-600' : 'text-red-600'}`}
+            >
+              {isWebSocketConnected ? (
+                <>
+                  <IconCellSignal5 className="w-4 h-4" />
+                  Online
+                </>
+              ) : (
+                <>
+                  <IconCellSignalOff className="w-4 h-4" />
+                  Offline
+                </>
+              )}
+            </div>
+            <div className="bottom-full left-0 z-50 absolute opacity-0 group-hover:opacity-100 mb-2 transition-all duration-200 pointer-events-none">
+              <div className="bg-secondary shadow-lg p-2 border border-white/10 rounded-lg">
+                <div className="text-white/60 text-xs whitespace-nowrap">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.allMids)}`}
+                    ></span>
+                    <span>Order Book: {timeSinceUpdate.allMids}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.candles)}`}
+                    ></span>
+                    <span>Chart Data: {timeSinceUpdate.candles}</span>
+                  </div>
+                  <div className="flex items-center gap-2 mt-1">
+                    <span
+                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
+                    ></span>
+                    <span>User Data: {timeSinceUpdate.webData2}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

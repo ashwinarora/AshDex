@@ -154,6 +154,7 @@ const placePerpOrder = async ({
   }
   const toastId = toast.loading('⏳ Loading…')
   try {
+    if (!sdk) return
     const res = await sdk.exchange.updateLeverage(
       selectedAsset,
       isCross ? 'cross' : 'isolated',

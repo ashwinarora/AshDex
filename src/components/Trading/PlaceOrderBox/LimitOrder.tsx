@@ -135,8 +135,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             )}
           </div>
         </div>
-      </div>
-      <div className="p-2 border-white/10 border-t">
+        <div className="p-2 border-white/10 border-t">
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}
@@ -151,7 +150,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isSpot={isSpot}
         />
       </div>
-      <div className="flex flex-col p-3 text-sm">
+      <div className="flex flex-col px-3 pb-2 text-sm">
         <div className="flex justify-between">
           <p className="text-white/50">Liquidation Price</p>
           <p className="text-white">{liquidationPrice()}</p>
@@ -173,6 +172,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <p className="text-white">0.0% / 0.0%</p>
         </div>
       </div>
+      </div>
+      
     </div>
   )
 }

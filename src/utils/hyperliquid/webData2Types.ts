@@ -23,7 +23,7 @@ export interface IWebData2 {
 
 export interface IOpenOrder {
   coin: string
-  side: 'buy' | 'sell'
+  side: 'buy' | 'sell' | 'long' | 'short'
   limitPx: number
   sz: number
   oid: number
