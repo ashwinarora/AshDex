@@ -7,7 +7,8 @@ function ReactiveText({
   currency = '$',
   pulse = false,
   isStatic = false,
-  suffix = ''
+  suffix = '',
+  className = ''
 }: {
   value: number | string
   precision?: number
@@ -16,6 +17,7 @@ function ReactiveText({
   pulse?: boolean
   isStatic?: boolean
   suffix?: string
+  className?: string
 }) {
   const [color, setColor] = useState<'text-green' | 'text-red' | 'text-white'>('text-white')
   const [prevValue, setPrevValue] = useState<number>(Number(value))
@@ -62,7 +64,7 @@ function ReactiveText({
   }, [value, pulse, prevValue, isStatic])
 
   return (
-    <p className={`text-sm transition-all duration-300 ${color}`}>
+    <p className={`text-sm transition-all duration-300 ${color} ${className}`}>
       {type === 'currency' ? currency : ''}
       {new Intl.NumberFormat('en-US', {
         minimumFractionDigits: precision,

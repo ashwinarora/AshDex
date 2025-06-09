@@ -29,8 +29,6 @@ function OverviewBox() {
     )
     setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
     setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
-
-    console.log(clearingHouseState)
   }, [clearingHouseState])
 
   return (
