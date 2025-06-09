@@ -19,6 +19,7 @@ import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import { IconWallet } from '@tabler/icons-react'
 import { useMemo } from 'react'
+import useIsSpot from '@/hooks/useIsSpot'
 
 type StopOrder = {
   isMarket: boolean
@@ -37,8 +38,6 @@ type OrderButtonProps = {
   isReduceOnly: boolean
   tpsl?: TPSLType
   stopOrder?: StopOrder
-  usdAmount: string
-  isSpot: boolean
 }
 
 const placePerpOrder = async ({
@@ -57,8 +56,7 @@ const placePerpOrder = async ({
   agentWallet,
   isTestnet,
   hyperliquidAxios,
-  currentFeeApproval,
-  isInvalid
+  currentFeeApproval
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdk: any
@@ -77,7 +75,6 @@ const placePerpOrder = async ({
   currentFeeApproval: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
-  isInvalid: boolean
 }) => {
   const assetIndex = getUniverseIndex(universe, selectedAsset)
   const szDecimals = universe[assetIndex].szDecimals
@@ -85,9 +82,6 @@ const placePerpOrder = async ({
   const orders: OrderData[] = []
   const formattedSize = assetAmount.replace(/\.?0+$/, '')
 
-  if (isInvalid) {
-    return
-  }
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
     orders.push({
@@ -212,8 +206,7 @@ const placeSpotOrder = async ({
   isBuy,
   limitPrice,
   assetAmount,
-  isPostOnly,
-  isInvalid
+  isPostOnly
 }: {
   spotMeta: SpotMeta
   spotAssetContext: IWebData2['spotAssetCtxs']
@@ -225,11 +218,7 @@ const placeSpotOrder = async ({
   limitPrice: string
   assetAmount: string
   isPostOnly: boolean
-  isInvalid: boolean
 }) => {
-  if (isInvalid) {
-    return
-  }
   if (!spotMeta.tokens) return
   const assetIndex =
     spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
@@ -297,9 +286,7 @@ const OrderButton = ({
   isPostOnly,
   isReduceOnly,
   tpsl,
-  stopOrder,
-  usdAmount,
-  isSpot
+  stopOrder
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
@@ -308,7 +295,7 @@ const OrderButton = ({
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-
+  const isSpot = useIsSpot()
   // Validation logic moved from parent components
   const isInvalid = useMemo(() => {
     if (isSpot) {
@@ -319,8 +306,7 @@ const OrderButton = ({
         formattedLimitPrice === '0' ||
         formattedLimitPrice === '' ||
         formattedAssetAmount === '0' ||
-        formattedAssetAmount === '' ||
-        Number(usdAmount) < 10
+        formattedAssetAmount === ''
       )
     } else {
       const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
@@ -335,11 +321,10 @@ const OrderButton = ({
         formattedLimitPrice === '' ||
         formattedAssetAmount === '0' ||
         formattedAssetAmount === '' ||
-        isTpslInvalid ||
-        Number(usdAmount) < 10
+        isTpslInvalid
       )
     }
-  }, [limitPrice, assetAmount, tpsl, usdAmount, isSpot])
+  }, [limitPrice, assetAmount, tpsl, isSpot])
 
   // We handle the render logic after hooks are all set up
   if (!isRendered) return null
@@ -380,6 +365,9 @@ const OrderButton = ({
       onClick={async () => {
         if (!agentWallet) return
         if (!currentFeeApproval) return
+        if (isInvalid) {
+          return
+        }
         if (isSpot) {
           await placeSpotOrder({
             spotMeta,
@@ -391,8 +379,7 @@ const OrderButton = ({
             isBuy,
             limitPrice,
             assetAmount,
-            isPostOnly,
-            isInvalid
+            isPostOnly
           })
         } else {
           await placePerpOrder({
@@ -411,8 +398,7 @@ const OrderButton = ({
             agentWallet,
             isTestnet,
             hyperliquidAxios,
-            currentFeeApproval,
-            isInvalid
+            currentFeeApproval
           })
         }
       }}

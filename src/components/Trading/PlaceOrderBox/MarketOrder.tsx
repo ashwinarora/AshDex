@@ -197,8 +197,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             isPostOnly={false}
             isReduceOnly={isReduceOnly}
             tpsl={tpsl}
-            usdAmount={usdAmount}
-            isSpot={isSpot}
           />
         </div>
         <div className="flex flex-col px-3 pb-2 text-sm">

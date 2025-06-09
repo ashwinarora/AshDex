@@ -145,9 +145,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             isCross={isCross}
             isPostOnly={isPostOnly}
             isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-            usdAmount={usdAmount}
-            isSpot={isSpot}
+            tpsl={tpsl}  
           />
         </div>
         <div className="flex flex-col px-3 pb-2 text-sm">
