@@ -47,12 +47,12 @@ const AmountInput = ({
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
-    if (!existingPosition) return clearingHouseState.withdrawable
+    if (!existingPosition) return 0
     if (existingPosition.position.szi > 0 && isBuy) return 0
     if (existingPosition.position.szi < 0 && !isBuy) return 0
     const priceQuotient = parseFloat(limitPrice) / existingPosition.position.entryPx
     const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
-    return Math.min(maxAllowedUsd, clearingHouseState.withdrawable * leverage)
+    return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
 
   useEffect(() => {
