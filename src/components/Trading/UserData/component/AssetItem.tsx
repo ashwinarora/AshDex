@@ -13,7 +13,6 @@ import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import ReactiveText from '@/components/common/ReactiveText'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { AssetCtx, SpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
-import { Token } from '@/hooks/usePerpetualData'
 import { getUniverseIndex } from '@/utils/utils'
 
 interface AssetItemProps {
@@ -65,7 +64,7 @@ const AssetItem: React.FC<AssetItemProps> = ({
     const coin = assetKey
 
     if (type === 'spot' && spotMeta && spotAssetContext) {
-      const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
+      const spotAsset = spotMeta.tokens.find((a) => a.name === coin)
       if (!spotAsset) return null
 
       const spotUniverse = spotMeta.universe.find(

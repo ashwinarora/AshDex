@@ -16,7 +16,6 @@ import {
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
-import { Token } from '@/hooks/usePerpetualData'
 import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
 import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
@@ -56,7 +55,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     const coin = selectedAsset
 
     if (isSpot && spotMeta && spotAssetContext) {
-      const spotAsset = spotMeta.tokens.find((a: Token) => a.name === coin)
+      const spotAsset = spotMeta.tokens.find((a) => a.name === coin)
       if (!spotAsset) return null
 
       const spotUniverse = spotMeta.universe.find(
