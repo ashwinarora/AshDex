@@ -187,54 +187,54 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <div className="p-2 border-white/10 border-t">
-        <OrderButton
-          isBuy={isBuy}
-          selectedAsset={selectedAsset}
-          limitPrice={getFormattedPrice()}
-          assetAmount={assetAmount}
-          leverage={leverage}
-          isCross={isCross}
-          isPostOnly={false}
-          isReduceOnly={isReduceOnly}
-          tpsl={tpsl}
-          usdAmount={usdAmount}
-          isSpot={isSpot}
-        />
-      </div>
-      <div className="flex flex-col px-3 pb-2 text-sm">
-        <div className="flex justify-between">
-          <p className="text-white/50">Liquidation Price</p>
-          <p className="text-white">{liquidationPrice}</p>
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={getFormattedPrice()}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={false}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+            usdAmount={usdAmount}
+            isSpot={isSpot}
+          />
         </div>
-
-        <div className="flex justify-between">
-          <p className="text-white/50">Order Value</p>
-          <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
-        </div>
-        <div className="flex justify-between">
-          <p className="text-white/50">Margin Required</p>
-          <p className="text-white">
-            ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
-          </p>
-        </div>
-        {
+        <div className="flex flex-col px-3 pb-2 text-sm">
           <div className="flex justify-between">
-            <p className="text-white/50">Slippage</p>
-            <p
-              onClick={() => setIsSlippageModalOpen(true)}
-              className="bg-primary/50 px-2 rounded-md text-white cursor-pointer"
-            >
-              Max. {slippage}%
+            <p className="text-white/50">Liquidation Price</p>
+            <p className="text-white">{liquidationPrice}</p>
+          </div>
+
+          <div className="flex justify-between">
+            <p className="text-white/50">Order Value</p>
+            <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+          </div>
+          <div className="flex justify-between">
+            <p className="text-white/50">Margin Required</p>
+            <p className="text-white">
+              ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
             </p>
           </div>
-        }
-        <div className="flex justify-between">
-          <p className="text-white/50">Fees</p>
-          <p className="text-white">0.0% / 0.0%</p>
+          {
+            <div className="flex justify-between">
+              <p className="text-white/50">Slippage</p>
+              <p
+                onClick={() => setIsSlippageModalOpen(true)}
+                className="bg-primary/50 px-2 rounded-md text-white cursor-pointer"
+              >
+                Max. {slippage}%
+              </p>
+            </div>
+          }
+          <div className="flex justify-between">
+            <p className="text-white/50">Fees</p>
+            <p className="text-white">0.0% / 0.0%</p>
+          </div>
         </div>
       </div>
-      </div>
-      
+
       <SlippageModal
         isOpen={isSlippageModalOpen}
         onClose={() => setIsSlippageModalOpen(false)}

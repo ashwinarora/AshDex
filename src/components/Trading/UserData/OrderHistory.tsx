@@ -119,8 +119,7 @@ const OrderHistoryTable: React.FC = () => {
       columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
         header: () => 'Coin',
-        cell: (info) => (
-          info.getValue() ),
+        cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),

@@ -42,10 +42,7 @@ const columns = [
   columnHelper.accessor('coin', {
     id: 'coin',
     header: () => 'Coin',
-    cell: (info) => (
-       
-        info.getValue() 
-    ),
+    cell: (info) => info.getValue(),
     enableSorting: false,
     meta: { label: 'Coin' }
   }),
@@ -80,8 +77,7 @@ const columns = [
   columnHelper.accessor('closedPnl', {
     id: 'closedPnl',
     header: () => 'Closed PnL',
-    cell: (info) => (info.getValue()
-    ),
+    cell: (info) => info.getValue(),
     enableSorting: true,
     sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
     meta: { label: 'Closed PnL' }
