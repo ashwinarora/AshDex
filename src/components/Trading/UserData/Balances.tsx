@@ -13,6 +13,7 @@ import {
   SortingState
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
+import SendModal from './component/SendModal'
 
 type ColumnType = {
   key: string
@@ -50,6 +51,8 @@ const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [selectedToken, setSelectedToken] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
 
   const columns = useMemo(
@@ -88,6 +91,27 @@ const Balances = () => {
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Entry NTL' }
+      }),
+      columnHelper.display({
+        id: 'send',
+        header: () => <HeaderWithIcons label="Send" />,
+        cell: (info) => {
+          const coin = info.row.original.coin
+          if (coin === 'USDC(Perps)') return '--'
+          return (
+            <button
+              onClick={() => {
+                setSelectedToken(coin)
+                setIsSendModalOpen(true)
+              }}
+              className="text-[#7A6FA7] hover:text-[#E8E0F1]"
+            >
+              Send
+            </button>
+          )
+        },
+        enableSorting: false,
+        meta: { label: 'Send' }
       })
     ],
     [columnHelper]
@@ -107,7 +131,7 @@ const Balances = () => {
     const spotData =
       spotState?.balances.map((state) => ({
         ...state,
-        coin: (state.coin === 'USDC' ? 'USDC(Spot)' : state.coin).replace('PERP', 'SPOT')
+        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
       })) || []
 
     return [perpData, ...spotData]
@@ -197,6 +221,13 @@ const Balances = () => {
         data={tableData}
         renderRow={(item) => <RenderRowData item={item} columns={tableColumns} />}
       />
+      {isSendModalOpen && (
+        <SendModal
+          isOpen={isSendModalOpen}
+          onClose={() => setIsSendModalOpen(false)}
+          spotDefaultName={selectedToken}
+        />
+      )}
     </div>
   )
 }

@@ -202,7 +202,14 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           openOrders: data.openOrders,
           perpAssetContext: data.assetCtxs,
           spotAssetContext: data.spotAssetCtxs,
-          spotState: data.spotState,
+          // HACK: Replace PERP with SPOT in the coin name. This is because SDK is buggy and returns PERP instead of SPOT.
+          spotState: {
+            ...data.spotState,
+            balances: data.spotState.balances.map((asset) => ({
+              ...asset,
+              coin: asset.coin.replace('PERP', 'SPOT')
+            }))
+          },
           lastWebSocketUpdate: Date.now(),
           isWebSocketConnected: true,
           lastUpdates: {
