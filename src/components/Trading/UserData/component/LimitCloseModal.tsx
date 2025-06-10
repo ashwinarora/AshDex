@@ -8,6 +8,7 @@ import { isTestnet } from '@/utils/constants'
 import { toast } from 'react-toastify'
 import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import SmallModal from '../../../common/SmallModal'
+import { IconRefresh } from '@tabler/icons-react'
 
 interface LimitCloseModalProps {
   isOpen: boolean
@@ -174,13 +175,27 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       <div className="space-y-4">
         <div>
           <label className="block mb-1 font-medium text-[#8B8BA0] text-sm">Price</label>
-          <input
-            type="number"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            className="bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none w-full text-white"
-            placeholder="Enter price"
-          />
+          <div className="relative">
+            <input
+              type="number"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+              className="bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none w-full text-white pr-10"
+              placeholder="Enter price"
+            />
+            <button
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 font-medium text-[#7D67FF] text-base cursor-pointer"
+              onClick={() => {
+                const mid = allMids[closingAsset]
+                if (mid) {
+                  setPrice(mid.toString())
+                }
+              }}
+            >
+              <IconRefresh className="w-5 h-5" />
+              Last
+            </button>
+          </div>
         </div>
         <div>
           <label className="block mb-1 font-medium text-[#8B8BA0] text-sm">Size</label>

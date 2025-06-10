@@ -41,7 +41,6 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   useEffect(() => {
     if (!sdk || !selectedAsset) return
 
-    const coin = selectedAsset // ✅ must match what you use in subscribe
     const nSigFigs = Number(selectedPrecision)
     let mantissa = null
     const handler = (data: WsBook) => {
@@ -58,13 +57,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
       mantissa = null
     }
     sdk.subscriptions.subscribeToL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa, handler)
-    console.log('SUBSCRIBE ->', { coin, nSigFigs, mantissa })
 
     // ✅ Cleanup is guaranteed to run BEFORE next effect
     return () => {
       //const prevNSigFigs = Number(prevPrecision ?? selectedPrecision)
       sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
-      console.log('UNSUBSCRIBE ->', { coin, nSigFigs, mantissa })
     }
   }, [sdk, selectedAsset, selectedPrecision])
 
