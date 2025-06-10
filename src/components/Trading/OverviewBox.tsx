@@ -40,10 +40,18 @@ function OverviewBox() {
 
   return (
     <>
-      <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
-      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
-      <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
-      <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
+      {isDepositOpen && (
+        <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
+      )}
+      {isWithdrawOpen && (
+        <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
+      )}
+      {isTransferModalOpen && (
+        <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
+      )}
+      {isSendModalOpen && (
+        <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
+      )}
       <div className="w-full h-full">
         <div className="flex flex-col justify-center gap-3 p-2 w-full">
           <div className="flex gap-3">
