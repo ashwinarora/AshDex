@@ -12,7 +12,7 @@ const MarkPxDisplay = ({ asset }: MarkPxDisplayProps) => {
   const { perpAssetContext } = useHyperliquid()
 
   const assetCtx = useMemo(() => {
-    const assetIndex = universe.findIndex((item) => item.name.split('-')[0] === asset)
+    const assetIndex = universe.findIndex((item) => item.name === asset)
 
     return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
   }, [perpAssetContext, asset, universe])
