@@ -58,7 +58,7 @@ function ReactiveText({
     if (!isStatic) {
       const colorTimer = setTimeout(() => {
         setColor('text-white')
-      }, 300)
+      }, 400)
       return () => clearTimeout(colorTimer)
     }
   }, [value, pulse, prevValue, isStatic])

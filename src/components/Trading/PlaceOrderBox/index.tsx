@@ -45,11 +45,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const availableOptions = isSpot
     ? [
         { value: 'TWAP', label: 'TWAP' },
-        { value: 'SCALE', label: 'SCALE' }
+        { value: 'SCALE', label: 'Scale' }
       ]
     : [
         { value: 'TWAP', label: 'TWAP' },
-        { value: 'SCALE', label: 'SCALE' },
+        { value: 'SCALE', label: 'Scale' },
         { value: 'STOP_LIMIT', label: 'Stop Limit' },
         { value: 'STOP_MARKET', label: 'Stop Market' }
       ]

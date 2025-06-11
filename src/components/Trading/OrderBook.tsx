@@ -13,6 +13,7 @@ import { IconArrowDown, IconArrowUp, IconChevronDown, IconDotsVertical } from '@
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { getCoinName, generatePrecisionLabels } from '@/utils/utils'
 import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
+import ReactiveText from '../common/ReactiveText'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -28,11 +29,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const sellsContainerRef = useRef<HTMLDivElement>(null)
   const buysContainerRef = useRef<HTMLDivElement>(null)
   const [visibleRows, setVisibleRows] = useState<{ sells: number; buys: number }>({
-    sells: 10,
-    buys: 9
+    sells: 9,
+    buys: 10
   })
   const [selectedLayoutType, setSelectedLayouttype] = useState<1 | 2 | 3>(1)
   const [selectedPrecision, setSelectedPrecision] = useState<string>('4')
+  const [selectedPrecisionLabel, setSelectedPrecisionLabel] = useState<string>('0.0001')
   const [showPrecisionSelector, setShowPrecisionSelector] = useState<boolean>(false)
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
@@ -60,10 +62,19 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
     // ✅ Cleanup is guaranteed to run BEFORE next effect
     return () => {
-      //const prevNSigFigs = Number(prevPrecision ?? selectedPrecision)
       sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
     }
   }, [sdk, selectedAsset, selectedPrecision])
+
+  // Initialize precision label when component mounts or asset changes
+  useEffect(() => {
+    const initialOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+      (option) => (option.value === null ? 'null' : option.value.toString()) === selectedPrecision
+    )
+    if (initialOption) {
+      setSelectedPrecisionLabel(initialOption.label)
+    }
+  }, [selectedAsset, allMids])
 
   const processOrders = (orders: WsLevel[]) => {
     let runningTotal = 0
@@ -76,11 +87,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [rawBuys, rawSells] = l2Book?.levels ?? [[], []]
 
   const sells = useMemo(
-    () => processOrders(rawSells.slice(0, visibleRows.sells)),
+    () => processOrders(rawSells.slice(0, Math.min(visibleRows.buys, Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.sells))),
     [rawSells, visibleRows.sells]
   )
   const buys = useMemo(
-    () => processOrders(rawBuys.slice(0, visibleRows.buys)),
+    () => processOrders(rawBuys.slice(0, Math.min(visibleRows.sells, Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.buys))),
     [rawBuys, visibleRows.buys]
   )
 
@@ -133,8 +144,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
   const showTotalColumn = layout === 'vertical'
   //const showMobileHeaders = layout === 'horizontal'
-  const handlePrecision = (precision: string) => {
+  const handlePrecision = (precision: string, label: string) => {
     setSelectedPrecision(precision)
+    setSelectedPrecisionLabel(label)
     setShowPrecisionSelector(false)
   }
 
@@ -143,7 +155,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     if (!sellsContainerRef.current || !buysContainerRef.current) return
 
     const calculateVisibleRows = () => {
-      const rowHeight = 22 // Updated: py-1 (16px) + my-[1px] (2px) = 26px total per row
+      const rowHeight = 27 // Updated: py-1 (16px) + my-[1px] (2px) = 26px total per row
       const headerHeight = 64 // Reduced from 80 to 64 (more precise measurement)
       const priceDisplayHeight = 32 // Reduced from 40 to 32 (more precise measurement)
 
@@ -157,9 +169,11 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         // Ensure even number of rows for equal distribution
         const rowsPerSection = Math.max(1, Math.floor(totalRows / 2))
         setVisibleRows({ sells: rowsPerSection, buys: rowsPerSection })
+        
       } else {
         // Use Math.ceil to ensure we use all available space
         const rows = Math.max(1, Math.ceil(availableHeight / rowHeight))
+         
         setVisibleRows({ sells: rows, buys: rows })
       }
     }
@@ -217,7 +231,8 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
             }}
             className="flex items-center gap-1 hover:bg-white/10 px-2 py-0.5 rounded-md text-white/50 hover:text-white cursor-pointer"
           >
-            <p className="text-white text-xs">{selectedPrecision}</p>
+            <p className="text-white text-xs">{selectedPrecisionLabel}</p>
+
             <IconChevronDown className="w-4 h-4" />
           </div>
 
@@ -231,8 +246,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 name="precision"
                 value={selectedPrecision}
                 onChange={(val) => {
-                  handlePrecision(val)
-                  setShowPrecisionSelector(false) // close AFTER change
+                  const selectedOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+                    (option) => (option.value === null ? 'null' : option.value.toString()) === val
+                  )
+                  if (selectedOption) {
+                    handlePrecision(val, selectedOption.label)
+                  }
                 }}
                 className="flex flex-col text-xs"
               >
@@ -317,23 +336,15 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                     <p className="flex col-span-2 font-medium text-red text-xs">{order.px}</p>
                     <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD
-                        ? new Intl.NumberFormat('en-US', {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                          }).format(Number(order.px) * Number(order.sz))
-                        : order.sz}
+                        ? <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.sz)} /> 
+                        : <ReactiveText precision={4} type="number" value={Number(order.sz)} /> }
                     </p>
                     {showTotalColumn && (
                       <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
-                          <>
-                            {new Intl.NumberFormat('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2
-                            }).format(Number((order.cumulative * Number(order.px)).toFixed(2)))}
-                          </>
+                          <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.cumulative)} /> 
                         ) : (
-                          <>{order.cumulative.toFixed(4)}</>
+                          <ReactiveText precision={4} type="number" value={Number(order.cumulative)} />
                         )}
                       </p>
                     )}
@@ -392,23 +403,15 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                     <p className="flex col-span-2 font-medium text-green text-xs">{order.px}</p>
                     <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD
-                        ? new Intl.NumberFormat('en-US', {
-                            minimumFractionDigits: 0,
-                            maximumFractionDigits: 0
-                          }).format(Number(order.px) * Number(order.sz))
-                        : order.sz}
+                        ? <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.sz)} /> 
+                        : <ReactiveText precision={4} type="number" value={Number(order.sz)} /> }
                     </p>
                     {showTotalColumn && (
                       <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
-                          <>
-                            {new Intl.NumberFormat('en-US', {
-                              minimumFractionDigits: 2,
-                              maximumFractionDigits: 2
-                            }).format(order.cumulative * Number(order.px))}
-                          </>
+                          <ReactiveText precision={0} type="number" value={Number(order.cumulative * Number(order.px))} /> 
                         ) : (
-                          <>{order.cumulative.toFixed(4)}</>
+                          <ReactiveText precision={4} type="number" value={Number(order.cumulative)} />
                         )}
                       </p>
                     )}

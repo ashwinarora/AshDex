@@ -5,14 +5,15 @@ import ReactiveText from '../common/ReactiveText'
 import WithdrawModal from '../DepositWithdraw/WithdrawModal'
 import TransferModal from './UserData/component/TransferModal'
 import SendModal from './UserData/component/SendModal'
-import { IconArrowsRightLeft } from '@tabler/icons-react'
+import { IconTransfer } from '@tabler/icons-react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 function OverviewBox() {
   const [isDepositOpen, setIsDepositOpen] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState, spotState, spotAssetContext } = useHyperliquid()
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState(0)
 
   const [maintenanceMargin, setMaintenanceMargin] = useState(0)
@@ -20,6 +21,8 @@ function OverviewBox() {
   const [crossAccountValue, setCrossAccountValue] = useState(0)
   const [crossMarginRatio, setCrossMarginRatio] = useState(0)
 
+  const [spotAccountValue, setSpotAccountValue] = useState(0)
+  const {data: spotMeta} = useSpotMeta()
   useEffect(() => {
     const totalUnrealizedPnl =
       clearingHouseState?.assetPositions?.reduce(
@@ -36,6 +39,21 @@ function OverviewBox() {
     )
     setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
     setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
+
+    const spotTokens = spotState?.balances
+     const spotUSDCBalance = spotTokens?.find((token) => token.coin === 'USDC')?.total || 0
+      
+    const spotTokenPrices = spotTokens?.slice(1).map(token => {
+      
+      const spotUniverse = spotMeta?.universe.find(
+        (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
+      );
+      const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0;
+      return token.total * price;
+    }) || [];
+    
+    const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0);
+    setSpotAccountValue(totalSpotValue + spotUSDCBalance);
   }, [clearingHouseState])
 
   return (
@@ -57,29 +75,29 @@ function OverviewBox() {
           <div className="flex gap-3">
             <button
               onClick={() => setIsDepositOpen(true)}
-              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+              className="bg-primary hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
               Deposit
-            </button>
-            <button
-              onClick={() => setIsWithdrawOpen(true)}
-              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+            </button>  <button
+              onClick={() => setIsSendModalOpen(true)}
+              className="bg-primary hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
-              Withdraw
+              Send
             </button>
+            
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setIsTransferModalOpen(true)}
-              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+              className="bg-transparent hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
-              Perps <IconArrowsRightLeft stroke={2} className="inline mx-2" /> Spot
+              Perps <IconTransfer  className="inline mx-2 w-4 h-4" /> Spot
             </button>
             <button
-              onClick={() => setIsSendModalOpen(true)}
-              className="w-full rounded-lg px-4 py-2 font-semibold transition-all duration-150 bg-primary text-white shadow hover:bg-primary-dark hover:scale-[1.02] hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer"
+              onClick={() => setIsWithdrawOpen(true)}
+              className="bg-transparent hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
-              Send
+              Withdraw
             </button>
           </div>
         </div>
@@ -91,7 +109,7 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Spot</p>
-                  <ReactiveText precision={2} type="currency" pulse={true} value={0} />
+                  <ReactiveText precision={2} type="currency" pulse={true} value={spotAccountValue || 0} />
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Perps</p>
@@ -111,7 +129,7 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Balance</p>
-                  <p className="text-white text-sm">$100,000</p>
+                  <p className="text-white text-sm"><ReactiveText precision={2} type="currency" value={crossAccountValue - totalUnrealizedPnl} /></p>
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Unrealized PnL</p>
