@@ -1,7 +1,7 @@
 'use client'
 import { useState, FC, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAccount, useBalance, useDisconnect } from 'wagmi'
+import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
@@ -39,7 +39,6 @@ const Header: FC = () => {
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const isRendered = useComponentRendered()
-  const { data: balanceData } = useBalance({ address })
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
   const [isOpen, setIsOpen] = useState(false)
@@ -187,7 +186,7 @@ const Header: FC = () => {
                 className="relative flex items-center hover:bg-white/10 p-[10px] rounded-lg w-auto overflow-hidden cursor-pointer"
               >
                 <Avatar className="mr-2 w-6 h-6" avatar={currentUser?.avatar_url || '0'} />
-                
+
                 <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span>
                 <span className="max-xl:hidden flex font-medium truncate">
                   {truncateAddress(address!)}
@@ -216,10 +215,9 @@ const Header: FC = () => {
                           <IconCopy className="w-4 h-4" />
                         </button>
                       </span>
-                     
                     </div>
                   </div>
-                   
+
                   <button
                     onClick={toggleConnectWalletModal}
                     className="flex items-center hover:bg-white/10 mt-3 px-2 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"

@@ -22,7 +22,7 @@ function OverviewBox() {
   const [crossMarginRatio, setCrossMarginRatio] = useState(0)
 
   const [spotAccountValue, setSpotAccountValue] = useState(0)
-  const {data: spotMeta} = useSpotMeta()
+  const { data: spotMeta } = useSpotMeta()
   useEffect(() => {
     const totalUnrealizedPnl =
       clearingHouseState?.assetPositions?.reduce(
@@ -41,19 +41,19 @@ function OverviewBox() {
     setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
 
     const spotTokens = spotState?.balances
-     const spotUSDCBalance = spotTokens?.find((token) => token.coin === 'USDC')?.total || 0
-      
-    const spotTokenPrices = spotTokens?.slice(1).map(token => {
-      
-      const spotUniverse = spotMeta?.universe.find(
-        (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
-      );
-      const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0;
-      return token.total * price;
-    }) || [];
-    
-    const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0);
-    setSpotAccountValue(totalSpotValue + spotUSDCBalance);
+    const spotUSDCBalance = spotTokens?.find((token) => token.coin === 'USDC')?.total || 0
+
+    const spotTokenPrices =
+      spotTokens?.slice(1).map((token) => {
+        const spotUniverse = spotMeta?.universe.find(
+          (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
+        )
+        const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0
+        return token.total * price
+      }) || []
+
+    const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0)
+    setSpotAccountValue(totalSpotValue + spotUSDCBalance)
   }, [clearingHouseState])
 
   return (
@@ -78,20 +78,20 @@ function OverviewBox() {
               className="bg-primary hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
               Deposit
-            </button>  <button
+            </button>{' '}
+            <button
               onClick={() => setIsSendModalOpen(true)}
               className="bg-primary hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
               Send
             </button>
-            
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => setIsTransferModalOpen(true)}
               className="bg-transparent hover:bg-primary-dark shadow hover:shadow-lg px-4 py-2 border border-primary rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 w-full text-white hover:scale-[1.02] transition-all duration-150 cursor-pointer"
             >
-              Perps <IconTransfer  className="inline mx-2 w-4 h-4" /> Spot
+              Perps <IconTransfer className="inline mx-2 w-4 h-4" /> Spot
             </button>
             <button
               onClick={() => setIsWithdrawOpen(true)}
@@ -109,7 +109,12 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Spot</p>
-                  <ReactiveText precision={2} type="currency" pulse={true} value={spotAccountValue || 0} />
+                  <ReactiveText
+                    precision={2}
+                    type="currency"
+                    pulse={true}
+                    value={spotAccountValue || 0}
+                  />
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Perps</p>
@@ -129,7 +134,13 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Balance</p>
-                  <p className="text-white text-sm"><ReactiveText precision={2} type="currency" value={crossAccountValue - totalUnrealizedPnl} /></p>
+                  <p className="text-white text-sm">
+                    <ReactiveText
+                      precision={2}
+                      type="currency"
+                      value={crossAccountValue - totalUnrealizedPnl}
+                    />
+                  </p>
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Unrealized PnL</p>

@@ -87,11 +87,29 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [rawBuys, rawSells] = l2Book?.levels ?? [[], []]
 
   const sells = useMemo(
-    () => processOrders(rawSells.slice(0, Math.min(visibleRows.buys, Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.sells))),
+    () =>
+      processOrders(
+        rawSells.slice(
+          0,
+          Math.min(
+            visibleRows.buys,
+            Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.sells
+          )
+        )
+      ),
     [rawSells, visibleRows.sells]
   )
   const buys = useMemo(
-    () => processOrders(rawBuys.slice(0, Math.min(visibleRows.sells, Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.buys))),
+    () =>
+      processOrders(
+        rawBuys.slice(
+          0,
+          Math.min(
+            visibleRows.sells,
+            Number(selectedPrecisionLabel) >= 10000 ? 10 : visibleRows.buys
+          )
+        )
+      ),
     [rawBuys, visibleRows.buys]
   )
 
@@ -169,11 +187,10 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         // Ensure even number of rows for equal distribution
         const rowsPerSection = Math.max(1, Math.floor(totalRows / 2))
         setVisibleRows({ sells: rowsPerSection, buys: rowsPerSection })
-        
       } else {
         // Use Math.ceil to ensure we use all available space
         const rows = Math.max(1, Math.ceil(availableHeight / rowHeight))
-         
+
         setVisibleRows({ sells: rows, buys: rows })
       }
     }
@@ -335,16 +352,30 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                   >
                     <p className="flex col-span-2 font-medium text-red text-xs">{order.px}</p>
                     <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
-                      {showPriceInUSD
-                        ? <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.sz)} /> 
-                        : <ReactiveText precision={4} type="number" value={Number(order.sz)} /> }
+                      {showPriceInUSD ? (
+                        <ReactiveText
+                          precision={0}
+                          type="number"
+                          value={Number(order.px) * Number(order.sz)}
+                        />
+                      ) : (
+                        <ReactiveText precision={4} type="number" value={Number(order.sz)} />
+                      )}
                     </p>
                     {showTotalColumn && (
                       <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
-                          <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.cumulative)} /> 
+                          <ReactiveText
+                            precision={0}
+                            type="number"
+                            value={Number(order.px) * Number(order.cumulative)}
+                          />
                         ) : (
-                          <ReactiveText precision={4} type="number" value={Number(order.cumulative)} />
+                          <ReactiveText
+                            precision={4}
+                            type="number"
+                            value={Number(order.cumulative)}
+                          />
                         )}
                       </p>
                     )}
@@ -402,16 +433,30 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                   >
                     <p className="flex col-span-2 font-medium text-green text-xs">{order.px}</p>
                     <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
-                      {showPriceInUSD
-                        ? <ReactiveText precision={0} type="number" value={Number(order.px) * Number(order.sz)} /> 
-                        : <ReactiveText precision={4} type="number" value={Number(order.sz)} /> }
+                      {showPriceInUSD ? (
+                        <ReactiveText
+                          precision={0}
+                          type="number"
+                          value={Number(order.px) * Number(order.sz)}
+                        />
+                      ) : (
+                        <ReactiveText precision={4} type="number" value={Number(order.sz)} />
+                      )}
                     </p>
                     {showTotalColumn && (
                       <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
-                          <ReactiveText precision={0} type="number" value={Number(order.cumulative * Number(order.px))} /> 
+                          <ReactiveText
+                            precision={0}
+                            type="number"
+                            value={Number(order.cumulative * Number(order.px))}
+                          />
                         ) : (
-                          <ReactiveText precision={4} type="number" value={Number(order.cumulative)} />
+                          <ReactiveText
+                            precision={4}
+                            type="number"
+                            value={Number(order.cumulative)}
+                          />
                         )}
                       </p>
                     )}

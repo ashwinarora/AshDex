@@ -200,24 +200,26 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         </div>
         <div className="flex flex-col px-3 pb-2 text-sm">
-          {!isSpot && (<>
-          <div className="flex justify-between">
-            <p className="text-white/50">Liquidation Price</p>
-            <p className="text-white">{liquidationPrice}</p>
-          </div>
+          {!isSpot && (
+            <>
+              <div className="flex justify-between">
+                <p className="text-white/50">Liquidation Price</p>
+                <p className="text-white">{liquidationPrice}</p>
+              </div>
 
-          <div className="flex justify-between">
-            <p className="text-white/50">Margin Required</p>
-            <p className="text-white">
-              ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
-            </p>
-          </div></>
-)}
+              <div className="flex justify-between">
+                <p className="text-white/50">Margin Required</p>
+                <p className="text-white">
+                  ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
+                </p>
+              </div>
+            </>
+          )}
           <div className="flex justify-between">
             <p className="text-white/50">Order Value</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-         
+
           {
             <div className="flex justify-between">
               <p className="text-white/50">Slippage</p>

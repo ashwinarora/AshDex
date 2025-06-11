@@ -1,14 +1,13 @@
-import { useState } from 'react';
-import { useAccount, useSignTypedData } from 'wagmi';
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer';
-import { splitSignature } from '@/utils/utils';
-import { useHyperliquid } from '@/store/HyperliquidStore';
-import { hyperliquidAxios } from '@/config/axios';
-import { isTestnet } from '@/utils/constants';
-import SmallModal from '../../../common/SmallModal';
-import { toast } from 'react-toastify';
-import { IconTransfer } from '@tabler/icons-react';
-
+import { useState } from 'react'
+import { useAccount, useSignTypedData } from 'wagmi'
+import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
+import { splitSignature } from '@/utils/utils'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { hyperliquidAxios } from '@/config/axios'
+import { isTestnet } from '@/utils/constants'
+import SmallModal from '../../../common/SmallModal'
+import { toast } from 'react-toastify'
+import { IconTransfer } from '@tabler/icons-react'
 
 interface ITransferModal {
   isOpen: boolean
