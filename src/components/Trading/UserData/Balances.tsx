@@ -129,7 +129,7 @@ const Balances = () => {
     }
 
     const spotData =
-      spotState?.balances.map((state) => ({
+      spotState?.balances?.map((state) => ({
         ...state,
         coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
       })) || []
@@ -177,15 +177,15 @@ const Balances = () => {
   }
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full hidden lg:table text-white">
+    <div className="px-3 w-full overflow-x-auto">
+      <table className="hidden lg:table w-full text-white">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   key={header.id}
-                  className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
+                  className="px-7 pt-3 pb-1 font-normal text-[#8B8BA0] text-sm text-left"
                 >
                   {header.isPlaceholder ? null : (
                     <button
@@ -206,9 +206,9 @@ const Balances = () => {
         </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-white/10">
+            <tr key={row.id} className="border-white/10 border-b">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-4 px-7 opacity-80 text-white font-medium text-sm">
+                <td key={cell.id} className="opacity-80 px-7 py-4 font-medium text-white text-sm">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
