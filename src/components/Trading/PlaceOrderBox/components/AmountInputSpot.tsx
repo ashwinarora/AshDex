@@ -39,8 +39,8 @@ const AmountInputSpot = ({
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
-      ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+      ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
 
   const updateFromAssetAmount = (input: string) => {
