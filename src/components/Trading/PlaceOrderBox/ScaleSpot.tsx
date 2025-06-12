@@ -73,8 +73,8 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
-      ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+      ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
   }, [spotState, selectedAsset, isBuy])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,9 +130,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div>
       <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <form onSubmit={handleSubmit} className="flex flex-col w-full rounded-md shadow-md">
-        <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-          <label className="block text-xs font-medium text-gray-300 mb-0.5">Start Price</label>
+      <form onSubmit={handleSubmit} className="flex flex-col shadow-md rounded-md w-full">
+        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+          <label className="block mb-0.5 font-medium text-gray-300 text-xs">Start Price</label>
           <div className="flex">
             <input
               type="text"
@@ -140,9 +140,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
             />
-            <span className="text-white flex items-center text-xs font-medium">
+            <span className="flex items-center font-medium text-white text-xs">
               <Image
                 src={usdcicon}
                 style={{ width: 45, height: 'auto' }}
@@ -153,16 +153,16 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </span>
           </div>
         </div>
-        <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-          <label className="block text-xs font-medium text-gray-300 mb-0.5">End Price</label>
+        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+          <label className="block mb-0.5 font-medium text-gray-300 text-xs">End Price</label>
           <div className="flex">
             <input
               type="text"
               value={endPrice ?? '0'}
               onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
             />
-            <span className="text-white flex items-center text-xs font-medium">
+            <span className="flex items-center font-medium text-white text-xs">
               <Image
                 src={usdcicon}
                 style={{ width: 45, height: 'auto' }}
@@ -173,7 +173,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </span>
           </div>
         </div>
-        <div className="flex w-full mb-1 items-end px-4 border-b border-[#FFFFFF0F] pb-2">
+        <div className="flex items-end mb-1 px-4 pb-2 border-[#FFFFFF0F] border-b w-full">
           <div className="w-5/6">
             <input
               type="range"
@@ -182,7 +182,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               step={1}
               value={usdPercent}
               onChange={handleUsdPercentChange}
-              className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
+              className="rounded-lg outline-none w-full h-2.5 appearance-none cursor-pointer"
               style={{
                 background:
                   'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
@@ -192,8 +192,8 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   '%, #2A1B3D 100%)'
               }}
             />
-            <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
-            <div className="flex justify-between text-xs text-gray-500 mt-1">
+            <Image src={Slider1} alt="Slider1" width={20} height={20} className="mt-1 w-full" />
+            <div className="flex justify-between mt-1 text-gray-500 text-xs">
               <span>0%</span>
               <span>25%</span>
               <span>50%</span>
@@ -204,17 +204,17 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
           <div className="relative pl-4">
             <input
               type="string"
-              className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2 flex justify-between"
+              className="flex justify-between bg-white/10 px-4 py-2 border border-white/10 rounded-md outline-none w-20 h-11"
               value={usdPercent}
               onChange={handleUsdPercentChange}
             />
-            <span className="absolute right-2 top-2.5 text-gray-500">%</span>
+            <span className="top-2.5 right-2 absolute text-gray-500">%</span>
           </div>
         </div>
-        <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-          <div className="flex mb-1 justify-between">
-            <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
-            <span className="block text-xs font-medium text-[#8B8BA0]">
+        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+          <div className="flex justify-between mb-1">
+            <label className="block mb-0.5 font-medium text-gray-300 text-xs">Total Size</label>
+            <span className="block font-medium text-[#8B8BA0] text-xs">
               Balance = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
             </span>
           </div>
@@ -225,9 +225,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
+              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
             />
-            <span className="text-white flex items-center text-xs font-medium">
+            <span className="flex items-center font-medium text-white text-xs">
               <Image
                 src={usdcicon}
                 style={{ width: 45, height: 'auto' }}
@@ -238,14 +238,14 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </span>
           </div>
         </div>
-        <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
-          <span className="block text-xs font-medium text-gray-300 mb-0.5">Scale Settings</span>
+        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
+          <span className="block mb-0.5 font-medium text-gray-300 text-xs">Scale Settings</span>
           <label className="mb-2">
-            <span className="block text-xs font-medium text-gray-300 mb-0.5">Number of Orders</span>
+            <span className="block mb-0.5 font-medium text-gray-300 text-xs">Number of Orders</span>
             <div className="flex items-center gap-2 mb-1 rounded-lg">
               <button
                 onClick={handleDecrease}
-                className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
+                className="bg-white/10 px-3 py-1.5 border border-white/10 rounded-md cursor-pointer"
               >
                 <Image
                   src={minusicon}
@@ -258,11 +258,11 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 type="text"
                 value={totalOrders}
                 onChange={handleChange}
-                className="w-full text-center rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
+                className="bg-white/10 px-3 py-1.5 border-2 border-white/10 rounded-md focus:outline-none w-full font-medium text-sm text-center"
               />
               <button
                 onClick={handleIncrease}
-                className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
+                className="bg-white/10 px-3 py-1.5 border border-white/10 rounded-md cursor-pointer"
               >
                 <Image
                   src={plusicon}
@@ -274,29 +274,29 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </label>
         </div>
-        <div className="px-4 border-b mb-1 pb-2 border-[#FFFFFF0F]">
-          <label className="block text-xs font-medium text-gray-300 mb-0.5">Size Skew</label>
+        <div className="mb-1 px-4 pb-2 border-[#FFFFFF0F] border-b">
+          <label className="block mb-0.5 font-medium text-gray-300 text-xs">Size Skew</label>
           <input
             type="text"
             value={sizeSkew ?? ''}
             onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)}
             placeholder="0.00"
-            className="w-full rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
+            className="bg-white/10 px-3 py-1.5 border-2 border-white/10 rounded-md focus:outline-none w-full font-medium text-sm"
           />
         </div>
-        <label className="mb-1 mt-1 px-4 flex items-center">
+        <label className="flex items-center mt-1 mb-1 px-4">
           <CheckBox
             label=""
             setIsChecked={(checked) => setIsReduceOnly(checked)}
             isChecked={isReduceOnly}
           />
-          <span className="text-xs font-medium text-[#E8E0F1]">Reduce Only</span>
+          <span className="font-medium text-[#E8E0F1] text-xs">Reduce Only</span>
         </label>
         <div className="px-4">
           {!isAgentApproved || currentFeeApproval === 0 ? (
             <button
               type="button"
-              className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
+              className="bg-primary hover:bg-purple-600 py-2 rounded-2xl w-full text-white cursor-pointer"
               onClick={async () => openAgentModal()}
             >
               Establish Connection
@@ -306,13 +306,13 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               onClick={handleSubmit}
               type="submit"
               disabled={totalSize! > maxAllowed}
-              className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
+              className="bg-primary py-[12px] rounded-xl w-full font-bold text-white text-base cursor-pointer px[24px]"
             >
               Scale Buy ({totalOrders} Orders)
             </button>
           )}
         </div>
-        {/* <span className="font-medium mx-4 my-4 text-sm text-[#8B8BA0]">
+        {/* <span className="mx-4 my-4 font-medium text-[#8B8BA0] text-sm">
           Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
         </span> */}
       </form>

@@ -274,6 +274,6 @@ export function generatePrecisionLabels(marketPrice: number): LabelEntry[] {
   /* 2. Scale every nominal factor by the base step, format nicely.   */
   return FACTORS.map(([value, factor]) => ({
     value,
-    label: toCleanString(baseStep * factor)
+    label: toCleanString(baseStep * (exponent > 4 && value === null ? factor / 10 : factor))
   }))
 }

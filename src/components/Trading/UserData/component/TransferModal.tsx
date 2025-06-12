@@ -1,14 +1,13 @@
-import React, { useState } from 'react'
-import Image from 'next/image'
+import { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
 import { splitSignature } from '@/utils/utils'
-import arrowsorticon from '@/assets/images/arrowsort_icon.svg'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import SmallModal from '../../../common/SmallModal'
 import { toast } from 'react-toastify'
+import { IconTransfer } from '@tabler/icons-react'
 
 interface ITransferModal {
   isOpen: boolean
@@ -34,41 +33,41 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   return (
     <SmallModal isOpen={isOpen} onClose={onClose} heading="Transfer between Perp and Spot">
-      <div className="flex items-center justify-between">
+      <div className="flex justify-between items-center">
         <div
           className={`flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left`}
         >
           {toPerp ? 'Spot' : 'Perp'}
         </div>
         <button className="mx-4 cursor-pointer" onClick={() => setToPerp((prev) => !prev)}>
-          <Image src={arrowsorticon} alt="Swap" style={{ width: 17, height: 'auto' }} />
+          <IconTransfer className="w-4 h-4" />
         </button>
-        <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
+        <div className="flex-1 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 border-2 border-white/10 rounded-xl text-left">
           {!toPerp ? 'Spot' : 'Perp'}
         </div>
       </div>
       <div className="my-4">
-        <div className="flex mb-2 justify-between font-medium text-sm text-[#8B8BA0]">
+        <div className="flex justify-between mb-2 font-medium text-[#8B8BA0] text-sm">
           <div>Amount</div>
           <div>Balance: {getBalance()} USDC</div>
         </div>
-        <div className="flex items-center border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-3 py-2 rounded-lg mb-3">
+        <div className="flex items-center bg-gradient-to-b from-white/5 to-gray-500/5 mb-3 px-3 py-2 border-2 border-white/10 rounded-lg">
           <input
             type="number"
             id="amount"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="bg-transparent text-white placeholder-[#8B8BA0] text-lg w-full outline-none"
+            className="bg-transparent outline-none w-full text-white text-lg placeholder-[#8B8BA0]"
             placeholder="0.00"
           />
           <div className="flex items-center gap-x-2">
             <button
               onClick={() => setAmount(getBalance())}
-              className="text-[#8B8BA0] border py-1 px-2 border-white/10 bg-[#FFFFFF0F] text-sm font-medium rounded-lg"
+              className="bg-[#FFFFFF0F] px-2 py-1 border border-white/10 rounded-lg font-medium text-[#8B8BA0] text-sm"
             >
               Max
             </button>
-            <span className="text-[#8B8BA0] text-sm font-medium">USDC</span>
+            <span className="font-medium text-[#8B8BA0] text-sm">USDC</span>
           </div>
         </div>
       </div>
@@ -117,7 +116,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
               })
             }
           }}
-          className="w-full bg-primary cursor-pointer text-[#FFFFFF] py-3 rounded-xl text-base font-semibold"
+          className="bg-primary py-3 rounded-xl w-full font-semibold text-[#FFFFFF] text-base cursor-pointer"
         >
           Transfer to {toPerp ? 'Perp' : 'Spot'}
         </button>
