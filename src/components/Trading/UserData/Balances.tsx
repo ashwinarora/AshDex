@@ -1,7 +1,7 @@
 'use client'
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import {
@@ -53,7 +53,12 @@ const Balances = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [selectedToken, setSelectedToken] = useState('')
+  const [isMounted, setIsMounted] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   const columns = useMemo(
     () => [
@@ -171,6 +176,10 @@ const Balances = () => {
       })),
     [columns]
   )
+
+  if (!isMounted) {
+    return null
+  }
 
   if (!isConnected) {
     return <WalletNotConnected />

@@ -351,7 +351,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                     }}
                   >
                     <p className="flex col-span-2 font-medium text-red text-xs">{order.px}</p>
-                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
+                    <div className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD ? (
                         <ReactiveText
                           precision={0}
@@ -361,9 +361,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                       ) : (
                         <ReactiveText precision={4} type="number" value={Number(order.sz)} />
                       )}
-                    </p>
+                    </div>
                     {showTotalColumn && (
-                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
+                      <div className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
                           <ReactiveText
                             precision={0}
@@ -377,7 +377,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                             value={Number(order.cumulative)}
                           />
                         )}
-                      </p>
+                      </div>
                     )}
                   </div>
                 )
@@ -406,8 +406,12 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                   <IconArrowDown className="inline w-4 h-4" />
                 )}
               </p>
-              <p>{spread}</p>
-              <p className="text-right">{((spread / allMids[selectedAsset]) * 100).toFixed(3)}%</p>
+              <p>{isNaN(spread) ? '-' : spread}</p>
+              <p className="text-right">
+                {isNaN(spread) || !allMids[selectedAsset] 
+                  ? '-' 
+                  : ((spread / allMids[selectedAsset]) * 100).toFixed(3)}%
+              </p>
             </div>
           </div>
         )}
@@ -432,7 +436,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                     }}
                   >
                     <p className="flex col-span-2 font-medium text-green text-xs">{order.px}</p>
-                    <p className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
+                    <div className="flex col-span-2 opacity-90 ml-auto text-white text-xs">
                       {showPriceInUSD ? (
                         <ReactiveText
                           precision={0}
@@ -442,9 +446,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                       ) : (
                         <ReactiveText precision={4} type="number" value={Number(order.sz)} />
                       )}
-                    </p>
+                    </div>
                     {showTotalColumn && (
-                      <p className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
+                      <div className="flex col-span-3 opacity-90 ml-auto text-white text-xs">
                         {showPriceInUSD ? (
                           <ReactiveText
                             precision={0}
@@ -458,7 +462,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                             value={Number(order.cumulative)}
                           />
                         )}
-                      </p>
+                      </div>
                     )}
                   </div>
                 )
