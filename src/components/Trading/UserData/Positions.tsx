@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import editicon from '@/assets/images/edit_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
-import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
-import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import {
   createColumnHelper,
   flexRender,
@@ -18,12 +15,8 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
 import LimitCloseModal from './component/LimitCloseModal'
 import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
@@ -34,6 +27,7 @@ import { IconPencil, IconSelector, IconChevronDown, IconChevronUp } from '@table
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
 import ReactiveText from '@/components/common/ReactiveText'
+import { AssetPosition } from '@nktkas/hyperliquid'
 
 type ColumnType = {
   key: string
@@ -139,7 +133,7 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
 const SortableHeader = ({
   header
 }: {
-  header: Header<IPositionData & { meta?: { label: string } }, unknown>
+  header: Header<AssetPosition['position'] & { meta?: { label: string } }, unknown>
 }) => {
   const canSort = header.column.getCanSort()
   const sortDirection = header.column.getIsSorted()
@@ -166,21 +160,19 @@ const SortableHeader = ({
 
 const Positions = () => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, agentWallet, allMids } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
-  const { sdk } = useHyperliquid()
+  const { clearingHouseState, allMids } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
   const [isMarketCloseModalOpen, setIsMarketCloseModalOpen] = useState(false)
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
   const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
-  const [tpslAsset, setTpslAsset] = useState<IPositionData>()
+  const [tpslAsset, setTpslAsset] = useState<AssetPosition['position']>()
   const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
-  const [leverageAsset, setLeverageAsset] = useState<IPositionData>()
+  const [leverageAsset, setLeverageAsset] = useState<AssetPosition['position']>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
-  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<IPositionData>()
+  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   useEffect(() => {
@@ -188,7 +180,7 @@ const Positions = () => {
   }, [])
 
   const helper = useMemo(
-    () => createColumnHelper<IPositionData & { meta?: { label: string } }>(),
+    () => createColumnHelper<AssetPosition['position'] & { meta?: { label: string } }>(),
     []
   )
 
@@ -197,70 +189,6 @@ const Positions = () => {
   useEffect(() => {
     allMidsRef.current = allMids
   }, [allMids])
-
-  const closePosition = useCallback(
-    async (position: IPositionData) => {
-      if (!agentWallet || !sdk) return
-      const assetIndex = getUniverseIndex(universe, position.coin)
-      const szDecimals = universe[assetIndex].szDecimals
-      const tif = 'Gtc'
-      const isBuy = !(position.szi > 0)
-      const toastId = toast.loading('Closing position...')
-      try {
-        const res = await sdk.exchange.updateLeverage(
-          position.coin,
-          position.leverage.type,
-          position.leverage.value
-        )
-        console.log(res)
-        const mid = allMidsRef.current[position.coin]
-        const price = isBuy ? mid * 1.1 : mid * 0.9
-        const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-          grouping: 'na',
-          orders: [
-            {
-              assetIndex: assetIndex,
-              isBuy: isBuy,
-              reduceOnly: true,
-              price: formatPrice(price, szDecimals).toString(),
-              size: Math.abs(position.szi).toString(),
-              orderType: {
-                limit: {
-                  tif: tif
-                }
-              }
-            }
-          ]
-        })
-        console.log(order)
-        const status = order.data.response.data.statuses[0]
-        if (status.error) {
-          toast.update(toastId, {
-            render: '❌' + status.error,
-            type: 'error',
-            isLoading: false,
-            autoClose: 3000
-          })
-        } else {
-          toast.update(toastId, {
-            render: '✅ Order placed successfully',
-            type: 'success',
-            isLoading: false,
-            autoClose: 2000
-          })
-        }
-      } catch (error) {
-        console.error('Error closing position:', error)
-        toast.update(toastId, {
-          render: '❌' + error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 2000
-        })
-      }
-    },
-    [agentWallet, universe, sdk, isTestnet, hyperliquidAxios]
-  )
 
   const columns = useMemo(
     () => [
@@ -347,7 +275,11 @@ const Positions = () => {
         id: 'liquidationPx',
         header: 'Liq. Price',
         meta: { label: 'Liq. Price' },
-        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
+        cell: (info) => {
+          const value = info.getValue()
+          if (!value) return '-'
+          return <ReactiveText value={value} type="currency" precision={2} />
+        }
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
@@ -474,7 +406,7 @@ const Positions = () => {
         meta: { label: 'TP/SL' }
       })
     ],
-    [helper, closePosition, isAgentApproved, currentFeeApproval, openAgentModal]
+    [helper, isAgentApproved, currentFeeApproval, openAgentModal]
   )
 
   useEffect(() => {
@@ -528,7 +460,7 @@ const Positions = () => {
           {table.getRowModel().rows.map((row) => (
             <tr
               key={row.id}
-              className={`border-white/10 border-l-5 py-1 ${row.original.szi < 0 ? 'border-l-red' : 'border-l-green'}`}
+              className={`border-white/10 border-l-5 py-1 ${Number(row.original.szi) < 0 ? 'border-l-red' : 'border-l-green'}`}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-2 py-1 text-white text-sm align-middle">

@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react'
-import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
 import { getFormattedPrice, getUniverseIndex } from '@/utils/utils'
@@ -9,15 +8,16 @@ import { hyperliquidAxios } from '@/config/axios'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import SmallModal from '../../../common/SmallModal'
 import { toast } from 'react-toastify'
+import { AssetPosition } from '@nktkas/hyperliquid'
 
 interface TPSLModalProps {
   isOpen: boolean
   onClose: () => void
-  tpslAsset: IPositionData
+  tpslAsset: AssetPosition['position']
 }
 
 function calculatePnL(
-  position: IPositionData,
+  position: AssetPosition['position'],
   triggerPrice: number
 ): { profitPercentage: number; profitAmount: number } {
   const {
@@ -26,9 +26,9 @@ function calculatePnL(
     marginUsed
   } = position
 
-  const delta = triggerPrice - entryPx
-  const profitPercentage = (delta / entryPx) * lev
-  const profitAmount = marginUsed * profitPercentage
+  const delta = Number(triggerPrice) - Number(entryPx)
+  const profitPercentage = (delta / Number(entryPx)) * Number(lev)
+  const profitAmount = Number(marginUsed) * profitPercentage
 
   return {
     profitPercentage: Number((profitPercentage * 100).toFixed(2)),
@@ -37,7 +37,7 @@ function calculatePnL(
 }
 
 function calculateTriggerFromPercentage(
-  position: IPositionData,
+  position: AssetPosition['position'],
   profitPercentage: number
 ): { triggerPrice: number; profitAmount: number } {
   const {
@@ -46,22 +46,22 @@ function calculateTriggerFromPercentage(
     marginUsed
   } = position
 
-  const deltaPrice = (profitPercentage * entryPx) / lev
-  const triggerPrice = entryPx + deltaPrice
-  const profitAmount = marginUsed * profitPercentage
+  const deltaPrice = (Number(profitPercentage) * Number(entryPx)) / Number(lev)
+  const triggerPrice = Number(entryPx) + Number(deltaPrice)
+  const profitAmount = Number(marginUsed) * Number(profitPercentage)
 
   return { triggerPrice, profitAmount }
 }
 
 function calculateTriggerFromAmount(
-  position: IPositionData,
+  position: AssetPosition['position'],
   profitAmount: number
 ): { triggerPrice: number; profitPercentage: number } {
   const entryPx = position.entryPx
   const positionSize = Number(position.szi)
   const deltaPrice = profitAmount / positionSize
-  const triggerPrice = entryPx + deltaPrice
-  const profitPercentage = (deltaPrice / entryPx) * 100
+  const triggerPrice = Number(entryPx) + Number(deltaPrice)
+  const profitPercentage = (Number(deltaPrice) / Number(entryPx)) * 100
   return {
     triggerPrice: Number(triggerPrice.toFixed(4)),
     profitPercentage: Number(profitPercentage.toFixed(2))
@@ -83,14 +83,13 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
   const [tpLimitPrice, setTpLimitPrice] = useState('')
   const [slLimitPrice, setSlLimitPrice] = useState('')
 
-  const { data: universe } = usePerpsUniverse()
-  const { perpAssetContext, agentWallet } = useHyperliquid()
+  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquid()
   const { currentFeeApproval } = useAgentApproval()
 
   const assetCtx = useMemo(() => {
-    const assetIndex = universe.findIndex((item) => item.name === tpslAsset.coin)
-    return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
-  }, [perpAssetContext, tpslAsset.coin, universe])
+    const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)
+    return assetIndex ? perpAssetContext[assetIndex] : null
+  }, [perpAssetContext, tpslAsset.coin, perpsMeta])
 
   const entryPrice = Number(tpslAsset.entryPx)
   const markPrice = Number(assetCtx?.markPx)
@@ -341,9 +340,10 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
           className="w-full mt-4 py-2 bg-[#00E0CA] text-[#18122B] font-semibold rounded-lg hover:bg-[#00bfae] transition"
           onClick={async () => {
             if (!agentWallet) return
+            if (!perpsMeta) return
             const orders: OrderData[] = []
-            const assetIndex = getUniverseIndex(universe, tpslAsset.coin)
-            const isBuy = !(tpslAsset.szi > 0)
+            const assetIndex = getUniverseIndex(perpsMeta.universe, tpslAsset.coin)
+            const isBuy = !(Number(tpslAsset.szi) > 0)
             if (tpTriggerPrice) {
               const multiplier = isBuy ? 1.1 : 0.9
               const price = tpLimitPrice
@@ -353,12 +353,12 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
               const formattedTriggerPrice = getFormattedPrice({
                 price: Number(tpTriggerPrice),
                 isSpot: false,
-                szDecimals: universe[assetIndex].szDecimals
+                szDecimals: perpsMeta.universe[assetIndex].szDecimals
               })
               const formattedPrice = getFormattedPrice({
                 price: Number(price),
                 isSpot: false,
-                szDecimals: universe[assetIndex].szDecimals
+                szDecimals: perpsMeta.universe[assetIndex].szDecimals
               })
               orders.push({
                 assetIndex,
@@ -384,12 +384,12 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
               const formattedSlTriggerPrice = getFormattedPrice({
                 price: Number(slTriggerPrice),
                 isSpot: false,
-                szDecimals: universe[assetIndex].szDecimals
+                szDecimals: perpsMeta.universe[assetIndex].szDecimals
               })
               const formattedPrice = getFormattedPrice({
                 price: Number(price),
                 isSpot: false,
-                szDecimals: universe[assetIndex].szDecimals
+                szDecimals: perpsMeta.universe[assetIndex].szDecimals
               })
               orders.push({
                 assetIndex,

@@ -1,7 +1,9 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { CandleInterval, useHyperliquid } from '@/store/HyperliquidStore'
+import * as hl from '@nktkas/hyperliquid'
+
+// TODO: Need Contributor review to fix the types
 
 interface BarData {
   time: number
@@ -154,7 +156,7 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdk, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
+  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
@@ -205,7 +207,7 @@ const TradingViewChart = ({
 
   // Create datafeed once when SDK is available
   useEffect(() => {
-    if (!sdk) return
+    if (!sdkInfoClient) return
 
     const datafeed: Datafeed = {
       onReady: (cb: DatafeedCallback) =>
@@ -240,7 +242,7 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
-          if (!sdk || !currentAsset) {
+          if (!sdkInfoClient || !currentAsset) {
             onErrorCallback('SDK or asset not available')
             return
           }
@@ -253,20 +255,26 @@ const TradingViewChart = ({
           const from = to - countBack * intervalSeconds
           const interval = convertedResolutionToInterval(resolution)
 
-          const rawCandles = await sdk.info.getCandleSnapshot(
-            currentAsset,
-            interval,
-            from * 1000,
-            to * 1000
-          )
-
-          const bars = rawCandles.map((bar: Candle) => ({
+          const rawCandles = await sdkInfoClient.candleSnapshot({
+            coin: currentAsset,
+            interval: interval as CandleInterval,
+            startTime: from,
+            endTime: to
+          })
+          // const rawCandles = await sdkInfoClient.candleSnapshot(
+          //   currentAsset,
+          //   interval,
+          //   from * 1000,
+          //   to * 1000
+          // )
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const bars = rawCandles.map((bar: any) => ({
             time: Number(Math.floor(Number(bar.t))),
-            open: parseFloat(bar.o.toString()),
-            high: parseFloat(bar.h.toString()),
-            low: parseFloat(bar.l.toString()),
-            close: parseFloat(bar.c.toString()),
-            volume: parseFloat(bar.v.toString())
+            open: typeof bar.o === 'string' ? parseFloat(bar.o) : Number(bar.o),
+            high: typeof bar.h === 'string' ? parseFloat(bar.h) : Number(bar.h),
+            low: typeof bar.l === 'string' ? parseFloat(bar.l) : Number(bar.l),
+            close: typeof bar.c === 'string' ? parseFloat(bar.c) : Number(bar.c),
+            volume: typeof bar.v === 'string' ? parseFloat(bar.v) : Number(bar.v)
           }))
 
           // Initialize cache for asset if not exists
@@ -315,12 +323,12 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
-          if (!sdk || !currentAsset) return
+          if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertedResolutionToInterval(resolution)
+          const interval = convertedResolutionToInterval(resolution) as CandleInterval
           let lastBar: BarData | undefined
 
-          const candleHandler = (payload: Candle[] | Candle) => {
+          const candleHandler = (payload: hl.Candle) => {
             const candles = Array.isArray(payload) ? payload : [payload]
 
             candles.forEach((c) => {
@@ -380,7 +388,7 @@ const TradingViewChart = ({
       Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
       tvSubscribersRef.current = {}
     }
-  }, [sdk])
+  }, [sdkInfoClient])
 
   // Initialize TradingView widget
   useEffect(() => {

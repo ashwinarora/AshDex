@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { TRADING_TABS } from '@/utils/constants'
 import Chart from './Chart'
 import OrderBook from './OrderBook'
-import Selector from './Selector'
+import Selector from './Selector/Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
@@ -12,7 +12,7 @@ import OverviewBox from './OverviewBox'
 
 const Trading = () => {
   const isSpot = useIsSpot()
-  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE-SPOT' : 'BTC-PERP')
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE' : 'BTC')
   const [activeTab, setActiveTab] = useState(0)
   const components = [
     <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30" />,

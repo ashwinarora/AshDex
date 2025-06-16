@@ -13,7 +13,7 @@ import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import { getUniverseIndex } from '@/utils/utils'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
@@ -31,13 +31,12 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { clearingHouseState } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState, perpsMeta } = useHyperliquid()
 
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 
   useEffect(() => {
-    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
   }, [clearingHouseState])
 
   const liquidationPrice = () => {
@@ -45,8 +44,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    const maxLeverage = universe[assetIndex]?.maxLeverage || 1
+    const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({
       entryPrice: Number(limitPrice),

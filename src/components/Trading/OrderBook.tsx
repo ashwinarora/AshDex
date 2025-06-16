@@ -14,6 +14,9 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { getCoinName, generatePrecisionLabels } from '@/utils/utils'
 import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 import ReactiveText from '../common/ReactiveText'
+import { EventL2BookParameters } from '@nktkas/hyperliquid'
+
+// TODO: Need Contributor review to fix the types
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -21,7 +24,7 @@ interface IOrderBookProps {
 }
 
 const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
-  const { sdk, allMids } = useHyperliquid()
+  const { sdkSubscriptionClient, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<WsBook>()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
@@ -41,15 +44,19 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!sdk || !selectedAsset) return
+    if (!sdkSubscriptionClient || !selectedAsset) return
+
+    let isMounted = true
+    let sub: { unsubscribe: () => void } | null = null
 
     const nSigFigs = Number(selectedPrecision)
     let mantissa = null
     const handler = (data: WsBook) => {
-      setL2Book(data)
-      setIsLoading(false)
+      if (isMounted) {
+        setL2Book(data)
+        setIsLoading(false)
+      }
     }
-
     setIsLoading(true)
     if (nSigFigs === 5) {
       mantissa = 5
@@ -58,17 +65,31 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     } else if (nSigFigs === 7) {
       mantissa = null
     }
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa, handler)
 
-    // ✅ Cleanup is guaranteed to run BEFORE next effect
+    // Use an async IIFE to use await inside useEffect
+    ;(async () => {
+      sub = await sdkSubscriptionClient.l2Book(
+        {
+          coin: selectedAsset,
+          nSigFigs: Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'],
+          mantissa: mantissa as EventL2BookParameters['mantissa']
+        },
+        handler
+      )
+    })()
+
+    // Cleanup
     return () => {
-      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
+      isMounted = false
+      if (sub) {
+        sub.unsubscribe()
+      }
     }
-  }, [sdk, selectedAsset, selectedPrecision])
+  }, [sdkSubscriptionClient, selectedAsset, selectedPrecision])
 
   // Initialize precision label when component mounts or asset changes
   useEffect(() => {
-    const initialOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+    const initialOption = generatePrecisionLabels(Number(allMids[selectedAsset] || 0)).find(
       (option) => (option.value === null ? 'null' : option.value.toString()) === selectedPrecision
     )
     if (initialOption) {
@@ -143,13 +164,13 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     if (allMids[selectedAsset]) {
       const currentPrice = allMids[selectedAsset]
       if (prevPriceRef.current !== null) {
-        if (currentPrice > prevPriceRef.current) {
+        if (Number(currentPrice) > Number(prevPriceRef.current)) {
           setPriceChange('up')
-        } else if (currentPrice < prevPriceRef.current) {
+        } else if (Number(currentPrice) < Number(prevPriceRef.current)) {
           setPriceChange('down')
         }
       }
-      prevPriceRef.current = currentPrice
+      prevPriceRef.current = Number(currentPrice)
     }
   }, [allMids, selectedAsset])
 
@@ -263,7 +284,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 name="precision"
                 value={selectedPrecision}
                 onChange={(val) => {
-                  const selectedOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+                  const selectedOption = generatePrecisionLabels(
+                    Number(allMids[selectedAsset] || 0)
+                  ).find(
                     (option) => (option.value === null ? 'null' : option.value.toString()) === val
                   )
                   if (selectedOption) {
@@ -272,7 +295,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 }}
                 className="flex flex-col text-xs"
               >
-                {generatePrecisionLabels(allMids[selectedAsset] || 0).map((level) => (
+                {generatePrecisionLabels(Number(allMids[selectedAsset] || 0)).map((level) => (
                   <RadioGroupItem
                     key={level.value ?? 'null'}
                     value={(level.value ?? 'null').toString()}
@@ -408,9 +431,10 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
               </p>
               <p>{isNaN(spread) ? '-' : spread}</p>
               <p className="text-right">
-                {isNaN(spread) || !allMids[selectedAsset] 
-                  ? '-' 
-                  : ((spread / allMids[selectedAsset]) * 100).toFixed(3)}%
+                {isNaN(spread) || !allMids[selectedAsset]
+                  ? '-'
+                  : ((Number(spread) / Number(allMids[selectedAsset])) * 100).toFixed(3)}
+                %
               </p>
             </div>
           </div>

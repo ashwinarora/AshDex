@@ -32,15 +32,16 @@ const AmountInputSpot = ({
   const [isInputUsd, setIsInputUsd] = useState(false)
 
   const szDecimals = useMemo(() => {
-    const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
     return tokenData?.szDecimals || 0
   }, [selectedAsset, spotMeta])
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
-    return isBuy
-      ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    const max = isBuy
+      ? (spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState?.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    return Number(max)
   }, [spotState, selectedAsset, isBuy])
 
   const updateFromAssetAmount = (input: string) => {

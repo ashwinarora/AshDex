@@ -2,7 +2,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 interface FavoriteAsset {
   name: string
   value: string
@@ -74,8 +74,7 @@ const formatPriceChange = (currentPrice: number, prevDayPrice: number): string =
 
 export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [favorites, setFavorites] = useState<FavoritesData>({ spot: [], perp: [] })
-  const { allMids, perpAssetContext, spotAssetContext } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { allMids, perpAssetContext, spotAssetContext, perpsMeta } = useHyperliquid()
   const isInitialized = useRef(false)
   const isSpot = useIsSpot()
   // Load favorites from localStorage on initial render
@@ -123,7 +122,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
       !isInitialized.current ||
       (!favorites.perp.length && !favorites.spot.length) ||
       !perpAssetContext ||
-      !universe ||
+      !perpsMeta ||
       !allMids ||
       !spotAssetContext
     ) {
@@ -134,7 +133,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
       return favoritesList.map((favorite) => {
         const assetIndex = isSpot
           ? spotAssetContext.findIndex((asset) => asset.coin === favorite.index)
-          : universe.findIndex((asset) => asset.name === favorite.index)
+          : perpsMeta.universe.findIndex((asset) => asset.name === favorite.index)
 
         if (assetIndex === -1 || !perpAssetContext[assetIndex] || !spotAssetContext[assetIndex]) {
           return favorite
@@ -147,15 +146,15 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
           ? spotAssetContext[assetIndex].prevDayPx
           : perpAssetContext[assetIndex].prevDayPx
         const newPrice = allMids[favorite.index]
-          ? `$${allMids[favorite.index].toLocaleString('en-US', {
+          ? `$${Number(allMids[favorite.index]).toLocaleString('en-US', {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2
             })}`
           : favorite.price
 
         let newChange24h = favorite.change24h
-        if (currentPrice && prevDayPrice && prevDayPrice > 0) {
-          newChange24h = formatPriceChange(currentPrice, prevDayPrice)
+        if (currentPrice && prevDayPrice && Number(prevDayPrice) > 0) {
+          newChange24h = formatPriceChange(Number(currentPrice), Number(prevDayPrice))
         }
 
         if (
@@ -185,7 +184,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
       setFavorites(updatedFavorites)
       localStorage.setItem('favorites', updatedJson)
     }
-  }, [perpAssetContext, allMids, universe, favorites, spotAssetContext])
+  }, [perpAssetContext, allMids, perpsMeta, favorites, spotAssetContext])
 
   const addFavorite = (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
     if (!isFavorite(asset.index, type)) {

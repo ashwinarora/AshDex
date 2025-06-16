@@ -13,7 +13,7 @@ import '@/styles/table.css'
 import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
-import { HyperLiquidInitializer } from './HyperliquidInitializer'
+import HyperLiquidInitializer from './HyperliquidInitializer'
 import FooterCompact from '@/components/FooterCompact'
 import SnackBar from '@/components/common/SnackBar'
 

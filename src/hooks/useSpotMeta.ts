@@ -1,21 +1,17 @@
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { SpotMeta } from '@nktkas/hyperliquid'
 import { useQuery } from '@tanstack/react-query'
-import { SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
 
 export const useSpotMeta = () => {
-  const { sdk } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquid()
 
-  return useQuery<SpotMeta>({
-    queryKey: ['spotUniverse'],
+  return useQuery<SpotMeta | undefined>({
+    queryKey: ['spotMeta'],
     queryFn: async () => {
-      if (!sdk) return { tokens: [], universe: [] }
-      const res = await sdk.info.spot.getSpotMeta()
-      return res as SpotMeta
+      if (!sdkInfoClient) return
+      const res = await sdkInfoClient.spotMeta()
+      return res
     },
-    enabled: !!sdk,
-    initialData: {
-      tokens: [],
-      universe: []
-    }
+    enabled: !!sdkInfoClient
   })
 }

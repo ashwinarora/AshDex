@@ -8,7 +8,6 @@ import {
 } from '@tabler/icons-react'
 import { useFavorites } from '@/context/FavoritesContext'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import ReactiveText from '@/components/common/ReactiveText'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { getUniverseIndex } from '@/utils/utils'
@@ -16,33 +15,32 @@ import useIsSpot from '@/hooks/useIsSpot'
 
 interface AssetItemProps {
   assetKey: string
-
   selectedAsset: string | null
   setSelectedAsset: (assetKey: string) => void
 }
 
 const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => {
-  const { perpAssetContext, spotAssetContext } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { perpAssetContext, spotAssetContext, perpsMeta } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
-  const { data: spotUniverse } = useSpotMeta()
   const { isFavorite, toggleFavorite } = useFavorites()
   const isSpot = useIsSpot()
   const type = isSpot ? 'spot' : 'perp'
   // Find the asset context for this asset
   const assetIndex = useMemo(() => {
     if (isSpot) {
-      return spotUniverse.tokens.findIndex((asset) => asset.name === assetKey)
+      return spotMeta?.tokens.findIndex((asset) => asset.name === assetKey)
     }
 
-    return universe.findIndex((asset) => asset.name === assetKey)
-  }, [universe, assetKey, isSpot])
+    return perpsMeta?.universe.findIndex((asset) => asset.name === assetKey)
+  }, [perpsMeta, assetKey, isSpot, spotMeta])
 
   const assetCtx = useMemo(() => {
-    if (isSpot && assetIndex !== -1) {
+    if (!assetIndex) return null
+    if (assetIndex === -1) return null
+    if (isSpot) {
       return spotAssetContext[assetIndex]
     }
-    return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
+    return perpAssetContext[assetIndex]
   }, [assetIndex, perpAssetContext, spotAssetContext])
 
   const selectedAssetContext = useMemo(() => {
@@ -63,17 +61,17 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
       const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
       return coinDetails || null
     }
-    const idx = getUniverseIndex(universe, assetKey)
+    const idx = getUniverseIndex(perpsMeta?.universe || [], assetKey)
     return perpAssetContext[idx] || null
-  }, [assetKey, universe, perpAssetContext, spotAssetContext, isSpot, spotMeta])
+  }, [assetKey, perpsMeta, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   // Calculate price change if context exists
   const priceChangeData = useMemo(() => {
     // If change24h is provided as a prop, use that
     if (selectedAssetContext?.markPx !== undefined) {
       const changeValue =
-        ((selectedAssetContext?.markPx - selectedAssetContext?.prevDayPx) /
-          selectedAssetContext?.markPx) *
+        ((Number(selectedAssetContext?.markPx) - Number(selectedAssetContext?.prevDayPx)) /
+          Number(selectedAssetContext?.markPx)) *
         100
 
       return {
@@ -91,8 +89,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
 
     const prevDayPrice = assetCtx.prevDayPx
     const currentPrice = assetCtx.midPx
-    const change = currentPrice - prevDayPrice
-    const percentageChange = (change / prevDayPrice) * 100
+    const change = Number(currentPrice) - Number(prevDayPrice)
+    const percentageChange = (change / Number(prevDayPrice)) * 100
     const isPositive = percentageChange >= 0
 
     return {
@@ -159,9 +157,9 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
           ) : (
             <p className="">{assetKey.split('-')[0]}-USDC</p>
           )}
-          {!isSpot && (
+          {!isSpot && assetIndex && (
             <p className="bg-primary/40 px-2 rounded-md text-xs">
-              {universe[assetIndex]?.maxLeverage || 50}×
+              {perpsMeta?.universe[assetIndex]?.maxLeverage || 1}×
             </p>
           )}
         </div>
@@ -183,7 +181,9 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
               <>
                 <ReactiveText
                   precision={formattedPrice === '-' ? 2 : formattedPrice.split('.')[1]?.length || 2}
-                  value={selectedAssetContext.markPx - selectedAssetContext.prevDayPx}
+                  value={
+                    Number(selectedAssetContext.markPx) - Number(selectedAssetContext.prevDayPx)
+                  }
                   type="currency"
                   isStatic={true}
                 />
@@ -192,8 +192,9 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
                   <ReactiveText
                     precision={2}
                     value={
-                      ((selectedAssetContext.markPx - selectedAssetContext.prevDayPx) /
-                        selectedAssetContext.markPx) *
+                      ((Number(selectedAssetContext.markPx) -
+                        Number(selectedAssetContext.prevDayPx)) /
+                        Number(selectedAssetContext.markPx)) *
                       100
                     }
                     type="percentage"
@@ -218,7 +219,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
             'circulatingSupply' in selectedAssetContext && (
               <ReactiveText
                 value={Number(
-                  selectedAssetContext.markPx * (selectedAssetContext.circulatingSupply || 1)
+                  Number(selectedAssetContext.markPx) *
+                    Number(selectedAssetContext.circulatingSupply || 1)
                 )}
                 type="currency"
               />
@@ -227,7 +229,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
             'openInterest' in selectedAssetContext && (
               <ReactiveText
                 value={Number(
-                  selectedAssetContext.midPx * (selectedAssetContext.openInterest || 1)
+                  Number(selectedAssetContext.midPx) *
+                    Number(selectedAssetContext.openInterest || 1)
                 )}
                 type="currency"
               />

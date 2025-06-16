@@ -2,26 +2,18 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import AssetItem from './UserData/component/AssetItem'
 import { getUniverseIndex } from '@/utils/utils'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
-import Skeleton from '../common/Skeleton'
-import {
-  IconExternalLink,
-  IconSearch,
-  IconSelector,
-  IconStar,
-  IconStarFilled
-} from '@tabler/icons-react'
-import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
-import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
-import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
+import Skeleton from '../../common/Skeleton'
+import { IconExternalLink, IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import ReactiveText from '../common/ReactiveText'
+import ReactiveText from '../../common/ReactiveText'
+import SpotTable from './SpotTable'
+import PerpsTable from './PerpsTable'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -55,14 +47,11 @@ const useCountdown = () => {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, perpAssetContext, spotAssetContext } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { allMids, perpAssetContext, spotAssetContext, perpsMeta } = useHyperliquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
-  const [sortKey, setSortKey] = useState('market')
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
   const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const settingsRef = useRef<HTMLDivElement>(null)
@@ -71,6 +60,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [tokenContract, setTokenContract] = useState<string>()
   const { isFavorite, toggleFavorite } = useFavorites()
   const { data: spotMeta } = useSpotMeta()
+
   const selectedAssetContext = useMemo(() => {
     const coin = selectedAsset
 
@@ -90,9 +80,9 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
       return coinDetails || null
     }
-    const idx = getUniverseIndex(universe, selectedAsset)
+    const idx = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     return perpAssetContext[idx] || null
-  }, [selectedAsset, universe, perpAssetContext, spotAssetContext, isSpot, spotMeta])
+  }, [selectedAsset, perpsMeta, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   const countdown = useCountdown()
 
@@ -123,8 +113,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     if (!selectedAssetContext) return []
     const calculate24hChange = () => {
       if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
-      const prev = selectedAssetContext.prevDayPx
-      const change = selectedAssetContext.midPx - prev
+      const prev = Number(selectedAssetContext.prevDayPx)
+      const change = Number(selectedAssetContext.midPx) - prev
       const percent = (change / prev) * 100
       const sign = change >= 0 ? '+' : ''
       return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
@@ -173,7 +163,9 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             <ReactiveText
               className="text-xs"
               precision={0}
-              value={Number(selectedAssetContext.openInterest! * selectedAssetContext.oraclePx!)}
+              value={
+                Number(selectedAssetContext.openInterest!) * Number(selectedAssetContext.oraclePx!)
+              }
               type="currency"
             />
           ) : (
@@ -207,10 +199,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             <ReactiveText
               className="text-xs"
               precision={0}
-              value={Number(
-                (selectedAssetContext as WebDataSpotAssetCtx).circulatingSupply *
-                  selectedAssetContext.midPx
-              )}
+              value={Number(Number(selectedAssetContext.midPx))}
               type="currency"
             />
           ) : (
@@ -241,7 +230,9 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Funding/Countdown',
         value: (
           <div className="flex items-center gap-1">
-            <span className={`${selectedAssetContext.funding! > 0 ? 'text-green' : 'text-red'}`}>
+            <span
+              className={`${Number(selectedAssetContext.funding!) > 0 ? 'text-green' : 'text-red'}`}
+            >
               {selectedAssetContext.funding!.toString()}
             </span>
             <span className="text-white/70">/</span>
@@ -263,15 +254,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     tokenContract,
     countdown
   ])
-
-  const handleSort = (key: string) => {
-    if (sortKey === key) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')
-    } else {
-      setSortKey(key)
-      setSortOrder('asc')
-    }
-  }
 
   const handleToggleFavorite = (e: React.MouseEvent) => {
     e.stopPropagation()
@@ -420,16 +402,27 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             ))}
           </div>
           {/* Table with sorting */}
-          <AssetTable
+          {/* <AssetTable
             filteredAssets={filteredAssets}
-            universe={universe}
             isFavorite={isFavorite}
             selectedAsset={selectedAsset}
             setSelectedAsset={setSelectedAsset}
-            sortKey={sortKey}
-            sortOrder={sortOrder}
-            handleSort={handleSort}
-          />
+          /> */}
+          {isSpot ? (
+            <SpotTable
+              filteredAssets={filteredAssets}
+              isFavorite={isFavorite}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+            />
+          ) : (
+            <PerpsTable
+              filteredAssets={filteredAssets}
+              isFavorite={isFavorite}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={setSelectedAsset}
+            />
+          )}
         </div>
       )}
     </div>
@@ -437,145 +430,3 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 }
 
 export default Selector
-
-// ----------------------------------
-// 🧩 Separated Table Component Below
-// ----------------------------------
-interface AssetTableProps {
-  filteredAssets: [string, number][]
-  universe: MetaData[]
-  isFavorite: (key: string, type: 'spot' | 'perp') => boolean
-  selectedAsset: string
-  setSelectedAsset: (asset: string) => void
-  sortKey: string
-  sortOrder: 'asc' | 'desc'
-  handleSort: (key: string) => void
-}
-
-const AssetTable = ({
-  filteredAssets,
-  universe,
-  isFavorite,
-  selectedAsset,
-  setSelectedAsset,
-  sortKey,
-  sortOrder,
-  handleSort
-}: AssetTableProps) => {
-  const isSpot = useIsSpot()
-  const type = isSpot ? 'spot' : 'perp'
-  const { spotAssetContext, perpAssetContext } = useHyperliquid()
-  const getSortValue = (key: string, ctx: AssetCtx | undefined, assetKey: string) => {
-    if (!ctx) return 0
-
-    switch (key) {
-      case 'market':
-        return assetKey || ''
-      case 'price':
-        return ctx.midPx ?? 0
-      case 'change':
-        return ctx.prevDayPx ? ((ctx.midPx - ctx.prevDayPx) / ctx.prevDayPx) * 100 : 0
-      case 'volume':
-        return ctx.dayNtlVlm ?? 0
-      case 'marketCap':
-        return ctx.marketCap ?? 0
-      default:
-        return 0
-    }
-  }
-
-  const sortAssets = (assets: [string, number][]) =>
-    [...assets].sort(([aKey], [bKey]) => {
-      let ctxA = perpAssetContext[universe.findIndex((a: MetaData) => a.name === aKey)]
-      let ctxB = perpAssetContext[universe.findIndex((a: MetaData) => a.name === bKey)]
-
-      if (isSpot) {
-        ctxA = spotAssetContext[universe.findIndex((a: MetaData) => a.name === aKey)]
-        ctxB = spotAssetContext[universe.findIndex((a: MetaData) => a.name === bKey)]
-      }
-      let a = getSortValue(sortKey, ctxA, aKey)
-      let b = getSortValue(sortKey, ctxB, bKey)
-
-      if (sortKey === 'market') {
-        a = String(a ?? '')
-        b = String(b ?? '')
-        return sortOrder === 'asc' ? a.localeCompare(b) : b.localeCompare(a)
-      }
-
-      return sortOrder === 'asc' ? Number(a) - Number(b) : Number(b) - Number(a)
-    })
-
-  const favoriteAssets = filteredAssets.filter(([key]) => isFavorite(key, type))
-  const nonFavoriteAssets = filteredAssets.filter(([key]) => !isFavorite(key, type))
-
-  const sortedFavorites = sortAssets(favoriteAssets)
-  const sortedNonFavorites = sortAssets(nonFavoriteAssets)
-
-  return (
-    <div className="h-[300px] overflow-y-auto no-scrollbar">
-      <table className="min-w-full text-white text-sm">
-        <thead className="top-0 z-10 sticky text-white/70">
-          <tr>
-            <th
-              className="group px-4 py-3 active:text-white text-left whitespace-nowrap cursor-pointer"
-              onClick={() => handleSort('market')}
-            >
-              <div className="flex items-center gap-1">
-                Market
-                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-              </div>
-            </th>
-            <th
-              className="group px-4 py-3 active:text-white text-right whitespace-nowrap cursor-pointer"
-              onClick={() => handleSort('price')}
-            >
-              <div className="flex justify-end items-center gap-1">
-                Price
-                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-              </div>
-            </th>
-            <th
-              className="group px-4 py-3 active:text-white text-right whitespace-nowrap cursor-pointer"
-              onClick={() => handleSort('change')}
-            >
-              <div className="flex justify-end items-center gap-1">
-                24h Change
-                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-              </div>
-            </th>
-            <th
-              className="group px-4 py-3 active:text-white text-right whitespace-nowrap cursor-pointer"
-              onClick={() => handleSort('volume')}
-            >
-              <div className="flex justify-end items-center gap-1">
-                Volume
-                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-              </div>
-            </th>
-            <th
-              className="group px-4 py-3 active:text-white text-right whitespace-nowrap cursor-pointer"
-              onClick={() => handleSort('marketCap')}
-            >
-              <div className="flex justify-end items-center gap-1">
-                {type === 'spot' ? 'Market Cap' : 'Open Interest'}
-                <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-              </div>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {[...sortedFavorites, ...sortedNonFavorites].map(([key]) => {
-            return (
-              <AssetItem
-                key={key}
-                assetKey={key}
-                selectedAsset={selectedAsset}
-                setSelectedAsset={setSelectedAsset}
-              />
-            )
-          })}
-        </tbody>
-      </table>
-    </div>
-  )
-}

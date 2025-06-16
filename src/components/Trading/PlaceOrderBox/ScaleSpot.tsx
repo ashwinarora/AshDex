@@ -1,10 +1,9 @@
 'use client'
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
-import { useAccount } from 'wagmi'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
-import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { getCoinName } from '@/utils/utils'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
@@ -15,7 +14,7 @@ import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { hyperliquidAxios } from '@/config/axios'
+import { toast } from 'react-toastify'
 
 interface Order {
   price: number
@@ -56,9 +55,8 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, spotState, spotAssetContext } = useHyperliquid()
+  const { agentWallet, spotState, spotAssetContext, sdkExchangeClient } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
-  const { chain } = useAccount()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
@@ -79,7 +77,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!spotMeta.tokens) return
+    if (!spotMeta) return
     if (!agentWallet) return
     if (!currentFeeApproval) return
     const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
@@ -99,25 +97,80 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
         }
       }
     }))
-    const res = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-      orders: ordersData,
-      grouping: 'na',
-      builder: {
-        address: BUILDER_ADDRESS,
-        fee: currentFeeApproval
+    // const res = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
+    //   orders: ordersData,
+    //   grouping: 'na',
+    //   builder: {
+    //     address: BUILDER_ADDRESS,
+    //     fee: currentFeeApproval
+    //   }
+    // })
+    // console.log(res)
+    const toastId = toast.loading(`Placing ${totalOrders} orders...`)
+    try {
+      if (!sdkExchangeClient) return
+      const placeOrderRes = await sdkExchangeClient.order({
+        grouping: 'na',
+        builder: {
+          b: BUILDER_ADDRESS,
+          f: currentFeeApproval
+        },
+        orders: ordersData.map((order) => ({
+          a: order.assetIndex,
+          b: order.isBuy,
+          p: order.price,
+          s: order.size,
+          r: order.reduceOnly,
+          t: order.orderType
+        }))
+      })
+      console.log(placeOrderRes)
+      // TODO: Handle the status of all Orders
+      const status = placeOrderRes.response.data.statuses[0]
+      if ('error' in status) {
+        toast.update(toastId, {
+          render: '❌' + status.error,
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
+      } else if ('filled' in status) {
+        const filled = status.filled
+        const action = isBuy ? 'long' : 'short'
+        const assetName = selectedAsset.split('-')[0]
+        toast.update(toastId, {
+          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      } else if ('resting' in status) {
+        toast.update(toastId, {
+          render: `✅ Order Placed Successfully`,
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
       }
-    })
-    console.log(res)
+    } catch (error) {
+      console.error('Error placing order:', error)
+      toast.update(toastId, {
+        render: 'Failed to place orders.',
+        type: 'error',
+        isLoading: false
+      })
+    }
   }
+
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const percent = parseFloat(e.target.value) || 0
     setUsdPercent(percent)
     if (isBuy) {
-      const newTotal = (percent / 100) * maxAllowed
+      const newTotal = (percent / 100) * Number(maxAllowed)
       setTotalSize(newTotal)
     } else {
-      const newAmount = (percent / 100) * maxAllowed
-      setTotalSize(newAmount * maxAllowed)
+      const newAmount = (percent / 100) * Number(maxAllowed)
+      setTotalSize(newAmount * Number(maxAllowed))
     }
   }
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
@@ -215,7 +268,8 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
           <div className="flex justify-between mb-1">
             <label className="block mb-0.5 font-medium text-gray-300 text-xs">Total Size</label>
             <span className="block font-medium text-[#8B8BA0] text-xs">
-              Balance = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
+              Balance = {Number(maxAllowed).toFixed(2)}{' '}
+              {isBuy ? 'USDC' : getCoinName(selectedAsset)}
             </span>
           </div>
           <div className="flex">
@@ -305,7 +359,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             <button
               onClick={handleSubmit}
               type="submit"
-              disabled={totalSize! > maxAllowed}
+              disabled={totalSize! > Number(maxAllowed)}
               className="bg-primary py-[12px] rounded-xl w-full font-bold text-white text-base cursor-pointer px[24px]"
             >
               Scale Buy ({totalOrders} Orders)

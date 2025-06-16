@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
-import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { getUniverseIndex } from '@/utils/utils'
-import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
+import { BUILDER_ADDRESS } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
 import minusicon from '@/assets/images/minus_icon.svg'
@@ -12,8 +12,6 @@ import { IPlaceOrderProps } from '.'
 import CheckBox from '@/components/common/CheckBox'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { hyperliquidAxios } from '@/config/axios'
 import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'react-toastify'
@@ -89,8 +87,8 @@ function calculateScaleOrdersByAssetSize(
 }
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, clearingHouseState, allMids } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkExchangeClient } =
+    useHyperliquid()
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -108,21 +106,21 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return clearingHouseState.withdrawable * leverage
+    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
     if (!existingPosition) return 0
-    if (existingPosition.position.szi > 0 && isBuy) return 0
-    if (existingPosition.position.szi < 0 && !isBuy) return 0
-    const priceQuotient = allMids[selectedAsset] / existingPosition.position.entryPx
-    const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
+    if (Number(existingPosition.position.szi) > 0 && isBuy) return 0
+    if (Number(existingPosition.position.szi) < 0 && !isBuy) return 0
+    const priceQuotient = Number(allMids[selectedAsset]) / Number(existingPosition.position.entryPx)
+    const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!universe.length) return
+    if (!perpsMeta) return
     if (!agentWallet) return
     if (!currentFeeApproval) return
     if (!totalUsd || !totalAssetSize) return
@@ -148,8 +146,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       sizeSkew!
     )
     console.log({ usdOrders, assetOrders })
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    const szDecimals = universe[assetIndex].szDecimals
+    const assetIndex = getUniverseIndex(perpsMeta.universe, selectedAsset)
+    const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const ordersData: OrderData[] = orders.map((order) => ({
       assetIndex: assetIndex,
       isBuy: isBuy,
@@ -164,25 +162,46 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     }))
     const toastId = toast.loading(`Placing ${totalOrders} orders...`)
     try {
-      const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-        orders: ordersData,
+      if (!sdkExchangeClient) return
+      const placeOrderRes = await sdkExchangeClient.order({
         grouping: 'na',
         builder: {
-          address: BUILDER_ADDRESS,
-          fee: currentFeeApproval
-        }
+          b: BUILDER_ADDRESS,
+          f: currentFeeApproval
+        },
+        orders: ordersData.map((order) => ({
+          a: order.assetIndex,
+          b: order.isBuy,
+          p: order.price,
+          s: order.size,
+          r: order.reduceOnly,
+          t: order.orderType
+        }))
       })
-      console.log(res)
-      if (res.data.status === 'ok') {
+      console.log(placeOrderRes)
+      // TODO: Handle the status of all Orders
+      const status = placeOrderRes.response.data.statuses[0]
+      if ('error' in status) {
         toast.update(toastId, {
-          render: 'Orders placed successfully!',
-          type: 'success',
-          isLoading: false
-        })
-      } else {
-        toast.update(toastId, {
-          render: '❌' + res.data.response,
+          render: '❌' + status.error,
           type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
+      } else if ('filled' in status) {
+        const filled = status.filled
+        const action = isBuy ? 'long' : 'short'
+        const assetName = selectedAsset.split('-')[0]
+        toast.update(toastId, {
+          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      } else if ('resting' in status) {
+        toast.update(toastId, {
+          render: `✅ Order Placed Successfully`,
+          type: 'success',
           isLoading: false,
           autoClose: 3000
         })
@@ -203,12 +222,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     setPercent(newUsdPercent)
     if (isInputUsd) {
       const totalUsd = (maxAllowedUsd * newUsdPercent) / 100
-      const totalAssetSize = totalUsd / (allMids[selectedAsset] || 1)
+      const totalAssetSize = totalUsd / (Number(allMids[selectedAsset]) || 1)
       setTotalUsd(totalUsd)
       setTotalAssetSize(totalAssetSize)
     } else {
-      const totalAssetSize = (maxAllowedUsd / (allMids[selectedAsset] || 1)) * newUsdPercent
-      const totalUsd = totalAssetSize * (allMids[selectedAsset] || 1)
+      const totalAssetSize = (maxAllowedUsd / (Number(allMids[selectedAsset]) || 1)) * newUsdPercent
+      const totalUsd = totalAssetSize * (Number(allMids[selectedAsset]) || 1)
       setTotalAssetSize(totalAssetSize)
       setTotalUsd(totalUsd)
     }
@@ -312,7 +331,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   Max:{' '}
                   {isInputUsd
                     ? `${maxAllowedUsd.toFixed(2)} USDC`
-                    : `${(maxAllowedUsd / (allMids[selectedAsset] || 1)).toFixed(2)} ${selectedAsset}`}
+                    : `${(maxAllowedUsd / (Number(allMids[selectedAsset]) || 1)).toFixed(2)} ${selectedAsset}`}
                 </span>
               </div>
               <div className="flex relative">
@@ -322,13 +341,13 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   onChange={(e) => {
                     if (isInputUsd) {
                       const totalUsd = parseFloat(e.target.value)
-                      const totalAssetSize = totalUsd / (allMids[selectedAsset] || 1)
+                      const totalAssetSize = totalUsd / (Number(allMids[selectedAsset]) || 1)
                       setTotalUsd(totalUsd)
                       setTotalAssetSize(totalAssetSize)
                       setPercent((totalUsd / maxAllowedUsd) * 100)
                     } else {
                       const totalAssetSize = parseFloat(e.target.value)
-                      const totalUsd = totalAssetSize * (allMids[selectedAsset] || 1)
+                      const totalUsd = totalAssetSize * (Number(allMids[selectedAsset]) || 1)
                       setTotalAssetSize(totalAssetSize)
                       setTotalUsd(totalUsd)
                       setPercent((totalUsd / maxAllowedUsd) * 100)

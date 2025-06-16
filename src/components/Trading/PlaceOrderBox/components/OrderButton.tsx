@@ -1,25 +1,19 @@
 'use client'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
-import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { MetaData, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
+import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { formatPrice, getUniverseIndex } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
-import { AxiosInstance } from 'axios'
-import { PrivateKeyAccount } from 'viem'
-import { IWebData2 } from '@/utils/hyperliquid/webData2Types'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
 import { IconWallet } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
+import { ExchangeClient, PerpsMeta, SpotAssetCtx, SpotMeta } from '@nktkas/hyperliquid'
 
 type StopOrder = {
   isMarket: boolean
@@ -41,11 +35,11 @@ type OrderButtonProps = {
 }
 
 const placePerpOrder = async ({
-  sdk,
+  sdkExchangeClient,
   selectedAsset,
   isCross,
   leverage,
-  universe,
+  perpsMeta,
   isPostOnly,
   stopOrder,
   isBuy,
@@ -53,31 +47,25 @@ const placePerpOrder = async ({
   limitPrice,
   isReduceOnly,
   tpsl,
-  agentWallet,
-  isTestnet,
-  hyperliquidAxios,
   currentFeeApproval
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  sdk: any
+  sdkExchangeClient: ExchangeClient | null
   selectedAsset: string
   isCross: boolean
   leverage: number
-  universe: MetaData[]
+  perpsMeta: PerpsMeta | null
   isPostOnly: boolean
   isBuy: boolean
   assetAmount: string
   limitPrice: string
   isReduceOnly: boolean
-  agentWallet: PrivateKeyAccount
-  isTestnet: boolean
-  hyperliquidAxios: AxiosInstance
   currentFeeApproval: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
 }) => {
-  const assetIndex = getUniverseIndex(universe, selectedAsset)
-  const szDecimals = universe[assetIndex].szDecimals
+  const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+  const szDecimals = perpsMeta?.universe[assetIndex].szDecimals || 0
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
   const formattedSize = assetAmount.replace(/\.?0+$/, '')
@@ -148,42 +136,63 @@ const placePerpOrder = async ({
   }
   const toastId = toast.loading('⏳ Loading…')
   try {
-    if (!sdk) return
-    const res = await sdk.exchange.updateLeverage(
-      selectedAsset,
-      isCross ? 'cross' : 'isolated',
-      leverage
-    )
+    if (!sdkExchangeClient) return
+    const res = await sdkExchangeClient.updateLeverage({
+      asset: assetIndex,
+      isCross: isCross,
+      leverage: leverage
+    })
     console.log(res)
-    const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-      orders: orders,
+    // const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+    //   orders: orders,
+    //   grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
+    //   builder: {
+    //     address: BUILDER_ADDRESS,
+    //     fee: currentFeeApproval
+    //   }
+    // })
+    const placeOrderRes = await sdkExchangeClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
-        address: BUILDER_ADDRESS,
-        fee: currentFeeApproval
-      }
+        b: BUILDER_ADDRESS,
+        f: currentFeeApproval
+      },
+      orders: orders.map((order) => ({
+        a: order.assetIndex,
+        b: order.isBuy,
+        p: order.price,
+        s: order.size,
+        r: order.reduceOnly,
+        t: order.orderType
+      }))
     })
     console.log(placeOrderRes)
-    const status = placeOrderRes.data.response.data.statuses[0]
-    if (status.error) {
+    // TODO: Handle the status of all Orders
+    const status = placeOrderRes.response.data.statuses[0]
+    if ('error' in status) {
       toast.update(toastId, {
         render: '❌' + status.error,
         type: 'error',
         isLoading: false,
         autoClose: 3000
       })
-    } else {
+    } else if ('filled' in status) {
       const filled = status.filled
-      if (filled) {
-        const action = isBuy ? 'long' : 'short'
-        const assetName = selectedAsset.split('-')[0]
-        toast.update(toastId, {
-          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
-        })
-      }
+      const action = isBuy ? 'long' : 'short'
+      const assetName = selectedAsset.split('-')[0]
+      toast.update(toastId, {
+        render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
+    } else if ('resting' in status) {
+      toast.update(toastId, {
+        render: `✅ Order Placed Successfully`,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
     }
   } catch (error) {
     console.error('Error placing perp order:', error)
@@ -197,45 +206,65 @@ const placePerpOrder = async ({
 }
 
 const placeSpotOrder = async ({
+  sdkExchangeClient,
   spotMeta,
   spotAssetContext,
-  agentWallet,
-  isTestnet,
-  hyperliquidAxios,
   selectedAsset,
   isBuy,
   limitPrice,
   assetAmount,
-  isPostOnly
+  isPostOnly,
+  currentFeeApproval
 }: {
-  spotMeta: SpotMeta
-  spotAssetContext: IWebData2['spotAssetCtxs']
-  agentWallet: PrivateKeyAccount
-  isTestnet: boolean
-  hyperliquidAxios: AxiosInstance
+  sdkExchangeClient: ExchangeClient | null
+  spotMeta?: SpotMeta
+  spotAssetContext: SpotAssetCtx[]
   selectedAsset: string
   isBuy: boolean
   limitPrice: string
   assetAmount: string
   isPostOnly: boolean
+  currentFeeApproval: number
 }) => {
-  if (!spotMeta.tokens) return
+  if (!spotMeta?.tokens) return
+  if (!sdkExchangeClient) return
   const assetIndex =
     spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
   const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
   if (!tokenData) return
   const toastId = toast.loading('⏳ Loading…')
   try {
-    const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+    // const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+    //   grouping: 'na',
+    //   orders: [
+    //     {
+    //       assetIndex: assetIndex,
+    //       isBuy: isBuy,
+    //       price: limitPrice,
+    //       size: assetAmount.replace(/\.?0+$/, ''),
+    //       reduceOnly: false,
+    //       orderType: {
+    //         limit: {
+    //           tif: isPostOnly ? 'Alo' : 'Gtc'
+    //         }
+    //       }
+    //     }
+    //   ]
+    // })
+    const res = await sdkExchangeClient.order({
       grouping: 'na',
+      builder: {
+        b: BUILDER_ADDRESS,
+        f: currentFeeApproval
+      },
       orders: [
         {
-          assetIndex: assetIndex,
-          isBuy: isBuy,
-          price: limitPrice,
-          size: assetAmount.replace(/\.?0+$/, ''),
-          reduceOnly: false,
-          orderType: {
+          a: assetIndex,
+          b: isBuy,
+          p: limitPrice,
+          s: assetAmount,
+          r: false,
+          t: {
             limit: {
               tif: isPostOnly ? 'Alo' : 'Gtc'
             }
@@ -244,21 +273,29 @@ const placeSpotOrder = async ({
       ]
     })
     console.log(res)
-    const status = res.data.response.data.statuses[0]
-    if (status.error) {
+    const status = res.response.data.statuses[0]
+    if ('error' in status) {
       toast.update(toastId, {
         render: '❌' + status.error,
         type: 'error',
         isLoading: false,
         autoClose: 3000
       })
-    } else {
+    } else if ('filled' in status) {
       const filled = status.filled
-      if (filled) {
-        const action = isBuy ? 'bought' : 'sold'
-        const assetName = selectedAsset.split('-')[0]
+      const action = isBuy ? 'long' : 'short'
+      const assetName = selectedAsset.split('-')[0]
+      toast.update(toastId, {
+        render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
+    } else if ('resting' in status) {
+      const resting = status.resting
+      if (resting) {
         toast.update(toastId, {
-          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          render: `✅ Order Placed Successfully`,
           type: 'success',
           isLoading: false,
           autoClose: 3000
@@ -290,8 +327,7 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdk, spotAssetContext } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { agentWallet, sdkExchangeClient, spotAssetContext, perpsMeta } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
@@ -370,24 +406,23 @@ const OrderButton = ({
         }
         if (isSpot) {
           await placeSpotOrder({
+            sdkExchangeClient,
             spotMeta,
             spotAssetContext,
-            agentWallet,
-            isTestnet,
-            hyperliquidAxios,
             selectedAsset,
             isBuy,
             limitPrice,
             assetAmount,
-            isPostOnly
+            isPostOnly,
+            currentFeeApproval
           })
         } else {
           await placePerpOrder({
-            sdk,
+            sdkExchangeClient,
             selectedAsset,
             isCross,
             leverage,
-            universe,
+            perpsMeta,
             isPostOnly,
             stopOrder,
             isBuy,
@@ -395,9 +430,6 @@ const OrderButton = ({
             limitPrice,
             isReduceOnly,
             tpsl,
-            agentWallet,
-            isTestnet,
-            hyperliquidAxios,
             currentFeeApproval
           })
         }

@@ -1,94 +1,30 @@
-import { AGENT_PRIVATE_KEY, isTestnet } from '@/utils/constants'
-import { IWebData2, SpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
+import {
+  AGENT_PRIVATE_KEY,
+  isTestnet,
+  WEBSOCKET_MAINNET_URL,
+  WEBSOCKET_TESTNET_URL
+} from '@/utils/constants'
 import type { Hex, PrivateKeyAccount } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
-import { Candle, WsBook, HistoricOrder, SpotMeta } from '@/utils/hyperliquid/hyperLiquidTypes'
-
-interface TokenDetails {
-  name: string
-  symbol: string
-  decimals: number
-  address: string
-  volume?: number
-  funding?: number
-}
-
-interface PriceMap {
-  [key: string]: number
-}
+import * as hl from '@nktkas/hyperliquid'
 
 interface HyperliquidState {
-  sdk: {
-    subscriptions: {
-      subscribeToAllMids: (callback: (data: Record<string, number>) => void) => void
-      unsubscribeFromAllMids: () => void
-      subscribeToWebData2: (address: Hex, callback: (data: IWebData2) => void) => void
-      unsubscribeFromWebData2: (address: Hex) => void
-      subscribeToCandle: (
-        asset: string,
-        interval: string,
-        callback: (data: Candle[] | Candle) => void
-      ) => void
-      unsubscribeFromCandle: (asset: string, interval: string) => void
-      subscribeToL2Book: (
-        asset: string,
-        nSigFigs: number,
-        mantissa: number | null,
-        callback: (data: WsBook) => void
-      ) => void
-      unsubscribeFromL2Book: (asset: string, nSigFigs: number, mantissa: number | null) => void
-    }
-    info: {
-      getCandleSnapshot: (
-        asset: string,
-        interval: string,
-        from: number,
-        to: number
-      ) => Promise<Candle[]>
-      spot: {
-        getSpotMetaAndAssetCtxs: () => Promise<[SpotMeta, SpotAssetCtx[]]>
-        getTokenDetails: (tokenId: string) => Promise<TokenDetails>
-        getSpotMeta: () => Promise<SpotMeta>
-      }
-      perpetuals: {
-        getMetaAndAssetCtxs: () => Promise<
-          [{ universe: { name?: string }[] }, { dayNtlVlm?: number; funding?: number }[]]
-        >
-        getMeta: () => Promise<{ universe: { name?: string }[] }>
-      }
-      getHistoricalOrders: (address: Hex) => Promise<HistoricOrder[]>
-    }
-    exchange: {
-      cancelOrder: (
-        params: { coin: string; o: number } | Array<{ coin: string; o: number }>
-      ) => Promise<void>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      updateLeverage: (coin: string, type: string, value: number) => Promise<any>
-      setReferrer: (code: string) => Promise<{ status: string }>
-      placeTwapOrder: (params: {
-        coin: string
-        is_buy: boolean
-        sz: number
-        minutes: number
-        randomize: boolean
-        reduce_only: boolean
-      }) => Promise<unknown>
-      updateIsolatedMargin: (coin: string, isBuy: boolean, amount: number) => Promise<unknown>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      usdTransfer: (destination: string, amount: number) => Promise<any>
-    }
-    connect: () => Promise<void>
-  } | null
+  sdkTransport: hl.HttpTransport
+  sdkSocketTransport: hl.WebSocketTransport
+  sdkExchangeClient: hl.ExchangeClient | null
+  sdkInfoClient: hl.InfoClient | null
+  sdkSubscriptionClient: hl.SubscriptionClient | null
   agentWallet: PrivateKeyAccount | null
-  allMids: PriceMap
-  clearingHouseState?: IWebData2['clearinghouseState']
-  perpAssetContext: IWebData2['assetCtxs']
-  spotAssetContext: IWebData2['spotAssetCtxs']
-  spotState: IWebData2['spotState']
-  openOrders: IWebData2['openOrders']
+  allMids: hl.AllMids
+  clearingHouseState: hl.PerpsClearinghouseState | null
+  perpsMeta: hl.PerpsMeta | null
+  perpAssetContext: hl.PerpsAssetCtx[]
+  spotAssetContext: hl.SpotAssetCtx[]
+  spotState: hl.SpotClearinghouseState
+  openOrders: hl.FrontendOrder[]
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -96,7 +32,29 @@ interface HyperliquidState {
     webData2: number
     candles: Record<string, number>
   }
+  subsManager: {
+    allMids?: hl.Subscription
+    webData2?: hl.Subscription
+    candles?: hl.Subscription
+  }
 }
+
+// HACK: Unable to import this from the SDK, so copied from the SDK.
+export type CandleInterval =
+  | '1m'
+  | '3m'
+  | '5m'
+  | '15m'
+  | '30m'
+  | '1h'
+  | '2h'
+  | '4h'
+  | '8h'
+  | '12h'
+  | '1d'
+  | '3d'
+  | '1w'
+  | '1M'
 
 interface HyperliquidActions {
   initSdk: (address: Hex) => Promise<void>
@@ -106,20 +64,29 @@ interface HyperliquidActions {
   unsubscribeWebData2: (address: Hex) => void
   subscribeToCandle: (
     asset: string,
-    interval: string,
-    callback: (data: Candle[] | Candle) => void
+    interval: CandleInterval,
+    callback: (data: hl.Candle) => void
   ) => void
-  unsubscribeFromCandle: (asset: string, interval: string) => void
+  unsubscribeFromCandle: (asset: string, interval: CandleInterval) => void
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
   {
-    sdk: null,
+    sdkTransport: new hl.HttpTransport({
+      isTestnet: isTestnet
+    }),
+    sdkSocketTransport: new hl.WebSocketTransport({
+      url: isTestnet ? WEBSOCKET_TESTNET_URL : WEBSOCKET_MAINNET_URL
+    }),
+    sdkExchangeClient: null,
+    sdkInfoClient: null,
+    sdkSubscriptionClient: null,
     agentWallet: null,
     allMids: {},
-    clearingHouseState: undefined,
+    clearingHouseState: null,
+    perpsMeta: null,
     perpAssetContext: [],
     spotAssetContext: [],
     spotState: { balances: [] },
@@ -130,7 +97,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       allMids: Date.now(),
       webData2: Date.now(),
       candles: {}
-    }
+    },
+    subsManager: {}
   },
   (set, get) => ({
     initSdk: async (address: Hex) => {
@@ -149,112 +117,126 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       })()
 
       const agentWallet = privateKeyToAccount(privateKey)
-      set({ agentWallet: agentWallet })
 
-      const script = document.createElement('script')
-      script.src = '/lib/hyperliquidSdk.js'
-      script.async = true
-      script.onload = async () => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const windowHyperliquid = (window as any).HyperliquidSDK
-        if (!windowHyperliquid) return
-        try {
-          const sdkInstance = new windowHyperliquid.Hyperliquid({
-            testnet: isTestnet,
-            enableWs: true,
-            privateKey: privateKey,
-            walletAddress: address,
-            vaultAddress: null
-          })
-          await sdkInstance.connect()
-          set({ sdk: sdkInstance })
-        } catch (err) {
-          console.error('SDK connection error:', err)
-        }
-      }
-      document.head.appendChild(script)
+      set((state) => ({
+        agentWallet: agentWallet,
+        sdkExchangeClient: new hl.ExchangeClient({
+          transport: state.sdkTransport,
+          wallet: agentWallet,
+          isTestnet: isTestnet
+        }),
+        sdkInfoClient: new hl.InfoClient({
+          transport: state.sdkTransport
+        }),
+        sdkSubscriptionClient: new hl.SubscriptionClient({
+          transport: state.sdkSocketTransport
+        })
+      }))
     },
-    subscribeToAllMids: () => {
-      const sdk = get().sdk
-      if (!sdk) return
-      sdk.subscriptions.subscribeToAllMids((data: Record<string, number>) => {
+    subscribeToAllMids: async () => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const allMidsSub = await sdkSubscriptionClient.allMids((data) => {
+        console.log('newSdk allMids', data)
         set({
-          allMids: data,
+          allMids: data.mids,
           lastUpdates: {
             ...get().lastUpdates,
             allMids: Date.now()
           }
         })
       })
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          allMids: allMidsSub
+        }
+      }))
     },
     unsubscribeFromAllMids: () => {
-      const sdk = get().sdk
-      if (!sdk) return
-      sdk.subscriptions.unsubscribeFromAllMids()
+      const { subsManager } = get()
+      if (!subsManager.allMids) return
+      subsManager.allMids.unsubscribe()
     },
-    subscribeWebData2: (address: Hex) => {
-      const sdk = get().sdk
-      if (!sdk) return
-      sdk.subscriptions.subscribeToWebData2(address, (data: IWebData2) => {
-        console.log('webdata2', data)
-        set({
-          clearingHouseState: data.clearinghouseState,
-          openOrders: data.openOrders,
-          perpAssetContext: data.assetCtxs,
-          spotAssetContext: data.spotAssetCtxs,
-          // HACK: Replace PERP with SPOT in the coin name. This is because SDK is buggy and returns PERP instead of SPOT.
-          spotState: {
-            ...data.spotState,
-            balances: data.spotState?.balances.map((asset) => ({
-              ...asset,
-              coin: asset.coin.replace('PERP', 'SPOT')
-            }))
-          },
-          lastWebSocketUpdate: Date.now(),
-          isWebSocketConnected: true,
-          lastUpdates: {
-            ...get().lastUpdates,
-            webData2: Date.now()
-          }
-        })
-      })
-    },
-    unsubscribeWebData2: (address: Hex) => {
-      const sdk = get().sdk
-      if (!sdk) return
-      sdk.subscriptions.unsubscribeFromWebData2(address)
-    },
-    subscribeToCandle: (
-      asset: string,
-      interval: string,
-      callback: (data: Candle[] | Candle) => void
-    ) => {
-      const sdk = get().sdk
-      if (!sdk) return
-
-      const subscriptionKey = `${asset}-${interval}`
-
-      const candleHandler = (payload: Candle[] | Candle) => {
-        callback(payload)
-        set((state) => ({
-          lastUpdates: {
-            ...state.lastUpdates,
-            candles: {
-              ...state.lastUpdates.candles,
-              [subscriptionKey]: Date.now()
+    subscribeWebData2: async (address: Hex) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const webData2Sub = await sdkSubscriptionClient.webData2(
+        {
+          user: address
+        },
+        (data) => {
+          // console.log('webdata2', data)
+          set({
+            clearingHouseState: data.clearinghouseState,
+            openOrders: data.openOrders,
+            perpsMeta: data.meta,
+            perpAssetContext: data.assetCtxs,
+            spotAssetContext: data.spotAssetCtxs,
+            spotState: data.spotState,
+            lastWebSocketUpdate: Date.now(),
+            isWebSocketConnected: true,
+            lastUpdates: {
+              ...get().lastUpdates,
+              webData2: Date.now()
             }
-          }
-        }))
-      }
-
-      sdk.subscriptions.subscribeToCandle(asset, interval, candleHandler)
+          })
+        }
+      )
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          webData2: webData2Sub
+        }
+      }))
     },
-    unsubscribeFromCandle: (asset: string, interval: string) => {
-      const sdk = get().sdk
-      if (!sdk) return
+    unsubscribeWebData2: () => {
+      const { subsManager } = get()
+      if (!subsManager.webData2) return
+      subsManager.webData2.unsubscribe()
+    },
+    subscribeToCandle: async (
+      asset: string,
+      interval: CandleInterval,
+      callback: (data: hl.Candle) => void
+    ) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
 
       const subscriptionKey = `${asset}-${interval}`
-      sdk.subscriptions.unsubscribeFromCandle(asset, interval)
+
+      const candleSub = await sdkSubscriptionClient.candle(
+        {
+          coin: asset,
+          interval: interval
+        },
+        (data) => {
+          callback(data)
+          set((state) => ({
+            lastUpdates: {
+              ...state.lastUpdates,
+              candles: {
+                ...state.lastUpdates.candles,
+                [subscriptionKey]: Date.now()
+              }
+            }
+          }))
+        }
+      )
+
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          candles: candleSub
+        }
+      }))
+    },
+    unsubscribeFromCandle: (asset: string, interval: CandleInterval) => {
+      const { subsManager } = get()
+      if (!subsManager.candles) return
+
+      const subscriptionKey = `${asset}-${interval}`
+      subsManager.candles.unsubscribe()
 
       set((state) => {
         const remainingCandles = { ...state.lastUpdates.candles }
@@ -321,8 +303,8 @@ const useHyperliquidStore = create(store)
 export const useInitHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
+      sdkSubscriptionClient: state.sdkSubscriptionClient,
       initSdk: state.initSdk,
-      sdk: state.sdk,
       subscribeToAllMids: state.subscribeToAllMids,
       unsubscribeFromAllMids: state.unsubscribeFromAllMids,
       subscribeWebData2: state.subscribeWebData2,
@@ -338,10 +320,13 @@ export const useInitHyperliquid = () => {
 export const useHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
-      sdk: state.sdk,
+      sdkExchangeClient: state.sdkExchangeClient,
+      sdkInfoClient: state.sdkInfoClient,
+      sdkSubscriptionClient: state.sdkSubscriptionClient,
       agentWallet: state.agentWallet,
       allMids: state.allMids,
       clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta,
       perpAssetContext: state.perpAssetContext,
       spotAssetContext: state.spotAssetContext,
       spotState: state.spotState,
