@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import SmallModal from '../../../common/SmallModal'
 import { AssetPosition } from '@nktkas/hyperliquid'
@@ -17,7 +17,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
-  const [percent, setPercent] = useState<number>(0)
+  const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     if (lastChanged === 'percent' && position) {
       if (!perpsMeta) return
       const absSzi = Math.abs(Number(position.szi))
-      const assetIndex = getUniverseIndex(perpsMeta.universe, position.coin)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
       const szDecimals = perpsMeta.universe[assetIndex].szDecimals
       if (sizeType === 'asset') {
         const newSize = (percent / 100) * absSzi
@@ -91,7 +91,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const handleClosePosition = async () => {
     if (!agentWallet || !position || !perpsMeta) return
 
-    const assetIndex = getUniverseIndex(perpsMeta.universe, position.coin)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
     const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const isBuy = !(Number(position.szi) > 0)
     const mid = allMids[position.coin]
@@ -117,7 +117,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
             b: isBuy,
             p: formatPrice(price, szDecimals).toString(),
             s: finalSize.replace(/\.?0+$/, ''),
-            r: false,
+            r: true,
             t: {
               limit: {
                 tif: tif
@@ -175,7 +175,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
               value={size}
               onChange={(e) => {
                 if (!perpsMeta) return
-                const assetIndex = getUniverseIndex(perpsMeta.universe, closingAsset)
+                const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
                 const szDecimals = perpsMeta.universe[assetIndex].szDecimals
                 setSize(trimDecimals(e.target.value, szDecimals))
                 setLastChanged('size')

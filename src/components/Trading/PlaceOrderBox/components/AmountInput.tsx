@@ -1,6 +1,6 @@
 'use client'
 
-import { getCoinName, getUniverseIndex } from '@/utils/utils'
+import { getCoinName, getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -35,7 +35,7 @@ const AmountInput = ({
   const { clearingHouseState, perpsMeta } = useHyperliquid()
 
   const szDecimals = useMemo(() => {
-    const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     if (assetIndex === -1) return 0
     return perpsMeta?.universe[assetIndex].szDecimals || 0
   }, [perpsMeta, selectedAsset])

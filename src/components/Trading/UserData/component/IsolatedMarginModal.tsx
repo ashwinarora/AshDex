@@ -3,7 +3,7 @@ import SmallModal from '../../../common/SmallModal'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { toast } from 'react-toastify'
 import { AssetPosition } from '@nktkas/hyperliquid'
-import { getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 
 interface IsolatedMarginModalProps {
   isOpen: boolean
@@ -88,7 +88,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             try {
               if (!sdkExchangeClient) return
               if (!perpsMeta) return
-              const assetIndex = getUniverseIndex(perpsMeta.universe, asset.coin)
+              const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
               const res = await sdkExchangeClient.updateIsolatedMargin({
                 asset: assetIndex,
                 isBuy: isBuy,

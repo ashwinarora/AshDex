@@ -13,8 +13,7 @@ import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
-
-import { getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -44,7 +43,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({

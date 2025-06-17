@@ -2,14 +2,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Image from 'next/image'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import { getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex, getSpotAssetContext } from '@/utils/utils'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
 import Skeleton from '../../common/Skeleton'
 import { IconExternalLink, IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
-
 import { useHyperliquid } from '@/store/HyperliquidStore'
-
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
 import SpotTable from './SpotTable'
@@ -61,27 +59,18 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { isFavorite, toggleFavorite } = useFavorites()
   const { data: spotMeta } = useSpotMeta()
 
-  const selectedAssetContext = useMemo(() => {
-    const coin = selectedAsset
-
+  const { context: selectedAssetContext, meta: selectedAssetToken } = useMemo(() => {
     if (isSpot && spotMeta && spotAssetContext) {
-      const spotAsset = spotMeta.tokens.find((a) => a.name === coin)
-      if (!spotAsset) return null
-
-      const spotUniverse = spotMeta.universe.find(
-        (a: { tokens: number[]; index: number }) => a.tokens[0] === spotAsset.index
-      )
-      if (!spotUniverse) return null
-
-      setTokenContract(spotAsset.tokenId)
-      const spotToken = spotAssetContext[spotUniverse.index]
-      if (!spotToken) return null
-
-      const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
-      return coinDetails || null
+      const spot = getSpotAssetContext({
+        asset: selectedAsset,
+        spotMeta,
+        spotAssetContext
+      })
+      setTokenContract(spot?.meta?.tokenId)
+      return { context: spot?.context, meta: spot?.meta }
     }
-    const idx = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
-    return perpAssetContext[idx] || null
+    const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    return { context: perpAssetContext[idx] || null, meta: null }
   }, [selectedAsset, perpsMeta, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
   const countdown = useCountdown()
@@ -99,15 +88,49 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
-  const filteredAssets = useMemo(
-    () =>
-      Object.entries(allMids)
-        .filter(([key]) => !key.startsWith('@'))
-        .filter(([key]) => key.includes(isSpot ? 'SPOT' : 'PERP'))
+  // const filteredAssets = useMemo(
+  //   () =>
+  //     Object.entries(allMids)
+  //       .filter(([key]) => !key.startsWith('@'))
+  //       .filter(([key]) => key.includes(isSpot ? 'SPOT' : 'PERP'))
+  //       .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase()))
+  //       .filter(([key]) => selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase()),
+  //   [allMids, searchTerm, isSpot, categoryMap, selectedTab]
+  // )
+
+  const spotCanonicalMap = useMemo(() => {
+    if (!spotMeta) return new Map<string, string>()
+    const map = new Map<string, string>(
+      spotMeta?.universe.map((item) => {
+        const token = spotMeta?.tokens[item.tokens[0]]
+        return [item.name, token?.name]
+      })
+    )
+    return map
+  }, [spotMeta])
+
+  const filteredAssets = useMemo(() => {
+    if (isSpot) {
+      // Map to [asset, mid] pairs, where asset is the canonical spot asset name
+      const spotMids = Object.entries(allMids)
+        .map(([key, value]) => {
+          const spotItem = spotCanonicalMap.get(key)
+          if (!spotItem) return null
+          return [spotItem, value]
+        })
+        .filter((item): item is [string, string] => item !== null)
         .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase()))
-        .filter(([key]) => selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase()),
-    [allMids, searchTerm, isSpot, categoryMap, selectedTab]
-  )
+        .filter(([key]) => selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase())
+      return spotMids
+    } else {
+      const perpMids = Object.entries(allMids)
+        .filter(([key]) => perpsMeta?.universe?.some((item) => item.name === key))
+        .filter(([key]) => key.toLowerCase().includes(searchTerm.toLowerCase()))
+        .filter(([key]) => selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase())
+
+      return perpMids
+    }
+  }, [allMids, searchTerm, isSpot, categoryMap, selectedTab])
 
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
@@ -311,7 +334,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           >
             <div className="flex flex-col">
               <span className="text-white text-sm text-nowrap">
-                {selectedAsset || 'Select an asset'}
+                {isSpot ? selectedAssetToken?.name : selectedAsset || 'Select an asset'}
               </span>
             </div>
             <Image width={20} height={20} src={arrowdownicon} alt="arrowdown" className="w-3 h-3" />
@@ -401,13 +424,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               </button>
             ))}
           </div>
-          {/* Table with sorting */}
-          {/* <AssetTable
-            filteredAssets={filteredAssets}
-            isFavorite={isFavorite}
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-          /> */}
           {isSpot ? (
             <SpotTable
               filteredAssets={filteredAssets}

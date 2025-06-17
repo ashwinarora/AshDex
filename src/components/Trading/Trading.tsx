@@ -12,10 +12,10 @@ import OverviewBox from './OverviewBox'
 
 const Trading = () => {
   const isSpot = useIsSpot()
-  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? 'HYPE' : 'BTC')
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? '@1035' : 'BTC') // @1035 is HYPE
   const [activeTab, setActiveTab] = useState(0)
   const components = [
-    <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30" />,
+    <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30m" />,
     <OrderBook key="orderbook" selectedAsset={selectedAsset} />,
     <PlaceOrder key="placeorder" selectedAsset={selectedAsset} />
   ]
@@ -47,7 +47,7 @@ const Trading = () => {
               <div className="relative flex justify-between items-center">
                 <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
               </div>
-              <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+              <Chart selectedAsset={selectedAsset} selectedInterval="30m" />
             </div>
 
             {/* OrderBook: Left on desktop, middle in mobile */}

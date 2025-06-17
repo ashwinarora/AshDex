@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import SmallModal from '@/components/common/SmallModal'
 import { toast } from 'react-toastify'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { getLeverageTicks, getUniverseIndex } from '@/utils/utils'
+import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 import { AssetPosition } from '@nktkas/hyperliquid'
 
 interface LeverageModalProps {
@@ -16,7 +16,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length) return 1
-    const assetIndex = getUniverseIndex(perpsMeta.universe, asset.coin)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
     return perpsMeta.universe[assetIndex]?.maxLeverage || 1
   }, [perpsMeta, asset])
 
@@ -95,7 +95,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             try {
               if (!sdkExchangeClient) return
               if (!perpsMeta) return
-              const assetIndex = getUniverseIndex(perpsMeta.universe, asset.coin)
+              const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
               const res = await sdkExchangeClient.updateLeverage({
                 asset: assetIndex,
                 isCross: asset.leverage.type === 'cross',

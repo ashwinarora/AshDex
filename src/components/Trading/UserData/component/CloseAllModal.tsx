@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import SmallModal from '../../../common/SmallModal'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 
@@ -32,7 +32,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       // Build orders array
       const orders: OrderData[] = clearingHouseState.assetPositions.map((posObj) => {
         const pos = posObj.position
-        const assetIndex = getUniverseIndex(perpsMeta.universe, pos.coin)
+        const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, pos.coin)
         const szDecimals = perpsMeta.universe[assetIndex].szDecimals
         const isBuy = !(Number(pos.szi) > 0)
         const absSize = Math.abs(Number(pos.szi)).toFixed(szDecimals)

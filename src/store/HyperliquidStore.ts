@@ -39,23 +39,6 @@ interface HyperliquidState {
   }
 }
 
-// HACK: Unable to import this from the SDK, so copied from the SDK.
-export type CandleInterval =
-  | '1m'
-  | '3m'
-  | '5m'
-  | '15m'
-  | '30m'
-  | '1h'
-  | '2h'
-  | '4h'
-  | '8h'
-  | '12h'
-  | '1d'
-  | '3d'
-  | '1w'
-  | '1M'
-
 interface HyperliquidActions {
   initSdk: (address: Hex) => Promise<void>
   subscribeToAllMids: () => void
@@ -64,10 +47,10 @@ interface HyperliquidActions {
   unsubscribeWebData2: (address: Hex) => void
   subscribeToCandle: (
     asset: string,
-    interval: CandleInterval,
+    interval: hl.EventCandleParameters['interval'],
     callback: (data: hl.Candle) => void
   ) => void
-  unsubscribeFromCandle: (asset: string, interval: CandleInterval) => void
+  unsubscribeFromCandle: (asset: string, interval: hl.EventCandleParameters['interval']) => void
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
 }
@@ -137,7 +120,6 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const { sdkSubscriptionClient } = get()
       if (!sdkSubscriptionClient) return
       const allMidsSub = await sdkSubscriptionClient.allMids((data) => {
-        console.log('newSdk allMids', data)
         set({
           allMids: data.mids,
           lastUpdates: {
@@ -197,7 +179,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     },
     subscribeToCandle: async (
       asset: string,
-      interval: CandleInterval,
+      interval: hl.EventCandleParameters['interval'],
       callback: (data: hl.Candle) => void
     ) => {
       const { sdkSubscriptionClient } = get()
@@ -231,7 +213,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    unsubscribeFromCandle: (asset: string, interval: CandleInterval) => {
+    unsubscribeFromCandle: (asset: string, interval: hl.EventCandleParameters['interval']) => {
       const { subsManager } = get()
       if (!subsManager.candles) return
 

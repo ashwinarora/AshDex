@@ -12,7 +12,7 @@ import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
-import { getUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
+import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 import SlippageModal from './components/SlippageModal'
@@ -45,7 +45,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
       return Number(tokenData?.szDecimals) || 0
     } else {
-      const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
       if (assetIndex === -1) return 0
       return Number(perpsMeta?.universe[assetIndex].szDecimals) || 0
     }
@@ -99,7 +99,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({

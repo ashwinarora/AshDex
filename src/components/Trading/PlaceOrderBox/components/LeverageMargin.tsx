@@ -1,5 +1,5 @@
 'use client'
-import { getLeverageTicks, getUniverseIndex } from '@/utils/utils'
+import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
 import { useEffect, useMemo } from 'react'
 
@@ -26,7 +26,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
 
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length) return 1
-    const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     return perpsMeta?.universe[assetIndex]?.maxLeverage || 1
   }, [perpsMeta, selectedAsset])
 

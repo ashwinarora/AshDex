@@ -4,7 +4,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
+import { getPerpsUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { useMemo, useEffect, useState } from 'react'
 import { MAX_SIG_FIGS } from '@/utils/constants'
 import { IconRefresh } from '@tabler/icons-react'
@@ -46,7 +46,7 @@ const SetPrice = ({
       const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
       return tokenData?.szDecimals || 0
     } else {
-      const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
       if (assetIndex === -1) return 0
       return perpsMeta?.universe[assetIndex].szDecimals || 0
     }

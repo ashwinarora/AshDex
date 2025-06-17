@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { CandleInterval, useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import * as hl from '@nktkas/hyperliquid'
 
 // TODO: Need Contributor review to fix the types
@@ -14,20 +14,24 @@ interface BarData {
   volume: number
 }
 
-const INTERVALS = ['1', '5', '15', '30', '60', '240', 'D', 'W', 'M'] as const
-type IntervalType = (typeof INTERVALS)[number]
+type IntervalType = hl.EventCandleParameters['interval']
 
 const getIntervalMinutes = (res: IntervalType): number => {
   const map: Record<IntervalType, number> = {
-    '1': 1,
-    '5': 5,
-    '15': 15,
-    '30': 30,
-    '60': 60,
-    '240': 240,
-    D: 1440,
-    W: 10080,
-    M: 43200
+    '1m': 1,
+    '3m': 3,
+    '5m': 5,
+    '15m': 15,
+    '30m': 30,
+    '1h': 60,
+    '2h': 120,
+    '4h': 240,
+    '8h': 480,
+    '12h': 720,
+    '1d': 1440,
+    '3d': 4320,
+    '1w': 10080,
+    '1M': 43200
   }
   return map[res]
 }
@@ -146,7 +150,7 @@ interface RealtimeCallback {
 
 const TradingViewChart = ({
   selectedAsset,
-  selectedInterval = '30'
+  selectedInterval = '30m'
 }: {
   selectedAsset: string
   selectedInterval: IntervalType
@@ -160,17 +164,9 @@ const TradingViewChart = ({
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
-  const convertedResolutionToInterval = (resolution: IntervalType) => {
-    return resolution.endsWith('D')
-      ? '1d'
-      : resolution.endsWith('W')
-        ? '1w'
-        : resolution.endsWith('M')
-          ? '1m'
-          : Number(resolution) >= 60
-            ? `${Number(resolution) / 60}h`
-            : `${Number(resolution)}m`
-  }
+  // const convertedResolutionToInterval = (resolution: IntervalType): IntervalType => {
+  //   return resolution
+  // }
 
   // Get current timezone offset
   const getEtcGMTTimezone = () => {
@@ -192,15 +188,20 @@ const TradingViewChart = ({
     // Initialize cache for new asset if it doesn't exist
     if (!barsCache.current[selectedAsset]) {
       barsCache.current[selectedAsset] = {
-        '1': new Map(),
-        '5': new Map(),
-        '15': new Map(),
-        '30': new Map(),
-        '60': new Map(),
-        '240': new Map(),
-        D: new Map(),
-        W: new Map(),
-        M: new Map()
+        '1m': new Map(),
+        '3m': new Map(),
+        '5m': new Map(),
+        '15m': new Map(),
+        '30m': new Map(),
+        '1h': new Map(),
+        '2h': new Map(),
+        '4h': new Map(),
+        '8h': new Map(),
+        '12h': new Map(),
+        '1d': new Map(),
+        '3d': new Map(),
+        '1w': new Map(),
+        '1M': new Map()
       }
     }
   }, [selectedAsset])
@@ -210,8 +211,28 @@ const TradingViewChart = ({
     if (!sdkInfoClient) return
 
     const datafeed: Datafeed = {
-      onReady: (cb: DatafeedCallback) =>
-        setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
+      onReady: (cb: DatafeedCallback) => {
+        window.setTimeout(() => {
+          cb({
+            supported_resolutions: [
+              '1m',
+              '3m',
+              '5m',
+              '15m',
+              '30m',
+              '1h',
+              '2h',
+              '4h',
+              '8h',
+              '12h',
+              '1d',
+              '3d',
+              '1w',
+              '1M'
+            ]
+          })
+        }, 0)
+      },
 
       resolveSymbol: (_, onResolve) => {
         setTimeout(
@@ -222,7 +243,22 @@ const TradingViewChart = ({
               type: 'crypto',
               session: '24x7',
               timezone: 'Etc/GMT+4',
-              supported_resolutions: INTERVALS,
+              supported_resolutions: [
+                '1m',
+                '3m',
+                '5m',
+                '15m',
+                '30m',
+                '1h',
+                '2h',
+                '4h',
+                '8h',
+                '12h',
+                '1d',
+                '3d',
+                '1w',
+                '1M'
+              ],
               pricescale: 100,
               minmov: 1,
               has_intraday: true,
@@ -253,11 +289,11 @@ const TradingViewChart = ({
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
           const from = to - countBack * intervalSeconds
-          const interval = convertedResolutionToInterval(resolution)
+          const interval = resolution
 
           const rawCandles = await sdkInfoClient.candleSnapshot({
             coin: currentAsset,
-            interval: interval as CandleInterval,
+            interval: interval,
             startTime: from,
             endTime: to
           })
@@ -280,15 +316,20 @@ const TradingViewChart = ({
           // Initialize cache for asset if not exists
           if (!barsCache.current[currentAsset]) {
             barsCache.current[currentAsset] = {
-              '1': new Map(),
-              '5': new Map(),
-              '15': new Map(),
-              '30': new Map(),
-              '60': new Map(),
-              '240': new Map(),
-              D: new Map(),
-              W: new Map(),
-              M: new Map()
+              '1m': new Map(),
+              '3m': new Map(),
+              '5m': new Map(),
+              '15m': new Map(),
+              '30m': new Map(),
+              '1h': new Map(),
+              '2h': new Map(),
+              '4h': new Map(),
+              '8h': new Map(),
+              '12h': new Map(),
+              '1d': new Map(),
+              '3d': new Map(),
+              '1w': new Map(),
+              '1M': new Map()
             }
           }
 
@@ -325,7 +366,7 @@ const TradingViewChart = ({
           const currentAsset = selectedAssetRef.current
           if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertedResolutionToInterval(resolution) as CandleInterval
+          const interval = resolution
           let lastBar: BarData | undefined
 
           const candleHandler = (payload: hl.Candle) => {

@@ -3,7 +3,7 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
-import { getFormattedPrice, getUniverseIndex } from '@/utils/utils'
+import { getFormattedPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { hyperliquidAxios } from '@/config/axios'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import SmallModal from '../../../common/SmallModal'
@@ -342,7 +342,7 @@ const TPSLModal: React.FC<TPSLModalProps> = ({ isOpen, onClose, tpslAsset }) => 
             if (!agentWallet) return
             if (!perpsMeta) return
             const orders: OrderData[] = []
-            const assetIndex = getUniverseIndex(perpsMeta.universe, tpslAsset.coin)
+            const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, tpslAsset.coin)
             const isBuy = !(Number(tpslAsset.szi) > 0)
             if (tpTriggerPrice) {
               const multiplier = isBuy ? 1.1 : 0.9

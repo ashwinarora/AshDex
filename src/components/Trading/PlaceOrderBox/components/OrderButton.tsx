@@ -2,7 +2,7 @@
 import { useWalletModal } from '@/context/WalletModalContext'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
@@ -64,7 +64,7 @@ const placePerpOrder = async ({
   tpsl?: TPSLType
   stopOrder?: StopOrder
 }) => {
-  const assetIndex = getUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+  const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
   const szDecimals = perpsMeta?.universe[assetIndex].szDecimals || 0
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []

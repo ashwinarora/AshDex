@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import SmallModal from '../../../common/SmallModal'
 import { IconRefresh } from '@tabler/icons-react'
@@ -50,7 +50,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     if (lastChanged === 'percent' && position) {
       if (!perpsMeta) return
       const absSzi = Math.abs(Number(position.szi))
-      const assetIndex = getUniverseIndex(perpsMeta.universe, position.coin)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
       const szDecimals = perpsMeta.universe[assetIndex].szDecimals
       if (sizeType === 'asset') {
         const newSize = (percent / 100) * absSzi
@@ -99,7 +99,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const handleClosePosition = async () => {
     if (!agentWallet || !position || !perpsMeta) return
 
-    const assetIndex = getUniverseIndex(perpsMeta.universe, position.coin)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
     const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const tif = 'Gtc'
     const isBuy = !(Number(position.szi) > 0)
@@ -124,7 +124,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             b: isBuy,
             p: formatPrice(Number(price), szDecimals).toString(),
             s: finalSize.replace(/\.?0+$/, ''),
-            r: false,
+            r: true,
             t: {
               limit: {
                 tif: tif
@@ -206,7 +206,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
               value={size}
               onChange={(e) => {
                 if (!perpsMeta) return
-                const assetIndex = getUniverseIndex(perpsMeta.universe, closingAsset)
+                const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
                 const szDecimals = perpsMeta.universe[assetIndex].szDecimals
                 setSize(trimDecimals(e.target.value, szDecimals))
                 setLastChanged('size')

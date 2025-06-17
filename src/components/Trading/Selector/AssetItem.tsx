@@ -10,7 +10,7 @@ import { useFavorites } from '@/context/FavoritesContext'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import ReactiveText from '@/components/common/ReactiveText'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 import useIsSpot from '@/hooks/useIsSpot'
 
 interface AssetItemProps {
@@ -61,7 +61,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
       const coinDetails = spotAssetContext.find((a) => a.coin.includes(spotToken.coin))
       return coinDetails || null
     }
-    const idx = getUniverseIndex(perpsMeta?.universe || [], assetKey)
+    const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], assetKey)
     return perpAssetContext[idx] || null
   }, [assetKey, perpsMeta, perpAssetContext, spotAssetContext, isSpot, spotMeta])
 
@@ -102,7 +102,13 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset }) => 
   }, [assetCtx])
 
   const handleClick = () => {
-    setSelectedAsset(assetKey)
+    if (isSpot && spotMeta) {
+      const tokenIndex = spotMeta.tokens.findIndex((item) => item.name === assetKey)
+      const spotUniverse = spotMeta.universe.find((item) => item.tokens[0] === tokenIndex)
+      setSelectedAsset(spotUniverse?.name || '')
+    } else {
+      setSelectedAsset(assetKey)
+    }
   }
 
   // Format price display

@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
 import plusicon from '@/assets/images/plus_icon.svg'
@@ -146,7 +146,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       sizeSkew!
     )
     console.log({ usdOrders, assetOrders })
-    const assetIndex = getUniverseIndex(perpsMeta.universe, selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, selectedAsset)
     const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const ordersData: OrderData[] = orders.map((order) => ({
       assetIndex: assetIndex,
