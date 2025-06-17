@@ -27,7 +27,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} />
       case 'TWAP':
-        return <TWAP selectedAsset={selectedAsset} />
+        return <TWAP />
       case 'SCALE':
         return isSpot ? (
           <ScaleSpot selectedAsset={selectedAsset} />
