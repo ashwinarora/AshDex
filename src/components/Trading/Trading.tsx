@@ -23,7 +23,6 @@ const Trading = () => {
     <>
       <div className="flex flex-col gap-2 bg-transparent p-1 h-full">
         {/* Top Bar for Asset Selector */}
-
         {/* Mobile view tabs */}
         <nav className="hidden max-xl:flex flex-wrap justify-evenly max-sm:justify-between gap-x-5 mb-2 border-white/10 border-b w-full">
           {TRADING_TABS?.map((tab, index) => (
