@@ -3,7 +3,6 @@ import Image from 'next/image'
 import { CHART_INTERVALS } from '@/utils/constants'
 import calendaricon from '@/assets/images/calendar_icon.svg'
 import Dropdown from '../common/Dropdown'
-
 interface IntervalSelectorProps {
   selectedInterval: (typeof CHART_INTERVALS)[number]
   setSelectedInterval: (interval: (typeof CHART_INTERVALS)[number]) => void
@@ -41,6 +40,9 @@ const IntervalSelector: React.FC<IntervalSelectorProps> = ({
         onSelect={(option) => setSelectedInterval(option as (typeof CHART_INTERVALS)[number])}
         className=" text-sm text-white bg-secondary"
       />
+      {/* <DropdownMenu>
+
+      </DropdownMenu> */}
 
       {/* Calendar Icon */}
       <Image

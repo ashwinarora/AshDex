@@ -5,6 +5,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IconPercentage } from '@tabler/icons-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { ChevronDown } from 'lucide-react'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -150,14 +157,22 @@ const AmountInput = ({
             onChange={isInputUsd ? handleUSDChange : handleAssetChange}
             className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
           />
-          <select
-            value={isInputUsd ? 'usd' : 'asset'}
-            onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
-            className="bg-transparent border-none focus:outline-none text-[#8B8BA0] text-xs cursor-pointer"
-          >
-            <option value="asset">{getCoinName(selectedAsset)}</option>
-            <option value="usd">USD</option>
-          </select>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild className="cursor-pointer">
+              <div className="text-xs flex items-center gap-1 text-popover-foreground">
+                {isInputUsd ? 'USD' : getCoinName(selectedAsset)}
+                <ChevronDown className="w-4 h-4" />
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-fit" align="end" alignOffset={-12} sideOffset={12}>
+              <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+                <p className="text-xs w-10 text-center">USD</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+                <p className="text-xs w-10 text-center">{getCoinName(selectedAsset)}</p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
       <div className="flex justify-between items-end pb-1 w-full">

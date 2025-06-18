@@ -4,11 +4,19 @@ import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
 import TWAP from './TWAP'
 import Scale from './Scale'
-import CustomSelector from '../../common/CustomSelector'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
 import useIsSpot from '@/hooks/useIsSpot'
 import ScaleSpot from './ScaleSpot'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { ChevronDown } from 'lucide-react'
+import { cn } from '@/lib/utils'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 /** Define the possible tab options */
 type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
@@ -55,40 +63,76 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       ]
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <div className="flex justify-start items-center mb-0.5 border-white/10 border-b w-full">
-        <div className="flex space-x-2 w-full">
-          <button
-            onClick={() => setActiveTab('LIMIT')}
-            className={`tab-btn flex-1 text-sm ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
-          >
+    <div className="flex flex-col w-full h-full overflow-y-auto no-scrollbar items-center justify-start">
+      <div className="w-full h-fit flex items-center justify-start">
+        <ToggleGroup
+          type="single"
+          className="w-2/3"
+          value={activeTab}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setActiveTab(value as OrderTab)
+          }}
+        >
+          <ToggleGroupItem className="w-full" value="LIMIT">
             Limit
-          </button>
-          <button
-            onClick={() => setActiveTab('MARKET')}
-            className={`tab-btn flex-1 text-sm ${activeTab === 'MARKET' && 'tab-btn-active'}`}
-          >
+          </ToggleGroupItem>
+          <ToggleGroupItem className="w-full" value="MARKET">
             Market
-          </button>
-          <button
-            className={`tab-btn flex-1 text-sm ${
-              ['TWAP', 'SCALE', 'STOP_LIMIT', 'STOP_MARKET']?.includes(activeTab)
-                ? 'tab-btn-active'
-                : ''
-            }`}
-          >
-            <CustomSelector
-              options={availableOptions}
-              selectedValue={activeTab}
-              customLabel="Advanced"
-              onChange={(value) => {
-                setActiveTab(value as OrderTab)
-              }}
-            />
-          </button>
-        </div>
+          </ToggleGroupItem>
+        </ToggleGroup>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div
+              className={cn(
+                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-full rounded-tr-md flex items-center gap-2 justify-center text-sm',
+                availableOptions.find((option) => option.value === activeTab)
+                  ? 'bg-accent'
+                  : 'bg-transparent'
+              )}
+            >
+              {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
+              <ChevronDown className="size-4" />
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem asChild>
+              <button
+                onClick={() => setActiveTab('TWAP')}
+                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+              >
+                TWAP
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <button
+                onClick={() => setActiveTab('SCALE')}
+                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+              >
+                SCALE
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <button
+                onClick={() => setActiveTab('STOP_LIMIT')}
+                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+              >
+                Stop Limit
+              </button>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <button
+                onClick={() => setActiveTab('STOP_MARKET')}
+                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+              >
+                Stop Market
+              </button>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
-
       <div className="flex-1 overflow-y-auto no-scrollbar">{renderTabContent()}</div>
     </div>
   )
