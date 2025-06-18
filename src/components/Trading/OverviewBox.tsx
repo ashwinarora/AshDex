@@ -134,12 +134,12 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Balance</p>
-                  
-                    <ReactiveText
-                      precision={2}
-                      type="currency"
-                      value={crossAccountValue - totalUnrealizedPnl}
-                    /> 
+
+                  <ReactiveText
+                    precision={2}
+                    type="currency"
+                    value={crossAccountValue - totalUnrealizedPnl}
+                  />
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Unrealized PnL</p>

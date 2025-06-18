@@ -408,9 +408,10 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
               </p>
               <p>{isNaN(spread) ? '-' : spread}</p>
               <p className="text-right">
-                {isNaN(spread) || !allMids[selectedAsset] 
-                  ? '-' 
-                  : ((spread / allMids[selectedAsset]) * 100).toFixed(3)}%
+                {isNaN(spread) || !allMids[selectedAsset]
+                  ? '-'
+                  : ((spread / allMids[selectedAsset]) * 100).toFixed(3)}
+                %
               </p>
             </div>
           </div>
