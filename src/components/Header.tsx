@@ -3,34 +3,28 @@ import { useState, FC, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
-import { truncateAddress } from '@/utils/utils'
+import { cn, truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
-import Link from 'next/link'
 import Avatar from './common/Avatar'
-import {
-  IconBell,
-  IconCopy,
-  IconHelp,
-  IconMoonFilled,
-  IconSettings,
-  IconSwitch3
-} from '@tabler/icons-react'
 import { toast } from 'react-toastify'
 import BridgeButton from './common/BridgeButton'
 import nexonlogo from '@/assets/images/logo.svg'
-import moonicon from '@/assets/images/dark_mode.svg'
-import walleticon from '@/assets/images/wallet_icon.svg'
-import menuline from '@/assets/images/menu_icon.svg'
-import menuClose from '@/assets/images/close_icon.svg'
-import helpicon from '@/assets/images/help_icon.svg'
-import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
-import disconnecticon from '@/assets/images/disconnect_icon.svg'
 import { useNexonReferral } from '@/hooks/useNexonReferral'
+import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from './ui/dropdown-menu'
+import { Button } from './ui/button'
+import { ChevronDownIcon, CopyIcon, LogOutIcon, SettingsIcon, WalletIcon } from 'lucide-react'
 type MenuItem = {
   name: string
   path: string
+  isComingSoon?: boolean
 }
 
 const Header: FC = () => {
@@ -41,21 +35,21 @@ const Header: FC = () => {
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
-  const [isOpen, setIsOpen] = useState(false)
-  const [notificationCount] = useState(0)
+  // const [isOpen, setIsOpen] = useState(false)
+  // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   useNexonReferral()
 
   const desktopMenu: MenuItem[] = [
-    { name: 'Futures', path: '/' },
-    { name: 'Spot', path: '/spot' },
-    { name: 'Referrals', path: '/referrals' }
-    // { name: 'Lend/Borrow', path: '/lendBorrow' },
-    // { name: 'Predictions', path: '/predictions' },
-    // { name: 'Stake', path: '/stake' },
-    // { name: 'Vaults', path: '/vaults' }
+    { name: 'Futures', path: '/', isComingSoon: false },
+    { name: 'Spot', path: '/spot', isComingSoon: false },
+    { name: 'Referrals', path: '/referrals', isComingSoon: false }
+    // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
+    // { name: 'Predictions', path: '/predictions', isComingSoon: true },
+    // { name: 'Stake', path: '/stake', isComingSoon: true },
+    // { name: 'Vaults', path: '/vaults', isComingSoon: true }
   ]
 
   const mobileMenu: MenuItem[] = [
@@ -77,10 +71,6 @@ const Header: FC = () => {
   }
   const activeMenu = getActiveMenu(pathname, mobileMenu)
 
-  const handleMenuClick = (path: string) => {
-    router.push(path)
-  }
-
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
     toast.success('Copied to clipboard')
@@ -89,7 +79,7 @@ const Header: FC = () => {
   useEffect(() => {
     const handleResize = () => {
       if (window.innerWidth >= 768) {
-        setIsOpen(false)
+        // setIsOpen(false)
       }
     }
     window.addEventListener('resize', handleResize)
@@ -122,200 +112,216 @@ const Header: FC = () => {
   if (!isRendered) return null
 
   return (
-    <>
-      <header className="top-0 z-55 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-2 w-full h-max">
-        <div className="flex justify-center items-center space-x-4 align-middle">
-          <h1
-            onClick={() => router.push('/')}
-            className="flex items-center gap-2 mr-6 lg:mr-6 px-3 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
-          >
-            <Image
-              style={{ width: 20, height: 'auto' }}
-              src={nexonlogo}
-              alt="Nexon Logo"
-              className="w-6 h-6"
-            />
-            Nexon
-          </h1>
-          <nav className="hidden xl:flex items-center xl:gap-2 text-[#8B8BA0] text-sm">
-            {desktopMenu?.map(({ name, path }) => (
-              <Link
+    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
+      <div
+        onClick={() => router.push('/')}
+        className="flex items-center gap-2 pr-4 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
+      >
+        <Image
+          style={{ width: 20, height: 'auto' }}
+          src={nexonlogo}
+          alt="Nexon Logo"
+          className="w-6 h-6"
+        />
+        Nexon
+      </div>
+      <div className="h-full flex-1 w-fit">
+        <NavigationMenu className="h-full w-fit">
+          {/* <NavigationMenuList className='h-full w-fit'> */}
+          {desktopMenu?.map(({ name, path, isComingSoon }) =>
+            isComingSoon ? (
+              <div
                 key={name}
-                href={path}
-                onClick={() => handleMenuClick(path)}
-                className={`tab-btn xl:px-6 px-4
-                  ${activeMenu === name && 'tab-btn-active'}`}
+                className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm"
               >
                 {name}
-              </Link>
-            ))}
-            {/* More Dropdown */}
-            <button
-              className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative hover:text-white`}
-            >
-              More
-              <span className="flex justify-center items-center bg-primary opacity-0 group-hover:opacity-100 px-1 rounded text-white text-xs text-nowrap transition-all duration-300">
-                Coming Soon!
-              </span>
-            </button>
-          </nav>
-        </div>
-        <div className="flex justify-end items-center space-x-3 2xl:space-x-4">
-          <BridgeButton />
-          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
-            <IconMoonFilled size={24} />
-          </button>
-          <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
-            <IconHelp size={24} />
-          </button>
-          <button className="relative p-1 text-gray-400 hover:text-white">
-            <IconBell size={24} />
-
-            {notificationCount > 0 && (
-              <span className="-top-1 right-0 2xl:-right-0 absolute flex justify-center items-center bg-primary rounded-[12px] w-[18px] h-[17px] text-white">
-                {notificationCount}
-              </span>
-            )}
-          </button>
-
-          {isConnected && isRendered ? (
-            <div className="relative w-1/6 2xl:w-[45%] xl:w-2/3">
-              <button
-                ref={buttonRef}
-                onClick={() => setIsDropdownOpen((prev) => !prev)}
-                className="relative flex items-center hover:bg-white/10 p-[10px] rounded-lg w-auto overflow-hidden cursor-pointer"
+                {/* <Badge variant={'outline'} className='text-white/50 text-xs'>Coming Soon</Badge> */}
+              </div>
+            ) : (
+              <NavigationMenuItem
+                className="h-full flex items-center justify-center w-24"
+                key={name}
               >
-                <Avatar className="mr-2 w-6 h-6" avatar={currentUser?.avatar_url || '0'} />
-
-                <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span>
-                <span className="max-xl:hidden flex font-medium truncate">
-                  {truncateAddress(address!)}
-                </span>
-                <Image
-                  style={{ width: 16, height: 'auto' }}
-                  src={arrowdownicon}
-                  alt="arrowdown"
-                  className="ml-2 w-3 h-3"
-                />
-              </button>
-
-              {isDropdownOpen && (
-                <div
-                  ref={dropdownRef}
-                  className="top-full right-0 z-[999] absolute bg-secondary shadow-lg mt-2 px-2 py-4 border border-white/10 rounded-2xl w-[270px]"
+                <NavigationMenuLink
+                  href={path}
+                  className={cn(
+                    'text-white/50 hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
+                    activeMenu === name && 'text-white bg-border font-semibold'
+                  )}
                 >
-                  <div className="flex items-start gap-2 px-2 text-[#E8E0F1]">
-                    <div className="flex flex-col">
-                      <span className="flex items-center truncate">
-                        {truncateAddress(address!)}
-                        <button
-                          onClick={handleCopy}
-                          className="opacity-70 hover:opacity-100 px-3 py-1 transition-all duration-300 cursor-pointer"
-                        >
-                          <IconCopy className="w-4 h-4" />
-                        </button>
-                      </span>
-                    </div>
-                  </div>
-
-                  <button
-                    onClick={toggleConnectWalletModal}
-                    className="flex items-center hover:bg-white/10 mt-3 px-2 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
-                  >
-                    <IconSwitch3 size={24} className="mr-3" />
-                    Switch Wallet
-                  </button>
-                  <Link
-                    href="/settings"
-                    className="flex items-center hover:bg-white/10 mt-3 px-2 py-2 rounded-md w-full font-medium text-[#E8E0F1] text-base cursor-pointer"
-                  >
-                    <IconSettings size={24} className="mr-3" />
-                    Settings
-                  </Link>
-                  <button
-                    onClick={() => disconnect()}
-                    className="flex items-center hover:bg-white/10 mt-2 px-3 py-2 rounded-md w-full font-medium text-md text-red text-base cursor-pointer"
-                  >
-                    <Image
-                      style={{ width: 20, height: 'auto' }}
-                      src={disconnecticon}
-                      alt="Disconnect"
-                      className="mr-3 w-5 h-5"
-                    />
-                    Disconnect
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={toggleConnectWalletModal}
-              className="flex items-center bg-primary md:ml-4 px-[11px] 2xl:px-[20px] py-2 rounded-md font-bold text-white text-sm cursor-pointer ml:1"
-            >
-              <Image
-                style={{ width: 20, height: 'auto' }}
-                src={walleticon}
-                alt="walleticon"
-                className="w-5 h-5"
-              />
-              <span className="hidden 2xl:block ml-2">Connect Wallet</span>
-            </button>
+                  {name}
+                </NavigationMenuLink>
+              </NavigationMenuItem>
+            )
           )}
-          <button
-            onClick={() => setIsOpen((prev) => !prev)}
-            className="min-xl:hidden block p-1 text-white hover:text-blue-400"
-          >
-            <Image
-              width={20}
-              height={20}
-              src={isOpen ? menuClose : menuline}
-              alt="menu-icon"
-              className={`w-5 h-5 mr-5`}
-            />
-          </button>
-        </div>
-      </header>
-      {/* Sidebar Menu */}
-      {isOpen && (
-        <div className="top-20 left-0 z-55 fixed bg-[#1a1027] shadow-lg px-3 py-4 w-full">
-          <div className="flex gap-2 mb-3 ml-1">
-            <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
-              <Image
-                style={{ width: 20, height: 'auto' }}
-                src={helpicon}
-                alt="helpicon"
-                className="w-5 h-5"
-              />
-            </button>
-            <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
-              <Image
-                style={{ width: 20, height: 'auto' }}
-                src={moonicon}
-                alt="moonicon"
-                className="md:mr-2 w-4 h-4"
-              />
-            </button>
+          {/* </NavigationMenuList> */}
+        </NavigationMenu>
+      </div>
+      <div className="flex items-center gap-2">
+        <BridgeButton />
+        {isConnected && isRendered ? (
+          <div className="flex items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant={'outline'}
+                  size={'sm'}
+                  className="flex text-white text-xs items-center gap-2"
+                >
+                  <Avatar className="size-4" avatar={currentUser?.avatar_url || '0'} />
+                  {/* <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span> */}
+                  <span className="max-xl:hidden flex font-medium  truncate">
+                    {truncateAddress(address!)}
+                  </span>
+                  <ChevronDownIcon className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48" align="end">
+                <DropdownMenuItem onClick={handleCopy}>
+                  <CopyIcon className="size-4 text-inherit" />
+                  Copy Address
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={toggleConnectWalletModal}>
+                  <WalletIcon className="size-4 text-inherit" />
+                  Switch Wallet
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => router.push('/settings')}>
+                  <SettingsIcon className="size-4 text-inherit" />
+                  Settings
+                </DropdownMenuItem>
+
+                <DropdownMenuItem onClick={() => disconnect()} variant="destructive">
+                  <LogOutIcon className="size-4 text-inherit" />
+                  Disconnect
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
-          <nav className="flex flex-col flex-start items-center text-[#8B8BA0] text-sm">
-            {mobileMenu?.map(({ name, path }) => (
-              <Link
-                key={name}
-                href={path}
-                onClick={() => handleMenuClick(path)}
-                className={`py-[5px] w-full px-[12px] mb-2 rounded-full transition-all duration-300
-                  ${
-                    activeMenu === name
-                      ? 'text-[#08030D] bg-[#E8E0F1]'
-                      : 'hover:text-[#08030D] hover:bg-[#E8E0F1]'
-                  }`}
-              >
-                {name}
-              </Link>
-            ))}
-          </nav>
-        </div>
-      )}
-    </>
+        ) : (
+          <Button
+            onClick={toggleConnectWalletModal}
+            size={'sm'}
+            className="flex items-center gap-2"
+          >
+            <WalletIcon className="size-4" />
+            <span className="text-xs">Connect Wallet</span>
+          </Button>
+        )}
+      </div>
+    </div>
+    // <>
+    //   <header className="top-0 z-55 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-2 w-full h-max">
+    //     <div className="flex justify-center items-center space-x-4 align-middle">
+    //       <h1
+    //         onClick={() => router.push('/')}
+    //         className="flex items-center gap-2 mr-6 lg:mr-6 px-3 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
+    //       >
+    //         <Image
+    //           style={{ width: 20, height: 'auto' }}
+    //           src={nexonlogo}
+    //           alt="Nexon Logo"
+    //           className="w-6 h-6"
+    //         />
+    //         Nexon
+    //       </h1>
+    //       <nav className="hidden xl:flex items-center xl:gap-2 text-[#8B8BA0] text-sm">
+    //         {desktopMenu?.map(({ name, path }) => (
+    //           <Link
+    //             key={name}
+    //             href={path}
+    //             onClick={() => handleMenuClick(path)}
+    //             className={`tab-btn xl:px-6 px-4
+    //               ${activeMenu === name && 'tab-btn-active'}`}
+    //           >
+    //             {name}
+    //           </Link>
+    //         ))}
+    //         {/* More Dropdown */}
+    //         <button
+    //           className={`flex items-center gap-1 group cursor-pointer  transition-all duration-300 relative hover:text-white`}
+    //         >
+    //           More
+    //           <span className="flex justify-center items-center bg-primary opacity-0 group-hover:opacity-100 px-1 rounded text-white text-xs text-nowrap transition-all duration-300">
+    //             Coming Soon!
+    //           </span>
+    //         </button>
+    //       </nav>
+    //     </div>
+    //     <div className="flex justify-end items-center space-x-3 2xl:space-x-4">
+    //       <BridgeButton />
+    //       <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
+    //         <IconMoonFilled size={24} />
+    //       </button>
+    //       <button className="hidden xl:block p-1 text-gray-400 hover:text-white">
+    //         <IconHelp size={24} />
+    //       </button>
+    //       <button className="relative p-1 text-gray-400 hover:text-white">
+    //         <IconBell size={24} />
+
+    //         {notificationCount > 0 && (
+    //           <span className="-top-1 right-0 2xl:-right-0 absolute flex justify-center items-center bg-primary rounded-[12px] w-[18px] h-[17px] text-white">
+    //             {notificationCount}
+    //           </span>
+    //         )}
+    //       </button>
+
+    //     <button
+    //       onClick={() => setIsOpen((prev) => !prev)}
+    //       className="min-xl:hidden block p-1 text-white hover:text-blue-400"
+    //     >
+    //       <Image
+    //         width={20}
+    //         height={20}
+    //         src={isOpen ? menuClose : menuline}
+    //         alt="menu-icon"
+    //         className={`w-5 h-5 mr-5`}
+    //       />
+    //     </button>
+    //   </div>
+    // </header>
+    //   {/* Sidebar Menu */}
+    //   {isOpen && (
+    //     <div className="top-20 left-0 z-55 fixed bg-[#1a1027] shadow-lg px-3 py-4 w-full">
+    //       <div className="flex gap-2 mb-3 ml-1">
+    //         <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
+    //           <Image
+    //             style={{ width: 20, height: 'auto' }}
+    //             src={helpicon}
+    //             alt="helpicon"
+    //             className="w-5 h-5"
+    //           />
+    //         </button>
+    //         <button className="flex items-center bg-white/10 px-[10px] md:px-[20px] py-[10px] rounded-md font-bold text-white text-sm cursor-pointer">
+    //           <Image
+    //             style={{ width: 20, height: 'auto' }}
+    //             src={moonicon}
+    //             alt="moonicon"
+    //             className="md:mr-2 w-4 h-4"
+    //           />
+    //         </button>
+    //       </div>
+    //       <nav className="flex flex-col flex-start items-center text-[#8B8BA0] text-sm">
+    //         {mobileMenu?.map(({ name, path }) => (
+    //           <Link
+    //             key={name}
+    //             href={path}
+    //             onClick={() => handleMenuClick(path)}
+    //             className={`py-[5px] w-full px-[12px] mb-2 rounded-full transition-all duration-300
+    //               ${
+    //                 activeMenu === name
+    //                   ? 'text-[#08030D] bg-[#E8E0F1]'
+    //                   : 'hover:text-[#08030D] hover:bg-[#E8E0F1]'
+    //               }`}
+    //           >
+    //             {name}
+    //           </Link>
+    //         ))}
+    //       </nav>
+    //     </div>
+    //   )}
+    // </>
   )
 }
 

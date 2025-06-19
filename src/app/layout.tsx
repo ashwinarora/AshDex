@@ -57,8 +57,8 @@ export default function RootLayout({
                 <UserProvider>
                   <ToastProvider>
                     <FavoritesProvider>
-                      <Header />
                       <SnackBar />
+                      <Header />
                       <OnboardingModal />
                       {children}
                       <div className="h-6"></div>

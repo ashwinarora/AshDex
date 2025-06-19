@@ -1,10 +1,10 @@
 'use client'
 import { useState } from 'react'
-import Image from 'next/image'
-import bridgingbtnlogo from '@/assets/images/bridge_icon.svg'
 import BridgeModal from '../Bridge/BridgeModal'
 import { SolanaWalletProvider } from '../Bridge/SolanaButton'
 import { TronWalletProvider } from '../Bridge/TronProvider'
+import { Button } from '../ui/button'
+import { WaypointsIcon } from 'lucide-react'
 // Create a singleton instance of AppKit
 
 const BridgeButton = () => {
@@ -12,18 +12,21 @@ const BridgeButton = () => {
 
   return (
     <div>
-      <button
+      <Button
         onClick={() => setIsModalOpen(true)}
-        className="flex items-center gap-2 nexon-button nexon-ghost"
+        className="flex items-center gap-2 text-xs text-white"
+        variant={'outline'}
+        size={'sm'}
       >
-        <Image
+        {/* <Image
           style={{ width: 20, height: 'auto' }}
           src={bridgingbtnlogo}
           alt="bridgingbtnlogo"
           className="w-5 h-5"
-        />
+        /> */}
+        <WaypointsIcon className="size-4" />
         Bridge
-      </button>
+      </Button>
       <SolanaWalletProvider>
         <TronWalletProvider>
           <BridgeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
