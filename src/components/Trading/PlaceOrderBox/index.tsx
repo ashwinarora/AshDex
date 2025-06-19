@@ -133,7 +133,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex-1 overflow-y-auto no-scrollbar">{renderTabContent()}</div>
+      <div className="flex-1 w-full">{renderTabContent()}</div>
     </div>
   )
 }

@@ -4,7 +4,6 @@ import { getCoinName, getUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconPercentage } from '@tabler/icons-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,6 +11,11 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { ChevronDown } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { ToggleGroupItem } from '@/components/ui/toggle-group'
+import { ToggleGroup } from '@/components/ui/toggle-group'
+import { cn } from '@/lib/utils'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -127,9 +131,8 @@ const AmountInput = ({
     setUsdPercent((parseFloat(input) / maxAllowedUsd) * 100)
   }
 
-  const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsdPercentChange = (newUsdPercent: number) => {
     if (!clearingHouseState) return
-    const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
     const rawAmount = (newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice)
     const roundedAmount = rawAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
@@ -138,78 +141,96 @@ const AmountInput = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 mx-3">
-      <label className="block font-medium text-gray-400 text-xs">
-        Max ={' '}
-        {isInputUsd
-          ? `${maxAllowedUsd.toFixed(2)} USD`
-          : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
-      </label>
-      <div className="flex items-center px-3 border border-white/10 rounded-md align-middle">
+    <div className="flex flex-col gap-2 px-2">
+      <div className="flex items-center justify-between gap-2">
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Position Size</p>
-        <div className="relative flex items-center w-full">
-          <input
-            type="text"
-            placeholder="0.0000"
-            value={
-              isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
-            }
-            onChange={isInputUsd ? handleUSDChange : handleAssetChange}
-            className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
-          />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild className="cursor-pointer">
-              <div className="text-xs flex items-center gap-1 text-popover-foreground">
-                {isInputUsd ? 'USD' : getCoinName(selectedAsset)}
-                <ChevronDown className="w-4 h-4" />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-fit" align="end" alignOffset={-12} sideOffset={12}>
-              <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
-                <p className="text-xs w-10 text-center">USD</p>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-                <p className="text-xs w-10 text-center">{getCoinName(selectedAsset)}</p>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
+          Max ={' '}
+          {isInputUsd
+            ? `${maxAllowedUsd.toFixed(2)} USD`
+            : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
+        </label>
       </div>
-      <div className="flex justify-between items-end pb-1 w-full">
-        <div className="pr-3 w-full">
-          <input
-            type="range"
-            min={0}
-            max={100}
-            step={1}
-            value={Number(usdPercent) || 0}
-            onChange={(e) => handleUsdPercentChange(e)}
-            className="[&::-moz-range-thumb]:bg-white [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:border-none [&::-webkit-slider-thumb]:border-none rounded-lg [&::-moz-range-thumb]:rounded-full [&::-webkit-slider-thumb]:rounded-full outline-none w-full [&::-moz-range-thumb]:w-3 [&::-webkit-slider-thumb]:w-3 h-0.5 [&::-moz-range-thumb]:h-3 [&::-webkit-slider-thumb]:h-3 appearance-none [&::-moz-range-thumb]:appearance-none [&::-webkit-slider-thumb]:appearance-none cursor-pointer [&::-moz-range-thumb]:cursor-pointer [&::-webkit-slider-thumb]:cursor-pointer"
-            style={{
-              background: `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${Number(usdPercent)}%, #2A1B3D ${Number(usdPercent)}%, #2A1B3D 100%)`
-            }}
-          />
-          <div className="flex justify-between mt-0.5 text-gray-500 text-xs">
-            <span>0%</span>
-            <span>25%</span>
-            <span>50%</span>
-            <span>75%</span>
-            <span>100%</span>
-          </div>
-        </div>
-        <div className="flex items-center border border-white/10 rounded-md">
-          <input
-            type="number"
-            max={100}
-            min={0}
-            maxLength={3}
-            minLength={1}
-            readOnly={true}
-            className="px-2 py-1 outline-none w-10 h-8 text-xs text-right"
-            value={Number(usdPercent) || 0}
-          />
-          <IconPercentage className="mr-2 w-4 h-4" />
-        </div>
+      <div className="flex items-center gap-2">
+        <Input
+          type="text"
+          placeholder="0"
+          value={
+            isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
+          }
+          onChange={isInputUsd ? handleUSDChange : handleAssetChange}
+          className="w-full text-right text-white border-white/10"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="outline"
+              size={'sm'}
+              className="text-xs w-16 flex items-center justify-start"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+            >
+              <p className="text-xs flex-1 w-full">
+                {isInputUsd ? 'USD' : getCoinName(selectedAsset)}
+              </p>
+              <ChevronDown className="size-3" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-fit" align="end">
+            <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+              <p className="text-xs w-10 text-center">USD</p>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+              <p className="text-xs w-10 text-center">{getCoinName(selectedAsset)}</p>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+      <div className="flex flex-1 flex-col gap-4 w-full items-center justify-center">
+        {/* <Slider min={0} max={100} value={[usdPercent]} onValueChange={(value) => setUsdPercent(Number(value[0]))} /> */}
+        <ToggleGroup
+          size={'sm'}
+          className="flex mt-1 bg-white/5 items-center justify-between w-full"
+          type="single"
+          value={usdPercent.toString()}
+          onValueChange={(value) => value !== '' && handleUsdPercentChange(parseInt(value, 10))}
+        >
+          <ToggleGroupItem
+            value={'25'}
+            className={cn(
+              'rounded-l-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+            )}
+          >
+            25%
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={'50'}
+            className={cn(
+              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 50 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+            )}
+          >
+            50%
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={'75'}
+            className={cn(
+              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 75 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+            )}
+          >
+            75%
+          </ToggleGroupItem>
+          <ToggleGroupItem
+            value={'100'}
+            className={cn(
+              'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+            )}
+          >
+            100%
+          </ToggleGroupItem>
+        </ToggleGroup>
       </div>
     </div>
   )

@@ -20,6 +20,8 @@ import { isTestnet } from '@/utils/constants'
 import { IconWallet } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 type StopOrder = {
   isMarket: boolean
@@ -331,80 +333,83 @@ const OrderButton = ({
 
   if (!isWalletConnected) {
     return (
-      <div
-        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
-        onClick={() => {
-          toggleConnectWalletModal()
-        }}
+      <Button
+        onClick={() => toggleConnectWalletModal()}
+        className="w-full font-semibold cursor-pointer"
       >
         <IconWallet className="w-4 h-4" /> Connect Wallet
-      </div>
+      </Button>
     )
   }
   if (!isAgentApproved || currentFeeApproval === 0) {
     return (
-      <div
-        className="flex justify-center items-center gap-2 bg-primary hover:bg-purple-600 py-2 rounded-md w-full text-white cursor-pointer"
+      <Button
         onClick={async () => openAgentModal()}
+        className="w-full font-semibold cursor-pointer"
       >
-        Enable Trading
-      </div>
+        {' '}
+        Enable Trading{' '}
+      </Button>
     )
   }
+
+  const handlePlaceOrder = async () => {
+    if (!agentWallet) return
+    if (!currentFeeApproval) return
+    if (isInvalid) {
+      return
+    }
+    if (isSpot) {
+      await placeSpotOrder({
+        spotMeta,
+        spotAssetContext,
+        agentWallet,
+        isTestnet,
+        hyperliquidAxios,
+        selectedAsset,
+        isBuy,
+        limitPrice,
+        assetAmount,
+        isPostOnly
+      })
+    } else {
+      await placePerpOrder({
+        sdk,
+        selectedAsset,
+        isCross,
+        leverage,
+        universe,
+        isPostOnly,
+        stopOrder,
+        isBuy,
+        assetAmount,
+        limitPrice,
+        isReduceOnly,
+        tpsl,
+        agentWallet,
+        isTestnet,
+        hyperliquidAxios,
+        currentFeeApproval
+      })
+    }
+  }
+
   return (
-    <button
-      type="button"
-      className={`py-2 rounded-md w-full  font-semibold text-white cursor-pointer ${
+    <Button
+      onClick={handlePlaceOrder}
+      className={cn(
+        'w-full font-semibold text-white cursor-pointer',
         isInvalid
           ? 'bg-white/10 hover:cursor-not-allowed '
           : isBuy
             ? 'bg-green hover:bg-green/80 '
             : 'bg-red hover:bg-red/80 '
-      }`}
+      )}
       disabled={isInvalid}
-      onClick={async () => {
-        if (!agentWallet) return
-        if (!currentFeeApproval) return
-        if (isInvalid) {
-          return
-        }
-        if (isSpot) {
-          await placeSpotOrder({
-            spotMeta,
-            spotAssetContext,
-            agentWallet,
-            isTestnet,
-            hyperliquidAxios,
-            selectedAsset,
-            isBuy,
-            limitPrice,
-            assetAmount,
-            isPostOnly
-          })
-        } else {
-          await placePerpOrder({
-            sdk,
-            selectedAsset,
-            isCross,
-            leverage,
-            universe,
-            isPostOnly,
-            stopOrder,
-            isBuy,
-            assetAmount,
-            limitPrice,
-            isReduceOnly,
-            tpsl,
-            agentWallet,
-            isTestnet,
-            hyperliquidAxios,
-            currentFeeApproval
-          })
-        }
-      }}
+      variant={isInvalid ? 'destructive' : 'default'}
     >
       {isSpot ? (isBuy ? 'Buy' : 'Sell') : isBuy ? 'Buy/Long' : 'Sell/Short'}
-    </button>
+    </Button>
   )
 }
 export default OrderButton

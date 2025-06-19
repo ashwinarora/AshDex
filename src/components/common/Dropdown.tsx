@@ -10,8 +10,6 @@ interface DropdownProps {
 }
 
 const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, className }) => {
-  console.log('🚀 ~ options:', options)
-
   const [isOpen, setIsOpen] = useState(false)
 
   return (
