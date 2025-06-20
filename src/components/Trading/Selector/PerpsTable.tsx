@@ -1,6 +1,12 @@
-"use client"
+'use client'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconSelector, IconStar, IconStarFilled, IconTriangleFilled, IconTriangleInvertedFilled } from '@tabler/icons-react'
+import {
+  IconSelector,
+  IconStar,
+  IconStarFilled,
+  IconTriangleFilled,
+  IconTriangleInvertedFilled
+} from '@tabler/icons-react'
 import { useMemo, useState } from 'react'
 import { useFavorites } from '@/context/FavoritesContext'
 import ReactiveText from '@/components/common/ReactiveText'
@@ -49,13 +55,14 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const tableData: PerpAssetData[] = useMemo(() => {
     if (!perpsMeta || !perpAssetContext) return []
     const data = perpsMeta.universe
-      .filter(asset => asset.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter((asset) => asset.name.toLowerCase().includes(searchTerm.toLowerCase()))
       .map((asset, idx) => {
         const ctx = perpAssetContext[idx]
         const price = ctx?.midPx ? Number(ctx.midPx) : 0
         const prevDayPrice = ctx?.prevDayPx ? Number(ctx.prevDayPx) : 0
         const volume = ctx?.dayNtlVlm ? Number(ctx.dayNtlVlm) : 0
-        const openInterest = ctx?.midPx && ctx?.openInterest ? Number(ctx.midPx) * Number(ctx.openInterest) : 0
+        const openInterest =
+          ctx?.midPx && ctx?.openInterest ? Number(ctx.midPx) * Number(ctx.openInterest) : 0
         const maxLeverage = asset.maxLeverage || 1
         return {
           symbol: asset.name,
@@ -87,7 +94,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           return (
             <div className="flex items-center gap-2 pl-2">
               <button
-                onClick={e => {
+                onClick={(e) => {
                   e.stopPropagation()
                   toggleFavorite(
                     {

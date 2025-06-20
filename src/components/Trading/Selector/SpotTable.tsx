@@ -61,7 +61,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
     if (!spotMeta) return []
 
     return spotAssetContext
-      .filter((asset) => spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase()))
+      .filter((asset) =>
+        spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
       .map((assetCtx) => {
         const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
         const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0

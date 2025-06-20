@@ -147,10 +147,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }, [])
 
   return (
-    <div
-      ref={containerRef}
-      className={`flex items-center ${isOpen ? 'z-50' : ''} nexon-card`}
-    >
+    <div ref={containerRef} className={`flex items-center ${isOpen ? 'z-50' : ''} nexon-card`}>
       <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
         <div className="flex items-center px-2">
           <button
