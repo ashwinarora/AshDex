@@ -146,7 +146,7 @@ const AmountInputSpot = ({
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
-          className="w-full text-right text-white border-white/10"
+          className="w-full text-right text-white"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

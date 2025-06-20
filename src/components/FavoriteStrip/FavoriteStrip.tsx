@@ -15,7 +15,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
   }
 
   return (
-    <div className="relative flex bg-secondary px-1 pt-1 pb-2 rounded-md w-full overflow-hidden">
+    <div className="relative flex bg-secondary px-1 pt-1 pb-2 rounded-md w-full h-fit overflow-hidden">
       <Splide
         className=""
         aria-label="My Favorite Tokens"

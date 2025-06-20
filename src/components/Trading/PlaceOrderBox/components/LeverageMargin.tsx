@@ -85,7 +85,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
             <MinusIcon className='size-4' />
           </Button> */}
           <Input
-            className={cn('w-16', error.isValid ? 'border-white/10' : 'border-red text-red')}
+            className={cn('w-16 text-white', !error.isValid && 'bg-red/10 text-red')}
             value={leverageInput}
             onChange={(e) => handleLeverageChange(e.target.value)}
           />

@@ -18,6 +18,7 @@ interface ISetLastPriceProps {
   setLimitPrice: (price: string) => void
   setUsdAmount: (amount: string) => void
   assetAmount: string
+  disabled?: boolean
 }
 
 const SetPrice = ({
@@ -25,7 +26,8 @@ const SetPrice = ({
   limitPrice,
   setLimitPrice,
   setUsdAmount,
-  assetAmount
+  assetAmount,
+  disabled = false
 }: ISetLastPriceProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
@@ -169,12 +171,14 @@ const SetPrice = ({
         value={limitPrice}
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
-        className={cn('w-full text-right text-white border-white/10')}
+        disabled={disabled}
+        className={cn('w-full text-right text-white')}
       />
       <Button
         variant="outline"
         size={'sm'}
         className="text-xs"
+        disabled={disabled}
         // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}
       >

@@ -61,7 +61,6 @@ export default function RootLayout({
                       <Header />
                       <OnboardingModal />
                       {children}
-                      <div className="h-6"></div>
                       <FooterCompact />
                     </FavoritesProvider>
                   </ToastProvider>

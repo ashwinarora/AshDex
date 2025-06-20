@@ -67,12 +67,12 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-2 w-full h-full justify-between flex-1">
+      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         {!isSpot && (
           <>
             <Separator orientation="horizontal" />
-            <div className="flex flex-col gap-2 px-2">
+            <div className="flex flex-col gap-3 px-2">
               <MarginMode isCross={isCross} setIsCross={setIsCross} />
               <LeverageMargin
                 selectedAsset={selectedAsset}
@@ -84,7 +84,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-3">
             <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
           </div>
           <SetPrice
@@ -119,7 +119,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-2 px-2">
+        <div className="flex items-center justify-center h-fit gap-3 px-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -166,7 +166,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           </Popover>
         </div>
       </div>
-      <div className="w-full h-fit flex flex-col gap-2 mt-2">
+      <div className="w-full h-full flex flex-col gap-3 mt-2">
         <Separator orientation="horizontal" />
         <div className="w-full h-fit px-2">
           <OrderButton
@@ -181,7 +181,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             tpsl={tpsl}
           />
         </div>
-        <div className="flex w-full flex-col gap-2 px-2 pb-2 text-xs">
+        <div className="flex w-full flex-col gap-3 px-2 pb-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -214,7 +214,7 @@ export default LimitOrder
 
 {
   /* 
-        <div className='w-full h-fit flex flex-col items-center justify-start gap-2 p-2'>
+        <div className='w-full h-fit flex flex-col items-center justify-start gap-3 p-2'>
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}

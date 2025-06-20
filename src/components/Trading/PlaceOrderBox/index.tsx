@@ -76,7 +76,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setActiveTab(value as OrderTab)
           }}
         >
-          <ToggleGroupItem className="w-full" value="LIMIT">
+          <ToggleGroupItem className="w-full rounded-tl-md" value="LIMIT">
             Limit
           </ToggleGroupItem>
           <ToggleGroupItem className="w-full" value="MARKET">
@@ -98,20 +98,20 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem asChild>
+            {/* <DropdownMenuItem asChild>
               <button
                 onClick={() => setActiveTab('TWAP')}
                 className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
               >
                 TWAP
               </button>
-            </DropdownMenuItem>
+            </DropdownMenuItem> */}
             <DropdownMenuItem asChild>
               <button
                 onClick={() => setActiveTab('SCALE')}
                 className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
               >
-                SCALE
+                Scale
               </button>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>

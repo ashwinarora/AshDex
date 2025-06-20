@@ -4,7 +4,6 @@ import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
 import OrderButton from './components/OrderButton'
-import CheckBox from '@/components/common/CheckBox'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
@@ -15,7 +14,16 @@ import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import SlippageModal from './components/SlippageModal'
+import { Toggle } from '@/components/ui/toggle'
+import { CheckSquare, ChevronDown, InfoIcon, Square } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
+import { Separator } from '@/components/ui/separator'
+import { Input } from '@/components/ui/input'
+import SetPrice from './components/SetPrice'
+import { Slider } from '@/components/ui/slider'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState } = useHyperliquid()
@@ -26,7 +34,6 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [slippage, setSlippage] = useState<number>(1) // Default 1% slippage
-  const [isSlippageModalOpen, setIsSlippageModalOpen] = useState<boolean>(false)
   const [tpsl, setTpsl] = useState<TPSLType>({
     isTpsl: false,
     takeProfit: 0,
@@ -126,67 +133,168 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   ])
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col gap-2">
-          {!isSpot && (
-            <>
-              {' '}
+    <div className="flex flex-col justify-start pt-4 w-full h-full">
+      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        {!isSpot && (
+          <>
+            <Separator orientation="horizontal" />
+            <div className="flex flex-col gap-3 px-2">
               <MarginMode isCross={isCross} setIsCross={setIsCross} />
               <LeverageMargin
                 selectedAsset={selectedAsset}
                 leverage={leverage}
                 setLeverage={setLeverage}
               />
-            </>
-          )}
-          <hr className="border-white/10" />
-
-          {isSpot ? (
-            <AmountInputSpot
-              selectedAsset={selectedAsset}
-              assetAmount={assetAmount}
-              setAssetAmount={setAssetAmount}
-              usdAmount={usdAmount}
-              setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset]?.toString() || '0'}
-              isBuy={isBuy}
-            />
-          ) : (
-            <AmountInput
-              selectedAsset={selectedAsset}
-              assetAmount={assetAmount}
-              setAssetAmount={setAssetAmount}
-              usdAmount={usdAmount}
-              setUsdAmount={setUsdAmount}
-              limitPrice={allMids[selectedAsset]?.toString() || '0'}
-              leverage={leverage}
-              isReduceOnly={isReduceOnly}
-              isBuy={isBuy}
-            />
-          )}
-
-          <div className="mx-3 text-xs">
-            <CheckBox label="Reduce Only" setIsChecked={setIsReduceOnly} isChecked={isReduceOnly} />
+            </div>
+          </>
+        )}
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-medium text-white/50 text-xs whitespace-nowrap">
+              Market price (USD)
+            </p>
           </div>
-          <hr className="border-white/10" />
-
-          <div className="gap-2 grid grid-cols-1 px-3 text-gray-400 text-xs">
-            {!isSpot && (
-              <>
-                <TPSL
-                  limitPrice={getFormattedPrice()}
-                  isBuy={isBuy}
-                  leverage={leverage}
-                  tpsl={tpsl}
-                  setTpsl={setTpsl}
-                />
-              </>
-            )}
-          </div>
+          <SetPrice
+            selectedAsset={selectedAsset}
+            limitPrice={getFormattedPrice()}
+            setLimitPrice={() => {}}
+            setUsdAmount={setUsdAmount}
+            assetAmount={assetAmount}
+            disabled={true}
+          />
         </div>
-        <div className="p-2 border-white/10 border-t">
+        {isSpot ? (
+          <AmountInputSpot
+            selectedAsset={selectedAsset}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
+            limitPrice={allMids[selectedAsset]?.toString() || '0'}
+            isBuy={isBuy}
+          />
+        ) : (
+          <AmountInput
+            selectedAsset={selectedAsset}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
+            limitPrice={allMids[selectedAsset]?.toString() || '0'}
+            leverage={leverage}
+            isReduceOnly={isReduceOnly}
+            isBuy={isBuy}
+          />
+        )}
+        <Separator orientation="horizontal" />
+        <div className="flex items-center justify-center h-full gap-3 px-2">
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isReduceOnly}
+            onPressedChange={setIsReduceOnly}
+          >
+            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            <p className="text-xs font-semibold">Reduce Only</p>
+            <InfoIcon className="size-3" />
+          </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  slippage > 0 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                Slippage
+                <ChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <div className="flex flex-col gap-3">
+                <p className="text-xs text-white/50">
+                  Max slippage only affects market orders placed from the order form. Closing
+                  positions will use max slippage of 8% and market TP/SL orders will use max
+                  slippage of 10%.
+                </p>
+                <div className="flex items-center gap-3">
+                  <Slider
+                    min={0.1}
+                    max={100}
+                    step={0.1}
+                    value={[slippage]}
+                    onValueChange={(value) => setSlippage(value[0])}
+                  />
+
+                  <Input
+                    type="number"
+                    min="0.1"
+                    max="100"
+                    step="0.1"
+                    value={slippage}
+                    className="w-20"
+                    onChange={(e) => setSlippage(Number(e.target.value))}
+                  />
+                  <span className="text-white/50">%</span>
+                </div>
+                <ToggleGroup
+                  size={'sm'}
+                  className="flex mt-1 items-center bg-white/5 justify-between w-full"
+                  type="single"
+                  value={slippage.toString()}
+                  onValueChange={(value) => value !== '' && setSlippage(parseInt(value, 10))}
+                >
+                  {[1, 2, 5, 10, 20].map((value, index) => (
+                    <ToggleGroupItem
+                      key={`leverage-tick-${value}-${index}`}
+                      value={value.toString()}
+                      className={cn(
+                        'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                        slippage === value
+                          ? 'bg-primary text-white'
+                          : 'bg-transparent text-white/50'
+                      )}
+                    >
+                      {value}%
+                    </ToggleGroupItem>
+                  ))}
+                </ToggleGroup>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                TP/SL
+                <ChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <TPSL
+                limitPrice={getFormattedPrice()}
+                isBuy={isBuy}
+                leverage={leverage}
+                tpsl={tpsl}
+                setTpsl={setTpsl}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+      <div className="w-full h-full flex flex-col gap-3 mt-2">
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
           <OrderButton
             isBuy={isBuy}
             selectedAsset={selectedAsset}
@@ -199,7 +307,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             tpsl={tpsl}
           />
         </div>
-        <div className="flex flex-col px-3 pb-2 text-sm">
+        <div className="flex w-full flex-col gap-3 px-2 pb-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -219,31 +327,12 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white/50">Order Value</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-
-          {
-            <div className="flex justify-between">
-              <p className="text-white/50">Slippage</p>
-              <p
-                onClick={() => setIsSlippageModalOpen(true)}
-                className="bg-primary/50 px-2 rounded-md text-white cursor-pointer"
-              >
-                Max. {slippage}%
-              </p>
-            </div>
-          }
           <div className="flex justify-between">
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>
       </div>
-
-      <SlippageModal
-        isOpen={isSlippageModalOpen}
-        onClose={() => setIsSlippageModalOpen(false)}
-        slippage={slippage}
-        setSlippage={setSlippage}
-      />
     </div>
   )
 }
