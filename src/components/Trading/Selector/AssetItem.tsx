@@ -15,7 +15,6 @@ import useIsSpot from '@/hooks/useIsSpot'
 
 interface AssetItemProps {
   assetKey: string
-  selectedAsset: string | null
   setSelectedAsset: (assetKey: string) => void
 }
 

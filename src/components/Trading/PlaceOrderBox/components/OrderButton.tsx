@@ -143,14 +143,6 @@ const placePerpOrder = async ({
       leverage: leverage
     })
     console.log(res)
-    // const placeOrderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-    //   orders: orders,
-    //   grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-    //   builder: {
-    //     address: BUILDER_ADDRESS,
-    //     fee: currentFeeApproval
-    //   }
-    // })
     const placeOrderRes = await sdkExchangeClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
@@ -234,23 +226,6 @@ const placeSpotOrder = async ({
   if (!tokenData) return
   const toastId = toast.loading('⏳ Loading…')
   try {
-    // const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-    //   grouping: 'na',
-    //   orders: [
-    //     {
-    //       assetIndex: assetIndex,
-    //       isBuy: isBuy,
-    //       price: limitPrice,
-    //       size: assetAmount.replace(/\.?0+$/, ''),
-    //       reduceOnly: false,
-    //       orderType: {
-    //         limit: {
-    //           tif: isPostOnly ? 'Alo' : 'Gtc'
-    //         }
-    //       }
-    //     }
-    //   ]
-    // })
     const res = await sdkExchangeClient.order({
       grouping: 'na',
       builder: {

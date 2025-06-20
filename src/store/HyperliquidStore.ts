@@ -154,7 +154,9 @@ const store = combine<HyperliquidState, HyperliquidActions>(
             openOrders: data.openOrders,
             perpsMeta: data.meta,
             perpAssetContext: data.assetCtxs,
-            spotAssetContext: data.spotAssetCtxs,
+            spotAssetContext: data.spotAssetCtxs.filter((ctx) => {
+              return Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
+            }),
             spotState: data.spotState,
             lastWebSocketUpdate: Date.now(),
             isWebSocketConnected: true,

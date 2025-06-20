@@ -1,5 +1,13 @@
 'use client'
-import React, { createContext, useContext, useState, useEffect, ReactNode, useRef } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+  useRef,
+  useCallback
+} from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 
@@ -77,6 +85,7 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
   const { allMids, perpAssetContext, spotAssetContext, perpsMeta } = useHyperliquid()
   const isInitialized = useRef(false)
   const isSpot = useIsSpot()
+  console.log('favorites Rendering')
   // Load favorites from localStorage on initial render
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -219,13 +228,16 @@ export const FavoritesProvider: React.FC<{ children: ReactNode }> = ({ children 
     return favorites[type].some((fav) => fav.index === assetKey)
   }
 
-  const toggleFavorite = (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
-    if (isFavorite(asset.index, type)) {
-      removeFavorite(asset.index, type)
-    } else {
-      addFavorite(asset, type)
-    }
-  }
+  const toggleFavorite = useCallback(
+    (asset: Omit<FavoriteAsset, 'type'>, type: 'spot' | 'perp') => {
+      if (isFavorite(asset.index, type)) {
+        removeFavorite(asset.index, type)
+      } else {
+        addFavorite(asset, type)
+      }
+    },
+    [isFavorite, removeFavorite, addFavorite]
+  )
 
   return (
     <FavoritesContext.Provider

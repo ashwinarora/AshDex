@@ -3,12 +3,13 @@ import { useState } from 'react'
 import { TRADING_TABS } from '@/utils/constants'
 import Chart from './Chart'
 import OrderBook from './OrderBook'
-import Selector from './Selector/Selector'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
 import useIsSpot from '@/hooks/useIsSpot'
 import OverviewBox from './OverviewBox'
+import PerpsSelector from './Selector/PerpsSelector'
+import SpotSelector from './Selector/SpotSelector'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -44,7 +45,14 @@ const Trading = () => {
             <div className="hidden xl:flex xl:flex-col gap-1 order-1 xl:order-1 xl:col-span-11 rounded-lg overflow-hidden">
               <FavoriteStrip setSelectedAsset={setSelectedAsset} />
               <div className="relative flex justify-between items-center">
-                <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+                {isSpot ? (
+                  <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+                ) : (
+                  <PerpsSelector
+                    selectedAsset={selectedAsset}
+                    setSelectedAsset={setSelectedAsset}
+                  />
+                )}
               </div>
               <Chart selectedAsset={selectedAsset} selectedInterval="30m" />
             </div>
