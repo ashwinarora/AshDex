@@ -42,46 +42,15 @@ const useCountdown = () => {
 }
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, perpAssetContext, perpsMeta } = useHyperliquid()
+  const { perpAssetContext, perpsMeta } = useHyperliquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
   const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const settingsRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const type = 'perp'
   const { isFavorite, toggleFavorite } = useFavorites()
-
-  // Memoize category map to avoid recreating it
-  const categoryMap = useMemo(
-    () =>
-      ({
-        'BTC-PERP': 'defi',
-        'ETH-PERP': 'defi',
-        'SOL-PERP': 'gaming',
-        'DOGE-PERP': 'meme',
-        'INJ-PERP': 'ai',
-        'ARB-PERP': 'defi',
-        'AXS-PERP': 'gaming',
-        'PEPE-PERP': 'meme'
-      }) as Record<string, string>,
-    []
-  )
-
-  // Optimize filtered assets with better memoization
-  const filteredAssets = useMemo(() => {
-    if (!allMids || Object.keys(allMids).length === 0) return []
-
-    // Pre-filter perp assets more efficiently
-    const perpMids = Object.entries(allMids).filter(([key]) => {
-      const existsInUniverse = perpsMeta?.universe?.some((item) => item.name === key)
-      const matchesSearch = key.toLowerCase().includes(searchTerm.toLowerCase())
-      const matchesTab = selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase()
-      return existsInUniverse && matchesSearch && matchesTab
-    })
-    return perpMids
-  }, [allMids, searchTerm, categoryMap, selectedTab, perpsMeta?.universe])
 
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -184,16 +153,14 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const assetPrice = selectedAssetContext?.midPx
-        ? String(selectedAssetContext.midPx)
-        : String(allMids[selectedAsset] || '0')
+      const assetPrice = Number(selectedAssetContext.markPx)
       const change24hItem = marketData.find((i) => i.label === '24h Change')
       const change24hValue =
         typeof change24hItem?.value === 'string' ? change24hItem.value : '0.00%'
       toggleFavorite(
         {
           name: selectedAsset,
-          value: assetPrice,
+          value: assetPrice.toString(),
           index: selectedAsset,
           price: assetPrice,
           change24h: change24hValue
@@ -201,16 +168,18 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         type
       )
     },
-    [selectedAssetContext, allMids, selectedAsset, marketData, toggleFavorite, type]
+    [selectedAssetContext, selectedAsset, marketData, toggleFavorite, type]
   )
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        (!panelRef.current || !panelRef.current.contains(target))
+      ) {
         setIsOpen(false)
-      }
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setIsSettingsOpen(false)
       }
     }
     document.addEventListener('mousedown', listener)
@@ -220,7 +189,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className={`flex items-center ${isOpen || isSettingsOpen ? 'z-50' : ''} nexon-card`}
+      className={`flex items-center ${isOpen ? 'z-50' : ''} nexon-card`}
     >
       <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
         <div className="flex items-center px-2">
@@ -276,7 +245,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
 
       {isOpen && (
-        <div className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]">
+        <div
+          ref={panelRef}
+          className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md w-full">
               <IconSearch className="w-4 h-4 text-white/60" />
@@ -289,22 +261,17 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               />
             </div>
             <div className="relative flex justify-between bg-white/5 m-3 p-1 py-3 rounded-md w-1/4 h-10 overflow-hidden">
-              {/* Sliding background */}
               <div
                 className={`absolute top-0 left-0 z-10 h-[100%]  w-1/2 rounded-md transition-all duration-200 ${
                   isStrict ? 'translate-x-0 bg-green' : 'translate-x-full bg-red'
                 }`}
               ></div>
-
-              {/* Buy Button */}
               <p
                 className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
                 onClick={() => setIsStrict(true)}
               >
                 Strict
               </p>
-
-              {/* Sell Button */}
               <p
                 className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
                 onClick={() => setIsStrict(false)}
@@ -328,10 +295,11 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             ))}
           </div>
           <PerpsTable
-            filteredAssets={filteredAssets}
-            isFavorite={isFavorite}
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
+            searchTerm={searchTerm}
+            setSelectedAsset={(asset) => {
+              setSelectedAsset(asset)
+              setIsOpen(false)
+            }}
           />
         </div>
       )}

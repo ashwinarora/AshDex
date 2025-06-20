@@ -21,9 +21,7 @@ import { useFavorites } from '@/context/FavoritesContext'
 import ReactiveText from '@/components/common/ReactiveText'
 
 interface AssetTableProps {
-  filteredAssets: [string, string][]
-  isFavorite: (key: string, type: 'spot' | 'perp') => boolean
-  selectedAsset: string
+  searchTerm: string
   setSelectedAsset: (asset: string) => void
 }
 
@@ -49,11 +47,11 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ isFavorite, setSelectedAsset }: AssetTableProps) => {
+const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
-  const { toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useFavorites()
 
   // Create column helper for TanStack Table
   const columnHelper = createColumnHelper<AssetData>()
@@ -62,25 +60,27 @@ const AssetTable = ({ isFavorite, setSelectedAsset }: AssetTableProps) => {
   const tableData: AssetData[] = useMemo(() => {
     if (!spotMeta) return []
 
-    return spotAssetContext.map((assetCtx) => {
-      const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
-      const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
-      const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
-      const marketCap =
-        assetCtx.markPx && 'tokenContract' in assetCtx
-          ? Number(assetCtx.markPx) * Number(assetCtx.totalSupply || 1)
-          : 0
+    return spotAssetContext
+      .filter((asset) => spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase()))
+      .map((assetCtx) => {
+        const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
+        const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
+        const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
+        const marketCap =
+          assetCtx.markPx && 'tokenContract' in assetCtx
+            ? Number(assetCtx.markPx) * Number(assetCtx.totalSupply || 1)
+            : 0
 
-      return {
-        symbol: spotKeyToName.get(assetCtx.coin) || '',
-        price,
-        prevDayPrice,
-        volume,
-        marketCap,
-        isFavorite: isFavorite(spotKeyToName.get(assetCtx.coin) || '', type)
-      }
-    })
-  }, [spotMeta, spotAssetContext, isFavorite])
+        return {
+          symbol: spotKeyToName.get(assetCtx.coin) || '',
+          price,
+          prevDayPrice,
+          volume,
+          marketCap,
+          isFavorite: isFavorite(spotKeyToName.get(assetCtx.coin) || '', type)
+        }
+      })
+  }, [spotMeta, spotAssetContext, isFavorite, searchTerm])
 
   // Define columns
   const columns = useMemo(

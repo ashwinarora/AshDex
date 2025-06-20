@@ -16,94 +16,17 @@ interface ISelectorProps {
   setSelectedAsset: (asset: string) => void
 }
 
-// const useCountdown = () => {
-//   const [timeLeft, setTimeLeft] = useState('')
-
-//   useEffect(() => {
-//     const updateCountdown = () => {
-//       const now = new Date()
-//       const hours = now.getHours()
-//       const minutes = now.getMinutes()
-//       const seconds = now.getSeconds()
-//       const timeLeft = 24 - hours - minutes / 60 - seconds / 3600
-//       const formattedTime = `00:${Math.floor((timeLeft % 1) * 60)
-//         .toString()
-//         .padStart(2, '0')}:${Math.floor((((timeLeft % 1) * 60) % 1) * 60)
-//         .toString()
-//         .padStart(2, '0')}`
-//       setTimeLeft(formattedTime)
-//     }
-
-//     updateCountdown()
-//     const interval = setInterval(updateCountdown, 1000)
-//     return () => clearInterval(interval)
-//   }, [])
-
-//   return timeLeft
-// }
-
 const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { allMids, spotAssetContext } = useHyperliquid()
+  const { spotAssetContext } = useHyperliquid()
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [selectedTab, setSelectedTab] = useState('All')
   const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
-  const settingsRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
   const { isFavorite, toggleFavorite } = useFavorites()
   const { data: spotMeta } = useSpotMeta()
-
-  // Memoize the spot canonical map to avoid recreating it on every render
-  const spotCanonicalMap = useMemo(() => {
-    if (!spotMeta) return new Map<string, string>()
-    const map = new Map<string, string>()
-    spotMeta.universe.forEach((item) => {
-      const token = spotMeta.tokens[item.tokens[0]]
-      if (token) {
-        map.set(item.name, token.name)
-      }
-    })
-    return map
-  }, [spotMeta])
-
-  // Memoize category map to avoid recreating it
-  const categoryMap = useMemo(
-    () =>
-      ({
-        'BTC-PERP': 'defi',
-        'ETH-PERP': 'defi',
-        'SOL-PERP': 'gaming',
-        'DOGE-PERP': 'meme',
-        'INJ-PERP': 'ai',
-        'ARB-PERP': 'defi',
-        'AXS-PERP': 'gaming',
-        'PEPE-PERP': 'meme'
-      }) as Record<string, string>,
-    []
-  )
-
-  // Optimize filtered assets with better memoization
-  const filteredAssets = useMemo(() => {
-    if (!allMids || Object.keys(allMids).length === 0) return []
-
-    // Pre-filter and map spot assets more efficiently
-    const spotMids = Object.entries(allMids)
-      .reduce<[string, string][]>((acc, [key, value]) => {
-        const spotItem = spotCanonicalMap.get(key)
-        if (spotItem) {
-          acc.push([spotItem, value])
-        }
-        return acc
-      }, [])
-      .filter(([key]) => {
-        const matchesSearch = key.toLowerCase().includes(searchTerm.toLowerCase())
-        const matchesTab = selectedTab === 'All' || categoryMap[key] === selectedTab.toLowerCase()
-        return matchesSearch && matchesTab
-      })
-    return spotMids
-  }, [allMids, searchTerm, categoryMap, selectedTab, spotCanonicalMap])
 
   const { context: selectedAssetContext, meta: selectedAssetToken } = useMemo(() => {
     if (spotMeta && spotAssetContext) {
@@ -120,7 +43,6 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
   const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
 
-  // Memoize market data calculation
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
 
@@ -191,16 +113,14 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const assetPrice = selectedAssetContext?.midPx
-        ? String(selectedAssetContext.midPx)
-        : String(allMids[selectedAsset] || '0')
+      const assetPrice = Number(selectedAssetContext?.markPx)
       const change24hItem = marketData.find((i) => i.label === '24h Change')
       const change24hValue =
         typeof change24hItem?.value === 'string' ? change24hItem.value : '0.00%'
       toggleFavorite(
         {
           name: selectedAsset,
-          value: assetPrice,
+          value: assetPrice.toString(),
           index: selectedAsset,
           price: assetPrice,
           change24h: change24hValue
@@ -208,16 +128,18 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         'spot'
       )
     },
-    [selectedAssetContext, allMids, selectedAsset, marketData, toggleFavorite]
+    [selectedAssetContext, selectedAsset, marketData, toggleFavorite]
   )
 
   useEffect(() => {
     const listener = (event: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+      const target = event.target as Node
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(target) &&
+        (!panelRef.current || !panelRef.current.contains(target))
+      ) {
         setIsOpen(false)
-      }
-      if (settingsRef.current && !settingsRef.current.contains(event.target as Node)) {
-        setIsSettingsOpen(false)
       }
     }
     document.addEventListener('mousedown', listener)
@@ -227,7 +149,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   return (
     <div
       ref={containerRef}
-      className={`flex items-center ${isOpen || isSettingsOpen ? 'z-50' : ''} nexon-card`}
+      className={`flex items-center ${isOpen ? 'z-50' : ''} nexon-card`}
     >
       <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
         <div className="flex items-center px-2">
@@ -267,7 +189,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <ReactiveText
             className="text-xs"
             precision={2}
-            value={Number(allMids[selectedAsset])}
+            value={Number(selectedAssetContext?.markPx)}
             type="currency"
           />
         </div>
@@ -283,7 +205,10 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       </div>
 
       {isOpen && (
-        <div className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]">
+        <div
+          ref={panelRef}
+          className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]"
+        >
           <div className="flex justify-between items-center">
             <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md w-full">
               <IconSearch className="w-4 h-4 text-white/60" />
@@ -335,10 +260,11 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             ))}
           </div>
           <SpotTable
-            filteredAssets={filteredAssets}
-            isFavorite={isFavorite}
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
+            searchTerm={searchTerm}
+            setSelectedAsset={(asset) => {
+              setSelectedAsset(asset)
+              setIsOpen(false)
+            }}
           />
         </div>
       )}
