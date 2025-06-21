@@ -14,7 +14,6 @@ interface BarData {
   volume: number
 }
 
-
 const INTERVALS = ['1', '5', '15', '30', '60', '240', '1d', '1w', '1M', '1h', '4h'] as const
 
 type IntervalType = (typeof INTERVALS)[number]
@@ -37,7 +36,7 @@ const getIntervalMinutes = (res: IntervalType): number => {
 }
 
 interface TradingViewWidget {
-  new(config: TradingViewWidgetConfig): TradingViewWidgetInstance
+  new (config: TradingViewWidgetConfig): TradingViewWidgetInstance
 }
 
 interface TradingViewWidgetInstance {
@@ -249,7 +248,8 @@ const TradingViewChart = ({
             onErrorCallback('SDK or asset not available')
             return
           }
-          const intervalSeconds = getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
+          const intervalSeconds =
+            getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
           const now = Math.floor(Date.now() / 1000)
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
@@ -260,7 +260,7 @@ const TradingViewChart = ({
             coin: currentAsset,
             interval: interval as hl.EventCandleParameters['interval'],
             startTime: from * 1000, // Keep in seconds for Hyperliquid API
-            endTime: to * 1000     // Keep in seconds for Hyperliquid API
+            endTime: to * 1000 // Keep in seconds for Hyperliquid API
           })
 
           // Process candles properly - TradingView expects timestamps in SECONDS
@@ -296,9 +296,7 @@ const TradingViewChart = ({
 
           // For first data request, return all available bars
           // For subsequent requests, limit to countBack
-          const outputBars = periodParams?.firstDataRequest
-            ? bars
-            : bars.slice(-countBack)
+          const outputBars = periodParams?.firstDataRequest ? bars : bars.slice(-countBack)
 
           onHistoryCallback(outputBars, {
             noData: outputBars.length === 0
@@ -319,14 +317,15 @@ const TradingViewChart = ({
           const currentAsset = selectedAssetRef.current
           if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertedResolutionToInterval(resolution) as hl.EventCandleParameters['interval']
+          const interval = convertedResolutionToInterval(
+            resolution
+          ) as hl.EventCandleParameters['interval']
           let lastBar: BarData | undefined
 
           const candleHandler = (payload: hl.Candle[] | hl.Candle) => {
             const candles = Array.isArray(payload) ? payload : [payload]
 
             candles.forEach((c) => {
-
               const bar: BarData = {
                 time: Number(c.t),
                 open: +c.o,
