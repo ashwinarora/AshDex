@@ -83,7 +83,6 @@ export const getSpotAssetContext = ({
   }
 }
 
-
 // refer https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
 export const roundToSignificantFigures = (num: number, sigFigs: number = 5): number => {
   if (num === 0) return 0

@@ -122,7 +122,8 @@ const AmountInputSpot = ({
     <>
       <div className="flex flex-col gap-2 mx-3">
         <label className="block font-medium text-gray-400 text-xs">
-          Available to Trade = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
+          Available to Trade = {maxAllowed.toFixed(2)}{' '}
+          {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
         </label>
         <div className="flex items-center px-3 border border-white/10 rounded-md align-middle">
           <p className="font-medium text-white/50 text-xs whitespace-nowrap">Amount</p>
