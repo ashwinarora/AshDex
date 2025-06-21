@@ -14,22 +14,22 @@ interface BarData {
   volume: number
 }
 
-type IntervalType = hl.EventCandleParameters['interval']
+
+const INTERVALS = ['1', '5', '15', '30', '60', '240', '1d', '1w', '1M', '1h', '4h'] as const
+
+type IntervalType = (typeof INTERVALS)[number]
 
 const getIntervalMinutes = (res: IntervalType): number => {
   const map: Record<IntervalType, number> = {
-    '1m': 1,
-    '3m': 3,
-    '5m': 5,
-    '15m': 15,
-    '30m': 30,
+    '1': 1,
+    '5': 5,
+    '15': 15,
+    '30': 30,
+    '60': 60,
     '1h': 60,
-    '2h': 120,
     '4h': 240,
-    '8h': 480,
-    '12h': 720,
+    '240': 240,
     '1d': 1440,
-    '3d': 4320,
     '1w': 10080,
     '1M': 43200
   }
@@ -37,7 +37,7 @@ const getIntervalMinutes = (res: IntervalType): number => {
 }
 
 interface TradingViewWidget {
-  new (config: TradingViewWidgetConfig): TradingViewWidgetInstance
+  new(config: TradingViewWidgetConfig): TradingViewWidgetInstance
 }
 
 interface TradingViewWidgetInstance {
@@ -84,6 +84,8 @@ interface TradingViewWidgetConfig {
 interface PeriodParams {
   countBack: number
   firstDataRequest: boolean
+  from: number
+  to: number
 }
 
 interface Datafeed {
@@ -131,11 +133,6 @@ interface SymbolInfo {
   has_weekly_and_monthly: boolean
 }
 
-interface PeriodParams {
-  from: number
-  to: number
-}
-
 interface HistoryCallback {
   (bars: BarData[], meta: { noData: boolean }): void
 }
@@ -150,7 +147,7 @@ interface RealtimeCallback {
 
 const TradingViewChart = ({
   selectedAsset,
-  selectedInterval = '30m'
+  selectedInterval = '30'
 }: {
   selectedAsset: string
   selectedInterval: IntervalType
@@ -164,9 +161,17 @@ const TradingViewChart = ({
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
-  // const convertedResolutionToInterval = (resolution: IntervalType): IntervalType => {
-  //   return resolution
-  // }
+  const convertedResolutionToInterval = (resolution: IntervalType) => {
+    return resolution.endsWith('D')
+      ? '1d'
+      : resolution.endsWith('W')
+        ? '1w'
+        : resolution.endsWith('M')
+          ? '1M'
+          : Number(resolution) >= 60
+            ? `${Number(resolution) / 60}h`
+            : `${Number(resolution)}m`
+  }
 
   // Get current timezone offset
   const getEtcGMTTimezone = () => {
@@ -188,18 +193,15 @@ const TradingViewChart = ({
     // Initialize cache for new asset if it doesn't exist
     if (!barsCache.current[selectedAsset]) {
       barsCache.current[selectedAsset] = {
-        '1m': new Map(),
-        '3m': new Map(),
-        '5m': new Map(),
-        '15m': new Map(),
-        '30m': new Map(),
+        '1': new Map(),
+        '5': new Map(),
+        '15': new Map(),
+        '30': new Map(),
         '1h': new Map(),
-        '2h': new Map(),
+        '60': new Map(),
         '4h': new Map(),
-        '8h': new Map(),
-        '12h': new Map(),
+        '240': new Map(),
         '1d': new Map(),
-        '3d': new Map(),
         '1w': new Map(),
         '1M': new Map()
       }
@@ -211,28 +213,8 @@ const TradingViewChart = ({
     if (!sdkInfoClient) return
 
     const datafeed: Datafeed = {
-      onReady: (cb: DatafeedCallback) => {
-        window.setTimeout(() => {
-          cb({
-            supported_resolutions: [
-              '1m',
-              '3m',
-              '5m',
-              '15m',
-              '30m',
-              '1h',
-              '2h',
-              '4h',
-              '8h',
-              '12h',
-              '1d',
-              '3d',
-              '1w',
-              '1M'
-            ]
-          })
-        }, 0)
-      },
+      onReady: (cb: DatafeedCallback) =>
+        setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
 
       resolveSymbol: (_, onResolve) => {
         setTimeout(
@@ -243,22 +225,7 @@ const TradingViewChart = ({
               type: 'crypto',
               session: '24x7',
               timezone: 'Etc/GMT+4',
-              supported_resolutions: [
-                '1m',
-                '3m',
-                '5m',
-                '15m',
-                '30m',
-                '1h',
-                '2h',
-                '4h',
-                '8h',
-                '12h',
-                '1d',
-                '3d',
-                '1w',
-                '1M'
-              ],
+              supported_resolutions: INTERVALS,
               pricescale: 100,
               minmov: 1,
               has_intraday: true,
@@ -282,77 +249,63 @@ const TradingViewChart = ({
             onErrorCallback('SDK or asset not available')
             return
           }
-
-          const intervalSeconds = getIntervalMinutes(resolution) * 60
+          const intervalSeconds = getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
           const now = Math.floor(Date.now() / 1000)
-
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
           const from = to - countBack * intervalSeconds
-          const interval = resolution
+          const interval = convertedResolutionToInterval(resolution)
 
           const rawCandles = await sdkInfoClient.candleSnapshot({
             coin: currentAsset,
-            interval: interval,
-            startTime: from,
-            endTime: to
+            interval: interval as hl.EventCandleParameters['interval'],
+            startTime: from * 1000, // Keep in seconds for Hyperliquid API
+            endTime: to * 1000     // Keep in seconds for Hyperliquid API
           })
-          // const rawCandles = await sdkInfoClient.candleSnapshot(
-          //   currentAsset,
-          //   interval,
-          //   from * 1000,
-          //   to * 1000
-          // )
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const bars = rawCandles.map((bar: any) => ({
+
+          // Process candles properly - TradingView expects timestamps in SECONDS
+          const bars = rawCandles.map((bar: hl.Candle) => ({
             time: Number(Math.floor(Number(bar.t))),
-            open: typeof bar.o === 'string' ? parseFloat(bar.o) : Number(bar.o),
-            high: typeof bar.h === 'string' ? parseFloat(bar.h) : Number(bar.h),
-            low: typeof bar.l === 'string' ? parseFloat(bar.l) : Number(bar.l),
-            close: typeof bar.c === 'string' ? parseFloat(bar.c) : Number(bar.c),
-            volume: typeof bar.v === 'string' ? parseFloat(bar.v) : Number(bar.v)
+            open: parseFloat(bar.o.toString()),
+            high: parseFloat(bar.h.toString()),
+            low: parseFloat(bar.l.toString()),
+            close: parseFloat(bar.c.toString()),
+            volume: parseFloat(bar.v.toString())
           }))
 
           // Initialize cache for asset if not exists
           if (!barsCache.current[currentAsset]) {
             barsCache.current[currentAsset] = {
-              '1m': new Map(),
-              '3m': new Map(),
-              '5m': new Map(),
-              '15m': new Map(),
-              '30m': new Map(),
+              '1': new Map(),
+              '5': new Map(),
+              '15': new Map(),
+              '30': new Map(),
+              '60': new Map(),
               '1h': new Map(),
-              '2h': new Map(),
               '4h': new Map(),
-              '8h': new Map(),
-              '12h': new Map(),
+              '240': new Map(),
               '1d': new Map(),
-              '3d': new Map(),
               '1w': new Map(),
               '1M': new Map()
             }
           }
 
+          // Update cache with timestamp as key (in seconds)
           const cache = barsCache.current[currentAsset][resolution]
           bars.forEach((bar: BarData) => cache.set(bar.time, bar))
 
-          const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
-          const responseBars = mergedBars.filter(
-            (bar) => bar.time >= from * 1000 && bar.time < to * 1000
-          )
-
-          const finalBars = responseBars.length >= 2 ? responseBars : mergedBars.slice(-countBack)
-
+          // For first data request, return all available bars
+          // For subsequent requests, limit to countBack
           const outputBars = periodParams?.firstDataRequest
-            ? finalBars
-            : finalBars.slice(-countBack)
+            ? bars
+            : bars.slice(-countBack)
 
           onHistoryCallback(outputBars, {
             noData: outputBars.length === 0
           })
         } catch (err) {
           console.error('Error fetching bars:', err)
-          onErrorCallback('Data error')
+          onErrorCallback('Data error: ' + String(err))
         }
       },
 
@@ -366,13 +319,14 @@ const TradingViewChart = ({
           const currentAsset = selectedAssetRef.current
           if (!sdkInfoClient || !currentAsset) return
 
-          const interval = resolution
+          const interval = convertedResolutionToInterval(resolution) as hl.EventCandleParameters['interval']
           let lastBar: BarData | undefined
 
-          const candleHandler = (payload: hl.Candle) => {
+          const candleHandler = (payload: hl.Candle[] | hl.Candle) => {
             const candles = Array.isArray(payload) ? payload : [payload]
 
             candles.forEach((c) => {
+
               const bar: BarData = {
                 time: Number(c.t),
                 open: +c.o,
@@ -447,8 +401,8 @@ const TradingViewChart = ({
       widgetRef.current = new window.TradingView.widget({
         symbol: selectedAssetRef.current,
         debug: false,
-        interval: selectedInterval,
-        timeframe: '1W',
+        interval: '60',
+        timeframe: '12M',
         container: chartRef.current,
         datafeed,
         library_path: '/lib/',
