@@ -83,12 +83,6 @@ export const getSpotAssetContext = ({
   }
 }
 
-export const getCoinName = (asset: string): string => {
-  if (asset.endsWith('-PERP')) {
-    return asset.slice(0, -5)
-  }
-  return asset
-}
 
 // refer https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size
 export const roundToSignificantFigures = (num: number, sigFigs: number = 5): number => {

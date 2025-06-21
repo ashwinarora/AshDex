@@ -4,7 +4,6 @@ import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { getCoinName } from '@/utils/utils'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import Slider1 from '@/assets/images/slider_value.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
@@ -65,6 +64,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
+  const { spotKeyToName } = useSpotMeta()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
@@ -269,7 +269,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             <label className="block mb-0.5 font-medium text-gray-300 text-xs">Total Size</label>
             <span className="block font-medium text-[#8B8BA0] text-xs">
               Balance = {Number(maxAllowed).toFixed(2)}{' '}
-              {isBuy ? 'USDC' : getCoinName(selectedAsset)}
+              {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
             </span>
           </div>
           <div className="flex">

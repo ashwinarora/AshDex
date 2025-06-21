@@ -1,6 +1,6 @@
 'use client'
 
-import { getCoinName, getPerpsUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -135,7 +135,7 @@ const AmountInput = ({
         Max ={' '}
         {isInputUsd
           ? `${maxAllowedUsd.toFixed(2)} USD`
-          : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
+          : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${selectedAsset}`}
       </label>
       <div className="flex items-center px-3 border border-white/10 rounded-md align-middle">
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Position Size</p>
@@ -154,7 +154,7 @@ const AmountInput = ({
             onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
             className="bg-transparent border-none focus:outline-none text-[#8B8BA0] text-xs cursor-pointer"
           >
-            <option value="asset">{getCoinName(selectedAsset)}</option>
+            <option value="asset">{selectedAsset}</option>
             <option value="usd">USD</option>
           </select>
         </div>
