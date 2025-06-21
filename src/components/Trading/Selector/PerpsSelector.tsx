@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import { getPerpsUniverseIndex } from '@/utils/utils'
-import { useFavorites } from '@/context/FavoritesContext'
+import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
 import { IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -49,8 +49,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const type = 'perp'
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useFavorites(false)
 
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -153,22 +152,9 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const assetPrice = Number(selectedAssetContext.markPx)
-      const change24hItem = marketData.find((i) => i.label === '24h Change')
-      const change24hValue =
-        typeof change24hItem?.value === 'string' ? change24hItem.value : '0.00%'
-      toggleFavorite(
-        {
-          name: selectedAsset,
-          value: assetPrice.toString(),
-          index: selectedAsset,
-          price: assetPrice,
-          change24h: change24hValue
-        },
-        type
-      )
+      toggleFavorite(selectedAsset)
     },
-    [selectedAssetContext, selectedAsset, marketData, toggleFavorite, type]
+    [selectedAsset, toggleFavorite]
   )
 
   useEffect(() => {
@@ -194,10 +180,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             onClick={handleToggleFavorite}
             className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
           >
-            {isFavorite(selectedAsset, type) ? (
+            {isFavorite(selectedAsset) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
-              <IconStar size={16} className="opacity-50 mr-1 text-white" />
+              <IconStar size={16} className="opacity-50 mr-1 text-white border border-red" />
             )}
           </button>
           <button

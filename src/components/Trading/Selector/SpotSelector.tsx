@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import { getSpotAssetContext } from '@/utils/utils'
-import { useFavorites } from '@/context/FavoritesContext'
+import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
 import { IconExternalLink, IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -25,7 +25,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useFavorites(true)
   const { data: spotMeta } = useSpotMeta()
 
   const { context: selectedAssetContext, meta: selectedAssetToken } = useMemo(() => {
@@ -113,20 +113,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation()
-      const assetPrice = Number(selectedAssetContext?.markPx)
-      const change24hItem = marketData.find((i) => i.label === '24h Change')
-      const change24hValue =
-        typeof change24hItem?.value === 'string' ? change24hItem.value : '0.00%'
-      toggleFavorite(
-        {
-          name: selectedAsset,
-          value: assetPrice.toString(),
-          index: selectedAsset,
-          price: assetPrice,
-          change24h: change24hValue
-        },
-        'spot'
-      )
+      toggleFavorite(selectedAsset)
     },
     [selectedAssetContext, selectedAsset, marketData, toggleFavorite]
   )
@@ -154,7 +141,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             onClick={handleToggleFavorite}
             className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
           >
-            {isFavorite(selectedAsset, 'spot') ? (
+            {isFavorite(selectedAsset) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
               <IconStar size={16} className="opacity-50 mr-1 text-white" />

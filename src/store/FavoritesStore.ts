@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import { useShallow } from 'zustand/react/shallow'
 import { persist, createJSONStorage } from 'zustand/middleware'
+import { useShallow } from 'zustand/react/shallow'
 
 interface FavoritesState {
   perps: Set<string>
@@ -11,43 +11,58 @@ interface FavoritesState {
   isPerpFavorite: (item: string) => boolean
 }
 
+/**
+ * Converts every Set -> { dataType:'Set', value:[...] } on save
+ * and performs the inverse on load.
+ */
+const storage = createJSONStorage<FavoritesState>(() => localStorage, {
+  replacer: (_, value) => (value instanceof Set ? { dataType: 'Set', value: [...value] } : value),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  reviver: (_, value: any) => (value.dataType === 'Set' ? new Set<string>(value.value) : value)
+})
+
 const useFavoritesStore = create<FavoritesState>()(
   persist(
     (set, get) => ({
       perps: new Set<string>(),
       spot: new Set<string>(),
-      togglePerp: (item: string) => {
+
+      togglePerp: (item) =>
         set((state) => {
-          const newPerps = new Set(state.perps)
-          if (newPerps.has(item)) {
-            newPerps.delete(item)
+          const perps = new Set(state.perps)
+          if (perps.has(item)) {
+            perps.delete(item)
           } else {
-            newPerps.add(item)
+            perps.add(item)
           }
-          return { perps: newPerps }
-        })
-      },
-      toggleSpot: (item: string) => {
+          return { perps }
+        }),
+
+      toggleSpot: (item) =>
         set((state) => {
-          const newSpot = new Set(state.spot)
-          if (newSpot.has(item)) {
-            newSpot.delete(item)
+          const spot = new Set(state.spot)
+          if (spot.has(item)) {
+            spot.delete(item)
           } else {
-            newSpot.add(item)
+            spot.add(item)
           }
-          return { spot: newSpot }
-        })
-      },
-      isSpotFavorite: (item: string) => {
-        return get().spot.has(item)
-      },
-      isPerpFavorite: (item: string) => {
-        return get().perps.has(item)
-      }
+          return { spot }
+        }),
+
+      isSpotFavorite: (item) => get().spot.has(item),
+      isPerpFavorite: (item) => get().perps.has(item)
     }),
     {
       name: 'favorites',
-      storage: createJSONStorage(() => localStorage)
+      storage,
+      // optional: convert any old array-based data when users upgrade
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      merge: (persisted: any, _current) => ({
+        ..._current,
+        ...persisted,
+        perps: new Set(persisted.perps ?? []),
+        spot: new Set(persisted.spot ?? [])
+      })
     }
   )
 )
@@ -57,15 +72,15 @@ export const useFavorites = (isSpot: boolean) => {
     useShallow((state) => {
       return isSpot
         ? {
-          favorites: state.spot,
-          toggleFavorite: state.toggleSpot,
-          isFavorite: state.isSpotFavorite,
-        }
+            favorites: state.spot,
+            toggleFavorite: state.toggleSpot,
+            isFavorite: state.isSpotFavorite
+          }
         : {
-          favorites: state.perps,
-          toggleFavorite: state.togglePerp,
-          isFavorite: state.isPerpFavorite
-        }
+            favorites: state.perps,
+            toggleFavorite: state.togglePerp,
+            isFavorite: state.isPerpFavorite
+          }
     })
   )
 }

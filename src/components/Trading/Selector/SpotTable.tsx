@@ -17,7 +17,7 @@ import {
   IconTriangleFilled,
   IconTriangleInvertedFilled
 } from '@tabler/icons-react'
-import { useFavorites } from '@/context/FavoritesContext'
+import { useFavorites } from '@/store/FavoritesStore'
 import ReactiveText from '@/components/common/ReactiveText'
 
 interface AssetTableProps {
@@ -35,8 +35,6 @@ interface AssetData {
   isFavorite: boolean
 }
 
-const type = 'spot'
-
 const formatPrice = (price: number | undefined | null) => {
   if (price === undefined || price === null) return '-'
   const numPrice = typeof price === 'string' ? parseFloat(price) : price
@@ -51,7 +49,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useFavorites(true)
 
   // Create column helper for TanStack Table
   const columnHelper = createColumnHelper<AssetData>()
@@ -74,12 +72,12 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
             : 0
 
         return {
-          symbol: spotKeyToName.get(assetCtx.coin) || '',
+          symbol: assetCtx.coin,
           price,
           prevDayPrice,
           volume,
           marketCap,
-          isFavorite: isFavorite(spotKeyToName.get(assetCtx.coin) || '', type)
+          isFavorite: isFavorite(assetCtx.coin)
         }
       })
   }, [spotMeta, spotAssetContext, isFavorite, searchTerm])
@@ -102,14 +100,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  toggleFavorite(
-                    {
-                      name: symbol,
-                      value: info.row.original.price.toString(),
-                      index: symbol
-                    },
-                    type
-                  )
+                  toggleFavorite(symbol)
                 }}
                 className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
                 aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
@@ -120,7 +111,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p>{symbol.split('-')[0]}/USDC</p>
+              <p>{spotKeyToName.get(symbol)}/USDC</p>
             </div>
           )
         },

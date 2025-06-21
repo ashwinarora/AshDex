@@ -8,7 +8,7 @@ import {
   IconTriangleInvertedFilled
 } from '@tabler/icons-react'
 import { useMemo, useState } from 'react'
-import { useFavorites } from '@/context/FavoritesContext'
+import { useFavorites } from '@/store/FavoritesStore'
 import ReactiveText from '@/components/common/ReactiveText'
 import {
   useReactTable,
@@ -34,8 +34,6 @@ interface PerpAssetData {
   isFavorite: boolean
 }
 
-const type = 'perp'
-
 const formatPrice = (price: number | undefined | null) => {
   if (price === undefined || price === null) return '-'
   const numPrice = typeof price === 'string' ? parseFloat(price) : price
@@ -49,7 +47,7 @@ const formatPrice = (price: number | undefined | null) => {
 const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquid()
-  const { isFavorite, toggleFavorite } = useFavorites()
+  const { isFavorite, toggleFavorite } = useFavorites(false)
 
   // Build table data for Tanstack Table (show all perps, no filtering)
   const tableData: PerpAssetData[] = useMemo(() => {
@@ -71,7 +69,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           volume,
           openInterest,
           maxLeverage,
-          isFavorite: isFavorite(asset.name, type)
+          isFavorite: isFavorite(asset.name)
         }
       })
     return data
@@ -96,16 +94,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
               <button
                 onClick={(e) => {
                   e.stopPropagation()
-                  toggleFavorite(
-                    {
-                      name: symbol,
-                      value: info.row.original.price.toString(),
-                      index: symbol,
-                      price: info.row.original.price,
-                      change24h: info.row.original.prevDayPrice
-                    },
-                    type
-                  )
+                  toggleFavorite(symbol)
                 }}
                 className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
                 aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
