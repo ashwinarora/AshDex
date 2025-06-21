@@ -49,7 +49,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
-  const { isFavorite, toggleFavorite } = useFavorites(false)
+  const { toggleFavorite, favorites } = useFavorites(false)
 
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -180,10 +180,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             onClick={handleToggleFavorite}
             className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
           >
-            {isFavorite(selectedAsset) ? (
+            {favorites.has(selectedAsset) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
-              <IconStar size={16} className="opacity-50 mr-1 text-white border border-red" />
+              <IconStar size={16} className="opacity-50 mr-1 text-white" />
             )}
           </button>
           <button

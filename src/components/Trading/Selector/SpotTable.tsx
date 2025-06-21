@@ -32,7 +32,6 @@ interface AssetData {
   prevDayPrice: number
   volume: number
   marketCap: number
-  isFavorite: boolean
 }
 
 const formatPrice = (price: number | undefined | null) => {
@@ -49,7 +48,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
-  const { isFavorite, toggleFavorite } = useFavorites(true)
+  const { toggleFavorite, favorites } = useFavorites(true)
 
   // Create column helper for TanStack Table
   const columnHelper = createColumnHelper<AssetData>()
@@ -76,11 +75,10 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           price,
           prevDayPrice,
           volume,
-          marketCap,
-          isFavorite: isFavorite(assetCtx.coin)
+          marketCap
         }
       })
-  }, [spotMeta, spotAssetContext, isFavorite, searchTerm])
+  }, [spotMeta, spotAssetContext, favorites, searchTerm])
 
   // Define columns
   const columns = useMemo(
@@ -94,7 +92,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           </div>
         ),
         cell: (info) => {
-          const { symbol, isFavorite } = info.row.original
+          const { symbol } = info.row.original
+          const isFavorite = favorites.has(symbol)
           return (
             <div className="flex items-center gap-2">
               <button
@@ -118,8 +117,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         enableSorting: true,
         sortingFn: (rowA, rowB) => {
           // Favorites always on top, then sort alphabetically or reverse
-          if (rowA.original.isFavorite && !rowB.original.isFavorite) return -1
-          if (!rowA.original.isFavorite && rowB.original.isFavorite) return 1
+          if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol)) return -1
+          if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol)) return 1
           // Both are favorites or both are not favorites, sort alphabetically
           const symbolA = rowA.original.symbol.toUpperCase()
           const symbolB = rowB.original.symbol.toUpperCase()
@@ -225,7 +224,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         enableSorting: true
       })
     ],
-    [columnHelper, toggleFavorite]
+    [columnHelper, toggleFavorite, favorites]
   )
 
   const table = useReactTable({

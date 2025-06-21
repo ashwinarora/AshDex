@@ -7,8 +7,6 @@ interface FavoritesState {
   spot: Set<string>
   togglePerp: (item: string) => void
   toggleSpot: (item: string) => void
-  isSpotFavorite: (item: string) => boolean
-  isPerpFavorite: (item: string) => boolean
 }
 
 /**
@@ -23,7 +21,7 @@ const storage = createJSONStorage<FavoritesState>(() => localStorage, {
 
 const useFavoritesStore = create<FavoritesState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       perps: new Set<string>(),
       spot: new Set<string>(),
 
@@ -47,10 +45,7 @@ const useFavoritesStore = create<FavoritesState>()(
             spot.add(item)
           }
           return { spot }
-        }),
-
-      isSpotFavorite: (item) => get().spot.has(item),
-      isPerpFavorite: (item) => get().perps.has(item)
+        })
     }),
     {
       name: 'favorites',
@@ -73,13 +68,11 @@ export const useFavorites = (isSpot: boolean) => {
       return isSpot
         ? {
             favorites: state.spot,
-            toggleFavorite: state.toggleSpot,
-            isFavorite: state.isSpotFavorite
+            toggleFavorite: state.toggleSpot
           }
         : {
             favorites: state.perps,
-            toggleFavorite: state.togglePerp,
-            isFavorite: state.isPerpFavorite
+            toggleFavorite: state.togglePerp
           }
     })
   )

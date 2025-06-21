@@ -25,7 +25,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
-  const { isFavorite, toggleFavorite } = useFavorites(true)
+  const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta } = useSpotMeta()
 
   const { context: selectedAssetContext, meta: selectedAssetToken } = useMemo(() => {
@@ -141,7 +141,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             onClick={handleToggleFavorite}
             className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
           >
-            {isFavorite(selectedAsset) ? (
+            {favorites.has(selectedAsset) ? (
               <IconStarFilled size={16} className="mr-1" />
             ) : (
               <IconStar size={16} className="opacity-50 mr-1 text-white" />

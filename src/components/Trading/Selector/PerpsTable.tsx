@@ -31,7 +31,6 @@ interface PerpAssetData {
   volume: number
   openInterest: number
   maxLeverage: number
-  isFavorite: boolean
 }
 
 const formatPrice = (price: number | undefined | null) => {
@@ -47,7 +46,7 @@ const formatPrice = (price: number | undefined | null) => {
 const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquid()
-  const { isFavorite, toggleFavorite } = useFavorites(false)
+  const { favorites, toggleFavorite } = useFavorites(false)
 
   // Build table data for Tanstack Table (show all perps, no filtering)
   const tableData: PerpAssetData[] = useMemo(() => {
@@ -68,12 +67,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           prevDayPrice,
           volume,
           openInterest,
-          maxLeverage,
-          isFavorite: isFavorite(asset.name)
+          maxLeverage
         }
       })
     return data
-  }, [perpsMeta, perpAssetContext, isFavorite, searchTerm])
+  }, [perpsMeta, perpAssetContext, favorites, searchTerm])
 
   const columnHelper = createColumnHelper<PerpAssetData>()
 
@@ -88,7 +86,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           </div>
         ),
         cell: (info) => {
-          const { symbol, isFavorite, maxLeverage } = info.row.original
+          const { symbol, maxLeverage } = info.row.original
+          const isFavorite = favorites.has(symbol)
           return (
             <div className="flex items-center gap-2 pl-2">
               <button
@@ -115,8 +114,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         enableSorting: true,
         sortingFn: (rowA, rowB) => {
           // Favorites always on top, then sort alphabetically
-          if (rowA.original.isFavorite && !rowB.original.isFavorite) return -1
-          if (!rowA.original.isFavorite && rowB.original.isFavorite) return 1
+          if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol)) return -1
+          if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol)) return 1
           const symbolA = rowA.original.symbol.toUpperCase()
           const symbolB = rowB.original.symbol.toUpperCase()
           return symbolA.localeCompare(symbolB)
@@ -219,7 +218,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         enableSorting: true
       })
     ],
-    [columnHelper, toggleFavorite]
+    [columnHelper, toggleFavorite, favorites]
   )
 
   const table = useReactTable({
