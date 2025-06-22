@@ -204,8 +204,11 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           const { leverage } = info.row.original
           return (
             <div className="flex items-center gap-x-2 align-middle">
-              <button className="text-white font-bold hover:underline hover:text-indigo-500 cursor-pointer" onClick={() => setSelectedAsset(coin)}>
-                {(coin || '')}
+              <button
+                className="text-white font-bold hover:underline hover:text-indigo-500 cursor-pointer"
+                onClick={() => setSelectedAsset(coin)}
+              >
+                {coin || ''}
               </button>
               <button
                 className="flex items-center hover:scale-150 bg-primary/10 ml-1 px-1 py-0.5 rounded-md font-semibold text-primary text-xs align-middle cursor-pointer"
