@@ -13,7 +13,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { IconWallet } from '@tabler/icons-react'
 import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
-import { ExchangeClient, PerpsMeta, SpotAssetCtx, SpotMeta } from '@nktkas/hyperliquid'
+import type { ExchangeClient, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
 
 type StopOrder = {
   isMarket: boolean
@@ -200,7 +200,6 @@ const placePerpOrder = async ({
 const placeSpotOrder = async ({
   sdkExchangeClient,
   spotMeta,
-  spotAssetContext,
   selectedAsset,
   isBuy,
   limitPrice,
@@ -210,7 +209,6 @@ const placeSpotOrder = async ({
 }: {
   sdkExchangeClient: ExchangeClient | null
   spotMeta?: SpotMeta
-  spotAssetContext: SpotAssetCtx[]
   selectedAsset: string
   isBuy: boolean
   limitPrice: string
@@ -218,12 +216,10 @@ const placeSpotOrder = async ({
   isPostOnly: boolean
   currentFeeApproval: number
 }) => {
-  if (!spotMeta?.tokens) return
+  if (!spotMeta?.tokens.length) return
   if (!sdkExchangeClient) return
-  const assetIndex =
-    spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
-  const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
-  if (!tokenData) return
+  const assetIndex = spotMeta.universe.find(asset => asset.name === selectedAsset)?.index
+  if (!assetIndex) return
   const toastId = toast.loading('⏳ Loading…')
   try {
     const res = await sdkExchangeClient.order({
@@ -234,7 +230,7 @@ const placeSpotOrder = async ({
       },
       orders: [
         {
-          a: assetIndex,
+          a: assetIndex + SPOT_DELTA, 
           b: isBuy,
           p: limitPrice,
           s: assetAmount,
@@ -302,7 +298,7 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkExchangeClient, spotAssetContext, perpsMeta } = useHyperliquid()
+  const { agentWallet, sdkExchangeClient, perpsMeta } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
@@ -383,7 +379,6 @@ const OrderButton = ({
           await placeSpotOrder({
             sdkExchangeClient,
             spotMeta,
-            spotAssetContext,
             selectedAsset,
             isBuy,
             limitPrice,

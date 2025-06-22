@@ -6,17 +6,26 @@ import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 const UserData = () => {
   const { clearingHouseState, openOrders } = useHyperliquid()
   const isSpot = useIsSpot()
+  const { spotKeyToName } = useSpotMeta()
 
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0
   }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.length
+    const openOrdersLength = openOrders.filter(order => {
+      if (isSpot) {
+        return !!spotKeyToName.get(order.coin)
+      } else {
+        // asset should not be in spot universe to be a perp order
+        return !spotKeyToName.get(order.coin)
+      }
+    }).length
     const tabs = [
       {
         header: 'Balances',

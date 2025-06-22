@@ -20,6 +20,8 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IconChevronDown, IconChevronUp, IconSelector, IconTrash } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { SPOT_DELTA } from '@/utils/constants'
 
 type ColumnType = {
   key: string
@@ -27,15 +29,17 @@ type ColumnType = {
 }
 
 type RenderRowProps = {
-  item: FrontendOrder & { meta?: { label: string } }
+  item: FrontendOrderWithAssetKey
   columns: ColumnType[]
   onCancel?: () => void
 }
 
+type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
+
 const SortableHeader = ({
   header
 }: {
-  header: Header<FrontendOrder & { meta?: { label: string } }, unknown>
+  header: Header<FrontendOrderWithAssetKey, unknown>
 }) => {
   const canSort = header.column.getCanSort()
   const sortDirection = header.column.getIsSorted()
@@ -109,20 +113,21 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) =>
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdkExchangeClient, openOrders } = useHyperliquid()
+  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquid()
   const isSpot = useIsSpot()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
+  const { spotKeyToName, data: spotMeta } = useSpotMeta()
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const columnHelper = createColumnHelper<FrontendOrder & { meta?: { label: string } }>()
+  const columnHelper = createColumnHelper<FrontendOrderWithAssetKey>()
 
   const renderCancelButton = useCallback(
-    (row: { original: FrontendOrder & { meta?: { label: string } } }) => {
+    (row: { original: FrontendOrderWithAssetKey}) => {
       if (!isAgentApproved || currentFeeApproval <= 0) {
         return (
           <button className="rounded font-bold text-red cursor-pointer" onClick={openAgentModal}>
@@ -137,11 +142,14 @@ const OpenOrders = () => {
             const toastId = toast.loading('Cancelling order...')
             try {
               if (!sdkExchangeClient) return
-              // await sdkExchangeClient.cancel({ coin: row.original.coin, o: row.original.oid })
+              const assetIndex = isSpot ? 
+                Number(spotMeta?.universe.find(asset => asset.name === row.original.assetKey)?.index) + SPOT_DELTA
+                : perpsMeta?.universe.findIndex(asset => asset.name === row.original.assetKey)
+              if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
               await sdkExchangeClient.cancel({
                 cancels: [
                   {
-                    a: Number(row.original.coin), // TODO: This is broken.
+                    a: assetIndex,
                     o: row.original.oid
                   }
                 ]
@@ -169,7 +177,7 @@ const OpenOrders = () => {
         </button>
       )
     },
-    [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal]
+    [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal, isSpot, spotMeta, perpsMeta]
   )
 
   const renderCancelAllButton = useCallback(() => {
@@ -187,14 +195,38 @@ const OpenOrders = () => {
           const toastId = toast.loading('Cancelling all orders...')
           try {
             if (!sdkExchangeClient) return
-            const allOrders = openOrders
-              .filter((order) => order.coin.includes(isSpot ? 'SPOT' : 'PERP'))
-              .map((order) => ({ coin: order.coin, o: order.oid }))
+            // const allOrders = openOrders
+            //   .filter((order) => order.coin.includes(isSpot ? 'SPOT' : 'PERP'))
+            //   .map((order) => ({ coin: order.coin, o: order.oid }))
+            // const allCancels = allOrders.map((order) => {
+            //   const assetIndex = isSpot ? 
+            //     Number(spotMeta?.universe.find(asset => asset.name === order.coin)?.index) + SPOT_DELTA
+            //     : perpsMeta?.universe.findIndex(asset => asset.name === order.coin)
+            //   if (!assetIndex) return
+            //   return {
+            //     a: assetIndex,
+            //     o: order.o
+            //   }
+            // }).filter(order => !!order)
+            const allOrders = openOrders.filter(order => {
+              if (isSpot) {
+                return !!spotKeyToName.get(order.coin)
+              } else {
+                // asset should not be in spot universe to be a perp order
+                return !spotKeyToName.get(order.coin)
+              }
+            })
             await sdkExchangeClient.cancel({
-              cancels: allOrders.map((order) => ({
-                a: Number(order.coin), // TODO: This is broken.
-                o: order.o
-              }))
+              cancels: allOrders.map((order) => {
+                const assetIndex = isSpot ? 
+                  Number(spotMeta?.universe.find(asset => asset.name === order.coin)?.index) + SPOT_DELTA
+                  : perpsMeta?.universe.findIndex(asset => asset.name === order.coin)
+                if (!assetIndex) return
+                return {
+                  a: assetIndex,
+                  o: order.oid
+                }
+              }).filter(order => !!order)
             })
             toast.update(toastId, {
               render: 'All orders cancelled',
@@ -215,7 +247,7 @@ const OpenOrders = () => {
         Cancel All
       </div>
     )
-  }, [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal, openOrders, isSpot])
+  }, [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal, openOrders, isSpot, spotMeta, perpsMeta])
 
   const columns = useMemo(
     () => [
@@ -250,11 +282,11 @@ const OpenOrders = () => {
         header: () => 'Direction',
         cell: (info) => (
           <span
-            className={`    capitalize ${
-              info.getValue()?.toLowerCase() === 'buy' ? 'text-green' : 'text-red'
+            className={`capitalize ${
+              info.getValue() === 'B' ? 'text-green' : 'text-red'
             }`}
           >
-            {info.getValue()}
+            {info.getValue() === 'B' ? 'Buy' : 'Sell'}
           </span>
         ),
         enableSorting: false,
@@ -327,7 +359,22 @@ const OpenOrders = () => {
   )
 
   const data = useMemo(() => {
-    return openOrders
+    return openOrders.filter(order => {
+      if (isSpot) {
+        return !!spotKeyToName.get(order.coin)
+      } else {
+        // asset should not be in spot universe to be a perp order
+        return !spotKeyToName.get(order.coin)
+      }
+    })
+    .map(order => {
+      const coin = isSpot ? spotKeyToName.get(order.coin) || "" : order.coin
+      return {
+        ...order,
+        coin,
+        assetKey: order.coin
+      }
+    })
   }, [openOrders, isSpot])
 
   const table = useReactTable({
@@ -374,7 +421,7 @@ const OpenOrders = () => {
               /* step 2: real border instead of ::before */
               className={
                 ` border-l-4   border-b-6 border-b-secondary  ` +
-                (row.original.side?.toLowerCase() === 'buy' ? 'border-l-green' : 'border-l-red')
+                (row.original.side === 'B' ? 'border-l-green' : 'border-l-red')
               }
             >
               {row.getVisibleCells().map((cell) => (
