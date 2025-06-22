@@ -36,11 +36,7 @@ type RenderRowProps = {
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
-const SortableHeader = ({
-  header
-}: {
-  header: Header<FrontendOrderWithAssetKey, unknown>
-}) => {
+const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
   const canSort = header.column.getCanSort()
   const sortDirection = header.column.getIsSorted()
 
@@ -127,7 +123,7 @@ const OpenOrders = () => {
   const columnHelper = createColumnHelper<FrontendOrderWithAssetKey>()
 
   const renderCancelButton = useCallback(
-    (row: { original: FrontendOrderWithAssetKey}) => {
+    (row: { original: FrontendOrderWithAssetKey }) => {
       if (!isAgentApproved || currentFeeApproval <= 0) {
         return (
           <button className="rounded font-bold text-red cursor-pointer" onClick={openAgentModal}>
@@ -142,9 +138,11 @@ const OpenOrders = () => {
             const toastId = toast.loading('Cancelling order...')
             try {
               if (!sdkExchangeClient) return
-              const assetIndex = isSpot ? 
-                Number(spotMeta?.universe.find(asset => asset.name === row.original.assetKey)?.index) + SPOT_DELTA
-                : perpsMeta?.universe.findIndex(asset => asset.name === row.original.assetKey)
+              const assetIndex = isSpot
+                ? Number(
+                    spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
+                  ) + SPOT_DELTA
+                : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
               if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
               await sdkExchangeClient.cancel({
                 cancels: [
@@ -177,7 +175,15 @@ const OpenOrders = () => {
         </button>
       )
     },
-    [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal, isSpot, spotMeta, perpsMeta]
+    [
+      sdkExchangeClient,
+      isAgentApproved,
+      currentFeeApproval,
+      openAgentModal,
+      isSpot,
+      spotMeta,
+      perpsMeta
+    ]
   )
 
   const renderCancelAllButton = useCallback(() => {
@@ -199,7 +205,7 @@ const OpenOrders = () => {
             //   .filter((order) => order.coin.includes(isSpot ? 'SPOT' : 'PERP'))
             //   .map((order) => ({ coin: order.coin, o: order.oid }))
             // const allCancels = allOrders.map((order) => {
-            //   const assetIndex = isSpot ? 
+            //   const assetIndex = isSpot ?
             //     Number(spotMeta?.universe.find(asset => asset.name === order.coin)?.index) + SPOT_DELTA
             //     : perpsMeta?.universe.findIndex(asset => asset.name === order.coin)
             //   if (!assetIndex) return
@@ -208,7 +214,7 @@ const OpenOrders = () => {
             //     o: order.o
             //   }
             // }).filter(order => !!order)
-            const allOrders = openOrders.filter(order => {
+            const allOrders = openOrders.filter((order) => {
               if (isSpot) {
                 return !!spotKeyToName.get(order.coin)
               } else {
@@ -217,16 +223,19 @@ const OpenOrders = () => {
               }
             })
             await sdkExchangeClient.cancel({
-              cancels: allOrders.map((order) => {
-                const assetIndex = isSpot ? 
-                  Number(spotMeta?.universe.find(asset => asset.name === order.coin)?.index) + SPOT_DELTA
-                  : perpsMeta?.universe.findIndex(asset => asset.name === order.coin)
-                if (!assetIndex) return
-                return {
-                  a: assetIndex,
-                  o: order.oid
-                }
-              }).filter(order => !!order)
+              cancels: allOrders
+                .map((order) => {
+                  const assetIndex = isSpot
+                    ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
+                      SPOT_DELTA
+                    : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
+                  if (!assetIndex) return
+                  return {
+                    a: assetIndex,
+                    o: order.oid
+                  }
+                })
+                .filter((order) => !!order)
             })
             toast.update(toastId, {
               render: 'All orders cancelled',
@@ -247,7 +256,16 @@ const OpenOrders = () => {
         Cancel All
       </div>
     )
-  }, [sdkExchangeClient, isAgentApproved, currentFeeApproval, openAgentModal, openOrders, isSpot, spotMeta, perpsMeta])
+  }, [
+    sdkExchangeClient,
+    isAgentApproved,
+    currentFeeApproval,
+    openAgentModal,
+    openOrders,
+    isSpot,
+    spotMeta,
+    perpsMeta
+  ])
 
   const columns = useMemo(
     () => [
@@ -281,11 +299,7 @@ const OpenOrders = () => {
         id: 'side',
         header: () => 'Direction',
         cell: (info) => (
-          <span
-            className={`capitalize ${
-              info.getValue() === 'B' ? 'text-green' : 'text-red'
-            }`}
-          >
+          <span className={`capitalize ${info.getValue() === 'B' ? 'text-green' : 'text-red'}`}>
             {info.getValue() === 'B' ? 'Buy' : 'Sell'}
           </span>
         ),
@@ -359,22 +373,23 @@ const OpenOrders = () => {
   )
 
   const data = useMemo(() => {
-    return openOrders.filter(order => {
-      if (isSpot) {
-        return !!spotKeyToName.get(order.coin)
-      } else {
-        // asset should not be in spot universe to be a perp order
-        return !spotKeyToName.get(order.coin)
-      }
-    })
-    .map(order => {
-      const coin = isSpot ? spotKeyToName.get(order.coin) || "" : order.coin
-      return {
-        ...order,
-        coin,
-        assetKey: order.coin
-      }
-    })
+    return openOrders
+      .filter((order) => {
+        if (isSpot) {
+          return !!spotKeyToName.get(order.coin)
+        } else {
+          // asset should not be in spot universe to be a perp order
+          return !spotKeyToName.get(order.coin)
+        }
+      })
+      .map((order) => {
+        const coin = isSpot ? spotKeyToName.get(order.coin) || '' : order.coin
+        return {
+          ...order,
+          coin,
+          assetKey: order.coin
+        }
+      })
   }, [openOrders, isSpot])
 
   const table = useReactTable({

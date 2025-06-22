@@ -218,7 +218,7 @@ const placeSpotOrder = async ({
 }) => {
   if (!spotMeta?.tokens.length) return
   if (!sdkExchangeClient) return
-  const assetIndex = spotMeta.universe.find(asset => asset.name === selectedAsset)?.index
+  const assetIndex = spotMeta.universe.find((asset) => asset.name === selectedAsset)?.index
   if (!assetIndex) return
   const toastId = toast.loading('⏳ Loading…')
   try {
@@ -230,7 +230,7 @@ const placeSpotOrder = async ({
       },
       orders: [
         {
-          a: assetIndex + SPOT_DELTA, 
+          a: assetIndex + SPOT_DELTA,
           b: isBuy,
           p: limitPrice,
           s: assetAmount,

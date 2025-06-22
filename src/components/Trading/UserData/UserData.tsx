@@ -18,7 +18,7 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.filter(order => {
+    const openOrdersLength = openOrders.filter((order) => {
       if (isSpot) {
         return !!spotKeyToName.get(order.coin)
       } else {
