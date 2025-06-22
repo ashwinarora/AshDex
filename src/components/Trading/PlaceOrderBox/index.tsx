@@ -18,7 +18,7 @@ export interface IPlaceOrderProps {
 }
 
 const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const [activeTab, setActiveTab] = useState<OrderTab>('LIMIT')
+  const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
   const isSpot = useIsSpot()
   const renderTabContent = () => {
     switch (activeTab) {
@@ -27,7 +27,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} />
       case 'TWAP':
-        return <TWAP selectedAsset={selectedAsset} />
+        return <TWAP />
       case 'SCALE':
         return isSpot ? (
           <ScaleSpot selectedAsset={selectedAsset} />
@@ -43,12 +43,8 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     }
   }
   const availableOptions = isSpot
-    ? [
-        { value: 'TWAP', label: 'TWAP' },
-        { value: 'SCALE', label: 'Scale' }
-      ]
+    ? [{ value: 'SCALE', label: 'Scale' }]
     : [
-        { value: 'TWAP', label: 'TWAP' },
         { value: 'SCALE', label: 'Scale' },
         { value: 'STOP_LIMIT', label: 'Stop Limit' },
         { value: 'STOP_MARKET', label: 'Stop Market' }
@@ -59,16 +55,16 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       <div className="flex justify-start items-center mb-0.5 border-white/10 border-b w-full">
         <div className="flex space-x-2 w-full">
           <button
-            onClick={() => setActiveTab('LIMIT')}
-            className={`tab-btn flex-1 text-sm ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
-          >
-            Limit
-          </button>
-          <button
             onClick={() => setActiveTab('MARKET')}
             className={`tab-btn flex-1 text-sm ${activeTab === 'MARKET' && 'tab-btn-active'}`}
           >
             Market
+          </button>
+          <button
+            onClick={() => setActiveTab('LIMIT')}
+            className={`tab-btn flex-1 text-sm ${activeTab === 'LIMIT' && 'tab-btn-active'}`}
+          >
+            Limit
           </button>
           <button
             className={`tab-btn flex-1 text-sm ${

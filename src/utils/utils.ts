@@ -1,6 +1,6 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
-import { MetaData } from './hyperliquid/hyperLiquidTypes'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, TOOLTIP_CONTENTS } from './constants'
+import { PerpsUniverse, SpotAssetCtx, SpotMeta } from '@nktkas/hyperliquid'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -60,15 +60,27 @@ export function cn(...classes: (string | undefined | boolean)[]) {
   return classes.filter(Boolean).join(' ')
 }
 
-export const getUniverseIndex = (universe: MetaData[], asset: string): number => {
+export const getPerpsUniverseIndex = (universe: PerpsUniverse[], asset: string): number => {
   return universe.findIndex((item) => item.name === asset)
 }
 
-export const getCoinName = (asset: string): string => {
-  if (asset.endsWith('-PERP')) {
-    return asset.slice(0, -5)
+export const getSpotAssetContext = ({
+  asset,
+  spotMeta,
+  spotAssetContext
+}: {
+  asset: string
+  spotMeta: SpotMeta
+  spotAssetContext: SpotAssetCtx[]
+}) => {
+  const meta = spotMeta.universe.find((item) => item.name === asset)
+  const context = spotAssetContext.find((item) => item.coin === asset)
+  if (!meta) return null
+  const base = spotMeta.tokens[meta.tokens[0]]
+  return {
+    meta: { ...meta, ...base },
+    context
   }
-  return asset
 }
 
 // refer https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size

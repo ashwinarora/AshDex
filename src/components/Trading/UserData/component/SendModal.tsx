@@ -43,7 +43,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, spotDefaultName 
     } else {
       const token = spotState?.balances.find((b) => b.coin === selectedToken)
       if (!token) return 0
-      return token.total - token.hold
+      return Number(token.total) - Number(token.hold)
     }
   }, [isPerp, clearingHouseState, spotState, spotMeta, selectedToken])
 
@@ -78,7 +78,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, spotDefaultName 
             ) : (
               spotState?.balances.map((token) => (
                 <option key={token.coin} value={token.coin}>
-                  {token.coin} ({(token.total - token.hold).toFixed(4)})
+                  {token.coin} ({(Number(token.total) - Number(token.hold)).toFixed(4)})
                 </option>
               ))
             )}
@@ -91,7 +91,7 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, spotDefaultName 
               className="text-[#7A6FA7] cursor-pointer hover:text-[#E8E0F1]"
               onClick={() => setAmount(maxAmount.toString())}
             >
-              MAX: {maxAmount.toFixed(4)} {selectedToken}
+              MAX: {Number(maxAmount).toFixed(4)} {selectedToken}
             </button>
           </div>
           <input
@@ -106,7 +106,9 @@ const SendModal: React.FC<SendModalProps> = ({ isOpen, onClose, spotDefaultName 
         </div>
         <button
           className="w-full mt-2 py-2 bg-[#7A6FA7] text-white font-bold rounded-lg shadow-lg hover:bg-[#E8E0F1] hover:text-[#322944] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-[#7A6FA7] cursor-pointer"
-          disabled={!destination || !amount || Number(amount) <= 0 || Number(amount) > maxAmount}
+          disabled={
+            !destination || !amount || Number(amount) <= 0 || Number(amount) > Number(maxAmount)
+          }
           onClick={async () => {
             if (!chainId) return
             const toastId = toast.loading('Sending...')

@@ -10,17 +10,20 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 function EnterCode() {
   const [code, setCode] = useState('')
   const { data: referral } = useReferralsInfo()
-  const { sdk } = useHyperliquid()
+  const { sdkExchangeClient } = useHyperliquid()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
   const { mutate, isSuccess } = useMutation({
     mutationFn: async () => {
-      if (!sdk) return
-      const res = await sdk.exchange.setReferrer(code)
-      console.log(res)
-      if (res.status === 'err') {
-        throw new Error(res.status)
+      if (!sdkExchangeClient) return
+      const res = await sdkExchangeClient.setReferrer({
+        code: code
+      })
+      if ('error' in res) {
+        console.error(res.error)
+      } else if ('ok' in res) {
+        return res.ok
       }
       return res
     }

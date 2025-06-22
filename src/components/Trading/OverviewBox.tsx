@@ -26,18 +26,18 @@ function OverviewBox() {
   useEffect(() => {
     const totalUnrealizedPnl =
       clearingHouseState?.assetPositions?.reduce(
-        (acc, curr) => acc + curr.position.unrealizedPnl,
+        (acc, curr) => acc + Number(curr.position.unrealizedPnl),
         0
       ) || 0
     setTotalUnrealizedPnl(totalUnrealizedPnl)
-    setMaintenanceMargin(clearingHouseState?.crossMaintenanceMarginUsed || 0)
+    setMaintenanceMargin(Number(clearingHouseState?.crossMaintenanceMarginUsed) || 0)
     setTotalCrossPositionsValue(
       clearingHouseState?.assetPositions?.reduce(
-        (acc, curr) => acc + curr.position.positionValue,
+        (acc, curr) => acc + Number(curr.position.positionValue),
         0
       ) || 0
     )
-    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+    setCrossAccountValue(Number(clearingHouseState?.marginSummary?.accountValue) || 0)
     setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
 
     const spotTokens = spotState?.balances
@@ -49,11 +49,11 @@ function OverviewBox() {
           (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
         )
         const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0
-        return token.total * price
+        return Number(token.total) * Number(price)
       }) || []
 
     const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0)
-    setSpotAccountValue(totalSpotValue + spotUSDCBalance)
+    setSpotAccountValue(totalSpotValue + Number(spotUSDCBalance))
   }, [clearingHouseState, spotState, spotMeta, spotAssetContext])
 
   return (
@@ -134,12 +134,12 @@ function OverviewBox() {
               <div className="flex flex-col gap-2">
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Balance</p>
-                  
-                    <ReactiveText
-                      precision={2}
-                      type="currency"
-                      value={crossAccountValue - totalUnrealizedPnl}
-                    /> 
+
+                  <ReactiveText
+                    precision={2}
+                    type="currency"
+                    value={crossAccountValue - totalUnrealizedPnl}
+                  />
                 </div>
                 <div className="flex justify-between items-center gap-2 w-full">
                   <p className="text-white/50 text-sm">Unrealized PnL</p>

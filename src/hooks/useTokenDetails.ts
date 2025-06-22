@@ -1,42 +1,27 @@
+import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useQuery } from '@tanstack/react-query'
+import { useSpotMeta } from './useSpotMeta'
 
-interface Token {
-  name: string
-  tokenId: string
-}
-
-interface Sdk {
-  info: {
-    spot: {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      getTokenDetails: (tokenId: string) => Promise<any>
-    }
-    perpetuals: {
-      getMetaAndAssetCtxs: () => Promise<
-        [{ universe: { name?: string }[] }, { dayNtlVlm?: number; funding?: number }[]]
-      >
-    }
-  }
-}
-
-export const useTokenDetails = (
-  sdk: Sdk | null,
-  safeTokens: Token[] | null,
-  selectedAsset: string
-) => {
+export const useTokenDetails = (selectedAsset: string) => {
+  const { sdkInfoClient } = useHyperliquid()
+  const { data: spotMeta } = useSpotMeta()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetchTokenDetails = async (): Promise<any | null> => {
-    if (!sdk || !selectedAsset) return null
+    if (!sdkInfoClient || !selectedAsset) return null
 
     try {
       const baseSymbol = selectedAsset?.split('-')[0].toLowerCase()
-      const matchedToken = safeTokens?.length
-        ? safeTokens.find((token) => token?.name.toLowerCase() === baseSymbol)
+      const matchedToken = spotMeta?.tokens.length
+        ? spotMeta.tokens.find((token) => token?.name.toLowerCase() === baseSymbol)
         : null
 
       const [tokenData, volumeData] = await Promise.all([
-        matchedToken ? sdk.info.spot.getTokenDetails(matchedToken.tokenId) : Promise.resolve({}),
-        sdk.info.perpetuals.getMetaAndAssetCtxs()
+        matchedToken
+          ? sdkInfoClient.tokenDetails({
+              tokenId: matchedToken.tokenId
+            })
+          : Promise.resolve({}),
+        sdkInfoClient.metaAndAssetCtxs()
       ])
 
       const universeIndex = volumeData[0]?.universe?.findIndex(
@@ -55,9 +40,9 @@ export const useTokenDetails = (
   }
 
   return useQuery({
-    queryKey: ['tokenDetails', !!sdk, safeTokens?.length ? safeTokens : null, selectedAsset],
+    queryKey: ['tokenDetails', selectedAsset],
     queryFn: fetchTokenDetails,
-    enabled: Boolean(sdk && selectedAsset),
+    enabled: Boolean(sdkInfoClient && selectedAsset),
     staleTime: 1000 * 60 * 5,
     refetchOnWindowFocus: false
   })

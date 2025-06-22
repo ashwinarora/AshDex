@@ -1,28 +1,27 @@
 import { useMemo, useState } from 'react'
 import SmallModal from '@/components/common/SmallModal'
-import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { toast } from 'react-toastify'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { getLeverageTicks, getUniverseIndex } from '@/utils/utils'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
+import { AssetPosition } from '@nktkas/hyperliquid'
 
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
-  asset: IPositionData
+  asset: AssetPosition['position']
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
-  const { data: universe } = usePerpsUniverse()
+  const { perpsMeta } = useHyperliquid()
 
   const maxLeverage = useMemo(() => {
-    if (!universe.length) return 1
-    const assetIndex = getUniverseIndex(universe, asset.coin)
-    return universe?.[assetIndex]?.maxLeverage || 1
-  }, [universe, asset])
+    if (!perpsMeta?.universe.length) return 1
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
+    return perpsMeta.universe[assetIndex]?.maxLeverage || 1
+  }, [perpsMeta, asset])
 
   const [leverage, setLeverage] = useState<number>(asset.leverage.value)
-  const { sdk } = useHyperliquid()
+  const { sdkExchangeClient } = useHyperliquid()
 
   const marks = useMemo(() => [1, ...getLeverageTicks(maxLeverage, 3), maxLeverage], [maxLeverage])
 
@@ -94,30 +93,38 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             if (!asset) return
             const toastId = toast.loading('⏳ Updating leverage...')
             try {
-              if (!sdk) return
-              const res = await sdk.exchange.updateLeverage(
-                asset.coin,
-                asset.leverage.type,
-                leverage
-              )
+              if (!sdkExchangeClient) return
+              if (!perpsMeta) return
+              const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
+              const res = await sdkExchangeClient.updateLeverage({
+                asset: assetIndex,
+                isCross: asset.leverage.type === 'cross',
+                leverage: leverage
+              })
               console.log(res)
-              if (res.status === 'err') {
-                toast.update(toastId, {
-                  render: '❌ ' + res.response,
-                  type: 'error',
-                  isLoading: false,
-                  autoClose: 6000
-                })
-                return
-              } else {
-                toast.update(toastId, {
-                  render: '✅ Leverage updated successfully',
-                  type: 'success',
-                  isLoading: false,
-                  autoClose: 2000
-                })
-                onClose()
-              }
+              // const resSdk = await sdk.exchange.updateLeverage(
+              //   asset.coin,
+              //   asset.leverage.type,
+              //   leverage
+              // )
+              // console.log(resSdk)
+              toast.update(toastId, {
+                render: '✅ Leverage updated successfully',
+                type: 'success',
+                isLoading: false,
+                autoClose: 2000
+              })
+              onClose()
+              // if (res.status === 'err') {
+              //   toast.update(toastId, {
+              //     render: '❌ ' + res.error,
+              //     type: 'error',
+              //     isLoading: false,
+              //     autoClose: 6000
+              //   })
+              //   return
+              // } else {
+              // }
             } catch (error) {
               console.error('Error updating leverage:', error)
               toast.update(toastId, {

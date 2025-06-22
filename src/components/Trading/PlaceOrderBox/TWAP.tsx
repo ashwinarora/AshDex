@@ -1,11 +1,8 @@
 import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IPlaceOrderProps } from '.'
 import CheckBox from '@/components/common/CheckBox'
 
-const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { sdk } = useHyperliquid()
+const TWAP = () => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [size, setSize] = useState<number>(0)
   const [minutes, setMinutes] = useState<number>(0)
@@ -45,21 +42,7 @@ const TWAP = ({ selectedAsset }: IPlaceOrderProps) => {
         </div>
       </div>
       <div className="p-2 border-white/10 border-t">
-        <button
-          className="bg-[#5F46F9] px-4 py-2 rounded-xl w-full font-bold text-white text-xs cursor-pointer"
-          onClick={async () => {
-            if (!sdk) return
-            const res = await sdk.exchange.placeTwapOrder({
-              coin: selectedAsset,
-              is_buy: isBuy,
-              sz: size,
-              minutes: minutes,
-              randomize: randomize,
-              reduce_only: false
-            })
-            console.log(res)
-          }}
-        >
+        <button className="bg-[#5F46F9] px-4 py-2 rounded-xl w-full font-bold text-white text-xs cursor-pointer">
           Place Order
         </button>
       </div>

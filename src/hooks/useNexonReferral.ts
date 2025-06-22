@@ -1,4 +1,3 @@
-import { ReferralData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
@@ -6,14 +5,15 @@ import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
+import { Referral } from '@nktkas/hyperliquid'
 
 export const useNexonReferral = () => {
-  const { clearingHouseState, sdk } = useHyperliquid()
+  const { clearingHouseState, sdkExchangeClient } = useHyperliquid()
   const { isConnected, address } = useAccount()
   const { isAgentApproved } = useAgentApproval()
   const [isReferralSet, setIsReferralSet] = useState(false)
 
-  const { data: referralData } = useQuery<ReferralData>({
+  const { data: referralData } = useQuery<Referral>({
     queryKey: ['referralsDetails', address],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {
@@ -32,11 +32,18 @@ export const useNexonReferral = () => {
     if (!clearingHouseState.withdrawable) return
     if (referralData.referredBy) return
     if (referralData.referrerState.stage === 'needToCreateCode') return
+    if (
+      referralData.referrerState.stage === 'ready' &&
+      referralData.referrerState.data.code === NEXON_REFERRAL_CODE
+    )
+      return // cannot refer to self
     if (isReferralSet) return
 
     const setNexonReferral = async () => {
-      if (!sdk) return
-      await sdk.exchange.setReferrer(NEXON_REFERRAL_CODE)
+      if (!sdkExchangeClient) return
+      await sdkExchangeClient.setReferrer({
+        code: NEXON_REFERRAL_CODE
+      })
       setIsReferralSet(true)
     }
 
