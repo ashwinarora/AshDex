@@ -40,6 +40,10 @@ type RenderRowProps = {
   columns: ColumnType[]
 }
 
+interface IPositionsProps {
+  setSelectedAsset: (asset: string) => void
+}
+
 const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
   return (
     <div className="flex flex-col gap-2 text-white text-sm">
@@ -158,7 +162,7 @@ const SortableHeader = ({
   )
 }
 
-const Positions = () => {
+const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const { isConnected } = useAccount()
   const { clearingHouseState, allMids } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
@@ -199,10 +203,12 @@ const Positions = () => {
           const coin = info.getValue()
           const { leverage } = info.row.original
           return (
-            <div className="flex items-center gap-1 align-middle">
-              {(coin || '').split('-')[0]}{' '}
+            <div className="flex items-center gap-x-2 align-middle">
+              <button className="text-white font-bold hover:underline hover:text-indigo-500 cursor-pointer" onClick={() => setSelectedAsset(coin)}>
+                {(coin || '')}
+              </button>
               <button
-                className="flex items-center bg-primary/10 ml-1 px-1 py-0.5 rounded-md font-semibold text-primary text-xs align-middle cursor-pointer"
+                className="flex items-center hover:scale-150 bg-primary/10 ml-1 px-1 py-0.5 rounded-md font-semibold text-primary text-xs align-middle cursor-pointer"
                 onClick={() => {
                   if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                   setLeverageAsset(info.row.original)

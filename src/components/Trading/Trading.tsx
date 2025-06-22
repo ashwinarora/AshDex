@@ -16,7 +16,7 @@ const Trading = () => {
   const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? '@1035' : 'BTC') // @1035 is HYPE
   const [activeTab, setActiveTab] = useState(0)
   const components = [
-    <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30m" />,
+    <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30" />,
     <OrderBook key="orderbook" selectedAsset={selectedAsset} />,
     <PlaceOrder key="placeorder" selectedAsset={selectedAsset} />
   ]
@@ -54,7 +54,7 @@ const Trading = () => {
                   />
                 )}
               </div>
-              <Chart selectedAsset={selectedAsset} selectedInterval="30m" />
+              <Chart selectedAsset={selectedAsset} selectedInterval="30" />
             </div>
 
             {/* OrderBook: Left on desktop, middle in mobile */}
@@ -73,7 +73,7 @@ const Trading = () => {
           </div>
           <div className="gap-1 grid grid-cols-18 min-h-[500px]">
             <div className="flex-1 col-span-14 h-full nexon-card">
-              <UserData />
+              <UserData setSelectedAsset={setSelectedAsset} />
             </div>
             <div className="flex-1 col-span-4 h-full nexon-card">
               <OverviewBox />
