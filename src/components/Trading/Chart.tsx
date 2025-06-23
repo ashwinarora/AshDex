@@ -1,7 +1,9 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { Candle } from '@/utils/hyperliquid/hyperLiquidTypes'
+import * as hl from '@nktkas/hyperliquid'
+
+// TODO: Need Contributor review to fix the types
 
 interface BarData {
   time: number
@@ -12,7 +14,8 @@ interface BarData {
   volume: number
 }
 
-const INTERVALS = ['1', '5', '15', '30', '60', '240', 'D', 'W', 'M'] as const
+const INTERVALS = ['1', '5', '15', '30', '60', '240', '1d', '1w', '1M', '1h', '4h'] as const
+
 type IntervalType = (typeof INTERVALS)[number]
 
 const getIntervalMinutes = (res: IntervalType): number => {
@@ -22,10 +25,12 @@ const getIntervalMinutes = (res: IntervalType): number => {
     '15': 15,
     '30': 30,
     '60': 60,
+    '1h': 60,
+    '4h': 240,
     '240': 240,
-    D: 1440,
-    W: 10080,
-    M: 43200
+    '1d': 1440,
+    '1w': 10080,
+    '1M': 43200
   }
   return map[res]
 }
@@ -78,6 +83,8 @@ interface TradingViewWidgetConfig {
 interface PeriodParams {
   countBack: number
   firstDataRequest: boolean
+  from: number
+  to: number
 }
 
 interface Datafeed {
@@ -125,11 +132,6 @@ interface SymbolInfo {
   has_weekly_and_monthly: boolean
 }
 
-interface PeriodParams {
-  from: number
-  to: number
-}
-
 interface HistoryCallback {
   (bars: BarData[], meta: { noData: boolean }): void
 }
@@ -154,7 +156,7 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdk, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
+  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
@@ -164,7 +166,7 @@ const TradingViewChart = ({
       : resolution.endsWith('W')
         ? '1w'
         : resolution.endsWith('M')
-          ? '1m'
+          ? '1M'
           : Number(resolution) >= 60
             ? `${Number(resolution) / 60}h`
             : `${Number(resolution)}m`
@@ -194,18 +196,20 @@ const TradingViewChart = ({
         '5': new Map(),
         '15': new Map(),
         '30': new Map(),
+        '1h': new Map(),
         '60': new Map(),
+        '4h': new Map(),
         '240': new Map(),
-        D: new Map(),
-        W: new Map(),
-        M: new Map()
+        '1d': new Map(),
+        '1w': new Map(),
+        '1M': new Map()
       }
     }
   }, [selectedAsset])
 
   // Create datafeed once when SDK is available
   useEffect(() => {
-    if (!sdk) return
+    if (!sdkInfoClient) return
 
     const datafeed: Datafeed = {
       onReady: (cb: DatafeedCallback) =>
@@ -240,27 +244,27 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
-          if (!sdk || !currentAsset) {
+          if (!sdkInfoClient || !currentAsset) {
             onErrorCallback('SDK or asset not available')
             return
           }
-
-          const intervalSeconds = getIntervalMinutes(resolution) * 60
+          const intervalSeconds =
+            getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
           const now = Math.floor(Date.now() / 1000)
-
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
           const from = to - countBack * intervalSeconds
           const interval = convertedResolutionToInterval(resolution)
 
-          const rawCandles = await sdk.info.getCandleSnapshot(
-            currentAsset,
-            interval,
-            from * 1000,
-            to * 1000
-          )
+          const rawCandles = await sdkInfoClient.candleSnapshot({
+            coin: currentAsset,
+            interval: interval as hl.EventCandleParameters['interval'],
+            startTime: from * 1000, // Keep in seconds for Hyperliquid API
+            endTime: to * 1000 // Keep in seconds for Hyperliquid API
+          })
 
-          const bars = rawCandles.map((bar: Candle) => ({
+          // Process candles properly - TradingView expects timestamps in SECONDS
+          const bars = rawCandles.map((bar: hl.Candle) => ({
             time: Number(Math.floor(Number(bar.t))),
             open: parseFloat(bar.o.toString()),
             high: parseFloat(bar.h.toString()),
@@ -277,33 +281,29 @@ const TradingViewChart = ({
               '15': new Map(),
               '30': new Map(),
               '60': new Map(),
+              '1h': new Map(),
+              '4h': new Map(),
               '240': new Map(),
-              D: new Map(),
-              W: new Map(),
-              M: new Map()
+              '1d': new Map(),
+              '1w': new Map(),
+              '1M': new Map()
             }
           }
 
+          // Update cache with timestamp as key (in seconds)
           const cache = barsCache.current[currentAsset][resolution]
           bars.forEach((bar: BarData) => cache.set(bar.time, bar))
 
-          const mergedBars = Array.from(cache.values()).sort((a, b) => a.time - b.time)
-          const responseBars = mergedBars.filter(
-            (bar) => bar.time >= from * 1000 && bar.time < to * 1000
-          )
-
-          const finalBars = responseBars.length >= 2 ? responseBars : mergedBars.slice(-countBack)
-
-          const outputBars = periodParams?.firstDataRequest
-            ? finalBars
-            : finalBars.slice(-countBack)
+          // For first data request, return all available bars
+          // For subsequent requests, limit to countBack
+          const outputBars = periodParams?.firstDataRequest ? bars : bars.slice(-countBack)
 
           onHistoryCallback(outputBars, {
             noData: outputBars.length === 0
           })
         } catch (err) {
           console.error('Error fetching bars:', err)
-          onErrorCallback('Data error')
+          onErrorCallback('Data error: ' + String(err))
         }
       },
 
@@ -315,12 +315,14 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
-          if (!sdk || !currentAsset) return
+          if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertedResolutionToInterval(resolution)
+          const interval = convertedResolutionToInterval(
+            resolution
+          ) as hl.EventCandleParameters['interval']
           let lastBar: BarData | undefined
 
-          const candleHandler = (payload: Candle[] | Candle) => {
+          const candleHandler = (payload: hl.Candle[] | hl.Candle) => {
             const candles = Array.isArray(payload) ? payload : [payload]
 
             candles.forEach((c) => {
@@ -380,7 +382,7 @@ const TradingViewChart = ({
       Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
       tvSubscribersRef.current = {}
     }
-  }, [sdk])
+  }, [sdkInfoClient])
 
   // Initialize TradingView widget
   useEffect(() => {
@@ -398,8 +400,8 @@ const TradingViewChart = ({
       widgetRef.current = new window.TradingView.widget({
         symbol: selectedAssetRef.current,
         debug: false,
-        interval: selectedInterval,
-        timeframe: '1W',
+        interval: '60',
+        timeframe: '12M',
         container: chartRef.current,
         datafeed,
         library_path: '/lib/',

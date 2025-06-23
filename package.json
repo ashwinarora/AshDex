@@ -19,6 +19,7 @@
     "@msgpack/msgpack": "^3.1.1",
     "@mysten/sui": "^1.29.1",
     "@next/third-parties": "^15.3.1",
+    "@nktkas/hyperliquid": "^0.22.1",
     "@prisma/client": "^6.8.1",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-navigation-menu": "^1.2.13",

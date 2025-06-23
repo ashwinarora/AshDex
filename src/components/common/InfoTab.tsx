@@ -7,27 +7,15 @@ import { useMemo } from 'react'
 import { useCoinData } from '@/hooks/useCoinData'
 import { useCoins } from '@/hooks/useCoins'
 import { useTokenDetails } from '@/hooks/useTokenDetails'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface IInfoTabProps {
   selectedAsset: string
 }
 
 const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
-  const { sdk } = useHyperliquid()
   const { data: allCoins = [] } = useCoins()
   const { coinData, coinInfo, isLoading } = useCoinData(allCoins, selectedAsset)
-  const { data: spotMeta } = useSpotMeta()
-  const safeTokens = useMemo(
-    () =>
-      spotMeta?.tokens.map((token) => ({
-        name: token.name,
-        tokenId: token.tokenId
-      })),
-    [spotMeta]
-  )
-  const { data: tokenDetails } = useTokenDetails(sdk, safeTokens, selectedAsset)
+  const { data: tokenDetails } = useTokenDetails(selectedAsset)
 
   const assetData = useMemo(
     () => [

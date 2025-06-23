@@ -1,14 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
-import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import SmallModal from '../../../common/SmallModal'
 import { IconRefresh } from '@tabler/icons-react'
+import { AssetPosition } from '@nktkas/hyperliquid'
 
 interface LimitCloseModalProps {
   isOpen: boolean
@@ -17,12 +13,12 @@ interface LimitCloseModalProps {
 }
 
 const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
-  const { clearingHouseState, agentWallet, allMids, sdk } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
+    useHyperliquid()
   const [price, setPrice] = useState<string>('')
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const [position, setPosition] = useState<IPositionData | null>(null)
+  const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
   const [percent, setPercent] = useState<number>(0)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
 
@@ -52,9 +48,10 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   // Update size when percent changes
   useEffect(() => {
     if (lastChanged === 'percent' && position) {
-      const absSzi = Math.abs(position.szi)
-      const assetIndex = universe ? getUniverseIndex(universe, position.coin) : 0
-      const szDecimals = universe ? universe[assetIndex].szDecimals : 8
+      if (!perpsMeta) return
+      const absSzi = Math.abs(Number(position.szi))
+      const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
+      const szDecimals = perpsMeta.universe[assetIndex].szDecimals
       if (sizeType === 'asset') {
         const newSize = (percent / 100) * absSzi
         setSize(trimDecimals(newSize.toString(), szDecimals))
@@ -64,12 +61,12 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         setSize(trimDecimals(usdValue.toString(), szDecimals))
       }
     }
-  }, [percent, position, sizeType, price, lastChanged, universe])
+  }, [percent, position, sizeType, price, lastChanged, perpsMeta])
 
   // Update percent when size changes
   useEffect(() => {
     if (lastChanged === 'size' && position) {
-      const absSzi = Math.abs(position.szi)
+      const absSzi = Math.abs(Number(position.szi))
       if (sizeType === 'asset') {
         const sizeNum = parseFloat(size)
         const newPercent = absSzi > 0 ? Math.min(100, Math.max(0, (sizeNum / absSzi) * 100)) : 0
@@ -90,20 +87,22 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const closeSize = parseFloat(size)
       const entryPx = position.entryPx
       const closePx = parseFloat(price)
-      const isLong = position.szi > 0
-      const pnlPerUnit = isLong ? closePx - entryPx : entryPx - closePx
+      const isLong = Number(position.szi) > 0
+      const pnlPerUnit = isLong
+        ? Number(closePx) - Number(entryPx)
+        : Number(entryPx) - Number(closePx)
       return closeSize * pnlPerUnit
     }
     return null
   }, [position, price, size])
 
   const handleClosePosition = async () => {
-    if (!agentWallet || !position || !universe) return
+    if (!agentWallet || !position || !perpsMeta) return
 
-    const assetIndex = getUniverseIndex(universe, position.coin)
-    const szDecimals = universe[assetIndex].szDecimals
+    const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, position.coin)
+    const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const tif = 'Gtc'
-    const isBuy = !(position.szi > 0)
+    const isBuy = !(Number(position.szi) > 0)
 
     let finalSize = size
     if (sizeType === 'usd') {
@@ -116,24 +115,17 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
 
     const toastId = toast.loading('Closing position...')
     try {
-      if (!sdk) return
-      const res = await sdk.exchange.updateLeverage(
-        position.coin,
-        position.leverage.type,
-        position.leverage.value
-      )
-      console.log(res)
-
-      const order = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      if (!sdkExchangeClient) return
+      const order = await sdkExchangeClient.order({
         grouping: 'na',
         orders: [
           {
-            assetIndex: assetIndex,
-            isBuy: isBuy,
-            reduceOnly: true,
-            price: formatPrice(parseFloat(price), szDecimals).toString(),
-            size: finalSize.replace(/\.?0+$/, ''),
-            orderType: {
+            a: assetIndex,
+            b: isBuy,
+            p: formatPrice(Number(price), szDecimals).toString(),
+            s: finalSize.replace(/\.?0+$/, ''),
+            r: true,
+            t: {
               limit: {
                 tif: tif
               }
@@ -142,22 +134,31 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         ]
       })
       console.log(order)
-      const status = order.data.response.data.statuses[0]
-      if (status.error) {
+      const status = order.response.data.statuses[0]
+      if ('error' in status) {
         toast.update(toastId, {
           render: '❌' + status.error,
           type: 'error',
           isLoading: false,
           autoClose: 3000
         })
-      } else {
+      } else if ('filled' in status) {
         toast.update(toastId, {
-          render: '✅ Order placed successfully',
+          render: `✅ Position Closed Successfully`,
           type: 'success',
           isLoading: false,
-          autoClose: 2000
+          autoClose: 3000
         })
-        onClose()
+      } else if ('resting' in status) {
+        const resting = status.resting
+        if (resting) {
+          toast.update(toastId, {
+            render: `✅ Order Placed Successfully`,
+            type: 'success',
+            isLoading: false,
+            autoClose: 3000
+          })
+        }
       }
     } catch (error) {
       console.error('Error closing position:', error)
@@ -204,8 +205,9 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
               type="number"
               value={size}
               onChange={(e) => {
-                const assetIndex = universe ? getUniverseIndex(universe, closingAsset) : 0
-                const szDecimals = universe ? universe[assetIndex].szDecimals : 8
+                if (!perpsMeta) return
+                const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
+                const szDecimals = perpsMeta.universe[assetIndex].szDecimals
                 setSize(trimDecimals(e.target.value, szDecimals))
                 setLastChanged('size')
               }}

@@ -11,8 +11,6 @@ import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { getUniverseIndex } from '@/utils/utils'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Toggle } from '@/components/ui/toggle'
@@ -20,6 +18,7 @@ import { CheckSquare, ChevronDown, InfoIcon, Square } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import OrderButton from './components/OrderButton'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -36,13 +35,12 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { clearingHouseState } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState, perpsMeta } = useHyperliquid()
 
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 
   useEffect(() => {
-    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
   }, [clearingHouseState])
 
   const liquidationPrice = () => {
@@ -50,8 +48,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    const maxLeverage = universe[assetIndex]?.maxLeverage || 1
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({
       entryPrice: Number(limitPrice),
@@ -211,22 +209,3 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   )
 }
 export default LimitOrder
-
-{
-  /* 
-        <div className='w-full h-fit flex flex-col items-center justify-start gap-3 p-2'>
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={limitPrice}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-
-
-      </div> */
-}

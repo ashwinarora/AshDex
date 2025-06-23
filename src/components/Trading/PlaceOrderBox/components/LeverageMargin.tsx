@@ -1,8 +1,8 @@
 'use client'
-import { getLeverageTicks, getUniverseIndex } from '@/utils/utils'
+import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
 import { useEffect, useMemo, useState } from 'react'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { Slider } from '@/components/ui/slider'
 import { cn, numberInputValidator } from '@/lib/utils'
@@ -16,8 +16,7 @@ interface LeverageMarginProps {
 }
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
-  const { data: universe } = usePerpsUniverse()
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquid()
 
   const [error, setError] = useState<{ isValid: boolean; error: string | null }>({
     isValid: true,
@@ -57,10 +56,10 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
   }, [])
 
   const maxLeverage = useMemo(() => {
-    if (!universe.length) return 1
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    return universe?.[assetIndex]?.maxLeverage || 1
-  }, [universe, selectedAsset])
+    if (!perpsMeta?.universe.length) return 1
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    return perpsMeta?.universe[assetIndex]?.maxLeverage || 1
+  }, [perpsMeta, selectedAsset])
 
   // useful when user changes the asset
   useEffect(() => {

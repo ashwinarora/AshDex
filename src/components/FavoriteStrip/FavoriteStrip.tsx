@@ -1,23 +1,18 @@
 'use client'
 
-import { useFavorites } from '@/context/FavoritesContext'
+import { useFavorites } from '@/store/FavoritesStore'
 import FavoriteItem from './FavoriteItem'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css'
 import useIsSpot from '@/hooks/useIsSpot'
 
 const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
-  const { favorites } = useFavorites()
   const isSpot = useIsSpot()
-  const type = isSpot ? 'spot' : 'perp'
-  if (favorites[type].length === 0) {
-    return null
-  }
+  const { favorites } = useFavorites(isSpot)
 
   return (
     <div className="relative flex bg-secondary px-1 pt-1 pb-2 rounded-md w-full h-fit overflow-hidden">
       <Splide
-        className=""
         aria-label="My Favorite Tokens"
         options={{
           drag: true,
@@ -28,9 +23,9 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           autoWidth: true
         }}
       >
-        {favorites[type].map((favorite, index) => (
-          <SplideSlide key={index}>
-            <FavoriteItem favorite={favorite} setSelectedAsset={setSelectedAsset} />
+        {Array.from(favorites).map((assetKey) => (
+          <SplideSlide key={assetKey}>
+            <FavoriteItem assetKey={assetKey} setSelectedAsset={setSelectedAsset} />
           </SplideSlide>
         ))}
       </Splide>

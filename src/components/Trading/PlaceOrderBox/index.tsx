@@ -26,8 +26,9 @@ export interface IPlaceOrderProps {
 }
 
 const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const [activeTab, setActiveTab] = useState<OrderTab>('LIMIT')
+  const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
   const isSpot = useIsSpot()
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'LIMIT':
@@ -35,7 +36,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} />
       case 'TWAP':
-        return <TWAP selectedAsset={selectedAsset} />
+        return <TWAP />
       case 'SCALE':
         return isSpot ? (
           <ScaleSpot selectedAsset={selectedAsset} />
@@ -50,13 +51,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         return null
     }
   }
+
   const availableOptions = isSpot
-    ? [
-        { value: 'TWAP', label: 'TWAP' },
-        { value: 'SCALE', label: 'Scale' }
-      ]
+    ? [{ value: 'SCALE', label: 'Scale' }]
     : [
-        { value: 'TWAP', label: 'TWAP' },
         { value: 'SCALE', label: 'Scale' },
         { value: 'STOP_LIMIT', label: 'Stop Limit' },
         { value: 'STOP_MARKET', label: 'Stop Market' }

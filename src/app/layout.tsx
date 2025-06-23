@@ -7,13 +7,12 @@ import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
 import { ToastProvider } from '../context/ToastContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
-import { FavoritesProvider } from '@/context/FavoritesContext'
 import './globals.css'
 import '@/styles/table.css'
 import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
-import { HyperLiquidInitializer } from './HyperliquidInitializer'
+import HyperLiquidInitializer from './HyperliquidInitializer'
 import FooterCompact from '@/components/FooterCompact'
 import SnackBar from '@/components/common/SnackBar'
 
@@ -56,13 +55,11 @@ export default function RootLayout({
               <EstablishConnectionProvider>
                 <UserProvider>
                   <ToastProvider>
-                    <FavoritesProvider>
-                      <SnackBar />
-                      <Header />
-                      <OnboardingModal />
-                      {children}
-                      <FooterCompact />
-                    </FavoritesProvider>
+                    <SnackBar />
+                    <Header />
+                    <OnboardingModal />
+                    {children}
+                    <FooterCompact />
                   </ToastProvider>
                 </UserProvider>
               </EstablishConnectionProvider>

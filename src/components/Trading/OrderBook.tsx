@@ -11,9 +11,11 @@ import Skeleton from '../common/Skeleton'
 import { SkeletonSize } from '../common/Skeleton'
 import { IconArrowDown, IconArrowUp, IconChevronDown, IconDotsVertical } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { getCoinName, generatePrecisionLabels } from '@/utils/utils'
+import { generatePrecisionLabels } from '@/utils/utils'
 import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 import ReactiveText from '../common/ReactiveText'
+import { EventL2BookParameters } from '@nktkas/hyperliquid'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -21,7 +23,7 @@ interface IOrderBookProps {
 }
 
 const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
-  const { sdk, allMids } = useHyperliquid()
+  const { sdkSubscriptionClient, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<WsBook>()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
@@ -39,17 +41,22 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const [showPriceInUSDSelector, setShowPriceInUSDSelector] = useState<boolean>(false)
+  const { spotKeyToName } = useSpotMeta()
 
   useEffect(() => {
-    if (!sdk || !selectedAsset) return
+    if (!sdkSubscriptionClient || !selectedAsset) return
+
+    let isMounted = true
+    let sub: { unsubscribe: () => void } | null = null
 
     const nSigFigs = Number(selectedPrecision)
     let mantissa = null
     const handler = (data: WsBook) => {
-      setL2Book(data)
-      setIsLoading(false)
+      if (isMounted) {
+        setL2Book(data)
+        setIsLoading(false)
+      }
     }
-
     setIsLoading(true)
     if (nSigFigs === 5) {
       mantissa = 5
@@ -58,17 +65,31 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     } else if (nSigFigs === 7) {
       mantissa = null
     }
-    sdk.subscriptions.subscribeToL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa, handler)
 
-    // ✅ Cleanup is guaranteed to run BEFORE next effect
+    // Use an async IIFE to use await inside useEffect
+    ;(async () => {
+      sub = await sdkSubscriptionClient.l2Book(
+        {
+          coin: selectedAsset,
+          nSigFigs: Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'],
+          mantissa: mantissa as EventL2BookParameters['mantissa']
+        },
+        handler
+      )
+    })()
+
+    // Cleanup
     return () => {
-      sdk.subscriptions.unsubscribeFromL2Book(selectedAsset, Math.min(nSigFigs, 5), mantissa)
+      isMounted = false
+      if (sub) {
+        sub.unsubscribe()
+      }
     }
-  }, [sdk, selectedAsset, selectedPrecision])
+  }, [sdkSubscriptionClient, selectedAsset, selectedPrecision])
 
   // Initialize precision label when component mounts or asset changes
   useEffect(() => {
-    const initialOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+    const initialOption = generatePrecisionLabels(Number(allMids[selectedAsset] || 0)).find(
       (option) => (option.value === null ? 'null' : option.value.toString()) === selectedPrecision
     )
     if (initialOption) {
@@ -143,13 +164,13 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     if (allMids[selectedAsset]) {
       const currentPrice = allMids[selectedAsset]
       if (prevPriceRef.current !== null) {
-        if (currentPrice > prevPriceRef.current) {
+        if (Number(currentPrice) > Number(prevPriceRef.current)) {
           setPriceChange('up')
-        } else if (currentPrice < prevPriceRef.current) {
+        } else if (Number(currentPrice) < Number(prevPriceRef.current)) {
           setPriceChange('down')
         }
       }
-      prevPriceRef.current = currentPrice
+      prevPriceRef.current = Number(currentPrice)
     }
   }, [allMids, selectedAsset])
 
@@ -263,7 +284,9 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 name="precision"
                 value={selectedPrecision}
                 onChange={(val) => {
-                  const selectedOption = generatePrecisionLabels(allMids[selectedAsset] || 0).find(
+                  const selectedOption = generatePrecisionLabels(
+                    Number(allMids[selectedAsset] || 0)
+                  ).find(
                     (option) => (option.value === null ? 'null' : option.value.toString()) === val
                   )
                   if (selectedOption) {
@@ -272,7 +295,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 }}
                 className="flex flex-col text-xs"
               >
-                {generatePrecisionLabels(allMids[selectedAsset] || 0).map((level) => (
+                {generatePrecisionLabels(Number(allMids[selectedAsset] || 0)).map((level) => (
                   <RadioGroupItem
                     key={level.value ?? 'null'}
                     value={(level.value ?? 'null').toString()}
@@ -290,7 +313,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
             className="flex items-center gap-1 hover:bg-white/10 p-0.5 px-2 rounded-md text-white/50 hover:text-white text-center align-middle cursor-pointer"
           >
             <p className="text-white text-xs">
-              {showPriceInUSD ? 'USD' : getCoinName(selectedAsset)}
+              {showPriceInUSD ? 'USD' : spotKeyToName.get(selectedAsset)}
             </p>
             <IconChevronDown className="w-4 h-4" />
           </div>
@@ -311,7 +334,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
                 className="flex flex-col gap-1 px-1 text-xs"
               >
                 <RadioGroupItem value="usd" label="USD" />
-                <RadioGroupItem value="coin" label={getCoinName(selectedAsset)} />
+                <RadioGroupItem value="coin" label={spotKeyToName.get(selectedAsset)} />
               </RadioGroup>
             </div>
           )}
@@ -322,10 +345,10 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
         <div className="flex justify-between my-1 px-3 py-1 w-full font-medium text-[#E8E0F1]">
           <p className="font-medium text-xs text-left">Price </p>
           <p className="font-medium text-xs">
-            Amount ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+            Amount ({showPriceInUSD ? 'USD' : spotKeyToName.get(selectedAsset)})
           </p>
           <p className="font-medium text-xs text-right">
-            Total ({showPriceInUSD ? 'USD' : getCoinName(selectedAsset)})
+            Total ({showPriceInUSD ? 'USD' : spotKeyToName.get(selectedAsset)})
           </p>
         </div>
       )}
@@ -410,7 +433,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
               <p className="text-right">
                 {isNaN(spread) || !allMids[selectedAsset]
                   ? '-'
-                  : ((spread / allMids[selectedAsset]) * 100).toFixed(3)}
+                  : ((Number(spread) / Number(allMids[selectedAsset])) * 100).toFixed(3)}
                 %
               </p>
             </div>

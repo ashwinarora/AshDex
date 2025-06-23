@@ -1,95 +1,62 @@
 'use client'
 
+import useIsSpot from '@/hooks/useIsSpot'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useMemo } from 'react'
+
 interface FavoriteItemProps {
-  favorite?: {
-    name: string
-    value: string
-    index: string
-    price?: string | number
-    change24h?: string | number
-  }
+  assetKey: string
   setSelectedAsset: (asset: string) => void
 }
 
-const FavoriteItem = ({ favorite, setSelectedAsset }: FavoriteItemProps) => {
-  // If favorite is undefined, don't continue
-  if (!favorite) {
-    return null
-  }
+const FavoriteItem = ({ assetKey, setSelectedAsset }: FavoriteItemProps) => {
+  const isSpot = useIsSpot()
+  const { spotAssetContext, perpAssetContext, perpsMeta } = useHyperliquid()
+  const { spotKeyToName } = useSpotMeta()
 
-  // Extract just the percentage part from the change24h string
-  const getPercentageOnly = (change: string | number | undefined): string => {
-    if (!change) return '-/-'
-
-    if (typeof change === 'string') {
-      // Look for percentage in parentheses like "(+6.69%)"
-      const percentMatch = change.match(/\(([+-]?\d+\.?\d*%)\)/)
-      if (percentMatch && percentMatch[1]) {
-        return percentMatch[1] // Return just the percentage part
+  const data = useMemo(() => {
+    if (isSpot) {
+      const asset = spotAssetContext.find((asset) => asset.coin === assetKey)
+      const change =
+        ((Number(asset?.markPx) - Number(asset?.prevDayPx)) / Number(asset?.prevDayPx)) * 100
+      const name = spotKeyToName.get(assetKey)
+      return {
+        name,
+        price: asset?.markPx,
+        change24h: isNaN(change) ? '-' : change.toFixed(2).concat('%'),
+        isPositive: change >= 0,
+        isPrice: true
       }
-
-      // If no parentheses but contains % sign, return as is
-      if (change.includes('%')) {
-        return change
+    } else {
+      const index = perpsMeta?.universe.findIndex((asset) => asset.name === assetKey)
+      const asset = perpAssetContext[index!]
+      const change =
+        ((Number(asset?.markPx) - Number(asset?.prevDayPx)) / Number(asset?.prevDayPx)) * 100
+      return {
+        name: assetKey,
+        price: asset?.markPx,
+        change24h: isNaN(change) ? '-' : change.toFixed(2).concat('%'),
+        isPositive: change >= 0,
+        isPrice: false
       }
-
-      // Try to convert to number and format
-      const num = parseFloat(change)
-      if (!isNaN(num)) {
-        return `${num >= 0 ? '+' : ''}${num.toFixed(2)}%`
-      }
-    } else if (typeof change === 'number') {
-      // If it's already a number, format it
-      return `${change >= 0 ? '+' : ''}${change.toFixed(2)}%`
     }
-
-    return '-/-'
-  }
-
-  // Determine if change is positive based on the string format or number
-  const isPositiveChange =
-    typeof favorite.change24h === 'string'
-      ? favorite.change24h.includes('+')
-      : typeof favorite.change24h === 'number'
-        ? favorite.change24h >= 0
-        : false
-
-  const priceChangeClass = isPositiveChange
-    ? 'text-green' // green for positive
-    : 'text-red' // red for negative
-
-  // Get just the percentage part
-  const percentageOnly = getPercentageOnly(favorite.change24h)
+  }, [assetKey, isSpot, perpAssetContext, perpsMeta, spotAssetContext, spotKeyToName])
 
   return (
-    <div
-      onClick={() => setSelectedAsset(favorite.name)}
+    <button
+      onClick={() => setSelectedAsset(assetKey)}
       className="flex justify-center items-center gap-1 hover:bg-white/5 px-3 py-1 h-full cursor-pointer"
     >
-      {/* <Image
-        src={starticon}
-        alt="staricon"
-        style={{ width: 20, height: 'auto' }}
-        className="flex-shrink-0 my-auto w-4 h-4"
-      /> */}
-      <span className="my-auto font-medium text-[#E8E0F1] text-sm">{favorite.name}</span>
+      <span className="my-auto font-medium text-[#E8E0F1] text-sm">{data.name}</span>
 
-      <div className={`text-[12px] ${priceChangeClass} my-auto flex items-center`}>
-        {/* {isPositiveChange ? (
-          <IconTriangleFilled size={12} className="mr-1" />
-        ) : (
-          <IconTriangleInvertedFilled size={12} className="mr-1" />
-        )} */}
-        {percentageOnly}
+      <div
+        className={`text-[12px] ${data.isPositive ? 'text-green' : 'text-red'} my-auto flex items-center`}
+      >
+        {data.change24h}
       </div>
-      <span className="my-auto text-[12px] text-gray-400">
-        {favorite.price
-          ? typeof favorite.price === 'string'
-            ? favorite.price
-            : `$${favorite.price}`
-          : '-/-'}
-      </span>
-    </div>
+      <span className="my-auto text-[12px] text-gray-400">{data.price}</span>
+    </button>
   )
 }
 

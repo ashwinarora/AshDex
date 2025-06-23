@@ -1,8 +1,8 @@
 'use client'
 
-import { getCoinName, getUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import {
   DropdownMenu,
@@ -43,26 +43,25 @@ const AmountInput = ({
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
-  const { data: universe } = usePerpsUniverse()
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquid()
 
   const szDecimals = useMemo(() => {
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     if (assetIndex === -1) return 0
-    return universe[assetIndex].szDecimals || 0
-  }, [universe, selectedAsset])
+    return perpsMeta?.universe[assetIndex].szDecimals || 0
+  }, [perpsMeta, selectedAsset])
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return clearingHouseState.withdrawable * leverage
+    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
     if (!existingPosition) return 0
-    if (existingPosition.position.szi > 0 && isBuy) return 0
-    if (existingPosition.position.szi < 0 && !isBuy) return 0
-    const priceQuotient = parseFloat(limitPrice) / existingPosition.position.entryPx
-    const maxAllowedUsd = existingPosition.position.positionValue * priceQuotient
+    if (Number(existingPosition.position.szi) > 0 && isBuy) return 0
+    if (Number(existingPosition.position.szi) < 0 && !isBuy) return 0
+    const priceQuotient = parseFloat(limitPrice) / Number(existingPosition.position.entryPx)
+    const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
 
@@ -148,7 +147,7 @@ const AmountInput = ({
           Max ={' '}
           {isInputUsd
             ? `${maxAllowedUsd.toFixed(2)} USD`
-            : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${getCoinName(selectedAsset)}`}
+            : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${selectedAsset}`}
         </label>
       </div>
       <div className="flex items-center gap-2">
@@ -169,9 +168,7 @@ const AmountInput = ({
               className="text-xs w-16 flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
-              <p className="text-xs flex-1 w-full">
-                {isInputUsd ? 'USD' : getCoinName(selectedAsset)}
-              </p>
+              <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAsset}</p>
               <ChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -180,7 +177,7 @@ const AmountInput = ({
               <p className="text-xs w-10 text-center">USD</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-              <p className="text-xs w-10 text-center">{getCoinName(selectedAsset)}</p>
+              <p className="text-xs w-10 text-center">{selectedAsset}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

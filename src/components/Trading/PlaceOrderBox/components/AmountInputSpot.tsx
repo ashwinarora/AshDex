@@ -1,5 +1,4 @@
 'use client'
-import { getCoinName } from '@/utils/utils'
 import { useMemo, useState } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -37,20 +36,21 @@ const AmountInputSpot = ({
   isBuy
 }: AmountInputSpotProps) => {
   const { spotState } = useHyperliquid()
-  const { data: spotMeta } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
   const szDecimals = useMemo(() => {
-    const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
     return tokenData?.szDecimals || 0
   }, [selectedAsset, spotMeta])
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
-    return isBuy
-      ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    const max = isBuy
+      ? (spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState?.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    return Number(max)
   }, [spotState, selectedAsset, isBuy])
 
   const updateFromAssetAmount = (input: string) => {
@@ -133,7 +133,8 @@ const AmountInputSpot = ({
       <div className="flex items-center justify-between gap-2">
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Amount</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
-          Available to Trade = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
+          Available to Trade = {maxAllowed.toFixed(2)}{' '}
+          {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
         </label>
       </div>
       <div className="flex items-center gap-2">
@@ -156,7 +157,7 @@ const AmountInputSpot = ({
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">
-                {isInputUsd ? 'USD' : getCoinName(selectedAsset).split('-')[0]}
+                {isInputUsd ? 'USD' : spotKeyToName.get(selectedAsset)}
               </p>
               <ChevronDown className="size-3" />
             </Button>
@@ -166,7 +167,7 @@ const AmountInputSpot = ({
               <p className="text-xs w-10 text-center">USD</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-              <p className="text-xs w-10 text-center">{getCoinName(selectedAsset).split('-')[0]}</p>
+              <p className="text-xs w-10 text-center">{spotKeyToName.get(selectedAsset)}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

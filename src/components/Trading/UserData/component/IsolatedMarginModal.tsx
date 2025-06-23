@@ -1,20 +1,21 @@
 import React, { useState } from 'react'
 import SmallModal from '../../../common/SmallModal'
-import { IPositionData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { toast } from 'react-toastify'
+import { AssetPosition } from '@nktkas/hyperliquid'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
-  asset: IPositionData
+  asset: AssetPosition['position']
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquid()
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
-  const { sdk } = useHyperliquid()
+  const { sdkExchangeClient } = useHyperliquid()
 
   const marginAvailable = clearingHouseState?.withdrawable || 0
 
@@ -31,11 +32,11 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
           <div className="flex justify-between items-center text-sm">
             <span className="text-[#8B8BA0]">Current margin for {asset.coin}-USD</span>
             <span className="font-medium text-white">
-              {asset.marginUsed.toLocaleString(undefined, {
+              {Number(asset.marginUsed).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}{' '}
-              USD
+              USD USD
             </span>
           </div>
           <div className="flex justify-between items-center text-sm">
@@ -81,16 +82,23 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         <button
           className="bg-[#7D67FF] hover:bg-[#6B57E6] py-3 rounded-lg w-full font-semibold text-white text-lg transition"
           onClick={async () => {
-            const isBuy = asset.szi > 0
+            const isBuy = Number(asset.szi) > 0
             const toastId = toast.loading('Updating margin...')
             const realAmount = Number(amount) * 10 ** 6
             try {
-              if (!sdk) return
-              const res = await sdk.exchange.updateIsolatedMargin(
-                asset.coin,
-                isBuy,
-                action === 'Add' ? realAmount : -realAmount
-              )
+              if (!sdkExchangeClient) return
+              if (!perpsMeta) return
+              const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
+              const res = await sdkExchangeClient.updateIsolatedMargin({
+                asset: assetIndex,
+                isBuy: isBuy,
+                ntli: action === 'Add' ? realAmount : -realAmount
+              })
+              // const res = await sdkExchangeClient.updateIsolatedMargin(
+              //   asset.coin,
+              //   isBuy,
+              //   action === 'Add' ? realAmount : -realAmount
+              // )
               console.log(res)
               toast.update(toastId, {
                 render: '✅ Margin updated successfully',

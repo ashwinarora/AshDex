@@ -5,11 +5,11 @@ import { useInitHyperliquid } from '@/store/HyperliquidStore'
 import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
 
-export const HyperLiquidInitializer = () => {
+const HyperLiquidInitializer = () => {
   const { address } = useAccount()
   const {
     initSdk,
-    sdk,
+    sdkSubscriptionClient,
     subscribeToAllMids,
     unsubscribeFromAllMids,
     subscribeWebData2,
@@ -22,28 +22,30 @@ export const HyperLiquidInitializer = () => {
   }, [address, initSdk])
 
   useEffect(() => {
-    if (!sdk) return
+    if (!sdkSubscriptionClient) return
 
     subscribeToAllMids()
     return () => {
       unsubscribeFromAllMids()
     }
-  }, [sdk, subscribeToAllMids, unsubscribeFromAllMids])
+  }, [sdkSubscriptionClient, subscribeToAllMids, unsubscribeFromAllMids])
 
   useEffect(() => {
-    if (!sdk) return
+    if (!sdkSubscriptionClient) return
     subscribeWebData2(address ?? zeroAddress)
     return () => {
       unsubscribeWebData2(address ?? zeroAddress)
     }
-  }, [sdk, address, subscribeWebData2, unsubscribeWebData2])
+  }, [sdkSubscriptionClient, address, subscribeWebData2, unsubscribeWebData2])
 
   useEffect(() => {
-    if (!sdk) return
+    if (!sdkSubscriptionClient) return
 
     const intervalId = setInterval(checkWebSocketStatus, 5000)
     return () => clearInterval(intervalId)
-  }, [sdk, checkWebSocketStatus])
+  }, [sdkSubscriptionClient, checkWebSocketStatus])
 
   return null
 }
+
+export default HyperLiquidInitializer

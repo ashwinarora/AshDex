@@ -3,8 +3,8 @@ import { MAX_DECIMALS_SPOT } from '@/utils/constants'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { getUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
+
+import { getPerpsUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { useMemo, useEffect, useState } from 'react'
 import { MAX_SIG_FIGS } from '@/utils/constants'
 import { IconRefresh } from '@tabler/icons-react'
@@ -31,8 +31,7 @@ const SetPrice = ({
 }: ISetLastPriceProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
-  const { data: universe } = usePerpsUniverse()
-  const { allMids } = useHyperliquid()
+  const { allMids, perpsMeta } = useHyperliquid()
   const [priceInitialized, setPriceInitialized] = useState(false)
 
   useEffect(() => {
@@ -49,14 +48,14 @@ const SetPrice = ({
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
-      const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+      const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
       return tokenData?.szDecimals || 0
     } else {
-      const assetIndex = getUniverseIndex(universe, selectedAsset)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
       if (assetIndex === -1) return 0
-      return universe[assetIndex].szDecimals || 0
+      return perpsMeta?.universe[assetIndex].szDecimals || 0
     }
-  }, [universe, selectedAsset, isSpot, spotMeta])
+  }, [perpsMeta, selectedAsset, isSpot, spotMeta])
 
   const handleLimitPriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value
