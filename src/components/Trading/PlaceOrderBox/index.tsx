@@ -62,10 +62,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full overflow-y-auto no-scrollbar items-center justify-start">
-      <div className="w-full h-fit flex items-center justify-start">
+      <div className="w-full h-fit px-2 pt-2 flex items-center justify-start">
         <ToggleGroup
           type="single"
-          className="w-2/3"
+          className="w-2/3 bg-white/5 rounded-l-md rounded-r-none"
           value={activeTab}
           onValueChange={(value) => {
             if (value === '') {
@@ -74,7 +74,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setActiveTab(value as OrderTab)
           }}
         >
-          <ToggleGroupItem className="w-full rounded-tl-md" value="LIMIT">
+          <ToggleGroupItem className="w-full rounded-l-md" value="LIMIT">
             Limit
           </ToggleGroupItem>
           <ToggleGroupItem className="w-full" value="MARKET">
@@ -85,10 +85,10 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <DropdownMenuTrigger asChild>
             <div
               className={cn(
-                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-full rounded-tr-md flex items-center gap-2 justify-center text-sm',
+                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-full rounded-r-md flex items-center gap-2 justify-center text-sm',
                 availableOptions.find((option) => option.value === activeTab)
-                  ? 'bg-accent'
-                  : 'bg-transparent'
+                  ? 'bg-accent text-accent-foreground'
+                  : 'bg-white/5 text-white/50'
               )}
             >
               {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}

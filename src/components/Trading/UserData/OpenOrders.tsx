@@ -9,7 +9,6 @@ import {
   getSortedRowModel,
   useReactTable,
   SortingState,
-  Header
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
@@ -17,11 +16,13 @@ import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconChevronDown, IconChevronUp, IconSelector, IconTrash } from '@tabler/icons-react'
+import { IconArrowsMoveVertical, IconArrowMoveDown, IconArrowMoveUp, IconTrash } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 type ColumnType = {
   key: string
@@ -36,29 +37,29 @@ type RenderRowProps = {
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
-const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
-  const canSort = header.column.getCanSort()
-  const sortDirection = header.column.getIsSorted()
+// const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
+//   const canSort = header.column.getCanSort()
+//   const sortDirection = header.column.getIsSorted()
 
-  return (
-    <div className="flex items-center text-white/50">
-      {header.isPlaceholder
-        ? null
-        : flexRender(header.column.columnDef.header, header.getContext())}
-      {canSort && (
-        <span className="inline-block">
-          {sortDirection === 'asc' ? (
-            <IconChevronDown className="w-4 h-4" />
-          ) : sortDirection === 'desc' ? (
-            <IconChevronUp className="w-4 h-4" />
-          ) : (
-            <IconSelector className="w-4 h-4" />
-          )}
-        </span>
-      )}
-    </div>
-  )
-}
+//   return (
+//     <div className="flex items-center text-white/50">
+//       {header.isPlaceholder
+//         ? null
+//         : flexRender(header.column.columnDef.header, header.getContext())}
+//       {canSort && (
+//         <span className="inline-block">
+//           {sortDirection === 'asc' ? (
+//             <IconChevronDown className="w-4 h-4" />
+//           ) : sortDirection === 'desc' ? (
+//             <IconChevronUp className="w-4 h-4" />
+//           ) : (
+//             <IconSelector className="w-4 h-4" />
+//           )}
+//         </span>
+//       )}
+//     </div>
+//   )
+// }
 
 const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) => {
   return (
@@ -85,14 +86,13 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) =>
                 <span
                   className={`
                     flex px-1.5 py-1 w-fit rounded-lg font-medium items-center gap-x-2
-                    ${
-                      isSide
-                        ? sideValue === 'buy'
-                          ? 'text-green'
-                          : sideValue === 'sell'
-                            ? 'text-red'
-                            : ''
-                        : ''
+                    ${isSide
+                      ? sideValue === 'buy'
+                        ? 'text-green'
+                        : sideValue === 'sell'
+                          ? 'text-red'
+                          : ''
+                      : ''
                     }
                   `}
                 >
@@ -140,8 +140,8 @@ const OpenOrders = () => {
               if (!sdkExchangeClient) return
               const assetIndex = isSpot
                 ? Number(
-                    spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
-                  ) + SPOT_DELTA
+                  spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
+                ) + SPOT_DELTA
                 : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
               if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
               await sdkExchangeClient.cancel({
@@ -227,7 +227,7 @@ const OpenOrders = () => {
                 .map((order) => {
                   const assetIndex = isSpot
                     ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                      SPOT_DELTA
+                    SPOT_DELTA
                     : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
                   if (!assetIndex) return
                   return {
@@ -410,44 +410,49 @@ const OpenOrders = () => {
   }
 
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white border-collapse">
-        <thead>
+    <div className='w-full h-full flex flex-col gap-2'>
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
-                  onClick={
-                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
-                  }
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full hover:text-accent-foreground',
+                    header.id === 'timestamp' ? 'justify-start' : header.id === 'actions' ? 'justify-center' : 'justify-end',
+                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                  )}
                 >
-                  <SortableHeader header={header} />
-                </th>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
+                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                    </>
+                  )}
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody className="divide-y divide-transparent">
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              /* step 2: real border instead of ::before */
-              className={
-                ` border-l-4   border-b-6 border-b-secondary  ` +
-                (row.original.side === 'B' ? 'border-l-green' : 'border-l-red')
-              }
-            >
+            <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-2 text-white text-sm align-middle">
+                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table >
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col.id as string,

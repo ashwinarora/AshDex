@@ -15,8 +15,10 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { hyperliquidAxios } from '@/config/axios'
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 type ColumnType = {
   key: string
@@ -124,28 +126,28 @@ const TradeHistoryTable: React.FC = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const getCellClass = (columnId: string, cellValue: unknown): string => {
-    let customClass = 'opacity-80 font-normal text-sm'
-    if (columnId === 'crossed') {
-      customClass = 'rounded-lg px-2 py-0.5 text-xs font-medium w-fit inline-block'
-      if (cellValue === true) {
-        customClass += ' bg-green/10 text-green'
-      } else if (cellValue === false) {
-        customClass += ' bg-red/10 text-red'
-      }
-    } else if (columnId === 'side') {
-      customClass += ' text-sm font-normal'
-      const value = (cellValue as string)?.toLowerCase()
-      if (value === 'buy') {
-        customClass += ' text-green'
-      } else if (value === 'sell') {
-        customClass += ' text-red'
-      }
-    } else {
-      customClass += ' text-[#FFFFFF]'
-    }
-    return customClass
-  }
+  // const getCellClass = (columnId: string, cellValue: unknown): string => {
+  //   let customClass = 'opacity-80 font-normal text-sm'
+  //   if (columnId === 'crossed') {
+  //     customClass = 'rounded-lg px-2 py-0.5 text-xs font-medium w-fit inline-block'
+  //     if (cellValue === true) {
+  //       customClass += ' bg-green/10 text-green'
+  //     } else if (cellValue === false) {
+  //       customClass += ' bg-red/10 text-red'
+  //     }
+  //   } else if (columnId === 'side') {
+  //     customClass += ' text-sm font-normal'
+  //     const value = (cellValue as string)?.toLowerCase()
+  //     if (value === 'buy') {
+  //       customClass += ' text-green'
+  //     } else if (value === 'sell') {
+  //       customClass += ' text-red'
+  //     }
+  //   } else {
+  //     customClass += ' text-[#FFFFFF]'
+  //   }
+  //   return customClass
+  // }
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     const formatValue = (key: string, value: unknown) => {
@@ -161,13 +163,12 @@ const TradeHistoryTable: React.FC = () => {
             <span className="text-[#8B8BA0]">{col?.label}</span>
             <span className={col?.key === 'contract' ? 'truncate' : ''}>
               <span
-                className={`flex items-center gap-x-2 ${
-                  col?.key === 'crossed'
+                className={`flex items-center gap-x-2 ${col?.key === 'crossed'
                     ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
                     : col?.key === 'side'
                       ? 'text-red'
                       : ''
-                }`}
+                  }`}
               >
                 {String(formatValue(col?.key, item[col?.key]))}
               </span>
@@ -188,59 +189,50 @@ const TradeHistoryTable: React.FC = () => {
   }
 
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white border-collapse">
-        <thead>
+    <div className='w-full h-full flex flex-col gap-2'>
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
-                  onClick={
-                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
-                  }
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full',
+                    header.id === 'timestamp' ? 'justify-start' : 'justify-end',
+                    header.column.columnDef.enableSorting ? 'hover:text-accent-foreground' : 'hover:text-white/50',
+                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                  )}
                 >
-                  <div className="flex items-center text-white/50">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getCanSort() && (
-                      <span className="inline-block">
-                        {header.column.getIsSorted() === 'asc' ? (
-                          <IconChevronDown className="w-4 h-4" />
-                        ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconChevronUp className="w-4 h-4" />
-                        ) : (
-                          <IconSelector className="w-4 h-4" />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </th>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
+                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                    </>
+                  )}
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody className="divide-y divide-transparent">
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => {
-                const columnId = cell.column.id
-                const cellValue = cell.getValue()
-                const customClass = getCellClass(columnId, cellValue)
-                return (
-                  <td key={cell.id} className="p-2 py-1 text-white text-sm align-middle">
-                    <div className={customClass}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </div>
-                  </td>
-                )
-              })}
-            </tr>
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table >
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col?.id as string,

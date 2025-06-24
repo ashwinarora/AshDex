@@ -9,7 +9,6 @@ import {
   useReactTable,
   getSortedRowModel,
   SortingState,
-  Header
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
@@ -23,11 +22,13 @@ import MarkPxDisplay from './component/MarkPxDisplay'
 import TPSL_Cell from './component/TPSL_Cell'
 import TPSL_Modal from './component/TPSL_Modal'
 import LeverageModal from './component/LeverageModal'
-import { IconPencil, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
+import { IconPencil, IconArrowMoveUp, IconArrowsMoveVertical, IconArrowMoveDown } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
 import ReactiveText from '@/components/common/ReactiveText'
 import { AssetPosition } from '@nktkas/hyperliquid'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 type ColumnType = {
   key: string
@@ -134,33 +135,33 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
   )
 }
 
-const SortableHeader = ({
-  header
-}: {
-  header: Header<AssetPosition['position'] & { meta?: { label: string } }, unknown>
-}) => {
-  const canSort = header.column.getCanSort()
-  const sortDirection = header.column.getIsSorted()
+// const SortableHeader = ({
+//   header
+// }: {
+//   header: Header<AssetPosition['position'] & { meta?: { label: string } }, unknown>
+// }) => {
+//   const canSort = header.column.getCanSort()
+//   const sortDirection = header.column.getIsSorted()
 
-  return (
-    <div className="flex items-center text-white/50">
-      {header.isPlaceholder
-        ? null
-        : flexRender(header.column.columnDef.header, header.getContext())}
-      {canSort && (
-        <span className="inline-block">
-          {sortDirection === 'asc' ? (
-            <IconChevronDown className="w-4 h-4" />
-          ) : sortDirection === 'desc' ? (
-            <IconChevronUp className="w-4 h-4" />
-          ) : (
-            <IconSelector className="w-4 h-4" />
-          )}
-        </span>
-      )}
-    </div>
-  )
-}
+//   return (
+//     <div className="flex items-center text-white/50">
+//       {header.isPlaceholder
+//         ? null
+//         : flexRender(header.column.columnDef.header, header.getContext())}
+//       {canSort && (
+//         <span className="inline-block">
+//           {sortDirection === 'asc' ? (
+//             <IconChevronDown className="w-4 h-4" />
+//           ) : sortDirection === 'desc' ? (
+//             <IconChevronUp className="w-4 h-4" />
+//           ) : (
+//             <IconSelector className="w-4 h-4" />
+//           )}
+//         </span>
+//       )}
+//     </div>
+//   )
+// }
 
 const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const { isConnected } = useAccount()
@@ -446,40 +447,50 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   }
 
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white">
-        <thead>
+    <div className='w-full h-full flex flex-col gap-2'>
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
-                  onClick={
-                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
-                  }
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full',
+                    header.id === 'coin' ? 'justify-start' : header.id === 'tp_sl' ? 'justify-end' : 'justify-center',
+                    header.column.columnDef.enableSorting ? 'hover:text-accent-foreground' : 'hover:text-white/50',
+                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                  )}
                 >
-                  <SortableHeader header={header} />
-                </th>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
+                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                    </>
+                  )}
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody>
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              className={`border-white/10 border-l-5 py-1 ${Number(row.original.szi) < 0 ? 'border-l-red' : 'border-l-green'}`}
-            >
+            <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-2 py-1 text-white text-sm align-middle">
+                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table >
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col.id as string,
@@ -536,6 +547,96 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
         <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
       )}
     </div>
+    // <div className="px-3 w-full overflow-x-auto">
+    //   <table className="hidden lg:table w-full text-white">
+    //     <thead>
+    //       {table.getHeaderGroups().map((headerGroup) => (
+    //         <tr key={headerGroup.id}>
+    //           {headerGroup.headers.map((header) => (
+    //             <th
+    //               key={header.id}
+    //               className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
+    //               onClick={
+    //                 header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
+    //               }
+    //             >
+    //               <SortableHeader header={header} />
+    //             </th>
+    //           ))}
+    //         </tr>
+    //       ))}
+    //     </thead>
+    //     <tbody>
+    //       {table.getRowModel().rows.map((row) => (
+    //         <tr
+    //           key={row.id}
+    //           className={`border-white/10 border-l-5 py-1 ${Number(row.original.szi) < 0 ? 'border-l-red' : 'border-l-green'}`}
+    //         >
+    //           {row.getVisibleCells().map((cell) => (
+    //             <td key={cell.id} className="px-2 py-1 text-white text-sm align-middle">
+    //               {flexRender(cell.column.columnDef.cell, cell.getContext())}
+    //             </td>
+    //           ))}
+    //         </tr>
+    //       ))}
+    //     </tbody>
+    //   </table>
+    //   <ResponsiveDataCard
+    //     columns={columns.map((col) => ({
+    //       key: col.id as string,
+    //       label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+    //     }))}
+    //     data={table.getRowModel().rows.map((row) => row.original)}
+    //     renderRow={(item) => (
+    //       <RenderRowData
+    //         item={item}
+    //         columns={columns.map((col) => ({
+    //           key: col.id as string,
+    //           label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+    //         }))}
+    //       />
+    //     )}
+    //     positionTab={true}
+    //   />
+    //   {isLimitCloseModalOpen && closingAsset && (
+    //     <LimitCloseModal
+    //       isOpen={isLimitCloseModalOpen}
+    //       onClose={() => setIsLimitCloseModalOpen(false)}
+    //       closingAsset={closingAsset}
+    //     />
+    //   )}
+    //   {isMarketCloseModalOpen && closingAsset && (
+    //     <MarketCloseModal
+    //       isOpen={isMarketCloseModalOpen}
+    //       onClose={() => setIsMarketCloseModalOpen(false)}
+    //       closingAsset={closingAsset}
+    //     />
+    //   )}
+    //   {isTPSLModalOpen && tpslAsset && (
+    //     <TPSL_Modal
+    //       isOpen={isTPSLModalOpen}
+    //       onClose={() => setIsTPSLModalOpen(false)}
+    //       tpslAsset={tpslAsset}
+    //     />
+    //   )}
+    //   {isLeverageModalOpen && leverageAsset && (
+    //     <LeverageModal
+    //       isOpen={isLeverageModalOpen}
+    //       onClose={() => setIsLeverageModalOpen(false)}
+    //       asset={leverageAsset}
+    //     />
+    //   )}
+    //   {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+    //     <IsolatedMarginModal
+    //       isOpen={isIsolatedMarginModalOpen}
+    //       onClose={() => setIsIsolatedMarginModalOpen(false)}
+    //       asset={isolatedMarginAsset}
+    //     />
+    //   )}
+    //   {isCloseAllModalOpen && (
+    //     <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
+    //   )}
+    // </div>
   )
 }
 

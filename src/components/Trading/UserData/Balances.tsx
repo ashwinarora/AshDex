@@ -14,6 +14,9 @@ import {
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import SendModal from './component/SendModal'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
+import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 
 type ColumnType = {
   key: string
@@ -185,46 +188,52 @@ const Balances = () => {
     return <WalletNotConnected />
   }
 
+
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white">
-        <thead>
+    <div className='w-full h-full flex flex-col gap-2'>
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-7 pt-3 pb-1 font-normal text-[#8B8BA0] text-sm text-left"
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full',
+                    header.id === 'coin' ? 'justify-start' : 'justify-end',
+                    header.column.columnDef.enableSorting ? 'hover:text-accent-foreground' : 'hover:text-white/50',
+                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                  )}
                 >
                   {header.isPlaceholder ? null : (
-                    <button
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="flex justify-start items-center gap-1"
-                    >
+                    <>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: '▲',
-                        desc: '▼'
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </button>
+                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
+                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                    </>
                   )}
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody>
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-white/10 border-b">
+            <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="opacity-80 px-7 py-4 font-medium text-white text-sm">
+                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table >
       <ResponsiveDataCard
         columns={tableColumns}
         data={tableData}

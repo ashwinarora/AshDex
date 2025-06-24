@@ -113,7 +113,7 @@ const Header: FC = () => {
   if (!isRendered) return null
 
   return (
-    <div className="top-0 z-50 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
+    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
       <div
         onClick={() => router.push('/')}
         className="flex items-center gap-2 pr-4 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
