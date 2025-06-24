@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { cn, getPerpsUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'

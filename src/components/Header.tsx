@@ -3,7 +3,7 @@ import { useState, FC, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
-import { cn, truncateAddress } from '@/utils/utils'
+import { truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
@@ -21,6 +21,7 @@ import {
 } from './ui/dropdown-menu'
 import { Button } from './ui/button'
 import { ChevronDownIcon, CopyIcon, LogOutIcon, SettingsIcon, WalletIcon } from 'lucide-react'
+import { cn } from '@/lib/utils'
 type MenuItem = {
   name: string
   path: string
@@ -112,7 +113,7 @@ const Header: FC = () => {
   if (!isRendered) return null
 
   return (
-    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
+    <div className="top-0 z-50 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
       <div
         onClick={() => router.push('/')}
         className="flex items-center gap-2 pr-4 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"

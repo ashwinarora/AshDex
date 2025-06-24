@@ -14,8 +14,8 @@ const MarginMode = ({ setIsCross, isCross }: MarginModeProps) => {
       <p className="text-xs font-medium text-white/50">Margin Mode</p>
       <ToggleGroup
         size={'sm'}
-        className="bg-white/5"
         type="single"
+        className='bg-white/5'
         value={isCross ? 'cross' : 'isolated'}
         onValueChange={(value) => value !== '' && setIsCross(value === 'cross')}
       >

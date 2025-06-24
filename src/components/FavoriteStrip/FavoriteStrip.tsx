@@ -5,6 +5,10 @@ import FavoriteItem from './FavoriteItem'
 import { Splide, SplideSlide } from '@splidejs/react-splide'
 import '@splidejs/react-splide/css'
 import useIsSpot from '@/hooks/useIsSpot'
+import { Toggle } from '../ui/toggle'
+import { Separator } from '../ui/separator'
+import { cn } from '@/lib/utils'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 
 const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const isSpot = useIsSpot()

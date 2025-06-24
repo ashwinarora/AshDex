@@ -8,8 +8,7 @@ import UserData from './UserData/UserData'
 import FavoriteStrip from '../FavoriteStrip/FavoriteStrip'
 import useIsSpot from '@/hooks/useIsSpot'
 import OverviewBox from './OverviewBox'
-import PerpsSelector from './Selector/PerpsSelector'
-import SpotSelector from './Selector/SpotSelector'
+import Selector from './Selector'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -19,13 +18,7 @@ const Trading = () => {
       <div className="flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden">
         <div className="col-span-10 h-full flex-1 basis-xl flex flex-col gap-1">
           <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-          <div className="relative flex justify-between items-center">
-            {isSpot ? (
-              <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            ) : (
-              <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            )}
-          </div>
+          <Selector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
         <div className="col-span-4 h-full flex-col basis-sm gap-2 bg-secondary rounded-md">
