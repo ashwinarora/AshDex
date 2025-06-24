@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react'
 import Image from 'next/image'
-import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
 import Filter1 from '../../assets/images/tabler-icon-layout-filled.svg'
 import Filter2 from '../../assets/images/tabler-icon-layout-filledAlt.svg'
 import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
@@ -14,7 +13,7 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { generatePrecisionLabels } from '@/utils/utils'
 import { RadioGroupItem, RadioGroup } from '../common/RadioGroup'
 import ReactiveText from '../common/ReactiveText'
-import { EventL2BookParameters } from '@nktkas/hyperliquid'
+import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface IOrderBookProps {
@@ -24,7 +23,7 @@ interface IOrderBookProps {
 
 const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquid()
-  const [l2Book, setL2Book] = useState<WsBook>()
+  const [l2Book, setL2Book] = useState<Book>()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -51,7 +50,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
 
     const nSigFigs = Number(selectedPrecision)
     let mantissa = null
-    const handler = (data: WsBook) => {
+    const handler = (data: Book) => {
       if (isMounted) {
         setL2Book(data)
         setIsLoading(false)
@@ -97,7 +96,7 @@ const OrderBook = ({ selectedAsset, layout = 'vertical' }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids])
 
-  const processOrders = (orders: WsLevel[]) => {
+  const processOrders = (orders: BookLevel[]) => {
     let runningTotal = 0
     return orders.map((order) => {
       runningTotal += Number(order.sz)
