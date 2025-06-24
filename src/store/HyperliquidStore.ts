@@ -4,7 +4,7 @@ import {
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
-import type { Hex, PrivateKeyAccount } from 'viem'
+import { zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
@@ -12,6 +12,7 @@ import { useShallow } from 'zustand/react/shallow'
 import * as hl from '@nktkas/hyperliquid'
 
 interface HyperliquidState {
+  userActiveAddress: Hex
   sdkTransport: hl.HttpTransport
   sdkSocketTransport: hl.WebSocketTransport
   sdkExchangeClient: hl.ExchangeClient | null
@@ -53,10 +54,12 @@ interface HyperliquidActions {
   unsubscribeFromCandle: (asset: string, interval: hl.EventCandleParameters['interval']) => void
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
+  updateUserActiveAddress: (address: Hex) => void
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
   {
+    userActiveAddress: zeroAddress,
     sdkTransport: new hl.HttpTransport({
       isTestnet: isTestnet
     }),
@@ -141,7 +144,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       subsManager.allMids.unsubscribe()
     },
     subscribeWebData2: async (address: Hex) => {
-      const { sdkSubscriptionClient } = get()
+      const { sdkSubscriptionClient, userActiveAddress } = get()
       if (!sdkSubscriptionClient) return
       const webData2Sub = await sdkSubscriptionClient.webData2(
         {
@@ -149,22 +152,28 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         },
         (data) => {
           // console.log('webdata2', data)
-          set({
-            clearingHouseState: data.clearinghouseState,
-            openOrders: data.openOrders,
-            perpsMeta: data.meta,
-            perpAssetContext: data.assetCtxs,
-            spotAssetContext: data.spotAssetCtxs.filter((ctx) => {
-              return Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
-            }),
-            spotState: data.spotState,
-            lastWebSocketUpdate: Date.now(),
-            isWebSocketConnected: true,
-            lastUpdates: {
-              ...get().lastUpdates,
-              webData2: Date.now()
-            }
-          })
+          if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
+            set({
+              clearingHouseState: data.clearinghouseState,
+              openOrders: data.openOrders,
+              perpsMeta: data.meta,
+              perpAssetContext: data.assetCtxs,
+              spotAssetContext: data.spotAssetCtxs.filter((ctx) => {
+                return Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
+              }),
+              spotState: data.spotState,
+              lastWebSocketUpdate: Date.now(),
+              isWebSocketConnected: true,
+              lastUpdates: {
+                ...get().lastUpdates,
+                webData2: Date.now()
+              }
+            })
+          } else {
+            // Useful to confirm unsub when address mismatch
+            console.log('WEBDATA2 ADDRESS MISMATCH')
+            webData2Sub.unsubscribe()
+          }
         }
       )
       set((state) => ({
@@ -267,6 +276,9 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           )
 
       return formatTimeSinceUpdate(timeSinceLastUpdate)
+    },
+    updateUserActiveAddress: (address: Hex) => {
+      set({ userActiveAddress: address })
     }
   })
 )
@@ -296,7 +308,8 @@ export const useInitHyperliquid = () => {
       subscribeToCandle: state.subscribeToCandle,
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,
-      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate
+      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
+      updateUserActiveAddress: state.updateUserActiveAddress
     }))
   )
 }
