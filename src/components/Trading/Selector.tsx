@@ -6,11 +6,7 @@ import { cn } from '@/lib/utils'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useFavorites } from '@/context/FavoritesContext'
 import Skeleton from '../common/Skeleton'
-import {
-  IconExternalLink,
-  IconStar,
-  IconStarFilled
-} from '@tabler/icons-react'
+import { IconExternalLink, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { SpotAssetCtx as WebDataSpotAssetCtx } from '@/utils/hyperliquid/webData2Types'
 import { MetaData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { AssetCtx } from '@/utils/hyperliquid/webData2Types'
@@ -20,7 +16,17 @@ import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../common/ReactiveText'
 import { Button } from '../ui/button'
-import { ArrowUpDownIcon, BadgePlusIcon, BrainCircuitIcon, ChevronDownIcon, Gamepad2Icon, HandCoinsIcon, ShieldCheckIcon, ShieldQuestionIcon, SmileIcon } from 'lucide-react'
+import {
+  ArrowUpDownIcon,
+  BadgePlusIcon,
+  BrainCircuitIcon,
+  ChevronDownIcon,
+  Gamepad2Icon,
+  HandCoinsIcon,
+  ShieldCheckIcon,
+  ShieldQuestionIcon,
+  SmileIcon
+} from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover'
 import { Input } from '../ui/input'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
@@ -45,8 +51,8 @@ const useCountdown = () => {
       const formattedTime = `00:${Math.floor((timeLeft % 1) * 60)
         .toString()
         .padStart(2, '0')}:${Math.floor((((timeLeft % 1) * 60) % 1) * 60)
-          .toString()
-          .padStart(2, '0')}`
+        .toString()
+        .padStart(2, '0')}`
       setTimeLeft(formattedTime)
     }
 
@@ -108,7 +114,14 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     'PEPE-PERP': 'meme'
     // Add all your assets here with the appropriate categories
   }
-  const tabs = [{ label: 'All' }, { label: 'New', icon: <BadgePlusIcon className='size-3' /> }, { label: 'AI', icon: <BrainCircuitIcon className='size-3' /> }, { label: 'Defi', icon: <HandCoinsIcon className='size-3' /> }, { label: 'Gaming', icon: <Gamepad2Icon className='size-3' /> }, { label: 'Meme', icon: <SmileIcon className='size-3' /> }]
+  const tabs = [
+    { label: 'All' },
+    { label: 'New', icon: <BadgePlusIcon className="size-3" /> },
+    { label: 'AI', icon: <BrainCircuitIcon className="size-3" /> },
+    { label: 'Defi', icon: <HandCoinsIcon className="size-3" /> },
+    { label: 'Gaming', icon: <Gamepad2Icon className="size-3" /> },
+    { label: 'Meme', icon: <SmileIcon className="size-3" /> }
+  ]
 
   const filteredAssets = useMemo(
     () =>
@@ -169,8 +182,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Open Interest',
         value:
           'openInterest' in selectedAssetContext &&
-            selectedAssetContext.openInterest &&
-            selectedAssetContext.oraclePx ? (
+          selectedAssetContext.openInterest &&
+          selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}
@@ -210,7 +223,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               precision={0}
               value={Number(
                 (selectedAssetContext as WebDataSpotAssetCtx).circulatingSupply *
-                selectedAssetContext.midPx
+                  selectedAssetContext.midPx
               )}
               type="currency"
             />
@@ -294,27 +307,35 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }
 
   return (
-    <div className='flex items-center justify-between p-2 h-14 bg-secondary rounded-md'>
-      <div className='flex items-center gap-2 w-full h-full'>
-        <Button onClick={handleToggleFavorite} variant='outline' size='icon' className='h-full aspect-square text-primary flex items-center justify-center cursor-pointer'>
+    <div className="flex items-center justify-between p-2 h-14 bg-secondary rounded-md">
+      <div className="flex items-center gap-2 w-full h-full">
+        <Button
+          onClick={handleToggleFavorite}
+          variant="outline"
+          size="icon"
+          className="h-full aspect-square text-primary flex items-center justify-center cursor-pointer"
+        >
           {isFavorite(selectedAsset, type) ? (
-            <IconStarFilled className='size-4 text-primary' />
+            <IconStarFilled className="size-4 text-primary" />
           ) : (
-            <IconStar className='size-4 text-white/50' />
+            <IconStar className="size-4 text-white/50" />
           )}
         </Button>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
-            <Button variant='outline' className='!h-fit !p-2 w-40 flex items-center justify-between gap-2'>
-              <h1 className='text-white text-sm font-semibold'>{selectedAsset}</h1>
-              <ChevronDownIcon className='size-4 text-white' />
+            <Button
+              variant="outline"
+              className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
+            >
+              <h1 className="text-white text-sm font-semibold">{selectedAsset}</h1>
+              <ChevronDownIcon className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align='start' className='w-3xl h-96 z-40 p-2 flex flex-col gap-2'>
+          <PopoverContent align="start" className="w-3xl h-96 z-40 p-2 flex flex-col gap-2">
             <div className="flex items-center w-full h-fit gap-2">
               <Input
                 type="text"
-                placeholder='Search for an asset'
+                placeholder="Search for an asset"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 focus:outline-none w-full text-left text-white text-sm"
@@ -322,7 +343,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <ToggleGroup
                 size={'sm'}
                 type="single"
-                className='bg-white/5'
+                className="bg-white/5"
                 value={isStrict ? 'Strict' : 'All'}
                 onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
               >
@@ -333,7 +354,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                     isStrict ? 'bg-green !text-green' : 'bg-transparent text-white/50'
                   )}
                 >
-                  <ShieldCheckIcon className='size-4' />
+                  <ShieldCheckIcon className="size-4" />
                   Verified
                 </ToggleGroupItem>
                 <ToggleGroupItem
@@ -343,7 +364,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                     !isStrict ? 'bg-red !text-red' : 'bg-transparent text-white/50'
                   )}
                 >
-                  <ShieldQuestionIcon className='size-4' />
+                  <ShieldQuestionIcon className="size-4" />
                   All
                 </ToggleGroupItem>
               </ToggleGroup>
@@ -360,10 +381,16 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               }}
             >
               {tabs.map((tab) => (
-                <ToggleGroupItem className={cn(
-                  'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                  selectedTab === tab.label ? 'bg-primary text-white' : 'bg-transparent text-white/50'
-                )} key={tab.label} value={tab.label}>
+                <ToggleGroupItem
+                  className={cn(
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    selectedTab === tab.label
+                      ? 'bg-primary text-white'
+                      : 'bg-transparent text-white/50'
+                  )}
+                  key={tab.label}
+                  value={tab.label}
+                >
                   {tab.icon}
                   {tab.label}
                 </ToggleGroupItem>
@@ -382,7 +409,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </PopoverContent>
         </Popover>
-        <Separator orientation='vertical' className='!h-full'/>
+        <Separator orientation="vertical" className="!h-full" />
         <div className="flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
@@ -476,26 +503,41 @@ const AssetTable = ({
   return (
     <Table>
       <TableHeader>
-        <TableRow className='hover:bg-transparent'>
-          <TableHead className='cursor-pointer hover:text-accent-foreground w-3/12' onClick={() => handleSort('market')}>
+        <TableRow className="hover:bg-transparent">
+          <TableHead
+            className="cursor-pointer hover:text-accent-foreground w-3/12"
+            onClick={() => handleSort('market')}
+          >
             Market
-            <ArrowUpDownIcon className='size-3' />
+            <ArrowUpDownIcon className="size-3" />
           </TableHead>
-          <TableHead className='cursor-pointer hover:text-accent-foreground w-2/12 justify-end' onClick={() => handleSort('price')}>
+          <TableHead
+            className="cursor-pointer hover:text-accent-foreground w-2/12 justify-end"
+            onClick={() => handleSort('price')}
+          >
             Price
-            <ArrowUpDownIcon className='size-3' />
+            <ArrowUpDownIcon className="size-3" />
           </TableHead>
-          <TableHead className='cursor-pointer hover:text-accent-foreground w-3/12 justify-end' onClick={() => handleSort('change')}>
+          <TableHead
+            className="cursor-pointer hover:text-accent-foreground w-3/12 justify-end"
+            onClick={() => handleSort('change')}
+          >
             24h Change
-            <ArrowUpDownIcon className='size-3' />
+            <ArrowUpDownIcon className="size-3" />
           </TableHead>
-          <TableHead className='cursor-pointer hover:text-accent-foreground w-2/12 justify-end' onClick={() => handleSort('volume')}>
+          <TableHead
+            className="cursor-pointer hover:text-accent-foreground w-2/12 justify-end"
+            onClick={() => handleSort('volume')}
+          >
             Volume
-            <ArrowUpDownIcon className='size-3' />
+            <ArrowUpDownIcon className="size-3" />
           </TableHead>
-          <TableHead className='cursor-pointer hover:text-accent-foreground w-2/12 justify-end' onClick={() => handleSort('marketCap')}>
+          <TableHead
+            className="cursor-pointer hover:text-accent-foreground w-2/12 justify-end"
+            onClick={() => handleSort('marketCap')}
+          >
             Market Cap
-            <ArrowUpDownIcon className='size-3' />
+            <ArrowUpDownIcon className="size-3" />
           </TableHead>
         </TableRow>
       </TableHeader>

@@ -23,7 +23,12 @@ interface AssetItemProps {
   setIsOpen: (open: boolean) => void
 }
 
-const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selectedAsset, setIsOpen }) => {
+const AssetItem: React.FC<AssetItemProps> = ({
+  assetKey,
+  setSelectedAsset,
+  selectedAsset,
+  setIsOpen
+}) => {
   const { perpAssetContext, spotAssetContext } = useHyperliquid()
   const { data: universe } = usePerpsUniverse()
   const { data: spotMeta } = useSpotMeta()
@@ -125,10 +130,15 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selec
   }, [selectedAssetContext])
 
   return (
-    <TableRow onClick={handleClick}
+    <TableRow
+      onClick={handleClick}
       key={assetKey}
-      className={cn("hover:bg-white/5 transition-colors duration-150 cursor-pointer", selectedAsset === assetKey && "bg-accent")}>
-      <TableCell className='flex items-center w-3/12 justify-start gap-2'>
+      className={cn(
+        'hover:bg-white/5 transition-colors duration-150 cursor-pointer',
+        selectedAsset === assetKey && 'bg-accent'
+      )}
+    >
+      <TableCell className="flex items-center w-3/12 justify-start gap-2">
         <button
           onClick={(e) => {
             e.stopPropagation()
@@ -163,10 +173,8 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selec
           </p>
         )}
       </TableCell>
-      <TableCell className='text-right w-2/12 justify-end'>
-        {formattedPrice}
-      </TableCell>
-      <TableCell className='text-right w-3/12 justify-end'>
+      <TableCell className="text-right w-2/12 justify-end">{formattedPrice}</TableCell>
+      <TableCell className="text-right w-3/12 justify-end">
         <div className="flex justify-end items-center">
           {priceChangeData.isPositive ? (
             <IconTriangleFilled className="size-2 mr-2 text-green" />
@@ -180,7 +188,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selec
                   precision={formattedPrice === '-' ? 2 : formattedPrice.split('.')[1]?.length || 2}
                   value={selectedAssetContext.markPx - selectedAssetContext.prevDayPx}
                   type="currency"
-                  className='text-xs'
+                  className="text-xs"
                   isStatic={true}
                 />
                 (
@@ -193,7 +201,7 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selec
                       100
                     }
                     type="percentage"
-                    className='text-xs'
+                    className="text-xs"
                     isStatic={true}
                   />
                 }
@@ -202,31 +210,35 @@ const AssetItem: React.FC<AssetItemProps> = ({ assetKey, setSelectedAsset, selec
             )}
         </div>
       </TableCell>
-      <TableCell className='text-right w-2/12 justify-end'>
-        <ReactiveText className='text-white/50 text-xs' value={Number(selectedAssetContext?.dayNtlVlm || 0)} type="currency" />{' '}
+      <TableCell className="text-right w-2/12 justify-end">
+        <ReactiveText
+          className="text-white/50 text-xs"
+          value={Number(selectedAssetContext?.dayNtlVlm || 0)}
+          type="currency"
+        />{' '}
       </TableCell>
-      <TableCell className='text-right w-2/12 justify-end'>
+      <TableCell className="text-right w-2/12 justify-end">
         {isSpot
           ? selectedAssetContext?.markPx &&
-          'circulatingSupply' in selectedAssetContext && (
-            <ReactiveText
-            className='text-white/50 text-xs'
-              value={Number(
-                selectedAssetContext.markPx * (selectedAssetContext.circulatingSupply || 1)
-              )}
-              type="currency"
-            />
-          )
+            'circulatingSupply' in selectedAssetContext && (
+              <ReactiveText
+                className="text-white/50 text-xs"
+                value={Number(
+                  selectedAssetContext.markPx * (selectedAssetContext.circulatingSupply || 1)
+                )}
+                type="currency"
+              />
+            )
           : selectedAssetContext?.midPx &&
-          'openInterest' in selectedAssetContext && (
-            <ReactiveText
-            className='text-white/50 text-xs'
-              value={Number(
-                selectedAssetContext.midPx * (selectedAssetContext.openInterest || 1)
-              )}
-              type="currency"
-            />
-          )}
+            'openInterest' in selectedAssetContext && (
+              <ReactiveText
+                className="text-white/50 text-xs"
+                value={Number(
+                  selectedAssetContext.midPx * (selectedAssetContext.openInterest || 1)
+                )}
+                type="currency"
+              />
+            )}
       </TableCell>
     </TableRow>
   )
