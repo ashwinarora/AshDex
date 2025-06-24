@@ -3,10 +3,8 @@ import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-q
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
 import { useAccount } from 'wagmi'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IExtraAgent } from '@/utils/hyperliquid/hyperLiquidTypes'
 import dynamic from 'next/dynamic'
 import { BUILDER_ADDRESS } from '@/utils/constants'
-import { hyperliquidAxios } from '@/config/axios'
 
 const EstablishConnectionModal = dynamic(
   () => import('@/components/EstablishConnectionModal/EstablishConnectionModal'),
@@ -31,36 +29,40 @@ const ConnectionContext = createContext<ConnectionContextType | undefined>(undef
 export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
-  const { agentWallet } = useHyperliquid()
+  const { agentWallet, sdkInfoClient } = useHyperliquid()
 
   const { data: isAgentApproved, refetch: refetchAgentApproval } = useQuery({
     queryKey: ['extraAgents'],
     queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'extraAgents',
+      if (!address) return false
+      if (!sdkInfoClient) return false
+      const extraAgents = await sdkInfoClient.extraAgents({
         user: address
       })
-      const extraAgents = response.data as IExtraAgent[]
+      console.log('extraAgents', extraAgents)
       const isAgentApproved = extraAgents.some(
         (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
       )
       return isAgentApproved
     },
-    enabled: isConnected && !!hyperliquidAxios && !!agentWallet,
+    enabled: isConnected && !!sdkInfoClient && !!agentWallet,
     initialData: false
   })
 
   const { data: currentFeeApproval, refetch: refetchCurrentFeeApproval } = useQuery<number>({
     queryKey: ['maxBuilderFee', address, BUILDER_ADDRESS],
     queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'maxBuilderFee',
+      if (!address) return 0
+      if (!sdkInfoClient) return 0
+      if (!BUILDER_ADDRESS) return 0
+      const response = await sdkInfoClient?.maxBuilderFee({
         user: address,
-        builder: BUILDER_ADDRESS
+        builder: BUILDER_ADDRESS,
       })
-      return response.data
+      console.log('currentFeeApproval', response)
+      return response
     },
-    enabled: isConnected && !!hyperliquidAxios && !!agentWallet && isAgentApproved,
+    enabled: isConnected && !!sdkInfoClient && !!agentWallet && isAgentApproved,
     initialData: 0
   })
 
