@@ -108,7 +108,7 @@ const TradeHistoryTable: React.FC = () => {
       if (!address) return []
       if (!sdkInfoClient) return []
       const response = await sdkInfoClient?.userFills({
-        user: address,
+        user: address
       })
       return response
     },

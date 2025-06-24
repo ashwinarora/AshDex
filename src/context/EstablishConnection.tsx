@@ -57,7 +57,7 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
       if (!BUILDER_ADDRESS) return 0
       const response = await sdkInfoClient?.maxBuilderFee({
         user: address,
-        builder: BUILDER_ADDRESS,
+        builder: BUILDER_ADDRESS
       })
       console.log('currentFeeApproval', response)
       return response
