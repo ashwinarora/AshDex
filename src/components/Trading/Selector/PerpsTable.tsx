@@ -18,7 +18,14 @@ import {
   flexRender,
   SortingState
 } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
 interface AssetTableProps {
@@ -47,7 +54,12 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: AssetTableProps) => {
+const AssetTable = ({
+  searchTerm,
+  setSelectedAsset,
+  selectedAsset,
+  setIsOpen
+}: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquid()
   const { favorites, toggleFavorite } = useFavorites(false)
@@ -108,7 +120,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p className='text-white'>{symbol.split('-')[0]}-USDC</p>
+              <p className="text-white">{symbol.split('-')[0]}-USDC</p>
               {maxLeverage && (
                 <p className="bg-primary/40 px-2 rounded-md text-xs">{maxLeverage}×</p>
               )}
@@ -157,7 +169,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
             <div className={`text-right text-xs ${className}`}>
               <div className="flex justify-end items-center">
                 {isPositive ? (
-                  <IconTriangleFilled  className="size-2 mr-1" />
+                  <IconTriangleFilled className="size-2 mr-1" />
                 ) : (
                   <IconTriangleInvertedFilled className="size-2 mr-1" />
                 )}
@@ -199,7 +211,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
           const volume = info.getValue()
           return (
             <div className="text-right">
-              <ReactiveText value={Number(volume || 0)} className='text-xs' type="currency" />
+              <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
             </div>
           )
         },
@@ -217,7 +229,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
           const openInterest = info.getValue()
           return (
             <div className="text-right">
-              <ReactiveText value={Number(openInterest || 0)} className='text-xs text-white/50' type="currency" />
+              <ReactiveText
+                value={Number(openInterest || 0)}
+                className="text-xs text-white/50"
+                type="currency"
+              />
             </div>
           )
         },
@@ -249,7 +265,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
-                className={cn("cursor-pointer hover:text-accent-foreground w-full", header.id === 'symbol' ? 'justify-start' : 'justify-end', (header.id === 'symbol' || header.id === 'prevDayPrice') ? 'w-3/12' : 'w-2/12')}
+                className={cn(
+                  'cursor-pointer hover:text-accent-foreground w-full',
+                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  header.id === 'symbol' || header.id === 'prevDayPrice' ? 'w-3/12' : 'w-2/12'
+                )}
                 onClick={() => {
                   if (header.column.getCanSort()) {
                     header.column.toggleSorting()
@@ -269,16 +289,24 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
           <TableRow
             key={row.id}
             onClick={() => handleRowClick(row.original.symbol)}
-            className={cn('hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer', selectedAsset === row.original.symbol && 'bg-accent')}
+            className={cn(
+              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+              selectedAsset === row.original.symbol && 'bg-accent'
+            )}
           >
             {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className={cn("font-medium whitespace-nowrap w-2/12", (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12')}>
+              <TableCell
+                key={cell.id}
+                className={cn(
+                  'font-medium whitespace-nowrap w-2/12',
+                  (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                )}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
           </TableRow>
         ))}
-
       </TableBody>
     </Table>
   )

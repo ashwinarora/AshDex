@@ -19,7 +19,14 @@ import {
 } from '@tabler/icons-react'
 import { useFavorites } from '@/store/FavoritesStore'
 import ReactiveText from '@/components/common/ReactiveText'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
 interface AssetTableProps {
@@ -48,7 +55,12 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: AssetTableProps) => {
+const AssetTable = ({
+  searchTerm,
+  setSelectedAsset,
+  selectedAsset,
+  setIsOpen
+}: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
@@ -257,7 +269,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
-                className={cn("cursor-pointer hover:text-accent-foreground w-full", header.id === 'symbol' ? 'justify-start' : 'justify-end', (header.id === 'symbol' || header.id === 'prevDayPrice') ? 'w-3/12' : 'w-2/12')}
+                className={cn(
+                  'cursor-pointer hover:text-accent-foreground w-full',
+                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  header.id === 'symbol' || header.id === 'prevDayPrice' ? 'w-3/12' : 'w-2/12'
+                )}
                 onClick={() => {
                   if (header.column.getCanSort()) {
                     header.column.toggleSorting()
@@ -277,16 +293,24 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: 
           <TableRow
             key={row.id}
             onClick={() => handleRowClick(row.original.symbol)}
-            className={cn('hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer', selectedAsset === row.original.symbol && 'bg-accent')}
+            className={cn(
+              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+              selectedAsset === row.original.symbol && 'bg-accent'
+            )}
           >
             {row.getVisibleCells().map((cell) => (
-              <TableCell key={cell.id} className={cn("font-medium whitespace-nowrap w-2/12", (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12')}>
+              <TableCell
+                key={cell.id}
+                className={cn(
+                  'font-medium whitespace-nowrap w-2/12',
+                  (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                )}
+              >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}
               </TableCell>
             ))}
           </TableRow>
         ))}
-
       </TableBody>
     </Table>
     // <div className="h-[300px] overflow-y-auto no-scrollbar">

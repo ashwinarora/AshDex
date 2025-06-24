@@ -11,7 +11,15 @@ import SpotTable from './SpotTable'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Separator } from '@/components/ui/separator'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { BadgePlusIcon, BrainCircuitIcon, ChevronDownIcon, HandCoinsIcon, Gamepad2Icon, ShieldCheckIcon, SmileIcon } from 'lucide-react'
+import {
+  BadgePlusIcon,
+  BrainCircuitIcon,
+  ChevronDownIcon,
+  HandCoinsIcon,
+  Gamepad2Icon,
+  ShieldCheckIcon,
+  SmileIcon
+} from 'lucide-react'
 import { ShieldQuestionIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'

@@ -8,7 +8,14 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
-import { BadgePlusIcon, BrainCircuitIcon, ChevronDownIcon, HandCoinsIcon, ShieldCheckIcon, SmileIcon } from 'lucide-react'
+import {
+  BadgePlusIcon,
+  BrainCircuitIcon,
+  ChevronDownIcon,
+  HandCoinsIcon,
+  ShieldCheckIcon,
+  SmileIcon
+} from 'lucide-react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Gamepad2Icon, ShieldQuestionIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -34,8 +41,8 @@ const useCountdown = () => {
       const formattedTime = `00:${Math.floor((timeLeft % 1) * 60)
         .toString()
         .padStart(2, '0')}:${Math.floor((((timeLeft % 1) * 60) % 1) * 60)
-          .toString()
-          .padStart(2, '0')}`
+        .toString()
+        .padStart(2, '0')}`
       setTimeLeft(formattedTime)
     }
 
@@ -125,8 +132,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Open Interest',
         value:
           'openInterest' in selectedAssetContext &&
-            selectedAssetContext.openInterest &&
-            selectedAssetContext.oraclePx ? (
+          selectedAssetContext.openInterest &&
+          selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}
