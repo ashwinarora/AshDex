@@ -17,7 +17,14 @@ import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { hyperliquidAxios } from '@/config/axios'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
 type ColumnType = {
@@ -163,12 +170,13 @@ const TradeHistoryTable: React.FC = () => {
             <span className="text-[#8B8BA0]">{col?.label}</span>
             <span className={col?.key === 'contract' ? 'truncate' : ''}>
               <span
-                className={`flex items-center gap-x-2 ${col?.key === 'crossed'
+                className={`flex items-center gap-x-2 ${
+                  col?.key === 'crossed'
                     ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
                     : col?.key === 'side'
                       ? 'text-red'
                       : ''
-                  }`}
+                }`}
               >
                 {String(formatValue(col?.key, item[col?.key]))}
               </span>
@@ -189,7 +197,7 @@ const TradeHistoryTable: React.FC = () => {
   }
 
   return (
-    <div className='w-full h-full flex flex-col gap-2'>
+    <div className="w-full h-full flex flex-col gap-2">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -205,15 +213,26 @@ const TradeHistoryTable: React.FC = () => {
                   className={cn(
                     'cursor-pointer w-full',
                     header.id === 'timestamp' ? 'justify-start' : 'justify-end',
-                    header.column.columnDef.enableSorting ? 'hover:text-accent-foreground' : 'hover:text-white/50',
-                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                    header.column.columnDef.enableSorting
+                      ? 'hover:text-accent-foreground'
+                      : 'hover:text-white/50',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
                   )}
                 >
                   {header.isPlaceholder ? null : (
                     <>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
-                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconArrowMoveDown className="text-inherit size-4" />
+                        ) : (
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
                     </>
                   )}
                 </TableHead>
@@ -225,14 +244,17 @@ const TradeHistoryTable: React.FC = () => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
+                <TableCell
+                  key={cell.id}
+                  className="font-medium text-white text-xs first:text-left text-right"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
-      </Table >
+      </Table>
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col?.id as string,

@@ -72,37 +72,27 @@ function OverviewBox() {
       {isSendModalOpen && (
         <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
       )}
-      <div className='w-full h-full flex flex-col gap-2 p-2'>
-        <Button onClick={() => setIsDepositOpen(true)}>
-          Deposit
-        </Button>
-        <div className='flex items-center justify-center gap-2 w-full'>
-          <Button
-            onClick={() => setIsSendModalOpen(true)}
-            variant='outline'
-            className='flex-2'
-          >
+      <div className="w-full h-full flex flex-col gap-2 p-2">
+        <Button onClick={() => setIsDepositOpen(true)}>Deposit</Button>
+        <div className="flex items-center justify-center gap-2 w-full">
+          <Button onClick={() => setIsSendModalOpen(true)} variant="outline" className="flex-2">
             Send
           </Button>
           <Button
             onClick={() => setIsTransferModalOpen(true)}
-            variant='outline'
-            className='flex flex-1 items-center justify-center gap-2'
+            variant="outline"
+            className="flex flex-1 items-center justify-center gap-2"
           >
             <p>Perps</p>
             <IconTransfer className="size-3" />
             <p>Spot</p>
           </Button>
-          <Button
-            onClick={() => setIsWithdrawOpen(true)}
-            variant='outline'
-            className='flex-2'
-          >
+          <Button onClick={() => setIsWithdrawOpen(true)} variant="outline" className="flex-2">
             Withdraw
           </Button>
         </div>
-        <Separator className='w-full' />
-        <div className='flex flex-col gap-2'>
+        <Separator className="w-full" />
+        <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center gap-2 w-full">
             <p className="text-white text-sm">Account Equity</p>
           </div>
@@ -111,7 +101,7 @@ function OverviewBox() {
             <ReactiveText
               precision={2}
               type="currency"
-              className='text-xs'
+              className="text-xs"
               pulse={true}
               value={spotAccountValue || 0}
             />
@@ -121,12 +111,12 @@ function OverviewBox() {
             <ReactiveText
               precision={2}
               type="currency"
-              className='text-xs'
+              className="text-xs"
               pulse={true}
               value={crossAccountValue || 0}
             />
           </div>
-          <Separator className='w-full' />
+          <Separator className="w-full" />
           <div className="flex justify-between items-center gap-2 w-full">
             <p className="text-white text-sm">Perps Overview</p>
           </div>
@@ -135,7 +125,7 @@ function OverviewBox() {
             <ReactiveText
               precision={2}
               type="currency"
-              className='text-xs'
+              className="text-xs"
               value={crossAccountValue - totalUnrealizedPnl}
             />
           </div>
@@ -145,24 +135,34 @@ function OverviewBox() {
               precision={2}
               type="currency"
               isStatic={true}
-              className='text-xs'
+              className="text-xs"
               value={totalUnrealizedPnl}
             />
           </div>
           <div className="flex justify-between items-center gap-2 w-full">
             <p className="text-white/50 text-xs">Cross Margin Ratio</p>
-            <ReactiveText precision={2} type="percentage" value={crossMarginRatio} className='text-xs' />
+            <ReactiveText
+              precision={2}
+              type="percentage"
+              value={crossMarginRatio}
+              className="text-xs"
+            />
           </div>
           <div className="flex justify-between items-center gap-2 w-full">
             <p className="text-white/50 text-xs">Maintenance Margin</p>
-            <ReactiveText precision={2} type="currency" value={maintenanceMargin} className='text-xs' />
+            <ReactiveText
+              precision={2}
+              type="currency"
+              value={maintenanceMargin}
+              className="text-xs"
+            />
           </div>
           <div className="flex justify-between items-center gap-2 w-full">
             <p className="text-white/50 text-xs">Cross Account Leverage</p>
             <ReactiveText
               precision={2}
               type="leverage"
-              className='text-xs'
+              className="text-xs"
               value={totalCrossPositionsValue / crossAccountValue}
             />
           </div>

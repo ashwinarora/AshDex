@@ -45,9 +45,15 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
   }, [assetKey, isSpot, perpAssetContext, perpsMeta, spotAssetContext, spotKeyToName])
 
   return (
-    <ToggleGroupItem value={data.name || ''} key={data.name} className='flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm'>
-      <p className='text-xs text-white/50'>{data.name}</p>
-      <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>{data.price}</p>
+    <ToggleGroupItem
+      value={data.name || ''}
+      key={data.name}
+      className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
+    >
+      <p className="text-xs text-white/50">{data.name}</p>
+      <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>
+        {data.price}
+      </p>
     </ToggleGroupItem>
   )
 }

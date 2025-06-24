@@ -8,7 +8,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-  SortingState,
+  SortingState
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
@@ -16,12 +16,24 @@ import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconArrowsMoveVertical, IconArrowMoveDown, IconArrowMoveUp, IconTrash } from '@tabler/icons-react'
+import {
+  IconArrowsMoveVertical,
+  IconArrowMoveDown,
+  IconArrowMoveUp,
+  IconTrash
+} from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 
 type ColumnType = {
@@ -86,13 +98,14 @@ const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) =>
                 <span
                   className={`
                     flex px-1.5 py-1 w-fit rounded-lg font-medium items-center gap-x-2
-                    ${isSide
-                      ? sideValue === 'buy'
-                        ? 'text-green'
-                        : sideValue === 'sell'
-                          ? 'text-red'
-                          : ''
-                      : ''
+                    ${
+                      isSide
+                        ? sideValue === 'buy'
+                          ? 'text-green'
+                          : sideValue === 'sell'
+                            ? 'text-red'
+                            : ''
+                        : ''
                     }
                   `}
                 >
@@ -140,8 +153,8 @@ const OpenOrders = () => {
               if (!sdkExchangeClient) return
               const assetIndex = isSpot
                 ? Number(
-                  spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
-                ) + SPOT_DELTA
+                    spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
+                  ) + SPOT_DELTA
                 : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
               if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
               await sdkExchangeClient.cancel({
@@ -227,7 +240,7 @@ const OpenOrders = () => {
                 .map((order) => {
                   const assetIndex = isSpot
                     ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                    SPOT_DELTA
+                      SPOT_DELTA
                     : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
                   if (!assetIndex) return
                   return {
@@ -410,7 +423,7 @@ const OpenOrders = () => {
   }
 
   return (
-    <div className='w-full h-full flex flex-col gap-2'>
+    <div className="w-full h-full flex flex-col gap-2">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -425,15 +438,28 @@ const OpenOrders = () => {
                   }}
                   className={cn(
                     'cursor-pointer w-full hover:text-accent-foreground',
-                    header.id === 'timestamp' ? 'justify-start' : header.id === 'actions' ? 'justify-center' : 'justify-end',
-                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                    header.id === 'timestamp'
+                      ? 'justify-start'
+                      : header.id === 'actions'
+                        ? 'justify-center'
+                        : 'justify-end',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
                   )}
                 >
                   {header.isPlaceholder ? null : (
                     <>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
-                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconArrowMoveDown className="text-inherit size-4" />
+                        ) : (
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
                     </>
                   )}
                 </TableHead>
@@ -445,14 +471,17 @@ const OpenOrders = () => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
+                <TableCell
+                  key={cell.id}
+                  className="font-medium text-white text-xs first:text-left text-right"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
-      </Table >
+      </Table>
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col.id as string,

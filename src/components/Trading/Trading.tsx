@@ -20,10 +20,10 @@ const Trading = () => {
         <div className="col-span-10 h-full flex-1 basis-xl flex flex-col gap-1">
           <FavoriteStrip setSelectedAsset={setSelectedAsset} />
           {isSpot ? (
-              <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            ) : (
-              <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            )}
+            <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          ) : (
+            <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
         <div className="col-span-4 h-full flex-col basis-sm gap-2 bg-secondary rounded-md">

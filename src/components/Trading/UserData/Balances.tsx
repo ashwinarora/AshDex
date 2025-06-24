@@ -14,7 +14,14 @@ import {
 } from '@tanstack/react-table'
 import HeaderWithIcons from './component/HeaderWithIcon'
 import SendModal from './component/SendModal'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 
@@ -188,9 +195,8 @@ const Balances = () => {
     return <WalletNotConnected />
   }
 
-
   return (
-    <div className='w-full h-full flex flex-col gap-2'>
+    <div className="w-full h-full flex flex-col gap-2">
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -206,15 +212,26 @@ const Balances = () => {
                   className={cn(
                     'cursor-pointer w-full',
                     header.id === 'coin' ? 'justify-start' : 'justify-end',
-                    header.column.columnDef.enableSorting ? 'hover:text-accent-foreground' : 'hover:text-white/50',
-                    (header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc') ? 'text-accent-foreground' : 'text-white/50'
+                    header.column.columnDef.enableSorting
+                      ? 'hover:text-accent-foreground'
+                      : 'hover:text-white/50',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
                   )}
                 >
                   {header.isPlaceholder ? null : (
                     <>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {header.column.columnDef.enableSorting ? header.column.getIsSorted() === 'asc' ? <IconArrowMoveUp className='text-inherit size-4' /> :
-                        header.column.getIsSorted() === 'desc' ? <IconArrowMoveDown className='text-inherit size-4' /> : <IconArrowsMoveVertical className='text-inherit size-4' /> : null}
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconArrowMoveDown className="text-inherit size-4" />
+                        ) : (
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
                     </>
                   )}
                 </TableHead>
@@ -226,14 +243,17 @@ const Balances = () => {
           {table.getRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id} className="font-medium text-white text-xs first:text-left text-right">
+                <TableCell
+                  key={cell.id}
+                  className="font-medium text-white text-xs first:text-left text-right"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
               ))}
             </TableRow>
           ))}
         </TableBody>
-      </Table >
+      </Table>
       <ResponsiveDataCard
         columns={tableColumns}
         data={tableData}

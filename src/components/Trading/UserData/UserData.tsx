@@ -67,8 +67,8 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
   return (
-    <div className='w-full h-full rounded-md flex flex-col gap-2 p-2'>
-      <div className='w-full h-fit flex items-center justify-start'>
+    <div className="w-full h-full rounded-md flex flex-col gap-2 p-2">
+      <div className="w-full h-fit flex items-center justify-start">
         <ToggleGroup
           type="single"
           className="w-full bg-white/5 rounded-md"
@@ -81,13 +81,17 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
           }}
         >
           {tabs.map((tab, index) => (
-            <ToggleGroupItem key={tab.header} className="w-full first:rounded-l-md last:rounded-r-md" value={index.toString()}>
+            <ToggleGroupItem
+              key={tab.header}
+              className="w-full first:rounded-l-md last:rounded-r-md"
+              value={index.toString()}
+            >
               {tab.header}
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
       </div>
-      <div className='w-full h-full rounded-md overflow-y-auto no-scrollbar'>
+      <div className="w-full h-full rounded-md overflow-y-auto no-scrollbar">
         {tabs[activeTab] && <div>{tabs[activeTab].element}</div>}
       </div>
     </div>

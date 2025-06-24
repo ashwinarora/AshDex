@@ -12,12 +12,16 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
 
   return (
     <div className="flex bg-secondary p-1 rounded-md w-full !h-10 overflow-hidden">
-      <div className='flex w-fit items-center gap-4 overflow-x-auto no-scrollbar'>
-        <ToggleGroup type='single' className='flex items-center gap-2 h-full' onValueChange={setSelectedAsset}>
+      <div className="flex w-fit items-center gap-4 overflow-x-auto no-scrollbar">
+        <ToggleGroup
+          type="single"
+          className="flex items-center gap-2 h-full"
+          onValueChange={setSelectedAsset}
+        >
           {Array.from(favorites).map((favorite) => (
             <>
-              <FavoriteItem assetKey={favorite}/>
-              <Separator orientation='vertical' className='!h-full last:hidden' />
+              <FavoriteItem assetKey={favorite} />
+              <Separator orientation="vertical" className="!h-full last:hidden" />
             </>
           ))}
         </ToggleGroup>
