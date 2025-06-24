@@ -53,7 +53,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
     let isMounted = true
     let sub: { unsubscribe: () => void } | null = null
 
-    const nSigFigs = Number(selectedPrecision)
+    const nSigFigs = Number(selectedPrecision.value)
     let mantissa = null
     const handler = (data: WsBook) => {
       if (isMounted) {
@@ -89,7 +89,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
         sub.unsubscribe()
       }
     }
-  }, [sdkSubscriptionClient, selectedAsset, selectedPrecision])
+  }, [sdkSubscriptionClient, selectedAsset, selectedPrecision.value])
 
   // Initialize precision label when component mounts or asset changes
   useEffect(() => {

@@ -18,10 +18,14 @@ import {
   flexRender,
   SortingState
 } from '@tanstack/react-table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 interface AssetTableProps {
   searchTerm: string
   setSelectedAsset: (asset: string) => void
+  selectedAsset: string
+  setIsOpen: (isOpen: boolean) => void
 }
 
 interface PerpAssetData {
@@ -43,7 +47,7 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
+const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, setIsOpen }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquid()
   const { favorites, toggleFavorite } = useFavorites(false)
@@ -71,7 +75,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         }
       })
     return data
-  }, [perpsMeta, perpAssetContext, favorites, searchTerm])
+  }, [perpsMeta, perpAssetContext, searchTerm])
 
   const columnHelper = createColumnHelper<PerpAssetData>()
 
@@ -89,7 +93,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           const { symbol, maxLeverage } = info.row.original
           const isFavorite = favorites.has(symbol)
           return (
-            <div className="flex items-center gap-2 pl-2">
+            <div className="flex items-center gap-2 pl-2 text-xs">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -104,7 +108,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p>{symbol.split('-')[0]}-USDC</p>
+              <p className='text-white'>{symbol.split('-')[0]}-USDC</p>
               {maxLeverage && (
                 <p className="bg-primary/40 px-2 rounded-md text-xs">{maxLeverage}×</p>
               )}
@@ -132,7 +136,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
-          return <div className="text-right">${formattedPrice}</div>
+          return <div className="text-right text-white text-xs">${formattedPrice}</div>
         },
         enableSorting: true
       }),
@@ -150,17 +154,18 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           const isPositive = difference >= 0
           const className = isPositive ? 'text-green' : 'text-red'
           return (
-            <div className={`text-right ${className}`}>
+            <div className={`text-right text-xs ${className}`}>
               <div className="flex justify-end items-center">
                 {isPositive ? (
-                  <IconTriangleFilled size={8} className="mr-1" />
+                  <IconTriangleFilled  className="size-2 mr-1" />
                 ) : (
-                  <IconTriangleInvertedFilled size={8} className="mr-1" />
+                  <IconTriangleInvertedFilled className="size-2 mr-1" />
                 )}
                 {difference !== undefined && prevDayPrice !== 0 && (
                   <>
                     <ReactiveText
                       precision={2}
+                      className="text-xs"
                       value={difference}
                       type="currency"
                       isStatic={true}
@@ -168,6 +173,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
                     (
                     <ReactiveText
                       precision={2}
+                      className="text-xs"
                       value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
                       type="percentage"
                       isStatic={true}
@@ -193,7 +199,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           const volume = info.getValue()
           return (
             <div className="text-right">
-              <ReactiveText value={Number(volume || 0)} type="currency" />
+              <ReactiveText value={Number(volume || 0)} className='text-xs' type="currency" />
             </div>
           )
         },
@@ -211,7 +217,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
           const openInterest = info.getValue()
           return (
             <div className="text-right">
-              <ReactiveText value={Number(openInterest || 0)} type="currency" />
+              <ReactiveText value={Number(openInterest || 0)} className='text-xs text-white/50' type="currency" />
             </div>
           )
         },
@@ -232,53 +238,49 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
 
   const handleRowClick = (symbol: string) => {
     setSelectedAsset(symbol)
+    setIsOpen(false)
   }
 
   return (
-    <div className="h-[300px] overflow-y-auto no-scrollbar">
-      <table className="min-w-full text-white text-sm">
-        <thead className="top-0 z-10 sticky text-white/70 ">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="group px-6 py-3 active:text-white text-left whitespace-nowrap cursor-pointer"
-                  onClick={() => {
-                    if (header.column.getCanSort()) {
-                      header.column.toggleSorting()
-                    }
-                  }}
-                >
-                  <div
-                    className={`flex ${header.id !== 'symbol' ? 'justify-end' : 'justify-start'} items-center gap-1`}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              onClick={() => handleRowClick(row.original.symbol)}
-              className="hover:bg-white/5 transition-colors duration-150 cursor-pointer"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-2 px-6 font-medium whitespace-nowrap">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader className="sticky top-0 z-10 bg-secondary">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead
+                key={header.id}
+                className={cn("cursor-pointer hover:text-accent-foreground w-full", header.id === 'symbol' ? 'justify-start' : 'justify-end', (header.id === 'symbol' || header.id === 'prevDayPrice') ? 'w-3/12' : 'w-2/12')}
+                onClick={() => {
+                  if (header.column.getCanSort()) {
+                    header.column.toggleSorting()
+                  }
+                }}
+              >
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(header.column.columnDef.header, header.getContext())}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody className="scroll-smooth">
+        {table.getRowModel().rows.map((row) => (
+          <TableRow
+            key={row.id}
+            onClick={() => handleRowClick(row.original.symbol)}
+            className={cn('hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer', selectedAsset === row.original.symbol && 'bg-accent')}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <TableCell key={cell.id} className={cn("font-medium whitespace-nowrap w-2/12", (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12')}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+
+      </TableBody>
+    </Table>
   )
 }
 
