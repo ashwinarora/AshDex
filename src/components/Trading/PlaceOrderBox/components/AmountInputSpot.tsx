@@ -1,5 +1,4 @@
 'use client'
-import { getCoinName } from '@/utils/utils'
 import { useMemo, useState } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -27,20 +26,21 @@ const AmountInputSpot = ({
   isBuy
 }: AmountInputSpotProps) => {
   const { spotState } = useHyperliquid()
-  const { data: spotMeta } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
   const szDecimals = useMemo(() => {
-    const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
     return tokenData?.szDecimals || 0
   }, [selectedAsset, spotMeta])
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
-    return isBuy
-      ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    const max = isBuy
+      ? (spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState?.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+    return Number(max)
   }, [spotState, selectedAsset, isBuy])
 
   const updateFromAssetAmount = (input: string) => {
@@ -122,7 +122,8 @@ const AmountInputSpot = ({
     <>
       <div className="flex flex-col gap-2 mx-3">
         <label className="block font-medium text-gray-400 text-xs">
-          Available to Trade = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : getCoinName(selectedAsset)}
+          Available to Trade = {maxAllowed.toFixed(2)}{' '}
+          {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
         </label>
         <div className="flex items-center px-3 border border-white/10 rounded-md align-middle">
           <p className="font-medium text-white/50 text-xs whitespace-nowrap">Amount</p>
@@ -145,7 +146,7 @@ const AmountInputSpot = ({
               onChange={(e) => setIsInputUsd(e.target.value === 'usdc')}
               className="bg-transparent border-none focus:outline-none text-[#8B8BA0] text-xs cursor-pointer"
             >
-              <option value="asset">{getCoinName(selectedAsset)}</option>
+              <option value="asset">{spotKeyToName.get(selectedAsset)}</option>
               <option value="usdc">USDC</option>
             </select>
           </div>

@@ -12,13 +12,13 @@ import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
-import { getUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
+import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
+
 import SlippageModal from './components/SlippageModal'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids, clearingHouseState } = useHyperliquid()
+  const { allMids, clearingHouseState, perpsMeta } = useHyperliquid()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
@@ -34,30 +34,29 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   })
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
-  const { data: universe } = usePerpsUniverse()
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 
   useEffect(() => {
-    setCrossAccountValue(clearingHouseState?.marginSummary?.accountValue || 0)
+    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
   }, [clearingHouseState])
 
   const szDecimals = useMemo(() => {
     if (isSpot) {
-      const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
-      return tokenData?.szDecimals || 0
+      const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
+      return Number(tokenData?.szDecimals) || 0
     } else {
-      const assetIndex = getUniverseIndex(universe, selectedAsset)
+      const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
       if (assetIndex === -1) return 0
-      return universe[assetIndex].szDecimals || 0
+      return Number(perpsMeta?.universe[assetIndex].szDecimals) || 0
     }
-  }, [universe, selectedAsset, isSpot, spotMeta])
+  }, [perpsMeta, selectedAsset, isSpot, spotMeta])
 
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
 
     const slippageMultiplier = isBuy ? 1 + slippage / 100 : 1 - slippage / 100
-    const rawPrice = (allMids[selectedAsset] * slippageMultiplier).toString()
+    const rawPrice = (Number(allMids[selectedAsset]) * slippageMultiplier).toString()
 
     // Split into integer and decimal parts
     const [intPart, decPart] = rawPrice.split('.')
@@ -100,8 +99,8 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       return 0
     }
 
-    const assetIndex = getUniverseIndex(universe, selectedAsset)
-    const maxLeverage = universe[assetIndex]?.maxLeverage || 1
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({
       entryPrice: Number(getFormattedPrice()),
@@ -120,7 +119,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     isBuy,
     usdAmount,
     isCross,
-    universe,
+    perpsMeta,
     selectedAsset,
     crossAccountValue
   ])

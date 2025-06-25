@@ -12,13 +12,13 @@ import {
   SortingState,
   flexRender
 } from '@tanstack/react-table'
-import { HistoricOrder } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
+import { FrontendOrder, OrderStatus } from '@nktkas/hyperliquid'
 
 type ColumnType = {
   key: string
@@ -33,7 +33,7 @@ type RenderRowProps = {
 
 const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const { sdk } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquid()
   const [mounted, setMounted] = useState(false)
 
   // Use useEffect to set mounted to true after hydration
@@ -41,13 +41,15 @@ const OrderHistoryTable: React.FC = () => {
     setMounted(true)
   }, [])
 
-  const { data: orderHistory = [] } = useQuery<HistoricOrder[]>({
+  const { data: orderHistory = [] } = useQuery<OrderStatus<FrontendOrder>[]>({
     queryKey: ['orderHistory', address],
     queryFn: async () => {
-      if (!sdk?.info.getHistoricalOrders || !address) return []
-      return sdk.info.getHistoricalOrders(address)
+      if (!sdkInfoClient || !address) return []
+      return sdkInfoClient.historicalOrders({
+        user: address
+      })
     },
-    enabled: !!address && !!sdk,
+    enabled: !!address && !!sdkInfoClient,
     initialData: []
   })
 
@@ -61,7 +63,9 @@ const OrderHistoryTable: React.FC = () => {
     console.log('orderHistory', orderHistory)
   }, [orderHistory])
 
-  const columnHelper = createColumnHelper<HistoricOrder & { meta?: { label: string } }>()
+  const columnHelper = createColumnHelper<
+    OrderStatus<FrontendOrder> & { meta?: { label: string } }
+  >()
   const getCellClass = (columnId: string, cellValue: unknown): string => {
     let customClass = 'opacity-80 font-normal text-sm'
     if (columnId === 'status') {
@@ -184,7 +188,7 @@ const OrderHistoryTable: React.FC = () => {
         cell: (info) => {
           if (info.getValue() === 'filled') {
             return <p className="bg-green/10 px-2 py-0.5 rounded-lg text-green text-xs">Filled</p>
-          } else if (info.getValue() === 'perpMarginRejected') {
+          } else if (info.getValue() === 'rejected') {
             return <p className="bg-red/10 px-2 py-0.5 rounded-lg text-red text-xs">Rejected</p>
           } else if (info.getValue() === 'canceled') {
             return (

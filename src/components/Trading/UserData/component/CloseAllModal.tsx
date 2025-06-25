@@ -1,12 +1,9 @@
 import React, { useState } from 'react'
 import SmallModal from '../../../common/SmallModal'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { usePerpsUniverse } from '@/hooks/usePerpsUniverse'
-import { formatPrice, getUniverseIndex } from '@/utils/utils'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
+import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
-import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
+import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -15,11 +12,12 @@ interface CloseAllModalProps {
 
 const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
-  const { clearingHouseState, agentWallet, allMids } = useHyperliquid()
-  const { data: universe } = usePerpsUniverse()
+  const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
+    useHyperliquid()
 
   const handleCloseAll = async () => {
-    if (!agentWallet || !clearingHouseState?.assetPositions || !universe) return
+    if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkExchangeClient)
+      return
     const toastId = toast.loading('Closing all positions...')
     try {
       // Update leverage for all positions first
@@ -34,16 +32,16 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       // Build orders array
       const orders: OrderData[] = clearingHouseState.assetPositions.map((posObj) => {
         const pos = posObj.position
-        const assetIndex = getUniverseIndex(universe, pos.coin)
-        const szDecimals = universe[assetIndex].szDecimals
-        const isBuy = !(pos.szi > 0)
-        const absSize = Math.abs(pos.szi).toFixed(szDecimals)
+        const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, pos.coin)
+        const szDecimals = perpsMeta.universe[assetIndex].szDecimals
+        const isBuy = !(Number(pos.szi) > 0)
+        const absSize = Math.abs(Number(pos.szi)).toFixed(szDecimals)
         const mid = allMids[pos.coin]
         let price: number
         if (selected === 'market') {
-          price = isBuy ? mid * 1.1 : mid * 0.9
+          price = isBuy ? Number(mid) * 1.1 : Number(mid) * 0.9
         } else {
-          price = mid
+          price = Number(mid)
         }
         return {
           assetIndex: assetIndex,
@@ -58,28 +56,36 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           }
         }
       })
-      const orderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      // const orderRes = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
+      //   grouping: 'na',
+      //   orders: orders
+      // })
+      const orderRes = await sdkExchangeClient.order({
         grouping: 'na',
-        orders: orders
+        orders: orders.map((order) => ({
+          a: order.assetIndex,
+          b: order.isBuy,
+          p: order.price,
+          s: order.size,
+          r: order.reduceOnly,
+          t: order.orderType
+        }))
       })
-      const statuses = orderRes.data.response.data.statuses
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const hasError = statuses.some((s: any) => s.error)
-      if (hasError) {
+      const status = orderRes.response.data.statuses[0]
+      if ('error' in status) {
         toast.update(toastId, {
-          render: '❌ Some orders failed',
+          render: '❌' + status.error,
           type: 'error',
           isLoading: false,
           autoClose: 3000
         })
-      } else {
+      } else if ('filled' in status) {
         toast.update(toastId, {
-          render: '✅ All positions closed successfully',
+          render: `✅ All positions closed successfully`,
           type: 'success',
           isLoading: false,
-          autoClose: 2000
+          autoClose: 3000
         })
-        onClose()
       }
     } catch (error) {
       console.error('Error closing all positions:', error)

@@ -6,17 +6,30 @@ import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const UserData = () => {
+interface IUserDataProps {
+  setSelectedAsset: (asset: string) => void
+}
+
+const UserData = ({ setSelectedAsset }: IUserDataProps) => {
   const { clearingHouseState, openOrders } = useHyperliquid()
   const isSpot = useIsSpot()
+  const { spotKeyToName } = useSpotMeta()
 
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0
   }, [clearingHouseState?.assetPositions])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.length
+    const openOrdersLength = openOrders.filter((order) => {
+      if (isSpot) {
+        return !!spotKeyToName.get(order.coin)
+      } else {
+        // asset should not be in spot universe to be a perp order
+        return !spotKeyToName.get(order.coin)
+      }
+    }).length
     const tabs = [
       {
         header: 'Balances',
@@ -40,7 +53,7 @@ const UserData = () => {
       tabs.splice(1, 0, {
         header: `Positions `,
         count: positionsCount,
-        element: <Positions />
+        element: <Positions setSelectedAsset={setSelectedAsset} />
       })
       tabs.push({
         header: 'Funding History',
@@ -50,7 +63,7 @@ const UserData = () => {
     return tabs
   }, [isSpot, positionsCount, openOrders.length])
 
-  const [activeTab, setActiveTab] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
   return (
     <div className="w-full h-full">
