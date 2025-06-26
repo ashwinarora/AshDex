@@ -94,7 +94,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                 toast.update(toastId, {
                   render: 'Withdrawal in progress…',
                   type: 'info',
-                  isLoading: true,
+                  isLoading: true
                 })
                 const body = {
                   action: {
