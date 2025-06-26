@@ -73,7 +73,6 @@ function OverviewBox() {
         <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
       )}
       <div className="w-full h-full flex flex-col gap-2 p-2">
-        <Button onClick={() => setIsDepositOpen(true)}>Deposit</Button>
         <div className="flex items-center justify-center gap-2 w-full">
           <Button onClick={() => setIsSendModalOpen(true)} variant="outline" className="flex-2">
             Send
@@ -91,6 +90,7 @@ function OverviewBox() {
             Withdraw
           </Button>
         </div>
+        <Button onClick={() => setIsDepositOpen(true)}>Deposit</Button>
         <Separator className="w-full" />
         <div className="flex flex-col gap-2">
           <div className="flex justify-between items-center gap-2 w-full">

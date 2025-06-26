@@ -20,6 +20,7 @@ interface ConnectionContextType {
     options?: RefetchOptions | undefined
   ) => Promise<QueryObserverResult<boolean, Error>>
   isAgentApproved: boolean
+  isModalOpen: boolean
   currentFeeApproval: number
   refetchCurrentFeeApproval: (
     options?: RefetchOptions | undefined
@@ -75,6 +76,7 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
         refetchAgentApproval,
         isAgentApproved,
         currentFeeApproval,
+        isModalOpen,
         refetchCurrentFeeApproval
       }}
     >

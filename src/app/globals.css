@@ -4,26 +4,20 @@
 /* ---break---*/
 @custom-variant dark (&:is(.dark *));
 @layer utilities {
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
-  }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 html {
   overflow: scroll;
   overflow-x: hidden;
-}
-::-webkit-scrollbar {
-  width: 0; /* Remove scrollbar space */
-  background: transparent; /* Optional: just make scrollbar invisible */
-}
-/* Optional: show position indicator in red */
-::-webkit-scrollbar-thumb {
-  background: #ff0000;
 }
 
 :root {

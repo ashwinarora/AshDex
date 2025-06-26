@@ -122,9 +122,9 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
         buys: processOrders(rawBuys.slice(0, 9))
       }
     } else if (selectedLayoutType === 2) {
-      return { sells: [], buys: processOrders(rawBuys.slice(0, 19)) }
+      return { sells: [], buys: processOrders(rawBuys.slice(0, 18)) }
     } else if (selectedLayoutType === 3) {
-      return { sells: processOrders(rawSells.slice(0, 19)), buys: [] }
+      return { sells: processOrders(rawSells.slice(0, 18)), buys: [] }
     }
     return { sells: [], buys: [] }
   }, [rawBuys, rawSells, selectedLayoutType])

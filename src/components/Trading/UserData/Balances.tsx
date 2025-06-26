@@ -2,7 +2,7 @@
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo, useEffect } from 'react'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+// import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import {
   createColumnHelper,
@@ -25,16 +25,16 @@ import {
 import { cn } from '@/lib/utils'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 
-type ColumnType = {
-  key: string
-  label: string
-}
+// type ColumnType = {
+//   key: string
+//   label: string
+// }
 
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
+// type RenderRowProps = {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   item: any
+//   columns: ColumnType[]
+// }
 
 type BalanceData = {
   coin: string
@@ -44,25 +44,25 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-  return (
-    <div className="flex flex-col gap-2 text-white text-sm">
-      {columns?.map((col) => (
-        <div key={col?.key} className="flex justify-between">
-          <span className="text-[#8B8BA0]">{col?.label}</span>
-          <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
+// const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+//   return (
+//     <div className="flex flex-col gap-2 text-white text-sm">
+//       {columns?.map((col) => (
+//         <div key={col?.key} className="flex justify-between">
+//           <span className="text-[#8B8BA0]">{col?.label}</span>
+//           <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
+//         </div>
+//       ))}
+//     </div>
+//   )
+// }
 
 const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [selectedToken, setSelectedToken] = useState('')
+  // const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  // const [selectedToken, setSelectedToken] = useState('')
   const [isMounted, setIsMounted] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
 
@@ -75,7 +75,7 @@ const Balances = () => {
       columnHelper.accessor('coin', {
         id: 'coin',
         header: () => <HeaderWithIcons label="Coin" />,
-        cell: (info) => info.getValue(),
+        cell: (info) => info.getValue().replace('(',' ('),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
@@ -114,15 +114,7 @@ const Balances = () => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
           return (
-            <button
-              onClick={() => {
-                setSelectedToken(coin)
-                setIsSendModalOpen(true)
-              }}
-              className="text-[#7A6FA7] hover:text-[#E8E0F1]"
-            >
-              Send
-            </button>
+            <SendModal spotDefaultName={coin} />
           )
         },
         enableSorting: false,
@@ -166,26 +158,26 @@ const Balances = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const tableData = useMemo(
-    () =>
-      table.getRowModel().rows.map((row) => {
-        const rowData: Record<string, unknown> = {}
-        row.getVisibleCells().forEach((cell) => {
-          rowData[cell.column.id] = cell.getValue()
-        })
-        return rowData
-      }),
-    [table.getRowModel().rows]
-  )
+  // const tableData = useMemo(
+  //   () =>
+  //     table.getRowModel().rows.map((row) => {
+  //       const rowData: Record<string, unknown> = {}
+  //       row.getVisibleCells().forEach((cell) => {
+  //         rowData[cell.column.id] = cell.getValue()
+  //       })
+  //       return rowData
+  //     }),
+  //   [table.getRowModel().rows]
+  // )
 
-  const tableColumns = useMemo(
-    () =>
-      columns.map((col) => ({
-        key: col.id as string,
-        label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-      })),
-    [columns]
-  )
+  // const tableColumns = useMemo(
+  //   () =>
+  //     columns.map((col) => ({
+  //       key: col.id as string,
+  //       label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+  //     })),
+  //   [columns]
+  // )
 
   if (!isMounted) {
     return null
@@ -241,7 +233,7 @@ const Balances = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id}>
+            <TableRow className='h-12' key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
@@ -254,18 +246,11 @@ const Balances = () => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
+      {/* <ResponsiveDataCard
         columns={tableColumns}
         data={tableData}
         renderRow={(item) => <RenderRowData item={item} columns={tableColumns} />}
-      />
-      {isSendModalOpen && (
-        <SendModal
-          isOpen={isSendModalOpen}
-          onClose={() => setIsSendModalOpen(false)}
-          spotDefaultName={selectedToken}
-        />
-      )}
+      /> */}
     </div>
   )
 }

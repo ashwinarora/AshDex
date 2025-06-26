@@ -104,30 +104,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 TWAP
               </button>
             </DropdownMenuItem> */}
-            <DropdownMenuItem asChild>
-              <button
-                onClick={() => setActiveTab('SCALE')}
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
-              >
-                Scale
-              </button>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <button
-                onClick={() => setActiveTab('STOP_LIMIT')}
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
-              >
-                Stop Limit
-              </button>
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <button
-                onClick={() => setActiveTab('STOP_MARKET')}
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
-              >
-                Stop Market
-              </button>
-            </DropdownMenuItem>
+            {availableOptions.map((option) => (
+              <DropdownMenuItem className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground" key={option.value} onClick={() => setActiveTab(option.value as OrderTab)}>
+                {option.label}
+              </DropdownMenuItem>
+            ))}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

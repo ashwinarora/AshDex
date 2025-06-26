@@ -2,8 +2,15 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
-import SmallModal from '../../../common/SmallModal'
 import { AssetPosition } from '@nktkas/hyperliquid'
+import { Button } from '@/components/ui/button'
+import { IconChevronDown } from '@tabler/icons-react'
+import { Input } from '@/components/ui/input'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { Slider } from '@/components/ui/slider'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
 
 interface MarketCloseModalProps {
   isOpen: boolean
@@ -17,7 +24,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
-  const [percent, setPercent] = useState<number>(100)
+  const [percent, setPercent] = useState<number>(0)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
 
   useEffect(() => {
@@ -165,82 +172,82 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   }
 
   return (
-    <SmallModal isOpen={isOpen} onClose={onClose} heading="Market Close">
-      <div className="space-y-4">
-        <div>
-          <label className="block mb-1 font-medium text-[#8B8BA0] text-sm">Size</label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              value={size}
-              onChange={(e) => {
-                if (!perpsMeta) return
-                const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
-                const szDecimals = perpsMeta.universe[assetIndex].szDecimals
-                setSize(trimDecimals(e.target.value, szDecimals))
-                setLastChanged('size')
-              }}
-              className="flex-1 bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none text-white"
-              placeholder="Enter size"
-            />
-            <select
-              value={sizeType}
-              onChange={(e) => setSizeType(e.target.value as 'asset' | 'usd')}
-              className="bg-[#322944] px-3 py-2 border border-white/10 focus:border-[#7D67FF] rounded-lg focus:outline-none text-white"
-            >
-              <option value="asset">{closingAsset}</option>
-              <option value="usd">USD</option>
-            </select>
-          </div>
-          {position && (
-            <>
-              <div className="flex items-center mt-4">
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={0.01}
-                  value={percent}
-                  onChange={(e) => {
-                    setPercent(Number(e.target.value))
-                    setLastChanged('percent')
-                  }}
-                  className="bg-[#231B36] rounded-lg focus:outline-none w-full h-2 accent-[#7D67FF] appearance-none slider-thumb"
-                  style={{ accentColor: '#7D67FF' }}
-                />
-                <div className="flex justify-center items-center bg-[#231B36] ml-4 px-4 py-2 border border-white/10 rounded-lg min-w-[90px] font-medium text-white text-lg text-center whitespace-nowrap">
-                  {percent.toFixed(2)} %
-                </div>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className='flex flex-col gap-4'>
+        <DialogHeader>
+          <DialogTitle>Market Close</DialogTitle>
+          <DialogDescription>
+            Close your position at the current market price.
+          </DialogDescription>
+        </DialogHeader>
+        <div className='flex flex-col gap-4'>
+          <div className='flex flex-col gap-1'>
+            <h1 className='text-xs text-white/50'>Size</h1>
+            <div className='flex w-full items-center gap-2'>
+              <Input
+                type="number"
+                value={size}
+                className='text-white flex-1 text-left h-9'
+                onChange={(e) => {
+                  if (!perpsMeta) return
+                  const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
+                  const szDecimals = perpsMeta.universe[assetIndex].szDecimals
+                  setSize(trimDecimals(e.target.value, szDecimals))
+                  setLastChanged('size')
+                }}
+                placeholder="Enter Size"
+              />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant='outline' size='icon' className='h-9 w-20'>
+                    <span>{sizeType === 'asset' ? closingAsset : 'USD'}</span>
+                    <IconChevronDown className='size-4' />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align='end' className='w-20'>
+                  <DropdownMenuItem onClick={() => setSizeType('asset')}>
+                    <span>{closingAsset}</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setSizeType('usd')}>
+                    <span>USD</span>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className='flex w-full items-center gap-2 mt-1'>
+              <Slider
+                min={0}
+                max={100}
+                step={0.01}
+                value={[percent]}
+                onValueChange={(value) => {
+                  setPercent(Math.round(value[0]))
+                  setLastChanged('percent')
+                }}
+                className='flex-1'
+              />
+              <div className='flex bg-white/5 p-2 rounded-md w-16 items-center justify-center gap-2'>
+                <span className='text-xs text-white/50'>{percent.toFixed(2)}%</span>
               </div>
-              {/* Estimated PnL */}
-              {estPnl !== null && (
-                <div className="mt-2 text-sm">
-                  Estimated closed PnL (without fees):
-                  <span
-                    className={
-                      'ml-1 font-semibold ' +
-                      (estPnl > 0 ? 'text-[#3FE17C]' : estPnl < 0 ? 'text-[#FF5A5A]' : 'text-white')
-                    }
-                  >
-                    {estPnl > 0 ? '+' : ''}$
-                    {estPnl.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2
-                    })}
-                  </span>
-                </div>
-              )}
-            </>
-          )}
+            </div>
+          </div>
         </div>
-        <button
-          onClick={handleClosePosition}
-          className="bg-[#7D67FF] hover:bg-[#6B57E6] py-2 rounded-lg w-full font-medium text-white transition"
-        >
-          Close Position
-        </button>
-      </div>
-    </SmallModal>
+        <div className="flex items-center gap-2">
+          <span className='text-xs text-white/50'>Estimated closed PnL (without fees):</span>
+          <span className={cn('text-xs text-white/50', estPnl ? estPnl > 0 ? 'text-green' : estPnl < 0 ? 'text-red' : 'text-white' : 'text-white/50')}>
+            {estPnl ? estPnl > 0 ? '+' : '' : ''}$
+            {estPnl ? estPnl.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            }) : '0.00'}
+          </span>
+        </div>
+        <Separator />
+        <Button onClick={handleClosePosition} className='w-full'>
+          Confirm
+        </Button>
+      </DialogContent>
+    </Dialog>
   )
 }
 

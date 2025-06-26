@@ -5,6 +5,7 @@ import FavoriteItem from './FavoriteItem'
 import useIsSpot from '@/hooks/useIsSpot'
 import { ToggleGroup } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
+import { Fragment } from 'react'
 
 const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const isSpot = useIsSpot()
@@ -19,33 +20,14 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           onValueChange={setSelectedAsset}
         >
           {Array.from(favorites).map((favorite) => (
-            <>
+            <Fragment key={favorite}>
               <FavoriteItem assetKey={favorite} />
               <Separator orientation="vertical" className="!h-full last:hidden" />
-            </>
+            </Fragment>
           ))}
         </ToggleGroup>
       </div>
     </div>
-    // <div className="relative flex bg-secondary px-1 pt-1 pb-2 rounded-md w-full h-fit overflow-hidden">
-    //   <Splide
-    //     aria-label="My Favorite Tokens"
-    //     options={{
-    //       drag: true,
-    //       pagination: false,
-    //       arrows: false,
-    //       rewind: true,
-
-    //       autoWidth: true
-    //     }}
-    //   >
-    //     {Array.from(favorites).map((assetKey) => (
-    //       <SplideSlide key={assetKey}>
-    //         <FavoriteItem assetKey={assetKey} setSelectedAsset={setSelectedAsset} />
-    //       </SplideSlide>
-    //     ))}
-    //   </Splide>
-    // </div>
   )
 }
 

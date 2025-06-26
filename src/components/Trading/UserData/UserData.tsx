@@ -68,7 +68,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
 
   return (
     <div className="w-full h-full rounded-md flex flex-col gap-2 p-2">
-      <div className="w-full h-fit flex items-center justify-start">
+      <div className="w-2/3 h-fit flex items-center justify-start">
         <ToggleGroup
           type="single"
           className="w-full bg-white/5 rounded-md"
@@ -91,8 +91,8 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
           ))}
         </ToggleGroup>
       </div>
-      <div className="w-full h-full rounded-md overflow-y-auto no-scrollbar">
-        {tabs[activeTab] && <div>{tabs[activeTab].element}</div>}
+      <div className="w-full h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
+        {tabs[activeTab] && <div className='w-full h-full'>{tabs[activeTab].element}</div>}
       </div>
     </div>
   )
