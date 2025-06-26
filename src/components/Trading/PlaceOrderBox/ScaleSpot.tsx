@@ -11,12 +11,19 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { toast } from 'react-toastify'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { IconCheckbox, IconRefresh, IconSquare, IconInfoSquare, IconChevronDown, IconMinus, IconPlus } from '@tabler/icons-react'
+import {
+  IconCheckbox,
+  IconRefresh,
+  IconSquare,
+  IconInfoSquare,
+  IconChevronDown,
+  IconMinus,
+  IconPlus
+} from '@tabler/icons-react'
 import { DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { IconRefresh } from '@tabler/icons-react'
 import { ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup } from '@/components/ui/toggle-group'

@@ -14,7 +14,15 @@ import { toast } from 'react-toastify'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconCheckbox, IconRefresh, IconSquare, IconInfoSquare, IconChevronDown, IconMinus, IconPlus } from '@tabler/icons-react'
+import {
+  IconCheckbox,
+  IconRefresh,
+  IconSquare,
+  IconInfoSquare,
+  IconChevronDown,
+  IconMinus,
+  IconPlus
+} from '@tabler/icons-react'
 import {
   DropdownMenu,
   DropdownMenuContent,

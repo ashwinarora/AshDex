@@ -3,7 +3,6 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getSpotAssetContext } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { IconExternalLink, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
@@ -11,7 +10,19 @@ import SpotTable from './SpotTable'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Separator } from '@/components/ui/separator'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { IconAdjustmentsDollar, IconBrain, IconChevronDown, IconDeviceGamepad2, IconMeteor, IconRosette, IconShieldCheck, IconShieldQuestion, IconStar, IconStarFilled } from '@tabler/icons-react'
+import {
+  IconAdjustmentsDollar,
+  IconExternalLink,
+  IconBrain,
+  IconChevronDown,
+  IconDeviceGamepad2,
+  IconMeteor,
+  IconRosette,
+  IconShieldCheck,
+  IconShieldQuestion,
+  IconStar,
+  IconStarFilled
+} from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'

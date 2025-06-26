@@ -3,7 +3,18 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { IconAdjustmentsDollar, IconBrain, IconChevronDown, IconDeviceGamepad2, IconMeteor, IconRosette, IconShieldCheck, IconShieldQuestion, IconStar, IconStarFilled } from '@tabler/icons-react'
+import {
+  IconAdjustmentsDollar,
+  IconBrain,
+  IconChevronDown,
+  IconDeviceGamepad2,
+  IconMeteor,
+  IconRosette,
+  IconShieldCheck,
+  IconShieldQuestion,
+  IconStar,
+  IconStarFilled
+} from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'

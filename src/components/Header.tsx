@@ -21,7 +21,13 @@ import {
 } from './ui/dropdown-menu'
 import { Button } from './ui/button'
 import { cn } from '@/lib/utils'
-import { IconChevronDown, IconCopy, IconLogout, IconSettings, IconWallet } from '@tabler/icons-react'
+import {
+  IconChevronDown,
+  IconCopy,
+  IconLogout,
+  IconSettings,
+  IconWallet
+} from '@tabler/icons-react'
 type MenuItem = {
   name: string
   path: string
