@@ -37,7 +37,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         element: <Balances />
       },
       {
-        header: `Open Orders`,
+        header: `Open Orders (${openOrdersLength})`,
         count: openOrdersLength,
         element: <OpenOrders />
       },
@@ -52,7 +52,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     ]
     if (!isSpot) {
       tabs.splice(1, 0, {
-        header: `Positions `,
+        header: `Positions (${positionsCount})`,
         count: positionsCount,
         element: <Positions setSelectedAsset={setSelectedAsset} />
       })
