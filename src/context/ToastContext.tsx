@@ -41,14 +41,13 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const options: ToastOptions = {
       position: popupPosition,
       autoClose: 3000,
-      className: '!bg-secondary !shadow-md !backdrop-blur-[40px] !border !border-white/10 !flex !items-center !gap-2',
+      className:
+        '!bg-secondary !shadow-md !backdrop-blur-[40px] !border !border-white/10 !flex !items-center !gap-2',
       closeButton: true,
       hideProgressBar: true,
       onClose: () => console.log(`Toast closed: ${title}`)
     }
-    const content = (
-      <Toaster type={type} title={title} message={message} />
-    )
+    const content = <Toaster type={type} title={title} message={message} />
     if (type === 'success') toast.success(content, options)
     else if (type === 'error') toast.error(content, options)
   }
