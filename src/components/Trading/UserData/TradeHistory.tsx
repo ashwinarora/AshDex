@@ -10,11 +10,9 @@ import {
   flexRender,
   SortingState
 } from '@tanstack/react-table'
-import { ITradeHistory } from '@/utils/hyperliquid/hyperLiquidTypes'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { hyperliquidAxios } from '@/config/axios'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import {
@@ -26,6 +24,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { Fill } from '@nktkas/hyperliquid'
 
 type ColumnType = {
   key: string
@@ -38,7 +38,7 @@ type RenderRowProps = {
   columns: ColumnType[]
 }
 
-const columnHelper = createColumnHelper<ITradeHistory & { meta?: { label: string } }>()
+const columnHelper = createColumnHelper<Fill>()
 
 const columns = [
   columnHelper.accessor('time', {
@@ -104,23 +104,24 @@ const TradeHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
+  const { sdkInfoClient } = useHyperliquid()
 
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  const { data: tradeHistory } = useQuery<ITradeHistory[]>({
+  const { data: tradeHistory } = useQuery<Fill[]>({
     queryKey: ['tradeHistory', address],
     queryFn: async () => {
-      const response = await hyperliquidAxios.post('/info', {
-        type: 'userFills',
-        user: address,
-        aggregateByTime: true
+      if (!address) return []
+      if (!sdkInfoClient) return []
+      const response = await sdkInfoClient?.userFills({
+        user: address
       })
-      return response.data
+      return response
     },
-    enabled: !!address && !!hyperliquidAxios,
+    enabled: !!address && !!sdkInfoClient,
     initialData: []
   })
 

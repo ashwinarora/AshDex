@@ -12,6 +12,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
+import { toast } from 'react-toastify'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -28,8 +29,8 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const onWithdrawClick = async () => {
     if (!chainId) return
     if (!address) return
+    const toastId = toast.loading('Signing in progress…')
     try {
-      setIsLoading(true)
       const payload = getWithrawalPayload({
         chainId: chainId,
         isTestnet: isTestnet,
@@ -38,6 +39,12 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         nonce: Date.now()
       })
       const sign = await signTypedDataAsync(payload)
+      setIsLoading(true)
+      toast.update(toastId, {
+        render: 'Withdrawal in progress…',
+        type: 'info',
+        isLoading: true
+      })
       const body = {
         action: {
           type: payload.message.type,
@@ -51,11 +58,21 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         signature: splitSignature(sign)
       }
       const res = await hyperliquidAxios.post('/exchange', body)
-      setIsLoading(false)
-      onClose()
       console.log('Withdraw response:', res)
+      toast.update(toastId, {
+        render: 'Withdrawal confirmed.',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
     } catch (error) {
       console.error('Error withdrawing:', error)
+      toast.update(toastId, {
+        render: 'Withdrawal failed. Please try again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 2000
+      })
     }
   }
 

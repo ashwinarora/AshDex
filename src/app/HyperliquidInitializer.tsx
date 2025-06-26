@@ -14,12 +14,18 @@ const HyperLiquidInitializer = () => {
     unsubscribeFromAllMids,
     subscribeWebData2,
     unsubscribeWebData2,
-    checkWebSocketStatus
+    checkWebSocketStatus,
+    updateUserActiveAddress
   } = useInitHyperliquid()
 
   useEffect(() => {
     initSdk(address ?? zeroAddress)
   }, [address, initSdk])
+
+  useEffect(() => {
+    if (!address) return
+    updateUserActiveAddress(address)
+  }, [address, updateUserActiveAddress])
 
   useEffect(() => {
     if (!sdkSubscriptionClient) return

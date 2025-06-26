@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
-import { useToast } from '@/context/ToastContext'
 import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
 import { toHumanNumber, toRealNumber } from '@/utils/utils'
@@ -12,6 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import Loading from '../common/Loading'
+import { toast } from 'react-toastify'
 
 interface DepositModalProps {
   isOpen: boolean
@@ -20,7 +20,6 @@ interface DepositModalProps {
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { address } = useAccount()
-  const { showToast } = useToast()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
@@ -37,6 +36,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
 
   const onDepositClick = async () => {
     if (!usdc) return
+    const toastId = toast.loading('Deposit in progress…')
     try {
       setIsLoading(true)
       await writeContractAsync({
@@ -47,13 +47,20 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       })
       setIsLoading(false)
       onClose()
-      showToast(
-        'success',
-        'Deposit confirmed. Balance will update on the next block.',
-        `<span className="text-green">Arbiscan Link</span>`
-      )
+      toast.update(toastId, {
+        render: 'Deposit confirmed. Balance will update on the next block.',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
     } catch (error) {
       console.error('Deposit error:', error)
+      toast.update(toastId, {
+        render: 'Deposit failed. Please try again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 2000
+      })
     }
   }
 

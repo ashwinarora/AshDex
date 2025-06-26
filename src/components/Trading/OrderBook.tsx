@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react'
 import Image from 'next/image'
-import type { WsBook, WsLevel } from '../../utils/hyperliquid/hyperLiquidTypes'
 import Filter1 from '../../assets/images/tabler-icon-layout-filled.svg'
 import Filter2 from '../../assets/images/tabler-icon-layout-filledAlt.svg'
 import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
@@ -21,8 +20,9 @@ import {
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
-import { EventL2BookParameters } from '@nktkas/hyperliquid'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
+import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -31,7 +31,7 @@ interface IOrderBookProps {
 
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquid()
-  const [l2Book, setL2Book] = useState<WsBook>()
+  const [l2Book, setL2Book] = useState<Book>()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -46,6 +46,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   })
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
+  const { spotKeyToName } = useSpotMeta()
 
   useEffect(() => {
     if (!sdkSubscriptionClient || !selectedAsset) return
@@ -55,7 +56,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
 
     const nSigFigs = Number(selectedPrecision.value)
     let mantissa = null
-    const handler = (data: WsBook) => {
+    const handler = (data: Book) => {
       if (isMounted) {
         setL2Book(data)
         setIsLoading(false)
@@ -105,7 +106,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
-  const processOrders = (orders: WsLevel[]) => {
+  const processOrders = (orders: BookLevel[]) => {
     let runningTotal = 0
     return orders.map((order) => {
       runningTotal += Number(order.sz)
@@ -232,7 +233,9 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               className="text-xs w-20 flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
-              <p className="text-xs flex-1 w-full">{showPriceInUSD ? 'USD' : selectedAsset}</p>
+              <p className="text-xs flex-1 w-full">
+                {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+              </p>
               <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -249,7 +252,9 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                 setShowPriceInUSD(false)
               }}
             >
-              <p className="text-xs w-full text-center">{selectedAsset}</p>
+              <p className="text-xs w-full text-center">
+                {spotKeyToName.get(selectedAsset) ?? selectedAsset}
+              </p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -258,10 +263,10 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
       <div className="flex items-center justify-between px-2">
         <p className="font-medium text-xs text-left">Price </p>
         <p className="font-medium text-xs text-center flex-1">
-          Amount ({showPriceInUSD ? 'USD' : selectedAsset})
+          Amount ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
         <p className="font-medium text-xs text-right">
-          Total ({showPriceInUSD ? 'USD' : selectedAsset})
+          Total ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/5 -mb-1" />

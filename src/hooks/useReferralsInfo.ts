@@ -1,12 +1,12 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-import type { ReferralData } from '@/utils/hyperliquid/hyperLiquidTypes'
 import { hyperliquidAxios } from '@/config/axios'
+import { Referral } from '@nktkas/hyperliquid'
 
 export const useReferralsInfo = () => {
   const { isConnected, address } = useAccount()
-  return useQuery<ReferralData>({
+  return useQuery<Referral>({
     queryKey: ['referralsDetails', address],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {

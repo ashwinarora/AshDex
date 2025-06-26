@@ -424,10 +424,6 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
     [helper, isAgentApproved, currentFeeApproval, openAgentModal]
   )
 
-  useEffect(() => {
-    console.log(openAgentModal)
-  }, [openAgentModal])
-
   const tableData = useMemo(() => {
     if (!clearingHouseState?.assetPositions) return []
     return clearingHouseState.assetPositions.map((pos) => pos.position)
