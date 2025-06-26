@@ -414,7 +414,7 @@ const OpenOrders = () => {
   }
 
   if (!mounted) {
-    return <div className="px-3 w-full h-40 overflow-x-auto"></div>
+    return <div className="w-full h-full bg-secondary"></div>
   }
 
   return (

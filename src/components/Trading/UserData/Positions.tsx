@@ -440,7 +440,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   })
 
   if (!mounted) {
-    return <div className="px-3 lg:px-4 w-full h-40 overflow-x-auto"></div>
+    return <div className="w-full h-full bg-secondary"></div>
   }
 
   if (!isConnected) {
@@ -497,7 +497,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
         </TableHeader>
         <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id + Math.random()}>
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}

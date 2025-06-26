@@ -6,10 +6,20 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { ToggleGroup } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
 import { Fragment } from 'react'
+import { IconStar } from '@tabler/icons-react'
 
 const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const isSpot = useIsSpot()
   const { favorites } = useFavorites(isSpot)
+
+  if (favorites.size === 0) {
+    return (
+      <div className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md w-full !h-10 overflow-hidden">
+        <IconStar className="size-3 text-white/20" />
+        <p className="text-white/20 text-sm">No token added to favorites</p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex bg-secondary p-1 rounded-md w-full !h-10 overflow-hidden">

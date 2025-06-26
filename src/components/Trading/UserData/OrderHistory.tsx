@@ -271,7 +271,7 @@ const OrderHistoryTable: React.FC = () => {
 
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
-    return <div className="dark:bg-gray-800 p-4 h-40 overflow-x-auto dark:text-gray-100"></div>
+    return <div className="w-full h-full bg-secondary"></div>
   }
 
   return (
