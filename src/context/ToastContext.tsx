@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { ReactNode } from 'react'
 import { ToastPosition, toast, ToastContainer, ToastOptions } from 'react-toastify'
 import { useUser } from './UserContext'
+import Toaster from '@/components/common/Toaster'
 
 type ToastType = 'success' | 'error'
 
@@ -40,15 +41,13 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const options: ToastOptions = {
       position: popupPosition,
       autoClose: 3000,
+      className: '!bg-secondary !shadow-md !backdrop-blur-[40px] !border !border-white/10 !flex !items-center !gap-2',
       closeButton: true,
       hideProgressBar: true,
       onClose: () => console.log(`Toast closed: ${title}`)
     }
     const content = (
-      <div>
-        <strong>{title}</strong>
-        <div>{message}</div>
-      </div>
+      <Toaster type={type} title={title} message={message} />
     )
     if (type === 'success') toast.success(content, options)
     else if (type === 'error') toast.error(content, options)

@@ -290,7 +290,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               .map((sell, index) => (
                 <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                    <p className="font-medium text-xs text-left flex-1">{sell.px}</p>
+                    <p className="font-medium text-xs text-left flex-1 text-red">{sell.px}</p>
                     <p className="font-medium text-xs">{sell.sz}</p>
                     {showPriceInUSD ? (
                       <ReactiveText
@@ -347,7 +347,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
             {barData?.buys.map((buy, index) => (
               <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
                 <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                  <p className="font-medium text-xs text-left flex-1">{buy.px}</p>
+                  <p className="font-medium text-xs text-left flex-1 text-green">{buy.px}</p>
                   <p className="font-medium text-xs">{buy.sz}</p>
                   {showPriceInUSD ? (
                     <ReactiveText
