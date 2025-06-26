@@ -46,7 +46,7 @@ html {
   --muted-foreground: oklch(0.554 0.046 257.417);
   --accent: #1c1033;
   --accent-foreground: #5e46f9;
-  --destructive: oklch(0.577 0.245 27.325);
+  --destructive: #e2464a;
   --border: #27163c;
   --input: oklch(0.929 0.013 255.508);
   --ring: #1c1033;

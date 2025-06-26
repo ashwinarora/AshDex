@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
-import { IconCheckbox, IconChevronDown, IconInfoSquare, IconSquare } from '@tabler/icons-react'
+import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -117,7 +117,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3 px-2">
+        <div className="flex items-center justify-center h-fit gap-2 px-2 pb-1">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -126,24 +126,14 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <IconInfoSquare className="size-3" />
-          </Toggle>
-          <Toggle
-            size={'sm'}
-            className="bg-white/5"
-            pressed={isPostOnly}
-            onPressedChange={setIsPostOnly}
-          >
-            {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Post Only</p>
-            <IconInfoSquare className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
+                  'bg-white/5 flex-2 text-xs',
                   tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
                 )}
                 size={'sm'}
@@ -162,24 +152,21 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               />
             </PopoverContent>
           </Popover>
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isPostOnly}
+            onPressedChange={setIsPostOnly}
+          >
+            {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
+            <p className="text-xs font-semibold">Post Only</p>
+            <IconInfoCircle className="size-3" />
+          </Toggle>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col gap-3 mt-2">
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={limitPrice}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
-        <div className="flex w-full flex-col gap-3 px-2 pb-2 text-xs">
+      <div className="w-full h-full flex flex-col gap-2 my-2">
+        {/* <Separator orientation="horizontal" /> */}
+        <div className="flex w-full flex-col gap-2 px-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -203,6 +190,20 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={limitPrice}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={isPostOnly}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+          />
         </div>
       </div>
     </div>

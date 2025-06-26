@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input'
 import SetPrice from './components/SetPrice'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { IconCheckbox, IconChevronDown, IconInfoSquare, IconSquare } from '@tabler/icons-react'
+import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquid()
@@ -149,11 +149,9 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-          <div className="flex items-center justify-between gap-3">
             <p className="font-medium text-white/50 text-xs whitespace-nowrap">
               Market price (USD)
             </p>
-          </div>
           <SetPrice
             selectedAsset={selectedAsset}
             limitPrice={getFormattedPrice()}
@@ -187,7 +185,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-full gap-3 px-2">
+        <div className="flex items-center justify-center h-full gap-2 px-2 pb-1">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -196,8 +194,32 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <IconInfoSquare className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-2 text-xs',
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                TP/SL
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <TPSL
+                limitPrice={getFormattedPrice()}
+                isBuy={isBuy}
+                leverage={leverage}
+                tpsl={tpsl}
+                setTpsl={setTpsl}
+              />
+            </PopoverContent>
+          </Popover>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -264,48 +286,11 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </PopoverContent>
           </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={cn(
-                  'bg-white/5 flex-1 text-xs',
-                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
-                )}
-                size={'sm'}
-              >
-                TP/SL
-                <IconChevronDown className="size-3" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end">
-              <TPSL
-                limitPrice={getFormattedPrice()}
-                isBuy={isBuy}
-                leverage={leverage}
-                tpsl={tpsl}
-                setTpsl={setTpsl}
-              />
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col gap-3 mt-2">
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={getFormattedPrice()}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={false}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
-        <div className="flex w-full flex-col gap-3 px-2 pb-2 text-xs">
+      <div className="w-full h-full flex flex-col gap-2 my-2">
+        {/* <Separator orientation="horizontal" /> */}
+        <div className="flex w-full flex-col gap-2 px-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -329,6 +314,20 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={getFormattedPrice()}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={false}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+          />
         </div>
       </div>
     </div>

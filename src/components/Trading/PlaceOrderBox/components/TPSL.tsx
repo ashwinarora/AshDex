@@ -1,5 +1,5 @@
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
 
 interface TPSLProps {
   limitPrice: string
@@ -153,9 +153,9 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   return (
     <div className="w-full flex flex-col gap-4">
       <div className="flex items-center space-x-2">
-        <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} />
+        {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
         <label htmlFor="tpsl" className="text-xs font-semibold">
-          Use TP/SL
+          Set Take Profit and Stop Loss Values
         </label>
       </div>
       <div className="flex flex-col gap-2 w-full">
@@ -172,7 +172,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right flex-1"
               value={tpsl.takeProfit || ''}
               onChange={handleTakeProfitValueChange}
@@ -181,7 +180,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right w-16"
               value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
               onChange={handleTakeProfitPercentageChange}
@@ -202,7 +200,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right flex-1"
               value={tpsl.stopLoss || ''}
               onChange={handleStopLossValueChange}
@@ -211,7 +208,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right w-16"
               value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
               onChange={handleStopLossPercentageChange}
@@ -220,6 +216,9 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           </div>
         </div>
       </div>
+      <Button size="sm" variant={tpsl.isTpsl ? 'destructive' : 'default'} onClick={() => setIsTpsl(!tpsl.isTpsl)} className="w-full">
+        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+      </Button>
     </div>
   )
 }

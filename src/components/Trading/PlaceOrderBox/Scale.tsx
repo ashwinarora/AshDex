@@ -18,7 +18,7 @@ import {
   IconCheckbox,
   IconRefresh,
   IconSquare,
-  IconInfoSquare,
+  IconInfoCircle,
   IconChevronDown,
   IconMinus,
   IconPlus
@@ -263,7 +263,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <MarginMode isCross={isCross} setIsCross={setIsCross} />
           <LeverageMargin
             selectedAsset={selectedAsset}
@@ -272,7 +272,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <label htmlFor="startPrice" className="text-xs text-white/50">
             Start Price
           </label>
@@ -293,7 +293,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   size={'sm'}
                   disabled
                   className="text-xs min-w-18 w-fit flex items-center justify-start"
-                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
                   <IconChevronDown className="size-3" />
@@ -310,7 +310,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <label htmlFor="endPrice" className="text-xs text-white/50">
             End Price
           </label>
@@ -325,9 +325,9 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-start"
+              className="text-xs min-w-18 w-fit flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-              onClick={() => {}}
+              onClick={() => { }}
             >
               <IconRefresh className="size-3" />
               Last
@@ -336,7 +336,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <div className="flex items-center justify-between">
             <label htmlFor="percent" className="text-xs text-white/50">
               Total Size
@@ -357,7 +357,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   variant="outline"
                   size={'sm'}
                   className="text-xs min-w-18 w-fit flex items-center justify-start"
-                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
                   <IconChevronDown className="size-3" />
@@ -373,7 +373,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-1 mt-2 flex-col gap-3 w-full items-center justify-center">
+          <div className="flex flex-1 mt-1 flex-col gap-2 w-full items-center justify-center">
             <Slider
               min={1}
               max={100}
@@ -404,7 +404,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3 px-2">
+        <div className="flex items-center justify-center h-fit gap-2 px-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -413,7 +413,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <IconInfoSquare className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
@@ -430,7 +430,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="orderCount" className="text-xs text-white/50">
                   Order Count
                 </label>
@@ -471,25 +471,23 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="sizeSkew" className="text-xs text-white/50">
                   Size Skew
                 </label>
-                <div className="flex items-center gap-3 rounded-lg">
-                  <Input
-                    type="text"
-                    value={sizeSkew}
-                    onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
-                    placeholder="0"
-                    className="text-white"
-                  />
-                </div>
+                <Input
+                  type="text"
+                  value={sizeSkew}
+                  onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
+                  placeholder="0"
+                  className="text-white"
+                />
               </div>
             </PopoverContent>
           </Popover>
         </div>
       </div>
-      <div className="w-full h-fit flex flex-col gap-3 my-3">
+      <div className="w-full h-fit flex flex-col gap-2 my-3">
         <Separator orientation="horizontal" />
         <div className="w-full h-fit px-2">
           {!isAgentApproved || currentFeeApproval === 0 ? (

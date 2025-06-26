@@ -10,7 +10,7 @@ import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { Button } from '@/components/ui/button'
-import { IconCheckbox, IconInfoSquare, IconSquare } from '@tabler/icons-react'
+import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 
 const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids } = useHyperliquid()
@@ -88,7 +88,7 @@ const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <IconInfoSquare className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
         </div>
       </div>

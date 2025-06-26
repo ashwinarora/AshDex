@@ -15,7 +15,7 @@ import {
   IconCheckbox,
   IconRefresh,
   IconSquare,
-  IconInfoSquare,
+  IconInfoCircle,
   IconChevronDown,
   IconMinus,
   IconPlus
@@ -249,7 +249,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-start"
+              className="text-xs min-w-18 w-fit flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={() => {}}
             >
@@ -296,7 +296,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-1 mt-2 flex-col gap-3 w-full items-center justify-center">
+          <div className="flex flex-1 mt-1 flex-col gap-3 w-full items-center justify-center">
             <Slider
               min={1}
               max={100}
@@ -336,7 +336,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <IconInfoSquare className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
