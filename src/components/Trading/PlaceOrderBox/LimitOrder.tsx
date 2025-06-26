@@ -14,11 +14,11 @@ import { calculateLiquidationPrice } from '@/utils/utils'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { Toggle } from '@/components/ui/toggle'
-import { CheckSquare, ChevronDown, InfoIcon, Square } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
+import { IconCheckbox, IconChevronDown, IconInfoSquare, IconSquare } from '@tabler/icons-react'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -124,9 +124,9 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
-            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoSquare className="size-3" />
           </Toggle>
           <Toggle
             size={'sm'}
@@ -134,9 +134,9 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             pressed={isPostOnly}
             onPressedChange={setIsPostOnly}
           >
-            {isPostOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Post Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoSquare className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
@@ -149,7 +149,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 TP/SL
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">

@@ -14,7 +14,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
@@ -92,7 +92,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               )}
             >
               {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
-              <ChevronDown className="size-4" />
+              <IconChevronDown className="size-4" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

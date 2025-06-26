@@ -19,10 +19,10 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
-import { ChevronDown, ChevronDownIcon, ChevronUpIcon } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { EventL2BookParameters } from '@nktkas/hyperliquid'
+import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -202,7 +202,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{selectedPrecision.label}</p>
-              <ChevronDown className="size-3" />
+              <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-20 flex flex-col gap-1" align="end">
@@ -233,7 +233,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{showPriceInUSD ? 'USD' : selectedAsset}</p>
-              <ChevronDown className="size-3" />
+              <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-20 flex flex-col gap-1" align="end">
@@ -329,9 +329,9 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               >
                 ${allMids[selectedAsset]}
                 {priceChange === 'up' ? (
-                  <ChevronUpIcon className="size-4" />
+                  <IconChevronDown className="size-4" />
                 ) : priceChange === 'down' ? (
-                  <ChevronDownIcon className="size-4" />
+                  <IconChevronUp className="size-4" />
                 ) : (
                   ''
                 )}

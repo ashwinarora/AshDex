@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useAccount, useReadContract, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
-import { ChevronDown } from 'lucide-react'
 import Image from 'next/image'
 import { useToast } from '@/context/ToastContext'
 import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
@@ -11,6 +10,7 @@ import Loading from '../common/Loading'
 import SmallModal from '../common/SmallModal'
 import arbitrum from '@/assets/images/arbitrum.svg'
 import usdcicon from '@/assets/images/usdc_icon.svg'
+import { IconChevronDown } from '@tabler/icons-react'
 
 interface DepositModalProps {
   isOpen: boolean
@@ -72,7 +72,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
               <select id="chain" className="appearance-none focus:outline-none">
                 <option value="ethereum">Arbitrum</option>
               </select>
-              <ChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+              <IconChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
             </div>
           </div>
           <div className="flex flex-col items-center gap-y-2 mb-6">

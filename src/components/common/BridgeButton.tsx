@@ -4,7 +4,7 @@ import BridgeModal from '../Bridge/BridgeModal'
 import { SolanaWalletProvider } from '../Bridge/SolanaButton'
 import { TronWalletProvider } from '../Bridge/TronProvider'
 import { Button } from '../ui/button'
-import { WaypointsIcon } from 'lucide-react'
+import { IconBuildingBridge } from '@tabler/icons-react'
 // Create a singleton instance of AppKit
 
 const BridgeButton = () => {
@@ -18,13 +18,7 @@ const BridgeButton = () => {
         variant={'outline'}
         size={'sm'}
       >
-        {/* <Image
-          style={{ width: 20, height: 'auto' }}
-          src={bridgingbtnlogo}
-          alt="bridgingbtnlogo"
-          className="w-5 h-5"
-        /> */}
-        <WaypointsIcon className="size-4" />
+        <IconBuildingBridge className="size-4" />
         Bridge
       </Button>
       <SolanaWalletProvider>

@@ -11,7 +11,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { toast } from 'react-toastify'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { CheckSquare, ChevronDown, InfoIcon, MinusIcon, PlusIcon, Square } from 'lucide-react'
+import { IconCheckbox, IconRefresh, IconSquare, IconInfoSquare, IconChevronDown, IconMinus, IconPlus } from '@tabler/icons-react'
 import { DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
@@ -216,7 +216,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{'USDC'}</p>
-                  <ChevronDown className="size-3" />
+                  <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-fit" align="end">
@@ -279,7 +279,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
-                  <ChevronDown className="size-3" />
+                  <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-fit" align="end">
@@ -327,9 +327,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
-            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoSquare className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
@@ -342,7 +342,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 Order Count
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
@@ -352,7 +352,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
-                    <MinusIcon className="size-3" />
+                    <IconMinus className="size-3" />
                   </Button>
                   <Input
                     type="text"
@@ -364,7 +364,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                     className="text-white placeholder:text-white"
                   />
                   <Button onClick={handleIncrease} size={'sm'} variant={'outline'}>
-                    <PlusIcon className="size-3" />
+                    <IconPlus className="size-3" />
                   </Button>
                 </div>
               </div>
@@ -383,7 +383,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 Skew
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">

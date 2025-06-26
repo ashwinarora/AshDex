@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import Image from 'next/image'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
@@ -30,7 +30,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <select id="chain" className="appearance-none focus:outline-none">
               <option value="ethereum">Arbitrum</option>
             </select>
-            <ChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
+            <IconChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
           </div>
         </div>
         <div className="flex flex-col items-center gap-y-2 mb-8">

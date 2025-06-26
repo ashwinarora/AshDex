@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 
 interface AmountInputSpotProps {
@@ -159,7 +159,7 @@ const AmountInputSpot = ({
               <p className="text-xs flex-1 w-full">
                 {isInputUsd ? 'USD' : spotKeyToName.get(selectedAsset)}
               </p>
-              <ChevronDown className="size-3" />
+              <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent className="w-fit" align="end">

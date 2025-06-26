@@ -1,6 +1,6 @@
+import { IconX } from '@tabler/icons-react'
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { X } from 'lucide-react'
 
 interface SmallModalProps {
   isOpen: boolean
@@ -34,7 +34,7 @@ const SmallModal: React.FC<SmallModalProps> = ({ isOpen, onClose, heading, child
             onClick={onClose}
             aria-label="Close"
           >
-            <X className="w-5 h-5" />
+            <IconX className="w-5 h-5" />
           </button>
         </div>
         {children}

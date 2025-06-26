@@ -3,21 +3,12 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { IconStar, IconStarFilled } from '@tabler/icons-react'
+import { IconAdjustmentsDollar, IconBrain, IconChevronDown, IconDeviceGamepad2, IconMeteor, IconRosette, IconShieldCheck, IconShieldQuestion, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
-import {
-  BadgePlusIcon,
-  BrainCircuitIcon,
-  ChevronDownIcon,
-  HandCoinsIcon,
-  ShieldCheckIcon,
-  SmileIcon
-} from 'lucide-react'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Gamepad2Icon, ShieldQuestionIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -74,11 +65,11 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   // const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
   const tabs = [
     { label: 'All' },
-    { label: 'New', icon: <BadgePlusIcon className="size-3" /> },
-    { label: 'AI', icon: <BrainCircuitIcon className="size-3" /> },
-    { label: 'Defi', icon: <HandCoinsIcon className="size-3" /> },
-    { label: 'Gaming', icon: <Gamepad2Icon className="size-3" /> },
-    { label: 'Meme', icon: <SmileIcon className="size-3" /> }
+    { label: 'New', icon: <IconRosette className="size-3" /> },
+    { label: 'AI', icon: <IconBrain className="size-3" /> },
+    { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+    { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+    { label: 'Meme', icon: <IconMeteor className="size-3" /> }
   ]
 
   // Memoize market data calculation
@@ -215,7 +206,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">{selectedAsset}</h1>
-              <ChevronDownIcon className="size-4 text-white" />
+              <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
           <PopoverContent align="start" className="w-3xl h-96 z-30 p-2 flex flex-col gap-2">
@@ -241,7 +232,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                     isStrict ? 'bg-green !text-green' : 'bg-transparent text-white/50'
                   )}
                 >
-                  <ShieldCheckIcon className="size-4" />
+                  <IconShieldCheck className="size-4" />
                   Verified
                 </ToggleGroupItem>
                 <ToggleGroupItem
@@ -251,7 +242,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                     !isStrict ? 'bg-red !text-red' : 'bg-transparent text-white/50'
                   )}
                 >
-                  <ShieldQuestionIcon className="size-4" />
+                  <IconShieldQuestion className="size-4" />
                   All
                 </ToggleGroupItem>
               </ToggleGroup>

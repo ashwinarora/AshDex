@@ -8,9 +8,8 @@ import MarginMode from './components/MarginMode'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { InfoIcon } from 'lucide-react'
 import { Toggle } from '@/components/ui/toggle'
-import { CheckSquare, Square } from 'lucide-react'
+import { IconCheckbox, IconInfoSquare, IconSquare } from '@tabler/icons-react'
 
 const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
@@ -94,9 +93,9 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
-            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoSquare className="size-3" />
           </Toggle>
         </div>
       </div>
