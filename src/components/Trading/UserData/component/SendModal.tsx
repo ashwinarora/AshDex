@@ -28,9 +28,12 @@ import { IconChevronDown, IconSend } from '@tabler/icons-react'
 
 interface SendModalProps {
   spotDefaultName?: string
+  isTriggeredByCustomButton?: boolean
+  isOpen?: boolean
+  onClose?: () => void
 }
 
-const SendModal: React.FC<SendModalProps> = ({ spotDefaultName }) => {
+const SendModal: React.FC<SendModalProps> = ({ spotDefaultName, isTriggeredByCustomButton = false, isOpen, onClose }) => {
   const [destination, setDestination] = useState('')
   const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
@@ -62,15 +65,15 @@ const SendModal: React.FC<SendModalProps> = ({ spotDefaultName }) => {
   }, [isPerp, clearingHouseState, spotState, spotMeta, selectedToken])
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        <Button
+        {!isTriggeredByCustomButton && <Button
           variant="link"
           className="text-accent-foreground !p-0 h-fit w-full flex items-center gap-1 justify-end"
         >
           <h1 className="text-xs">Send</h1>
           <IconSend className="size-3" />
-        </Button>
+        </Button>}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

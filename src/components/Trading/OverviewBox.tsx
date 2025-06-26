@@ -70,7 +70,7 @@ function OverviewBox() {
         <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
       )}
       {isSendModalOpen && (
-        <SendModal isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
+        <SendModal isTriggeredByCustomButton={true} isOpen={isSendModalOpen} onClose={() => setIsSendModalOpen(false)} />
       )}
       <div className="w-full h-full flex flex-col gap-2 p-2">
         <div className="flex items-center justify-center gap-2 w-full">
