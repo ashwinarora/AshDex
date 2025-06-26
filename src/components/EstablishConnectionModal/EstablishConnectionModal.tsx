@@ -147,10 +147,7 @@ const EstablishConnectionModal = () => {
       )
     }
     return (
-      <Button
-        variant={'outline'}
-        onClick={closeModal}
-      >
+      <Button variant={'outline'} onClick={closeModal}>
         Close
       </Button>
     )
@@ -158,7 +155,7 @@ const EstablishConnectionModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={closeModal}>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
           <DialogTitle>Establish Connection</DialogTitle>
         </DialogHeader>

@@ -199,7 +199,7 @@ const TradeHistoryTable: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
-        <TableHeader className='sticky top-0 bg-secondary'>
+        <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -242,7 +242,7 @@ const TradeHistoryTable: React.FC = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className='h-12' key={row.id}>
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}

@@ -4,7 +4,13 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { AssetPosition } from '@nktkas/hyperliquid'
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
@@ -15,7 +21,12 @@ import { toast } from 'react-toastify'
 import { getFormattedPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { hyperliquidAxios } from '@/config/axios'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 interface TPSLCellProps {
   asset: string
@@ -76,11 +87,14 @@ function calculateTriggerFromAmount(
   }
 }
 
-
-const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose }: TPSLCellProps) => {
+const TPSL_Cell: React.FC<TPSLCellProps> = ({
+  asset,
+  tpslAsset,
+  isOpen,
+  onClose
+}: TPSLCellProps) => {
   // const { openOrders } = useHyperliquid()
   const { currentFeeApproval } = useAgentApproval()
-
 
   // const triggerPrices = useMemo(() => {
   //   const assetOrders = openOrders.filter((order) => order.coin === asset)
@@ -205,9 +219,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
     const isBuy = !(Number(tpslAsset.szi) > 0)
     if (tpTriggerPrice) {
       const multiplier = isBuy ? 1.1 : 0.9
-      const price = tpLimitPrice
-        ? tpLimitPrice
-        : (Number(tpTriggerPrice) * multiplier).toString()
+      const price = tpLimitPrice ? tpLimitPrice : (Number(tpTriggerPrice) * multiplier).toString()
       const isMarket = tpLimitPrice ? false : true
       const formattedTriggerPrice = getFormattedPrice({
         price: Number(tpTriggerPrice),
@@ -236,9 +248,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
     }
     if (slTriggerPrice) {
       const multiplier = isBuy ? 0.9 : 1.1
-      const price = slLimitPrice
-        ? slLimitPrice
-        : (Number(slTriggerPrice) * multiplier).toString()
+      const price = slLimitPrice ? slLimitPrice : (Number(slTriggerPrice) * multiplier).toString()
       const isMarket = slLimitPrice ? false : true
       const formattedSlTriggerPrice = getFormattedPrice({
         price: Number(slTriggerPrice),
@@ -291,7 +301,6 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
         autoClose: 2000
       })
     }
-
   }
 
   return (
@@ -305,31 +314,31 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
           <IconPencil className="size-3 text-inherit" />
         </button>
       </DialogTrigger> */}
-      <DialogContent className='flex flex-col gap-4'>
+      <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>
-            TP/SL for {tpslAsset.coin}
-          </DialogTitle>
+          <DialogTitle>TP/SL for {tpslAsset.coin}</DialogTitle>
         </DialogHeader>
-        <div className='flex flex-col gap-2'>
-          <div className='flex w-full items-center justify-between gap-1'>
-            <span className='text-xs text-white/50'>Coin</span>
-            <span className='text-xs text-white'>{asset}</span>
+        <div className="flex flex-col gap-2">
+          <div className="flex w-full items-center justify-between gap-1">
+            <span className="text-xs text-white/50">Coin</span>
+            <span className="text-xs text-white">{asset}</span>
           </div>
-          <div className='flex w-full items-center justify-between gap-1'>
-            <span className='text-xs text-white/50'>Position</span>
-            <span className='text-xs text-white'>{position} {asset}</span>
+          <div className="flex w-full items-center justify-between gap-1">
+            <span className="text-xs text-white/50">Position</span>
+            <span className="text-xs text-white">
+              {position} {asset}
+            </span>
           </div>
-          <div className='flex w-full items-center justify-between gap-1'>
-            <span className='text-xs text-white/50'>Entry Price</span>
-            <span className='text-xs text-white'>{entryPrice.toLocaleString()}</span>
+          <div className="flex w-full items-center justify-between gap-1">
+            <span className="text-xs text-white/50">Entry Price</span>
+            <span className="text-xs text-white">{entryPrice.toLocaleString()}</span>
           </div>
-          <div className='flex w-full items-center justify-between gap-1'>
-            <span className='text-xs text-white/50'>Mark Price</span>
-            <span className='text-xs text-white'>{markPrice.toLocaleString()}</span>
+          <div className="flex w-full items-center justify-between gap-1">
+            <span className="text-xs text-white/50">Mark Price</span>
+            <span className="text-xs text-white">{markPrice.toLocaleString()}</span>
           </div>
         </div>
-        <Separator orientation='horizontal' />
+        <Separator orientation="horizontal" />
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full items-start gap-2">
             <div className="flex items-center w-full justify-between gap-2">
@@ -355,12 +364,18 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant={'outline'} size={'sm'} className='w-20 !p-2 !h-fit flex items-center justify-between gap-1'>
-                    <span className='text-xs text-white/50'>{tpMode === '%' ? 'TP %' : 'TP $'}</span>
-                    <IconChevronDown className='size-3' />
+                  <Button
+                    variant={'outline'}
+                    size={'sm'}
+                    className="w-20 !p-2 !h-fit flex items-center justify-between gap-1"
+                  >
+                    <span className="text-xs text-white/50">
+                      {tpMode === '%' ? 'TP %' : 'TP $'}
+                    </span>
+                    <IconChevronDown className="size-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className='w-20' align='end'>
+                <DropdownMenuContent className="w-20" align="end">
                   <DropdownMenuItem onClick={() => handleTpModeChange('$')}>$</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleTpModeChange('%')}>%</DropdownMenuItem>
                 </DropdownMenuContent>
@@ -399,12 +414,18 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant={'outline'} size={'sm'} className='w-20 !p-2 !h-fit flex items-center justify-between gap-1'>
-                    <span className='text-xs text-white/50'>{slMode === '%' ? 'SL %' : 'SL $'}</span>
-                    <IconChevronDown className='size-3' />
+                  <Button
+                    variant={'outline'}
+                    size={'sm'}
+                    className="w-20 !p-2 !h-fit flex items-center justify-between gap-1"
+                  >
+                    <span className="text-xs text-white/50">
+                      {slMode === '%' ? 'SL %' : 'SL $'}
+                    </span>
+                    <IconChevronDown className="size-3" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className='w-20' align='end'>
+                <DropdownMenuContent className="w-20" align="end">
                   <DropdownMenuItem onClick={() => handleSlModeChange('$')}>$</DropdownMenuItem>
                   <DropdownMenuItem onClick={() => handleSlModeChange('%')}>%</DropdownMenuItem>
                 </DropdownMenuContent>
@@ -420,7 +441,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
               : '0.00'}
           </div>
         </div>
-        <Separator orientation='horizontal' />
+        <Separator orientation="horizontal" />
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/50">Configure Amount</span>
@@ -437,27 +458,26 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
               step={Math.abs(position) / 100}
               value={[Number(amount)]}
               onValueChange={(value) => setAmount(value[0].toString())}
-              className='w-full'
+              className="w-full"
             />
             <Input
               value={amount.toLocaleString()}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               disabled={!configureAmount}
-              className='w-20 text-right'
-              type='number'
-              inputMode='decimal'
+              className="w-20 text-right"
+              type="number"
+              inputMode="decimal"
             />
-            <span className={cn("text-xs text-white", !configureAmount && "opacity-50")}>{tpslAsset.coin}</span>
+            <span className={cn('text-xs text-white', !configureAmount && 'opacity-50')}>
+              {tpslAsset.coin}
+            </span>
           </div>
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
             <span className="text-xs text-white/50">Limit Price</span>
-            <Switch
-              checked={limitPrice}
-              onCheckedChange={() => setLimitPrice(!limitPrice)}
-            />
+            <Switch checked={limitPrice} onCheckedChange={() => setLimitPrice(!limitPrice)} />
           </div>
           <div className="flex items-center gap-2 w-full">
             <Input
@@ -478,12 +498,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({ asset, tpslAsset, isOpen, onClose 
             />
           </div>
         </div>
-        <Separator orientation='horizontal' />
+        <Separator orientation="horizontal" />
         <Button onClick={handleClick}>Confirm</Button>
-        <DialogFooter className='text-xs text-white/50 text-center'>
-          Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and
-          stop-loss automatically cancel after closing the position. A market order is triggered
-          when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.
+        <DialogFooter className="text-xs text-white/50 text-center">
+          Note: By default take-profit and stop-loss orders apply to the entire position.
+          Take-profit and stop-loss automatically cancel after closing the position. A market order
+          is triggered when the stop loss or take profit price is reached. If the order size is
+          configured above, the TP/SL order will be for that size no matter how the position changes
+          in the future.
         </DialogFooter>
       </DialogContent>
     </Dialog>

@@ -105,7 +105,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               </button>
             </DropdownMenuItem> */}
             {availableOptions.map((option) => (
-              <DropdownMenuItem className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground" key={option.value} onClick={() => setActiveTab(option.value as OrderTab)}>
+              <DropdownMenuItem
+                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+                key={option.value}
+                onClick={() => setActiveTab(option.value as OrderTab)}
+              >
                 {option.label}
               </DropdownMenuItem>
             ))}

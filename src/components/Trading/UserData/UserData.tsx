@@ -92,7 +92,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         </ToggleGroup>
       </div>
       <div className="w-full h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
-        {tabs[activeTab] && <div className='w-full h-full'>{tabs[activeTab].element}</div>}
+        {tabs[activeTab] && <div className="w-full h-full">{tabs[activeTab].element}</div>}
       </div>
     </div>
   )

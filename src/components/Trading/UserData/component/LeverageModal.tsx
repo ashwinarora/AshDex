@@ -3,7 +3,14 @@ import { toast } from 'react-toastify'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 import { AssetPosition } from '@nktkas/hyperliquid'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Slider } from '@/components/ui/slider'
@@ -82,34 +89,40 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='flex flex-col gap-4'>
+      <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>Adjust Leverage</DialogTitle>
           <DialogDescription>
-            Control the leverage used for {asset.coin} positions. The maximum leverage is {maxLeverage}x. Max position size decreases the higher your leverage.
+            Control the leverage used for {asset.coin} positions. The maximum leverage is{' '}
+            {maxLeverage}x. Max position size decreases the higher your leverage.
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between">
             <p
-              className={cn(
-                'text-xs font-medium transition-colors duration-150',
-                'text-white/50'
-              )}
+              className={cn('text-xs font-medium transition-colors duration-150', 'text-white/50')}
             >
               Leverage
             </p>
             <div className="flex items-center gap-2">
-              <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
-                <IconMinus className='size-4' />
+              <Button
+                onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
+                variant="outline"
+                size="icon"
+              >
+                <IconMinus className="size-4" />
               </Button>
               <Input
                 className={cn('w-16 text-white')}
                 value={leverage}
                 onChange={(e) => setLeverage(Number(e.target.value))}
               />
-              <Button onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))} variant='outline' size='icon'>
-                <IconPlus className='size-4' />
+              <Button
+                onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))}
+                variant="outline"
+                size="icon"
+              >
+                <IconPlus className="size-4" />
               </Button>
             </div>
           </div>
@@ -143,9 +156,11 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
           </div>
         </div>
         <Separator />
-        <Button onClick={handleLeverageChange} className='w-full'>Confirm</Button>
-        <DialogFooter className='text-xs text-white/50'>
-          <span className='text-center w-full'>
+        <Button onClick={handleLeverageChange} className="w-full">
+          Confirm
+        </Button>
+        <DialogFooter className="text-xs text-white/50">
+          <span className="text-center w-full">
             Note that setting a higher leverage increases the risk of liquidation.
           </span>
         </DialogFooter>

@@ -265,7 +265,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               type="text"
               placeholder="0"
               value={totalSize}
-              onChange={(e) => setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)}
+              onChange={(e) =>
+                setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+              }
               className={cn('w-full text-right text-white placeholder:text-white')}
             />
             <DropdownMenu>
@@ -415,7 +417,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               Enable Trading
             </Button>
           ) : (
-            <Button className='w-full' onClick={handleSubmit} type="submit" disabled={totalSize! > Number(maxAllowed)}>
+            <Button
+              className="w-full"
+              onClick={handleSubmit}
+              type="submit"
+              disabled={totalSize! > Number(maxAllowed)}
+            >
               Scale Buy ({totalOrders} Orders)
             </Button>
           )}

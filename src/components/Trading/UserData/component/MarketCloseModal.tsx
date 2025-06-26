@@ -6,8 +6,19 @@ import { AssetPosition } from '@nktkas/hyperliquid'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -173,21 +184,19 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='flex flex-col gap-4'>
+      <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>Market Close</DialogTitle>
-          <DialogDescription>
-            Close your position at the current market price.
-          </DialogDescription>
+          <DialogDescription>Close your position at the current market price.</DialogDescription>
         </DialogHeader>
-        <div className='flex flex-col gap-4'>
-          <div className='flex flex-col gap-1'>
-            <h1 className='text-xs text-white/50'>Size</h1>
-            <div className='flex w-full items-center gap-2'>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-xs text-white/50">Size</h1>
+            <div className="flex w-full items-center gap-2">
               <Input
                 type="number"
                 value={size}
-                className='text-white flex-1 text-left h-9'
+                className="text-white flex-1 text-left h-9"
                 onChange={(e) => {
                   if (!perpsMeta) return
                   const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
@@ -199,12 +208,12 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant='outline' size='icon' className='h-9 w-20'>
+                  <Button variant="outline" size="icon" className="h-9 w-20">
                     <span>{sizeType === 'asset' ? closingAsset : 'USD'}</span>
-                    <IconChevronDown className='size-4' />
+                    <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end' className='w-20'>
+                <DropdownMenuContent align="end" className="w-20">
                   <DropdownMenuItem onClick={() => setSizeType('asset')}>
                     <span>{closingAsset}</span>
                   </DropdownMenuItem>
@@ -214,7 +223,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className='flex w-full items-center gap-2 mt-1'>
+            <div className="flex w-full items-center gap-2 mt-1">
               <Slider
                 min={0}
                 max={100}
@@ -224,26 +233,39 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                   setPercent(Math.round(value[0]))
                   setLastChanged('percent')
                 }}
-                className='flex-1'
+                className="flex-1"
               />
-              <div className='flex bg-white/5 p-2 rounded-md w-16 items-center justify-center gap-2'>
-                <span className='text-xs text-white/50'>{percent.toFixed(2)}%</span>
+              <div className="flex bg-white/5 p-2 rounded-md w-16 items-center justify-center gap-2">
+                <span className="text-xs text-white/50">{percent.toFixed(2)}%</span>
               </div>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className='text-xs text-white/50'>Estimated closed PnL (without fees):</span>
-          <span className={cn('text-xs text-white/50', estPnl ? estPnl > 0 ? 'text-green' : estPnl < 0 ? 'text-red' : 'text-white' : 'text-white/50')}>
-            {estPnl ? estPnl > 0 ? '+' : '' : ''}$
-            {estPnl ? estPnl.toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            }) : '0.00'}
+          <span className="text-xs text-white/50">Estimated closed PnL (without fees):</span>
+          <span
+            className={cn(
+              'text-xs text-white/50',
+              estPnl
+                ? estPnl > 0
+                  ? 'text-green'
+                  : estPnl < 0
+                    ? 'text-red'
+                    : 'text-white'
+                : 'text-white/50'
+            )}
+          >
+            {estPnl ? (estPnl > 0 ? '+' : '') : ''}$
+            {estPnl
+              ? estPnl.toLocaleString(undefined, {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })
+              : '0.00'}
           </span>
         </div>
         <Separator />
-        <Button onClick={handleClosePosition} className='w-full'>
+        <Button onClick={handleClosePosition} className="w-full">
           Confirm
         </Button>
       </DialogContent>

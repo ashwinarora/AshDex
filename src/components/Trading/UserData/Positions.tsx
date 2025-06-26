@@ -43,7 +43,12 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 
 type ColumnType = {
   key: string
@@ -222,16 +227,16 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           return (
             <div className="flex items-center justify-start gap-2">
               <Button
-                variant='link'
-                size='defaultLink'
-                className='text-white hover:text-accent-foreground transition-all hover:no-underline'
+                variant="link"
+                size="defaultLink"
+                className="text-white hover:text-accent-foreground transition-all hover:no-underline"
                 onClick={() => setSelectedAsset(coin)}
               >
                 {coin || ''}
               </Button>
               <Button
-                variant='outline'
-                className='p-1 flex-1 h-fit text-xs'
+                variant="outline"
+                className="p-1 flex-1 h-fit text-xs"
                 onClick={() => {
                   if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
                   setLeverageAsset(info.row.original)
@@ -325,8 +330,8 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
               <div className="flex items-center gap-1 text-white/50 text-xs capitalize">
                 {info.row.original.leverage.type === 'isolated' ? (
                   <Button
-                    variant='link'
-                    size='defaultLink'
+                    variant="link"
+                    size="defaultLink"
                     className="cursor-pointer capitalize p-0 h-fit text-xs flex items-center gap-1"
                     onClick={() => {
                       setIsolatedMarginAsset(info.row.original)
@@ -360,43 +365,57 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.display({
         id: 'tp_sl',
-        header: () => <div className='flex items-center justify-end gap-2'>
-          <span className='text-white/50 text-xs'>Action</span>
-          <Button onClick={() => setIsCloseAllModalOpen(true)} variant={'outline'} className='!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1'>
-            <IconX className='size-3' />
-          </Button>
-          </div>,
+        header: () => (
+          <div className="flex items-center justify-end gap-2">
+            <span className="text-white/50 text-xs">Action</span>
+            <Button
+              onClick={() => setIsCloseAllModalOpen(true)}
+              variant={'outline'}
+              className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+            >
+              <IconX className="size-3" />
+            </Button>
+          </div>
+        ),
         cell: ({ row }) => {
           return (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={'outline'} className='!py-1 !px-2 text-xs w-full h-fit flex items-center justify-between gap-1'>
+                <Button
+                  variant={'outline'}
+                  className="!py-1 !px-2 text-xs w-full h-fit flex items-center justify-between gap-1"
+                >
                   More <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end'>
-                <DropdownMenuItem onClick={() => {
-                  setTpslAsset(row.original)
-                  if (!agentWallet || !isAgentApproved) return openAgentModal()
-                  setIsTPSLModalOpen(true)
-                }}>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    setTpslAsset(row.original)
+                    if (!agentWallet || !isAgentApproved) return openAgentModal()
+                    setIsTPSLModalOpen(true)
+                  }}
+                >
                   <span>Set TP/SL</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setClosingAsset(row.original.coin)
-                  setIsLimitCloseModalOpen(true)
-                }}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setClosingAsset(row.original.coin)
+                    setIsLimitCloseModalOpen(true)
+                  }}
+                >
                   <span>Close on Limit</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => {
-                  setClosingAsset(row.original.coin)
-                  setIsMarketCloseModalOpen(true)
-                }}>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setClosingAsset(row.original.coin)
+                    setIsMarketCloseModalOpen(true)
+                  }}
+                >
                   <span>Close on Market</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-
           )
         },
         meta: { label: 'TP/SL' }
@@ -435,7 +454,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
-        <TableHeader className='sticky top-0 bg-secondary'>
+        <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -448,7 +467,11 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                   }}
                   className={cn(
                     'cursor-pointer flex-1',
-                    header.id === 'coin' ? 'justify-start' : header.id === 'tp_sl' ? 'justify-end' : 'justify-center',
+                    header.id === 'coin'
+                      ? 'justify-start'
+                      : header.id === 'tp_sl'
+                        ? 'justify-end'
+                        : 'justify-center',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -476,13 +499,20 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
             </TableRow>
           ))}
         </TableHeader>
-        <TableBody className='overflow-y-auto h-full overflow-x-hidden no-scrollbar'>
+        <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className='h-12' key={row.id + Math.random()}>
+            <TableRow className="h-12" key={row.id + Math.random()}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={cn("font-medium text-white text-xs first:text-left text-right", cell.column.id === 'coin' ? 'text-start justify-start' : cell.column.id === 'tp_sl' ? 'text-end justify-end' : 'text-center justify-center')}
+                  className={cn(
+                    'font-medium text-white text-xs first:text-left text-right',
+                    cell.column.id === 'coin'
+                      ? 'text-start justify-start'
+                      : cell.column.id === 'tp_sl'
+                        ? 'text-end justify-end'
+                        : 'text-center justify-center'
+                  )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
@@ -509,13 +539,13 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
         positionTab={true}
       />
       {agentWallet && isAgentApproved && isTPSLModalOpen && tpslAsset && (
-          <TPSL_Cell
-            isOpen={isTPSLModalOpen}
-            onClose={() => setIsTPSLModalOpen(false)}
-            asset={tpslAsset.coin}
-            tpslAsset={tpslAsset}
-          />
-        )}
+        <TPSL_Cell
+          isOpen={isTPSLModalOpen}
+          onClose={() => setIsTPSLModalOpen(false)}
+          asset={tpslAsset.coin}
+          tpslAsset={tpslAsset}
+        />
+      )}
       {isLimitCloseModalOpen && closingAsset && (
         <LimitCloseModal
           isOpen={isLimitCloseModalOpen}

@@ -3,7 +3,14 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@/components/ui/dialog'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
 
@@ -102,28 +109,38 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='flex flex-col gap-4'>
+      <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>Close All Positions</DialogTitle>
         </DialogHeader>
         <DialogDescription>
           This will close all your positions and cancel their associated TP/SL orders.
         </DialogDescription>
-        <ToggleGroup className='w-full bg-white/5 rounded-md' type='single' value={selected} onValueChange={(value) => {
-          if (value === '') {
-            return
-          }
-          setSelected(value as 'market' | 'limit')
-        }}>
-          <ToggleGroupItem value='market' className='w-full rounded-l-md'>Market Close</ToggleGroupItem>
-          <ToggleGroupItem value='limit' className='w-full rounded-r-md'>Limit Close at Mid Price</ToggleGroupItem>
+        <ToggleGroup
+          className="w-full bg-white/5 rounded-md"
+          type="single"
+          value={selected}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setSelected(value as 'market' | 'limit')
+          }}
+        >
+          <ToggleGroupItem value="market" className="w-full rounded-l-md">
+            Market Close
+          </ToggleGroupItem>
+          <ToggleGroupItem value="limit" className="w-full rounded-r-md">
+            Limit Close at Mid Price
+          </ToggleGroupItem>
         </ToggleGroup>
         <Button onClick={handleCloseAll}>
           {selected === 'market' ? 'Confirm Market Close' : 'Confirm Limit Close at Mid Price'}
         </Button>
         <DialogFooter>
-          <span className='text-red text-xs text-center w-full'>
-            This will close all your positions and cancel their associated TP/SL orders. <br /> You cannot undo this action.
+          <span className="text-red text-xs text-center w-full">
+            This will close all your positions and cancel their associated TP/SL orders. <br /> You
+            cannot undo this action.
           </span>
         </DialogFooter>
       </DialogContent>

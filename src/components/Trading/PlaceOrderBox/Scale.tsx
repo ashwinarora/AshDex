@@ -494,7 +494,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               Enable Trading
             </Button>
           ) : (
-            <Button className='w-full' onClick={handleSubmit} type="submit" disabled={totalUsd! > maxAllowedUsd}>
+            <Button
+              className="w-full"
+              onClick={handleSubmit}
+              type="submit"
+              disabled={totalUsd! > maxAllowedUsd}
+            >
               Scale Buy ({totalOrders} Orders)
             </Button>
           )}

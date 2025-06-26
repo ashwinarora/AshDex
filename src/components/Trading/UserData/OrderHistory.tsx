@@ -103,12 +103,13 @@ const OrderHistoryTable: React.FC = () => {
             <span className="text-[#8B8BA0]">{col?.label}</span>
             <span className={col?.key === 'contract' ? 'truncate' : ''}>
               <span
-                className={`flex ${col?.key === 'status'
-                  ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
+                className={`flex ${
+                  col?.key === 'status'
+                    ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
                           ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
                           ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
-                  : `${col?.key === 'side' ? 'text-green' : ''}`
-                  } item-center gap-x-2`}
+                    : `${col?.key === 'side' ? 'text-green' : ''}`
+                } item-center gap-x-2`}
               >
                 {item[col?.key] ?? '-'}
               </span>
@@ -194,19 +195,31 @@ const OrderHistoryTable: React.FC = () => {
         id: 'status',
         header: () => 'Status',
         cell: (info) => {
-          return <div className="flex w-full justify-end items-center gap-2">
-            {info.getValue() === 'filled' ? (
-              <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">Filled</div>
-            ) : info.getValue() === 'rejected' ? (
-              <div className="bg-red/10 px-2 py-0.5 rounded-lg text-end  text-red text-xs w-fit">Rejected</div>
-            ) : info.getValue() === 'canceled' ? (
-              <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">Canceled</div>
-            ) : info.getValue() === 'open' ? (
-              <div className="bg-yellow-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-yellow-500 text-xs">Open</div>
-            ) : (
-              <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">{info.getValue()}</div>
-            )}
-          </div>
+          return (
+            <div className="flex w-full justify-end items-center gap-2">
+              {info.getValue() === 'filled' ? (
+                <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">
+                  Filled
+                </div>
+              ) : info.getValue() === 'rejected' ? (
+                <div className="bg-red/10 px-2 py-0.5 rounded-lg text-end  text-red text-xs w-fit">
+                  Rejected
+                </div>
+              ) : info.getValue() === 'canceled' ? (
+                <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
+                  Canceled
+                </div>
+              ) : info.getValue() === 'open' ? (
+                <div className="bg-yellow-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-yellow-500 text-xs">
+                  Open
+                </div>
+              ) : (
+                <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
+                  {info.getValue()}
+                </div>
+              )}
+            </div>
+          )
           // <div></div>
           // if (info.getValue() === 'filled') {
           //   return <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">Filled</div>
@@ -264,7 +277,7 @@ const OrderHistoryTable: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
-        <TableHeader className='sticky top-0 bg-secondary'>
+        <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -277,9 +290,7 @@ const OrderHistoryTable: React.FC = () => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'timestamp'
-                      ? 'justify-start !w-36'
-                      : 'justify-end flex-2',
+                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -309,14 +320,15 @@ const OrderHistoryTable: React.FC = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className='h-12' key={row.id}>
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={cn("font-medium text-white text-xs first:text-left text-right",
+                  className={cn(
+                    'font-medium text-white text-xs first:text-left text-right',
                     cell.column.id === 'timestamp'
                       ? 'justify-start text-start !w-36'
-                      : 'justify-end text-end flex-2',
+                      : 'justify-end text-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

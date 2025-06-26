@@ -75,7 +75,7 @@ const Balances = () => {
       columnHelper.accessor('coin', {
         id: 'coin',
         header: () => <HeaderWithIcons label="Coin" />,
-        cell: (info) => info.getValue().replace('(',' ('),
+        cell: (info) => info.getValue().replace('(', ' ('),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
@@ -113,9 +113,7 @@ const Balances = () => {
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
-          return (
-            <SendModal spotDefaultName={coin} />
-          )
+          return <SendModal spotDefaultName={coin} />
         },
         enableSorting: false,
         meta: { label: 'Send' }
@@ -233,7 +231,7 @@ const Balances = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className='h-12' key={row.id}>
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}

@@ -3,11 +3,22 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { toast } from 'react-toastify'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import { getPerpsUniverseIndex } from '@/utils/utils'
-import { Dialog, DialogContent, DialogTitle, DialogHeader, DialogDescription } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  DialogHeader,
+  DialogDescription
+} from '@/components/ui/dialog'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { IconChevronDown } from '@tabler/icons-react'
 
 interface IsolatedMarginModalProps {
@@ -62,7 +73,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className='flex flex-col gap-4'>
+      <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>Adjust Margin</DialogTitle>
           <DialogDescription>
@@ -71,7 +82,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
           </DialogDescription>
         </DialogHeader>
         <Separator />
-        <div className='flex flex-col gap-4'>
+        <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center text-xs">
             <span className="text-white/50">Current margin for {asset.coin}-USD</span>
             <span className="font-medium text-white">
@@ -94,40 +105,42 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
           </div>
         </div>
         <Separator />
-        <div className='flex flex-col text-xs text-white/50 w-full gap-2'>
-          <div className='flex items-center justify-between'>
+        <div className="flex flex-col text-xs text-white/50 w-full gap-2">
+          <div className="flex items-center justify-between">
             <span>Amount</span>
             <Button
               variant={'link'}
-              className='p-0 h-fit'
+              className="p-0 h-fit"
               onClick={() => setAmount(marginAvailable.toString())}
             >
               Max
             </Button>
           </div>
-          <div className='flex items-center gap-2'>
+          <div className="flex items-center gap-2">
             <Input
-              type='number'
+              type="number"
               value={amount}
-              className='h-10 text-left text-white'
+              className="h-10 text-left text-white"
               onChange={(e) => setAmount(e.target.value)}
-              placeholder='Amount'
+              placeholder="Amount"
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant={'outline'} className='w-24'>
+                <Button variant={'outline'} className="w-24">
                   {action}
-                  <IconChevronDown className='size-4' />
+                  <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='w-20'>
+              <DropdownMenuContent align="end" className="w-20">
                 <DropdownMenuItem onClick={() => setAction('Add')}>Add</DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setAction('Remove')}>Remove</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-        <Button onClick={handleMarginChange} className='w-full'>Confirm</Button>
+        <Button onClick={handleMarginChange} className="w-full">
+          Confirm
+        </Button>
       </DialogContent>
     </Dialog>
   )

@@ -4,7 +4,6 @@
 /* ---break---*/
 @custom-variant dark (&:is(.dark *));
 @layer utilities {
-
 }
 
 .no-scrollbar::-webkit-scrollbar {
