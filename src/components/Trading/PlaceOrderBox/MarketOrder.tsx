@@ -149,9 +149,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">
-              Market price (USD)
-            </p>
+          <p className="font-medium text-white/50 text-xs whitespace-nowrap">Market price (USD)</p>
           <SetPrice
             selectedAsset={selectedAsset}
             limitPrice={getFormattedPrice()}

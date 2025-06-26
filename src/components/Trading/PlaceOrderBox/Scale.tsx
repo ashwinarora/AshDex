@@ -293,7 +293,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   size={'sm'}
                   disabled
                   className="text-xs min-w-18 w-fit flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
                   <IconChevronDown className="size-3" />
@@ -327,7 +327,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               size={'sm'}
               className="text-xs min-w-18 w-fit flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-              onClick={() => { }}
+              onClick={() => {}}
             >
               <IconRefresh className="size-3" />
               Last
@@ -357,7 +357,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   variant="outline"
                   size={'sm'}
                   className="text-xs min-w-18 w-fit flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
                   <IconChevronDown className="size-3" />

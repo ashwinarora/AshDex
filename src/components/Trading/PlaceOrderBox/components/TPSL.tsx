@@ -216,7 +216,12 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           </div>
         </div>
       </div>
-      <Button size="sm" variant={tpsl.isTpsl ? 'destructive' : 'default'} onClick={() => setIsTpsl(!tpsl.isTpsl)} className="w-full">
+      <Button
+        size="sm"
+        variant={tpsl.isTpsl ? 'destructive' : 'default'}
+        onClick={() => setIsTpsl(!tpsl.isTpsl)}
+        className="w-full"
+      >
         {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
       </Button>
     </div>
