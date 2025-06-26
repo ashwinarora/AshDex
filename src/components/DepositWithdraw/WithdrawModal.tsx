@@ -65,55 +65,65 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         <DialogHeader>
           <DialogTitle>Withdraw to Wallet</DialogTitle>
           <DialogDescription>
-            USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.
+            USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be
+            deducted from the withdrawal amount. Processing usually takes under 5 minutes.
           </DialogDescription>
         </DialogHeader>
         <Separator />
-        {isLoading ? (<div className='flex items-center justify-center w-full h-full'>
-          <Loading
-            title={'Withdrawal in progress…'}
-            subTitle={'You will need to sign this transaction in your wallet:'}
-            className="py-[1rem] px-[1rem]"
-          />
-        </div>) : (<>
-          <div className='flex flex-col gap-4'>
-            <div className='flex flex-col gap-2'>
-              <div className='flex items-center justify-between text-xs text-white/50'>
-                <p>Amount</p>
-                <div className='flex items-center gap-1'>
-                  Available to withdraw:
-                  <Button variant='link' onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')} className='text-xs h-fit p-0'>
-                    {clearingHouseState?.withdrawable} {'USDC'}
-                  </Button>
+        {isLoading ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <Loading
+              title={'Withdrawal in progress…'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
+              className="py-[1rem] px-[1rem]"
+            />
+          </div>
+        ) : (
+          <>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs text-white/50">
+                  <p>Amount</p>
+                  <div className="flex items-center gap-1">
+                    Available to withdraw:
+                    <Button
+                      variant="link"
+                      onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
+                      className="text-xs h-fit p-0"
+                    >
+                      {clearingHouseState?.withdrawable} {'USDC'}
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    id="amount"
+                    className="text-left flex-1 h-10"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                  />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild disabled>
+                      <Button variant="outline" className="w-fit">
+                        USDC
+                        <IconChevronDown className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </DropdownMenu>
                 </div>
               </div>
-              <div className='flex items-center gap-2'>
-                <Input
-                  type="text"
-                  id="amount"
-                  className='text-left flex-1 h-10'
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild disabled>
-                    <Button
-                      variant='outline'
-                      className='w-fit'
-                    >
-                      USDC
-                      <IconChevronDown className='size-4' />
-                    </Button>
-                  </DropdownMenuTrigger>
-                </DropdownMenu>
-              </div>
             </div>
-          </div>
-          <Separator />
-          <Button className='w-full' disabled={!amount || parseFloat(amount.toString()) === 0} onClick={onWithdrawClick}>
-            Withdraw
-          </Button>
-        </>)}
+            <Separator />
+            <Button
+              className="w-full"
+              disabled={!amount || parseFloat(amount.toString()) === 0}
+              onClick={onWithdrawClick}
+            >
+              Withdraw
+            </Button>
+          </>
+        )}
       </DialogContent>
     </Dialog>
   )

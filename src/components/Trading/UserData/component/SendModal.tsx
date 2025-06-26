@@ -33,7 +33,12 @@ interface SendModalProps {
   onClose?: () => void
 }
 
-const SendModal: React.FC<SendModalProps> = ({ spotDefaultName, isTriggeredByCustomButton = false, isOpen, onClose }) => {
+const SendModal: React.FC<SendModalProps> = ({
+  spotDefaultName,
+  isTriggeredByCustomButton = false,
+  isOpen,
+  onClose
+}) => {
   const [destination, setDestination] = useState('')
   const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
@@ -67,13 +72,15 @@ const SendModal: React.FC<SendModalProps> = ({ spotDefaultName, isTriggeredByCus
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
-        {!isTriggeredByCustomButton && <Button
-          variant="link"
-          className="text-accent-foreground !p-0 h-fit w-full flex items-center gap-1 justify-end"
-        >
-          <h1 className="text-xs">Send</h1>
-          <IconSend className="size-3" />
-        </Button>}
+        {!isTriggeredByCustomButton && (
+          <Button
+            variant="link"
+            className="text-accent-foreground !p-0 h-fit w-full flex items-center gap-1 justify-end"
+          >
+            <h1 className="text-xs">Send</h1>
+            <IconSend className="size-3" />
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
