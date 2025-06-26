@@ -21,10 +21,11 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
 
   useEffect(() => {
-    if (clearingHouseState?.assetPositions && closingAsset) {
+    if (clearingHouseState?.assetPositions && closingAsset && perpsMeta) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
       if (pos) {
         setPosition(pos.position)
+        setSize(Math.abs(Number(pos.position.szi)).toString())
       }
     }
   }, [clearingHouseState, closingAsset])

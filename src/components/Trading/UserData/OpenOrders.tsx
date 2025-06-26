@@ -349,7 +349,7 @@ const OpenOrders = () => {
       columnHelper.accessor('reduceOnly', {
         id: 'reduceOnly',
         header: () => 'Reduce Only',
-        cell: (info) => info.getValue(),
+        cell: (info) => info.getValue() ? 'Yes' : 'No',
         enableSorting: false,
         meta: { label: 'Reduce Only' }
       }),
