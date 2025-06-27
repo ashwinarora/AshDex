@@ -16,9 +16,18 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder, OrderStatus } from '@nktkas/hyperliquid'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 type ColumnType = {
   key: string
@@ -66,25 +75,25 @@ const OrderHistoryTable: React.FC = () => {
   const columnHelper = createColumnHelper<
     OrderStatus<FrontendOrder> & { meta?: { label: string } }
   >()
-  const getCellClass = (columnId: string, cellValue: unknown): string => {
-    let customClass = 'opacity-80 font-normal text-sm'
-    if (columnId === 'status') {
-      customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
-      if (cellValue === 'Filled') {
-        customClass += ' bg-[#28283e] text-green'
-      } else if (cellValue === 'Rejected') {
-        customClass += ' bg-[#27273b] text-red'
-      } else if (cellValue === 'Cancelled') {
-        customClass += ' bg-[#505061] text-[#FFFFFF]'
-      }
-    } else if (columnId === 'side') {
-      customClass += ' text-green'
-    } else {
-      customClass += ' text-[#FFFFFF]'
-    }
+  // const getCellClass = (columnId: string, cellValue: unknown): string => {
+  //   let customClass = 'opacity-80 font-normal text-sm'
+  //   if (columnId === 'status') {
+  //     customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
+  //     if (cellValue === 'Filled') {
+  //       customClass += ' bg-[#28283e] text-green'
+  //     } else if (cellValue === 'Rejected') {
+  //       customClass += ' bg-[#27273b] text-red'
+  //     } else if (cellValue === 'Cancelled') {
+  //       customClass += ' bg-[#505061] text-[#FFFFFF]'
+  //     }
+  //   } else if (columnId === 'side') {
+  //     customClass += ' text-green'
+  //   } else {
+  //     customClass += ' text-[#FFFFFF]'
+  //   }
 
-    return customClass
-  }
+  //   return customClass
+  // }
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     return (
@@ -186,24 +195,50 @@ const OrderHistoryTable: React.FC = () => {
         id: 'status',
         header: () => 'Status',
         cell: (info) => {
-          if (info.getValue() === 'filled') {
-            return <p className="bg-green/10 px-2 py-0.5 rounded-lg text-green text-xs">Filled</p>
-          } else if (info.getValue() === 'rejected') {
-            return <p className="bg-red/10 px-2 py-0.5 rounded-lg text-red text-xs">Rejected</p>
-          } else if (info.getValue() === 'canceled') {
-            return (
-              <p className="bg-gray-500/10 px-2 py-0.5 rounded-lg text-gray-500 text-xs">
-                Canceled
-              </p>
-            )
-          } else if (info.getValue() === 'open') {
-            return (
-              <p className="bg-yellow-500/10 px-2 py-0.5 rounded-lg text-yellow-500 text-xs">
-                Open
-              </p>
-            )
-          }
-          return <p className=" ">{info.getValue()}</p>
+          return (
+            <div className="flex w-full justify-end items-center gap-2">
+              {info.getValue() === 'filled' ? (
+                <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">
+                  Filled
+                </div>
+              ) : info.getValue() === 'rejected' ? (
+                <div className="bg-red/10 px-2 py-0.5 rounded-lg text-end  text-red text-xs w-fit">
+                  Rejected
+                </div>
+              ) : info.getValue() === 'canceled' ? (
+                <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
+                  Canceled
+                </div>
+              ) : info.getValue() === 'open' ? (
+                <div className="bg-yellow-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-yellow-500 text-xs">
+                  Open
+                </div>
+              ) : (
+                <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
+                  {info.getValue()}
+                </div>
+              )}
+            </div>
+          )
+          // <div></div>
+          // if (info.getValue() === 'filled') {
+          //   return <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">Filled</div>
+          // } else if (info.getValue() === 'rejected') {
+          //   return <div className="bg-red/10 px-2 py-0.5 rounded-lg text-end  text-red text-xs w-fit">Rejected</div>
+          // } else if (info.getValue() === 'canceled') {
+          //   return (
+          //     <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
+          //       Canceled
+          //     </div>
+          //   )
+          // } else if (info.getValue() === 'open') {
+          //   return (
+          //     <div className="bg-yellow-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-yellow-500 text-xs">
+          //       Open
+          //     </div>
+          //   )
+          // }
+          // return <p className=" ">{info.getValue()}</p>
         },
         enableSorting: true,
         meta: { label: 'Status' }
@@ -236,63 +271,73 @@ const OrderHistoryTable: React.FC = () => {
 
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
-    return <div className="dark:bg-gray-800 p-4 h-40 overflow-x-auto dark:text-gray-100"></div>
+    return <div className="w-full h-full bg-secondary"></div>
   }
 
   return (
-    <div className="px-3 w-full overflow-auto">
-      <table className="hidden lg:table w-full text-white border-collapse">
-        <thead>
+    <div className="w-full h-full flex flex-col gap-2">
+      <Table>
+        <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
-                  onClick={
-                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
-                  }
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full',
+                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
+                    header.column.columnDef.enableSorting
+                      ? 'hover:text-accent-foreground'
+                      : 'hover:text-white/50',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
+                  )}
                 >
-                  <div className="flex items-center text-white/50">
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                    {header.column.getCanSort() && (
-                      <span className="inline-block">
-                        {header.column.getIsSorted() === 'asc' ? (
-                          <IconChevronDown className="w-4 h-4" />
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconChevronUp className="w-4 h-4" />
+                          <IconArrowMoveDown className="text-inherit size-4" />
                         ) : (
-                          <IconSelector className="w-4 h-4" />
-                        )}
-                      </span>
-                    )}
-                  </div>
-                </th>
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
+                    </>
+                  )}
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody className="divide-y divide-transparent">
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className=" ">
-              {row.getVisibleCells().map((cell) => {
-                const columnId = cell.column.id
-                const cellValue = cell.getValue()
-                const customClass = getCellClass(columnId, cellValue)
-                return (
-                  <td key={cell.id} className="px-2 py-0.5 text-white text-sm align-middle">
-                    <div className={customClass}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </div>
-                  </td>
-                )
-              })}
-            </tr>
+            <TableRow className="h-12" key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  className={cn(
+                    'font-medium text-white text-xs first:text-left text-right',
+                    cell.column.id === 'timestamp'
+                      ? 'justify-start text-start !w-36'
+                      : 'justify-end text-end flex-2'
+                  )}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col?.id as string,

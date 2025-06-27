@@ -431,9 +431,9 @@ const TradingViewChart = ({
               '#e48f6b',
               '#e07f56',
               '#dc6f41',
-              '#d85f2b',
+              '#5F46F9',
               '#d03f01',
-              '#bf3a01',
+              '#5F46F9',
               '#ad3501',
               '#9c2f01',
               '#8b2a01',
@@ -763,7 +763,11 @@ const TradingViewChart = ({
     }
   }, [selectedAsset, selectedInterval])
 
-  return <div ref={chartRef} className="rounded-md w-full h-full" />
+  return (
+    <div className="rounded-md p-2 bg-secondary w-full h-full">
+      <div ref={chartRef} className="w-full h-full" />
+    </div>
+  )
 }
 
 export default TradingViewChart

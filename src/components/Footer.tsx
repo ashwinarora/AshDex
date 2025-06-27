@@ -25,13 +25,7 @@ const FooterContent: FC = () => {
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
     return (
-      <footer
-        className="nexon-card border border-[#251A3C] rounded-2xl pt-0 p-5 md:p-8"
-        style={{
-          backdropFilter: 'blur(40px)',
-          WebkitBackdropFilter: 'blur(40px)'
-        }}
-      >
+      <footer className="bg-secondary p-2">
         <div className="h-40"></div>
       </footer>
     )

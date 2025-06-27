@@ -8,6 +8,9 @@ import { getPerpsUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
 import { useMemo, useEffect, useState } from 'react'
 import { MAX_SIG_FIGS } from '@/utils/constants'
 import { IconRefresh } from '@tabler/icons-react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 
 interface ISetLastPriceProps {
   selectedAsset: string
@@ -15,6 +18,7 @@ interface ISetLastPriceProps {
   setLimitPrice: (price: string) => void
   setUsdAmount: (amount: string) => void
   assetAmount: string
+  disabled?: boolean
 }
 
 const SetPrice = ({
@@ -22,7 +26,8 @@ const SetPrice = ({
   limitPrice,
   setLimitPrice,
   setUsdAmount,
-  assetAmount
+  assetAmount,
+  disabled = false
 }: ISetLastPriceProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
@@ -158,22 +163,28 @@ const SetPrice = ({
   }
 
   return (
-    <div className="flex w-full">
-      <input
+    <div className="flex w-full gap-2 items-center">
+      <Input
         type="text"
         placeholder="0"
         value={limitPrice}
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
-        className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
+        disabled={disabled}
+        className={cn('w-full text-right text-white')}
       />
-      <button
-        className="flex items-center gap-1 ml-auto font-medium text-[#7D67FF] text-xs align-middle cursor-pointer"
+      <Button
+        variant="outline"
+        size={'sm'}
+        className="text-xs"
+        disabled={disabled}
+        // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}
       >
-        <IconRefresh style={{ width: 12, height: 'auto' }} className="w-3 h-3" />
+        <IconRefresh className="size-3" />
         Last
-      </button>
+      </Button>
+      {/* */}
     </div>
   )
 }

@@ -1,4 +1,5 @@
-import CheckBox from '@/components/common/CheckBox'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface TPSLProps {
   limitPrice: string
@@ -150,69 +151,79 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   }
 
   return (
-    <div className="w-full">
-      <div className="flex items-center gap-2 mb-2">
-        <CheckBox
-          label="Take Profit / Stop loss"
-          isChecked={tpsl.isTpsl}
-          setIsChecked={setIsTpsl}
-        />
+    <div className="w-full flex flex-col gap-4">
+      <div className="flex items-center space-x-2">
+        {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
+        <label htmlFor="tpsl" className="text-xs font-semibold">
+          Set Take Profit and Stop Loss Values
+        </label>
       </div>
-      {tpsl.isTpsl && (
-        <div className="flex flex-col gap-2 w-full">
-          {/* Take Profit Row */}
-          <div className="items-center gap-2 grid grid-cols-3 w-full">
-            <div className="flex items-center gap-2 col-span-2 px-2 border border-white/10 rounded-md w-full">
-              <span className="flex-1 font-medium text-[#8B8BA0] text-xs">Take Profit</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-[45%] text-white text-sm text-right"
-                value={tpsl.takeProfit || ''}
-                onChange={handleTakeProfitValueChange}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex items-center gap-2 col-span-1 px-2 border border-white/10 rounded-md w-full">
-              <span className="font-medium text-[#8B8BA0] text-xs whitespace-nowrap">Gain %</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-full text-white text-sm text-right"
-                value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
-                onChange={handleTakeProfitPercentageChange}
-                placeholder="0.00"
-              />
-            </div>
+      <div className="flex flex-col gap-2 w-full">
+        <div className="flex flex-col w-full items-start gap-2">
+          <div className="flex items-center w-full justify-between gap-2">
+            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
+              TP Value
+            </span>
+            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
+              TP %
+            </span>
           </div>
-
-          {/* Stop Loss Row */}
-          <div className="items-center gap-2 grid grid-cols-3 w-full">
-            <div className="flex items-center gap-2 col-span-2 px-2 border border-white/10 rounded-md w-full">
-              <span className="flex-1 font-medium text-[#8B8BA0] text-xs">Stop Loss</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-[45%] text-white text-sm text-right"
-                value={tpsl.stopLoss || ''}
-                onChange={handleStopLossValueChange}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex items-center gap-2 col-span-1 px-2 border border-white/10 rounded-md w-full">
-              <span className="font-medium text-[#8B8BA0] text-xs whitespace-nowrap">Loss %</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-full text-white text-sm text-right"
-                value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
-                onChange={handleStopLossPercentageChange}
-                placeholder="0.00"
-              />
-            </div>
+          <div className="flex items-center gap-2 w-full">
+            <Input
+              type="text"
+              inputMode="decimal"
+              className="text-white text-sm text-right flex-1"
+              value={tpsl.takeProfit || ''}
+              onChange={handleTakeProfitValueChange}
+              placeholder="0.00"
+            />
+            <Input
+              type="text"
+              inputMode="decimal"
+              className="text-white text-sm text-right w-16"
+              value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
+              onChange={handleTakeProfitPercentageChange}
+              placeholder="0.00"
+            />
           </div>
         </div>
-      )}
+        <div className="flex flex-col w-full items-start gap-2">
+          <div className="flex items-center w-full justify-between gap-2">
+            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
+              SL Value
+            </span>
+            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
+              SL %
+            </span>
+          </div>
+          <div className="flex items-center gap-2 w-full">
+            <Input
+              type="text"
+              inputMode="decimal"
+              className="text-white text-sm text-right flex-1"
+              value={tpsl.stopLoss || ''}
+              onChange={handleStopLossValueChange}
+              placeholder="0.00"
+            />
+            <Input
+              type="text"
+              inputMode="decimal"
+              className="text-white text-sm text-right w-16"
+              value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
+              onChange={handleStopLossPercentageChange}
+              placeholder="0.00"
+            />
+          </div>
+        </div>
+      </div>
+      <Button
+        size="sm"
+        variant={tpsl.isTpsl ? 'destructive' : 'default'}
+        onClick={() => setIsTpsl(!tpsl.isTpsl)}
+        className="w-full"
+      >
+        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+      </Button>
     </div>
   )
 }

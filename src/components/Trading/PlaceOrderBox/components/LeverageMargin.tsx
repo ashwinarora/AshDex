@@ -1,9 +1,13 @@
 'use client'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
-import { useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { Slider } from '@/components/ui/slider'
+import { cn, numberInputValidator } from '@/lib/utils'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Input } from '@/components/ui/input'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -13,6 +17,33 @@ interface LeverageMarginProps {
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
   const { clearingHouseState, perpsMeta } = useHyperliquid()
+
+  const [error, setError] = useState<{ isValid: boolean; error: string | null }>({
+    isValid: true,
+    error: null
+  })
+  const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
+
+  useEffect(() => {
+    const { isValid, error } = numberInputValidator({
+      value: leverageInput,
+      min: 1,
+      max: maxLeverage
+    })
+    setError({ isValid, error })
+    if (isValid) {
+      setLeverage(parseInt(leverageInput, 10))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error.isValid, leverageInput])
+
+  useEffect(() => {
+    setLeverageInput(leverage.toString())
+  }, [leverage])
+
+  const handleLeverageChange = (value: string) => {
+    setLeverageInput(value)
+  }
 
   // set the leverage to the existing position leverage
   useEffect(() => {
@@ -38,49 +69,57 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
   }, [maxLeverage, setLeverage, leverage])
 
   return (
-    <div className="px-3">
-      <div className="flex justify-between items-center px-3 py-1 border border-white/10 rounded-md">
-        <label className="block font-medium text-gray-400 text-xs">Leverage</label>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1">
-            <button
-              onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))}
-              className="flex justify-center items-center bg-primary/20 active:bg-white/5 p-1 rounded-md w-6 h-6 aspect-square text-md text-white cursor-pointer"
-            >
-              -
-            </button>
-            <span className="w-8 font-medium text-sm text-center">{leverage}x</span>
-            <button
-              onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))}
-              className="flex justify-center items-center bg-primary/20 active:bg-white/5 p-1 rounded-md w-6 h-6 aspect-square text-md text-white cursor-pointer"
-            >
-              +
-            </button>
-          </div>
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-between">
+        <p
+          className={cn(
+            'text-xs font-medium transition-colors duration-150',
+            error.isValid ? 'text-white/50' : 'text-red'
+          )}
+        >
+          Leverage
+        </p>
+        <div className="flex items-center gap-2">
+          {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
+            <MinusIcon className='size-4' />
+          </Button> */}
+          <Input
+            className={cn('w-16 text-white', !error.isValid && 'bg-red/10 text-red')}
+            value={leverageInput}
+            onChange={(e) => handleLeverageChange(e.target.value)}
+          />
+          {/* <Button onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))} variant='outline' size='icon'>
+            <PlusIcon className='size-4' />
+          </Button> */}
         </div>
       </div>
-      <div className="w-full">
-        <input
-          type="range"
+      <div className="flex flex-1 flex-col gap-2 w-full items-center justify-center">
+        <Slider
           min={1}
           max={maxLeverage}
-          step={1}
-          value={leverage}
-          onChange={(e) => setLeverage(parseInt(e.target.value, 10))}
-          className="[&::-moz-range-thumb]:bg-white [&::-webkit-slider-thumb]:bg-white [&::-moz-range-thumb]:border-none [&::-webkit-slider-thumb]:border-none rounded-lg [&::-moz-range-thumb]:rounded-full [&::-webkit-slider-thumb]:rounded-full outline-none w-full [&::-moz-range-thumb]:w-3 [&::-webkit-slider-thumb]:w-3 h-0.5 [&::-moz-range-thumb]:h-3 [&::-webkit-slider-thumb]:h-3 appearance-none [&::-moz-range-thumb]:appearance-none [&::-webkit-slider-thumb]:appearance-none cursor-pointer [&::-moz-range-thumb]:cursor-pointer [&::-webkit-slider-thumb]:cursor-pointer"
-          style={{
-            background:
-              maxLeverage > 1
-                ? `linear-gradient(to right, #5F46F9 0%, #5F46F9 ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D ${((leverage - 1) / (maxLeverage - 1)) * 100}%, #2A1B3D 100%)`
-                : '#2A1B3D'
-          }}
-          disabled={maxLeverage <= 1}
+          value={[leverage]}
+          onValueChange={(value) => setLeverage(value[0])}
         />
-        <div className="flex justify-between mt-0.5 text-gray-500 text-xs">
+        <ToggleGroup
+          size={'sm'}
+          className="flex mt-1 items-center bg-white/5 justify-between w-full"
+          type="single"
+          value={leverage.toString()}
+          onValueChange={(value) => value !== '' && setLeverage(parseInt(value, 10))}
+        >
           {getLeverageTicks(maxLeverage, 3).map((value, index) => (
-            <span key={`leverage-tick-${value}-${index}`}>{value}x</span>
+            <ToggleGroupItem
+              key={`leverage-tick-${value}-${index}`}
+              value={value.toString()}
+              className={cn(
+                'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              )}
+            >
+              {value}x
+            </ToggleGroupItem>
           ))}
-        </div>
+        </ToggleGroup>
       </div>
     </div>
   )

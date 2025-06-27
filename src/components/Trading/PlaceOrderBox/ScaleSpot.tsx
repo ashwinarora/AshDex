@@ -1,19 +1,35 @@
 'use client'
 import { useMemo, useState } from 'react'
-import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
-import CheckBox from '@/components/common/CheckBox'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
-import Slider1 from '@/assets/images/slider_value.svg'
-import usdcicon from '@/assets/images/usdc_icon.svg'
-import plusicon from '@/assets/images/plus_icon.svg'
-import minusicon from '@/assets/images/minus_icon.svg'
+
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import {
+  IconCheckbox,
+  IconRefresh,
+  IconSquare,
+  IconInfoCircle,
+  IconChevronDown,
+  IconMinus,
+  IconPlus
+} from '@tabler/icons-react'
+import { DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+import { Input } from '@/components/ui/input'
+import { DropdownMenu, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Slider } from '@/components/ui/slider'
+import { ToggleGroup } from '@/components/ui/toggle-group'
+import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Toggle } from '@/components/ui/toggle'
+import { Popover } from '@/components/ui/popover'
 
 interface Order {
   price: number
@@ -64,7 +80,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
-  const { spotKeyToName } = useSpotMeta()
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 
@@ -162,8 +177,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     }
   }
 
-  const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const percent = parseFloat(e.target.value) || 0
+  const handleUsdPercentChange = (percent: number) => {
     setUsdPercent(percent)
     if (isBuy) {
       const newTotal = (percent / 100) * Number(maxAllowed)
@@ -181,195 +195,246 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div>
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <form onSubmit={handleSubmit} className="flex flex-col shadow-md rounded-md w-full">
-        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
-          <label className="block mb-0.5 font-medium text-gray-300 text-xs">Start Price</label>
-          <div className="flex">
-            <input
+    <div className="flex flex-col justify-start pt-4 w-full h-full">
+      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col gap-3 px-2">
+          <label htmlFor="startPrice" className="text-xs text-white/50">
+            Start Price
+          </label>
+          <div className="flex w-full gap-3 items-center">
+            <Input
               type="text"
-              value={startPrice ?? '0'}
+              placeholder="0"
+              value={startPrice}
               onChange={(e) =>
                 setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
+              className={cn('w-full text-right text-white placeholder:text-white')}
             />
-            <span className="flex items-center font-medium text-white text-xs">
-              <Image
-                src={usdcicon}
-                style={{ width: 45, height: 'auto' }}
-                className="pr-1"
-                alt="usdcicon"
-              />
-              USDC
-            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger disabled asChild>
+                <Button
+                  variant="outline"
+                  size={'sm'}
+                  disabled
+                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                >
+                  <p className="text-xs flex-1 w-full">{'USDC'}</p>
+                  <IconChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-fit" align="end">
+                <DropdownMenuItem onClick={() => {}}>
+                  <p className="text-xs w-10 text-center">USDC</p>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
-        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
-          <label className="block mb-0.5 font-medium text-gray-300 text-xs">End Price</label>
-          <div className="flex">
-            <input
+        <div className="flex flex-col gap-3 px-2">
+          <label htmlFor="endPrice" className="text-xs text-white/50">
+            End Price
+          </label>
+          <div className="flex w-full gap-3 items-center">
+            <Input
               type="text"
-              value={endPrice ?? '0'}
+              placeholder="0"
+              value={endPrice}
               onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
+              className={cn('w-full text-right text-white placeholder:text-white')}
             />
-            <span className="flex items-center font-medium text-white text-xs">
-              <Image
-                src={usdcicon}
-                style={{ width: 45, height: 'auto' }}
-                className="pr-1"
-                alt="usdcicon"
-              />
-              USDC
-            </span>
+            <Button
+              variant="outline"
+              size={'sm'}
+              className="text-xs min-w-18 w-fit flex items-center justify-center"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              onClick={() => {}}
+            >
+              <IconRefresh className="size-3" />
+              Last
+            </Button>
+            {/* */}
           </div>
         </div>
-        <div className="flex items-end mb-1 px-4 pb-2 border-[#FFFFFF0F] border-b w-full">
-          <div className="w-5/6">
-            <input
-              type="range"
-              min={0}
-              max={100}
-              step={1}
-              value={usdPercent}
-              onChange={handleUsdPercentChange}
-              className="rounded-lg outline-none w-full h-2.5 appearance-none cursor-pointer"
-              style={{
-                background:
-                  'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
-                  usdPercent +
-                  '%, #2A1B3D ' +
-                  usdPercent +
-                  '%, #2A1B3D 100%)'
-              }}
-            />
-            <Image src={Slider1} alt="Slider1" width={20} height={20} className="mt-1 w-full" />
-            <div className="flex justify-between mt-1 text-gray-500 text-xs">
-              <span>0%</span>
-              <span>25%</span>
-              <span>50%</span>
-              <span>75%</span>
-              <span>100%</span>
-            </div>
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col gap-3 px-2">
+          <div className="flex items-center justify-between">
+            <label htmlFor="percent" className="text-xs text-white/50">
+              Total Size
+            </label>
+            <p className="text-xs text-white/50">Max: {Number(maxAllowed).toFixed(2)} USDC</p>
           </div>
-          <div className="relative pl-4">
-            <input
-              type="string"
-              className="flex justify-between bg-white/10 px-4 py-2 border border-white/10 rounded-md outline-none w-20 h-11"
-              value={usdPercent}
-              onChange={handleUsdPercentChange}
-            />
-            <span className="top-2.5 right-2 absolute text-gray-500">%</span>
-          </div>
-        </div>
-        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
-          <div className="flex justify-between mb-1">
-            <label className="block mb-0.5 font-medium text-gray-300 text-xs">Total Size</label>
-            <span className="block font-medium text-[#8B8BA0] text-xs">
-              Balance = {Number(maxAllowed).toFixed(2)}{' '}
-              {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
-            </span>
-          </div>
-          <div className="flex">
-            <input
+          <div className="flex w-full gap-3 items-center">
+            <Input
               type="text"
-              value={totalSize ?? '0'}
+              placeholder="0"
+              value={totalSize}
               onChange={(e) =>
                 setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm focus:none focus:none"
+              className={cn('w-full text-right text-white placeholder:text-white')}
             />
-            <span className="flex items-center font-medium text-white text-xs">
-              <Image
-                src={usdcicon}
-                style={{ width: 45, height: 'auto' }}
-                className="pr-1"
-                alt="usdcicon"
-              />
-              USDC
-            </span>
+            <DropdownMenu>
+              <DropdownMenuTrigger disabled asChild>
+                <Button
+                  variant="outline"
+                  size={'sm'}
+                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                >
+                  <p className="text-xs flex-1 w-full">USDC</p>
+                  <IconChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-fit" align="end">
+                <DropdownMenuItem onClick={() => {}}>
+                  <p className="text-xs w-10 text-center">USDC</p>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="flex flex-1 mt-1 flex-col gap-3 w-full items-center justify-center">
+            <Slider
+              min={1}
+              max={100}
+              value={[usdPercent]}
+              onValueChange={(value) => handleUsdPercentChange(value[0])}
+              className="w-full"
+            />
+            <ToggleGroup
+              size={'sm'}
+              className="flex mt-1 items-center bg-white/5 justify-between w-full"
+              type="single"
+              value={usdPercent.toString()}
+              onValueChange={(value) => value !== '' && handleUsdPercentChange(parseInt(value, 10))}
+            >
+              {[0, 25, 50, 75, 100].map((value, index) => (
+                <ToggleGroupItem
+                  key={`leverage-tick-${value}-${index}`}
+                  value={value.toString()}
+                  className={cn(
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    usdPercent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                  )}
+                >
+                  {value}%
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
           </div>
         </div>
-        <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
-          <span className="block mb-0.5 font-medium text-gray-300 text-xs">Scale Settings</span>
-          <label className="mb-2">
-            <span className="block mb-0.5 font-medium text-gray-300 text-xs">Number of Orders</span>
-            <div className="flex items-center gap-2 mb-1 rounded-lg">
-              <button
-                onClick={handleDecrease}
-                className="bg-white/10 px-3 py-1.5 border border-white/10 rounded-md cursor-pointer"
+        <Separator orientation="horizontal" />
+        <div className="flex items-center justify-center h-fit gap-3 px-2">
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isReduceOnly}
+            onPressedChange={setIsReduceOnly}
+          >
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
+            <p className="text-xs font-semibold">Reduce Only</p>
+            <IconInfoCircle className="size-3" />
+          </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
               >
-                <Image
-                  src={minusicon}
-                  style={{ width: 20, height: 20 }}
-                  className="pr-1"
-                  alt="minusicon"
-                />
-              </button>
-              <input
-                type="text"
-                value={totalOrders}
-                onChange={handleChange}
-                className="bg-white/10 px-3 py-1.5 border-2 border-white/10 rounded-md focus:outline-none w-full font-medium text-sm text-center"
-              />
-              <button
-                onClick={handleIncrease}
-                className="bg-white/10 px-3 py-1.5 border border-white/10 rounded-md cursor-pointer"
+                Order Count
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <div className="flex flex-col gap-3">
+                <label htmlFor="orderCount" className="text-xs text-white/50">
+                  Order Count
+                </label>
+                <div className="flex items-center gap-3 rounded-lg">
+                  <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
+                    <IconMinus className="size-3" />
+                  </Button>
+                  <Input
+                    type="text"
+                    value={totalOrders}
+                    onChange={handleChange}
+                    min={1}
+                    max={100}
+                    step={1}
+                    className="text-white placeholder:text-white"
+                  />
+                  <Button onClick={handleIncrease} size={'sm'} variant={'outline'}>
+                    <IconPlus className="size-3" />
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  sizeSkew && sizeSkew > 0
+                    ? 'bg-accent text-accent-foreground'
+                    : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
               >
-                <Image
-                  src={plusicon}
-                  style={{ width: 20, height: 20 }}
-                  className="pr-1"
-                  alt="plusicon"
-                />
-              </button>
-            </div>
-          </label>
+                Skew
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <div className="flex flex-col gap-3">
+                <label htmlFor="sizeSkew" className="text-xs text-white/50">
+                  Size Skew
+                </label>
+                <div className="flex items-center gap-3 rounded-lg">
+                  <Input
+                    type="text"
+                    value={sizeSkew}
+                    onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
+                    placeholder="0"
+                    className="text-white"
+                  />
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
-        <div className="mb-1 px-4 pb-2 border-[#FFFFFF0F] border-b">
-          <label className="block mb-0.5 font-medium text-gray-300 text-xs">Size Skew</label>
-          <input
-            type="text"
-            value={sizeSkew ?? ''}
-            onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)}
-            placeholder="0.00"
-            className="bg-white/10 px-3 py-1.5 border-2 border-white/10 rounded-md focus:outline-none w-full font-medium text-sm"
-          />
-        </div>
-        <label className="flex items-center mt-1 mb-1 px-4">
-          <CheckBox
-            label=""
-            setIsChecked={(checked) => setIsReduceOnly(checked)}
-            isChecked={isReduceOnly}
-          />
-          <span className="font-medium text-[#E8E0F1] text-xs">Reduce Only</span>
-        </label>
-        <div className="px-4">
+      </div>
+      <div className="w-full h-fit flex flex-col gap-3 my-3">
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
           {!isAgentApproved || currentFeeApproval === 0 ? (
-            <button
-              type="button"
-              className="bg-primary hover:bg-purple-600 py-2 rounded-2xl w-full text-white cursor-pointer"
+            <Button
+              className="w-full font-semibold cursor-pointer"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              Establish Connection
-            </button>
+              Enable Trading
+            </Button>
           ) : (
-            <button
+            <Button
+              className="w-full"
               onClick={handleSubmit}
               type="submit"
               disabled={totalSize! > Number(maxAllowed)}
-              className="bg-primary py-[12px] rounded-xl w-full font-bold text-white text-base cursor-pointer px[24px]"
             >
               Scale Buy ({totalOrders} Orders)
-            </button>
+            </Button>
           )}
         </div>
-        {/* <span className="mx-4 my-4 font-medium text-[#8B8BA0] text-sm">
-          Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
-        </span> */}
-      </form>
+      </div>
     </div>
   )
 }

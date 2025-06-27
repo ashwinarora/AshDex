@@ -1,7 +1,6 @@
 import React from 'react'
-import Image from 'next/image'
-import { cn } from '@/utils/utils'
-import nexonlogo from '../../assets/images/logo.svg'
+import { cn } from '@/lib/utils'
+import { IconLoader } from '@tabler/icons-react'
 
 interface LoadingProps {
   title: string
@@ -11,13 +10,11 @@ interface LoadingProps {
 
 const Loading: React.FC<LoadingProps> = ({ title, subTitle, className }) => {
   return (
-    <div className={cn('flex justify-center items-center w-full flex-col', className)}>
-      <div className="w-16 h-16">
-        <Image src={nexonlogo} alt="Nexon Logo" style={{ width: 64, height: 'auto' }} />
-      </div>
-      <div className="">
-        <p className="mt-8 text-white font-medium text-base text-center">{title ?? ''}</p>
-        <p className="mt-2 text-[#8B8BA0] font-medium text-sm text-center">{subTitle ?? ''}</p>
+    <div className={cn('flex justify-center items-center w-full flex-col gap-4', className)}>
+      <IconLoader className="size-10 animate-spin" />
+      <div className="flex flex-col gap-2">
+        <p className="text-white font-medium text-base text-center">{title ?? ''}</p>
+        <p className=" text-white/50 font-medium text-sm text-center">{subTitle ?? ''}</p>
       </div>
     </div>
   )

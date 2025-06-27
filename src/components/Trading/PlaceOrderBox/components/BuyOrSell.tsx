@@ -1,3 +1,5 @@
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { cn } from '@/lib/utils'
 import React from 'react'
 
 interface BuyOrSellProps {
@@ -7,29 +9,33 @@ interface BuyOrSellProps {
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
   return (
-    <div className="relative flex justify-between bg-white/5 m-3 p-1 py-3 rounded-md h-8 overflow-hidden">
-      {/* Sliding background */}
-      <div
-        className={`absolute top-0 left-0 z-10 h-[100%]  w-1/2 rounded-md transition-all duration-200 ${
-          isBuy ? 'translate-x-0 bg-green' : 'translate-x-full bg-red'
-        }`}
-      ></div>
-
-      {/* Buy Button */}
-      <p
-        className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
-        onClick={() => setIsBuy(true)}
+    <div className="flex px-2 w-full items-center justify-between gap-2">
+      <ToggleGroup
+        size={'sm'}
+        className="w-full bg-white/5 rounded-md"
+        type="single"
+        value={isBuy ? 'buy' : 'sell'}
+        onValueChange={(value) => value !== '' && setIsBuy(value === 'buy')}
       >
-        Buy
-      </p>
-
-      {/* Sell Button */}
-      <p
-        className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
-        onClick={() => setIsBuy(false)}
-      >
-        Sell
-      </p>
+        <ToggleGroupItem
+          className={cn(
+            'w-full rounded-l-md transition-colors font-semibold hover:!text-green',
+            isBuy && '!bg-green hover:!text-accent !text-accent'
+          )}
+          value="buy"
+        >
+          Buy
+        </ToggleGroupItem>
+        <ToggleGroupItem
+          className={cn(
+            'w-full rounded-r-md transition-colors font-semibold hover:!text-red',
+            !isBuy && '!bg-red hover:!text-accent !text-accent'
+          )}
+          value="sell"
+        >
+          Sell
+        </ToggleGroupItem>
+      </ToggleGroup>
     </div>
   )
 }

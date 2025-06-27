@@ -2,7 +2,7 @@
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo, useEffect } from 'react'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+// import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import {
   createColumnHelper,
@@ -12,19 +12,28 @@ import {
   useReactTable,
   SortingState
 } from '@tanstack/react-table'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import SendModal from './component/SendModal'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
+import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 
-type ColumnType = {
-  key: string
-  label: string
-}
+// type ColumnType = {
+//   key: string
+//   label: string
+// }
 
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
+// type RenderRowProps = {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   item: any
+//   columns: ColumnType[]
+// }
 
 type BalanceData = {
   coin: string
@@ -34,25 +43,25 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-  return (
-    <div className="flex flex-col gap-2 text-white text-sm">
-      {columns?.map((col) => (
-        <div key={col?.key} className="flex justify-between">
-          <span className="text-[#8B8BA0]">{col?.label}</span>
-          <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
-        </div>
-      ))}
-    </div>
-  )
-}
+// const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+//   return (
+//     <div className="flex flex-col gap-2 text-white text-sm">
+//       {columns?.map((col) => (
+//         <div key={col?.key} className="flex justify-between">
+//           <span className="text-[#8B8BA0]">{col?.label}</span>
+//           <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
+//         </div>
+//       ))}
+//     </div>
+//   )
+// }
 
 const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
-  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const [selectedToken, setSelectedToken] = useState('')
+  // const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  // const [selectedToken, setSelectedToken] = useState('')
   const [isMounted, setIsMounted] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
 
@@ -64,56 +73,46 @@ const Balances = () => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => <HeaderWithIcons label="Coin" />,
-        cell: (info) => info.getValue(),
+        header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
+        cell: (info) => info.getValue().replace('(', ' ('),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
       columnHelper.accessor('token', {
         id: 'token',
-        header: () => <HeaderWithIcons label="Tokens" />,
+        header: () => <span className="flex justify-start items-center gap-1">Tokens</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Tokens' }
       }),
       columnHelper.accessor('total', {
         id: 'total',
-        header: () => <HeaderWithIcons label="Total Balance" />,
+        header: () => <span className="flex justify-start items-center gap-1">Total Balance</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Total Balance' }
       }),
       columnHelper.accessor('hold', {
         id: 'hold',
-        header: () => <HeaderWithIcons label="Hold" />,
+        header: () => <span className="flex justify-start items-center gap-1">Hold</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Hold' }
       }),
       columnHelper.accessor('entryNtl', {
         id: 'entryNtl',
-        header: () => <HeaderWithIcons label="Entry NTL" />,
+        header: () => <span className="flex justify-start items-center gap-1">Entry NTL</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Entry NTL' }
       }),
       columnHelper.display({
         id: 'send',
-        header: () => <HeaderWithIcons label="Send" />,
+        header: () => <span className="flex justify-start items-center gap-1">Send</span>,
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
-          return (
-            <button
-              onClick={() => {
-                setSelectedToken(coin)
-                setIsSendModalOpen(true)
-              }}
-              className="text-[#7A6FA7] hover:text-[#E8E0F1]"
-            >
-              Send
-            </button>
-          )
+          return <SendModal spotDefaultName={coin} />
         },
         enableSorting: false,
         meta: { label: 'Send' }
@@ -156,26 +155,26 @@ const Balances = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const tableData = useMemo(
-    () =>
-      table.getRowModel().rows.map((row) => {
-        const rowData: Record<string, unknown> = {}
-        row.getVisibleCells().forEach((cell) => {
-          rowData[cell.column.id] = cell.getValue()
-        })
-        return rowData
-      }),
-    [table.getRowModel().rows]
-  )
+  // const tableData = useMemo(
+  //   () =>
+  //     table.getRowModel().rows.map((row) => {
+  //       const rowData: Record<string, unknown> = {}
+  //       row.getVisibleCells().forEach((cell) => {
+  //         rowData[cell.column.id] = cell.getValue()
+  //       })
+  //       return rowData
+  //     }),
+  //   [table.getRowModel().rows]
+  // )
 
-  const tableColumns = useMemo(
-    () =>
-      columns.map((col) => ({
-        key: col.id as string,
-        label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-      })),
-    [columns]
-  )
+  // const tableColumns = useMemo(
+  //   () =>
+  //     columns.map((col) => ({
+  //       key: col.id as string,
+  //       label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
+  //     })),
+  //   [columns]
+  // )
 
   if (!isMounted) {
     return null
@@ -186,57 +185,69 @@ const Balances = () => {
   }
 
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white">
-        <thead>
+    <div className="w-full h-full flex flex-col gap-2">
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-7 pt-3 pb-1 font-normal text-[#8B8BA0] text-sm text-left"
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer w-full',
+                    header.id === 'coin' ? 'justify-start' : 'justify-end',
+                    header.column.columnDef.enableSorting
+                      ? 'hover:text-accent-foreground'
+                      : 'hover:text-white/50',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
+                  )}
                 >
                   {header.isPlaceholder ? null : (
-                    <button
-                      onClick={header.column.getToggleSortingHandler()}
-                      className="flex justify-start items-center gap-1"
-                    >
+                    <>
                       {flexRender(header.column.columnDef.header, header.getContext())}
-                      {{
-                        asc: '▲',
-                        desc: '▼'
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </button>
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconArrowMoveDown className="text-inherit size-4" />
+                        ) : (
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
+                    </>
                   )}
-                </th>
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody>
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-white/10 border-b">
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="opacity-80 px-7 py-4 font-medium text-white text-sm">
+                <TableCell
+                  key={cell.id}
+                  className="font-medium text-white text-xs first:text-left text-right"
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
-      <ResponsiveDataCard
+        </TableBody>
+      </Table>
+      {/* <ResponsiveDataCard
         columns={tableColumns}
         data={tableData}
         renderRow={(item) => <RenderRowData item={item} columns={tableColumns} />}
-      />
-      {isSendModalOpen && (
-        <SendModal
-          isOpen={isSendModalOpen}
-          onClose={() => setIsSendModalOpen(false)}
-          spotDefaultName={selectedToken}
-        />
-      )}
+      /> */}
     </div>
   )
 }
