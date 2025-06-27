@@ -26,8 +26,10 @@ import {
   IconCopy,
   IconLogout,
   IconSettings,
+  IconStackPop,
   IconWallet
 } from '@tabler/icons-react'
+import WithdrawModal from './DepositWithdraw/WithdrawModal'
 type MenuItem = {
   name: string
   path: string
@@ -39,6 +41,7 @@ const Header: FC = () => {
   const pathname = usePathname()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
+  const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
@@ -199,6 +202,11 @@ const Header: FC = () => {
                   Settings
                 </DropdownMenuItem>
 
+                <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
+                  <IconStackPop className="size-4 text-inherit" />
+                  Withdraw
+                </DropdownMenuItem>
+
                 <DropdownMenuItem onClick={() => disconnect()} variant="destructive">
                   <IconLogout className="size-4 text-inherit" />
                   Disconnect
@@ -217,6 +225,9 @@ const Header: FC = () => {
           </Button>
         )}
       </div>
+      {/* {isWithdrawOpen && ( */}
+      <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
+      {/* )} */}
     </div>
   )
 }
