@@ -15,7 +15,7 @@ const Trading = () => {
   const isSpot = useIsSpot()
   const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? '@1035' : 'BTC') // @1035 is HYPE
   return (
-    <div className="flex flex-col gap-1 p-1 mb-6 h-fit w-full">
+    <div className="flex flex-col gap-1 p-1 mb-8 h-fit w-full">
       <div className="flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden">
         <div className="col-span-10 h-full flex-1 basis-xl flex flex-col gap-1">
           <FavoriteStrip setSelectedAsset={setSelectedAsset} />

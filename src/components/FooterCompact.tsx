@@ -7,6 +7,8 @@ import { FC, useState, useEffect } from 'react'
 import { IconCellSignal5, IconCellSignalOff } from '@tabler/icons-react'
 import dynamic from 'next/dynamic'
 import { useHyperliquid } from '@/store/HyperliquidStore'
+import { cn } from '@/lib/utils'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
@@ -21,21 +23,21 @@ const FooterContent: FC = () => {
 
   // Helper function to get color based on time string
   const getFreshnessColor = (timeStr: string): string => {
-    if (timeStr === 'No candle data') return 'bg-gray-600'
+    if (timeStr === 'No candle data') return 'bg-white/50'
 
-    if (timeStr.includes('ms')) return 'bg-green-600'
+    if (timeStr.includes('ms')) return 'bg-green'
     if (timeStr.includes('s')) {
       const seconds = parseInt(timeStr)
-      if (seconds < 10) return 'bg-green-600'
-      if (seconds < 30) return 'bg-yellow-600'
-      return 'bg-red-600'
+      if (seconds < 10) return 'bg-green'
+      if (seconds < 30) return 'bg-yellow-500'
+      return 'bg-red'
     }
     if (timeStr.includes('m')) {
       const minutes = parseInt(timeStr)
-      if (minutes < 1) return 'bg-yellow-600'
-      return 'bg-red-600'
+      if (minutes < 1) return 'bg-yellow-500'
+      return 'bg-red'
     }
-    return 'bg-red-600'
+    return 'bg-red'
   }
 
   // Use useEffect to set mounted to true after hydration
@@ -78,71 +80,71 @@ const FooterContent: FC = () => {
     )
   }
 
+  const collectiveFreshness = [getFreshnessColor(timeSinceUpdate.allMids), getFreshnessColor(timeSinceUpdate.candles), getFreshnessColor(timeSinceUpdate.webData2)]
+
   return (
-    <footer
-      className="bottom-0 left-0 fixed items-center bg-secondary p-1 border-white/5 border-t w-screen align-middle"
-      style={{
-        backdropFilter: 'blur(40px)',
-        WebkitBackdropFilter: 'blur(40px)'
-      }}
-    >
-      <div className="flex justify-between px-4">
-        <div className="flex items-center gap-4">
-          <div className="group relative cursor-pointer">
+    <footer className="bottom-0 left-0 z-40 fixed items-center bg-secondary p-2 text-white/50 text-xs border-white/5 border-t w-screen align-middle">
+      <div className="flex w-full justify-between">
+        <HoverCard>
+          <HoverCardTrigger asChild>
             <div
-              className={`flex gap-2 text-xs ${isWebSocketConnected ? 'text-green-600' : 'text-red-600'}`}
+              className={cn(
+                'flex items-center cursor-help gap-2 w-fit h-full',
+                isWebSocketConnected
+                  ? collectiveFreshness.includes('bg-yellow-500')
+                    ? 'text-yellow-500'
+                    : 'text-green'
+                  : 'text-red'
+              )}
             >
               {isWebSocketConnected ? (
                 <>
-                  <IconCellSignal5 className="w-4 h-4" />
+                  <IconCellSignal5 className="size-4" />
                   Online
                 </>
               ) : (
                 <>
-                  <IconCellSignalOff className="w-4 h-4" />
+                  <IconCellSignalOff className="size-4" />
                   Offline
                 </>
               )}
             </div>
-            <div className="bottom-full left-0 z-50 absolute opacity-0 group-hover:opacity-100 mb-2 transition-all duration-200 pointer-events-none">
-              <div className="bg-secondary shadow-lg p-2 border border-white/10 rounded-lg">
-                <div className="text-white/60 text-xs whitespace-nowrap">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.allMids)}`}
-                    ></span>
-                    <span>Order Book: {timeSinceUpdate.allMids}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.candles)}`}
-                    ></span>
-                    <span>Chart Data: {timeSinceUpdate.candles}</span>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <span
-                      className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
-                    ></span>
-                    <span>User Data: {timeSinceUpdate.webData2}</span>
-                  </div>
-                </div>
+          </HoverCardTrigger>
+          <HoverCardContent className="bg-secondary text-white/50 text-xs p-2 w-fit h-fit" side="top" align="start">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.allMids)}`}
+                ></span>
+                <span>Order Book: {timeSinceUpdate.allMids}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.candles)}`}
+                ></span>
+                <span>Chart Data: {timeSinceUpdate.candles}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
+                ></span>
+                <span>User Data: {timeSinceUpdate.webData2}</span>
               </div>
             </div>
-          </div>
-        </div>
+          </HoverCardContent>
+        </HoverCard>
 
-        <div className="flex gap-4 text-white/60 text-xs">
-          <a href="/docs" className="hover:text-white">
+        <div className="flex gap-4 duration-200 items-center justify-center text-xs">
+          <a href="/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
             Docs
           </a>
-          <a href="/support" className="hover:text-white">
+          <a href="/support" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
             Support
           </a>
-          <a href="/terms" className="hover:text-white">
+          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
             Terms
           </a>
-          <a href="/privacy" className="hover:text-white">
+          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
             Privacy Policy
           </a>
         </div>
