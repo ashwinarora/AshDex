@@ -1,6 +1,6 @@
 'use client'
+import { IconChevronDown } from '@tabler/icons-react'
 import { useState } from 'react'
-import { ChevronDown } from 'lucide-react'
 
 interface DropdownProps {
   options: string[]
@@ -19,7 +19,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, classN
         className={`px-4 py-2 rounded-lg flex items-center justify-between w-20 cursor-pointer`}
         onClick={() => setIsOpen(!isOpen)}
       >
-        {selected} <ChevronDown size={18} className="ml-2" />
+        {selected} <IconChevronDown size={18} className="ml-2" />
       </button>
 
       {/* Dropdown Menu */}

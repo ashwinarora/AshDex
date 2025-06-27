@@ -1,6 +1,6 @@
 'use client'
 import { InputHTMLAttributes } from 'react'
-import { cn } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 
 export const Input: React.FC<InputHTMLAttributes<HTMLInputElement>> = ({ className, ...props }) => {
   return (

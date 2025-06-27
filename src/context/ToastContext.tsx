@@ -40,6 +40,8 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     const options: ToastOptions = {
       position: popupPosition,
       autoClose: 3000,
+      className:
+        '!bg-secondary !shadow-md !backdrop-blur-[40px] !border !border-white/10 !flex !items-center !gap-2',
       closeButton: true,
       hideProgressBar: true,
       onClose: () => console.log(`Toast closed: ${title}`)

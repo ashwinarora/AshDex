@@ -7,6 +7,7 @@ import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 interface IUserDataProps {
   setSelectedAsset: (asset: string) => void
@@ -36,7 +37,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         element: <Balances />
       },
       {
-        header: `Open Orders`,
+        header: `Open Orders (${openOrdersLength})`,
         count: openOrdersLength,
         element: <OpenOrders />
       },
@@ -51,14 +52,14 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     ]
     if (!isSpot) {
       tabs.splice(1, 0, {
-        header: `Positions `,
+        header: `Positions (${positionsCount})`,
         count: positionsCount,
         element: <Positions setSelectedAsset={setSelectedAsset} />
       })
-      tabs.push({
-        header: 'Funding History',
-        element: <></>
-      })
+      // tabs.push({
+      //   header: 'Funding History',
+      //   element: <></>
+      // })
     }
     return tabs
   }, [isSpot, positionsCount, openOrders.length])
@@ -66,29 +67,32 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
   return (
-    <div className="w-full h-full">
-      <div className="flex justify-between items-center border-white/10 border-b w-full">
-        <nav className="flex">
-          {tabs?.map((tab, index) => (
-            <button
+    <div className="w-full h-full rounded-md flex flex-col gap-2 p-2">
+      <div className="w-2/3 h-fit flex items-center justify-start">
+        <ToggleGroup
+          type="single"
+          className="w-full bg-white/5 rounded-md"
+          value={activeTab.toString()}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setActiveTab(Number(value))
+          }}
+        >
+          {tabs.map((tab, index) => (
+            <ToggleGroupItem
               key={tab.header}
-              onClick={() => setActiveTab(index)}
-              className={`tab-btn xl:px-6 px-4  text-xs font-normal whitespace-nowrap flex items-center gap-x-2 ${
-                activeTab === index ? 'tab-btn-active' : 'border-transparent text-[#8B8BA0]'
-              }`}
+              className="w-full first:rounded-l-md last:rounded-r-md"
+              value={index.toString()}
             >
               {tab.header}
-              {tab.count && Number(tab.count) > 0 ? (
-                <p className="flex justify-center items-center bg-primary rounded-full w-4 h-4 aspect-square text-white text-xs">
-                  {tab.count}
-                </p>
-              ) : null}
-            </button>
+            </ToggleGroupItem>
           ))}
-        </nav>
+        </ToggleGroup>
       </div>
-      <div className="mt-3 mb-6 w-full">
-        {tabs[activeTab] && <div>{tabs[activeTab].element}</div>}
+      <div className="w-full h-96 overflow-y-auto overflow-x-hidden no-scrollbar">
+        {tabs[activeTab] && <div className="w-full h-full">{tabs[activeTab].element}</div>}
       </div>
     </div>
   )

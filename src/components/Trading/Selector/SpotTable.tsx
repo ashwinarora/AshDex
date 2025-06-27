@@ -19,10 +19,21 @@ import {
 } from '@tabler/icons-react'
 import { useFavorites } from '@/store/FavoritesStore'
 import ReactiveText from '@/components/common/ReactiveText'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
 
 interface AssetTableProps {
   searchTerm: string
   setSelectedAsset: (asset: string) => void
+  selectedAsset: string
+  setIsOpen: (isOpen: boolean) => void
 }
 
 // Define the data structure for each asset
@@ -44,7 +55,12 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
+const AssetTable = ({
+  searchTerm,
+  setSelectedAsset,
+  selectedAsset,
+  setIsOpen
+}: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
@@ -241,54 +257,62 @@ const AssetTable = ({ searchTerm, setSelectedAsset }: AssetTableProps) => {
       const tokenIndex = spotMeta.tokens.findIndex((item) => item.name === assetKey)
       const spotUniverse = spotMeta.universe.find((item) => item.tokens[0] === tokenIndex)
       setSelectedAsset(spotUniverse?.name || '')
+      setIsOpen(false)
     }
   }
 
   return (
-    <div className="h-[300px] overflow-y-auto no-scrollbar">
-      <table className="min-w-full text-white text-sm">
-        <thead className="top-0 z-10 sticky text-white/70 ">
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <th
-                  key={header.id}
-                  className="group px-6 py-3 active:text-white text-left whitespace-nowrap cursor-pointer"
-                  onClick={() => {
-                    if (header.column.getCanSort()) {
-                      header.column.toggleSorting()
-                    }
-                  }}
-                >
-                  <div
-                    className={`flex ${header.id !== 'symbol' ? 'justify-end' : 'justify-start'} items-center gap-1`}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              onClick={() => handleRowClick(row.original.symbol)}
-              className="hover:bg-white/5 transition-colors duration-150 cursor-pointer"
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="py-2 px-6 font-medium whitespace-nowrap">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <Table>
+      <TableHeader className="sticky top-0 z-10 bg-secondary">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead
+                key={header.id}
+                className={cn(
+                  'cursor-pointer hover:text-accent-foreground w-full',
+                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  header.id === 'symbol' || header.id === 'prevDayPrice' ? 'w-3/12' : 'w-2/12'
+                )}
+                onClick={() => {
+                  if (header.column.getCanSort()) {
+                    header.column.toggleSorting()
+                  }
+                }}
+              >
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(header.column.columnDef.header, header.getContext())}
+              </TableHead>
+            ))}
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody className="scroll-smooth">
+        {table.getRowModel().rows.map((row) => (
+          <TableRow
+            key={row.id}
+            onClick={() => handleRowClick(row.original.symbol)}
+            className={cn(
+              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+              selectedAsset === row.original.symbol && 'bg-accent'
+            )}
+          >
+            {row.getVisibleCells().map((cell) => (
+              <TableCell
+                key={cell.id}
+                className={cn(
+                  'font-medium whitespace-nowrap w-2/12',
+                  (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                )}
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </TableCell>
+            ))}
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   )
 }
 

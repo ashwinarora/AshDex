@@ -1,15 +1,31 @@
 'use client'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
-import Image from 'next/image'
-import arrowdownicon from '@/assets/images/arrowdown_icon.svg'
 import { getSpotAssetContext } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { IconExternalLink, IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
 import SpotTable from './SpotTable'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Separator } from '@/components/ui/separator'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  IconAdjustmentsDollar,
+  IconExternalLink,
+  IconBrain,
+  IconChevronDown,
+  IconDeviceGamepad2,
+  IconMeteor,
+  IconRosette,
+  IconShieldCheck,
+  IconShieldQuestion,
+  IconStar,
+  IconStarFilled
+} from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -26,9 +42,9 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
   const { toggleFavorite, favorites } = useFavorites(true)
-  const { data: spotMeta } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
 
-  const { context: selectedAssetContext, meta: selectedAssetToken } = useMemo(() => {
+  const { context: selectedAssetContext, meta: selectedAssetMeta } = useMemo(() => {
     if (spotMeta && spotAssetContext) {
       const spot = getSpotAssetContext({
         asset: selectedAsset,
@@ -41,7 +57,14 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     return { context: null, meta: null }
   }, [selectedAsset, spotAssetContext, spotMeta])
 
-  const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
+  const tabs = [
+    { label: 'All' },
+    { label: 'New', icon: <IconRosette className="size-3" /> },
+    { label: 'AI', icon: <IconBrain className="size-3" /> },
+    { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+    { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+    { label: 'Meme', icon: <IconMeteor className="size-3" /> }
+  ]
 
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
@@ -134,124 +157,118 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }, [])
 
   return (
-    <div ref={containerRef} className={`flex items-center ${isOpen ? 'z-50' : ''} nexon-card`}>
-      <div className="flex max-xl:border-white/10 max-xl:border-b max-xl:w-full">
-        <div className="flex items-center px-2">
-          <button
-            onClick={handleToggleFavorite}
-            className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
-          >
-            {favorites.has(selectedAsset) ? (
-              <IconStarFilled size={16} className="mr-1" />
-            ) : (
-              <IconStar size={16} className="opacity-50 mr-1 text-white" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setIsOpen(!isOpen)
-            }}
-            className="flex items-center gap-x-2 text-white text-lg cursor-pointer disabled:opacity-50"
-          >
-            <div className="flex flex-col">
-              <span className="text-white text-sm text-nowrap">
-                {selectedAssetToken?.name || 'Select an asset'}
-              </span>
-            </div>
-            <Image
-              width={20}
-              height={20}
-              src={arrowdownicon}
-              alt="arrowdown"
-              className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-            />
-          </button>
-        </div>
-        <div className="flex flex-col p-4">
-          <p className="text-white/70 text-xs">Price</p>
-          <ReactiveText
-            className="text-xs"
-            precision={2}
-            value={Number(selectedAssetContext?.markPx)}
-            type="currency"
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-4 text-white text-xs">
-        {marketData?.map((item, index) => (
-          <div key={index} className="flex flex-col flex-wrap justify-center">
-            <div className="text-white/70 text-xs">{item.label}</div>
-            <div className={`font-medium text-xs ${item.color || 'text-white'}`}>{item.value}</div>
-          </div>
-        ))}
-      </div>
-
-      {isOpen && (
-        <div
-          ref={panelRef}
-          className="top-9 left-2 z-50 absolute flex flex-col gap-3 bg-[#211134] shadow-xl mt-8 p-4 border-2 border-white/5 rounded-xl w-[90%] max-w-[95vw]"
+    <div className="flex items-center justify-between p-2 h-14 bg-secondary rounded-md">
+      <div className="flex items-center gap-2 w-full h-full">
+        <Button
+          onClick={handleToggleFavorite}
+          variant="outline"
+          size="icon"
+          className="h-full aspect-square text-primary flex items-center justify-center cursor-pointer"
         >
-          <div className="flex justify-between items-center">
-            <div className="flex items-center bg-[#FFFFFF08] px-4 border border-white/5 rounded-md w-full">
-              <IconSearch className="w-4 h-4 text-white/60" />
-              <input
+          {favorites.has(selectedAsset) ? (
+            <IconStarFilled className="size-4 text-primary" />
+          ) : (
+            <IconStar className="size-4 text-white/50" />
+          )}
+        </Button>
+        <Popover open={isOpen} onOpenChange={setIsOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
+            >
+              <h1 className="text-white text-sm font-semibold">
+                {spotKeyToName.get(selectedAsset) || selectedAssetMeta?.name}
+              </h1>
+              <IconChevronDown className="size-4 text-white" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent align="start" className="w-3xl h-96 z-30 p-2 flex flex-col gap-2">
+            <div className="flex items-center w-full h-fit gap-2">
+              <Input
                 type="text"
-                placeholder='e.g. "BTC" or "Bitcoin"'
+                placeholder="Search for an asset"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="bg-transparent p-2 focus:outline-none w-full text-white text-sm"
+                className="p-2 focus:outline-none w-full text-left text-white text-sm"
               />
+              <ToggleGroup
+                size={'sm'}
+                type="single"
+                className="bg-white/5"
+                value={isStrict ? 'Strict' : 'All'}
+                onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
+              >
+                <ToggleGroupItem
+                  value="Strict"
+                  className={cn(
+                    'px-4 py-1 rounded-l-md cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
+                    isStrict ? 'bg-green !text-green' : 'bg-transparent text-white/50'
+                  )}
+                >
+                  <IconShieldCheck className="size-4" />
+                  Verified
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="All"
+                  className={cn(
+                    'px-4 py-1 rounded-r-md cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
+                    !isStrict ? 'bg-red !text-red' : 'bg-transparent text-white/50'
+                  )}
+                >
+                  <IconShieldQuestion className="size-4" />
+                  All
+                </ToggleGroupItem>
+              </ToggleGroup>
             </div>
-            <div className="relative flex justify-between bg-white/5 m-3 p-1 py-3 rounded-md w-1/4 h-10 overflow-hidden">
-              {/* Sliding background */}
-              <div
-                className={`absolute top-0 left-0 z-10 h-[100%]  w-1/2 rounded-md transition-all duration-200 ${
-                  isStrict ? 'translate-x-0 bg-green' : 'translate-x-full bg-red'
-                }`}
-              ></div>
-
-              {/* Buy Button */}
-              <p
-                className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
-                onClick={() => setIsStrict(true)}
-              >
-                Strict
-              </p>
-
-              {/* Sell Button */}
-              <p
-                className="z-20 flex justify-center items-center w-1/2 font-medium text-white text-sm cursor-pointer"
-                onClick={() => setIsStrict(false)}
-              >
-                All
-              </p>
+            <ToggleGroup
+              className="flex items-center bg-white/5 justify-between w-full"
+              type="single"
+              value={selectedTab}
+              onValueChange={(value) => {
+                if (value === '') {
+                  return
+                }
+                setSelectedTab(value)
+              }}
+            >
+              {tabs.map((tab) => (
+                <ToggleGroupItem
+                  className={cn(
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    selectedTab === tab.label
+                      ? 'bg-primary text-white'
+                      : 'bg-transparent text-white/50'
+                  )}
+                  key={tab.label}
+                  value={tab.label}
+                >
+                  {tab.icon}
+                  {tab.label}
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+            <SpotTable
+              searchTerm={searchTerm}
+              setIsOpen={setIsOpen}
+              selectedAsset={selectedAsset}
+              setSelectedAsset={(asset) => {
+                setSelectedAsset(asset)
+                setIsOpen(false)
+              }}
+            />
+          </PopoverContent>
+        </Popover>
+        <Separator orientation="vertical" className="!h-full" />
+        <div className="flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+          {marketData?.map((item, index) => (
+            <div key={index} className="flex flex-col flex-wrap justify-center">
+              <div className="text-white/50 text-xs">{item.label}</div>
+              <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
             </div>
-          </div>
-
-          <div className="flex gap-2 bg-white/2 px-3 py-2 rounded-md w-max">
-            {tabs.map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setSelectedTab(tab)}
-                className={`text-white rounded-md transition-all duration-200 cursor-pointer py-1 px-3 ${
-                  selectedTab === tab ? 'bg-primary font-medium' : 'hover:bg-[#FFFFFF20]'
-                }`}
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-          <SpotTable
-            searchTerm={searchTerm}
-            setSelectedAsset={(asset) => {
-              setSelectedAsset(asset)
-              setIsOpen(false)
-            }}
-          />
+          ))}
         </div>
-      )}
+      </div>
     </div>
   )
 }

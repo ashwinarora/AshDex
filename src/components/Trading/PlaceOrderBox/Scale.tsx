@@ -1,20 +1,39 @@
 import { useMemo, useState } from 'react'
-import Image from 'next/image'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { getPerpsUniverseIndex } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
-import Slider1 from '@/assets/images/slider_value.svg'
-import plusicon from '@/assets/images/plus_icon.svg'
-import minusicon from '@/assets/images/minus_icon.svg'
-import refreshpurpleIcon from '@/assets/images/refreshpurple2_icon.svg'
+
 import { IPlaceOrderProps } from '.'
-import CheckBox from '@/components/common/CheckBox'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'react-toastify'
+import { Separator } from '@/components/ui/separator'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import {
+  IconCheckbox,
+  IconRefresh,
+  IconSquare,
+  IconInfoCircle,
+  IconChevronDown,
+  IconMinus,
+  IconPlus
+} from '@tabler/icons-react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Slider } from '@/components/ui/slider'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Toggle } from '@/components/ui/toggle'
+import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Popover } from '@/components/ui/popover'
 interface Order {
   price: number
   size: number
@@ -94,7 +113,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const [startPrice, setStartPrice] = useState<number>()
   const [endPrice, setEndPrice] = useState<number>()
   const [totalOrders, setTotalOrders] = useState<number>(2)
-  const [sizeSkew, setSizeSkew] = useState<number>()
+  const [sizeSkew, setSizeSkew] = useState<number>(1)
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [percent, setPercent] = useState(0)
@@ -216,9 +235,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     }
   }
 
-  const handlePercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePercentChange = (newUsdPercent: number) => {
     if (!clearingHouseState) return
-    const newUsdPercent = parseFloat(e.target.value) || 0
     setPercent(newUsdPercent)
     if (isInputUsd) {
       const totalUsd = (maxAllowedUsd * newUsdPercent) / 100
@@ -241,219 +259,262 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <MarginMode isCross={isCross} setIsCross={setIsCross} />
-      <LeverageMargin selectedAsset={selectedAsset} leverage={leverage} setLeverage={setLeverage} />
-      <div className="flex-1 mt-6 overflow-y-auto no-scrollbar">
-        <div className="flex flex-col w-full rounded-md shadow-md">
-          <div className="space-y-2">
-            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-              <label className="block text-xs font-medium text-gray-300 mb-0.5">Start Price</label>
-              <div className="flex">
-                <input
-                  type="text"
-                  value={startPrice ?? '0'}
-                  onChange={(e) =>
-                    setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-                  }
-                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-                />
-                <span className="text-white flex items-center text-xs font-medium">USDC</span>
-              </div>
-            </div>
-            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-              <label className="block text-xs font-medium text-gray-300 mb-0.5">End Price</label>
-              <div className="flex">
-                <input
-                  type="text"
-                  value={endPrice ?? '0'}
-                  onChange={(e) =>
-                    setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-                  }
-                  className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-                />
-                <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-xs font-medium">
-                  <Image
-                    src={refreshpurpleIcon}
-                    style={{ width: 15, height: 'auto' }}
-                    alt="Refresh Icon"
-                    className="w-3.5 h-3.5"
-                  />
-                  Last
-                </span>
-              </div>
-            </div>
-
-            <div className="flex w-full mb-2 items-end px-4 border-b border-[#FFFFFF0F] pb-2">
-              <div className="w-5/6">
-                <input
-                  type="range"
-                  min={0}
-                  max={100}
-                  step={1}
-                  value={percent}
-                  onChange={handlePercentChange}
-                  className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
-                  style={{
-                    background:
-                      'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
-                      percent +
-                      '%, #2A1B3D ' +
-                      percent +
-                      '%, #2A1B3D 100%)'
-                  }}
-                />
-                <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>0%</span>
-                  <span>25%</span>
-                  <span>50%</span>
-                  <span>75%</span>
-                  <span>100%</span>
-                </div>
-              </div>
-              <div className="relative pl-4">
-                <input
-                  type="string"
-                  className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2 flex justify-between"
-                  value={percent}
-                  onChange={handlePercentChange}
-                />
-                <span className="absolute right-2 top-2.5 text-gray-500">%</span>
-              </div>
-            </div>
-
-            <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-              <div className="flex mb-1 justify-between">
-                <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
-                <span className="block text-xs font-medium text-[#8B8BA0]">
-                  Max:{' '}
-                  {isInputUsd
-                    ? `${maxAllowedUsd.toFixed(2)} USDC`
-                    : `${(maxAllowedUsd / (Number(allMids[selectedAsset]) || 1)).toFixed(2)} ${selectedAsset}`}
-                </span>
-              </div>
-              <div className="flex relative">
-                <input
-                  type="number"
-                  value={isInputUsd ? (totalUsd ?? '') : (totalAssetSize ?? '')}
-                  onChange={(e) => {
-                    if (isInputUsd) {
-                      const totalUsd = parseFloat(e.target.value)
-                      const totalAssetSize = totalUsd / (Number(allMids[selectedAsset]) || 1)
-                      setTotalUsd(totalUsd)
-                      setTotalAssetSize(totalAssetSize)
-                      setPercent((totalUsd / maxAllowedUsd) * 100)
-                    } else {
-                      const totalAssetSize = parseFloat(e.target.value)
-                      const totalUsd = totalAssetSize * (Number(allMids[selectedAsset]) || 1)
-                      setTotalAssetSize(totalAssetSize)
-                      setTotalUsd(totalUsd)
-                      setPercent((totalUsd / maxAllowedUsd) * 100)
-                    }
-                  }}
-                  className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium pr-20"
-                  placeholder={isInputUsd ? '0.00' : '0.0000'}
-                />
-                <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-                  <select
-                    value={isInputUsd ? 'usd' : 'asset'}
-                    onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
-                    className="bg-transparent border-none outline-none text-[#8B8BA0] text-xs cursor-pointer"
-                  >
-                    <option value="usd">USDC</option>
-                    <option value="asset">{selectedAsset}</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-            <div className="px-4 border-b mb-1 border-[#FFFFFF0F]">
-              <span className="block text-xs font-medium text-gray-300 mb-0.5">Scale Settings</span>
-              <label className="mb-2">
-                <span className="block text-xs font-medium text-gray-300 mb-0.5">
-                  Number of Orders
-                </span>
-                <div className="flex items-center gap-2 mb-1 rounded-lg">
-                  <button
-                    onClick={handleDecrease}
-                    className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
-                  >
-                    <Image
-                      src={minusicon}
-                      style={{ width: 20, height: 20 }}
-                      className="pr-1"
-                      alt="minusicon"
-                    />
-                  </button>
-                  <input
+    <div className="flex flex-col justify-start pt-4 w-full h-full">
+      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col gap-2 px-2">
+          <MarginMode isCross={isCross} setIsCross={setIsCross} />
+          <LeverageMargin
+            selectedAsset={selectedAsset}
+            leverage={leverage}
+            setLeverage={setLeverage}
+          />
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col gap-2 px-2">
+          <label htmlFor="startPrice" className="text-xs text-white/50">
+            Start Price
+          </label>
+          <div className="flex w-full gap-3 items-center">
+            <Input
+              type="text"
+              placeholder="0"
+              value={startPrice}
+              onChange={(e) =>
+                setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+              }
+              className={cn('w-full text-right text-white placeholder:text-white')}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size={'sm'}
+                  disabled
+                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                >
+                  <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
+                  <IconChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-fit" align="end">
+                <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+                  <p className="text-xs w-10 text-center">USDC</p>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+                  <p className="text-xs w-10 text-center">{selectedAsset}</p>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2 px-2">
+          <label htmlFor="endPrice" className="text-xs text-white/50">
+            End Price
+          </label>
+          <div className="flex w-full gap-3 items-center">
+            <Input
+              type="text"
+              placeholder="0"
+              value={endPrice}
+              onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+              className={cn('w-full text-right text-white placeholder:text-white')}
+            />
+            <Button
+              variant="outline"
+              size={'sm'}
+              className="text-xs min-w-18 w-fit flex items-center justify-center"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              onClick={() => {}}
+            >
+              <IconRefresh className="size-3" />
+              Last
+            </Button>
+            {/* */}
+          </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col gap-2 px-2">
+          <div className="flex items-center justify-between">
+            <label htmlFor="percent" className="text-xs text-white/50">
+              Total Size
+            </label>
+            <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
+          </div>
+          <div className="flex w-full gap-3 items-center">
+            <Input
+              type="text"
+              placeholder="0"
+              value={totalUsd}
+              onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
+              className={cn('w-full text-right text-white placeholder:text-white')}
+            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size={'sm'}
+                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                >
+                  <p className="text-xs flex-1 w-full">USDC</p>
+                  <IconChevronDown className="size-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-fit" align="end">
+                <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+                  <p className="text-xs w-10 text-center">USDC</p>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+                  <p className="text-xs w-10 text-center">{selectedAsset}</p>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+          <div className="flex flex-1 mt-1 flex-col gap-2 w-full items-center justify-center">
+            <Slider
+              min={1}
+              max={100}
+              value={[percent]}
+              onValueChange={(value) => handlePercentChange(value[0])}
+              className="w-full"
+            />
+            <ToggleGroup
+              size={'sm'}
+              className="flex mt-1 items-center bg-white/5 justify-between w-full"
+              type="single"
+              value={percent.toString()}
+              onValueChange={(value) => value !== '' && handlePercentChange(parseInt(value, 10))}
+            >
+              {[0, 25, 50, 75, 100].map((value, index) => (
+                <ToggleGroupItem
+                  key={`leverage-tick-${value}-${index}`}
+                  value={value.toString()}
+                  className={cn(
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                  )}
+                >
+                  {value}%
+                </ToggleGroupItem>
+              ))}
+            </ToggleGroup>
+          </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="flex items-center justify-center h-fit gap-2 px-2">
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isReduceOnly}
+            onPressedChange={setIsReduceOnly}
+          >
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
+            <p className="text-xs font-semibold">Reduce Only</p>
+            <IconInfoCircle className="size-3" />
+          </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                Order Count
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="orderCount" className="text-xs text-white/50">
+                  Order Count
+                </label>
+                <div className="flex items-center gap-3 rounded-lg">
+                  <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
+                    <IconMinus className="size-3" />
+                  </Button>
+                  <Input
                     type="text"
                     value={totalOrders}
                     onChange={handleChange}
-                    className="w-full text-center rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
+                    min={1}
+                    max={100}
+                    step={1}
+                    className="text-white placeholder:text-white"
                   />
-                  <button
-                    onClick={handleIncrease}
-                    className="rounded-md px-3 py-1.5 border border-white/10 bg-white/10 cursor-pointer"
-                  >
-                    <Image
-                      src={plusicon}
-                      style={{ width: 20, height: 20 }}
-                      className="pr-1"
-                      alt="plusicon"
-                    />
-                  </button>
+                  <Button onClick={handleIncrease} size={'sm'} variant={'outline'}>
+                    <IconPlus className="size-3" />
+                  </Button>
                 </div>
-              </label>
-            </div>
-
-            <div className="px-4 border-b mb-1 pb-2 border-[#FFFFFF0F]">
-              <label className="block text-xs font-medium text-gray-300 mb-0.5">Size Skew</label>
-              <input
-                type="text"
-                value={sizeSkew ?? ''}
-                onChange={(e) =>
-                  setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)
-                }
-                placeholder="0.00"
-                className="w-full rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
-              />
-            </div>
-            <label className="mb-1 mt-1 px-4 flex items-center">
-              <CheckBox
-                label=""
-                setIsChecked={(checked) => setIsReduceOnly(checked)}
-                isChecked={isReduceOnly}
-              />
-              <span className="text-xs font-medium text-[#E8E0F1]">Reduce Only</span>
-            </label>
-          </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-1 text-xs',
+                  sizeSkew && sizeSkew > 0
+                    ? 'bg-accent text-accent-foreground'
+                    : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                Skew
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="sizeSkew" className="text-xs text-white/50">
+                  Size Skew
+                </label>
+                <Input
+                  type="text"
+                  value={sizeSkew}
+                  onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
+                  placeholder="0"
+                  className="text-white"
+                />
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
-
-      <div className="p-4 pb-4 border-t border-white/10">
-        {!isAgentApproved || currentFeeApproval === 0 ? (
-          <button
-            type="button"
-            className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
-            onClick={async () => openAgentModal()}
-          >
-            Establish Connection
-          </button>
-        ) : (
-          <button
-            onClick={handleSubmit}
-            type="submit"
-            disabled={totalUsd! > maxAllowedUsd}
-            className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
-          >
-            Scale Buy ({totalOrders} Orders)
-          </button>
-        )}
+      <div className="w-full h-fit flex flex-col gap-2 my-3">
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
+          {!isAgentApproved || currentFeeApproval === 0 ? (
+            <Button
+              className="w-full font-semibold cursor-pointer"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              onClick={async () => openAgentModal()}
+            >
+              Enable Trading
+            </Button>
+          ) : (
+            <Button
+              className={cn(
+                'w-full',
+                totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize
+                  ? 'bg-white/10 hover:cursor-not-allowed '
+                  : ''
+              )}
+              onClick={handleSubmit}
+              type="submit"
+              disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
+            >
+              Scale Buy ({totalOrders} Orders)
+            </Button>
+          )}
+        </div>
       </div>
-      {/* <span className="font-medium mx-4 mb-4 text-sm text-[#8B8BA0]">
-        Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
-      </span> */}
     </div>
   )
 }

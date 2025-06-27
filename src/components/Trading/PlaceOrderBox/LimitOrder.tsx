@@ -3,8 +3,6 @@ import { useState, useEffect } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
-import OrderButton from './components/OrderButton'
-import CheckBox from '@/components/common/CheckBox'
 import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
@@ -13,7 +11,14 @@ import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
+import { Separator } from '@/components/ui/separator'
+import { cn } from '@/lib/utils'
+import { Toggle } from '@/components/ui/toggle'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
+import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
+import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -59,94 +64,109 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col w-full h-full">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-      <div className="flex-1 no-scrollbar">
-        <div className="flex flex-col gap-2">
-          {!isSpot && (
-            <>
+    <div className="flex flex-col justify-start pt-4 w-full h-full">
+      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        {!isSpot && (
+          <>
+            <Separator orientation="horizontal" />
+            <div className="flex flex-col gap-3 px-2">
               <MarginMode isCross={isCross} setIsCross={setIsCross} />
               <LeverageMargin
                 selectedAsset={selectedAsset}
                 leverage={leverage}
                 setLeverage={setLeverage}
               />
-            </>
-          )}
-          <hr className="border-white/10" />
-          <div className="flex items-center mx-3 px-3 border border-white/10 rounded-md align-middle">
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
-            <SetPrice
-              selectedAsset={selectedAsset}
-              limitPrice={limitPrice}
-              setLimitPrice={setLimitPrice}
-              setUsdAmount={setUsdAmount}
-              assetAmount={assetAmount}
-            />
-          </div>
-          {isSpot ? (
-            <AmountInputSpot
-              selectedAsset={selectedAsset}
-              assetAmount={assetAmount}
-              setAssetAmount={setAssetAmount}
-              usdAmount={usdAmount}
-              setUsdAmount={setUsdAmount}
-              limitPrice={limitPrice}
-              isBuy={isBuy}
-            />
-          ) : (
-            <AmountInput
-              selectedAsset={selectedAsset}
-              assetAmount={assetAmount}
-              setAssetAmount={setAssetAmount}
-              usdAmount={usdAmount}
-              setUsdAmount={setUsdAmount}
-              limitPrice={limitPrice}
-              leverage={leverage}
-              isReduceOnly={isReduceOnly}
-              isBuy={isBuy}
-            />
-          )}
-          {!isSpot && (
-            <div className="flex flex-col gap-2 mx-3 text-xs">
-              <CheckBox
-                label="Reduce Only"
-                setIsChecked={setIsReduceOnly}
-                isChecked={isReduceOnly}
-              />
-              <CheckBox label="Post-Only" setIsChecked={setIsPostOnly} isChecked={isPostOnly} />
             </div>
-          )}
-          <hr className="border-white/10" />
-
-          <div className="gap-2 grid grid-cols-1 px-3 pb-3 text-gray-400 text-xs">
-            {!isSpot && (
-              <>
-                <TPSL
-                  limitPrice={limitPrice}
-                  isBuy={isBuy}
-                  leverage={leverage}
-                  tpsl={tpsl}
-                  setTpsl={setTpsl}
-                />
-              </>
-            )}
+          </>
+        )}
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
+          <div className="flex items-center justify-between gap-3">
+            <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
           </div>
-        </div>
-        <div className="p-2 border-white/10 border-t">
-          <OrderButton
-            isBuy={isBuy}
+          <SetPrice
             selectedAsset={selectedAsset}
             limitPrice={limitPrice}
+            setLimitPrice={setLimitPrice}
+            setUsdAmount={setUsdAmount}
             assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
           />
         </div>
-        <div className="flex flex-col px-3 pb-2 text-sm">
+        {isSpot ? (
+          <AmountInputSpot
+            selectedAsset={selectedAsset}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
+            limitPrice={limitPrice}
+            isBuy={isBuy}
+          />
+        ) : (
+          <AmountInput
+            selectedAsset={selectedAsset}
+            assetAmount={assetAmount}
+            setAssetAmount={setAssetAmount}
+            usdAmount={usdAmount}
+            setUsdAmount={setUsdAmount}
+            limitPrice={limitPrice}
+            leverage={leverage}
+            isReduceOnly={isReduceOnly}
+            isBuy={isBuy}
+          />
+        )}
+        <Separator orientation="horizontal" />
+        <div className="flex items-center justify-center h-fit gap-2 px-2 pb-1">
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isReduceOnly}
+            onPressedChange={setIsReduceOnly}
+          >
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
+            <p className="text-xs font-semibold">Reduce Only</p>
+            <IconInfoCircle className="size-3" />
+          </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-2 text-xs',
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                TP/SL
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <TPSL
+                limitPrice={limitPrice}
+                isBuy={isBuy}
+                leverage={leverage}
+                tpsl={tpsl}
+                setTpsl={setTpsl}
+              />
+            </PopoverContent>
+          </Popover>
+          <Toggle
+            size={'sm'}
+            className="bg-white/5"
+            pressed={isPostOnly}
+            onPressedChange={setIsPostOnly}
+          >
+            {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
+            <p className="text-xs font-semibold">Post Only</p>
+            <IconInfoCircle className="size-3" />
+          </Toggle>
+        </div>
+      </div>
+      <div className="w-full h-full flex flex-col gap-2 my-2">
+        {/* <Separator orientation="horizontal" /> */}
+        <div className="flex w-full flex-col gap-2 px-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -170,6 +190,20 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={limitPrice}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={isPostOnly}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+          />
         </div>
       </div>
     </div>
