@@ -35,7 +35,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
-  const [percent, setPercent] = useState<number>(0)
+  const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
 
   useEffect(() => {

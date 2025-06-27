@@ -12,7 +12,6 @@ import {
   useReactTable,
   SortingState
 } from '@tanstack/react-table'
-import HeaderWithIcons from './component/HeaderWithIcon'
 import SendModal from './component/SendModal'
 import {
   Table,
@@ -74,42 +73,42 @@ const Balances = () => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => <HeaderWithIcons label="Coin" />,
+        header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
         cell: (info) => info.getValue().replace('(', ' ('),
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
       columnHelper.accessor('token', {
         id: 'token',
-        header: () => <HeaderWithIcons label="Tokens" />,
+        header: () => <span className="flex justify-start items-center gap-1">Tokens</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Tokens' }
       }),
       columnHelper.accessor('total', {
         id: 'total',
-        header: () => <HeaderWithIcons label="Total Balance" />,
+        header: () => <span className="flex justify-start items-center gap-1">Total Balance</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Total Balance' }
       }),
       columnHelper.accessor('hold', {
         id: 'hold',
-        header: () => <HeaderWithIcons label="Hold" />,
+        header: () => <span className="flex justify-start items-center gap-1">Hold</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Hold' }
       }),
       columnHelper.accessor('entryNtl', {
         id: 'entryNtl',
-        header: () => <HeaderWithIcons label="Entry NTL" />,
+        header: () => <span className="flex justify-start items-center gap-1">Entry NTL</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
         meta: { label: 'Entry NTL' }
       }),
       columnHelper.display({
         id: 'send',
-        header: () => <HeaderWithIcons label="Send" />,
+        header: () => <span className="flex justify-start items-center gap-1">Send</span>,
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'

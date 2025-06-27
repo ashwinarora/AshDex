@@ -69,6 +69,95 @@ const SendModal: React.FC<SendModalProps> = ({
     }
   }, [isPerp, clearingHouseState, spotState, spotMeta, selectedToken])
 
+  const handleSend = async () => {
+    if (!chainId) return
+    const toastId = toast.loading('Sending...')
+    if (isPerp) {
+      try {
+        const payload = getUsdSendPayload({
+          destination: destination,
+          amount: amount,
+          chainId: chainId,
+          isTestnet: isTestnet,
+          nonce: Date.now()
+        })
+        const sign = await signTypedDataAsync(payload)
+        const body = {
+          action: payload.message,
+          nonce: payload.message.time,
+          signature: splitSignature(sign)
+        }
+        const res = await hyperliquidAxios.post('/exchange', body)
+        if (res.data.status === 'err') {
+          toast.update(toastId, {
+            render: '❌' + res.data.response,
+            type: 'error',
+            isLoading: false,
+            autoClose: 4000
+          })
+          return
+        }
+        toast.update(toastId, {
+          render: '✅ Send successful',
+          type: 'success',
+          isLoading: false,
+          autoClose: 2000
+        })
+      } catch (error) {
+        console.log(error)
+        toast.update(toastId, {
+          render: '❌ Send failed',
+          type: 'error',
+          isLoading: false,
+          autoClose: 4000
+        })
+      }
+    } else {
+      if (!spotData) return
+      try {
+        const payload = getSpotSendPayload({
+          destination: destination,
+          amount: amount,
+          chainId: chainId,
+          isTestnet: isTestnet,
+          nonce: Date.now(),
+          tokenName: spotData.tokenName,
+          tokenId: spotData.tokenId
+        })
+        const sign = await signTypedDataAsync(payload)
+        const body = {
+          action: payload.message,
+          nonce: payload.message.time,
+          signature: splitSignature(sign)
+        }
+        const res = await hyperliquidAxios.post('/exchange', body)
+        if (res.data.status === 'err') {
+          toast.update(toastId, {
+            render: '❌' + res.data.response,
+            type: 'error',
+            isLoading: false,
+            autoClose: 4000
+          })
+          return
+        }
+        toast.update(toastId, {
+          render: '✅ Send successful',
+          type: 'success',
+          isLoading: false,
+          autoClose: 2000
+        })
+      } catch (error) {
+        console.log(error)
+        toast.update(toastId, {
+          render: '❌ Send failed',
+          type: 'error',
+          isLoading: false,
+          autoClose: 4000
+        })
+      }
+    }
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogTrigger asChild>
@@ -162,94 +251,7 @@ const SendModal: React.FC<SendModalProps> = ({
             disabled={
               !destination || !amount || Number(amount) <= 0 || Number(amount) > Number(maxAmount)
             }
-            onClick={async () => {
-              if (!chainId) return
-              const toastId = toast.loading('Sending...')
-              if (isPerp) {
-                try {
-                  const payload = getUsdSendPayload({
-                    destination: destination,
-                    amount: amount,
-                    chainId: chainId,
-                    isTestnet: isTestnet,
-                    nonce: Date.now()
-                  })
-                  const sign = await signTypedDataAsync(payload)
-                  const body = {
-                    action: payload.message,
-                    nonce: payload.message.time,
-                    signature: splitSignature(sign)
-                  }
-                  const res = await hyperliquidAxios.post('/exchange', body)
-                  if (res.data.status === 'err') {
-                    toast.update(toastId, {
-                      render: '❌' + res.data.response,
-                      type: 'error',
-                      isLoading: false,
-                      autoClose: 4000
-                    })
-                    return
-                  }
-                  toast.update(toastId, {
-                    render: '✅ Send successful',
-                    type: 'success',
-                    isLoading: false,
-                    autoClose: 2000
-                  })
-                } catch (error) {
-                  console.log(error)
-                  toast.update(toastId, {
-                    render: '❌ Send failed',
-                    type: 'error',
-                    isLoading: false,
-                    autoClose: 4000
-                  })
-                }
-              } else {
-                if (!spotData) return
-                try {
-                  const payload = getSpotSendPayload({
-                    destination: destination,
-                    amount: amount,
-                    chainId: chainId,
-                    isTestnet: isTestnet,
-                    nonce: Date.now(),
-                    tokenName: spotData.tokenName,
-                    tokenId: spotData.tokenId
-                  })
-                  const sign = await signTypedDataAsync(payload)
-                  const body = {
-                    action: payload.message,
-                    nonce: payload.message.time,
-                    signature: splitSignature(sign)
-                  }
-                  const res = await hyperliquidAxios.post('/exchange', body)
-                  if (res.data.status === 'err') {
-                    toast.update(toastId, {
-                      render: '❌' + res.data.response,
-                      type: 'error',
-                      isLoading: false,
-                      autoClose: 4000
-                    })
-                    return
-                  }
-                  toast.update(toastId, {
-                    render: '✅ Send successful',
-                    type: 'success',
-                    isLoading: false,
-                    autoClose: 2000
-                  })
-                } catch (error) {
-                  console.log(error)
-                  toast.update(toastId, {
-                    render: '❌ Send failed',
-                    type: 'error',
-                    isLoading: false,
-                    autoClose: 4000
-                  })
-                }
-              }
-            }}
+            onClick={handleSend}
           >
             Send
           </Button>

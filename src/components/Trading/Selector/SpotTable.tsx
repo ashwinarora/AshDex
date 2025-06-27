@@ -313,50 +313,6 @@ const AssetTable = ({
         ))}
       </TableBody>
     </Table>
-    // <div className="h-[300px] overflow-y-auto no-scrollbar">
-    //   <table className="min-w-full text-white text-sm">
-    //     <thead className="top-0 z-10 sticky text-white/70 ">
-    //       {table.getHeaderGroups().map((headerGroup) => (
-    //         <tr key={headerGroup.id}>
-    //           {headerGroup.headers.map((header) => (
-    //             <th
-    //               key={header.id}
-    //               className="group px-6 py-3 active:text-white text-left whitespace-nowrap cursor-pointer"
-    //               onClick={() => {
-    //                 if (header.column.getCanSort()) {
-    //                   header.column.toggleSorting()
-    //                 }
-    //               }}
-    //             >
-    //               <div
-    //                 className={`flex ${header.id !== 'symbol' ? 'justify-end' : 'justify-start'} items-center gap-1`}
-    //               >
-    //                 {header.isPlaceholder
-    //                   ? null
-    //                   : flexRender(header.column.columnDef.header, header.getContext())}
-    //               </div>
-    //             </th>
-    //           ))}
-    //         </tr>
-    //       ))}
-    //     </thead>
-    //     <tbody>
-    //       {table.getRowModel().rows.map((row) => (
-    //         <tr
-    //           key={row.id}
-    //           onClick={() => handleRowClick(row.original.symbol)}
-    //           className="hover:bg-white/5 transition-colors duration-150 cursor-pointer"
-    //         >
-    //           {row.getVisibleCells().map((cell) => (
-    //             <td key={cell.id} className="py-2 px-6 font-medium whitespace-nowrap">
-    //               {flexRender(cell.column.columnDef.cell, cell.getContext())}
-    //             </td>
-    //           ))}
-    //         </tr>
-    //       ))}
-    //     </tbody>
-    //   </table>
-    // </div>
   )
 }
 
