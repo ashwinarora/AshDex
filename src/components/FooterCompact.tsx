@@ -80,7 +80,11 @@ const FooterContent: FC = () => {
     )
   }
 
-  const collectiveFreshness = [getFreshnessColor(timeSinceUpdate.allMids), getFreshnessColor(timeSinceUpdate.candles), getFreshnessColor(timeSinceUpdate.webData2)]
+  const collectiveFreshness = [
+    getFreshnessColor(timeSinceUpdate.allMids),
+    getFreshnessColor(timeSinceUpdate.candles),
+    getFreshnessColor(timeSinceUpdate.webData2)
+  ]
 
   return (
     <footer className="bottom-0 left-0 z-40 fixed items-center bg-secondary p-2 text-white/50 text-xs border-white/5 border-t w-screen align-middle">
@@ -110,7 +114,11 @@ const FooterContent: FC = () => {
               )}
             </div>
           </HoverCardTrigger>
-          <HoverCardContent className="bg-secondary text-white/50 text-xs p-2 w-fit h-fit" side="top" align="start">
+          <HoverCardContent
+            className="bg-secondary text-white/50 text-xs p-2 w-fit h-fit"
+            side="top"
+            align="start"
+          >
             <div className="flex flex-col gap-2">
               <div className="flex items-center gap-2">
                 <span
@@ -135,16 +143,36 @@ const FooterContent: FC = () => {
         </HoverCard>
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
-          <a href="/docs" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
+          <a
+            href="/docs"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white text-white/50 transition-colors"
+          >
             Docs
           </a>
-          <a href="/support" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
+          <a
+            href="/support"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white text-white/50 transition-colors"
+          >
             Support
           </a>
-          <a href="/terms" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
+          <a
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white text-white/50 transition-colors"
+          >
             Terms
           </a>
-          <a href="/privacy" target="_blank" rel="noopener noreferrer" className="hover:text-white text-white/50 transition-colors">
+          <a
+            href="/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-white text-white/50 transition-colors"
+          >
             Privacy Policy
           </a>
         </div>
