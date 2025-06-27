@@ -24,7 +24,7 @@ const CustomSelector: React.FC<CustomSelectorProps> = ({
   return (
     <div className="relative z-50">
       <div
-        className={`w-full text-white px-4 ${isPadding ? 'py-1.5' : 'py-0'}  text-sm flex justify-between z-40 items-center ${className}`}
+        className={`w-full text-white px-4 ${isPadding ? 'py-1.5' : 'py-0'}  text-sm flex justify-between z-30 items-center ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         {options?.find((opt) => opt?.value === selectedValue)?.flag && (

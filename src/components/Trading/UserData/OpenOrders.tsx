@@ -8,8 +8,7 @@ import {
   getCoreRowModel,
   getSortedRowModel,
   useReactTable,
-  SortingState,
-  Header
+  SortingState
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
@@ -17,11 +16,26 @@ import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconChevronDown, IconChevronUp, IconSelector, IconTrash } from '@tabler/icons-react'
+import {
+  IconArrowsMoveVertical,
+  IconArrowMoveDown,
+  IconArrowMoveUp,
+  IconX
+} from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
+} from '@/components/ui/table'
+import { cn } from '@/lib/utils'
+import { Button } from '@/components/ui/button'
 
 type ColumnType = {
   key: string
@@ -36,29 +50,29 @@ type RenderRowProps = {
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
-const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
-  const canSort = header.column.getCanSort()
-  const sortDirection = header.column.getIsSorted()
+// const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
+//   const canSort = header.column.getCanSort()
+//   const sortDirection = header.column.getIsSorted()
 
-  return (
-    <div className="flex items-center text-white/50">
-      {header.isPlaceholder
-        ? null
-        : flexRender(header.column.columnDef.header, header.getContext())}
-      {canSort && (
-        <span className="inline-block">
-          {sortDirection === 'asc' ? (
-            <IconChevronDown className="w-4 h-4" />
-          ) : sortDirection === 'desc' ? (
-            <IconChevronUp className="w-4 h-4" />
-          ) : (
-            <IconSelector className="w-4 h-4" />
-          )}
-        </span>
-      )}
-    </div>
-  )
-}
+//   return (
+//     <div className="flex items-center text-white/50">
+//       {header.isPlaceholder
+//         ? null
+//         : flexRender(header.column.columnDef.header, header.getContext())}
+//       {canSort && (
+//         <span className="inline-block">
+//           {sortDirection === 'asc' ? (
+//             <IconChevronDown className="w-4 h-4" />
+//           ) : sortDirection === 'desc' ? (
+//             <IconChevronUp className="w-4 h-4" />
+//           ) : (
+//             <IconSelector className="w-4 h-4" />
+//           )}
+//         </span>
+//       )}
+//     </div>
+//   )
+// }
 
 const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) => {
   return (
@@ -122,57 +136,69 @@ const OpenOrders = () => {
 
   const columnHelper = createColumnHelper<FrontendOrderWithAssetKey>()
 
+  const handleCancelOrder = useCallback(
+    (row: { original: FrontendOrderWithAssetKey }) => {
+      const cancelOrder = async () => {
+        if (!isAgentApproved || currentFeeApproval <= 0) {
+          openAgentModal()
+          return
+        }
+        const toastId = toast.loading('Cancelling order...')
+        try {
+          if (!sdkExchangeClient) return
+          const assetIndex = isSpot
+            ? Number(
+                spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
+              ) + SPOT_DELTA
+            : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
+          if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
+          await sdkExchangeClient.cancel({
+            cancels: [
+              {
+                a: assetIndex,
+                o: row.original.oid
+              }
+            ]
+          })
+          toast.update(toastId, {
+            render: 'Order cancelled',
+            type: 'success',
+            isLoading: false,
+            autoClose: 2000
+          })
+        } catch (error: unknown) {
+          toast.update(toastId, {
+            render: '❌ ' + (error instanceof Error ? error.message : String(error)),
+            type: 'error',
+            isLoading: false,
+            autoClose: 2000
+          })
+        }
+      }
+      cancelOrder()
+    },
+    [sdkExchangeClient, isSpot, spotMeta, perpsMeta]
+  )
+
   const renderCancelButton = useCallback(
     (row: { original: FrontendOrderWithAssetKey }) => {
-      if (!isAgentApproved || currentFeeApproval <= 0) {
-        return (
-          <button className="rounded font-bold text-red cursor-pointer" onClick={openAgentModal}>
-            Connect
-          </button>
-        )
-      }
       return (
-        <button
-          className="group flex items-center gap-1 px-2 py-0.5 rounded text-primary hover:text-red text-sm cursor-pointer"
-          onClick={async () => {
-            const toastId = toast.loading('Cancelling order...')
-            try {
-              if (!sdkExchangeClient) return
-              const assetIndex = isSpot
-                ? Number(
-                    spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
-                  ) + SPOT_DELTA
-                : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
-              if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
-              await sdkExchangeClient.cancel({
-                cancels: [
-                  {
-                    a: assetIndex,
-                    o: row.original.oid
-                  }
-                ]
-              })
-              toast.update(toastId, {
-                render: 'Order cancelled',
-                type: 'success',
-                isLoading: false,
-                autoClose: 2000
-              })
-            } catch (error: unknown) {
-              toast.update(toastId, {
-                render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-                type: 'error',
-                isLoading: false,
-                autoClose: 2000
-              })
-            }
-          }}
+        <Button
+          onClick={() => handleCancelOrder(row)}
+          variant="link"
+          className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
         >
-          <IconTrash className="w-4 h-4 group-hover:text-red transition-colors" />
-          <span className="opacity-0 group-hover:opacity-100 group-hover:text-red transition-all -translate-x-4 group-hover:translate-x-0 duration-200">
-            Cancel
-          </span>
-        </button>
+          Cancel
+        </Button>
+        // <button
+        //   className="group flex items-center gap-1 px-2 py-0.5 rounded text-primary hover:text-red text-sm cursor-pointer"
+        //   onClick={}
+        // >
+        //   <IconTrash className="w-4 h-4 group-hover:text-red transition-colors" />
+        //   <span className="opacity-0 group-hover:opacity-100 group-hover:text-red transition-all -translate-x-4 group-hover:translate-x-0 duration-200">
+        //     Cancel
+        //   </span>
+        // </button>
       )
     },
     [
@@ -186,106 +212,94 @@ const OpenOrders = () => {
     ]
   )
 
-  const renderCancelAllButton = useCallback(() => {
-    if (!isAgentApproved || currentFeeApproval <= 0) {
-      return (
-        <div className="rounded font-bold text-red cursor-pointer" onClick={openAgentModal}>
-          Connect
-        </div>
-      )
-    }
-    return (
-      <div
-        className="px-2 rounded text-primary hover:text-red cursor-pointer"
-        onClick={async () => {
-          const toastId = toast.loading('Cancelling all orders...')
-          try {
-            if (!sdkExchangeClient) return
-            // const allOrders = openOrders
-            //   .filter((order) => order.coin.includes(isSpot ? 'SPOT' : 'PERP'))
-            //   .map((order) => ({ coin: order.coin, o: order.oid }))
-            // const allCancels = allOrders.map((order) => {
-            //   const assetIndex = isSpot ?
-            //     Number(spotMeta?.universe.find(asset => asset.name === order.coin)?.index) + SPOT_DELTA
-            //     : perpsMeta?.universe.findIndex(asset => asset.name === order.coin)
-            //   if (!assetIndex) return
-            //   return {
-            //     a: assetIndex,
-            //     o: order.o
-            //   }
-            // }).filter(order => !!order)
-            const allOrders = openOrders.filter((order) => {
-              if (isSpot) {
-                return !!spotKeyToName.get(order.coin)
-              } else {
-                // asset should not be in spot universe to be a perp order
-                return !spotKeyToName.get(order.coin)
+  const handleCancelAll = useCallback(() => {
+    const cancelAll = async () => {
+      if (!isAgentApproved || currentFeeApproval <= 0) {
+        openAgentModal()
+        return
+      }
+      const toastId = toast.loading('Cancelling all orders...')
+      try {
+        if (!sdkExchangeClient) return
+        const allOrders = openOrders.filter((order) => {
+          if (isSpot) {
+            return !!spotKeyToName.get(order.coin)
+          } else {
+            // asset should not be in spot universe to be a perp order
+            return !spotKeyToName.get(order.coin)
+          }
+        })
+        await sdkExchangeClient.cancel({
+          cancels: allOrders
+            .map((order) => {
+              const assetIndex = isSpot
+                ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
+                  SPOT_DELTA
+                : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
+              if (!assetIndex) return
+              return {
+                a: assetIndex,
+                o: order.oid
               }
             })
-            await sdkExchangeClient.cancel({
-              cancels: allOrders
-                .map((order) => {
-                  const assetIndex = isSpot
-                    ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                      SPOT_DELTA
-                    : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
-                  if (!assetIndex) return
-                  return {
-                    a: assetIndex,
-                    o: order.oid
-                  }
-                })
-                .filter((order) => !!order)
-            })
-            toast.update(toastId, {
-              render: 'All orders cancelled',
-              type: 'success',
-              isLoading: false,
-              autoClose: 2000
-            })
-          } catch (error: unknown) {
-            toast.update(toastId, {
-              render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-              type: 'error',
-              isLoading: false,
-              autoClose: 2000
-            })
-          }
-        }}
-      >
-        Cancel All
-      </div>
-    )
+            .filter((order) => !!order)
+        })
+        toast.update(toastId, {
+          render: 'All orders cancelled',
+          type: 'success',
+          isLoading: false,
+          autoClose: 2000
+        })
+      } catch (error: unknown) {
+        toast.update(toastId, {
+          render: '❌ ' + (error instanceof Error ? error.message : String(error)),
+          type: 'error',
+          isLoading: false,
+          autoClose: 2000
+        })
+      }
+    }
+    cancelAll()
   }, [
-    sdkExchangeClient,
     isAgentApproved,
     currentFeeApproval,
     openAgentModal,
+    sdkExchangeClient,
     openOrders,
     isSpot,
     spotMeta,
-    perpsMeta
+    perpsMeta,
+    spotKeyToName
   ])
+
+  const renderCancelAllButton = useCallback(() => {
+    return (
+      <div className="flex items-center justify-end gap-2">
+        <span className="text-white/50 text-xs">Action</span>
+        <Button
+          onClick={() => handleCancelAll()}
+          variant={'outline'}
+          className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+        >
+          <IconX className="size-3" />
+        </Button>
+      </div>
+    )
+  }, [handleCancelAll])
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
         header: () => 'Time',
-        cell: (info) => (
-          <div className="flex items-center gap-1 text-nowrap align-middle">
-            {new Date(info.getValue()).toLocaleString('en-US')}
-          </div>
-        ),
+        cell: (info) => <>{new Date(info.getValue()).toLocaleString('en-US')}</>,
         enableSorting: true,
         meta: { label: 'Time' }
       }),
       columnHelper.accessor('coin', {
         id: 'coin',
         header: () => 'Coin',
-        cell: (info) => (
-          <div className="flex items-center gap-1 font-bold align-middle">{info.getValue()}</div>
-        ),
+        cell: (info) => <>{info.getValue()}</>,
         enableSorting: false,
         meta: { label: 'Coin' }
       }),
@@ -316,33 +330,27 @@ const OpenOrders = () => {
         id: 'sz',
         header: () => 'Size',
         cell: (info) => (
-          <div className="flex items-center gap-1">
+          <>
             <ReactiveText value={info.getValue()} type="number" precision={4} />
-          </div>
+          </>
         ),
         meta: { label: 'Original Size' }
       }),
       columnHelper.accessor('origSz', {
         id: 'origSz',
         header: () => 'Original Size',
-        cell: (info) => (
-          <div className="flex items-center gap-1">
-            <ReactiveText value={info.getValue()} type="number" precision={4} />
-          </div>
-        ),
+        cell: (info) => <ReactiveText value={info.getValue()} type="number" precision={4} />,
         meta: { label: 'Original Size' }
       }),
       columnHelper.accessor('origSz', {
         id: 'orderValue',
         header: () => 'Order Value',
         cell: (info) => (
-          <div className="flex items-center gap-1">
-            <ReactiveText
-              value={Number(info.getValue()) * Number(info.row.original.limitPx)}
-              type="currency"
-              precision={2}
-            />
-          </div>
+          <ReactiveText
+            value={Number(info.getValue()) * Number(info.row.original.limitPx)}
+            type="currency"
+            precision={2}
+          />
         ),
         meta: { label: 'Order Value' }
       }),
@@ -355,7 +363,7 @@ const OpenOrders = () => {
       }),
       columnHelper.accessor('triggerCondition', {
         id: 'triggerCondition',
-        header: () => 'Trigger Condition',
+        header: () => 'Trigger',
         cell: (info) => info.getValue(),
         enableSorting: false,
         meta: { label: 'Trigger Condition' }
@@ -406,48 +414,70 @@ const OpenOrders = () => {
   }
 
   if (!mounted) {
-    return <div className="px-3 w-full h-40 overflow-x-auto"></div>
+    return <div className="w-full h-full bg-secondary"></div>
   }
 
   return (
-    <div className="px-3 w-full overflow-x-auto">
-      <table className="hidden lg:table w-full text-white border-collapse">
-        <thead>
+    <div className="w-full h-full flex flex-col gap-2">
+      <Table>
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
-                <th
+                <TableHead
                   key={header.id}
-                  className="px-2 py-2 font-normal text-sm text-left cursor-pointer"
-                  onClick={
-                    header.column.getCanSort() ? header.column.getToggleSortingHandler() : undefined
-                  }
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                  className={cn(
+                    'cursor-pointer hover:text-accent-foreground',
+                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
+                    header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      ? 'text-accent-foreground'
+                      : 'text-white/50'
+                  )}
                 >
-                  <SortableHeader header={header} />
-                </th>
+                  {header.isPlaceholder ? null : (
+                    <>
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.columnDef.enableSorting ? (
+                        header.column.getIsSorted() === 'asc' ? (
+                          <IconArrowMoveUp className="text-inherit size-4" />
+                        ) : header.column.getIsSorted() === 'desc' ? (
+                          <IconArrowMoveDown className="text-inherit size-4" />
+                        ) : (
+                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                        )
+                      ) : null}
+                    </>
+                  )}
+                </TableHead>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
-        <tbody className="divide-y divide-transparent">
+        </TableHeader>
+        <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <tr
-              key={row.id}
-              /* step 2: real border instead of ::before */
-              className={
-                ` border-l-4   border-b-6 border-b-secondary  ` +
-                (row.original.side === 'B' ? 'border-l-green' : 'border-l-red')
-              }
-            >
+            <TableRow className="h-12" key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="p-2 text-white text-sm align-middle">
+                <TableCell
+                  key={cell.id}
+                  className={cn(
+                    'font-medium text-white text-xs first:text-left text-right',
+                    cell.column.id === 'timestamp'
+                      ? 'justify-start text-start !w-36'
+                      : 'justify-end text-end flex-2'
+                  )}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
       <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col.id as string,

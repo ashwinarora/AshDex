@@ -13,19 +13,19 @@ import SpotSelector from './Selector/SpotSelector'
 
 const Trading = () => {
   const isSpot = useIsSpot()
-  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ?  (isTestnet ? '@1035' : '@107') : 'BTC') // @1035 and @107 is HYPE
+  const [selectedAsset, setSelectedAsset] = useState<string>(
+    isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
+  ) // @1035 and @107 is HYPE
   return (
-    <div className="flex flex-col gap-1 p-1 h-screen w-full">
+    <div className="flex flex-col gap-1 p-1 mb-8 h-fit w-full">
       <div className="flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden">
         <div className="col-span-10 h-full flex-1 basis-xl flex flex-col gap-1">
           <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-          <div className="relative flex justify-between items-center">
-            {isSpot ? (
-              <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            ) : (
-              <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-            )}
-          </div>
+          {isSpot ? (
+            <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          ) : (
+            <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
         <div className="col-span-4 h-full flex-col basis-sm gap-2 bg-secondary rounded-md">
@@ -36,10 +36,10 @@ const Trading = () => {
         </div>
       </div>
       <div className="grid grid-cols-18 gap-1 h-fit">
-        <div className="flex-1 col-span-14 h-full nexon-card">
+        <div className="col-span-14 h-full w-full rounded-md bg-secondary">
           <UserData setSelectedAsset={setSelectedAsset} />
         </div>
-        <div className="flex-1 col-span-4 h-full nexon-card">
+        <div className="col-span-4 h-full w-full rounded-md bg-secondary">
           <OverviewBox />
         </div>
       </div>

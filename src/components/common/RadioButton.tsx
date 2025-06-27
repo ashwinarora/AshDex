@@ -1,5 +1,5 @@
 import React from 'react'
-import { cn } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 
 interface RadioButtonProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label?: string

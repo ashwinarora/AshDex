@@ -56,10 +56,6 @@ export function splitSignature(signature: Hex) {
   return { r, s, v }
 }
 
-export function cn(...classes: (string | undefined | boolean)[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
 export const getPerpsUniverseIndex = (universe: PerpsUniverse[], asset: string): number => {
   return universe.findIndex((item) => item.name === asset)
 }

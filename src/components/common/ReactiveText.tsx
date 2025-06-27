@@ -1,3 +1,4 @@
+import { cn } from '@/lib/utils'
 import { useEffect, useState } from 'react'
 
 function ReactiveText({
@@ -64,7 +65,7 @@ function ReactiveText({
   }, [value, pulse, prevValue, isStatic])
 
   return (
-    <p className={`text-sm transition-all duration-300 ${color} ${className}`}>
+    <p className={cn('text-xs transition-all duration-300', color, className)}>
       {type === 'currency' ? currency : ''}
       {new Intl.NumberFormat('en-US', {
         minimumFractionDigits: precision,

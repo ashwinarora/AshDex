@@ -1,9 +1,9 @@
 'use client'
 import React from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { Loader2, AlertCircle } from 'lucide-react'
 import metamask from '@/assets/images/metamask.svg'
 import verifiedicon from '@/assets/images/verified_icon.svg'
+import { IconAlertCircle, IconLoader } from '@tabler/icons-react'
 
 interface WalletDisplayProps {
   name: string
@@ -48,20 +48,20 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
                   isWalletConnected === false ? 'grayscale' : ''
                 }`}
               />
-              <div className="text-[#E8E0F1] font-medium mt-4 text-md">
+              <div className="text-white/50 font-medium mt-4 text-md">
                 {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : 'Wallet'}
               </div>
             </button>
             <div className="flex py-4 justify-center items-center border-t border-[#33293B] gap-2">
               {isWalletConnected === null && (
                 <>
-                  <Loader2 className="w-5 h-5 animate-spin text-[#E8E0F1]" />
-                  <div className="text-[#E8E0F1] text-sm">Waiting for connection...</div>
+                  <IconLoader className="w-5 h-5 animate-spin text-white/50" />
+                  <div className="text-white/50 text-sm">Waiting for connection...</div>
                 </>
               )}
               {isWalletConnected === false && (
                 <>
-                  <AlertCircle className="w-5 h-5 text-red-500" />
+                  <IconAlertCircle className="w-5 h-5 text-red" />
                   <div className="text-red text-sm">Connection failed</div>
                 </>
               )}

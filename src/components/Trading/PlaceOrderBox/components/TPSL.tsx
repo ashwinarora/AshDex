@@ -1,5 +1,5 @@
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Switch } from '@/components/ui/switch'
 
 interface TPSLProps {
   limitPrice: string
@@ -153,9 +153,9 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   return (
     <div className="w-full flex flex-col gap-4">
       <div className="flex items-center space-x-2">
-        <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} />
+        {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
         <label htmlFor="tpsl" className="text-xs font-semibold">
-          Use TP/SL
+          Set Take Profit and Stop Loss Values
         </label>
       </div>
       <div className="flex flex-col gap-2 w-full">
@@ -172,7 +172,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right flex-1"
               value={tpsl.takeProfit || ''}
               onChange={handleTakeProfitValueChange}
@@ -181,7 +180,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right w-16"
               value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
               onChange={handleTakeProfitPercentageChange}
@@ -202,7 +200,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right flex-1"
               value={tpsl.stopLoss || ''}
               onChange={handleStopLossValueChange}
@@ -211,7 +208,6 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              disabled={!tpsl.isTpsl}
               className="text-white text-sm text-right w-16"
               value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
               onChange={handleStopLossPercentageChange}
@@ -220,59 +216,14 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           </div>
         </div>
       </div>
-      {/* {tpsl.isTpsl && (
-        <div className="flex flex-col gap-2 w-full">
-          <div className="items-center gap-2 grid grid-cols-3 w-full">
-            <div className="flex items-center gap-2 col-span-2 px-2 border border-white/10 rounded-md w-full">
-              <span className="flex-1 font-medium text-[#8B8BA0] text-xs">Take Profit</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-[45%] text-white text-sm text-right"
-                value={tpsl.takeProfit || ''}
-                onChange={handleTakeProfitValueChange}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex items-center gap-2 col-span-1 px-2 border border-white/10 rounded-md w-full">
-              <span className="font-medium text-[#8B8BA0] text-xs whitespace-nowrap">Gain %</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-full text-white text-sm text-right"
-                value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
-                onChange={handleTakeProfitPercentageChange}
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-
-          <div className="items-center gap-2 grid grid-cols-3 w-full">
-            <div className="flex items-center gap-2 col-span-2 px-2 border border-white/10 rounded-md w-full">
-              <span className="flex-1 font-medium text-[#8B8BA0] text-xs">Stop Loss</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-[45%] text-white text-sm text-right"
-                value={tpsl.stopLoss || ''}
-                onChange={handleStopLossValueChange}
-                placeholder="0.00"
-              />
-            </div>
-            <div className="flex items-center gap-2 col-span-1 px-2 border border-white/10 rounded-md w-full">
-              <span className="font-medium text-[#8B8BA0] text-xs whitespace-nowrap">Loss %</span>
-              <input
-                type="text"
-                inputMode="decimal"
-                className="py-1 focus:outline-none w-full text-white text-sm text-right"
-                value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
-                onChange={handleStopLossPercentageChange}
-                placeholder="0.00"
-              />
-            </div>
-          </div>
-        </div>
-      )} */}
+      <Button
+        size="sm"
+        variant={tpsl.isTpsl ? 'destructive' : 'default'}
+        onClick={() => setIsTpsl(!tpsl.isTpsl)}
+        className="w-full"
+      >
+        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+      </Button>
     </div>
   )
 }

@@ -14,7 +14,6 @@ import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Toggle } from '@/components/ui/toggle'
-import { CheckSquare, ChevronDown, InfoIcon, Square } from 'lucide-react'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -23,6 +22,7 @@ import { Input } from '@/components/ui/input'
 import SetPrice from './components/SetPrice'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquid()
@@ -149,11 +149,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-          <div className="flex items-center justify-between gap-3">
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">
-              Market price (USD)
-            </p>
-          </div>
+          <p className="font-medium text-white/50 text-xs whitespace-nowrap">Market price (USD)</p>
           <SetPrice
             selectedAsset={selectedAsset}
             limitPrice={getFormattedPrice()}
@@ -187,17 +183,41 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-full gap-3 px-2">
+        <div className="flex items-center justify-center h-full gap-2 px-2 pb-1">
           <Toggle
             size={'sm'}
             className="bg-white/5"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
-            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={'outline'}
+                className={cn(
+                  'bg-white/5 flex-2 text-xs',
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                )}
+                size={'sm'}
+              >
+                TP/SL
+                <IconChevronDown className="size-3" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end">
+              <TPSL
+                limitPrice={getFormattedPrice()}
+                isBuy={isBuy}
+                leverage={leverage}
+                tpsl={tpsl}
+                setTpsl={setTpsl}
+              />
+            </PopoverContent>
+          </Popover>
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -209,7 +229,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 Slippage
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
@@ -264,48 +284,11 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </PopoverContent>
           </Popover>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={'outline'}
-                className={cn(
-                  'bg-white/5 flex-1 text-xs',
-                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
-                )}
-                size={'sm'}
-              >
-                TP/SL
-                <ChevronDown className="size-3" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="end">
-              <TPSL
-                limitPrice={getFormattedPrice()}
-                isBuy={isBuy}
-                leverage={leverage}
-                tpsl={tpsl}
-                setTpsl={setTpsl}
-              />
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col gap-3 mt-2">
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={getFormattedPrice()}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={false}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
-        <div className="flex w-full flex-col gap-3 px-2 pb-2 text-xs">
+      <div className="w-full h-full flex flex-col gap-2 my-2">
+        {/* <Separator orientation="horizontal" /> */}
+        <div className="flex w-full flex-col gap-2 px-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -329,6 +312,20 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="w-full h-fit px-2">
+          <OrderButton
+            isBuy={isBuy}
+            selectedAsset={selectedAsset}
+            limitPrice={getFormattedPrice()}
+            assetAmount={assetAmount}
+            leverage={leverage}
+            isCross={isCross}
+            isPostOnly={false}
+            isReduceOnly={isReduceOnly}
+            tpsl={tpsl}
+          />
         </div>
       </div>
     </div>

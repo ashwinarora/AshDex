@@ -1,7 +1,8 @@
 import { useMemo, useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
-import { cn, getPerpsUniverseIndex } from '@/utils/utils'
+import { getPerpsUniverseIndex } from '@/utils/utils'
+import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'
@@ -13,8 +14,15 @@ import { toast } from 'react-toastify'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconRefresh } from '@tabler/icons-react'
-import { CheckSquare, ChevronDown, InfoIcon, MinusIcon, PlusIcon, Square } from 'lucide-react'
+import {
+  IconCheckbox,
+  IconRefresh,
+  IconSquare,
+  IconInfoCircle,
+  IconChevronDown,
+  IconMinus,
+  IconPlus
+} from '@tabler/icons-react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -255,7 +263,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <MarginMode isCross={isCross} setIsCross={setIsCross} />
           <LeverageMargin
             selectedAsset={selectedAsset}
@@ -264,7 +272,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <label htmlFor="startPrice" className="text-xs text-white/50">
             Start Price
           </label>
@@ -288,7 +296,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
-                  <ChevronDown className="size-3" />
+                  <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-fit" align="end">
@@ -302,7 +310,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <label htmlFor="endPrice" className="text-xs text-white/50">
             End Price
           </label>
@@ -317,7 +325,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-start"
+              className="text-xs min-w-18 w-fit flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={() => {}}
             >
@@ -328,7 +336,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-2 px-2">
           <div className="flex items-center justify-between">
             <label htmlFor="percent" className="text-xs text-white/50">
               Total Size
@@ -352,7 +360,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
-                  <ChevronDown className="size-3" />
+                  <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-fit" align="end">
@@ -365,7 +373,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-1 mt-2 flex-col gap-3 w-full items-center justify-center">
+          <div className="flex flex-1 mt-1 flex-col gap-2 w-full items-center justify-center">
             <Slider
               min={1}
               max={100}
@@ -396,16 +404,16 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3 px-2">
+        <div className="flex items-center justify-center h-fit gap-2 px-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
-            {isReduceOnly ? <CheckSquare className="size-3" /> : <Square className="size-3" />}
+            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
             <p className="text-xs font-semibold">Reduce Only</p>
-            <InfoIcon className="size-3" />
+            <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
             <PopoverTrigger asChild>
@@ -418,17 +426,17 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 Order Count
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="orderCount" className="text-xs text-white/50">
                   Order Count
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
-                    <MinusIcon className="size-3" />
+                    <IconMinus className="size-3" />
                   </Button>
                   <Input
                     type="text"
@@ -440,7 +448,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                     className="text-white placeholder:text-white"
                   />
                   <Button onClick={handleIncrease} size={'sm'} variant={'outline'}>
-                    <PlusIcon className="size-3" />
+                    <IconPlus className="size-3" />
                   </Button>
                 </div>
               </div>
@@ -459,29 +467,27 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
               >
                 Skew
-                <ChevronDown className="size-3" />
+                <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-2">
                 <label htmlFor="sizeSkew" className="text-xs text-white/50">
                   Size Skew
                 </label>
-                <div className="flex items-center gap-3 rounded-lg">
-                  <Input
-                    type="text"
-                    value={sizeSkew}
-                    onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
-                    placeholder="0"
-                    className="text-white"
-                  />
-                </div>
+                <Input
+                  type="text"
+                  value={sizeSkew}
+                  onChange={(e) => setSizeSkew(e.target.value ? parseFloat(e.target.value) : 0)}
+                  placeholder="0"
+                  className="text-white"
+                />
               </div>
             </PopoverContent>
           </Popover>
         </div>
       </div>
-      <div className="w-full h-fit flex flex-col gap-3 my-3">
+      <div className="w-full h-fit flex flex-col gap-2 my-3">
         <Separator orientation="horizontal" />
         <div className="w-full h-fit px-2">
           {!isAgentApproved || currentFeeApproval === 0 ? (
@@ -493,189 +499,23 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               Enable Trading
             </Button>
           ) : (
-            <Button onClick={handleSubmit} type="submit" disabled={totalUsd! > maxAllowedUsd}>
+            <Button
+              className={cn(
+                'w-full',
+                totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize
+                  ? 'bg-white/10 hover:cursor-not-allowed '
+                  : ''
+              )}
+              onClick={handleSubmit}
+              type="submit"
+              disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
+            >
               Scale Buy ({totalOrders} Orders)
             </Button>
           )}
         </div>
       </div>
     </div>
-    // <div className="w-full h-full flex flex-col">
-    //   <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-    //   <MarginMode isCross={isCross} setIsCross={setIsCross} />
-    //   <LeverageMargin selectedAsset={selectedAsset} leverage={leverage} setLeverage={setLeverage} />
-    //   <div className="flex-1 mt-6 overflow-y-auto no-scrollbar">
-    //     <div className="flex flex-col w-full rounded-md shadow-md">
-    //       <div className="space-y-2">
-    //         <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-    //           <label className="block text-xs font-medium text-gray-300 mb-0.5">Start Price</label>
-    //           <div className="flex">
-    //             <input
-    //               type="text"
-    //               value={startPrice ?? '0'}
-    //               onChange={(e) =>
-    //                 setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-    //               }
-    //               className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-    //             />
-    //             <span className="text-white flex items-center text-xs font-medium">USDC</span>
-    //           </div>
-    //         </div>
-    //         <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-    //           <label className="block text-xs font-medium text-gray-300 mb-0.5">End Price</label>
-    //           <div className="flex">
-    //             <input
-    //               type="text"
-    //               value={endPrice ?? '0'}
-    //               onChange={(e) =>
-    //                 setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-    //               }
-    //               className="w-full rounded-md p-1.5 focus:outline-none focus:none focus:none text-sm font-medium"
-    //             />
-    //             <span className="text-[#7D67FF] gap-x-1.5 flex items-center text-xs font-medium">
-    //               <Image
-    //                 src={refreshpurpleIcon}
-    //                 style={{ width: 15, height: 'auto' }}
-    //                 alt="Refresh Icon"
-    //                 className="w-3.5 h-3.5"
-    //               />
-    //               Last
-    //             </span>
-    //           </div>
-    //         </div>
-
-    //         <div className="flex w-full mb-2 items-end px-4 border-b border-[#FFFFFF0F] pb-2">
-    //           <div className="w-5/6">
-    //             <input
-    //               type="range"
-    //               min={0}
-    //               max={100}
-    //               step={1}
-    //               value={percent}
-    //               onChange={handlePercentChange}
-    //               className="w-full cursor-pointer appearance-none h-2.5 rounded-lg outline-none"
-    //               style={{
-    //                 background:
-    //                   'linear-gradient(to right, #5F46F9 0%, #5F46F9 ' +
-    //                   percent +
-    //                   '%, #2A1B3D ' +
-    //                   percent +
-    //                   '%, #2A1B3D 100%)'
-    //               }}
-    //             />
-    //             <Image src={Slider1} alt="Slider1" width={20} height={20} className="w-full mt-1" />
-    //             <div className="flex justify-between text-xs text-gray-500 mt-1">
-    //               <span>0%</span>
-    //               <span>25%</span>
-    //               <span>50%</span>
-    //               <span>75%</span>
-    //               <span>100%</span>
-    //             </div>
-    //           </div>
-    //           <div className="relative pl-4">
-    //             <input
-    //               type="string"
-    //               className="w-20 h-11 rounded-md border border-white/10 bg-white/10 outline-none px-4 py-2 flex justify-between"
-    //               value={percent}
-    //               onChange={handlePercentChange}
-    //             />
-    //             <span className="absolute right-2 top-2.5 text-gray-500">%</span>
-    //           </div>
-    //         </div>
-
-    //         <div className="border-b px-4 mb-1 border-[#FFFFFF0F]">
-    //           <div className="flex mb-1 justify-between">
-    //             <label className="block text-xs font-medium text-gray-300 mb-0.5">Total Size</label>
-    //             <span className="block text-xs font-medium text-[#8B8BA0]">
-    //               Max:{' '}
-    //               {isInputUsd
-    //                 ? `${maxAllowedUsd.toFixed(2)} USDC`
-    //                 : `${(maxAllowedUsd / (allMids[selectedAsset] || 1)).toFixed(2)} ${selectedAsset}`}
-    //             </span>
-    //           </div>
-    //           <div className="flex relative">
-    //             <input
-    //               type="number"
-    //               value={isInputUsd ? (totalUsd ?? '') : (totalAssetSize ?? '')}
-    //               onChange={(e) => {
-    //                 if (isInputUsd) {
-    //                   const totalUsd = parseFloat(e.target.value)
-    //                   const totalAssetSize = totalUsd / (allMids[selectedAsset] || 1)
-    //                   setTotalUsd(totalUsd)
-    //                   setTotalAssetSize(totalAssetSize)
-    //                   setPercent((totalUsd / maxAllowedUsd) * 100)
-    //                 } else {
-    //                   const totalAssetSize = parseFloat(e.target.value)
-    //                   const totalUsd = totalAssetSize * (allMids[selectedAsset] || 1)
-    //                   setTotalAssetSize(totalAssetSize)
-    //                   setTotalUsd(totalUsd)
-    //                   setPercent((totalUsd / maxAllowedUsd) * 100)
-    //                 }
-    //               }}
-    //               className="w-full rounded-md p-1.5 focus:outline-none text-sm font-medium pr-20"
-    //               placeholder={isInputUsd ? '0.00' : '0.0000'}
-    //             />
-    //             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
-    //               <select
-    //                 value={isInputUsd ? 'usd' : 'asset'}
-    //                 onChange={(e) => setIsInputUsd(e.target.value === 'usd')}
-    //                 className="bg-transparent border-none outline-none text-[#8B8BA0] text-xs cursor-pointer"
-    //               >
-    //                 <option value="usd">USDC</option>
-    //                 <option value="asset">{selectedAsset}</option>
-    //               </select>
-    //             </div>
-    //           </div>
-    //         </div>
-
-    //         <div className="px-4 border-b mb-1 pb-2 border-[#FFFFFF0F]">
-    //           <label className="block text-xs font-medium text-gray-300 mb-0.5">Size Skew</label>
-    //           <input
-    //             type="text"
-    //             value={sizeSkew ?? ''}
-    //             onChange={(e) =>
-    //               setSizeSkew(e.target.value ? parseFloat(e.target.value) : undefined)
-    //             }
-    //             placeholder="0.00"
-    //             className="w-full rounded-md px-3 py-1.5 border-2 border-white/10 bg-white/10 text-sm font-medium focus:outline-none"
-    //           />
-    //         </div>
-    //         <label className="mb-1 mt-1 px-4 flex items-center">
-    //           <CheckBox
-    //             label=""
-    //             setIsChecked={(checked) => setIsReduceOnly(checked)}
-    //             isChecked={isReduceOnly}
-    //           />
-    //           <span className="text-xs font-medium text-[#E8E0F1]">Reduce Only</span>
-    //         </label>
-    //       </div>
-    //     </div>
-    //   </div>
-
-    //   <div className="p-4 pb-4 border-t border-white/10">
-    //     {!isAgentApproved || currentFeeApproval === 0 ? (
-    //       <button
-    //         type="button"
-    //         className="py-2 rounded-2xl w-full  bg-primary hover:bg-purple-600 text-white cursor-pointer"
-    //         onClick={async () => openAgentModal()}
-    //       >
-    //         Establish Connection
-    //       </button>
-    //     ) : (
-    //       <button
-    //         onClick={handleSubmit}
-    //         type="submit"
-    //         disabled={totalUsd! > maxAllowedUsd}
-    //         className="py-[12px] px[24px] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer"
-    //       >
-    //         Scale Buy ({totalOrders} Orders)
-    //       </button>
-    //     )}
-    //   </div>
-    //   {/* <span className="font-medium mx-4 mb-4 text-sm text-[#8B8BA0]">
-    //     Order will execute <b>0.912 BTC</b> in <b>10 equal orders of 0.076 BTC.</b>
-    //   </span> */}
-    // </div>
   )
 }
 export default Scale

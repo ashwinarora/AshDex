@@ -4,13 +4,14 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useMemo } from 'react'
+import { ToggleGroupItem } from '../ui/toggle-group'
+import { cn } from '@/lib/utils'
 
 interface FavoriteItemProps {
   assetKey: string
-  setSelectedAsset: (asset: string) => void
 }
 
-const FavoriteItem = ({ assetKey, setSelectedAsset }: FavoriteItemProps) => {
+const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
   const isSpot = useIsSpot()
   const { spotAssetContext, perpAssetContext, perpsMeta } = useHyperliquid()
   const { spotKeyToName } = useSpotMeta()
@@ -44,19 +45,16 @@ const FavoriteItem = ({ assetKey, setSelectedAsset }: FavoriteItemProps) => {
   }, [assetKey, isSpot, perpAssetContext, perpsMeta, spotAssetContext, spotKeyToName])
 
   return (
-    <button
-      onClick={() => setSelectedAsset(assetKey)}
-      className="flex justify-center items-center gap-1 hover:bg-white/5 px-3 py-1 h-full cursor-pointer"
+    <ToggleGroupItem
+      value={data.name || ''}
+      key={data.name}
+      className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
-      <span className="my-auto font-medium text-[#E8E0F1] text-sm">{data.name}</span>
-
-      <div
-        className={`text-[12px] ${data.isPositive ? 'text-green' : 'text-red'} my-auto flex items-center`}
-      >
-        {data.change24h}
-      </div>
-      <span className="my-auto text-[12px] text-gray-400">{data.price}</span>
-    </button>
+      <p className="text-xs text-white/50">{data.name}</p>
+      <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>
+        {data.price}
+      </p>
+    </ToggleGroupItem>
   )
 }
 

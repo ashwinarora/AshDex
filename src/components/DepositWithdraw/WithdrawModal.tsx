@@ -1,14 +1,17 @@
 import React, { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { ChevronDown } from 'lucide-react'
-import Image from 'next/image'
+import { IconChevronDown } from '@tabler/icons-react'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
-import SmallModal from '../common/SmallModal'
-import arbitrum from '@/assets/images/arbitrum.svg'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import Loading from '../common/Loading'
+import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
+import { Button } from '../ui/button'
+import { Separator } from '../ui/separator'
+import { Input } from '../ui/input'
+import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'react-toastify'
 
 interface WithdrawModalProps {
@@ -21,117 +24,125 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const [amount, setAmount] = useState<string>('')
   const { clearingHouseState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
+  const [isLoading, setIsLoading] = useState(false)
+
+  const onWithdrawClick = async () => {
+    if (!chainId) return
+    if (!address) return
+    const toastId = toast.loading('Signing in progress…')
+    try {
+      const payload = getWithrawalPayload({
+        chainId: chainId,
+        isTestnet: isTestnet,
+        amount: amount,
+        destination: address,
+        nonce: Date.now()
+      })
+      const sign = await signTypedDataAsync(payload)
+      setIsLoading(true)
+      toast.update(toastId, {
+        render: 'Withdrawal in progress…',
+        type: 'info',
+        isLoading: true
+      })
+      const body = {
+        action: {
+          type: payload.message.type,
+          amount: payload.message.amount,
+          destination: payload.message.destination,
+          time: payload.message.time,
+          signatureChainId: payload.message.signatureChainId,
+          hyperliquidChain: payload.message.hyperliquidChain
+        },
+        nonce: payload.message.time,
+        signature: splitSignature(sign)
+      }
+      const res = await hyperliquidAxios.post('/exchange', body)
+      console.log('Withdraw response:', res)
+      toast.update(toastId, {
+        render: 'Withdrawal confirmed.',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
+    } catch (error) {
+      console.error('Error withdrawing:', error)
+      toast.update(toastId, {
+        render: 'Withdrawal failed. Please try again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 2000
+      })
+    }
+  }
 
   return (
-    <SmallModal isOpen={isOpen} onClose={onClose} heading="Withdraw to Wallet">
-      <div className="w-full">
-        <div className="border-2 max-md:mt-4 border-white/10 rounded-md bg-[#FFFFFF0F] pl-4 py-3 text-white text-sm mb-6 flex items-center justify-between">
-          <span className="text-[#8B8BA0] text-sm font-medium">Withdraw Cain</span>
-          <div className="relative w-1/4 text-white tracking-normal flex items-center gap-x-1 text-sm font-medium">
-            <select id="chain" className="appearance-none focus:outline-none">
-              <option value="ethereum">Arbitrum</option>
-            </select>
-            <ChevronDown className="absolute w-5 h-5 right-1 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" />
-          </div>
-        </div>
-        <div className="flex flex-col items-center gap-y-2 mb-8">
-          <Image src={arbitrum} alt="test" style={{ width: 50, height: 'auto' }} />
-          <p className="text-white tracking-normal font-medium">Withdrawal USDC from Arbitrum</p>
-          <div className="text-sm text-[#8B8BA0] text-center font-normal">
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Withdraw to Wallet</DialogTitle>
+          <DialogDescription>
             USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be
             deducted from the withdrawal amount. Processing usually takes under 5 minutes.
-          </div>
-        </div>
-        <div className="mb-4">
-          <div className="flex mb-2 justify-between font-medium text-sm text-[#8B8BA0]">
-            <div>Amount</div>
-            <div>Available to withdrawal: {clearingHouseState?.withdrawable} USDC</div>
-          </div>
-          <div className="relative flex justify-between items-center pr-4 pt-1 border-b border-white/10 pb-3">
-            <input
-              type="text"
-              id="amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-md placeholder:text-[#8B8BA0] py-1 focus:outline-none text-base font-semibold placeholder:opacity-70 text-white pr-28"
-              placeholder="00,000.00"
+          </DialogDescription>
+        </DialogHeader>
+        <Separator />
+        {isLoading ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <Loading
+              title={'Withdrawal in progress…'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
+              className="py-[1rem] px-[1rem]"
             />
-            <button
-              onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
-              className="text-sm font-medium p-[8px] text-white bg-white/10 rounded-lg"
-            >
-              Max
-            </button>
           </div>
-        </div>
-        <div className="flex gap-x-2 justify-between mt-6">
-          <button
-            onClick={onClose}
-            className="text-[#8B8BA0] cursor-pointer w-1/2 text-base font-medium hover:text-white"
-          >
-            Cancel
-          </button>
-          <button
-            disabled={!amount || parseFloat(amount) === 0}
-            className={`text-base w-1/2 font-semibold px-6 py-3 rounded-2xl ${
-              !amount || parseFloat(amount) === 0
-                ? 'bg-white/10 text-[#8B8BA0] cursor-not-allowed opacity-70'
-                : 'bg-[#5F46F9] text-white hover:opacity-90 cursor-pointer'
-            }`}
-            onClick={async () => {
-              if (!chainId) return
-              if (!address) return
-              const toastId = toast.loading('Signing in progress…')
-              try {
-                const payload = getWithrawalPayload({
-                  chainId: chainId,
-                  isTestnet: isTestnet,
-                  amount: amount,
-                  destination: address,
-                  nonce: Date.now()
-                })
-                const sign = await signTypedDataAsync(payload)
-                toast.update(toastId, {
-                  render: 'Withdrawal in progress…',
-                  type: 'info',
-                  isLoading: true
-                })
-                const body = {
-                  action: {
-                    type: payload.message.type,
-                    amount: payload.message.amount,
-                    destination: payload.message.destination,
-                    time: payload.message.time,
-                    signatureChainId: payload.message.signatureChainId,
-                    hyperliquidChain: payload.message.hyperliquidChain
-                  },
-                  nonce: payload.message.time,
-                  signature: splitSignature(sign)
-                }
-                const res = await hyperliquidAxios.post('/exchange', body)
-                console.log('Withdraw response:', res)
-                toast.update(toastId, {
-                  render: 'Withdrawal confirmed.',
-                  type: 'success',
-                  isLoading: false,
-                  autoClose: 3000
-                })
-              } catch (error) {
-                console.error('Error withdrawing:', error)
-                toast.update(toastId, {
-                  render: 'Withdrawal failed. Please try again.',
-                  type: 'error',
-                  isLoading: false,
-                  autoClose: 2000
-                })
-              }
-            }}
-          >
-            Withdrawal
-          </button>
-        </div>
-      </div>
-    </SmallModal>
+        ) : (
+          <>
+            <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between text-xs text-white/50">
+                  <p>Amount</p>
+                  <div className="flex items-center gap-1">
+                    Available to withdraw:
+                    <Button
+                      variant="link"
+                      onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
+                      className="text-xs h-fit p-0"
+                    >
+                      {clearingHouseState?.withdrawable} {'USDC'}
+                    </Button>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="text"
+                    id="amount"
+                    className="text-left flex-1 h-10"
+                    value={amount}
+                    onChange={(e) => setAmount(e.target.value)}
+                  />
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild disabled>
+                      <Button variant="outline" className="w-fit">
+                        USDC
+                        <IconChevronDown className="size-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                  </DropdownMenu>
+                </div>
+              </div>
+            </div>
+            <Separator />
+            <Button
+              className="w-full"
+              disabled={!amount || parseFloat(amount.toString()) === 0}
+              onClick={onWithdrawClick}
+            >
+              Withdraw
+            </Button>
+          </>
+        )}
+      </DialogContent>
+    </Dialog>
   )
 }
 

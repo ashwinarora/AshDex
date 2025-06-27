@@ -1,6 +1,6 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
-import { MoveRightIcon, ShuffleIcon } from 'lucide-react'
+import { IconArrowRight, IconArrowsShuffle } from '@tabler/icons-react'
 import React from 'react'
 
 interface MarginModeProps {
@@ -14,8 +14,8 @@ const MarginMode = ({ setIsCross, isCross }: MarginModeProps) => {
       <p className="text-xs font-medium text-white/50">Margin Mode</p>
       <ToggleGroup
         size={'sm'}
-        className="bg-white/5"
         type="single"
+        className="bg-white/5"
         value={isCross ? 'cross' : 'isolated'}
         onValueChange={(value) => value !== '' && setIsCross(value === 'cross')}
       >
@@ -26,7 +26,7 @@ const MarginMode = ({ setIsCross, isCross }: MarginModeProps) => {
             isCross ? 'bg-primary text-white' : 'bg-transparent text-white/50'
           )}
         >
-          <ShuffleIcon className="size-4" />
+          <IconArrowsShuffle className="size-4" />
           Cross
         </ToggleGroupItem>
         <ToggleGroupItem
@@ -36,7 +36,7 @@ const MarginMode = ({ setIsCross, isCross }: MarginModeProps) => {
             !isCross ? 'bg-primary text-white' : 'bg-transparent text-white/50'
           )}
         >
-          <MoveRightIcon className="size-4" />
+          <IconArrowRight className="size-4" />
           Isolated
         </ToggleGroupItem>
       </ToggleGroup>
