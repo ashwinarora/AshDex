@@ -1,6 +1,6 @@
 'use client'
 import { useState } from 'react'
-import { TRADING_TABS } from '@/utils/constants'
+import { isTestnet, TRADING_TABS } from '@/utils/constants'
 import Chart from './Chart'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
@@ -13,7 +13,7 @@ import SpotSelector from './Selector/SpotSelector'
 
 const Trading = () => {
   const isSpot = useIsSpot()
-  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ? '@1035' : 'BTC') // @1035 is HYPE
+  const [selectedAsset, setSelectedAsset] = useState<string>(isSpot ?  (isTestnet ? '@1035' : '@107') : 'BTC') // @1035 and @107 is HYPE
   const [activeTab, setActiveTab] = useState(0)
   const components = [
     <Chart key="chart" selectedAsset={selectedAsset} selectedInterval="30" />,
