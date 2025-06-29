@@ -25,7 +25,6 @@ import { cn } from '@/lib/utils'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 
-
 type BalanceData = {
   coin: string
   token: string | number
@@ -41,7 +40,6 @@ const Balances = () => {
   const [isMounted, setIsMounted] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet } = useScreenSize()
-
 
   useEffect(() => {
     setIsMounted(true)
@@ -90,7 +88,6 @@ const Balances = () => {
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
-
 
           return <SendModal spotDefaultName={coin} />
         },
@@ -143,30 +140,37 @@ const Balances = () => {
     return <WalletNotConnected />
   }
 
-
   if (isTablet) {
-    return <div className="w-full h-full flex flex-col rounded-md gap-2">
-      <div className='flex xl:hidden flex-col items-center justify-start gap-2'>
-        {combinedData.map((data, index) => {
-          const header = Object.keys(data)
-          const cell = Object.values(data)
-          return (
-            <div key={index} className='w-full flex flex-col justify-between rounded-md h-40 bg-accent p-4'>
-              {header.map((item, index) => (<div key={index} className='flex text-xs justify-between'>
-                <span className='text-white/50'>{item.charAt(0).toUpperCase() + item.slice(1) || '-'}</span>
-                <span className='text-white'>{cell[index] || '-'}</span>
-              </div>))}
-            </div>
-          )
-        })}
+    return (
+      <div className="w-full h-full flex flex-col rounded-md gap-2">
+        <div className="flex xl:hidden flex-col items-center justify-start gap-2">
+          {combinedData.map((data, index) => {
+            const header = Object.keys(data)
+            const cell = Object.values(data)
+            return (
+              <div
+                key={index}
+                className="w-full flex flex-col justify-between rounded-md h-40 bg-accent p-4"
+              >
+                {header.map((item, index) => (
+                  <div key={index} className="flex text-xs justify-between">
+                    <span className="text-white/50">
+                      {item.charAt(0).toUpperCase() + item.slice(1) || '-'}
+                    </span>
+                    <span className="text-white">{cell[index] || '-'}</span>
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
       </div>
-    </div>
+    )
   }
-
 
   return (
     <div className="w-full h-full flex flex-col rounded-md gap-2">
-      <Table className='hidden xl:flex'>
+      <Table className="hidden xl:flex">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>

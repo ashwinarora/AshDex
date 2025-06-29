@@ -220,7 +220,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-xl md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2">
+          <PopoverContent
+            align="start"
+            className="w-xl md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
+          >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
                 type="text"

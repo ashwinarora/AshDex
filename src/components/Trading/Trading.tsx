@@ -20,33 +20,34 @@ const Trading = () => {
 
   const { isTablet } = useScreenSize()
 
-
   if (isTablet) {
-    return <div className='hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-fit w-full'>
-      <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-      {isSpot ? (
-        <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-      ) : (
-        <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-      )}
-      <Chart selectedAsset={selectedAsset} selectedInterval="30" />
-      <div className='flex items-start justify-center w-full h-full max-h-[672px] gap-1'>
-        <div className="h-full flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
-          <OrderBook selectedAsset={selectedAsset} />
+    return (
+      <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-fit w-full">
+        <FavoriteStrip setSelectedAsset={setSelectedAsset} />
+        {isSpot ? (
+          <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+        ) : (
+          <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+        )}
+        <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+        <div className="flex items-start justify-center w-full h-full max-h-[672px] gap-1">
+          <div className="h-full flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
+            <OrderBook selectedAsset={selectedAsset} />
+          </div>
+          <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
+            <PlaceOrder selectedAsset={selectedAsset} />
+          </div>
         </div>
-        <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
-          <PlaceOrder selectedAsset={selectedAsset} />
+        <div className="flex items-start justify-center w-full h-[484px] gap-1">
+          <div className="h-full flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
+            <UserData setSelectedAsset={setSelectedAsset} />
+          </div>
+          <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
+            <OverviewBox />
+          </div>
         </div>
       </div>
-      <div className='flex items-start justify-center w-full h-[484px] gap-1'>
-        <div className="h-full flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
-          <UserData setSelectedAsset={setSelectedAsset} />
-        </div>
-        <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
-          <OverviewBox />
-        </div>
-      </div>
-    </div>
+    )
   }
 
   return (

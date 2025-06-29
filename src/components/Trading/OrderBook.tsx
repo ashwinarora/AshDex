@@ -273,13 +273,19 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           {Array(visibleRows.sells)
             .fill(0)
             .map((_, index) => (
-              <Skeleton className="px-2 py-1 w-full rounded-none h-full flex-1 bg-red/20" key={index} />
+              <Skeleton
+                className="px-2 py-1 w-full rounded-none h-full flex-1 bg-red/20"
+                key={index}
+              />
             ))}
           <Skeleton className="px-2 py-1 w-full rounded-none h-full flex-1 bg-accent" />
           {Array(visibleRows.buys)
             .fill(0)
             .map((_, index) => (
-              <Skeleton className="px-2 py-1 w-full rounded-none h-full flex-1 bg-green/20" key={index} />
+              <Skeleton
+                className="px-2 py-1 w-full rounded-none h-full flex-1 bg-green/20"
+                key={index}
+              />
             ))}
         </div>
       ) : (
