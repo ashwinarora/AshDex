@@ -56,6 +56,7 @@
     "@tronweb3/tronwallet-adapter-walletconnect": "^2.0.3",
     "@tronweb3/tronwallet-adapters": "^1.2.8",
     "@trustwallet/web3-react-trust-wallet": "^0.0.5",
+    "@uidotdev/usehooks": "^2.4.1",
     "@walletconnect/solana-adapter": "^0.0.8",
     "@web3-react/core": "^8.2.3",
     "@web3-react/types": "^8.0.20-beta.0",

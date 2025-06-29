@@ -764,7 +764,7 @@ const TradingViewChart = ({
   }, [selectedAsset, selectedInterval])
 
   return (
-    <div className="rounded-md p-2 bg-secondary w-full h-full">
+    <div className="rounded-md p-2 bg-secondary w-full h-[576px]">
       <div ref={chartRef} className="w-full h-full" />
     </div>
   )

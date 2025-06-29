@@ -49,6 +49,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { Separator } from '@/components/ui/separator'
 
 type ColumnType = {
   key: string
@@ -200,6 +202,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
   const { agentWallet } = useHyperliquid()
+  const { isTablet } = useScreenSize()
 
   useEffect(() => {
     setMounted(true)
@@ -445,6 +448,35 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
 
   if (!isConnected) {
     return <WalletNotConnected />
+  }
+
+
+  if (isTablet) {
+    const header = table.getHeaderGroups()[0].headers.map((header) => {
+      return flexRender(header.column.columnDef.header, header.getContext());
+    });
+    return <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className='flex xl:hidden flex-col items-center justify-start gap-2'>
+        {table.getRowModel().rows.map((row) => {
+          const cell = row.getVisibleCells().map((cell) => {
+            return (flexRender(cell.column.columnDef.cell, cell.getContext()));
+          });
+          return (
+            <div key={row.id} className='w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4'>
+              {header.map((item, index) => (
+                <div className='flex flex-col gap-3' key={index}>
+                  <div className='flex items-center text-xs justify-between'>
+                    <span className='text-white/50'>{item}</span>
+                    <span className='text-white w-fit'>{cell[index]}</span>
+                  </div>
+                  {(item === 'Position' || item === 'Margin') &&  <Separator className='w-full bg-white/10' />}
+                </div>
+              ))}
+            </div>
+          )
+        })}
+      </div>
+    </div>
   }
 
   return (

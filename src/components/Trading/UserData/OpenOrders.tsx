@@ -36,6 +36,8 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 type ColumnType = {
   key: string
@@ -49,30 +51,6 @@ type RenderRowProps = {
 }
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
-
-// const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
-//   const canSort = header.column.getCanSort()
-//   const sortDirection = header.column.getIsSorted()
-
-//   return (
-//     <div className="flex items-center text-white/50">
-//       {header.isPlaceholder
-//         ? null
-//         : flexRender(header.column.columnDef.header, header.getContext())}
-//       {canSort && (
-//         <span className="inline-block">
-//           {sortDirection === 'asc' ? (
-//             <IconChevronDown className="w-4 h-4" />
-//           ) : sortDirection === 'desc' ? (
-//             <IconChevronUp className="w-4 h-4" />
-//           ) : (
-//             <IconSelector className="w-4 h-4" />
-//           )}
-//         </span>
-//       )}
-//     </div>
-//   )
-// }
 
 const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) => {
   return (
@@ -129,6 +107,7 @@ const OpenOrders = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { spotKeyToName, data: spotMeta } = useSpotMeta()
+  const { isTablet } = useScreenSize()
 
   useEffect(() => {
     setMounted(true)
@@ -190,15 +169,6 @@ const OpenOrders = () => {
         >
           Cancel
         </Button>
-        // <button
-        //   className="group flex items-center gap-1 px-2 py-0.5 rounded text-primary hover:text-red text-sm cursor-pointer"
-        //   onClick={}
-        // >
-        //   <IconTrash className="w-4 h-4 group-hover:text-red transition-colors" />
-        //   <span className="opacity-0 group-hover:opacity-100 group-hover:text-red transition-all -translate-x-4 group-hover:translate-x-0 duration-200">
-        //     Cancel
-        //   </span>
-        // </button>
       )
     },
     [
@@ -415,6 +385,34 @@ const OpenOrders = () => {
 
   if (!mounted) {
     return <div className="w-full h-full bg-secondary"></div>
+  }
+
+  if (isTablet) {
+    const header = table.getHeaderGroups()[0].headers.map((header) => {
+      return flexRender(header.column.columnDef.header, header.getContext());
+    });
+    return <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className='flex xl:hidden flex-col items-center justify-start gap-2'>
+        {table.getRowModel().rows.map((row) => {
+          const cell = row.getVisibleCells().map((cell) => {
+            return (flexRender(cell.column.columnDef.cell, cell.getContext()));
+          });
+          return (
+            <div key={row.id} className='w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4'>
+              {header.map((item, index) => (
+                <div className='flex flex-col gap-3' key={index}>
+                  <div className='flex items-center text-xs justify-between'>
+                    <span className='text-white/50'>{item}</span>
+                    <span className='text-white w-fit'>{cell[index]}</span>
+                  </div>
+                  {(item === 'Coin' || item === 'Trigger') &&  <Separator className='w-full bg-white/10' />}
+                </div>
+              ))}
+            </div>
+          )
+        })}
+      </div>
+    </div>
   }
 
   return (

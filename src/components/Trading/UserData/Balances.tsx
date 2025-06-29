@@ -23,17 +23,8 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
-// type ColumnType = {
-//   key: string
-//   label: string
-// }
-
-// type RenderRowProps = {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   item: any
-//   columns: ColumnType[]
-// }
 
 type BalanceData = {
   coin: string
@@ -43,27 +34,14 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-// const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-//   return (
-//     <div className="flex flex-col gap-2 text-white text-sm">
-//       {columns?.map((col) => (
-//         <div key={col?.key} className="flex justify-between">
-//           <span className="text-[#8B8BA0]">{col?.label}</span>
-//           <span className={col?.key === 'contract' ? 'truncate' : ''}>{item[col?.key] ?? '-'}</span>
-//         </div>
-//       ))}
-//     </div>
-//   )
-// }
-
 const Balances = () => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
-  // const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  // const [selectedToken, setSelectedToken] = useState('')
   const [isMounted, setIsMounted] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
+  const { isTablet } = useScreenSize()
+
 
   useEffect(() => {
     setIsMounted(true)
@@ -112,6 +90,8 @@ const Balances = () => {
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
+
+
           return <SendModal spotDefaultName={coin} />
         },
         enableSorting: false,
@@ -155,27 +135,6 @@ const Balances = () => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  // const tableData = useMemo(
-  //   () =>
-  //     table.getRowModel().rows.map((row) => {
-  //       const rowData: Record<string, unknown> = {}
-  //       row.getVisibleCells().forEach((cell) => {
-  //         rowData[cell.column.id] = cell.getValue()
-  //       })
-  //       return rowData
-  //     }),
-  //   [table.getRowModel().rows]
-  // )
-
-  // const tableColumns = useMemo(
-  //   () =>
-  //     columns.map((col) => ({
-  //       key: col.id as string,
-  //       label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-  //     })),
-  //   [columns]
-  // )
-
   if (!isMounted) {
     return null
   }
@@ -184,9 +143,30 @@ const Balances = () => {
     return <WalletNotConnected />
   }
 
+
+  if (isTablet) {
+    return <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className='flex xl:hidden flex-col items-center justify-start gap-2'>
+        {combinedData.map((data, index) => {
+          const header = Object.keys(data)
+          const cell = Object.values(data)
+          return (
+            <div key={index} className='w-full flex flex-col justify-between rounded-md h-40 bg-accent p-4'>
+              {header.map((item, index) => (<div key={index} className='flex text-xs justify-between'>
+                <span className='text-white/50'>{item.charAt(0).toUpperCase() + item.slice(1) || '-'}</span>
+                <span className='text-white'>{cell[index] || '-'}</span>
+              </div>))}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  }
+
+
   return (
-    <div className="w-full h-full flex flex-col gap-2">
-      <Table>
+    <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <Table className='hidden xl:flex'>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -243,11 +223,6 @@ const Balances = () => {
           ))}
         </TableBody>
       </Table>
-      {/* <ResponsiveDataCard
-        columns={tableColumns}
-        data={tableData}
-        renderRow={(item) => <RenderRowData item={item} columns={tableColumns} />}
-      /> */}
     </div>
   )
 }
