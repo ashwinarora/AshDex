@@ -24,7 +24,7 @@ interface AmountInputSpotProps {
   isBuy: boolean
 }
 
-const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
+const isMatch = (a: string, b: string): boolean => a.split('/')[0] === b.split('/')[0]
 
 const AmountInputSpot = ({
   selectedAsset,
