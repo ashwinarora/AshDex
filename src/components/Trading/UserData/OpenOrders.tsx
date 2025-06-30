@@ -12,7 +12,6 @@ import {
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -36,90 +35,10 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
-
-type ColumnType = {
-  key: string
-  label: string
-}
-
-type RenderRowProps = {
-  item: FrontendOrderWithAssetKey
-  columns: ColumnType[]
-  onCancel?: () => void
-}
+import { Separator } from '@/components/ui/separator'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
-
-// const SortableHeader = ({ header }: { header: Header<FrontendOrderWithAssetKey, unknown> }) => {
-//   const canSort = header.column.getCanSort()
-//   const sortDirection = header.column.getIsSorted()
-
-//   return (
-//     <div className="flex items-center text-white/50">
-//       {header.isPlaceholder
-//         ? null
-//         : flexRender(header.column.columnDef.header, header.getContext())}
-//       {canSort && (
-//         <span className="inline-block">
-//           {sortDirection === 'asc' ? (
-//             <IconChevronDown className="w-4 h-4" />
-//           ) : sortDirection === 'desc' ? (
-//             <IconChevronUp className="w-4 h-4" />
-//           ) : (
-//             <IconSelector className="w-4 h-4" />
-//           )}
-//         </span>
-//       )}
-//     </div>
-//   )
-// }
-
-const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) => {
-  return (
-    <div className="flex flex-col gap-2 text-white text-sm">
-      {columns?.map((col) => {
-        const isAction = col?.key === 'actions'
-        const key = col?.key as keyof FrontendOrder
-        const value = item[key]
-        const isSide = col?.key === 'side'
-        const sideValue = isSide && typeof value === 'string' ? value.toLowerCase() : ''
-
-        return (
-          <div key={col?.key} className="flex justify-between items-center">
-            <span className="text-[#8B8BA0]">{col?.label}</span>
-            {isAction ? (
-              <button
-                className="bg-[#27273b] px-2 py-0.5 rounded font-bold text-red text-sm cursor-pointer"
-                onClick={onCancel}
-              >
-                Cancel
-              </button>
-            ) : (
-              <span className={col?.key === 'coin' ? 'truncate' : ''}>
-                <span
-                  className={`
-                    flex px-1.5 py-1 w-fit rounded-lg font-medium items-center gap-x-2
-                    ${
-                      isSide
-                        ? sideValue === 'buy'
-                          ? 'text-green'
-                          : sideValue === 'sell'
-                            ? 'text-red'
-                            : ''
-                        : ''
-                    }
-                  `}
-                >
-                  {String(value ?? '-')}
-                </span>
-              </span>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
@@ -129,6 +48,7 @@ const OpenOrders = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { spotKeyToName, data: spotMeta } = useSpotMeta()
+  const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {
     setMounted(true)
@@ -190,15 +110,6 @@ const OpenOrders = () => {
         >
           Cancel
         </Button>
-        // <button
-        //   className="group flex items-center gap-1 px-2 py-0.5 rounded text-primary hover:text-red text-sm cursor-pointer"
-        //   onClick={}
-        // >
-        //   <IconTrash className="w-4 h-4 group-hover:text-red transition-colors" />
-        //   <span className="opacity-0 group-hover:opacity-100 group-hover:text-red transition-all -translate-x-4 group-hover:translate-x-0 duration-200">
-        //     Cancel
-        //   </span>
-        // </button>
       )
     },
     [
@@ -417,6 +328,41 @@ const OpenOrders = () => {
     return <div className="w-full h-full bg-secondary"></div>
   }
 
+  if (isTablet || isMobile) {
+    const header = table.getHeaderGroups()[0].headers.map((header) => {
+      return flexRender(header.column.columnDef.header, header.getContext())
+    })
+    return (
+      <div className="w-full h-full flex flex-col rounded-md gap-2">
+        <div className="flex xl:hidden flex-col items-center justify-start gap-2">
+          {table.getRowModel().rows.map((row) => {
+            const cell = row.getVisibleCells().map((cell) => {
+              return flexRender(cell.column.columnDef.cell, cell.getContext())
+            })
+            return (
+              <div
+                key={row.id}
+                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
+              >
+                {header.map((item, index) => (
+                  <div className="flex flex-col gap-3" key={index}>
+                    <div className="flex items-center text-xs justify-between">
+                      <span className="text-white/50">{item}</span>
+                      <span className="text-white w-fit">{cell[index]}</span>
+                    </div>
+                    {(item === 'Coin' || item === 'Trigger') && (
+                      <Separator className="w-full bg-white/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
@@ -478,55 +424,6 @@ const OpenOrders = () => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
-        columns={columns.map((col) => ({
-          key: col.id as string,
-          label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-        }))}
-        data={table.getRowModel().rows.map((row) => row.original)}
-        renderRow={(item) => (
-          <RenderRowData
-            item={item}
-            columns={columns.map((col) => ({
-              key: col.id as string,
-              label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-            }))}
-            onCancel={() => {
-              if (!sdkExchangeClient) return
-              if (isAgentApproved && currentFeeApproval > 0) {
-                const toastId = toast.loading('Cancelling order...')
-                sdkExchangeClient
-                  .cancel({
-                    cancels: [
-                      {
-                        a: Number(item.coin), // TODO: This is broken.
-                        o: item.oid
-                      }
-                    ]
-                  })
-                  .then(() => {
-                    toast.update(toastId, {
-                      render: 'Order cancelled',
-                      type: 'success',
-                      isLoading: false,
-                      autoClose: 2000
-                    })
-                  })
-                  .catch((error: unknown) => {
-                    toast.update(toastId, {
-                      render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-                      type: 'error',
-                      isLoading: false,
-                      autoClose: 2000
-                    })
-                  })
-              } else {
-                openAgentModal()
-              }
-            }}
-          />
-        )}
-      />
     </div>
   )
 }

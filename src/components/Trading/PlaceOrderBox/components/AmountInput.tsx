@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
+import { Slider } from '@/components/ui/slider'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -140,7 +141,7 @@ const AmountInput = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 px-2">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Position Size</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
@@ -158,7 +159,7 @@ const AmountInput = ({
             isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
           }
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
-          className="w-full text-right text-white"
+          className="flex-1 text-right text-white shrink-0"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -182,8 +183,22 @@ const AmountInput = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex flex-1 flex-col gap-4 w-full items-center justify-center">
-        {/* <Slider min={0} max={100} value={[usdPercent]} onValueChange={(value) => setUsdPercent(Number(value[0]))} /> */}
+      <div className="flex flex-1 flex-col gap-2 mt-2 w-full items-center justify-center">
+        <div className="w-full flex items-center justify-center gap-2">
+          <Slider
+            min={0}
+            max={100}
+            value={[usdPercent]}
+            onValueChange={(value) => setUsdPercent(value[0])}
+            className="w-full"
+          />
+          <Input
+            type="text"
+            value={usdPercent.toString()}
+            onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+            className="w-20 text-xs"
+          />
+        </div>
         <ToggleGroup
           size={'sm'}
           className="flex mt-1 bg-white/5 items-center justify-between w-full"
@@ -195,7 +210,9 @@ const AmountInput = ({
             value={'25'}
             className={cn(
               'rounded-l-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 25
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             25%
@@ -204,7 +221,9 @@ const AmountInput = ({
             value={'50'}
             className={cn(
               'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 50 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 50
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             50%
@@ -213,7 +232,9 @@ const AmountInput = ({
             value={'75'}
             className={cn(
               'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 75 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 75
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             75%
@@ -222,7 +243,9 @@ const AmountInput = ({
             value={'100'}
             className={cn(
               'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 100
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             100%

@@ -220,7 +220,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
-          <PopoverContent align="start" className="w-3xl h-96 z-30 p-2 flex flex-col gap-2">
+          <PopoverContent
+            align="start"
+            className="w-xl md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
+          >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
                 type="text"
@@ -240,7 +243,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   value="Strict"
                   className={cn(
                     'px-4 py-1 rounded-l-md cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
-                    isStrict ? 'bg-green !text-green' : 'bg-transparent text-white/50'
+                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/50'
                   )}
                 >
                   <IconShieldCheck className="size-4" />
@@ -250,7 +253,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   value="All"
                   className={cn(
                     'px-4 py-1 rounded-r-md cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
-                    !isStrict ? 'bg-red !text-red' : 'bg-transparent text-white/50'
+                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/50'
                   )}
                 >
                   <IconShieldQuestion className="size-4" />
@@ -274,7 +277,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   className={cn(
                     'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
                     selectedTab === tab.label
-                      ? 'bg-primary text-white'
+                      ? '!bg-primary !text-white'
                       : 'bg-transparent text-white/50'
                   )}
                   key={tab.label}
@@ -297,7 +300,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverContent>
         </Popover>
         <Separator orientation="vertical" className="!h-full" />
-        <div className="flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+        <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>

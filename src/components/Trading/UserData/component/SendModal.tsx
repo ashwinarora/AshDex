@@ -29,8 +29,8 @@ import { IconChevronDown, IconSend } from '@tabler/icons-react'
 interface SendModalProps {
   spotDefaultName?: string
   isTriggeredByCustomButton?: boolean
-  isOpen?: boolean
-  onClose?: () => void
+  isOpen: boolean
+  onClose: () => void
 }
 
 const SendModal: React.FC<SendModalProps> = ({
@@ -89,6 +89,7 @@ const SendModal: React.FC<SendModalProps> = ({
         }
         const res = await hyperliquidAxios.post('/exchange', body)
         if (res.data.status === 'err') {
+          onClose()
           toast.update(toastId, {
             render: '❌' + res.data.response,
             type: 'error',
@@ -97,6 +98,7 @@ const SendModal: React.FC<SendModalProps> = ({
           })
           return
         }
+        onClose()
         toast.update(toastId, {
           render: '✅ Send successful',
           type: 'success',
@@ -105,6 +107,7 @@ const SendModal: React.FC<SendModalProps> = ({
         })
       } catch (error) {
         console.log(error)
+        onClose()
         toast.update(toastId, {
           render: '❌ Send failed',
           type: 'error',

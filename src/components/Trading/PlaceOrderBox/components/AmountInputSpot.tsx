@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { Slider } from '@/components/ui/slider'
 
 interface AmountInputSpotProps {
   selectedAsset: string
@@ -129,7 +130,7 @@ const AmountInputSpot = ({
   }
 
   return (
-    <div className="flex flex-col gap-2 px-2">
+    <div className="flex flex-col gap-2">
       <div className="flex items-center justify-between gap-2">
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Amount</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
@@ -147,7 +148,7 @@ const AmountInputSpot = ({
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
-          className="w-full text-right text-white"
+          className="w-full text-right text-white shrink-0"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -173,7 +174,12 @@ const AmountInputSpot = ({
         </DropdownMenu>
       </div>
       <div className="flex flex-1 flex-col gap-4 w-full items-center justify-center">
-        {/* <Slider min={0} max={100} value={[usdPercent]} onValueChange={(value) => setUsdPercent(Number(value[0]))} /> */}
+        <Slider
+          min={0}
+          max={100}
+          value={[usdPercent]}
+          onValueChange={(value) => setUsdPercent(Number(value[0]))}
+        />
         <ToggleGroup
           size={'sm'}
           className="flex mt-1 bg-white/5 items-center justify-between w-full"

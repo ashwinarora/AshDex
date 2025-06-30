@@ -53,30 +53,15 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         leverage: leverage
       })
       console.log(res)
-      // const resSdk = await sdk.exchange.updateLeverage(
-      //   asset.coin,
-      //   asset.leverage.type,
-      //   leverage
-      // )
-      // console.log(resSdk)
+      onClose()
       toast.update(toastId, {
         render: '✅ Leverage updated successfully',
         type: 'success',
         isLoading: false,
         autoClose: 2000
       })
-      onClose()
-      // if (res.status === 'err') {
-      //   toast.update(toastId, {
-      //     render: '❌ ' + res.error,
-      //     type: 'error',
-      //     isLoading: false,
-      //     autoClose: 6000
-      //   })
-      //   return
-      // } else {
-      // }
     } catch (error) {
+      onClose()
       console.error('Error updating leverage:', error)
       toast.update(toastId, {
         render: '❌ ' + error,
