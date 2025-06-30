@@ -28,6 +28,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { Separator } from '@/components/ui/separator'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 type ColumnType = {
   key: string
@@ -44,7 +46,7 @@ const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { sdkInfoClient } = useHyperliquid()
   const [mounted, setMounted] = useState(false)
-
+  const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
     setMounted(true)
@@ -75,25 +77,6 @@ const OrderHistoryTable: React.FC = () => {
   const columnHelper = createColumnHelper<
     OrderStatus<FrontendOrder> & { meta?: { label: string } }
   >()
-  // const getCellClass = (columnId: string, cellValue: unknown): string => {
-  //   let customClass = 'opacity-80 font-normal text-sm'
-  //   if (columnId === 'status') {
-  //     customClass = 'rounded-lg px-2 py-0.5 text-sm font-medium w-fit inline-block'
-  //     if (cellValue === 'Filled') {
-  //       customClass += ' bg-[#28283e] text-green'
-  //     } else if (cellValue === 'Rejected') {
-  //       customClass += ' bg-[#27273b] text-red'
-  //     } else if (cellValue === 'Cancelled') {
-  //       customClass += ' bg-[#505061] text-[#FFFFFF]'
-  //     }
-  //   } else if (columnId === 'side') {
-  //     customClass += ' text-green'
-  //   } else {
-  //     customClass += ' text-[#FFFFFF]'
-  //   }
-
-  //   return customClass
-  // }
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
     return (
@@ -272,6 +255,41 @@ const OrderHistoryTable: React.FC = () => {
   // During server-side rendering and initial client render, show a placeholder
   if (!mounted) {
     return <div className="w-full h-full bg-secondary"></div>
+  }
+
+  if (isTablet || isMobile) {
+    const header = table.getHeaderGroups()[0].headers.map((header) => {
+      return flexRender(header.column.columnDef.header, header.getContext())
+    })
+    return (
+      <div className="w-full h-full flex flex-col rounded-md gap-2">
+        <div className="flex xl:hidden flex-col items-center justify-start gap-2">
+          {table.getRowModel().rows.map((row) => {
+            const cell = row.getVisibleCells().map((cell) => {
+              return flexRender(cell.column.columnDef.cell, cell.getContext())
+            })
+            return (
+              <div
+                key={row.id}
+                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
+              >
+                {header.map((item, index) => (
+                  <div className="flex flex-col gap-3" key={index}>
+                    <div className="flex items-center text-xs justify-between">
+                      <span className="text-white/50">{item}</span>
+                      <span className="text-white w-fit">{cell[index]}</span>
+                    </div>
+                    {(item === 'Coin' || item === 'Trigger') && (
+                      <Separator className="w-full bg-white/10" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
   }
 
   return (

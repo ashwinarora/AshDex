@@ -29,16 +29,6 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       return
     const toastId = toast.loading('Closing all positions...')
     try {
-      // Update leverage for all positions first
-      //   for (const posObj of clearingHouseState.assetPositions) {
-      //     const pos = posObj.position
-      //     await sdk.exchange.updateLeverage(
-      //       pos.coin,
-      //       pos.leverage.type,
-      //       pos.leverage.value
-      //     )
-      //   }
-      // Build orders array
       const orders: OrderData[] = clearingHouseState.assetPositions.map((posObj) => {
         const pos = posObj.position
         const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, pos.coin)
@@ -82,6 +72,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       })
       const status = orderRes.response.data.statuses[0]
       if ('error' in status) {
+        onClose()
         toast.update(toastId, {
           render: '❌' + status.error,
           type: 'error',
@@ -89,6 +80,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           autoClose: 3000
         })
       } else if ('filled' in status) {
+        onClose()
         toast.update(toastId, {
           render: `✅ All positions closed successfully`,
           type: 'success',
@@ -98,6 +90,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       }
     } catch (error) {
       console.error('Error closing all positions:', error)
+      onClose()
       toast.update(toastId, {
         render: '❌' + error,
         type: 'error',

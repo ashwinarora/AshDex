@@ -69,6 +69,7 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
       }
       const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Transfer response:', res.data)
+      onClose()
       toast.update(toastId, {
         render: 'Transfer successful',
         type: 'success',
@@ -76,9 +77,9 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
         autoClose: 3000
       })
       setIsLoading(false)
-      onClose()
     } catch (error) {
       console.error('Transfer failed:', error)
+      onClose()
       toast.update(toastId, {
         render: 'Transfer failed',
         type: 'error',

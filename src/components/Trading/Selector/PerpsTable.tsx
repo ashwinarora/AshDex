@@ -259,7 +259,7 @@ const AssetTable = ({
 
   return (
     <Table>
-      <TableHeader className="sticky top-0 z-10 bg-secondary">
+      <TableHeader className="sticky top-0 z-10 bg-accent">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
@@ -291,7 +291,7 @@ const AssetTable = ({
             onClick={() => handleRowClick(row.original.symbol)}
             className={cn(
               'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-              selectedAsset === row.original.symbol && 'bg-accent'
+              selectedAsset === row.original.symbol && 'bg-secondary'
             )}
           >
             {row.getVisibleCells().map((cell) => (

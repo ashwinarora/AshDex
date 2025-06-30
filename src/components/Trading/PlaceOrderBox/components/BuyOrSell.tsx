@@ -9,7 +9,7 @@ interface BuyOrSellProps {
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
   return (
-    <div className="flex px-2 w-full items-center justify-between gap-2">
+    <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
         size={'sm'}
         className="w-full bg-white/5 rounded-md"

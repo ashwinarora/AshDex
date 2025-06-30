@@ -48,12 +48,8 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         isBuy: isBuy,
         ntli: action === 'Add' ? realAmount : -realAmount
       })
-      // const res = await sdkExchangeClient.updateIsolatedMargin(
-      //   asset.coin,
-      //   isBuy,
-      //   action === 'Add' ? realAmount : -realAmount
-      // )
       console.log(res)
+      onClose()
       toast.update(toastId, {
         render: '✅ Margin updated successfully',
         type: 'success',
@@ -62,6 +58,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
     } catch (error) {
       console.error(error)
+      onClose()
       toast.update(toastId, {
         render: '❌' + error,
         type: 'error',

@@ -1,7 +1,7 @@
 import { useState } from 'react'
-import { useAccount, useReadContract, useWriteContract } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
-import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
+import { HYPERLIQUID_DEPOSIT, isTestnet, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
 import { toHumanNumber, toRealNumber } from '@/utils/utils'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -19,7 +19,8 @@ interface DepositModalProps {
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
-  const { address } = useAccount()
+  const { address, chainId } = useAccount()
+  const { switchChainAsync } = useSwitchChain()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
@@ -34,7 +35,33 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   })
   const { writeContractAsync } = useWriteContract()
 
+  const supportedChain = isTestnet ? 421614 : 42161
+
+  const switchChain = async () => {
+    const toastId = toast.loading('Switching to Arbitrum network…')
+    await switchChainAsync({ chainId: supportedChain })
+      .then(() => {
+        toast.update(toastId, {
+          render: 'Switched to Arbitrum network.',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      })
+      .catch(() => {
+        toast.update(toastId, {
+          render: 'Failed to switch to Arbitrum network.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
+      })
+  }
+
   const onDepositClick = async () => {
+    if (chainId !== 42161) {
+      await switchChainAsync({ chainId: 42161 })
+    }
     if (!usdc) return
     const toastId = toast.loading('Deposit in progress…')
     try {
@@ -55,6 +82,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       })
     } catch (error) {
       console.error('Deposit error:', error)
+      onClose()
       toast.update(toastId, {
         render: 'Deposit failed. Please try again.',
         type: 'error',
@@ -86,9 +114,8 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center justify-between text-xs text-white/50">
                   <p>Amount</p>
                   <div className="flex items-center gap-1">
-                    Available to deposit:
                     <Button variant="link" className="text-xs h-fit p-0">
-                      {toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'}
+                      Use Max: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
                     </Button>
                   </div>
                 </div>
@@ -112,13 +139,19 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
             <Separator />
-            <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onDepositClick}
-            >
-              Deposit
-            </Button>
+            {chainId !== supportedChain ? (
+              <Button className="w-full" onClick={switchChain}>
+                Switch to Arbitrum
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={onDepositClick}
+              >
+                Deposit
+              </Button>
+            )}
           </>
         )}
       </DialogContent>

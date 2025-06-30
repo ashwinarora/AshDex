@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
+import { useAccount, useSignTypedData, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
@@ -21,10 +21,34 @@ interface WithdrawModalProps {
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useAccount()
+
   const [amount, setAmount] = useState<string>('')
   const { clearingHouseState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
+  const { switchChainAsync } = useSwitchChain()
+  const supportedChain = isTestnet ? 421614 : 42161
+
+  const switchChain = async () => {
+    const toastId = toast.loading('Switching to Arbitrum network…')
+    await switchChainAsync({ chainId: supportedChain })
+      .then(() => {
+        toast.update(toastId, {
+          render: 'Switched to Arbitrum network.',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
+      })
+      .catch(() => {
+        toast.update(toastId, {
+          render: 'Failed to switch to Arbitrum network.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
+      })
+  }
 
   const onWithdrawClick = async () => {
     if (!chainId) return
@@ -59,6 +83,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       }
       const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Withdraw response:', res)
+      onClose()
       toast.update(toastId, {
         render: 'Withdrawal confirmed.',
         type: 'success',
@@ -66,6 +91,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         autoClose: 3000
       })
     } catch (error) {
+      onClose()
       console.error('Error withdrawing:', error)
       toast.update(toastId, {
         render: 'Withdrawal failed. Please try again.',
@@ -132,13 +158,27 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               </div>
             </div>
             <Separator />
-            <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onWithdrawClick}
-            >
-              Withdraw
-            </Button>
+
+            {chainId !== supportedChain ? (
+              <Button
+                className="w-full"
+                onClick={async () => {
+                  await switchChain()
+                }}
+              >
+                Switch to Arbitrum
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={async () => {
+                  await onWithdrawClick()
+                }}
+              >
+                Withdraw
+              </Button>
+            )}
           </>
         )}
       </DialogContent>
