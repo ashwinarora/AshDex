@@ -30,7 +30,7 @@ const Trading = () => {
           <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         )}
         <Chart selectedAsset={selectedAsset} selectedInterval="30" />
-        <div className="flex items-start justify-center w-full h-full max-h-[672px] gap-1">
+        <div className="flex items-start justify-center w-full h-full max-h-[688px] gap-1">
           <div className="h-full flex-1 flex-col basis-sm gap-2 bg-secondary rounded-md">
             <OrderBook selectedAsset={selectedAsset} />
           </div>

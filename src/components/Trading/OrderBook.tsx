@@ -159,7 +159,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col pt-2 gap-2 w-full h-full min-h-[672px] text-white/50">
+    <div className="flex flex-col pt-2 gap-2 w-full h-[688px] text-white/50">
       <div className="flex justify-between items-center px-2">
         <h1 className="text-white text-sm font-semibold">Order Book</h1>
         <ToggleGroup

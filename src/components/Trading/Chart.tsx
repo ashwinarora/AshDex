@@ -756,7 +756,6 @@ const TradingViewChart = ({
     if (widgetRef.current) {
       try {
         widgetRef.current.activeChart().setSymbol(selectedAsset, selectedInterval)
-        // toast.info(`Switched to ${selectedAsset} ${selectedInterval}`)
       } catch (e) {
         console.error('Chart update error:', e)
       }
@@ -764,7 +763,7 @@ const TradingViewChart = ({
   }, [selectedAsset, selectedInterval])
 
   return (
-    <div className="rounded-md p-2 bg-secondary w-full h-[576px]">
+    <div className="rounded-md p-2 bg-secondary w-full h-[576px] xl:h-full">
       <div ref={chartRef} className="w-full h-full" />
     </div>
   )

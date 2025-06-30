@@ -12,7 +12,6 @@ import {
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
@@ -39,65 +38,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 
-type ColumnType = {
-  key: string
-  label: string
-}
-
-type RenderRowProps = {
-  item: FrontendOrderWithAssetKey
-  columns: ColumnType[]
-  onCancel?: () => void
-}
-
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
-
-const RenderRowData: React.FC<RenderRowProps> = ({ item, columns, onCancel }) => {
-  return (
-    <div className="flex flex-col gap-2 text-white text-sm">
-      {columns?.map((col) => {
-        const isAction = col?.key === 'actions'
-        const key = col?.key as keyof FrontendOrder
-        const value = item[key]
-        const isSide = col?.key === 'side'
-        const sideValue = isSide && typeof value === 'string' ? value.toLowerCase() : ''
-
-        return (
-          <div key={col?.key} className="flex justify-between items-center">
-            <span className="text-[#8B8BA0]">{col?.label}</span>
-            {isAction ? (
-              <button
-                className="bg-[#27273b] px-2 py-0.5 rounded font-bold text-red text-sm cursor-pointer"
-                onClick={onCancel}
-              >
-                Cancel
-              </button>
-            ) : (
-              <span className={col?.key === 'coin' ? 'truncate' : ''}>
-                <span
-                  className={`
-                    flex px-1.5 py-1 w-fit rounded-lg font-medium items-center gap-x-2
-                    ${
-                      isSide
-                        ? sideValue === 'buy'
-                          ? 'text-green'
-                          : sideValue === 'sell'
-                            ? 'text-red'
-                            : ''
-                        : ''
-                    }
-                  `}
-                >
-                  {String(value ?? '-')}
-                </span>
-              </span>
-            )}
-          </div>
-        )
-      })}
-    </div>
-  )
-}
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
@@ -483,55 +424,6 @@ const OpenOrders = () => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
-        columns={columns.map((col) => ({
-          key: col.id as string,
-          label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-        }))}
-        data={table.getRowModel().rows.map((row) => row.original)}
-        renderRow={(item) => (
-          <RenderRowData
-            item={item}
-            columns={columns.map((col) => ({
-              key: col.id as string,
-              label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-            }))}
-            onCancel={() => {
-              if (!sdkExchangeClient) return
-              if (isAgentApproved && currentFeeApproval > 0) {
-                const toastId = toast.loading('Cancelling order...')
-                sdkExchangeClient
-                  .cancel({
-                    cancels: [
-                      {
-                        a: Number(item.coin), // TODO: This is broken.
-                        o: item.oid
-                      }
-                    ]
-                  })
-                  .then(() => {
-                    toast.update(toastId, {
-                      render: 'Order cancelled',
-                      type: 'success',
-                      isLoading: false,
-                      autoClose: 2000
-                    })
-                  })
-                  .catch((error: unknown) => {
-                    toast.update(toastId, {
-                      render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-                      type: 'error',
-                      isLoading: false,
-                      autoClose: 2000
-                    })
-                  })
-              } else {
-                openAgentModal()
-              }
-            }}
-          />
-        )}
-      />
     </div>
   )
 }

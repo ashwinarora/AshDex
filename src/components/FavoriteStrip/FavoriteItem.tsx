@@ -6,6 +6,7 @@ import { useHyperliquid } from '@/store/HyperliquidStore'
 import { useMemo } from 'react'
 import { ToggleGroupItem } from '../ui/toggle-group'
 import { cn } from '@/lib/utils'
+import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react'
 
 interface FavoriteItemProps {
   assetKey: string
@@ -50,9 +51,16 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
       key={data.name}
       className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
-      <p className="text-xs text-white/50">{data.name}</p>
+      {data.isPositive ? (
+        <IconTrendingUp className="size-3 text-green" />
+      ) : (
+        <IconTrendingDown className="size-3 text-red" />
+      )}
+      <p className={cn('text-xs font-bold text-white', data.isPositive ? 'text-green' : 'text-red')}>
+        {data.name}
+      </p>
       <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>
-        {data.price}
+        {data.change24h}
       </p>
     </ToggleGroupItem>
   )

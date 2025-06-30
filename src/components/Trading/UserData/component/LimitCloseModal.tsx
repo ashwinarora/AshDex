@@ -153,6 +153,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       console.log(order)
       const status = order.response.data.statuses[0]
       if ('error' in status) {
+        onClose()
         toast.update(toastId, {
           render: '❌' + status.error,
           type: 'error',
@@ -160,6 +161,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           autoClose: 3000
         })
       } else if ('filled' in status) {
+        onClose()
         toast.update(toastId, {
           render: `✅ Position Closed Successfully`,
           type: 'success',
@@ -169,6 +171,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
+          onClose()
           toast.update(toastId, {
             render: `✅ Order Placed Successfully`,
             type: 'success',
@@ -178,6 +181,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         }
       }
     } catch (error) {
+      onClose()
       console.error('Error closing position:', error)
       toast.update(toastId, {
         render: '❌' + error,
@@ -288,9 +292,9 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             {estPnl ? (estPnl > 0 ? '+' : '') : ''}$
             {estPnl
               ? estPnl.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
               : '0.00'}
           </span>
         </div>

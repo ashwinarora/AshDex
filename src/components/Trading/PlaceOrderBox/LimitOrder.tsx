@@ -64,25 +64,19 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+    <div className='flex flex-col w-full h-full justify-between flex-1'>
+      <div className='flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1'>
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-        {!isSpot && (
-          <>
-            <Separator orientation="horizontal" />
-            <div className="flex flex-col gap-3 px-2">
-              <MarginMode isCross={isCross} setIsCross={setIsCross} />
-              <LeverageMargin
-                selectedAsset={selectedAsset}
-                leverage={leverage}
-                setLeverage={setLeverage}
-              />
-            </div>
-          </>
-        )}
         <Separator orientation="horizontal" />
-        <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-          <div className="flex items-center justify-between gap-3">
+        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <LeverageMargin
+          selectedAsset={selectedAsset}
+          leverage={leverage}
+          setLeverage={setLeverage}
+        />
+        <Separator orientation="horizontal" />
+        <div className="flex flex-col items-start rounded-md align-middle gap-2 w-full">
+          <div className="flex items-center justify-between gap-2">
             <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
           </div>
           <SetPrice
@@ -117,7 +111,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-2 px-2 pb-1">
+
+        <div className="flex items-center justify-center h-fit gap-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -163,10 +158,8 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <IconInfoCircle className="size-3" />
           </Toggle>
         </div>
-      </div>
-      <div className="w-full h-full flex flex-col gap-2 my-2">
-        {/* <Separator orientation="horizontal" /> */}
-        <div className="flex w-full flex-col gap-2 px-2 text-xs">
+        <Separator orientation="horizontal" />
+        <div className="flex w-full flex-col gap-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -191,20 +184,20 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={limitPrice}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={isPostOnly}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
+      </div>
+      <div className='flex flex-col gap-2 h-fit w-full p-2'>
+        <Separator orientation='horizontal' />
+        <OrderButton
+          isBuy={isBuy}
+          selectedAsset={selectedAsset}
+          limitPrice={limitPrice}
+          assetAmount={assetAmount}
+          leverage={leverage}
+          isCross={isCross}
+          isPostOnly={isPostOnly}
+          isReduceOnly={isReduceOnly}
+          tpsl={tpsl}
+        />
       </div>
     </div>
   )

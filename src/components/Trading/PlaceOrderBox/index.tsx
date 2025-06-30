@@ -61,7 +61,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
       ]
 
   return (
-    <div className="flex flex-col w-full h-full min-h-[672px] overflow-y-auto no-scrollbar items-center justify-start">
+    <div className="flex flex-col w-full h-[688px] overflow-y-auto no-scrollbar items-center justify-start">
       <div className="w-full h-fit px-2 pt-2 flex items-center justify-start">
         <ToggleGroup
           type="single"
@@ -92,7 +92,7 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               )}
             >
               {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
-              <IconChevronDown className="size-4" />
+              <IconChevronDown className="size-3" />
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

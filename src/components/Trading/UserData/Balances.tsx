@@ -24,6 +24,8 @@ import {
 import { cn } from '@/lib/utils'
 import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { Button } from '@/components/ui/button'
+import { Separator } from '@/components/ui/separator'
 
 type BalanceData = {
   coin: string
@@ -38,6 +40,8 @@ const Balances = () => {
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
+  const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [coin, setCoin] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet } = useScreenSize()
 
@@ -89,13 +93,25 @@ const Balances = () => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
 
-          return <SendModal spotDefaultName={coin} />
+          return (
+            <Button
+              variant={'link'}
+              size={'sm'}
+              className="text-xs !p-0"
+              onClick={() => {
+                setCoin(() => coin)
+                setIsSendModalOpen(true)
+              }}
+            >
+              Send
+            </Button>
+          )
         },
         enableSorting: false,
         meta: { label: 'Send' }
       })
     ],
-    [columnHelper]
+    [columnHelper, isSendModalOpen]
   )
 
   const combinedData = useMemo(() => {
@@ -141,25 +157,37 @@ const Balances = () => {
   }
 
   if (isTablet) {
+    const header = table.getHeaderGroups()[0].headers.map((header) => {
+      return flexRender(header.column.columnDef.header, header.getContext())
+    })
     return (
       <div className="w-full h-full flex flex-col rounded-md gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
-          {combinedData.map((data, index) => {
-            const header = Object.keys(data)
-            const cell = Object.values(data)
+          {table.getRowModel().rows.map((row) => {
+            const cell = row.getVisibleCells().map((cell) => {
+              return flexRender(cell.column.columnDef.cell, cell.getContext())
+            })
             return (
               <div
-                key={index}
-                className="w-full flex flex-col justify-between rounded-md h-40 bg-accent p-4"
+                key={row.id}
+                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
               >
                 {header.map((item, index) => (
-                  <div key={index} className="flex text-xs justify-between">
-                    <span className="text-white/50">
-                      {item.charAt(0).toUpperCase() + item.slice(1) || '-'}
-                    </span>
-                    <span className="text-white">{cell[index] || '-'}</span>
+                  <div className="flex flex-col gap-3" key={index}>
+                    <div className="flex items-center text-xs justify-between">
+                      <span className="text-white/50">{item}</span>
+                      <span className="text-white w-fit">{cell[index]}</span>
+                    </div>
+                    {item === 'Coin' && <Separator className="w-full bg-white/10" />}
                   </div>
                 ))}
+                {isSendModalOpen && (
+                  <SendModal
+                    isOpen={isSendModalOpen}
+                    onClose={() => setIsSendModalOpen(false)}
+                    spotDefaultName={coin}
+                  />
+                )}
               </div>
             )
           })}
@@ -170,7 +198,7 @@ const Balances = () => {
 
   return (
     <div className="w-full h-full flex flex-col rounded-md gap-2">
-      <Table className="hidden xl:flex">
+      <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -227,6 +255,13 @@ const Balances = () => {
           ))}
         </TableBody>
       </Table>
+      {isSendModalOpen && (
+        <SendModal
+          isOpen={isSendModalOpen}
+          onClose={() => setIsSendModalOpen(false)}
+          spotDefaultName={coin}
+        />
+      )}
     </div>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -19,7 +19,6 @@ import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
-import SetPrice from './components/SetPrice'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
@@ -57,7 +56,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     }
   }, [perpsMeta, selectedAsset, isSpot, spotMeta])
 
-  const getFormattedPrice = () => {
+  const getFormattedPrice = useCallback(() => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
     const allowedDecimals = maxDecimals - szDecimals
 
@@ -93,7 +92,14 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     // Handle decimal places restriction
     const maxAllowedDecimals = Math.min(allowedDecimals, decPart.length)
     return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
-  }
+  }, [
+    allMids,
+    selectedAsset,
+    slippage,
+    isBuy,
+    szDecimals,
+    isSpot
+  ])
 
   const liquidationPrice = useMemo(() => {
     if (
@@ -131,34 +137,17 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   ])
 
   return (
-    <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+    <div className='flex flex-col w-full h-full justify-between flex-1'>
+      <div className='flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1'>
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-        {!isSpot && (
-          <>
-            <Separator orientation="horizontal" />
-            <div className="flex flex-col gap-3 px-2">
-              <MarginMode isCross={isCross} setIsCross={setIsCross} />
-              <LeverageMargin
-                selectedAsset={selectedAsset}
-                leverage={leverage}
-                setLeverage={setLeverage}
-              />
-            </div>
-          </>
-        )}
         <Separator orientation="horizontal" />
-        <div className="flex flex-col items-start px-2 rounded-md align-middle gap-2 w-full">
-          <p className="font-medium text-white/50 text-xs whitespace-nowrap">Market price (USD)</p>
-          <SetPrice
-            selectedAsset={selectedAsset}
-            limitPrice={getFormattedPrice()}
-            setLimitPrice={() => {}}
-            setUsdAmount={setUsdAmount}
-            assetAmount={assetAmount}
-            disabled={true}
-          />
-        </div>
+        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <LeverageMargin
+          selectedAsset={selectedAsset}
+          leverage={leverage}
+          setLeverage={setLeverage}
+        />
+        <Separator orientation="horizontal" />
         {isSpot ? (
           <AmountInputSpot
             selectedAsset={selectedAsset}
@@ -183,7 +172,8 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           />
         )}
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-full gap-2 px-2 pb-1">
+
+        <div className="flex items-center justify-center h-fit gap-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -254,7 +244,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                     max="100"
                     step="0.1"
                     value={slippage}
-                    className="w-20"
+                    className="w-20 shrink-0"
                     onChange={(e) => setSlippage(Number(e.target.value))}
                   />
                   <span className="text-white/50">%</span>
@@ -285,10 +275,8 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </PopoverContent>
           </Popover>
         </div>
-      </div>
-      <div className="w-full h-full flex flex-col gap-2 my-2">
-        {/* <Separator orientation="horizontal" /> */}
-        <div className="flex w-full flex-col gap-2 px-2 text-xs">
+        <Separator orientation="horizontal" />
+        <div className="flex w-full flex-col gap-2 text-xs">
           {!isSpot && (
             <>
               <div className="flex justify-between">
@@ -313,20 +301,20 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            isBuy={isBuy}
-            selectedAsset={selectedAsset}
-            limitPrice={getFormattedPrice()}
-            assetAmount={assetAmount}
-            leverage={leverage}
-            isCross={isCross}
-            isPostOnly={false}
-            isReduceOnly={isReduceOnly}
-            tpsl={tpsl}
-          />
-        </div>
+      </div>
+      <div className='flex flex-col gap-2 h-fit w-full p-2'>
+        <Separator orientation='horizontal' />
+        <OrderButton
+          isBuy={isBuy}
+          selectedAsset={selectedAsset}
+          limitPrice={getFormattedPrice()}
+          assetAmount={assetAmount}
+          leverage={leverage}
+          isCross={isCross}
+          isPostOnly={false}
+          isReduceOnly={isReduceOnly}
+          tpsl={tpsl}
+        />
       </div>
     </div>
   )

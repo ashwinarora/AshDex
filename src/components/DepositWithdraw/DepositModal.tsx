@@ -55,6 +55,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       })
     } catch (error) {
       console.error('Deposit error:', error)
+      onClose()
       toast.update(toastId, {
         render: 'Deposit failed. Please try again.',
         type: 'error',
@@ -86,9 +87,8 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center justify-between text-xs text-white/50">
                   <p>Amount</p>
                   <div className="flex items-center gap-1">
-                    Available to deposit:
                     <Button variant="link" className="text-xs h-fit p-0">
-                      {toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'}
+                      Use Max: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
                     </Button>
                   </div>
                 </div>

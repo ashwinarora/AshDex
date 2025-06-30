@@ -1,7 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import Image from 'next/image'
-import editicon from '@/assets/images/edit_icon.svg'
-import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
 import {
   createColumnHelper,
   flexRender,
@@ -13,7 +10,6 @@ import {
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import LimitCloseModal from './component/LimitCloseModal'
@@ -51,139 +47,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
-
-type ColumnType = {
-  key: string
-  label: string
-}
-
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
-
 interface IPositionsProps {
   setSelectedAsset: (asset: string) => void
 }
-
-const RenderRowData: React.FC<RenderRowProps> = ({ item }) => {
-  return (
-    <div className="flex flex-col gap-2 text-white text-sm">
-      <div className="flex justify-between">
-        <div className="flex items-center gap-1">
-          <span className={`w-[4px] h-[30px] rounded-sm bg-green`}></span>
-          <Image
-            src={bitcoinicon}
-            alt="Bitcoin"
-            style={{ width: 24, height: 'auto' }}
-            className="mx-1 w-6 h-6 cursor-pointer"
-          />
-          {item?.coin}{' '}
-          <span className="bg-[#5F46F91A] ml-1 px-1.5 py-1 rounded-lg font-semibold text-[#7D67FF] text-xs">
-            {item?.leverage?.value + 'x'}
-          </span>
-        </div>
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Entry Price</span>{' '}
-        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Mark Price</span>{' '}
-        <span className="font-medium text-sm">{item?.entryPx}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Funding P&L</span>{' '}
-        <span className="font-medium text-sm">{item?.cumFunding?.allTime}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Size</span>{' '}
-        <span className="font-medium text-sm">{item?.szi}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Unrealized PnL</span>{' '}
-        <span className="font-medium text-sm">{item?.unrealizedPnl}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Liq. Price</span>{' '}
-        <span className="font-medium text-red text-sm">{item?.liquidationPx}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Margin</span>{' '}
-        <span className="font-medium text-sm">{item?.liquidationPx}</span>{' '}
-      </div>
-      <div className="flex justify-between">
-        <span className="text-[#8B8BA0]">Status</span>{' '}
-        <span className="bg-[#1F1F30] px-1.5 py-0.5 rounded-lg font-medium text-green text-sm">
-          {'Open'}
-        </span>{' '}
-      </div>
-      <div className="flex justify-between gap-1">
-        <div className="flex items-center font-medium text-[#7D67FF] text-sm">
-          <span className="py-2 pr-3">Market</span>
-          <span className="px-3 py-2">Limit</span>
-        </div>
-        <div className="flex items-center">
-          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
-            dummy
-          </span>
-          <span className="bg-[#322944] bg-opacity-10 ml-2 px-3 py-1.5 border-2 border-white/10 border-opacity-10 rounded-md text-white text-sm">
-            dummy
-          </span>
-        </div>
-      </div>
-      <div className="flex justify-between gap-1">
-        <span className="text-[#8B8BA0]">TP/SL for position</span>
-        <span>
-          {item?.tp_sl?.tp && item?.tp_sl?.sl ? (
-            <div className="flex items-center gap-x-1">
-              <span className="w-17 overflow-hidden break-words">
-                {item.tp_sl.tp}/{item.tp_sl.sl}
-              </span>
-              <Image
-                src={editicon}
-                alt="Edit"
-                style={{ width: 16, height: 'auto' }}
-                className="w-4 h-4 cursor-pointer"
-              />
-            </div>
-          ) : (
-            '-/-'
-          )}
-        </span>
-      </div>
-    </div>
-  )
-}
-
-// const SortableHeader = ({
-//   header
-// }: {
-//   header: Header<AssetPosition['position'] & { meta?: { label: string } }, unknown>
-// }) => {
-//   const canSort = header.column.getCanSort()
-//   const sortDirection = header.column.getIsSorted()
-
-//   return (
-//     <div className="flex items-center text-white/50">
-//       {header.isPlaceholder
-//         ? null
-//         : flexRender(header.column.columnDef.header, header.getContext())}
-//       {canSort && (
-//         <span className="inline-block">
-//           {sortDirection === 'asc' ? (
-//             <IconChevronDown className="w-4 h-4" />
-//           ) : sortDirection === 'desc' ? (
-//             <IconChevronUp className="w-4 h-4" />
-//           ) : (
-//             <IconSelector className="w-4 h-4" />
-//           )}
-//         </span>
-//       )}
-//     </div>
-//   )
-// }
 
 const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const { isConnected } = useAccount()
@@ -481,6 +347,45 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
             )
           })}
         </div>
+        {agentWallet && isAgentApproved && isTPSLModalOpen && tpslAsset && (
+          <TPSL_Cell
+            isOpen={isTPSLModalOpen}
+            onClose={() => setIsTPSLModalOpen(false)}
+            asset={tpslAsset.coin}
+            tpslAsset={tpslAsset}
+          />
+        )}
+        {isLimitCloseModalOpen && closingAsset && (
+          <LimitCloseModal
+            isOpen={isLimitCloseModalOpen}
+            onClose={() => setIsLimitCloseModalOpen(false)}
+            closingAsset={closingAsset}
+          />
+        )}
+        {isMarketCloseModalOpen && closingAsset && (
+          <MarketCloseModal
+            isOpen={isMarketCloseModalOpen}
+            onClose={() => setIsMarketCloseModalOpen(false)}
+            closingAsset={closingAsset}
+          />
+        )}
+        {isLeverageModalOpen && leverageAsset && (
+          <LeverageModal
+            isOpen={isLeverageModalOpen}
+            onClose={() => setIsLeverageModalOpen(false)}
+            asset={leverageAsset}
+          />
+        )}
+        {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+          <IsolatedMarginModal
+            isOpen={isIsolatedMarginModalOpen}
+            onClose={() => setIsIsolatedMarginModalOpen(false)}
+            asset={isolatedMarginAsset}
+          />
+        )}
+        {isCloseAllModalOpen && (
+          <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
+        )}
       </div>
     )
   }
@@ -555,23 +460,6 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
-        columns={columns.map((col) => ({
-          key: col.id as string,
-          label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-        }))}
-        data={table.getRowModel().rows.map((row) => row.original)}
-        renderRow={(item) => (
-          <RenderRowData
-            item={item}
-            columns={columns.map((col) => ({
-              key: col.id as string,
-              label: col.meta && 'label' in col.meta ? String(col.meta.label) : ''
-            }))}
-          />
-        )}
-        positionTab={true}
-      />
       {agentWallet && isAgentApproved && isTPSLModalOpen && tpslAsset && (
         <TPSL_Cell
           isOpen={isTPSLModalOpen}

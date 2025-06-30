@@ -259,121 +259,115 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+    <div className='flex flex-col w-full h-full justify-between flex-1'>
+      <div className='flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1'>
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-2 px-2">
-          <MarginMode isCross={isCross} setIsCross={setIsCross} />
-          <LeverageMargin
-            selectedAsset={selectedAsset}
-            leverage={leverage}
-            setLeverage={setLeverage}
+        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <LeverageMargin
+          selectedAsset={selectedAsset}
+          leverage={leverage}
+          setLeverage={setLeverage}
+        />
+        <Separator orientation="horizontal" />
+        <label htmlFor="startPrice" className="text-xs text-white/50">
+          Start Price
+        </label>
+        <div className="flex w-full gap-3 items-center">
+          <Input
+            type="text"
+            placeholder="0"
+            value={startPrice}
+            onChange={(e) =>
+              setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
+            }
+            className={cn('w-full text-right text-white placeholder:text-white')}
           />
-        </div>
-        <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-2 px-2">
-          <label htmlFor="startPrice" className="text-xs text-white/50">
-            Start Price
-          </label>
-          <div className="flex w-full gap-3 items-center">
-            <Input
-              type="text"
-              placeholder="0"
-              value={startPrice}
-              onChange={(e) =>
-                setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-              }
-              className={cn('w-full text-right text-white placeholder:text-white')}
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size={'sm'}
-                  disabled
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
-                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-                >
-                  <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
-                  <IconChevronDown className="size-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-fit" align="end">
-                <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
-                  <p className="text-xs w-10 text-center">USDC</p>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-                  <p className="text-xs w-10 text-center">{selectedAsset}</p>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-        <div className="flex flex-col gap-2 px-2">
-          <label htmlFor="endPrice" className="text-xs text-white/50">
-            End Price
-          </label>
-          <div className="flex w-full gap-3 items-center">
-            <Input
-              type="text"
-              placeholder="0"
-              value={endPrice}
-              onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className={cn('w-full text-right text-white placeholder:text-white')}
-            />
-            <Button
-              variant="outline"
-              size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-center"
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size={'sm'}
+                disabled
+                className="text-xs min-w-18 w-fit flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-              onClick={() => {}}
-            >
-              <IconRefresh className="size-3" />
-              Last
-            </Button>
-            {/* */}
-          </div>
+              >
+                <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
+                <IconChevronDown className="size-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-fit" align="end">
+              <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+                <p className="text-xs w-10 text-center">USDC</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+                <p className="text-xs w-10 text-center">{selectedAsset}</p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <label htmlFor="endPrice" className="text-xs text-white/50">
+          End Price
+        </label>
+        <div className="flex w-full gap-3 items-center">
+          <Input
+            type="text"
+            placeholder="0"
+            value={endPrice}
+            onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+            className={cn('w-full text-right text-white placeholder:text-white')}
+          />
+          <Button
+            variant="outline"
+            size={'sm'}
+            className="text-xs min-w-18 w-fit flex items-center justify-center"
+            // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+            onClick={() => { }}
+          >
+            <IconRefresh className="size-3" />
+            Last
+          </Button>
+          {/* */}
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-2 px-2">
-          <div className="flex items-center justify-between">
-            <label htmlFor="percent" className="text-xs text-white/50">
-              Total Size
-            </label>
-            <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
-          </div>
-          <div className="flex w-full gap-3 items-center">
-            <Input
-              type="text"
-              placeholder="0"
-              value={totalUsd}
-              onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className={cn('w-full text-right text-white placeholder:text-white')}
-            />
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size={'sm'}
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
-                  // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-                >
-                  <p className="text-xs flex-1 w-full">USDC</p>
-                  <IconChevronDown className="size-3" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-fit" align="end">
-                <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
-                  <p className="text-xs w-10 text-center">USDC</p>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-                  <p className="text-xs w-10 text-center">{selectedAsset}</p>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <div className="flex flex-1 mt-1 flex-col gap-2 w-full items-center justify-center">
+        <div className="flex items-center justify-between">
+          <label htmlFor="percent" className="text-xs text-white/50">
+            Total Size
+          </label>
+          <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
+        </div>
+        <div className="flex w-full gap-3 items-center">
+          <Input
+            type="text"
+            placeholder="0"
+            value={totalUsd}
+            onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
+            className={cn('w-full text-right text-white placeholder:text-white')}
+          />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size={'sm'}
+                className="text-xs min-w-18 w-fit flex items-center justify-start"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              >
+                <p className="text-xs flex-1 w-full">USDC</p>
+                <IconChevronDown className="size-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-fit" align="end">
+              <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+                <p className="text-xs w-10 text-center">USDC</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
+                <p className="text-xs w-10 text-center">{selectedAsset}</p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex mt-2 flex-col gap-2 w-full items-center justify-center">
+          <div className='flex items-center w-full gap-3'>
             <Slider
               min={1}
               max={100}
@@ -381,30 +375,36 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               onValueChange={(value) => handlePercentChange(value[0])}
               className="w-full"
             />
-            <ToggleGroup
-              size={'sm'}
-              className="flex mt-1 items-center bg-white/5 justify-between w-full"
-              type="single"
-              value={percent.toString()}
-              onValueChange={(value) => value !== '' && handlePercentChange(parseInt(value, 10))}
-            >
-              {[0, 25, 50, 75, 100].map((value, index) => (
-                <ToggleGroupItem
-                  key={`leverage-tick-${value}-${index}`}
-                  value={value.toString()}
-                  className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                    percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
-                  )}
-                >
-                  {value}%
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
+            <Input
+              type='text'
+              value={percent}
+              onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
+              className={cn('w-20 text-xs text-right text-white placeholder:text-white')}
+            />
           </div>
+          <ToggleGroup
+            size={'sm'}
+            className="flex mt-1 items-center bg-white/5 justify-between w-full"
+            type="single"
+            value={percent.toString()}
+            onValueChange={(value) => value !== '' && handlePercentChange(parseInt(value, 10))}
+          >
+            {[0, 25, 50, 75, 100].map((value, index) => (
+              <ToggleGroupItem
+                key={`leverage-tick-${value}-${index}`}
+                value={value.toString()}
+                className={cn(
+                  'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                )}
+              >
+                {value}%
+              </ToggleGroupItem>
+            ))}
+          </ToggleGroup>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-2 px-2">
+        <div className="flex items-center justify-center h-fit gap-2">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -487,9 +487,9 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </Popover>
         </div>
       </div>
-      <div className="w-full h-fit flex flex-col gap-2 my-3">
-        <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
+      <div className='flex flex-col gap-2 h-fit w-full p-2'>
+        <Separator orientation='horizontal' />
+        <div className="w-full h-fit">
           {!isAgentApproved || currentFeeApproval === 0 ? (
             <Button
               className="w-full font-semibold cursor-pointer"

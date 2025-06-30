@@ -59,6 +59,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       }
       const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Withdraw response:', res)
+      onClose()
       toast.update(toastId, {
         render: 'Withdrawal confirmed.',
         type: 'success',
@@ -66,6 +67,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         autoClose: 3000
       })
     } catch (error) {
+      onClose()
       console.error('Error withdrawing:', error)
       toast.update(toastId, {
         render: 'Withdrawal failed. Please try again.',

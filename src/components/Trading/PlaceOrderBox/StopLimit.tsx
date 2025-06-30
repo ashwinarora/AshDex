@@ -29,49 +29,41 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-between pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
+    <div className='flex flex-col w-full h-full justify-between flex-1'>
+      <div className='flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1'>
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
-          <MarginMode isCross={isCross} setIsCross={setIsCross} />
-          <LeverageMargin
-            selectedAsset={selectedAsset}
-            leverage={leverage}
-            setLeverage={setLeverage}
-          />
-        </div>
+        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <LeverageMargin
+          selectedAsset={selectedAsset}
+          leverage={leverage}
+          setLeverage={setLeverage}
+        />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
-          <label htmlFor="stopPrice" className="text-xs text-white/50">
-            Stop Price
-          </label>
-          <div className="flex w-full gap-3 items-center">
-            <Input
-              type="text"
-              placeholder="0"
-              value={stopPrice}
-              onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
-              className={'w-full text-right text-white placeholder:text-white'}
-            />
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 px-2">
-          <label htmlFor="limitPrice" className="text-xs text-white/50">
-            Limit Price
-          </label>
-          <div className="flex w-full gap-3 items-center">
-            <Input
-              type="text"
-              placeholder="0"
-              value={limitPrice}
-              onChange={(e) => handleLimitPriceChange(e)}
-              className={'w-full text-right text-white placeholder:text-white'}
-            />
-            <Button variant={'outline'} size={'sm'} className="text-xs" disabled>
-              USD
-            </Button>
-          </div>
+        <label htmlFor="stopPrice" className="text-xs text-white/50">
+          Stop Price
+        </label>
+        <Input
+          type="text"
+          placeholder="0"
+          value={stopPrice}
+          onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
+          className={'w-full shrink-0 text-right text-white placeholder:text-white'}
+        />
+        <label htmlFor="limitPrice" className="text-xs text-white/50">
+          Limit Price
+        </label>
+        <div className="flex w-full gap-3 items-center">
+          <Input
+            type="text"
+            placeholder="0"
+            value={limitPrice}
+            onChange={(e) => handleLimitPriceChange(e)}
+            className={'w-full shrink-0 text-right text-white placeholder:text-white'}
+          />
+          <Button variant={'outline'} size={'sm'} className="text-xs" disabled>
+            USD
+          </Button>
         </div>
         <Separator orientation="horizontal" />
         <AmountInput
@@ -86,10 +78,10 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           isBuy={isBuy}
         />
         <Separator orientation="horizontal" />
-        <div className="flex items-start justify-start h-full gap-2 px-2">
+        <div className="flex items-start w-full justify-start h-full gap-2">
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className="bg-white/5 w-fit"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -99,25 +91,23 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           </Toggle>
         </div>
       </div>
-      <div className="w-full h-fit flex flex-col gap-3 my-3">
+      <div className='flex flex-col gap-2 h-fit w-full p-2'>
         <Separator orientation="horizontal" />
-        <div className="w-full h-fit px-2">
-          <OrderButton
-            selectedAsset={selectedAsset}
-            isBuy={isBuy}
-            isCross={isCross}
-            isPostOnly={false}
-            isReduceOnly={isReduceOnly}
-            leverage={leverage}
-            assetAmount={assetAmount}
-            limitPrice={limitPrice}
-            stopOrder={{
-              isMarket: false,
-              tpsl: 'sl',
-              triggerPx: stopPrice
-            }}
-          />
-        </div>
+        <OrderButton
+          selectedAsset={selectedAsset}
+          isBuy={isBuy}
+          isCross={isCross}
+          isPostOnly={false}
+          isReduceOnly={isReduceOnly}
+          leverage={leverage}
+          assetAmount={assetAmount}
+          limitPrice={limitPrice}
+          stopOrder={{
+            isMarket: false,
+            tpsl: 'sl',
+            triggerPx: stopPrice
+          }}
+        />
       </div>
     </div>
   )
