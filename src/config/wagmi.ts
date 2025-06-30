@@ -1,5 +1,15 @@
 import { createConfig, http } from 'wagmi'
-import { arbitrum, arbitrumSepolia, avalanche, base, bsc, celo, mainnet, optimism, polygon } from 'wagmi/chains'
+import {
+  arbitrum,
+  arbitrumSepolia,
+  avalanche,
+  base,
+  bsc,
+  celo,
+  mainnet,
+  optimism,
+  polygon
+} from 'wagmi/chains'
 import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 
 const phantomWalletConnector = injected({
