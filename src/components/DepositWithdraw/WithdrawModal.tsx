@@ -30,7 +30,22 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
-    await switchChainAsync({ chainId: supportedChain })
+    const toastId = toast.loading('Switching to Arbitrum network…')
+    await switchChainAsync({ chainId: supportedChain }).then(() => {
+      toast.update(toastId, {
+        render: 'Switched to Arbitrum network.',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
+    }).catch(() => {
+      toast.update(toastId, {
+        render: 'Failed to switch to Arbitrum network.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      })
+    })
   }
 
   const onWithdrawClick = async () => {
@@ -145,7 +160,6 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             {chainId !== supportedChain ? (
               <Button
                 className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
                 onClick={async () => {
                   await switchChain()
                 }}

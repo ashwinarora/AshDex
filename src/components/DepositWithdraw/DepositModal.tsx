@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
-import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
+import { HYPERLIQUID_DEPOSIT, isTestnet, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
 import { toHumanNumber, toRealNumber } from '@/utils/utils'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -34,6 +34,27 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     }
   })
   const { writeContractAsync } = useWriteContract()
+
+  const supportedChain = isTestnet ? 421614 : 42161
+
+  const switchChain = async () => {
+    const toastId = toast.loading('Switching to Arbitrum network…')
+    await switchChainAsync({ chainId: supportedChain }).then(() => {
+      toast.update(toastId, {
+        render: 'Switched to Arbitrum network.',
+        type: 'success',
+        isLoading: false,
+        autoClose: 3000
+      })
+    }).catch(() => {
+      toast.update(toastId, {
+        render: 'Failed to switch to Arbitrum network.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 3000
+      })
+    })
+  }
 
   const onDepositClick = async () => {
     if (chainId !== 42161) {
@@ -116,13 +137,19 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
               </div>
             </div>
             <Separator />
-            <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onDepositClick}
-            >
-              Deposit
-            </Button>
+            {chainId !== supportedChain ? (
+              <Button className="w-full" onClick={switchChain}>
+                Switch to Arbitrum
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={onDepositClick}
+              >
+                Deposit
+              </Button>
+            )}
           </>
         )}
       </DialogContent>
