@@ -14,7 +14,7 @@ import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { ExchangeClient, FrontendOrder, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
+import type { AssetPosition, ExchangeClient, FrontendOrder, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
 
 type StopOrder = {
   isMarket: boolean
@@ -49,7 +49,8 @@ const placePerpOrder = async ({
   isReduceOnly,
   tpsl,
   currentFeeApproval,
-  pushNewOpenOrders
+  pushNewOpenOrders,
+  pushNewPosition
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdkExchangeClient: ExchangeClient | null
@@ -66,6 +67,7 @@ const placePerpOrder = async ({
   tpsl?: TPSLType
   stopOrder?: StopOrder
   pushNewOpenOrders: (order: FrontendOrder[]) => void
+  pushNewPosition: (postion: AssetPosition) => void
 }) => {
   const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
   const szDecimals = perpsMeta?.universe[assetIndex].szDecimals || 0
@@ -176,6 +178,26 @@ const placePerpOrder = async ({
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'
       const assetName = selectedAsset.split('-')[0]
+      pushNewPosition({
+        type: 'oneWay',
+        position: {
+          coin: selectedAsset,
+          entryPx: filled.avgPx,
+          leverage: isCross ? { type: 'cross', value: leverage } : { type: 'isolated', value: leverage, rawUsd: '0' },
+          liquidationPx: '',
+          marginUsed: '',
+          maxLeverage: 0,
+          positionValue: (Number(filled.totalSz) * Number(filled.avgPx)).toString(),
+          szi: (Number(formattedSize) * (isBuy ? 1 : -1)).toString(),
+          unrealizedPnl: '',
+          returnOnEquity: '',
+          cumFunding: {
+            allTime: '',
+            sinceOpen: '',
+            sinceChange: ''
+          }
+        }
+      })
       toast.update(toastId, {
         render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
         type: 'success',
@@ -367,8 +389,7 @@ const OrderButton = ({
   stopOrder
 }: OrderButtonProps) => {
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders } =
-    useHyperliquid()
+  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } = useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
@@ -458,7 +479,8 @@ const OrderButton = ({
         isReduceOnly,
         tpsl,
         currentFeeApproval,
-        pushNewOpenOrders
+        pushNewOpenOrders,
+        pushNewPosition
       })
     }
   }
