@@ -31,7 +31,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
-  const [slippage, setSlippage] = useState<number>(1) // Default 1% slippage
+  const [slippage, setSlippage] = useState<number>(8) // Default 8% slippage just like hyperliquid
   const [tpsl, setTpsl] = useState<TPSLType>({
     isTpsl: false,
     takeProfit: 0,
@@ -193,7 +193,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <TPSL
-                limitPrice={getFormattedPrice()}
+                limitPrice={allMids[selectedAsset]}
                 isBuy={isBuy}
                 leverage={leverage}
                 tpsl={tpsl}

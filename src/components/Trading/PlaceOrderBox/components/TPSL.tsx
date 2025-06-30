@@ -11,8 +11,8 @@ interface TPSLProps {
 
 export type TPSLType = {
   isTpsl: boolean
-  takeProfit: number | string
-  stopLoss: number | string
+  takeProfit: number
+  stopLoss: number
 }
 
 const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
@@ -102,7 +102,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
       }
     } else {
       // Keep the string value while typing
-      setTpsl({ ...tpsl, takeProfit: value })
+      setTpsl({ ...tpsl, takeProfit: Number(value) })
     }
   }
 
@@ -134,7 +134,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
       }
     } else {
       // Keep the string value while typing
-      setTpsl({ ...tpsl, stopLoss: value })
+      setTpsl({ ...tpsl, stopLoss: Number(value) })
     }
   }
 

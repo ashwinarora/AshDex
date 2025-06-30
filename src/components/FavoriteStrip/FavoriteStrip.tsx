@@ -50,7 +50,10 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
         <ToggleGroup
           type="single"
           className="flex items-center gap-2 h-full"
-          onValueChange={setSelectedAsset}
+          onValueChange={(asset) => {
+            console.log('asset', asset)
+            setSelectedAsset(asset)
+          }}
         >
           {Array.from(favorites).map((favorite) => (
             <Fragment key={favorite}>

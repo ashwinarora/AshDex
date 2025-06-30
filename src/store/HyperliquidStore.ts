@@ -46,6 +46,8 @@ interface HyperliquidActions {
   unsubscribeFromAllMids: () => void
   subscribeWebData2: (address: Hex) => void
   unsubscribeWebData2: (address: Hex) => void
+  pushNewOpenOrders: (orders: hl.FrontendOrder[]) => void
+  pushNewPosition: (position: hl.AssetPosition) => void
   subscribeToCandle: (
     asset: string,
     interval: hl.EventCandleParameters['interval'],
@@ -151,7 +153,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           user: address
         },
         (data) => {
-          // console.log('webdata2', data)
+          console.log('webdata2', data)
           if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
             set({
               clearingHouseState: data.clearinghouseState,
@@ -182,6 +184,25 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           webData2: webData2Sub
         }
       }))
+    },
+    pushNewOpenOrders: (orders: hl.FrontendOrder[]) => {
+      set((state) => ({
+        openOrders: [...state.openOrders, ...orders]
+      }))
+    },
+    pushNewPosition: (position: hl.AssetPosition) => {
+      console.log('pushing position', position)
+      set((state) => {
+        if (!state.clearingHouseState) {
+          return state // Don't update if clearingHouseState is null
+        }
+        return {
+          clearingHouseState: {
+            ...state.clearingHouseState,
+            assetPositions: [...state.clearingHouseState.assetPositions, position]
+          }
+        }
+      })
     },
     unsubscribeWebData2: () => {
       const { subsManager } = get()
@@ -331,7 +352,9 @@ export const useHyperliquid = () => {
       isWebSocketConnected: state.isWebSocketConnected,
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
       subscribeToCandle: state.subscribeToCandle,
-      unsubscribeFromCandle: state.unsubscribeFromCandle
+      unsubscribeFromCandle: state.unsubscribeFromCandle,
+      pushNewOpenOrders: state.pushNewOpenOrders,
+      pushNewPosition: state.pushNewPosition
     }))
   )
 }

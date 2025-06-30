@@ -253,7 +253,6 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             </ToggleGroup>
             <SpotTable
               searchTerm={searchTerm}
-              setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
               setSelectedAsset={(asset) => {
                 setSelectedAsset(asset)
