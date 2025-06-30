@@ -26,13 +26,13 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { clearingHouseState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
-  const {switchChainAsync} = useSwitchChain()
+  const { switchChainAsync } = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
-      await switchChainAsync({ chainId: supportedChain })
+    await switchChainAsync({ chainId: supportedChain })
   }
-  
+
   const onWithdrawClick = async () => {
     if (!chainId) return
     if (!address) return
@@ -144,7 +144,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <Button
               className="w-full"
               disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={async() => {
+              onClick={async () => {
                 if (chainId !== supportedChain) {
                   await switchChain()
                 } else {

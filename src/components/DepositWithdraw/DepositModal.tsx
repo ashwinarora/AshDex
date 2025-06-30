@@ -20,7 +20,7 @@ interface DepositModalProps {
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { address, chainId } = useAccount()
-  const {switchChainAsync} = useSwitchChain()
+  const { switchChainAsync } = useSwitchChain()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)

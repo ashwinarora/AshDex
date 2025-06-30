@@ -56,7 +56,8 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
         header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
-          if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)') return <span className="text-white text-xs">{coin}</span>
+          if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
+            return <span className="text-white text-xs">{coin}</span>
           return (
             <Button
               variant="link"

@@ -16,13 +16,19 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
 
   const scrollRight = () => {
     if (favoriteStripRef.current) {
-      favoriteStripRef.current.scrollBy({ left: favoriteStripRef.current?.clientWidth - 96 || 0, behavior: 'smooth' })
+      favoriteStripRef.current.scrollBy({
+        left: favoriteStripRef.current?.clientWidth - 96 || 0,
+        behavior: 'smooth'
+      })
     }
   }
 
   const scrollLeft = () => {
     if (favoriteStripRef.current) {
-      favoriteStripRef.current.scrollBy({ left: -(favoriteStripRef.current?.clientWidth - 96 || 0), behavior: 'smooth' })
+      favoriteStripRef.current.scrollBy({
+        left: -(favoriteStripRef.current?.clientWidth - 96 || 0),
+        behavior: 'smooth'
+      })
     }
   }
 
@@ -37,7 +43,10 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
 
   return (
     <div className="flex bg-secondary p-1 rounded-md w-full !h-10 pr-24 relative overflow-hidden">
-      <div ref={favoriteStripRef} className="flex w-fit items-center gap-4 overflow-x-auto no-scrollbar">
+      <div
+        ref={favoriteStripRef}
+        className="flex w-fit items-center gap-4 overflow-x-auto no-scrollbar"
+      >
         <ToggleGroup
           type="single"
           className="flex items-center gap-2 h-full"
@@ -51,12 +60,17 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           ))}
         </ToggleGroup>
       </div>
-      <div className='flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1'>
-        <Button onClick={scrollLeft} variant='outline' size='icon' className='h-full aspect-square'>
-          <IconChevronLeft className='size-4 text-white/50' />
+      <div className="flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1">
+        <Button onClick={scrollLeft} variant="outline" size="icon" className="h-full aspect-square">
+          <IconChevronLeft className="size-4 text-white/50" />
         </Button>
-        <Button onClick={scrollRight} variant='outline' size='icon' className='h-full aspect-square'>
-          <IconChevronRight className='size-4 text-white/50' />
+        <Button
+          onClick={scrollRight}
+          variant="outline"
+          size="icon"
+          className="h-full aspect-square"
+        >
+          <IconChevronRight className="size-4 text-white/50" />
         </Button>
       </div>
     </div>

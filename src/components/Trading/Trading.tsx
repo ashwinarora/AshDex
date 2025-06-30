@@ -21,38 +21,45 @@ const Trading = () => {
 
   const { isTablet, isMobile } = useScreenSize()
 
-  const [mobileState, setMobileState] = useState<
-    {
-      firstToggle: 'chart' | 'orderbook' | 'placeorder'
-      secondToggle: 'userdata' | 'overview'
-    }>({
-      firstToggle: 'chart',
-      secondToggle: 'userdata'
-    })
+  const [mobileState, setMobileState] = useState<{
+    firstToggle: 'chart' | 'orderbook' | 'placeorder'
+    secondToggle: 'userdata' | 'overview'
+  }>({
+    firstToggle: 'chart',
+    secondToggle: 'userdata'
+  })
 
   if (isMobile) {
     return (
       <div className="flex flex-col gap-1 p-1 mb-8 h-fit w-full">
         <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-        <ToggleGroup type="single" className='w-full h-12 bg-secondary' value={mobileState.firstToggle} onValueChange={(value) => {
-          if (value === '') {
-            return
-          }
-          setMobileState({ ...mobileState, firstToggle: value as 'chart' | 'orderbook' | 'placeorder' })
-        }}>
-          <ToggleGroupItem className='rounded-l-md h-full' value="chart">
+        <ToggleGroup
+          type="single"
+          className="w-full h-12 bg-secondary"
+          value={mobileState.firstToggle}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setMobileState({
+              ...mobileState,
+              firstToggle: value as 'chart' | 'orderbook' | 'placeorder'
+            })
+          }}
+        >
+          <ToggleGroupItem className="rounded-l-md h-full" value="chart">
             <p>Chart</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className='h-full' value="orderbook">
+          <ToggleGroupItem className="h-full" value="orderbook">
             <p>Orderbook</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className='rounded-r-md h-full' value="placeorder">
+          <ToggleGroupItem className="rounded-r-md h-full" value="placeorder">
             <p>Place Order</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className='flex items-start justify-center w-full h-[688px]'>
-          {mobileState.firstToggle === 'chart' &&
-            <div className='w-full h-full flex flex-col gap-1'>
+        <div className="flex items-start justify-center w-full h-[688px]">
+          {mobileState.firstToggle === 'chart' && (
+            <div className="w-full h-full flex flex-col gap-1">
               {isSpot ? (
                 <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
               ) : (
@@ -60,25 +67,32 @@ const Trading = () => {
               )}
               <Chart selectedAsset={selectedAsset} selectedInterval="30" />
             </div>
-          }
+          )}
           {mobileState.firstToggle === 'orderbook' && <OrderBook selectedAsset={selectedAsset} />}
           {mobileState.firstToggle === 'placeorder' && <PlaceOrder selectedAsset={selectedAsset} />}
         </div>
-        <ToggleGroup type="single" className='w-full h-12 bg-secondary' value={mobileState.secondToggle} onValueChange={(value) => {
-          if (value === '') {
-            return
-          }
-          setMobileState({ ...mobileState, secondToggle: value as 'userdata' | 'overview' })
-        }}>
-          <ToggleGroupItem className='rounded-l-md h-full' value="userdata">
+        <ToggleGroup
+          type="single"
+          className="w-full h-12 bg-secondary"
+          value={mobileState.secondToggle}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setMobileState({ ...mobileState, secondToggle: value as 'userdata' | 'overview' })
+          }}
+        >
+          <ToggleGroupItem className="rounded-l-md h-full" value="userdata">
             <p>Your Data</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className='rounded-r-md h-full' value="overview">
+          <ToggleGroupItem className="rounded-r-md h-full" value="overview">
             <p>Overview</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className='flex items-start justify-center w-full h-[688px]'>
-          {mobileState.secondToggle === 'userdata' && <UserData setSelectedAsset={setSelectedAsset} />}
+        <div className="flex items-start justify-center w-full h-[688px]">
+          {mobileState.secondToggle === 'userdata' && (
+            <UserData setSelectedAsset={setSelectedAsset} />
+          )}
           {mobileState.secondToggle === 'overview' && <OverviewBox />}
         </div>
       </div>

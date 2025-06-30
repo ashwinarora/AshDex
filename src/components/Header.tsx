@@ -139,49 +139,56 @@ const Header: FC = () => {
         Nexon
       </div>
       <div className="h-full flex-1 w-full md:w-fit flex px-2 items-center md:!justify-start justify-end">
-        {isMobile ? 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant={'outline'} size={'sm'} className="flex size-8 text-white text-xs items-center gap-2">
-              <IconMenu className="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-48" align="end">
-            {desktopMenu?.map(({ name, path }) => (
-              <DropdownMenuItem key={name} onClick={() => router.push(path)}>
-                {name}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu> : <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
-          {desktopMenu?.map(({ name, path, isComingSoon }) =>
-            isComingSoon ? (
-              <div
-                key={name}
-                className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm"
+        {isMobile ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={'outline'}
+                size={'sm'}
+                className="flex size-8 text-white text-xs items-center gap-2"
               >
-                {name}
-                {/* <Badge variant={'outline'} className='text-white/50 text-xs'>Coming Soon</Badge> */}
-              </div>
-            ) : (
-              <NavigationMenuItem
-                className="h-full flex items-center justify-center w-24"
-                key={name}
-              >
-                <NavigationMenuLink
-                  href={path}
-                  className={cn(
-                    'text-white/50 hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
-                    activeMenu === name && 'text-white bg-border font-semibold'
-                  )}
+                <IconMenu className="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-48" align="end">
+              {desktopMenu?.map(({ name, path }) => (
+                <DropdownMenuItem key={name} onClick={() => router.push(path)}>
+                  {name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
+            {desktopMenu?.map(({ name, path, isComingSoon }) =>
+              isComingSoon ? (
+                <div
+                  key={name}
+                  className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm"
                 >
                   {name}
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            )
-          )}
-          {/* </NavigationMenuList> */}
-        </NavigationMenu>}
+                  {/* <Badge variant={'outline'} className='text-white/50 text-xs'>Coming Soon</Badge> */}
+                </div>
+              ) : (
+                <NavigationMenuItem
+                  className="h-full flex items-center justify-center w-24"
+                  key={name}
+                >
+                  <NavigationMenuLink
+                    href={path}
+                    className={cn(
+                      'text-white/50 hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
+                      activeMenu === name && 'text-white bg-border font-semibold'
+                    )}
+                  >
+                    {name}
+                  </NavigationMenuLink>
+                </NavigationMenuItem>
+              )
+            )}
+            {/* </NavigationMenuList> */}
+          </NavigationMenu>
+        )}
       </div>
       <div className="flex items-center gap-2">
         <BridgeButton />
