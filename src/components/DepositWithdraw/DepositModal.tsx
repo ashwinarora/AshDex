@@ -114,7 +114,11 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                 <div className="flex items-center justify-between text-xs text-white/50">
                   <p>Amount</p>
                   <div className="flex items-center gap-1">
-                    <Button variant="link" className="text-xs h-fit p-0">
+                    <Button
+                      onClick={() => setAmount(balance ?? 0n)}
+                      variant="link"
+                      className="text-xs h-fit p-0"
+                    >
                       Use Max: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
                     </Button>
                   </div>
