@@ -305,7 +305,9 @@ const placeSpotOrder = async ({
   limitPrice,
   assetAmount,
   isPostOnly,
-  currentFeeApproval
+  currentFeeApproval,
+  spotKeyToName,
+  pushNewOpenOrders
 }: {
   sdkExchangeClient: ExchangeClient | null
   spotMeta?: SpotMeta
@@ -315,11 +317,13 @@ const placeSpotOrder = async ({
   assetAmount: string
   isPostOnly: boolean
   currentFeeApproval: number
+  spotKeyToName: Map<string, string>,
+  pushNewOpenOrders: (order: FrontendOrder[]) => void
 }) => {
   if (!spotMeta?.tokens.length) return
   if (!sdkExchangeClient) return
   const assetIndex = spotMeta.universe.find((asset) => asset.name === selectedAsset)?.index
-  if (!assetIndex) return
+  if (assetIndex === -1 || assetIndex === undefined) return
   const toastId = toast.loading('⏳ Loading…')
   try {
     const res = await sdkExchangeClient.order({
@@ -357,13 +361,32 @@ const placeSpotOrder = async ({
       const action = isBuy ? 'long' : 'short'
       const assetName = selectedAsset.split('-')[0]
       toast.update(toastId, {
-        render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+        render: `✅ ${filled.totalSz} ${spotKeyToName.get(assetName)} ${action} at average price of ${filled.avgPx}`,
         type: 'success',
         isLoading: false,
         autoClose: 3000
       })
     } else if ('resting' in status) {
       const resting = status.resting
+      console.log("pushing open order", resting)
+      pushNewOpenOrders([{
+        oid: resting.oid,
+        children: [],
+        cloid: null,
+        triggerPx: '',
+        triggerCondition: 'N/A',
+        isTrigger: false,
+        isPositionTpsl: false,
+        reduceOnly: false,
+        limitPx: limitPrice,
+        orderType: 'Limit',
+        tif: isPostOnly ? 'Alo' : 'Gtc',
+        coin: selectedAsset,
+        side: isBuy ? 'B' : 'A',
+        sz: assetAmount,
+        origSz: assetAmount,
+        timestamp: Date.now()
+      }])
       if (resting) {
         toast.update(toastId, {
           render: `✅ Order Placed Successfully`,
@@ -399,7 +422,7 @@ const OrderButton = ({
   const { isConnected: isWalletConnected } = useAccount()
   const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
     useHyperliquid()
-  const { data: spotMeta } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const isSpot = useIsSpot()
@@ -471,7 +494,9 @@ const OrderButton = ({
         limitPrice,
         assetAmount,
         isPostOnly,
-        currentFeeApproval
+        currentFeeApproval,
+        spotKeyToName,
+        pushNewOpenOrders
       })
     } else {
       await placePerpOrder({

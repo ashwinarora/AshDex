@@ -33,7 +33,6 @@ interface AssetTableProps {
   searchTerm: string
   setSelectedAsset: (asset: string) => void
   selectedAsset: string
-  setIsOpen: (isOpen: boolean) => void
 }
 
 // Define the data structure for each asset
@@ -58,8 +57,7 @@ const formatPrice = (price: number | undefined | null) => {
 const AssetTable = ({
   searchTerm,
   setSelectedAsset,
-  selectedAsset,
-  setIsOpen
+  selectedAsset
 }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
@@ -253,12 +251,7 @@ const AssetTable = ({
   })
 
   const handleRowClick = (assetKey: string) => {
-    if (spotMeta) {
-      const tokenIndex = spotMeta.tokens.findIndex((item) => item.name === assetKey)
-      const spotUniverse = spotMeta.universe.find((item) => item.tokens[0] === tokenIndex)
-      setSelectedAsset(spotUniverse?.name || '')
-      setIsOpen(false)
-    }
+    setSelectedAsset(assetKey)
   }
 
   return (
