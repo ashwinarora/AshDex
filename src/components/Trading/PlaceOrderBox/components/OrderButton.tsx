@@ -358,7 +358,7 @@ const placeSpotOrder = async ({
       })
     } else if ('filled' in status) {
       const filled = status.filled
-      const action = isBuy ? 'long' : 'short'
+      const action = isBuy ? 'bought' : 'sold'
       const assetName = selectedAsset.split('-')[0]
       toast.update(toastId, {
         render: `✅ ${filled.totalSz} ${spotKeyToName.get(assetName)} ${action} at average price of ${filled.avgPx}`,
