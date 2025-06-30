@@ -57,7 +57,7 @@ function OverviewBox() {
   }, [clearingHouseState, spotState, spotMeta, spotAssetContext])
 
   return (
-    <div className="w-full h-full flex-1 flex flex-col gap-2 p-2">
+    <div className="w-full h-full flex-1 flex flex-col gap-2 p-2 bg-secondary rounded-md">
       <div className="flex items-center justify-center gap-2 w-full">
         <Button onClick={() => setIsSendModalOpen(true)} variant="outline" className="flex-1">
           Send

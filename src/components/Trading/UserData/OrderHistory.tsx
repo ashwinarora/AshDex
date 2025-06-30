@@ -46,7 +46,7 @@ const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { sdkInfoClient } = useHyperliquid()
   const [mounted, setMounted] = useState(false)
-  const { isTablet } = useScreenSize()
+  const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
     setMounted(true)
@@ -257,7 +257,7 @@ const OrderHistoryTable: React.FC = () => {
     return <div className="w-full h-full bg-secondary"></div>
   }
 
-  if (isTablet) {
+  if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })

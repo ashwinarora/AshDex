@@ -48,7 +48,7 @@ const OpenOrders = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { spotKeyToName, data: spotMeta } = useSpotMeta()
-  const { isTablet } = useScreenSize()
+  const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {
     setMounted(true)
@@ -328,7 +328,7 @@ const OpenOrders = () => {
     return <div className="w-full h-full bg-secondary"></div>
   }
 
-  if (isTablet) {
+  if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })

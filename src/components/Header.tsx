@@ -25,11 +25,13 @@ import {
   IconChevronDown,
   IconCopy,
   IconLogout,
+  IconMenu,
   IconSettings,
   IconStackPop,
   IconWallet
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
+import { useScreenSize } from '@/hooks/useScreenSize'
 type MenuItem = {
   name: string
   path: string
@@ -45,6 +47,7 @@ const Header: FC = () => {
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
   const { currentUser } = useUser()
+  const { isMobile } = useScreenSize()
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -135,9 +138,22 @@ const Header: FC = () => {
         />
         Nexon
       </div>
-      <div className="h-full flex-1 w-fit">
-        <NavigationMenu className="h-full w-fit">
-          {/* <NavigationMenuList className='h-full w-fit'> */}
+      <div className="h-full flex-1 w-full md:w-fit flex px-2 items-center md:!justify-start justify-end">
+        {isMobile ? 
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant={'outline'} size={'sm'} className="flex size-8 text-white text-xs items-center gap-2">
+              <IconMenu className="size-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-48" align="end">
+            {desktopMenu?.map(({ name, path }) => (
+              <DropdownMenuItem key={name} onClick={() => router.push(path)}>
+                {name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu> : <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
           {desktopMenu?.map(({ name, path, isComingSoon }) =>
             isComingSoon ? (
               <div
@@ -165,7 +181,7 @@ const Header: FC = () => {
             )
           )}
           {/* </NavigationMenuList> */}
-        </NavigationMenu>
+        </NavigationMenu>}
       </div>
       <div className="flex items-center gap-2">
         <BridgeButton />

@@ -68,7 +68,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
   const { agentWallet } = useHyperliquid()
-  const { isTablet } = useScreenSize()
+  const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {
     setMounted(true)
@@ -316,7 +316,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
     return <WalletNotConnected />
   }
 
-  if (isTablet) {
+  if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })

@@ -34,7 +34,12 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     const tabs = [
       {
         header: 'Balances',
-        element: <Balances />
+        element: <Balances setSelectedAsset={setSelectedAsset} />
+      },
+      {
+        header: `Positions (${positionsCount})`,
+        count: positionsCount,
+        element: <Positions setSelectedAsset={setSelectedAsset} />
       },
       {
         header: `Open Orders (${openOrdersLength})`,
@@ -50,28 +55,17 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         element: <OrderHistory />
       }
     ]
-    if (!isSpot) {
-      tabs.splice(1, 0, {
-        header: `Positions (${positionsCount})`,
-        count: positionsCount,
-        element: <Positions setSelectedAsset={setSelectedAsset} />
-      })
-      // tabs.push({
-      //   header: 'Funding History',
-      //   element: <></>
-      // })
-    }
     return tabs
   }, [isSpot, positionsCount, openOrders.length])
 
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
   return (
-    <div className="w-full h-full rounded-md flex flex-col gap-2 p-2">
-      <div className="max-w-2xl w-full h-fit flex items-center justify-start">
+    <div className="w-full bg-secondary h-full rounded-md overflow-x-hidden flex flex-col gap-2 p-2">
+      <div className="md:max-w-md xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start">
         <ToggleGroup
           type="single"
-          className="w-full bg-white/5 rounded-md"
+          className="w-fit h-full bg-white/5 rounded-md"
           value={activeTab.toString()}
           onValueChange={(value) => {
             if (value === '') {
@@ -83,7 +77,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
           {tabs.map((tab, index) => (
             <ToggleGroupItem
               key={tab.header}
-              className="!text-xs xl:!text-sm w-full first:rounded-l-md last:rounded-r-md"
+              className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 first:rounded-l-md last:rounded-r-md"
               value={index.toString()}
             >
               {tab.header}

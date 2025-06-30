@@ -159,7 +159,7 @@ const AmountInput = ({
             isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
           }
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
-          className="w-full text-right text-white shrink-0"
+          className="flex-1 text-right text-white shrink-0"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -175,7 +175,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
+              className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">
                 {spotKeyToName.get(selectedAsset) || selectedAssetMeta?.name}
@@ -262,8 +262,8 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </PopoverContent>
         </Popover>
-        <Separator orientation="vertical" className="!h-full" />
-        <div className="flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+        <Separator orientation="vertical" className="hidden md:block!h-full" />
+        <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>

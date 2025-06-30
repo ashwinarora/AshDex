@@ -107,10 +107,25 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   }, [selectedAsset, allMids, selectedPrecision.value])
 
   const processOrders = (orders: BookLevel[]) => {
+    if (!orders || orders.length === 0) {
+      return []
+    }
+
+    const maxDecimalPlaces = Math.max(
+      ...orders.map((order) => {
+        const parts = order.px.split('.')
+        return parts.length > 1 ? parts[1].length : 0
+      })
+    )
+
     let runningTotal = 0
     return orders.map((order) => {
       runningTotal += Number(order.sz)
-      return { ...order, cumulative: runningTotal }
+      return {
+        ...order,
+        px: Number(order.px).toFixed(maxDecimalPlaces),
+        cumulative: runningTotal
+      }
     })
   }
 
@@ -159,7 +174,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col pt-2 gap-2 w-full h-[688px] text-white/50">
+    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-[688px] text-white/50">
       <div className="flex justify-between items-center px-2">
         <h1 className="text-white text-sm font-semibold">Order Book</h1>
         <ToggleGroup
@@ -299,7 +314,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                   <p className="font-medium text-xs">{sell.sz}</p>
                   {showPriceInUSD ? (
                     <ReactiveText
-                      precision={0}
+                      precision={3}
                       type="number"
                       className="text-right flex-1 text-xs"
                       value={Number(sell.px) * Number(sell.cumulative)}

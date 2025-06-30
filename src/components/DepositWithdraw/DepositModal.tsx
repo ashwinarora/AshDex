@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAccount, useReadContract, useWriteContract } from 'wagmi'
+import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
 import { HYPERLIQUID_DEPOSIT, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
@@ -19,7 +19,8 @@ interface DepositModalProps {
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
-  const { address } = useAccount()
+  const { address, chainId } = useAccount()
+  const {switchChainAsync} = useSwitchChain()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
@@ -35,6 +36,9 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { writeContractAsync } = useWriteContract()
 
   const onDepositClick = async () => {
+    if (chainId !== 42161) {
+      await switchChainAsync({ chainId: 42161 })
+    }
     if (!usdc) return
     const toastId = toast.loading('Deposit in progress…')
     try {

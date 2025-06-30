@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
+import { useAccount, useSignTypedData, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
@@ -21,11 +21,18 @@ interface WithdrawModalProps {
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useAccount()
+
   const [amount, setAmount] = useState<string>('')
   const { clearingHouseState } = useHyperliquid()
   const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
+  const {switchChainAsync} = useSwitchChain()
+  const supportedChain = isTestnet ? 421614 : 42161
 
+  const switchChain = async () => {
+      await switchChainAsync({ chainId: supportedChain })
+  }
+  
   const onWithdrawClick = async () => {
     if (!chainId) return
     if (!address) return
@@ -137,7 +144,13 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <Button
               className="w-full"
               disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onWithdrawClick}
+              onClick={async() => {
+                if (chainId !== supportedChain) {
+                  await switchChain()
+                } else {
+                  await onWithdrawClick()
+                }
+              }}
             >
               Withdraw
             </Button>

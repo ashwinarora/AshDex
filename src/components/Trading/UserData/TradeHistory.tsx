@@ -107,7 +107,7 @@ const TradeHistoryTable: React.FC = () => {
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { sdkInfoClient } = useHyperliquid()
-  const { isTablet } = useScreenSize()
+  const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
     setMounted(true)
@@ -199,7 +199,7 @@ const TradeHistoryTable: React.FC = () => {
     return <div className="h-full w-full bg-secondary"></div>
   }
 
-  if (isTablet) {
+  if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })

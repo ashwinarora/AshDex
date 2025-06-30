@@ -300,7 +300,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverContent>
         </Popover>
         <Separator orientation="vertical" className="!h-full" />
-        <div className="flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+        <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>

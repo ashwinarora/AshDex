@@ -35,7 +35,7 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const Balances = () => {
+const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
@@ -43,7 +43,7 @@ const Balances = () => {
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
-  const { isTablet } = useScreenSize()
+  const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {
     setIsMounted(true)
@@ -54,7 +54,20 @@ const Balances = () => {
       columnHelper.accessor('coin', {
         id: 'coin',
         header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
-        cell: (info) => info.getValue().replace('(', ' ('),
+        cell: (info) => {
+          const coin = info.getValue().replace('(', ' (')
+          if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)') return <span className="text-white text-xs">{coin}</span>
+          return (
+            <Button
+              variant="link"
+              size="defaultLink"
+              className="text-accent-foreground font-bold text-xs hover:text-accent-foreground transition-all hover:no-underline"
+              onClick={() => setSelectedAsset(coin)}
+            >
+              {coin}
+            </Button>
+          )
+        },
         enableSorting: true,
         meta: { label: 'Coin' }
       }),
@@ -156,7 +169,7 @@ const Balances = () => {
     return <WalletNotConnected />
   }
 
-  if (isTablet) {
+  if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
