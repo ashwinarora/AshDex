@@ -141,19 +141,28 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               </div>
             </div>
             <Separator />
-            <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={async () => {
-                if (chainId !== supportedChain) {
+
+            {chainId !== supportedChain ? (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={async () => {
                   await switchChain()
-                } else {
+                }}
+              >
+                Switch to Arbitrum
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={async () => {
                   await onWithdrawClick()
-                }
-              }}
-            >
-              Withdraw
-            </Button>
+                }}
+              >
+                Withdraw
+              </Button>
+            )}
           </>
         )}
       </DialogContent>
