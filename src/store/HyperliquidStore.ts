@@ -191,7 +191,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       }))
     },
     pushNewPosition: (position: hl.AssetPosition) => {
-      console.log("pushing position", position)
+      console.log('pushing position', position)
       set((state) => {
         if (!state.clearingHouseState) {
           return state // Don't update if clearingHouseState is null

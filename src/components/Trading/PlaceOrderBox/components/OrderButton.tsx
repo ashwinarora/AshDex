@@ -14,7 +14,13 @@ import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { AssetPosition, ExchangeClient, FrontendOrder, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
+import type {
+  AssetPosition,
+  ExchangeClient,
+  FrontendOrder,
+  PerpsMeta,
+  SpotMeta
+} from '@nktkas/hyperliquid'
 
 type StopOrder = {
   isMarket: boolean
@@ -183,7 +189,9 @@ const placePerpOrder = async ({
         position: {
           coin: selectedAsset,
           entryPx: filled.avgPx,
-          leverage: isCross ? { type: 'cross', value: leverage } : { type: 'isolated', value: leverage, rawUsd: '0' },
+          leverage: isCross
+            ? { type: 'cross', value: leverage }
+            : { type: 'isolated', value: leverage, rawUsd: '0' },
           liquidationPx: '',
           marginUsed: '',
           maxLeverage: 0,
@@ -389,7 +397,8 @@ const OrderButton = ({
   stopOrder
 }: OrderButtonProps) => {
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } = useHyperliquid()
+  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
+    useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
