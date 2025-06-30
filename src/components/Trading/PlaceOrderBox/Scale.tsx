@@ -259,8 +259,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className='flex flex-col w-full h-full justify-between flex-1'>
-      <div className='flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1'>
+    <div className="flex flex-col w-full h-full justify-between flex-1">
+      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
         <Separator orientation="horizontal" />
         <MarginMode isCross={isCross} setIsCross={setIsCross} />
@@ -278,9 +278,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             type="text"
             placeholder="0"
             value={startPrice}
-            onChange={(e) =>
-              setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-            }
+            onChange={(e) => setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
             className={cn('w-full text-right text-white placeholder:text-white')}
           />
           <DropdownMenu>
@@ -290,7 +288,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 size={'sm'}
                 disabled
                 className="text-xs min-w-18 w-fit flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
                 <IconChevronDown className="size-3" />
@@ -322,7 +320,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             size={'sm'}
             className="text-xs min-w-18 w-fit flex items-center justify-center"
             // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-            onClick={() => { }}
+            onClick={() => {}}
           >
             <IconRefresh className="size-3" />
             Last
@@ -350,7 +348,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 variant="outline"
                 size={'sm'}
                 className="text-xs min-w-18 w-fit flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">USDC</p>
                 <IconChevronDown className="size-3" />
@@ -367,7 +365,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </DropdownMenu>
         </div>
         <div className="flex mt-2 flex-col gap-2 w-full items-center justify-center">
-          <div className='flex items-center w-full gap-3'>
+          <div className="flex items-center w-full gap-3">
             <Slider
               min={1}
               max={100}
@@ -376,7 +374,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               className="w-full"
             />
             <Input
-              type='text'
+              type="text"
               value={percent}
               onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
               className={cn('w-20 text-xs text-right text-white placeholder:text-white')}
@@ -487,8 +485,8 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </Popover>
         </div>
       </div>
-      <div className='flex flex-col gap-2 h-fit w-full p-2'>
-        <Separator orientation='horizontal' />
+      <div className="flex flex-col gap-2 h-fit w-full p-2">
+        <Separator orientation="horizontal" />
         <div className="w-full h-fit">
           {!isAgentApproved || currentFeeApproval === 0 ? (
             <Button

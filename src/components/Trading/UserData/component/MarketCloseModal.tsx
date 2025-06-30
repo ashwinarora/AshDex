@@ -263,9 +263,9 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
             {estPnl ? (estPnl > 0 ? '+' : '') : ''}$
             {estPnl
               ? estPnl.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })
               : '0.00'}
           </span>
         </div>

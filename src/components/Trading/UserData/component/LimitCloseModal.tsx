@@ -292,9 +292,9 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             {estPnl ? (estPnl > 0 ? '+' : '') : ''}$
             {estPnl
               ? estPnl.toLocaleString(undefined, {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-              })
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })
               : '0.00'}
           </span>
         </div>

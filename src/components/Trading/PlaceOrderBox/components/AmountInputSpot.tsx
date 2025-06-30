@@ -174,7 +174,12 @@ const AmountInputSpot = ({
         </DropdownMenu>
       </div>
       <div className="flex flex-1 flex-col gap-4 w-full items-center justify-center">
-        <Slider min={0} max={100} value={[usdPercent]} onValueChange={(value) => setUsdPercent(Number(value[0]))} />
+        <Slider
+          min={0}
+          max={100}
+          value={[usdPercent]}
+          onValueChange={(value) => setUsdPercent(Number(value[0]))}
+        />
         <ToggleGroup
           size={'sm'}
           className="flex mt-1 bg-white/5 items-center justify-between w-full"

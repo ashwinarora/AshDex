@@ -384,7 +384,10 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           />
         )}
         {isCloseAllModalOpen && (
-          <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
+          <CloseAllModal
+            isOpen={isCloseAllModalOpen}
+            onClose={() => setIsCloseAllModalOpen(false)}
+          />
         )}
       </div>
     )

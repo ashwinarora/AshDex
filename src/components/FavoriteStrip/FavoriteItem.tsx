@@ -56,7 +56,9 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
       ) : (
         <IconTrendingDown className="size-3 text-red" />
       )}
-      <p className={cn('text-xs font-bold text-white', data.isPositive ? 'text-green' : 'text-red')}>
+      <p
+        className={cn('text-xs font-bold text-white', data.isPositive ? 'text-green' : 'text-red')}
+      >
         {data.name}
       </p>
       <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>

@@ -167,7 +167,7 @@ const AmountInput = ({
               variant="outline"
               size={'sm'}
               className="text-xs w-16 flex items-center justify-start"
-            // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAsset}</p>
               <IconChevronDown className="size-3" />
@@ -184,9 +184,20 @@ const AmountInput = ({
         </DropdownMenu>
       </div>
       <div className="flex flex-1 flex-col gap-2 mt-2 w-full items-center justify-center">
-        <div className='w-full flex items-center justify-center gap-2'>
-          <Slider min={0} max={100} value={[usdPercent]} onValueChange={(value) => setUsdPercent(value[0])} className='w-full' />
-          <Input type='text' value={usdPercent.toString()} onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))} className='w-20 text-xs' />
+        <div className="w-full flex items-center justify-center gap-2">
+          <Slider
+            min={0}
+            max={100}
+            value={[usdPercent]}
+            onValueChange={(value) => setUsdPercent(value[0])}
+            className="w-full"
+          />
+          <Input
+            type="text"
+            value={usdPercent.toString()}
+            onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+            className="w-20 text-xs"
+          />
         </div>
         <ToggleGroup
           size={'sm'}
@@ -199,7 +210,9 @@ const AmountInput = ({
             value={'25'}
             className={cn(
               'rounded-l-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 25 ? 'bg-accent text-accent-foreground' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 25
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             25%
@@ -208,7 +221,9 @@ const AmountInput = ({
             value={'50'}
             className={cn(
               'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 50 ? 'bg-accent text-accent-foreground' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 50
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             50%
@@ -217,7 +232,9 @@ const AmountInput = ({
             value={'75'}
             className={cn(
               'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 75 ? 'bg-accent text-accent-foreground' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 75
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             75%
@@ -226,7 +243,9 @@ const AmountInput = ({
             value={'100'}
             className={cn(
               'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 100 ? 'bg-accent text-accent-foreground' : 'bg-transparent text-white/50'
+              Math.round(usdPercent) === 100
+                ? 'bg-accent text-accent-foreground'
+                : 'bg-transparent text-white/50'
             )}
           >
             100%

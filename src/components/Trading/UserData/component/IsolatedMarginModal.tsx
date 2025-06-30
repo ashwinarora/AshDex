@@ -49,7 +49,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         ntli: action === 'Add' ? realAmount : -realAmount
       })
       console.log(res)
-      onClose() 
+      onClose()
       toast.update(toastId, {
         render: '✅ Margin updated successfully',
         type: 'success',
