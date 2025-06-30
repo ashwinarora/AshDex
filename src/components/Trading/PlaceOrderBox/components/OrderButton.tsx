@@ -3,7 +3,6 @@ import { useWalletModal } from '@/context/WalletModalContext'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
-import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
 import { toast } from 'react-toastify'
@@ -15,7 +14,7 @@ import { useMemo } from 'react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import type { ExchangeClient, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
+import type { ExchangeClient, FrontendOrder, PerpsMeta, SpotMeta } from '@nktkas/hyperliquid'
 
 type StopOrder = {
   isMarket: boolean
@@ -49,7 +48,8 @@ const placePerpOrder = async ({
   limitPrice,
   isReduceOnly,
   tpsl,
-  currentFeeApproval
+  currentFeeApproval,
+  pushNewOpenOrders
 }: {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdkExchangeClient: ExchangeClient | null
@@ -65,6 +65,7 @@ const placePerpOrder = async ({
   currentFeeApproval: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
+  pushNewOpenOrders: (order: FrontendOrder[]) => void
 }) => {
   const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
   const szDecimals = perpsMeta?.universe[assetIndex].szDecimals || 0
@@ -163,6 +164,7 @@ const placePerpOrder = async ({
     console.log(placeOrderRes)
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
+    const openOrders: FrontendOrder[] = []
     if ('error' in status) {
       toast.update(toastId, {
         render: '❌' + status.error,
@@ -181,6 +183,24 @@ const placePerpOrder = async ({
         autoClose: 3000
       })
     } else if ('resting' in status) {
+      openOrders.push({
+        oid: status.resting.oid,
+        children: [],
+        cloid: null,
+        triggerPx: '',
+        triggerCondition: 'N/A',
+        isTrigger: false,
+        isPositionTpsl: false,
+        reduceOnly: isReduceOnly,
+        tif: tif,
+        coin: selectedAsset,
+        side: isBuy ? 'B' : 'A',
+        sz: formattedSize,
+        origSz: formattedSize,
+        limitPx: limitPrice,
+        orderType: 'Limit',
+        timestamp: Date.now()
+      })
       toast.update(toastId, {
         render: `✅ Order Placed Successfully`,
         type: 'success',
@@ -188,6 +208,54 @@ const placePerpOrder = async ({
         autoClose: 3000
       })
     }
+    if ('resting' in status || 'filled' in status) {
+      const orderId = 'resting' in status ? status.resting.oid : status.filled.oid
+      if (tpsl?.isTpsl) {
+        const limitPxmultiplier = isBuy ? 0.92 : 1.08 // 8% buffer. Hyperliquid also uses 8% buffer for market orders.
+        if (tpsl.takeProfit > 0) {
+          openOrders.push({
+            oid: orderId + 1, // adds 1 when no SL and 2 when SL is set.
+            children: [],
+            cloid: null,
+            triggerPx: tpsl.takeProfit.toString(),
+            triggerCondition: 'Price Above ' + tpsl.takeProfit,
+            isTrigger: true,
+            isPositionTpsl: false,
+            reduceOnly: true,
+            tif: null,
+            sz: formattedSize,
+            origSz: formattedSize,
+            limitPx: (tpsl.takeProfit * limitPxmultiplier).toString(),
+            coin: selectedAsset,
+            orderType: 'Take Profit Market',
+            side: isBuy ? 'A' : 'B',
+            timestamp: Date.now()
+          })
+        }
+        if (tpsl.stopLoss > 0) {
+          openOrders.push({
+            oid: orderId + openOrders.length, // adds 1 when no SL and 2 when SL is set.
+            children: [],
+            cloid: null,
+            triggerPx: tpsl.stopLoss.toString(),
+            triggerCondition: 'Price Below ' + tpsl.stopLoss,
+            isTrigger: true,
+            isPositionTpsl: false,
+            reduceOnly: true,
+            tif: null,
+            sz: formattedSize,
+            origSz: formattedSize,
+            limitPx: (tpsl.stopLoss * limitPxmultiplier).toString(),
+            coin: selectedAsset,
+            orderType: 'Stop Market',
+            side: isBuy ? 'A' : 'B',
+            timestamp: Date.now()
+          })
+        }
+      }
+    }
+    console.log('pushing open orders', openOrders)
+    pushNewOpenOrders(openOrders)
   } catch (error) {
     console.error('Error placing perp order:', error)
     toast.update(toastId, {
@@ -298,13 +366,14 @@ const OrderButton = ({
   tpsl,
   stopOrder
 }: OrderButtonProps) => {
-  const isRendered = useComponentRendered()
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkExchangeClient, perpsMeta } = useHyperliquid()
+  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders } =
+    useHyperliquid()
   const { data: spotMeta } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const isSpot = useIsSpot()
+
   // Validation logic moved from parent components
   const isInvalid = useMemo(() => {
     if (isSpot) {
@@ -334,9 +403,6 @@ const OrderButton = ({
       )
     }
   }, [limitPrice, assetAmount, tpsl, isSpot])
-
-  // We handle the render logic after hooks are all set up
-  if (!isRendered) return null
 
   if (!isWalletConnected) {
     return (
@@ -391,7 +457,8 @@ const OrderButton = ({
         limitPrice,
         isReduceOnly,
         tpsl,
-        currentFeeApproval
+        currentFeeApproval,
+        pushNewOpenOrders
       })
     }
   }
