@@ -31,21 +31,23 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   const switchChain = async () => {
     const toastId = toast.loading('Switching to Arbitrum network…')
-    await switchChainAsync({ chainId: supportedChain }).then(() => {
-      toast.update(toastId, {
-        render: 'Switched to Arbitrum network.',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
+    await switchChainAsync({ chainId: supportedChain })
+      .then(() => {
+        toast.update(toastId, {
+          render: 'Switched to Arbitrum network.',
+          type: 'success',
+          isLoading: false,
+          autoClose: 3000
+        })
       })
-    }).catch(() => {
-      toast.update(toastId, {
-        render: 'Failed to switch to Arbitrum network.',
-        type: 'error',
-        isLoading: false,
-        autoClose: 3000
+      .catch(() => {
+        toast.update(toastId, {
+          render: 'Failed to switch to Arbitrum network.',
+          type: 'error',
+          isLoading: false,
+          autoClose: 3000
+        })
       })
-    })
   }
 
   const onWithdrawClick = async () => {
