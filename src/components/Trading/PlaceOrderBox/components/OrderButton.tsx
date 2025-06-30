@@ -317,7 +317,7 @@ const placeSpotOrder = async ({
   assetAmount: string
   isPostOnly: boolean
   currentFeeApproval: number
-  spotKeyToName: Map<string, string>,
+  spotKeyToName: Map<string, string>
   pushNewOpenOrders: (order: FrontendOrder[]) => void
 }) => {
   if (!spotMeta?.tokens.length) return
@@ -368,25 +368,27 @@ const placeSpotOrder = async ({
       })
     } else if ('resting' in status) {
       const resting = status.resting
-      console.log("pushing open order", resting)
-      pushNewOpenOrders([{
-        oid: resting.oid,
-        children: [],
-        cloid: null,
-        triggerPx: '',
-        triggerCondition: 'N/A',
-        isTrigger: false,
-        isPositionTpsl: false,
-        reduceOnly: false,
-        limitPx: limitPrice,
-        orderType: 'Limit',
-        tif: isPostOnly ? 'Alo' : 'Gtc',
-        coin: selectedAsset,
-        side: isBuy ? 'B' : 'A',
-        sz: assetAmount,
-        origSz: assetAmount,
-        timestamp: Date.now()
-      }])
+      console.log('pushing open order', resting)
+      pushNewOpenOrders([
+        {
+          oid: resting.oid,
+          children: [],
+          cloid: null,
+          triggerPx: '',
+          triggerCondition: 'N/A',
+          isTrigger: false,
+          isPositionTpsl: false,
+          reduceOnly: false,
+          limitPx: limitPrice,
+          orderType: 'Limit',
+          tif: isPostOnly ? 'Alo' : 'Gtc',
+          coin: selectedAsset,
+          side: isBuy ? 'B' : 'A',
+          sz: assetAmount,
+          origSz: assetAmount,
+          timestamp: Date.now()
+        }
+      ])
       if (resting) {
         toast.update(toastId, {
           render: `✅ Order Placed Successfully`,

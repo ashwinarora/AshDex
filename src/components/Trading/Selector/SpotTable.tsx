@@ -54,11 +54,7 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({
-  searchTerm,
-  setSelectedAsset,
-  selectedAsset
-}: AssetTableProps) => {
+const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
