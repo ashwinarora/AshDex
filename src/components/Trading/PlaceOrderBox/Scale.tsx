@@ -21,7 +21,8 @@ import {
   IconInfoCircle,
   IconChevronDown,
   IconMinus,
-  IconPlus
+  IconPlus,
+  IconPercentage
 } from '@tabler/icons-react'
 import {
   DropdownMenu,
@@ -371,14 +372,20 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               max={100}
               value={[percent]}
               onValueChange={(value) => handlePercentChange(value[0])}
-              className="w-full"
+              className="flex-1 w-full"
             />
-            <Input
-              type="text"
-              value={percent}
-              onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
-              className={cn('w-20 text-xs text-right text-white placeholder:text-white')}
-            />
+            <div
+              className={cn(
+                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+              )}
+            >
+              <Input
+                className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+                value={percent}
+                onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
+              />
+              <IconPercentage className="size-3" />
+            </div>
           </div>
           <ToggleGroup
             size={'sm'}

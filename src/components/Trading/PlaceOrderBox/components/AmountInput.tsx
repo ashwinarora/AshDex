@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconPercentage } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -190,14 +190,20 @@ const AmountInput = ({
             max={100}
             value={[usdPercent]}
             onValueChange={(value) => setUsdPercent(value[0])}
-            className="w-full"
+            className="flex-1 w-full"
           />
-          <Input
-            type="text"
-            value={usdPercent.toString()}
-            onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
-            className="w-20 text-xs"
-          />
+          <div
+            className={cn(
+              'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+            )}
+          >
+            <Input
+              className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+              value={usdPercent.toString()}
+              onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+            />
+            <IconPercentage className="size-3" />
+          </div>
         </div>
         <ToggleGroup
           size={'sm'}

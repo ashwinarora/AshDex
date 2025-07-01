@@ -10,8 +10,8 @@ import {
   IconDeviceGamepad2,
   IconMeteor,
   IconRosette,
-  IconShieldCheck,
-  IconShieldQuestion,
+  // IconShieldCheck,
+  // IconShieldQuestion,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
@@ -61,7 +61,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')
-  const [isStrict, setIsStrict] = useState(true)
+  // const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
@@ -232,7 +232,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 focus:outline-none w-full text-left text-white text-sm"
               />
-              <ToggleGroup
+              {/* <ToggleGroup
                 size={'sm'}
                 type="single"
                 className="bg-white/5"
@@ -259,7 +259,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   <IconShieldQuestion className="size-4" />
                   All
                 </ToggleGroupItem>
-              </ToggleGroup>
+              </ToggleGroup> */}
             </div>
             <ToggleGroup
               className="flex items-center bg-white/5 justify-between w-full"

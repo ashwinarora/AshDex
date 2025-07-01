@@ -19,11 +19,10 @@ import TPSL_Cell from './component/TPSL_Cell'
 import LeverageModal from './component/LeverageModal'
 import {
   IconPencil,
-  IconArrowMoveUp,
-  IconArrowsMoveVertical,
-  IconArrowMoveDown,
   IconChevronDown,
-  IconX
+  IconX,
+  IconSelector,
+  IconChevronUp
 } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
@@ -427,11 +426,11 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>
