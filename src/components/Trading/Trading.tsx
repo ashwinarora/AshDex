@@ -12,6 +12,7 @@ import PerpsSelector from './Selector/PerpsSelector'
 import SpotSelector from './Selector/SpotSelector'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import FooterCompact from '../FooterCompact'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -31,8 +32,13 @@ const Trading = () => {
 
   if (isMobile) {
     return (
-      <div className="flex flex-col gap-1 p-1 mb-8 h-fit w-full">
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} />
+      <div className="flex relative flex-col gap-1 p-1 mb-12 h-fit w-full">
+        {/* <FavoriteStrip setSelectedAsset={setSelectedAsset} /> */}
+        {isSpot ? (
+          <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+        ) : (
+          <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+        )}
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary"
@@ -53,23 +59,14 @@ const Trading = () => {
           <ToggleGroupItem className="h-full" value="orderbook">
             <p>Orderbook</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className="rounded-r-md h-full" value="placeorder">
-            <p>Place Order</p>
-          </ToggleGroupItem>
         </ToggleGroup>
-        <div className="flex items-start justify-center w-full h-[688px]">
+        <div className="flex items-start justify-center w-full h-96">
           {mobileState.firstToggle === 'chart' && (
             <div className="w-full h-full flex flex-col gap-1">
-              {isSpot ? (
-                <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-              ) : (
-                <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
-              )}
               <Chart selectedAsset={selectedAsset} selectedInterval="30" />
             </div>
           )}
           {mobileState.firstToggle === 'orderbook' && <OrderBook selectedAsset={selectedAsset} />}
-          {mobileState.firstToggle === 'placeorder' && <PlaceOrder selectedAsset={selectedAsset} />}
         </div>
         <ToggleGroup
           type="single"
@@ -89,12 +86,13 @@ const Trading = () => {
             <p>Overview</p>
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="flex items-start justify-center w-full h-[688px]">
+        <div className="flex items-start justify-center w-full h-96">
           {mobileState.secondToggle === 'userdata' && (
             <UserData setSelectedAsset={setSelectedAsset} />
           )}
           {mobileState.secondToggle === 'overview' && <OverviewBox />}
         </div>
+        <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary"></div>
       </div>
     )
   }
@@ -156,6 +154,7 @@ const Trading = () => {
           <OverviewBox />
         </div>
       </div>
+      <FooterCompact />
     </div>
   )
 }

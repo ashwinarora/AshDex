@@ -105,7 +105,7 @@ const AssetTable = ({
           const { symbol, maxLeverage } = info.row.original
           const isFavorite = favorites.has(symbol)
           return (
-            <div className="flex items-center gap-2 pl-2 text-xs">
+            <div className="flex items-center gap-2 text-xs">
               <button
                 onClick={(e) => {
                   e.stopPropagation()

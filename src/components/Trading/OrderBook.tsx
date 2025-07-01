@@ -23,6 +23,7 @@ import { Skeleton } from '../ui/skeleton'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -32,6 +33,7 @@ interface IOrderBookProps {
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<Book>()
+  const { isMobile } = useScreenSize()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -171,6 +173,43 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
 
   const handlePrecision = (precision: string, label: string) => {
     setSelectedPrecision({ value: precision, label })
+  }
+
+  if (isMobile) {
+    return (
+      <div className="flex flex-col p-1 gap-1 bg-secondary rounded-md items-center justify-start w-full h-96">
+        <div className="flex items-center justify-between w-full h-12">
+          <Skeleton className="w-28 h-10" />
+          <Skeleton className="w-28 h-10" />
+        </div>
+        {!isLoading ? (
+          <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
+            <div className="flex flex-col gap-1 w-full flex-1 h-full">
+              {Array(visibleRows.sells)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton
+                    className="px-2 py-1 w-full rounded-none last:rounded-bl-md shrink-0 !h-6 flex-1 bg-red/20"
+                    key={index}
+                  />
+                ))}
+            </div>
+            <div className="flex flex-col gap-1 w-full flex-1 h-full">
+              {Array(visibleRows.buys)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton
+                    className="px-2 py-1 w-full rounded-none last:rounded-br-md shrink-0 !h-6 flex-1 bg-green/20"
+                    key={index}
+                  />
+                ))}
+            </div>
+          </div>
+        ) : (
+          <div></div>
+        )}
+      </div>
+    )
   }
 
   return (

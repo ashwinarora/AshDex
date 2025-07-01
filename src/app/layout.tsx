@@ -13,7 +13,6 @@ import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
-import FooterCompact from '@/components/FooterCompact'
 import SnackBar from '@/components/common/SnackBar'
 
 const geistSans = Geist({
@@ -59,7 +58,6 @@ export default function RootLayout({
                     <Header />
                     <OnboardingModal />
                     {children}
-                    <FooterCompact />
                   </ToastProvider>
                 </UserProvider>
               </EstablishConnectionProvider>

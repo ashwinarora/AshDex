@@ -8,6 +8,7 @@ import {
   IconBrain,
   IconChevronDown,
   IconDeviceGamepad2,
+  IconInfoCircle,
   IconMeteor,
   IconRosette,
   // IconShieldCheck,
@@ -171,6 +172,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     return data
   }, [selectedAssetContext, countdown])
 
+  console.log(marketData)
+
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
@@ -202,7 +205,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           onClick={handleToggleFavorite}
           variant="outline"
           size="icon"
-          className="h-full aspect-square text-primary flex items-center justify-center cursor-pointer"
+          className="h-fit aspect-square flex items-center justify-center cursor-pointer"
         >
           {favorites.has(selectedAsset) ? (
             <IconStarFilled className="size-4 text-primary" />
@@ -299,7 +302,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </PopoverContent>
         </Popover>
-        <Separator orientation="vertical" className="!h-full" />
+        <Separator orientation="vertical" className="hidden md:block !h-full" />
         <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
@@ -307,6 +310,28 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
             </div>
           ))}
+        </div>
+        <div className="flex flex-1 h-full md:hidden items-center justify-end gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={marketData.length === 0}
+                variant="outline"
+                size="icon"
+                className="h-fit aspect-square flex items-center justify-center cursor-pointer"
+              >
+                <IconInfoCircle className="size-4 text-white" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-1/2 h-fit">
+              {marketData?.map((item, index) => (
+                <div key={index} className="flex flex-col flex-wrap justify-center">
+                  <div className="text-white/50 text-xs">{item.label}</div>
+                  <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

@@ -105,7 +105,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
           const { symbol } = info.row.original
           const isFavorite = favorites.has(symbol)
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-xs">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -120,7 +120,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p>{spotKeyToName.get(symbol)}/USDC</p>
+              <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
             </div>
           )
         },
@@ -147,7 +147,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
-          return <div className="text-right">${formattedPrice}</div>
+          return <div className="text-right text-white text-xs">${formattedPrice}</div>
         },
         enableSorting: true
       }),
@@ -166,7 +166,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
           const className = isPositive ? 'text-green' : 'text-red'
 
           return (
-            <div className={`text-right ${className}`}>
+            <div className={`text-right text-xs ${className}`}>
               <div className="flex justify-end items-center">
                 {isPositive ? (
                   <IconTriangleFilled size={8} className="mr-1" />
@@ -208,7 +208,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const volume = info.getValue()
           return (
-            <div className="text-right">
+            <div className="text-right text-xs">
               <ReactiveText value={Number(volume || 0)} type="currency" />
             </div>
           )
@@ -226,8 +226,12 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const marketCap = info.getValue()
           return (
-            <div className="text-right">
-              <ReactiveText value={Number(marketCap || 0)} type="currency" />
+            <div className="text-right  text-xs">
+              <ReactiveText
+                className="text-white/50"
+                value={Number(marketCap || 0)}
+                type="currency"
+              />
             </div>
           )
         },
