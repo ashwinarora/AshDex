@@ -25,6 +25,7 @@ import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -66,6 +67,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
+  const { isMobile } = useScreenSize()
 
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -225,7 +227,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-xl md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
@@ -286,7 +288,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   key={tab.label}
                   value={tab.label}
                 >
-                  {tab.icon}
+                  {!isMobile ? tab.icon : null}
                   {tab.label}
                 </ToggleGroupItem>
               ))}
@@ -323,11 +325,13 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 <IconInfoCircle className="size-4 text-white" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-1/2 h-fit">
+            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
               {marketData?.map((item, index) => (
-                <div key={index} className="flex flex-col flex-wrap justify-center">
-                  <div className="text-white/50 text-xs">{item.label}</div>
-                  <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
+                <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
+                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
+                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                    {item.value}
+                  </div>
                 </div>
               ))}
             </PopoverContent>

@@ -13,6 +13,8 @@ import SpotSelector from './Selector/SpotSelector'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import FooterCompact from '../FooterCompact'
+import { Drawer, DrawerContent } from '../ui/drawer'
+import { IconTransform, IconUserBitcoin } from '@tabler/icons-react'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -22,26 +24,28 @@ const Trading = () => {
 
   const { isTablet, isMobile } = useScreenSize()
 
+  const [drawerOpen, setDrawerOpen] = useState(false)
+
   const [mobileState, setMobileState] = useState<{
     firstToggle: 'chart' | 'orderbook' | 'placeorder'
-    secondToggle: 'userdata' | 'overview'
+    secondToggle: 'trade' | 'overview' | ''
   }>({
     firstToggle: 'chart',
-    secondToggle: 'userdata'
+    secondToggle: ''
   })
 
   if (isMobile) {
     return (
       <div className="flex relative flex-col gap-1 p-1 mb-12 h-fit w-full">
-        {/* <FavoriteStrip setSelectedAsset={setSelectedAsset} /> */}
         {isSpot ? (
           <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         ) : (
           <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         )}
+        <FavoriteStrip setSelectedAsset={setSelectedAsset} />
         <ToggleGroup
           type="single"
-          className="w-full h-12 bg-secondary"
+          className="w-full h-12 bg-secondary p-1 gap-1"
           value={mobileState.firstToggle}
           onValueChange={(value) => {
             if (value === '') {
@@ -53,46 +57,63 @@ const Trading = () => {
             })
           }}
         >
-          <ToggleGroupItem className="rounded-l-md h-full" value="chart">
+          <ToggleGroupItem className="rounded-l-md bg-white/5 h-full" value="chart">
             <p>Chart</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className="h-full" value="orderbook">
+          <ToggleGroupItem className="rounded-r-md h-full bg-white/5" value="orderbook">
             <p>Orderbook</p>
           </ToggleGroupItem>
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
-          {mobileState.firstToggle === 'chart' && (
-            <div className="w-full h-full flex flex-col gap-1">
-              <Chart selectedAsset={selectedAsset} selectedInterval="30" />
-            </div>
-          )}
+          <div
+            data-isVisible={mobileState.firstToggle === 'chart'}
+            className="[&[data-isVisible='false']]:hidden [&[data-isVisible='true']]:flex w-full h-full flex-col gap-1"
+          >
+            <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+          </div>
           {mobileState.firstToggle === 'orderbook' && <OrderBook selectedAsset={selectedAsset} />}
         </div>
-        <ToggleGroup
-          type="single"
-          className="w-full h-12 bg-secondary"
-          value={mobileState.secondToggle}
-          onValueChange={(value) => {
-            if (value === '') {
-              return
-            }
-            setMobileState({ ...mobileState, secondToggle: value as 'userdata' | 'overview' })
-          }}
-        >
-          <ToggleGroupItem className="rounded-l-md h-full" value="userdata">
-            <p>Your Data</p>
-          </ToggleGroupItem>
-          <ToggleGroupItem className="rounded-r-md h-full" value="overview">
-            <p>Overview</p>
-          </ToggleGroupItem>
-        </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
-          {mobileState.secondToggle === 'userdata' && (
-            <UserData setSelectedAsset={setSelectedAsset} />
-          )}
-          {mobileState.secondToggle === 'overview' && <OverviewBox />}
+          <UserData setSelectedAsset={setSelectedAsset} />
         </div>
-        <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary"></div>
+        <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
+          <ToggleGroup
+            type="single"
+            className="w-full h-full flex items-center justify-evenly"
+            value={mobileState.secondToggle}
+            onValueChange={(value) => {
+              if (value === '') {
+                setDrawerOpen(false)
+              } else {
+                setDrawerOpen(true)
+              }
+              setMobileState({ ...mobileState, secondToggle: value as 'trade' | 'overview' | '' })
+            }}
+          >
+            <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
+              <IconTransform className="size-4" />
+              <p>Trade</p>
+            </ToggleGroupItem>
+            <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="overview">
+              <IconUserBitcoin className="size-4" />
+              <p>Overview</p>
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Drawer
+            open={drawerOpen}
+            onOpenChange={(open) => {
+              setDrawerOpen(open)
+              if (!open) {
+                setMobileState({ ...mobileState, secondToggle: '' })
+              }
+            }}
+          >
+            <DrawerContent className="w-full h-full bg-secondary">
+              {mobileState.secondToggle === 'trade' && <PlaceOrder selectedAsset={selectedAsset} />}
+              {mobileState.secondToggle === 'overview' && <OverviewBox />}
+            </DrawerContent>
+          </Drawer>
+        </div>
       </div>
     )
   }
