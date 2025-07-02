@@ -67,13 +67,17 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
         <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-        <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} />
-        <LeverageMargin
-          selectedAsset={selectedAsset}
-          leverage={leverage}
-          setLeverage={setLeverage}
-        />
+        {!isSpot && (
+          <>
+            <Separator orientation="horizontal" />
+            <MarginMode isCross={isCross} setIsCross={setIsCross} />
+            <LeverageMargin
+              selectedAsset={selectedAsset}
+              leverage={leverage}
+              setLeverage={setLeverage}
+            />
+          </>
+        )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start rounded-md align-middle gap-2 w-full">
           <div className="flex items-center justify-between gap-2">

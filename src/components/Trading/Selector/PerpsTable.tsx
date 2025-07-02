@@ -68,7 +68,6 @@ const AssetTable = ({
   const tableData: PerpAssetData[] = useMemo(() => {
     if (!perpsMeta || !perpAssetContext) return []
     const data = perpsMeta.universe
-      .filter((asset) => asset.name.toLowerCase().includes(searchTerm.toLowerCase()))
       .map((asset, idx) => {
         const ctx = perpAssetContext[idx]
         const price = ctx?.midPx ? Number(ctx.midPx) : 0
@@ -86,6 +85,7 @@ const AssetTable = ({
           maxLeverage
         }
       })
+      .filter((asset) => asset.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
     return data
   }, [perpsMeta, perpAssetContext, searchTerm])
 

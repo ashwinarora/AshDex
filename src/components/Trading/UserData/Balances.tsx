@@ -93,12 +93,12 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
         enableSorting: true,
         meta: { label: 'Hold' }
       }),
-      columnHelper.accessor('entryNtl', {
-        id: 'entryNtl',
-        header: () => <span className="flex justify-start items-center gap-1">Entry NTL</span>,
-        cell: (info) => info.getValue(),
+      columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
+        id: 'averagePrice',
+        header: () => <span className="flex justify-start items-center gap-1">Average Price</span>,
+        cell: (info) => (isNaN(info.getValue()) ? '-' : info.getValue().toFixed(2)),
         enableSorting: true,
-        meta: { label: 'Entry NTL' }
+        meta: { label: 'Average Price' }
       }),
       columnHelper.display({
         id: 'send',
