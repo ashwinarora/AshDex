@@ -33,7 +33,7 @@ interface IOrderBookProps {
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<Book>()
-  const { isMobile } = useScreenSize()
+  const { isMobile, isTablet } = useScreenSize()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -175,7 +175,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
     setSelectedPrecision({ value: precision, label })
   }
 
-  if (isMobile) {
+  if (isMobile || isTablet) {
     if (isLoading) {
       return (
         <div className="flex flex-col p-1 gap-1 bg-secondary rounded-md items-center justify-start w-full h-96">

@@ -67,6 +67,7 @@ html {
 
 @theme inline {
   --breakpoint-xs: 480px;
+  --breakpoint-base: 970px;
   --color-primary: #5f46f9;
   --color-secondary: #140b1e; /* recommend 22162d*/
   --color-brand: #10b981; /* Brand accent color */
