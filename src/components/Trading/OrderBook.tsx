@@ -299,11 +299,11 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                   )}
                   <p className="font-medium text-xs flex-1 text-right text-green">{buy.px}</p>
                 </div>
-                <div className="absolute last:rounded-b-md flex items-center justify-end top-0 z-0 left-0 w-full h-full">
+                <div className="absolute last:rounded-b-md md:last:rounded-b-none flex items-center justify-end top-0 z-0 left-0 w-full h-full">
                   <div
                     className={cn(
                       'bg-green/20 h-full',
-                      index === barData?.buys.length - 1 ? 'rounded-bl-md' : ''
+                      index === barData?.buys.length - 1 ? 'rounded-bl-md md:rounded-bl-none' : ''
                     )}
                     style={{ width: `${(buy.cumulative / maxCumulative) * 100}%` }}
                   ></div>
@@ -335,7 +335,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                       />
                     )}
                   </div>
-                  <div className="absolute last:rounded-br-md flex items-center justify-start top-0 z-0 left-0 w-full h-full">
+                  <div className="absolute last:rounded-br-md md:last:rounded-br-none flex items-center justify-start top-0 z-0 left-0 w-full h-full">
                     <div
                       className="bg-red/20 h-full"
                       style={{ width: `${(sell.cumulative / maxCumulative) * 100}%` }}

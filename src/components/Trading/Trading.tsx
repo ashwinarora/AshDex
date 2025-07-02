@@ -15,6 +15,7 @@ import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import FooterCompact from '../FooterCompact'
 import { Drawer, DrawerContent } from '../ui/drawer'
 import { IconTransform, IconUserBitcoin } from '@tabler/icons-react'
+import { Separator } from '../ui/separator'
 
 const Trading = () => {
   const isSpot = useIsSpot()
@@ -128,10 +129,7 @@ const Trading = () => {
           <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
         )}
         <div className="flex items-start justify-center w-full h-96">
-          <div
-            data-isVisible={mobileState.firstToggle === 'chart'}
-            className="[&[data-isVisible='false']]:hidden [&[data-isVisible='true']]:flex w-full h-full flex-col gap-1"
-          >
+          <div className="flex w-full h-full flex-col gap-1">
             <Chart selectedAsset={selectedAsset} selectedInterval="30" />
           </div>
         </div>
@@ -174,11 +172,13 @@ const Trading = () => {
           >
             <DrawerContent className="w-full h-full bg-secondary">
               {mobileState.secondToggle === 'trade' && (
-                <div className="flex items-start justify-center w-full h-full max-h-[688px] gap-1">
-                  <div className="h-full flex-1 flex-col basis-sm gap-2">
+                <div className="flex items-start justify-center w-full h-full">
+                  <div className="h-full flex-1 flex-col basis-sm">
                     <OrderBook selectedAsset={selectedAsset} />
+                    <Separator className="my-1" orientation="horizontal" />
                     <OverviewBox />
                   </div>
+                  <Separator orientation="vertical" className="mx-1" />
                   <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 ">
                     <PlaceOrder selectedAsset={selectedAsset} />
                   </div>
