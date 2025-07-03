@@ -408,9 +408,16 @@ const TradingViewChart = ({
         locale: 'en',
         theme: 'dark',
         autosize: true,
+        // @ts-expect-error - enabled_features is not in the type
+        enabled_features: [
+          'hide_left_toolbar_by_default',
+          'hide_unresolved_symbols_in_legend',
+          'hide_image_invalid_symbol'
+        ],
         disabled_features: [
           'use_localstorage_for_settings',
           'header_symbol_search',
+          'widget_logo',
           'compare_symbols'
         ],
         overrides: {

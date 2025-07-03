@@ -23,6 +23,7 @@ import { Skeleton } from '../ui/skeleton'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -32,6 +33,7 @@ interface IOrderBookProps {
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquid()
   const [l2Book, setL2Book] = useState<Book>()
+  const { isMobile, isTablet } = useScreenSize()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -171,6 +173,180 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
 
   const handlePrecision = (precision: string, label: string) => {
     setSelectedPrecision({ value: precision, label })
+  }
+
+  if (isMobile || isTablet) {
+    if (isLoading) {
+      return (
+        <div className="flex flex-col p-1 gap-1 bg-secondary rounded-md items-center justify-start w-full h-96">
+          <div className="flex items-center justify-between w-full h-12 px-1">
+            <Skeleton className="w-28 h-10" />
+            <Skeleton className="w-28 h-10" />
+          </div>
+          <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
+            <div className="flex flex-col gap-1 w-full flex-1 h-full">
+              {Array(visibleRows.sells)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton
+                    className="px-2 py-1 w-full rounded-none last:rounded-bl-md shrink-0 !h-6 flex-1 bg-red/20"
+                    key={index}
+                  />
+                ))}
+            </div>
+            <div className="flex flex-col gap-1 w-full flex-1 h-full">
+              {Array(visibleRows.buys)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton
+                    className="px-2 py-1 w-full rounded-none last:rounded-br-md shrink-0 !h-6 flex-1 bg-green/20"
+                    key={index}
+                  />
+                ))}
+            </div>
+          </div>
+        </div>
+      )
+    }
+    return (
+      <div className="flex flex-col p-1 gap-1 bg-secondary rounded-md items-center justify-start w-full h-96">
+        <div className="flex items-center justify-between w-full h-12 px-1">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size={'sm'}
+                className="text-xs w-20 flex items-center justify-start"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              >
+                <p className="text-xs flex-1 w-full">{selectedPrecision.label}</p>
+                <IconChevronDown className="size-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-20 flex flex-col gap-1" align="end">
+              {/* <DropdownMenuItem onClick={() => setIsInputUsd(true)}>
+              <p className="text-xs w-10 text-center">USD</p>
+            </DropdownMenuItem> */}
+              {generatePrecisionLabels(Number(allMids[selectedAsset]) || 0).map((level, index) => (
+                <DropdownMenuItem
+                  className={cn(
+                    selectedPrecision.label === level.label
+                      ? 'bg-accent text-accent-foreground'
+                      : 'bg-transparent text-white/50'
+                  )}
+                  key={index}
+                  onClick={() => handlePrecision(level.value?.toString() ?? '0', level.label)}
+                >
+                  <p className="text-xs w-full text-center">{level.label}</p>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="outline"
+                size={'sm'}
+                className="text-xs w-20 flex items-center justify-start"
+                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              >
+                <p className="text-xs flex-1 w-full">
+                  {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+                </p>
+                <IconChevronDown className="size-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-20 flex flex-col gap-1" align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowPriceInUSD(true)
+                }}
+              >
+                <p className="text-xs w-full text-center">USD</p>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowPriceInUSD(false)
+                }}
+              >
+                <p className="text-xs w-full text-center">
+                  {spotKeyToName.get(selectedAsset) ?? selectedAsset}
+                </p>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
+          <div className="flex flex-col gap-1 w-full flex-1 h-full">
+            {barData?.buys.map((buy, index) => (
+              <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
+                <div className="flex items-center z-10 w-full justify-between text-sm text-white">
+                  {/* <p className="font-medium text-xs">{buy.sz}</p> */}
+                  {showPriceInUSD ? (
+                    <ReactiveText
+                      precision={0}
+                      type="number"
+                      className="text-left text-xs flex-1"
+                      value={Number(buy.px) * Number(buy.cumulative)}
+                    />
+                  ) : (
+                    <ReactiveText
+                      precision={4}
+                      type="number"
+                      className="text-left text-xs flex-1"
+                      value={Number(buy.cumulative)}
+                    />
+                  )}
+                  <p className="font-medium text-xs flex-1 text-right text-green">{buy.px}</p>
+                </div>
+                <div className="absolute last:rounded-b-md md:last:rounded-b-none flex items-center justify-end top-0 z-0 left-0 w-full h-full">
+                  <div
+                    className={cn(
+                      'bg-green/20 h-full',
+                      index === barData?.buys.length - 1 ? 'rounded-bl-md md:rounded-bl-none' : ''
+                    )}
+                    style={{ width: `${(buy.cumulative / maxCumulative) * 100}%` }}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-col gap-1 w-full flex-1 h-full">
+            {barData?.sells
+              .sort((a, b) => Number(a.px) - Number(b.px))
+              .map((sell, index) => (
+                <div className="relative  h-full w-full py-1 px-2 flex items-center" key={index}>
+                  <div className="flex items-center z-10 w-full justify-between text-sm text-white">
+                    <p className="font-medium text-xs text-left flex-1 text-red">{sell.px}</p>
+                    {/* <p className="font-medium text-xs">{sell.sz}</p> */}
+                    {showPriceInUSD ? (
+                      <ReactiveText
+                        precision={3}
+                        type="number"
+                        className="text-right flex-1 text-xs"
+                        value={Number(sell.px) * Number(sell.cumulative)}
+                      />
+                    ) : (
+                      <ReactiveText
+                        precision={4}
+                        type="number"
+                        className="text-right flex-1 text-xs"
+                        value={Number(sell.cumulative)}
+                      />
+                    )}
+                  </div>
+                  <div className="absolute last:rounded-br-md md:last:rounded-br-none flex items-center justify-start top-0 z-0 left-0 w-full h-full">
+                    <div
+                      className="bg-red/20 h-full"
+                      style={{ width: `${(sell.cumulative / maxCumulative) * 100}%` }}
+                    ></div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

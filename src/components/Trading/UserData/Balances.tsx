@@ -22,7 +22,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -240,11 +240,11 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

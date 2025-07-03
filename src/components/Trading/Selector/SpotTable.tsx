@@ -28,6 +28,7 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 interface AssetTableProps {
   searchTerm: string
@@ -59,7 +60,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
   const { spotAssetContext } = useHyperliquid()
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { toggleFavorite, favorites } = useFavorites(true)
-
+  const { isMobile } = useScreenSize()
   // Create column helper for TanStack Table
   const columnHelper = createColumnHelper<AssetData>()
 
@@ -91,8 +92,125 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
   }, [spotMeta, spotAssetContext, favorites, searchTerm])
 
   // Define columns
-  const columns = useMemo(
-    () => [
+  const columns = useMemo(() => {
+    if (isMobile) {
+      return [
+        columnHelper.accessor('symbol', {
+          id: 'symbol',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Market
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+            </div>
+          ),
+          cell: (info) => {
+            const { symbol } = info.row.original
+            const isFavorite = favorites.has(symbol)
+            return (
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite(symbol)
+                  }}
+                  className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
+                  aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {isFavorite ? (
+                    <IconStarFilled size={16} />
+                  ) : (
+                    <IconStar size={16} className="opacity-50 text-white" />
+                  )}
+                </button>
+                <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
+              </div>
+            )
+          },
+          enableSorting: true,
+          sortingFn: (rowA, rowB) => {
+            // Favorites always on top, then sort alphabetically or reverse
+            if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol))
+              return -1
+            if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol))
+              return 1
+            // Both are favorites or both are not favorites, sort alphabetically
+            const symbolA = rowA.original.symbol.toUpperCase()
+            const symbolB = rowB.original.symbol.toUpperCase()
+            // Sort alphabetically (sorting direction is handled by the table)
+            return symbolA.localeCompare(symbolB)
+          }
+        }),
+        columnHelper.accessor('volume', {
+          id: 'volume',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Volume
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+            </div>
+          ),
+          cell: (info) => {
+            const volume = info.getValue()
+            return (
+              <div className="text-right text-xs">
+                <ReactiveText value={Number(volume || 0)} type="currency" />
+              </div>
+            )
+          },
+          enableSorting: true
+        }),
+        columnHelper.accessor('price', {
+          id: 'price',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Price / 24h
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+            </div>
+          ),
+          cell: (info) => {
+            const { price, prevDayPrice } = info.row.original
+            const formattedPrice = formatPrice(price)
+            const difference = price - prevDayPrice
+            const isPositive = difference >= 0
+            const className = isPositive ? 'text-green' : 'text-red'
+            return (
+              <div className="flex flex-col gap-1">
+                <div className="text-right text-white text-xs">${formattedPrice}</div>
+                <div className={`text-right text-xs ${className}`}>
+                  <div className="flex justify-end items-center">
+                    {isPositive ? (
+                      <IconTriangleFilled className="size-2 mr-1" />
+                    ) : (
+                      <IconTriangleInvertedFilled className="size-2 mr-1" />
+                    )}
+                    {difference !== undefined && prevDayPrice !== 0 && (
+                      <>
+                        {/* <ReactiveText
+                            precision={2}
+                            className="text-xs"
+                            value={difference}
+                            type="currency"
+                            isStatic={true}
+                          /> */}
+
+                        <ReactiveText
+                          precision={2}
+                          className="text-xs"
+                          value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
+                          type="percentage"
+                          isStatic={true}
+                        />
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          },
+          enableSorting: true
+        })
+      ]
+    }
+    return [
       columnHelper.accessor('symbol', {
         id: 'symbol',
         header: () => (
@@ -105,7 +223,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
           const { symbol } = info.row.original
           const isFavorite = favorites.has(symbol)
           return (
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 text-xs">
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -120,7 +238,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p>{spotKeyToName.get(symbol)}/USDC</p>
+              <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
             </div>
           )
         },
@@ -147,7 +265,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
-          return <div className="text-right">${formattedPrice}</div>
+          return <div className="text-right text-white text-xs">${formattedPrice}</div>
         },
         enableSorting: true
       }),
@@ -166,7 +284,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
           const className = isPositive ? 'text-green' : 'text-red'
 
           return (
-            <div className={`text-right ${className}`}>
+            <div className={`text-right text-xs ${className}`}>
               <div className="flex justify-end items-center">
                 {isPositive ? (
                   <IconTriangleFilled size={8} className="mr-1" />
@@ -208,7 +326,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const volume = info.getValue()
           return (
-            <div className="text-right">
+            <div className="text-right text-xs">
               <ReactiveText value={Number(volume || 0)} type="currency" />
             </div>
           )
@@ -226,16 +344,19 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         cell: (info) => {
           const marketCap = info.getValue()
           return (
-            <div className="text-right">
-              <ReactiveText value={Number(marketCap || 0)} type="currency" />
+            <div className="text-right  text-xs">
+              <ReactiveText
+                className="text-white/50"
+                value={Number(marketCap || 0)}
+                type="currency"
+              />
             </div>
           )
         },
         enableSorting: true
       })
-    ],
-    [columnHelper, toggleFavorite, favorites]
-  )
+    ]
+  }, [columnHelper, toggleFavorite, favorites, isMobile])
 
   const table = useReactTable({
     data: tableData,
@@ -252,7 +373,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
 
   return (
     <Table>
-      <TableHeader className="sticky top-0 z-10 bg-accent">
+      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
@@ -261,7 +382,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                 className={cn(
                   'cursor-pointer hover:text-accent-foreground w-full',
                   header.id === 'symbol' ? 'justify-start' : 'justify-end',
-                  header.id === 'symbol' || header.id === 'prevDayPrice' ? 'w-3/12' : 'w-2/12'
+                  !isMobile
+                    ? header.id === 'symbol' || header.id === 'prevDayPrice'
+                      ? 'w-3/12'
+                      : 'w-2/12'
+                    : 'w-full flex-1 shrink-0'
                 )}
                 onClick={() => {
                   if (header.column.getCanSort()) {
@@ -292,7 +417,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                 key={cell.id}
                 className={cn(
                   'font-medium whitespace-nowrap w-2/12',
-                  (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                  !isMobile
+                    ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                    : 'w-full flex-1 shrink-0'
                 )}
               >
                 {flexRender(cell.column.columnDef.cell, cell.getContext())}

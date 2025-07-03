@@ -15,12 +15,7 @@ import dynamic from 'next/dynamic'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
-import {
-  IconArrowsMoveVertical,
-  IconArrowMoveDown,
-  IconArrowMoveUp,
-  IconX
-} from '@tabler/icons-react'
+import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -390,11 +385,11 @@ const OpenOrders = () => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

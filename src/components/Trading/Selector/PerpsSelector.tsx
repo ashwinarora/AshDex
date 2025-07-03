@@ -8,10 +8,11 @@ import {
   IconBrain,
   IconChevronDown,
   IconDeviceGamepad2,
+  IconInfoCircle,
   IconMeteor,
   IconRosette,
-  IconShieldCheck,
-  IconShieldQuestion,
+  // IconShieldCheck,
+  // IconShieldQuestion,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
@@ -24,6 +25,7 @@ import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
+import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 
 interface ISelectorProps {
@@ -46,10 +48,11 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')
-  const [isStrict, setIsStrict] = useState(true)
+  // const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
+  const { isMobile } = useScreenSize()
 
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -154,6 +157,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     return data
   }, [selectedAssetContext])
 
+  console.log(marketData)
+
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
     (e: React.MouseEvent) => {
@@ -185,7 +190,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           onClick={handleToggleFavorite}
           variant="outline"
           size="icon"
-          className="h-full aspect-square text-primary flex items-center justify-center cursor-pointer"
+          className="h-fit aspect-square flex items-center justify-center cursor-pointer"
         >
           {favorites.has(selectedAsset) ? (
             <IconStarFilled className="size-4 text-primary" />
@@ -205,7 +210,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-xl md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
@@ -215,7 +220,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 focus:outline-none w-full text-left text-white text-sm"
               />
-              <ToggleGroup
+              {/* <ToggleGroup
                 size={'sm'}
                 type="single"
                 className="bg-white/5"
@@ -242,7 +247,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   <IconShieldQuestion className="size-4" />
                   All
                 </ToggleGroupItem>
-              </ToggleGroup>
+              </ToggleGroup> */}
             </div>
             <ToggleGroup
               className="flex items-center bg-white/5 justify-between w-full"
@@ -266,7 +271,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   key={tab.label}
                   value={tab.label}
                 >
-                  {tab.icon}
+                  {!isMobile ? tab.icon : null}
                   {tab.label}
                 </ToggleGroupItem>
               ))}
@@ -282,7 +287,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             />
           </PopoverContent>
         </Popover>
-        <Separator orientation="vertical" className="!h-full" />
+        <Separator orientation="vertical" className="hidden md:block !h-full" />
         <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
@@ -306,6 +311,30 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               </div>
             </div>
           ))}
+        </div>
+        <div className="flex flex-1 h-full md:hidden items-center justify-end gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={marketData.length === 0}
+                variant="outline"
+                size="icon"
+                className="h-fit aspect-square flex items-center justify-center cursor-pointer"
+              >
+                <IconInfoCircle className="size-4 text-white" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
+              {marketData?.map((item, index) => (
+                <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
+                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
+                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
