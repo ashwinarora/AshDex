@@ -62,7 +62,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
 
   return (
     <div className="w-full bg-secondary h-full rounded-md overflow-x-hidden flex flex-col gap-2 p-2">
-      <div className="md:max-w-md xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start">
+      <div className="md:max-w-xl xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start">
         <ToggleGroup
           type="single"
           className="w-fit h-full bg-white/5 rounded-md"

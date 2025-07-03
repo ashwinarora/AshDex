@@ -21,11 +21,13 @@ import {
   IconShieldCheck,
   IconShieldQuestion,
   IconStar,
-  IconStarFilled
+  IconStarFilled,
+  IconInfoCircle
 } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -43,7 +45,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [tokenContract, setTokenContract] = useState<string>()
   const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
-
+  const { isMobile } = useScreenSize()
   const { context: selectedAssetContext, meta: selectedAssetMeta } = useMemo(() => {
     if (spotMeta && spotAssetContext) {
       const spot = getSpotAssetContext({
@@ -185,7 +187,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-xl md:w-3xl h-96 z-30 p-2 flex bg-accent flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-96 z-30 p-2 flex bg-accent flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
@@ -246,7 +248,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   key={tab.label}
                   value={tab.label}
                 >
-                  {tab.icon}
+                  {!isMobile ? tab.icon : null}
                   {tab.label}
                 </ToggleGroupItem>
               ))}
@@ -269,6 +271,30 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
             </div>
           ))}
+        </div>
+        <div className="flex flex-1 h-full md:hidden items-center justify-end gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={marketData.length === 0}
+                variant="outline"
+                size="icon"
+                className="h-fit aspect-square flex items-center justify-center cursor-pointer"
+              >
+                <IconInfoCircle className="size-4 text-white" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
+              {marketData?.map((item, index) => (
+                <div key={index} className="flex flex-col gap-1 items-end flex-wrap justify-center">
+                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
+                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>
