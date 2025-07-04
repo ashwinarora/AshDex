@@ -209,9 +209,12 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
-        toast.success(`${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`, {
-          id: toastId
-        })
+        toast.success(
+          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          {
+            id: toastId
+          }
+        )
       } else if ('resting' in status) {
         toast.success('Order Placed Successfully', {
           id: toastId
