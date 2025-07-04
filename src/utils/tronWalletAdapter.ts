@@ -2,7 +2,7 @@ import { TronLinkAdapter } from '@tronweb3/tronwallet-adapters'
 import { WalletConnectAdapter } from '@tronweb3/tronwallet-adapter-walletconnect'
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks'
 import { useState, useCallback } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface TronWalletAdapter {
   connect: () => Promise<void>

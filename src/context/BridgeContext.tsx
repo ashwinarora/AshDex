@@ -9,7 +9,7 @@ import {
   GasFeeOptions
 } from '@allbridge/bridge-core-sdk'
 import React, { createContext, useContext, useState, ReactNode, useEffect, useRef } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useAccount, useBalance } from 'wagmi'
 import { WalletProvider as SuiWalletProvider } from '@suiet/wallet-kit'
 import '@suiet/wallet-kit/style.css'

@@ -6,7 +6,7 @@ import { WalletAdapterNetwork } from '@solana/wallet-adapter-base'
 import { ConnectionProvider, WalletProvider } from '@solana/wallet-adapter-react'
 import { FC, useEffect, useMemo } from 'react'
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useBridge } from '@/context/BridgeContext'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 // require('@solana/wallet-adapter-react-ui/styles.css')

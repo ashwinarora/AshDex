@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE, isTestnet } from '@/utils/constants'
 import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { splitSignature } from '@/utils/utils'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
@@ -64,29 +64,20 @@ const EstablishConnectionModal = () => {
               }
               const res = await hyperliquidAxios.post('/exchange', body)
               if (res.data.status === 'err') {
-                toast.update(toastId, {
-                  render: '❌' + res.data.response,
-                  type: 'error',
-                  isLoading: false,
-                  autoClose: 4000
+                toast.error(res.data.response, {
+                  id: toastId
                 })
                 return
               }
               await refetchAgentApproval()
               setIsApproving(true)
-              toast.update(toastId, {
-                render: '✅ Agent approved successfully',
-                type: 'success',
-                isLoading: false,
-                autoClose: 2000
+              toast.success('Agent approved successfully', {
+                id: toastId
               })
             } catch (error) {
               console.error('Error approving agent:', error)
-              toast.update(toastId, {
-                render: '❌' + error,
-                type: 'error',
-                isLoading: false,
-                autoClose: 2000
+              toast.error(error as string, {
+                id: toastId
               })
             }
           }}
@@ -109,7 +100,7 @@ const EstablishConnectionModal = () => {
               feePercentage: BUILDER_FEE
             })
             const sign = await signTypedDataAsync(payload)
-            const toastId = toast.loading('⏳ Approving fee…')
+            const toastId = toast.loading('Approving fee…')
             try {
               const body = {
                 action: {
@@ -125,19 +116,13 @@ const EstablishConnectionModal = () => {
               }
               await hyperliquidAxios.post('/exchange', body)
               await refetchCurrentFeeApproval()
-              toast.update(toastId, {
-                render: '✅ Fee approved successfully',
-                type: 'success',
-                isLoading: false,
-                autoClose: 2000
+              toast.success('Fee approved successfully', {
+                id: toastId
               })
             } catch (error) {
               console.error('Error approving agent:', error)
-              toast.update(toastId, {
-                render: '❌' + error,
-                type: 'error',
-                isLoading: false,
-                autoClose: 2000
+              toast.error(error as string, {
+                id: toastId
               })
             }
           }}

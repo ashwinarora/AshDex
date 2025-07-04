@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 
 import { useState } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import Modal from '../common/Modal'
 import { IconX } from '@tabler/icons-react'
 import Image from 'next/image'

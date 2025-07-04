@@ -7,7 +7,7 @@ import {
 } from '@tabler/icons-react'
 import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useAccount, useWalletClient, useBalance } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
 import { useDisconnect } from 'wagmi'

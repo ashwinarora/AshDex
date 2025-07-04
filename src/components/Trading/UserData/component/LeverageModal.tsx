@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 import { AssetPosition } from '@nktkas/hyperliquid'
@@ -54,20 +54,14 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       })
       console.log(res)
       onClose()
-      toast.update(toastId, {
-        render: '✅ Leverage updated successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
+      toast.success('Leverage updated successfully', {
+        id: toastId
       })
     } catch (error) {
       onClose()
       console.error('Error updating leverage:', error)
-      toast.update(toastId, {
-        render: '❌ ' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 3000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

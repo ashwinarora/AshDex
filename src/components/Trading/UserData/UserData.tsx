@@ -14,13 +14,17 @@ interface IUserDataProps {
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
-  const { clearingHouseState, openOrders } = useHyperliquid()
+  const { clearingHouseState, openOrders, spotState } = useHyperliquid()
   const isSpot = useIsSpot()
   const { spotKeyToName } = useSpotMeta()
 
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0
   }, [clearingHouseState?.assetPositions])
+
+  const balanceCount = useMemo(() => {
+    return spotState?.balances?.filter((balance) => balance.coin !== 'USDC').length || 0
+  }, [spotState?.balances])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {
@@ -33,8 +37,15 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     }).length
     const tabs = [
       {
-        header: 'Balances',
-        element: <Balances setSelectedAsset={setSelectedAsset} />
+        header: `Balances (${balanceCount})`,
+        count: balanceCount,
+        element: (
+          <Balances
+            setSelectedAsset={setSelectedAsset}
+            clearingHouseState={clearingHouseState}
+            spotState={spotState}
+          />
+        )
       },
       {
         header: `Positions (${positionsCount})`,

@@ -12,7 +12,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -33,19 +33,13 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     const toastId = toast.loading('Switching to Arbitrum network…')
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
-        toast.update(toastId, {
-          render: 'Switched to Arbitrum network.',
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Switched to Arbitrum network.', {
+          id: toastId
         })
       })
       .catch(() => {
-        toast.update(toastId, {
-          render: 'Failed to switch to Arbitrum network.',
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error('Failed to switch to Arbitrum network.', {
+          id: toastId
         })
       })
   }
@@ -64,10 +58,8 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       })
       const sign = await signTypedDataAsync(payload)
       setIsLoading(true)
-      toast.update(toastId, {
-        render: 'Withdrawal in progress…',
-        type: 'info',
-        isLoading: true
+      toast.loading('Withdrawal in progress…', {
+        id: toastId
       })
       const body = {
         action: {
@@ -84,20 +76,14 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Withdraw response:', res)
       onClose()
-      toast.update(toastId, {
-        render: 'Withdrawal confirmed.',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
+      toast.success('Withdrawal confirmed.', {
+        id: toastId
       })
     } catch (error) {
       onClose()
       console.error('Error withdrawing:', error)
-      toast.update(toastId, {
-        render: 'Withdrawal failed. Please try again.',
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error('Withdrawal failed. Please try again.', {
+        id: toastId
       })
     }
   }

@@ -59,7 +59,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
             placeholder="0"
             value={limitPrice}
             onChange={(e) => handleLimitPriceChange(e)}
-            className={'w-full shrink-0 text-right text-white placeholder:text-white'}
+            className={'w-full flex-1 text-right text-white placeholder:text-white'}
           />
           <Button variant={'outline'} size={'sm'} className="text-xs" disabled>
             USD

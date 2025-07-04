@@ -2,8 +2,6 @@
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo, useEffect } from 'react'
-// import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { useHyperliquid } from '@/store/HyperliquidStore'
 import {
   createColumnHelper,
   flexRender,
@@ -26,6 +24,14 @@ import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-reac
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import * as hl from '@nktkas/hyperliquid'
+import { useRouter } from 'next/navigation'
+
+type BalanceProps = {
+  setSelectedAsset: (asset: string) => void
+  clearingHouseState: hl.PerpsClearinghouseState | null
+  spotState: hl.SpotClearinghouseState | null
+}
 
 type BalanceData = {
   coin: string
@@ -35,19 +41,44 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
+const Balances = ({ setSelectedAsset, clearingHouseState, spotState }: BalanceProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquid()
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
+  const router = useRouter()
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  const combinedData = useMemo(() => {
+    if (!isConnected) return []
+
+    const perpData = {
+      coin: 'USDC(Perps)',
+      token: 'USDC',
+      total: clearingHouseState?.marginSummary?.accountValue || '-',
+      hold: clearingHouseState?.withdrawable || '-',
+      entryNtl: '-'
+    }
+
+    const spotData =
+      spotState?.balances?.map((state) => ({
+        ...state,
+        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
+      })) || []
+
+    return [perpData, ...spotData]
+  }, [
+    isConnected,
+    clearingHouseState?.marginSummary?.accountValue,
+    clearingHouseState?.withdrawable,
+    spotState?.balances
+  ])
 
   const columns = useMemo(
     () => [
@@ -63,7 +94,10 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
               variant="link"
               size="defaultLink"
               className="text-accent-foreground font-bold text-xs hover:text-accent-foreground transition-all hover:no-underline"
-              onClick={() => setSelectedAsset(coin)}
+              onClick={() => {
+                setSelectedAsset(coin)
+                router.push(`/spot`)
+              }}
             >
               {coin}
             </Button>
@@ -127,32 +161,6 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
     ],
     [columnHelper, isSendModalOpen]
   )
-
-  const combinedData = useMemo(() => {
-    if (!isConnected) return []
-
-    const perpData = {
-      coin: 'USDC(Perps)',
-      token: 'USDC',
-      total: clearingHouseState?.marginSummary?.accountValue || '-',
-      hold: clearingHouseState?.withdrawable || '-',
-      entryNtl: '-'
-    }
-
-    const spotData =
-      spotState?.balances?.map((state) => ({
-        ...state,
-        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
-      })) || []
-
-    return [perpData, ...spotData]
-  }, [
-    isConnected,
-    clearingHouseState?.marginSummary?.accountValue,
-    clearingHouseState?.withdrawable,
-    spotState?.balances
-  ])
-
   const table = useReactTable({
     data: combinedData,
     columns,

@@ -5,7 +5,7 @@ import { splitSignature } from '@/utils/utils'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { DialogDescription } from '@/components/ui/dialog'
@@ -70,21 +70,15 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
       const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Transfer response:', res.data)
       onClose()
-      toast.update(toastId, {
-        render: 'Transfer successful',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
+      toast.success('Transfer successful', {
+        id: toastId
       })
       setIsLoading(false)
     } catch (error) {
       console.error('Transfer failed:', error)
       onClose()
-      toast.update(toastId, {
-        render: 'Transfer failed',
-        type: 'error',
-        isLoading: false,
-        autoClose: 3000
+      toast.error('Transfer failed', {
+        id: toastId
       })
       setIsLoading(false)
     }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import {
   Dialog,
@@ -73,29 +73,20 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       const status = orderRes.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.update(toastId, {
-          render: `✅ All positions closed successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('All positions closed successfully', {
+          id: toastId
         })
       }
     } catch (error) {
       console.error('Error closing all positions:', error)
       onClose()
-      toast.update(toastId, {
-        render: '❌' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

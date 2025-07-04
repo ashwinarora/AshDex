@@ -11,7 +11,7 @@ import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import Loading from '../common/Loading'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface DepositModalProps {
   isOpen: boolean
@@ -41,19 +41,13 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     const toastId = toast.loading('Switching to Arbitrum network…')
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
-        toast.update(toastId, {
-          render: 'Switched to Arbitrum network.',
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Switched to Arbitrum network.', {
+          id: toastId
         })
       })
       .catch(() => {
-        toast.update(toastId, {
-          render: 'Failed to switch to Arbitrum network.',
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error('Failed to switch to Arbitrum network.', {
+          id: toastId
         })
       })
   }
@@ -74,20 +68,14 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       })
       setIsLoading(false)
       onClose()
-      toast.update(toastId, {
-        render: 'Deposit confirmed. Balance will update on the next block.',
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
+      toast.success('Deposit confirmed. Balance will update on the next block.', {
+        id: toastId
       })
     } catch (error) {
       console.error('Deposit error:', error)
       onClose()
-      toast.update(toastId, {
-        render: 'Deposit failed. Please try again.',
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error('Deposit failed. Please try again.', {
+        id: toastId
       })
     }
   }

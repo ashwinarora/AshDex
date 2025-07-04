@@ -12,7 +12,7 @@ import {
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
@@ -75,18 +75,12 @@ const OpenOrders = () => {
               }
             ]
           })
-          toast.update(toastId, {
-            render: 'Order cancelled',
-            type: 'success',
-            isLoading: false,
-            autoClose: 2000
+          toast.success('Order cancelled', {
+            id: toastId
           })
         } catch (error: unknown) {
-          toast.update(toastId, {
-            render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-            type: 'error',
-            isLoading: false,
-            autoClose: 2000
+          toast.error(error instanceof Error ? error.message : String(error), {
+            id: toastId
           })
         }
       }
@@ -150,18 +144,12 @@ const OpenOrders = () => {
             })
             .filter((order) => !!order)
         })
-        toast.update(toastId, {
-          render: 'All orders cancelled',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('All orders cancelled', {
+          id: toastId
         })
       } catch (error: unknown) {
-        toast.update(toastId, {
-          render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-          type: 'error',
-          isLoading: false,
-          autoClose: 2000
+        toast.error(error instanceof Error ? error.message : String(error), {
+          id: toastId
         })
       }
     }
