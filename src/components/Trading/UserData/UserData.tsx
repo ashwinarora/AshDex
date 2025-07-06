@@ -1,3 +1,4 @@
+'use client'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useMemo, useState } from 'react'
 import Balances from './Balances'
