@@ -34,6 +34,15 @@ interface ISelectorProps {
   setSelectedAsset: (asset: string) => void
 }
 
+const tabs = [
+  { label: 'All', icon: null },
+  { label: 'New', icon: <IconRosette className="size-3" /> },
+  { label: 'AI', icon: <IconBrain className="size-3" /> },
+  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
+] as const
+
 const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { spotAssetContext } = useHyperliquid()
   const [isOpen, setIsOpen] = useState(false)
@@ -46,7 +55,8 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { isMobile } = useScreenSize()
-  const { context: selectedAssetContext, meta: selectedAssetMeta } = useMemo(() => {
+
+  const  selectedAssetContext  = useMemo(() => {
     if (spotMeta && spotAssetContext) {
       const spot = getSpotAssetContext({
         asset: selectedAsset,
@@ -54,19 +64,10 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         spotAssetContext
       })
       setTokenContract(spot?.meta?.tokenId)
-      return { context: spot?.context, meta: spot?.meta }
+      return spot?.context
     }
-    return { context: null, meta: null }
+    return null
   }, [selectedAsset, spotAssetContext, spotMeta])
-
-  const tabs = [
-    { label: 'All' },
-    { label: 'New', icon: <IconRosette className="size-3" /> },
-    { label: 'AI', icon: <IconBrain className="size-3" /> },
-    { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-    { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-    { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-  ]
 
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
@@ -180,7 +181,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">
-                {spotKeyToName.get(selectedAsset) || selectedAssetMeta?.name}
+                {spotKeyToName.get(selectedAsset)}
               </h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>

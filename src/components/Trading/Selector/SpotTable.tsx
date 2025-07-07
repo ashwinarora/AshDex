@@ -1,7 +1,7 @@
 'use client'
 import { useHyperliquid } from '@/store/HyperliquidStore'
 import { IconSelector } from '@tabler/icons-react'
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
   useReactTable,
@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useVirtualizer } from '@tanstack/react-virtual'
 
 interface AssetTableProps {
   searchTerm: string
@@ -367,68 +368,113 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     getSortedRowModel: getSortedRowModel()
   })
 
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: table.getRowModel().rows.length,
+    estimateSize: () => 48,
+    getScrollElement: () => scrollRef.current,
+    overscan: 5,
+  })
+
   const handleRowClick = (assetKey: string) => {
     setSelectedAsset(assetKey)
   }
 
   return (
-    <Table>
-      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead
-                key={header.id}
-                className={cn(
-                  'cursor-pointer hover:text-accent-foreground w-full',
-                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
-                  !isMobile
-                    ? header.id === 'symbol' || header.id === 'prevDayPrice'
-                      ? 'w-3/12'
-                      : 'w-2/12'
-                    : 'w-full flex-1 shrink-0'
-                )}
-                onClick={() => {
-                  if (header.column.getCanSort()) {
-                    header.column.toggleSorting()
-                  }
-                }}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody className="scroll-smooth">
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            onClick={() => handleRowClick(row.original.symbol)}
-            className={cn(
-              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-              selectedAsset === row.original.symbol && 'bg-secondary'
-            )}
-          >
-            {row.getVisibleCells().map((cell) => (
+    <div ref={scrollRef} className="h-[500px] relative overflow-auto">
+      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
+
+      <Table>
+        <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  className={cn(
+                    'cursor-pointer hover:text-accent-foreground w-full',
+                    header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                    !isMobile
+                      ? header.id === 'symbol' || header.id === 'prevDayPrice'
+                        ? 'w-3/12'
+                        : 'w-2/12'
+                      : 'w-full flex-1 shrink-0'
+                  )}
+                  onClick={() => {
+                    if (header.column.getCanSort()) {
+                      header.column.toggleSorting()
+                    }
+                  }}
+                >
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(header.column.columnDef.header, header.getContext())}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {/* Add top padding to account for virtualized rows above */}
+          {rowVirtualizer.getVirtualItems().length > 0 && (
+            <TableRow>
               <TableCell
-                key={cell.id}
+                colSpan={columns.length}
+                style={{
+                  height: `${rowVirtualizer.getVirtualItems()[0].start}px`,
+                  padding: 0,
+                }}
+              />
+            </TableRow>
+          )}
+          
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+            const row = table.getRowModel().rows[virtualRow.index]
+            return (
+              <TableRow
+                key={virtualRow.index}
+                onClick={() => handleRowClick(row.original.symbol)}
                 className={cn(
-                  'font-medium whitespace-nowrap w-2/12',
-                  !isMobile
-                    ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
-                    : 'w-full flex-1 shrink-0'
+                  'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+                  selectedAsset === row.original.symbol && 'bg-secondary'
                 )}
+                data-index={virtualRow.index}
+                ref={rowVirtualizer.measureElement}
               >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      'font-medium whitespace-nowrap w-2/12',
+                      !isMobile
+                        ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                        : 'w-full flex-1 shrink-0'
+                    )}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                ))}
+              </TableRow>
+            )
+          })}
+          
+          {/* Add bottom padding to account for virtualized rows below */}
+          {rowVirtualizer.getVirtualItems().length > 0 && (
+            <TableRow>
+              <TableCell
+                colSpan={columns.length}
+                style={{
+                  height: `${rowVirtualizer.getTotalSize() - rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1].end}px`,
+                  padding: 0,
+                }}
+              />
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      </div>
+    </div>
   )
 }
 

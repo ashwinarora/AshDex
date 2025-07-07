@@ -1,5 +1,5 @@
 'use client'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import {
   IconSelector,
   IconStar,
@@ -28,11 +28,17 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useShallow } from 'zustand/react/shallow'
+import { useRef } from 'react'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { Separator } from '@/components/ui/separator'
 
 interface AssetTableProps {
   searchTerm: string
+
   setSelectedAsset: (asset: string) => void
   selectedAsset: string
+
   setIsOpen: (isOpen: boolean) => void
 }
 
@@ -62,7 +68,12 @@ const AssetTable = ({
   setIsOpen
 }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
-  const { perpsMeta, perpAssetContext } = useHyperliquid()
+  const { perpsMeta, perpAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpsMeta: state.perpsMeta,
+      perpAssetContext: state.perpAssetContext
+    }))
+  )
   const { favorites, toggleFavorite } = useFavorites(false)
   const { isMobile } = useScreenSize()
 
@@ -214,154 +225,156 @@ const AssetTable = ({
         })
       ]
     }
-    return [
-      columnHelper.accessor('symbol', {
-        id: 'symbol',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Market
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
-        cell: (info) => {
-          const { symbol, maxLeverage } = info.row.original
-          const isFavorite = favorites.has(symbol)
-          return (
-            <div className="flex items-center gap-2 text-xs">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  toggleFavorite(symbol)
-                }}
-                className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
-                aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
-              >
-                {isFavorite ? (
-                  <IconStarFilled size={16} />
-                ) : (
-                  <IconStar size={16} className="opacity-50 text-white" />
-                )}
-              </button>
-              <p className="text-white">{symbol.split('-')[0]}-USDC</p>
-              {maxLeverage && (
-                <p className="bg-primary/40 px-2 rounded-md text-xs">{maxLeverage}×</p>
-              )}
+    else {
+      return [
+        columnHelper.accessor('symbol', {
+          id: 'symbol',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Market
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
             </div>
-          )
-        },
-        enableSorting: true,
-        sortingFn: (rowA, rowB) => {
-          // Favorites always on top, then sort alphabetically
-          if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol)) return -1
-          if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol)) return 1
-          const symbolA = rowA.original.symbol.toUpperCase()
-          const symbolB = rowB.original.symbol.toUpperCase()
-          return symbolA.localeCompare(symbolB)
-        }
-      }),
-      columnHelper.accessor('price', {
-        id: 'price',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Price
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
-        cell: (info) => {
-          const price = info.getValue()
-          const formattedPrice = formatPrice(price)
-          return <div className="text-right text-white text-xs">${formattedPrice}</div>
-        },
-        enableSorting: true
-      }),
-      columnHelper.accessor('prevDayPrice', {
-        id: 'prevDayPrice',
-        header: () => (
-          <div className="flex items-center gap-1">
-            24h Change
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
-        cell: (info) => {
-          const { price, prevDayPrice } = info.row.original
-          const difference = price - prevDayPrice
-          const isPositive = difference >= 0
-          const className = isPositive ? 'text-green' : 'text-red'
-          return (
-            <div className={`text-right text-xs ${className}`}>
-              <div className="flex justify-end items-center">
-                {isPositive ? (
-                  <IconTriangleFilled className="size-2 mr-1" />
-                ) : (
-                  <IconTriangleInvertedFilled className="size-2 mr-1" />
-                )}
-                {difference !== undefined && prevDayPrice !== 0 && (
-                  <>
-                    <ReactiveText
-                      precision={2}
-                      className="text-xs"
-                      value={difference}
-                      type="currency"
-                      isStatic={true}
-                    />
-                    (
-                    <ReactiveText
-                      precision={2}
-                      className="text-xs"
-                      value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
-                      type="percentage"
-                      isStatic={true}
-                    />
-                    )
-                  </>
+          ),
+          cell: (info) => {
+            const { symbol, maxLeverage } = info.row.original
+            const isFavorite = favorites.has(symbol)
+            return (
+              <div className="flex items-center gap-2 text-xs">
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    toggleFavorite(symbol)
+                  }}
+                  className="focus:outline-none w-5 h-5 text-primary hover:scale-105 cursor-pointer"
+                  aria-label={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
+                >
+                  {isFavorite ? (
+                    <IconStarFilled size={16} />
+                  ) : (
+                    <IconStar size={16} className="opacity-50 text-white" />
+                  )}
+                </button>
+                <p className="text-white">{symbol.split('-')[0]}-USDC</p>
+                {maxLeverage && (
+                  <p className="bg-primary/40 px-2 rounded-md text-xs">{maxLeverage}×</p>
                 )}
               </div>
+            )
+          },
+          enableSorting: true,
+          sortingFn: (rowA, rowB) => {
+            // Favorites always on top, then sort alphabetically
+            if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol)) return -1
+            if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol)) return 1
+            const symbolA = rowA.original.symbol.toUpperCase()
+            const symbolB = rowB.original.symbol.toUpperCase()
+            return symbolA.localeCompare(symbolB)
+          }
+        }),
+        columnHelper.accessor('price', {
+          id: 'price',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Price
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
             </div>
-          )
-        },
-        enableSorting: true
-      }),
-      columnHelper.accessor('volume', {
-        id: 'volume',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Volume
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
-        cell: (info) => {
-          const volume = info.getValue()
-          return (
-            <div className="text-right">
-              <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
+          ),
+          cell: (info) => {
+            const price = info.getValue()
+            const formattedPrice = formatPrice(price)
+            return <div className="text-right text-white text-xs">${formattedPrice}</div>
+          },
+          enableSorting: true
+        }),
+        columnHelper.accessor('prevDayPrice', {
+          id: 'prevDayPrice',
+          header: () => (
+            <div className="flex items-center gap-1">
+              24h Change
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
             </div>
-          )
-        },
-        enableSorting: true
-      }),
-      columnHelper.accessor('openInterest', {
-        id: 'openInterest',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Open Interest
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
-        cell: (info) => {
-          const openInterest = info.getValue()
-          return (
-            <div className="text-right">
-              <ReactiveText
-                value={Number(openInterest || 0)}
-                className="text-xs text-white/50"
-                type="currency"
-              />
+          ),
+          cell: (info) => {
+            const { price, prevDayPrice } = info.row.original
+            const difference = price - prevDayPrice
+            const isPositive = difference >= 0
+            const className = isPositive ? 'text-green' : 'text-red'
+            return (
+              <div className={`text-right text-xs ${className}`}>
+                <div className="flex justify-end items-center">
+                  {isPositive ? (
+                    <IconTriangleFilled className="size-2 mr-1" />
+                  ) : (
+                    <IconTriangleInvertedFilled className="size-2 mr-1" />
+                  )}
+                  {difference !== undefined && prevDayPrice !== 0 && (
+                    <>
+                      <ReactiveText
+                        precision={2}
+                        className="text-xs"
+                        value={difference}
+                        type="currency"
+                        isStatic={true}
+                      />
+                      (
+                      <ReactiveText
+                        precision={2}
+                        className="text-xs"
+                        value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
+                        type="percentage"
+                        isStatic={true}
+                      />
+                      )
+                    </>
+                  )}
+                </div>
+              </div>
+            )
+          },
+          enableSorting: true
+        }),
+        columnHelper.accessor('volume', {
+          id: 'volume',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Volume
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
             </div>
-          )
-        },
-        enableSorting: true
-      })
-    ]
+          ),
+          cell: (info) => {
+            const volume = info.getValue()
+            return (
+              <div className="text-right">
+                <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
+              </div>
+            )
+          },
+          enableSorting: true
+        }),
+        columnHelper.accessor('openInterest', {
+          id: 'openInterest',
+          header: () => (
+            <div className="flex items-center gap-1">
+              Open Interest
+              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
+            </div>
+          ),
+          cell: (info) => {
+            const openInterest = info.getValue()
+            return (
+              <div className="text-right">
+                <ReactiveText
+                  value={Number(openInterest || 0)}
+                  className="text-xs text-white/50"
+                  type="currency"
+                />
+              </div>
+            )
+          },
+          enableSorting: true
+        })
+      ]
+    }
   }, [columnHelper, toggleFavorite, favorites, isMobile])
 
   const table = useReactTable({
@@ -378,64 +391,135 @@ const AssetTable = ({
     setIsOpen(false)
   }
 
+  const parentRef = useRef<HTMLDivElement>(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: table.getRowModel().rows.length,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 48, // px height of each row
+    overscan: 5,
+    scrollPaddingStart: 48 // Account for header height
+  })
+
+  const virtualRows = rowVirtualizer.getVirtualItems()
+  const totalSize = rowVirtualizer.getTotalSize()
+
+  console.log("render perps table", { virtualRows: virtualRows.length, totalRows: table.getRowModel().rows.length })
+
   return (
-    <Table>
-      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
-        {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <TableHead
-                key={header.id}
-                className={cn(
-                  'cursor-pointer hover:text-accent-foreground w-full',
-                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
-                  !isMobile
-                    ? header.id === 'symbol' || header.id === 'prevDayPrice'
-                      ? 'w-3/12'
-                      : 'w-2/12'
-                    : 'w-full flex-1 shrink-0'
-                )}
-                onClick={() => {
-                  if (header.column.getCanSort()) {
-                    header.column.toggleSorting()
-                  }
+    <div ref={parentRef} style={{ height: 800, overflow: 'auto' }}>
+      <div style={{ height: `${totalSize}px`, position: 'relative' }}>
+        <Table>
+          <TableHeader className="sticky top-0 z-10 bg-accent">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className={cn(
+                      'cursor-pointer hover:text-accent-foreground w-full',
+                      header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                      !isMobile
+                        ? header.id === 'symbol' || header.id === 'prevDayPrice'
+                          ? 'w-3/12'
+                          : 'w-2/12'
+                        : 'w-full flex-1 shrink-0'
+                    )}
+                    onClick={() => {
+                      if (header.column.getCanSort()) {
+                        header.column.toggleSorting()
+                      }
+                    }}
+                  >
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <Separator className="my-2" />
+          <TableBody>
+            {virtualRows.length > 0 && (
+              <TableRow
+                key="top-padding"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: `${virtualRows[0].start}px`,
+                  transform: 'translateY(0px)'
                 }}
               >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
-              </TableHead>
-            ))}
-          </TableRow>
-        ))}
-      </TableHeader>
-      <TableBody className="scroll-smooth">
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            onClick={() => handleRowClick(row.original.symbol)}
-            className={cn(
-              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-              selectedAsset === row.original.symbol && 'bg-secondary'
+                <TableCell
+                  colSpan={columns.length}
+                  style={{
+                    height: `${virtualRows[0].start}px`,
+                    padding: 0,
+                  }}
+                />
+              </TableRow>
             )}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell
-                key={cell.id}
-                className={cn(
-                  'font-medium whitespace-nowrap w-2/12',
-                  !isMobile
-                    ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
-                    : 'w-full flex-1 shrink-0'
-                )}
+            {virtualRows.map((virtualRow) => {
+              const row = table.getRowModel().rows[virtualRow.index]
+              return (
+                <TableRow
+                  key={row.id}
+                  onClick={() => handleRowClick(row.original.symbol)}
+                  className={cn(
+                    'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+                    selectedAsset === row.original.symbol && 'bg-secondary'
+                  )}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    width: '100%',
+                    transform: `translateY(${virtualRow.start}px)`
+                  }}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      className={cn(
+                        'font-medium whitespace-nowrap w-2/12',
+                        !isMobile
+                          ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                          : 'w-full flex-1 shrink-0'
+                      )}
+                    >
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              )
+            })}
+            {virtualRows.length > 0 && (
+              <TableRow
+                key="bottom-padding"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  transform: `translateY(${virtualRows[virtualRows.length - 1].end}px)`
+                }}
               >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+                <TableCell
+                  colSpan={columns.length}
+                  style={{
+                    height: `${totalSize - virtualRows[virtualRows.length - 1].end}px`,
+                    padding: 0,
+                  }}
+                />
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   )
 }
 

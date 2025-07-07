@@ -315,7 +315,7 @@ const formatTimeSinceUpdate = (timeSinceLastUpdate: number): string => {
   }
 }
 
-const useHyperliquidStore = create(store)
+export const useHyperliquidStore = create(store)
 
 export const useInitHyperliquid = () => {
   return useHyperliquidStore(

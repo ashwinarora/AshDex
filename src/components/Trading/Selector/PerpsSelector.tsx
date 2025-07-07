@@ -11,8 +11,6 @@ import {
   IconInfoCircle,
   IconMeteor,
   IconRosette,
-  // IconShieldCheck,
-  // IconShieldQuestion,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
@@ -48,7 +46,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')
-  // const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
@@ -116,8 +113,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Open Interest',
         value:
           'openInterest' in selectedAssetContext &&
-          selectedAssetContext.openInterest &&
-          selectedAssetContext.oraclePx ? (
+            selectedAssetContext.openInterest &&
+            selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}
@@ -156,8 +153,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
     return data
   }, [selectedAssetContext])
-
-  console.log(marketData)
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -220,34 +215,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 focus:outline-none w-full text-left text-white text-sm"
               />
-              {/* <ToggleGroup
-                size={'sm'}
-                type="single"
-                className="bg-white/5"
-                value={isStrict ? 'Strict' : 'All'}
-                onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
-              >
-                <ToggleGroupItem
-                  value="Strict"
-                  className={cn(
-                    'px-4 py-1 rounded-l-md cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
-                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/50'
-                  )}
-                >
-                  <IconShieldCheck className="size-4" />
-                  Verified
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="All"
-                  className={cn(
-                    'px-4 py-1 rounded-r-md cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
-                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/50'
-                  )}
-                >
-                  <IconShieldQuestion className="size-4" />
-                  All
-                </ToggleGroupItem>
-              </ToggleGroup> */}
             </div>
             <ToggleGroup
               className="flex items-center bg-white/5 justify-between w-full"
