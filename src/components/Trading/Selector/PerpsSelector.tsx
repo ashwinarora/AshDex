@@ -43,7 +43,7 @@ const TABS = [
 ] as const
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-    const { perpAssetContext, perpsMeta } = useHyperliquidStore(
+  const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       perpAssetContext: state.perpAssetContext,
       perpsMeta: state.perpsMeta

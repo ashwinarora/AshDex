@@ -73,7 +73,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
-  
+
   const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {

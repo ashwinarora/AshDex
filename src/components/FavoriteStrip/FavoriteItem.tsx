@@ -21,7 +21,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
       perpAssetContext: state.perpAssetContext,
       perpsMeta: state.perpsMeta
     }))
-  ) 
+  )
   const { spotKeyToName } = useSpotMeta()
 
   const data = useMemo(() => {

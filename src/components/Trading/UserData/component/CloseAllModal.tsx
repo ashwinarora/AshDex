@@ -24,14 +24,14 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
   const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
     useHyperliquidStore(
-    useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState,
-      agentWallet: state.agentWallet,
-      allMids: state.allMids,
-      sdkExchangeClient: state.sdkExchangeClient,
-      perpsMeta: state.perpsMeta
-    }))
-  )
+      useShallow((state) => ({
+        clearingHouseState: state.clearingHouseState,
+        agentWallet: state.agentWallet,
+        allMids: state.allMids,
+        sdkExchangeClient: state.sdkExchangeClient,
+        perpsMeta: state.perpsMeta
+      }))
+    )
 
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkExchangeClient)

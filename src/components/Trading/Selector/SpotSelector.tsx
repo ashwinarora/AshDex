@@ -45,7 +45,7 @@ const tabs = [
 ] as const
 
 const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-    const { spotAssetContext } = useHyperliquidStore(
+  const { spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
       spotAssetContext: state.spotAssetContext
     }))

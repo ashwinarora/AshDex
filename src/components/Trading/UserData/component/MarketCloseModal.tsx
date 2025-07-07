@@ -33,14 +33,14 @@ interface MarketCloseModalProps {
 const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
   const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
     useHyperliquidStore(
-    useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState,
-      agentWallet: state.agentWallet,
-      allMids: state.allMids,
-      sdkExchangeClient: state.sdkExchangeClient,
-      perpsMeta: state.perpsMeta
-    }))
-  )
+      useShallow((state) => ({
+        clearingHouseState: state.clearingHouseState,
+        agentWallet: state.agentWallet,
+        allMids: state.allMids,
+        sdkExchangeClient: state.sdkExchangeClient,
+        perpsMeta: state.perpsMeta
+      }))
+    )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
