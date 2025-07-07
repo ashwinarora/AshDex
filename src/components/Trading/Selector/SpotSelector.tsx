@@ -56,7 +56,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { isMobile } = useScreenSize()
 
-  const  selectedAssetContext  = useMemo(() => {
+  const selectedAssetContext = useMemo(() => {
     if (spotMeta && spotAssetContext) {
       const spot = getSpotAssetContext({
         asset: selectedAsset,

@@ -113,8 +113,8 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         label: 'Open Interest',
         value:
           'openInterest' in selectedAssetContext &&
-            selectedAssetContext.openInterest &&
-            selectedAssetContext.oraclePx ? (
+          selectedAssetContext.openInterest &&
+          selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}

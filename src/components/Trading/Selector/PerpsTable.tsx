@@ -224,8 +224,7 @@ const AssetTable = ({
           enableSorting: true
         })
       ]
-    }
-    else {
+    } else {
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
@@ -264,8 +263,10 @@ const AssetTable = ({
           enableSorting: true,
           sortingFn: (rowA, rowB) => {
             // Favorites always on top, then sort alphabetically
-            if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol)) return -1
-            if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol)) return 1
+            if (favorites.has(rowA.original.symbol) && !favorites.has(rowB.original.symbol))
+              return -1
+            if (!favorites.has(rowA.original.symbol) && favorites.has(rowB.original.symbol))
+              return 1
             const symbolA = rowA.original.symbol.toUpperCase()
             const symbolB = rowB.original.symbol.toUpperCase()
             return symbolA.localeCompare(symbolB)
@@ -404,7 +405,10 @@ const AssetTable = ({
   const virtualRows = rowVirtualizer.getVirtualItems()
   const totalSize = rowVirtualizer.getTotalSize()
 
-  console.log("render perps table", { virtualRows: virtualRows.length, totalRows: table.getRowModel().rows.length })
+  console.log('render perps table', {
+    virtualRows: virtualRows.length,
+    totalRows: table.getRowModel().rows.length
+  })
 
   return (
     <div ref={parentRef} style={{ height: 800, overflow: 'auto' }}>
@@ -457,7 +461,7 @@ const AssetTable = ({
                   colSpan={columns.length}
                   style={{
                     height: `${virtualRows[0].start}px`,
-                    padding: 0,
+                    padding: 0
                   }}
                 />
               </TableRow>
@@ -486,7 +490,8 @@ const AssetTable = ({
                       className={cn(
                         'font-medium whitespace-nowrap w-2/12',
                         !isMobile
-                          ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
+                          ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
+                              'w-3/12'
                           : 'w-full flex-1 shrink-0'
                       )}
                     >
@@ -511,7 +516,7 @@ const AssetTable = ({
                   colSpan={columns.length}
                   style={{
                     height: `${totalSize - virtualRows[virtualRows.length - 1].end}px`,
-                    padding: 0,
+                    padding: 0
                   }}
                 />
               </TableRow>
