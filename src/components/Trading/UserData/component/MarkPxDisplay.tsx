@@ -1,5 +1,6 @@
 import ReactiveText from '@/components/common/ReactiveText'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { useMemo } from 'react'
 
 interface MarkPxDisplayProps {
@@ -7,7 +8,12 @@ interface MarkPxDisplayProps {
 }
 
 const MarkPxDisplay = ({ asset }: MarkPxDisplayProps) => {
-  const { perpAssetContext, perpsMeta } = useHyperliquid()
+  const { perpAssetContext, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpAssetContext: state.perpAssetContext,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const assetCtx = useMemo(() => {
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === asset)

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -120,7 +121,13 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const [tpLimitPrice, setTpLimitPrice] = useState('')
   const [slLimitPrice, setSlLimitPrice] = useState('')
 
-  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquid()
+  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpAssetContext: state.perpAssetContext,
+      agentWallet: state.agentWallet,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const assetCtx = useMemo(() => {
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)

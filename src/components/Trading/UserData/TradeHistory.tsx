@@ -24,7 +24,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { Fill } from '@nktkas/hyperliquid'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -106,7 +107,11 @@ const TradeHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
   const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {

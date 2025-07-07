@@ -15,7 +15,8 @@ import {
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder, OrderStatus } from '@nktkas/hyperliquid'
@@ -44,7 +45,11 @@ type RenderRowProps = {
 
 const OrderHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
   const [mounted, setMounted] = useState(false)
   const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration

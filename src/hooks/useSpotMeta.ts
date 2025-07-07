@@ -1,10 +1,15 @@
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { SpotMeta } from '@nktkas/hyperliquid'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 export const useSpotMeta = () => {
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
 
   const query = useQuery<SpotMeta | undefined>({
     queryKey: ['spotMeta'],

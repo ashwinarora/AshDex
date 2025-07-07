@@ -11,7 +11,8 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import LimitCloseModal from './component/LimitCloseModal'
 import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
@@ -52,7 +53,13 @@ interface IPositionsProps {
 
 const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, allMids } = useHyperliquid()
+  const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      allMids: state.allMids,
+      agentWallet: state.agentWallet
+    }))
+  )
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
@@ -66,7 +73,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
-  const { agentWallet } = useHyperliquid()
+  
   const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {

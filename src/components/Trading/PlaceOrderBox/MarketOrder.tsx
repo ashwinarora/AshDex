@@ -9,7 +9,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
 import MarginMode from './components/MarginMode'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -22,9 +22,16 @@ import { Input } from '@/components/ui/input'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids, clearingHouseState, perpsMeta } = useHyperliquid()
+  const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      allMids: state.allMids,
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')

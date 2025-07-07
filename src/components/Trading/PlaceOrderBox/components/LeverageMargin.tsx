@@ -3,12 +3,13 @@ import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Slider } from '@/components/ui/slider'
 import { cn, numberInputValidator } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Input } from '@/components/ui/input'
 import { IconX } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -17,7 +18,12 @@ interface LeverageMarginProps {
 }
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const [error, setError] = useState<{ isValid: boolean; error: string | null }>({
     isValid: true,

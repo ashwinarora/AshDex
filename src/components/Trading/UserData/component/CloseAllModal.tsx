@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'react-toastify'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
@@ -22,7 +23,15 @@ interface CloseAllModalProps {
 const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
   const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
-    useHyperliquid()
+    useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      agentWallet: state.agentWallet,
+      allMids: state.allMids,
+      sdkExchangeClient: state.sdkExchangeClient,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkExchangeClient)

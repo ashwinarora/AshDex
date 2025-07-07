@@ -1,5 +1,5 @@
 'use client'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { IconSelector } from '@tabler/icons-react'
 import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -30,6 +30,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { useShallow } from 'zustand/react/shallow'
 
 interface AssetTableProps {
   searchTerm: string
@@ -58,7 +59,11 @@ const formatPrice = (price: number | undefined | null) => {
 
 const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
-  const { spotAssetContext } = useHyperliquid()
+  const { spotAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotAssetContext: state.spotAssetContext
+    }))
+  )
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { toggleFavorite, favorites } = useFavorites(true)
   const { isMobile } = useScreenSize()

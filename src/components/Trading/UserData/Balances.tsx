@@ -3,7 +3,8 @@ import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo, useEffect } from 'react'
 // import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import {
   createColumnHelper,
   flexRender,
@@ -37,7 +38,12 @@ type BalanceData = {
 
 const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquid()
+  const { clearingHouseState, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState
+    }))
+  )
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)

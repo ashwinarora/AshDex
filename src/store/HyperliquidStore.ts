@@ -334,27 +334,3 @@ export const useInitHyperliquid = () => {
     }))
   )
 }
-
-export const useHyperliquid = () => {
-  return useHyperliquidStore(
-    useShallow((state) => ({
-      sdkExchangeClient: state.sdkExchangeClient,
-      sdkInfoClient: state.sdkInfoClient,
-      sdkSubscriptionClient: state.sdkSubscriptionClient,
-      agentWallet: state.agentWallet,
-      allMids: state.allMids,
-      clearingHouseState: state.clearingHouseState,
-      perpsMeta: state.perpsMeta,
-      perpAssetContext: state.perpAssetContext,
-      spotAssetContext: state.spotAssetContext,
-      spotState: state.spotState,
-      openOrders: state.openOrders,
-      isWebSocketConnected: state.isWebSocketConnected,
-      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
-      subscribeToCandle: state.subscribeToCandle,
-      unsubscribeFromCandle: state.unsubscribeFromCandle,
-      pushNewOpenOrders: state.pushNewOpenOrders,
-      pushNewPosition: state.pushNewPosition
-    }))
-  )
-}

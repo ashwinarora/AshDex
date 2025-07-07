@@ -5,14 +5,19 @@ import LeverageMargin from './components/LeverageMargin'
 import AmountInput from './components/AmountInput'
 import BuyOrSell from './components/BuyOrSell'
 import MarginMode from './components/MarginMode'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const StopMarket = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { allMids } = useHyperliquid()
+  const { allMids } = useHyperliquidStore(
+    useShallow((state) => ({
+      allMids: state.allMids
+    }))
+  )
   const [stopPrice, setStopPrice] = useState(0)
   const [isReduceOnly, setIsReduceOnly] = useState(false)
   const [isBuy, setIsBuy] = useState(true)

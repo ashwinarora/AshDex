@@ -14,7 +14,7 @@ import {
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
@@ -25,6 +25,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
+import { useShallow } from 'zustand/react/shallow'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -42,7 +43,12 @@ const TABS = [
 ] as const
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { perpAssetContext, perpsMeta } = useHyperliquid()
+    const { perpAssetContext, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpAssetContext: state.perpAssetContext,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')

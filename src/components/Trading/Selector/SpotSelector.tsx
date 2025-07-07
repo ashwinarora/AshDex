@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getSpotAssetContext } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
 import SpotTable from './SpotTable'
@@ -28,6 +28,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useShallow } from 'zustand/react/shallow'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -44,7 +45,11 @@ const tabs = [
 ] as const
 
 const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { spotAssetContext } = useHyperliquid()
+    const { spotAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotAssetContext: state.spotAssetContext
+    }))
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')

@@ -9,7 +9,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -19,6 +19,7 @@ import { Button } from '@/components/ui/button'
 import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -35,7 +36,12 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 

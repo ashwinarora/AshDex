@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import DepositModal from '../DepositWithdraw/DepositModal'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../common/ReactiveText'
 import TransferModal from './UserData/component/TransferModal'
 import SendModal from './UserData/component/SendModal'
@@ -8,12 +8,19 @@ import { IconTransfer } from '@tabler/icons-react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
+import { useShallow } from 'zustand/react/shallow'
 
 function OverviewBox() {
   const [isDepositOpen, setIsDepositOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
-  const { clearingHouseState, spotState, spotAssetContext } = useHyperliquid()
+  const { clearingHouseState, spotState, spotAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState,
+      spotAssetContext: state.spotAssetContext
+    }))
+  )
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState(0)
 
   const [maintenanceMargin, setMaintenanceMargin] = useState(0)
