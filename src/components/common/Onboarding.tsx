@@ -9,7 +9,7 @@ import step3 from '@/assets/images/onboarding/step3.png'
 import step4 from '@/assets/images/onboarding/step4.png'
 import nexonlogo from '@/assets/images/logo.svg'
 import arrowrightlineicon from '@/assets/images/arrowrightline_icon.svg'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 const NextButton = () => (
   <div className="flex items-center justify-center gap-2">

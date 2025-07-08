@@ -153,12 +153,13 @@ const AmountInputSpot = ({
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
-          className="w-full text-right text-white shrink-0"
+          className="w-full text-right text-white flex-1"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
+              size={'sm'}
               className="text-xs min-w-18 w-fit flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
@@ -178,7 +179,7 @@ const AmountInputSpot = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex flex-1 flex-col gap-4 w-full items-center justify-center">
+      <div className="flex flex-1 mt-2 flex-col gap-4 w-full items-center justify-center">
         <Slider
           min={0}
           max={100}

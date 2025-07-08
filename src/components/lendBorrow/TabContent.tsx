@@ -3,12 +3,12 @@ import { useEffect, useMemo, useState } from 'react'
 import Image from 'next/image'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { useToast } from '@/context/ToastContext'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import Switch from '../common/Switch'
 import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import wethicon from '../../assets/images/weth_icon.svg'
+import { toast } from 'sonner'
 
 interface ITabContentProps {
   activeTab: 'Supply' | 'Borrow'
@@ -23,7 +23,6 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
   const { isConnected } = useAccount()
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
-  const { showToast } = useToast()
   const [amount, setAmount] = useState('0.00')
   const [isChecked, setIsChecked] = useState<boolean>(true)
 
@@ -32,11 +31,9 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
     setTimeout(() => {
       setActiveTab(tab)
       setIsLoading(false)
-      showToast(
-        'success',
-        'Asset successfully deposited!',
-        `You have added 5,000 USDC to the pool. You are now earning 2.9% APY.`
-      )
+      toast.success('Asset successfully deposited!', {
+        description: `You have added 5,000 USDC to the pool. You are now earning 2.9% APY.`
+      })
       // showToast(
       //   'error',
       //   'Deposit failed!',

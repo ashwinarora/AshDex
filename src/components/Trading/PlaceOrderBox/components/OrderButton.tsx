@@ -5,7 +5,7 @@ import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -59,7 +59,6 @@ const placePerpOrder = async ({
   pushNewOpenOrders,
   pushNewPosition
 }: {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   sdkExchangeClient: ExchangeClient | null
   selectedAsset: string
   isCross: boolean
@@ -175,11 +174,8 @@ const placePerpOrder = async ({
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: FrontendOrder[] = []
     if ('error' in status) {
-      toast.update(toastId, {
-        render: '❌' + status.error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 3000
+      toast.error(status.error, {
+        id: toastId
       })
     } else if ('filled' in status) {
       const filled = status.filled
@@ -207,12 +203,12 @@ const placePerpOrder = async ({
           }
         }
       })
-      toast.update(toastId, {
-        render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
-      })
+      toast.success(
+        `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+        {
+          id: toastId
+        }
+      )
     } else if ('resting' in status) {
       openOrders.push({
         oid: status.resting.oid,
@@ -232,11 +228,8 @@ const placePerpOrder = async ({
         orderType: 'Limit',
         timestamp: Date.now()
       })
-      toast.update(toastId, {
-        render: `✅ Order Placed Successfully`,
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
+      toast.success('Order Placed Successfully', {
+        id: toastId
       })
     }
     if ('resting' in status || 'filled' in status) {
@@ -289,11 +282,8 @@ const placePerpOrder = async ({
     pushNewOpenOrders(openOrders)
   } catch (error) {
     console.error('Error placing perp order:', error)
-    toast.update(toastId, {
-      render: '❌' + error,
-      type: 'error',
-      isLoading: false,
-      autoClose: 2000
+    toast.error(error as string, {
+      id: toastId
     })
   }
 }
@@ -351,22 +341,19 @@ const placeSpotOrder = async ({
     console.log(res)
     const status = res.response.data.statuses[0]
     if ('error' in status) {
-      toast.update(toastId, {
-        render: '❌' + status.error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 3000
+      toast.error(status.error, {
+        id: toastId
       })
     } else if ('filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'bought' : 'sold'
       const assetName = selectedAsset.split('-')[0]
-      toast.update(toastId, {
-        render: `✅ ${filled.totalSz} ${spotKeyToName.get(assetName)} ${action} at average price of ${filled.avgPx}`,
-        type: 'success',
-        isLoading: false,
-        autoClose: 3000
-      })
+      toast.success(
+        `${filled.totalSz} ${spotKeyToName.get(assetName)} ${action} at average price of ${filled.avgPx}`,
+        {
+          id: toastId
+        }
+      )
     } else if ('resting' in status) {
       const resting = status.resting
       console.log('pushing open order', resting)
@@ -391,21 +378,15 @@ const placeSpotOrder = async ({
         }
       ])
       if (resting) {
-        toast.update(toastId, {
-          render: `✅ Order Placed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Order Placed Successfully', {
+          id: toastId
         })
       }
     }
   } catch (error) {
     console.error('Error placing spot order:', error)
-    toast.update(toastId, {
-      render: '❌' + error,
-      type: 'error',
-      isLoading: false,
-      autoClose: 2000
+    toast.error(error as string, {
+      id: toastId
     })
   }
 }

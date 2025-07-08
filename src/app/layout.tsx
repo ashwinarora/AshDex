@@ -5,7 +5,6 @@ import Header from '@/components/Header'
 import { Provider } from './provider'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { UserProvider } from '@/context/UserContext'
-import { ToastProvider } from '../context/ToastContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import '@/styles/table.css'
@@ -14,6 +13,7 @@ import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
 import SnackBar from '@/components/common/SnackBar'
+import dynamic from 'next/dynamic'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,6 +36,10 @@ export const metadata: Metadata = {
   description: 'Best place to Trade'
 }
 
+const DynamicUseToastOptions = dynamic(() =>
+  import('@/components/ui/toast-config').then((mod) => mod.Toast)
+)
+
 export default function RootLayout({
   children
 }: Readonly<{
@@ -53,12 +57,11 @@ export default function RootLayout({
             <BridgeProvider>
               <EstablishConnectionProvider>
                 <UserProvider>
-                  <ToastProvider>
-                    <SnackBar />
-                    <Header />
-                    <OnboardingModal />
-                    {children}
-                  </ToastProvider>
+                  <SnackBar />
+                  <Header />
+                  <OnboardingModal />
+                  <DynamicUseToastOptions />
+                  {children}
                 </UserProvider>
               </EstablishConnectionProvider>
             </BridgeProvider>

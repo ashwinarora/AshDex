@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 export interface User {
   id: number
   wallet_id: string

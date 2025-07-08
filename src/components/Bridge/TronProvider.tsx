@@ -2,7 +2,7 @@ import { FC } from 'react'
 import { WalletModalProvider } from '@tronweb3/tronwallet-adapter-react-ui'
 import { tronAdapters, useTronConnect, useTronWallet } from '@/utils/tronWalletAdapter'
 import { WalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { RawTronTransaction, TokenWithChainDetails } from '@allbridge/bridge-core-sdk'
 import { useBridge } from '@/context/BridgeContext'
 

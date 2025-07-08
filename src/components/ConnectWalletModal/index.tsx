@@ -12,7 +12,7 @@ import nexticon from '@/assets/images/next_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface WalletConnectProvider {
   id: string

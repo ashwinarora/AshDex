@@ -177,7 +177,7 @@ const SetPrice = ({
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={cn('w-full text-right text-white shrink-0')}
+        className={cn('w-full flex-1 text-right text-white')}
       />
       <Button
         variant="outline"

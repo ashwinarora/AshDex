@@ -15,10 +15,11 @@ interface IUserDataProps {
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
-  const { clearingHouseState, openOrders } = useHyperliquidStore(
+  const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      openOrders: state.openOrders
+      openOrders: state.openOrders,
+      spotState: state.spotState
     }))
   )
   const isSpot = useIsSpot()
@@ -27,6 +28,10 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0
   }, [clearingHouseState?.assetPositions])
+
+  const balanceCount = useMemo(() => {
+    return spotState?.balances?.filter((balance) => balance.coin !== 'USDC').length || 0
+  }, [spotState?.balances])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {
@@ -39,7 +44,8 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     }).length
     const tabs = [
       {
-        header: 'Balances',
+        header: `Balances (${balanceCount})`,
+        count: balanceCount,
         element: <Balances setSelectedAsset={setSelectedAsset} />
       },
       {

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
+import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { toast } from 'react-toastify'
 import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
 import { isTestnet } from '@/utils/constants'
 import { hyperliquidAxios } from '@/config/axios'
@@ -96,29 +96,20 @@ const SendModal: React.FC<SendModalProps> = ({
         const res = await hyperliquidAxios.post('/exchange', body)
         if (res.data.status === 'err') {
           onClose()
-          toast.update(toastId, {
-            render: '❌' + res.data.response,
-            type: 'error',
-            isLoading: false,
-            autoClose: 4000
+          toast.error(res.data.response, {
+            id: toastId
           })
           return
         }
         onClose()
-        toast.update(toastId, {
-          render: '✅ Send successful',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('Send successful', {
+          id: toastId
         })
       } catch (error) {
         console.log(error)
         onClose()
-        toast.update(toastId, {
-          render: '❌ Send failed',
-          type: 'error',
-          isLoading: false,
-          autoClose: 4000
+        toast.error('Send failed', {
+          id: toastId
         })
       }
     } else {
@@ -141,27 +132,18 @@ const SendModal: React.FC<SendModalProps> = ({
         }
         const res = await hyperliquidAxios.post('/exchange', body)
         if (res.data.status === 'err') {
-          toast.update(toastId, {
-            render: '❌' + res.data.response,
-            type: 'error',
-            isLoading: false,
-            autoClose: 4000
+          toast.error(res.data.response, {
+            id: toastId
           })
           return
         }
-        toast.update(toastId, {
-          render: '✅ Send successful',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('Send successful', {
+          id: toastId
         })
       } catch (error) {
         console.log(error)
-        toast.update(toastId, {
-          render: '❌ Send failed',
-          type: 'error',
-          isLoading: false,
-          autoClose: 4000
+        toast.error('Send failed', {
+          id: toastId
         })
       }
     }

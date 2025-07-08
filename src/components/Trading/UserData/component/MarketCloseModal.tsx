@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -158,40 +158,28 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.update(toastId, {
-          render: `✅ Position Closed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Position Closed Successfully', {
+          id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.update(toastId, {
-            render: `✅ Order Placed Successfully`,
-            type: 'success',
-            isLoading: false,
-            autoClose: 3000
+          toast.success('Order Placed Successfully', {
+            id: toastId
           })
         }
       }
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.update(toastId, {
-        render: '❌' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
+import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { toast } from 'react-toastify'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import {
@@ -56,20 +56,14 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
       console.log(res)
       onClose()
-      toast.update(toastId, {
-        render: '✅ Margin updated successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
+      toast.success('Margin updated successfully', {
+        id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.update(toastId, {
-        render: '❌' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

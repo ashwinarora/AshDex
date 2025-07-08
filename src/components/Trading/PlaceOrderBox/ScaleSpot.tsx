@@ -8,7 +8,7 @@ import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -149,36 +149,28 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
-        toast.update(toastId, {
-          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
-        })
+        toast.success(
+          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          {
+            id: toastId
+          }
+        )
       } else if ('resting' in status) {
-        toast.update(toastId, {
-          render: `✅ Order Placed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Order Placed Successfully', {
+          id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.update(toastId, {
-        render: 'Failed to place orders.',
-        type: 'error',
-        isLoading: false
+      toast.error('Failed to place orders.', {
+        id: toastId
       })
     }
   }
