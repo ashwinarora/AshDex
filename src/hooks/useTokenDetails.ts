@@ -1,9 +1,14 @@
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { useQuery } from '@tanstack/react-query'
 import { useSpotMeta } from './useSpotMeta'
 
 export const useTokenDetails = (selectedAsset: string) => {
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
   const { data: spotMeta } = useSpotMeta()
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const fetchTokenDetails = async (): Promise<any | null> => {

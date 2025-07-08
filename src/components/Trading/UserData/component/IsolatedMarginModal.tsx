@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'react-toastify'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import { getPerpsUniverseIndex } from '@/utils/utils'
@@ -28,10 +29,15 @@ interface IsolatedMarginModalProps {
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta, sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta,
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
-  const { sdkExchangeClient } = useHyperliquid()
 
   const marginAvailable = clearingHouseState?.withdrawable || 0
 

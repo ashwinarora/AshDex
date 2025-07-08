@@ -6,7 +6,8 @@ import editicon from '@/assets/images/edit_icon.svg'
 import infoicon from '@/assets/images/info_icon.svg'
 import sortingIcon from '@/assets/images/sorting_icon.svg'
 import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 
 const columns = [
   { key: 'coin', label: 'Position' },
@@ -32,7 +33,11 @@ type RenderRowProps = {
 }
 
 const Positions = () => {
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState
+    }))
+  )
   const [currentPage, setCurrentPage] = useState(1)
 
   const totalPages = Math.ceil((clearingHouseState?.assetPositions?.length ?? 0) / 10)

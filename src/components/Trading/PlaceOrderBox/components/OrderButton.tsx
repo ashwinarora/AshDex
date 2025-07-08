@@ -7,7 +7,7 @@ import { useAccount } from 'wagmi'
 import { TPSLType } from './TPSL'
 import { toast } from 'react-toastify'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { IconWallet } from '@tabler/icons-react'
 import { useMemo } from 'react'
@@ -21,6 +21,7 @@ import type {
   PerpsMeta,
   SpotMeta
 } from '@nktkas/hyperliquid'
+import { useShallow } from 'zustand/react/shallow'
 
 type StopOrder = {
   isMarket: boolean
@@ -423,7 +424,15 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const { isConnected: isWalletConnected } = useAccount()
   const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
-    useHyperliquid()
+    useHyperliquidStore(
+      useShallow((state) => ({
+        agentWallet: state.agentWallet,
+        sdkExchangeClient: state.sdkExchangeClient,
+        perpsMeta: state.perpsMeta,
+        pushNewOpenOrders: state.pushNewOpenOrders,
+        pushNewPosition: state.pushNewPosition
+      }))
+    )
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()

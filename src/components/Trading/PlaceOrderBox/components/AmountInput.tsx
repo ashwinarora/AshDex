@@ -3,7 +3,7 @@
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,6 +17,7 @@ import { ToggleGroupItem } from '@/components/ui/toggle-group'
 import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
+import { useShallow } from 'zustand/react/shallow'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -44,7 +45,12 @@ const AmountInput = ({
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const szDecimals = useMemo(() => {
     const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)

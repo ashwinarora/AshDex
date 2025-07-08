@@ -12,10 +12,16 @@ import FundingHistory from '@/components/Vault/UserData/FundingHistory'
 import DepositsAndWithdrawals from '@/components/Vault/UserData/DepositsAndWithdrawals'
 import Depositors from '@/components/Vault/UserData/Depositors'
 import CustomSelector from '@/components/common/CustomSelector'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 
 function UserData() {
-  const { clearingHouseState, openOrders } = useHyperliquid()
+  const { clearingHouseState, openOrders } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      openOrders: state.openOrders
+    }))
+  )
   const [searchValue, setSearchValue] = useState('')
   const [activeTab, setActiveTab] = useState<number>(1)
   const positionsCount = clearingHouseState?.assetPositions?.length || 0

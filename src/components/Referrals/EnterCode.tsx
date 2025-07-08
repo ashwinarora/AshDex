@@ -5,12 +5,17 @@ import successicon from '@/assets/images/success_icon.svg'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useMutation } from '@tanstack/react-query'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 
 function EnterCode() {
   const [code, setCode] = useState('')
   const { data: referral } = useReferralsInfo()
-  const { sdkExchangeClient } = useHyperliquid()
+  const { sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
 

@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'react-toastify'
 import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
 import { isTestnet } from '@/utils/constants'
@@ -44,7 +45,12 @@ const SendModal: React.FC<SendModalProps> = ({
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
   const { chainId } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquid()
+  const { clearingHouseState, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState
+    }))
+  )
   const { signTypedDataAsync } = useSignTypedData()
   const { data: spotMeta } = useSpotMeta()
 

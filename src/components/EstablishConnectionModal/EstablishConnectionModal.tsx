@@ -6,15 +6,20 @@ import { toast } from 'react-toastify'
 import { splitSignature } from '@/utils/utils'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { Dialog } from '@radix-ui/react-dialog'
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
+import { useShallow } from 'zustand/react/shallow'
 
 const EstablishConnectionModal = () => {
   const { chainId } = useAccount()
-  const { agentWallet } = useHyperliquid()
+  const { agentWallet } = useHyperliquidStore(
+    useShallow((state) => ({
+      agentWallet: state.agentWallet
+    }))
+  )
   const { signTypedDataAsync } = useSignTypedData()
   const [isApproving, setIsApproving] = useState(false)
   const {

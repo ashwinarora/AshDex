@@ -1,10 +1,15 @@
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { SpotMeta } from '@nktkas/hyperliquid'
 import { useQuery } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 export const useSpotMeta = () => {
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
 
   const query = useQuery<SpotMeta | undefined>({
     queryKey: ['spotMeta'],
@@ -26,5 +31,15 @@ export const useSpotMeta = () => {
     )
   }, [query.data])
 
-  return { ...query, spotKeyToName }
+  const spotKeyToBaseName: Map<string, string> = useMemo(() => {
+    if (!query.data) return new Map()
+    return new Map(
+      query.data.universe.map((universe) => [
+        universe.name,
+        query.data?.tokens[universe.tokens[1]]?.name
+      ])
+    )
+  }, [query.data])
+
+  return { ...query, spotKeyToName, spotKeyToBaseName }
 }

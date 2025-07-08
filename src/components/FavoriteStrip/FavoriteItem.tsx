@@ -2,11 +2,12 @@
 
 import useIsSpot from '@/hooks/useIsSpot'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useMemo } from 'react'
 import { ToggleGroupItem } from '../ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 interface FavoriteItemProps {
   assetKey: string
@@ -14,7 +15,13 @@ interface FavoriteItemProps {
 
 const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
   const isSpot = useIsSpot()
-  const { spotAssetContext, perpAssetContext, perpsMeta } = useHyperliquid()
+  const { spotAssetContext, perpAssetContext, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotAssetContext: state.spotAssetContext,
+      perpAssetContext: state.perpAssetContext,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const { spotKeyToName } = useSpotMeta()
 
   const data = useMemo(() => {
@@ -47,8 +54,8 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
 
   return (
     <ToggleGroupItem
-      value={data.name || ''}
-      key={data.name}
+      value={assetKey}
+      key={assetKey}
       className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
       {data.isPositive ? (
