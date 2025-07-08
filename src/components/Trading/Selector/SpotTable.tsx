@@ -1,6 +1,6 @@
 'use client'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { IconSelector } from '@tabler/icons-react'
+import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
 import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
@@ -103,12 +103,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Market
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Market</div>,
           cell: (info) => {
             const { symbol } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -150,12 +145,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Volume
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Volume</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -168,12 +158,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Price / 24h
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Price / 24h</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -221,12 +206,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     return [
       columnHelper.accessor('symbol', {
         id: 'symbol',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Market
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Market</div>,
         cell: (info) => {
           const { symbol } = info.row.original
           const isFavorite = favorites.has(symbol)
@@ -266,12 +246,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('price', {
         id: 'price',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Price
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Price</div>,
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
@@ -281,12 +256,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('prevDayPrice', {
         id: 'prevDayPrice',
-        header: () => (
-          <div className="flex items-center gap-1">
-            24h Change
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">24h Change</div>,
         cell: (info) => {
           const { price, prevDayPrice } = info.row.original
           const difference = price - prevDayPrice
@@ -327,12 +297,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('volume', {
         id: 'volume',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Volume
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Volume</div>,
         cell: (info) => {
           const volume = info.getValue()
           return (
@@ -345,12 +310,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('marketCap', {
         id: 'marketCap',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Market Cap
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Market Cap</div>,
         cell: (info) => {
           const marketCap = info.getValue()
           return (
@@ -377,113 +337,95 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     getSortedRowModel: getSortedRowModel()
   })
 
-  const scrollRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef(null)
 
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
-    estimateSize: () => 48,
-    getScrollElement: () => scrollRef.current,
+    estimateSize: () => 36,
+    getScrollElement: () => parentRef.current,
     overscan: 5
   })
+
+  const virtualRows = rowVirtualizer.getVirtualItems()
+  const totalSize = rowVirtualizer.getTotalSize()
 
   const handleRowClick = (assetKey: string) => {
     setSelectedAsset(assetKey)
   }
 
   return (
-    <div ref={scrollRef} className="h-[500px] relative overflow-auto">
-      <div style={{ height: `${rowVirtualizer.getTotalSize()}px`, position: 'relative' }}>
-        <Table>
-          <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      'cursor-pointer hover:text-accent-foreground w-full',
-                      header.id === 'symbol' ? 'justify-start' : 'justify-end',
-                      !isMobile
-                        ? header.id === 'symbol' || header.id === 'prevDayPrice'
-                          ? 'w-3/12'
-                          : 'w-2/12'
-                        : 'w-full flex-1 shrink-0'
-                    )}
-                    onClick={() => {
-                      if (header.column.getCanSort()) {
-                        header.column.toggleSorting()
-                      }
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
+    <Table ref={parentRef}>
+      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead
+                key={header.id}
+                className={cn(
+                  'cursor-pointer hover:text-accent-foreground w-full',
+                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  !isMobile
+                    ? header.id === 'symbol' || header.id === 'prevDayPrice'
+                      ? 'w-3/12'
+                      : 'w-2/12'
+                    : 'w-full flex-1 shrink-0'
+                )}
+                onClick={() => {
+                  if (header.column.getCanSort()) {
+                    header.column.toggleSorting()
+                  }
+                }}
+              >
+                {header.isPlaceholder ? null : (
+                  <>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.columnDef.enableSorting ? (
+                      header.column.getIsSorted() === 'asc' ? (
+                        <IconChevronUp className="text-inherit size-4" />
+                      ) : header.column.getIsSorted() === 'desc' ? (
+                        <IconChevronDown className="text-inherit size-4" />
+                      ) : (
+                        <IconSelector className="text-inherit size-4" />
+                      )
+                    ) : null}
+                  </>
+                )}
+              </TableHead>
             ))}
-          </TableHeader>
-          <TableBody>
-            {/* Add top padding to account for virtualized rows above */}
-            {rowVirtualizer.getVirtualItems().length > 0 && (
-              <TableRow>
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody className="scroll-smooth" style={{ height: `${totalSize}px` }}>
+        {virtualRows.map((virtualRow) => {
+          const row = table.getRowModel().rows[virtualRow.index]
+          return (
+            <TableRow
+              key={row.id}
+              onClick={() => handleRowClick(row.original.symbol)}
+              className={cn(
+                'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+                selectedAsset === row.original.symbol && 'bg-secondary'
+              )}
+            >
+              {row.getVisibleCells().map((cell) => (
                 <TableCell
-                  colSpan={columns.length}
-                  style={{
-                    height: `${rowVirtualizer.getVirtualItems()[0].start}px`,
-                    padding: 0
-                  }}
-                />
-              </TableRow>
-            )}
-
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const row = table.getRowModel().rows[virtualRow.index]
-              return (
-                <TableRow
-                  key={virtualRow.index}
-                  onClick={() => handleRowClick(row.original.symbol)}
+                  key={cell.id}
                   className={cn(
-                    'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-                    selectedAsset === row.original.symbol && 'bg-secondary'
+                    'font-medium whitespace-nowrap w-2/12',
+                    !isMobile
+                      ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
+                          'w-3/12'
+                      : 'w-full flex-1 shrink-0'
                   )}
-                  data-index={virtualRow.index}
-                  ref={rowVirtualizer.measureElement}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        'font-medium whitespace-nowrap w-2/12',
-                        !isMobile
-                          ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
-                              'w-3/12'
-                          : 'w-full flex-1 shrink-0'
-                      )}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )
-            })}
-
-            {/* Add bottom padding to account for virtualized rows below */}
-            {rowVirtualizer.getVirtualItems().length > 0 && (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  style={{
-                    height: `${rowVirtualizer.getTotalSize() - rowVirtualizer.getVirtualItems()[rowVirtualizer.getVirtualItems().length - 1].end}px`,
-                    padding: 0
-                  }}
-                />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          )
+        })}
+      </TableBody>
+    </Table>
   )
 }
 

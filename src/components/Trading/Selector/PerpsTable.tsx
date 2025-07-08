@@ -1,6 +1,8 @@
 'use client'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import {
+  IconChevronDown,
+  IconChevronUp,
   IconSelector,
   IconStar,
   IconStarFilled,
@@ -31,7 +33,6 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { Separator } from '@/components/ui/separator'
 
 interface AssetTableProps {
   searchTerm: string
@@ -109,12 +110,7 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Market
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Market</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -157,12 +153,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Volume
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Volume</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -175,12 +166,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Price / 24h
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Price / 24h</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -228,12 +214,7 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Market
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Market</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -274,12 +255,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Price
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Price</div>,
           cell: (info) => {
             const price = info.getValue()
             const formattedPrice = formatPrice(price)
@@ -289,12 +265,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('prevDayPrice', {
           id: 'prevDayPrice',
-          header: () => (
-            <div className="flex items-center gap-1">
-              24h Change
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">24h Change</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const difference = price - prevDayPrice
@@ -336,12 +307,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Volume
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Volume</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -354,12 +320,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('openInterest', {
           id: 'openInterest',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Open Interest
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Open Interest</div>,
           cell: (info) => {
             const openInterest = info.getValue()
             return (
@@ -392,12 +353,12 @@ const AssetTable = ({
     setIsOpen(false)
   }
 
-  const parentRef = useRef<HTMLDivElement>(null)
+  const parentRef = useRef(null)
 
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 48, // px height of each row
+    estimateSize: () => 36, // px height of each row
     overscan: 5,
     scrollPaddingStart: 48 // Account for header height
   })
@@ -405,126 +366,79 @@ const AssetTable = ({
   const virtualRows = rowVirtualizer.getVirtualItems()
   const totalSize = rowVirtualizer.getTotalSize()
 
-  console.log('render perps table', {
-    virtualRows: virtualRows.length,
-    totalRows: table.getRowModel().rows.length
-  })
-
   return (
-    <div ref={parentRef} style={{ height: 800, overflow: 'auto' }}>
-      <div style={{ height: `${totalSize}px`, position: 'relative' }}>
-        <Table>
-          <TableHeader className="sticky top-0 z-10 bg-accent">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    className={cn(
-                      'cursor-pointer hover:text-accent-foreground w-full',
-                      header.id === 'symbol' ? 'justify-start' : 'justify-end',
-                      !isMobile
-                        ? header.id === 'symbol' || header.id === 'prevDayPrice'
-                          ? 'w-3/12'
-                          : 'w-2/12'
-                        : 'w-full flex-1 shrink-0'
-                    )}
-                    onClick={() => {
-                      if (header.column.getCanSort()) {
-                        header.column.toggleSorting()
-                      }
-                    }}
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
-                  </TableHead>
-                ))}
-              </TableRow>
+    <Table ref={parentRef}>
+      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
+        {table.getHeaderGroups().map((headerGroup) => (
+          <TableRow key={headerGroup.id}>
+            {headerGroup.headers.map((header) => (
+              <TableHead
+                key={header.id}
+                className={cn(
+                  'cursor-pointer hover:text-accent-foreground w-full',
+                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  !isMobile
+                    ? header.id === 'symbol' || header.id === 'prevDayPrice'
+                      ? 'w-3/12'
+                      : 'w-2/12'
+                    : 'w-full flex-1 shrink-0'
+                )}
+                onClick={() => {
+                  if (header.column.getCanSort()) {
+                    header.column.toggleSorting()
+                  }
+                }}
+              >
+                {header.isPlaceholder ? null : (
+                  <>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.columnDef.enableSorting ? (
+                      header.column.getIsSorted() === 'asc' ? (
+                        <IconChevronUp className="text-inherit size-4" />
+                      ) : header.column.getIsSorted() === 'desc' ? (
+                        <IconChevronDown className="text-inherit size-4" />
+                      ) : (
+                        <IconSelector className="text-inherit size-4" />
+                      )
+                    ) : null}
+                  </>
+                )}
+              </TableHead>
             ))}
-          </TableHeader>
-          <Separator className="my-2" />
-          <TableBody>
-            {virtualRows.length > 0 && (
-              <TableRow
-                key="top-padding"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRows[0].start}px`,
-                  transform: 'translateY(0px)'
-                }}
-              >
+          </TableRow>
+        ))}
+      </TableHeader>
+      <TableBody className="scroll-smooth" style={{ height: `${totalSize}px` }}>
+        {virtualRows.map((virtualRow) => {
+          const row = table.getRowModel().rows[virtualRow.index]
+          return (
+            <TableRow
+              key={row.id}
+              onClick={() => handleRowClick(row.original.symbol)}
+              className={cn(
+                'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+                selectedAsset === row.original.symbol && 'bg-secondary'
+              )}
+            >
+              {row.getVisibleCells().map((cell) => (
                 <TableCell
-                  colSpan={columns.length}
-                  style={{
-                    height: `${virtualRows[0].start}px`,
-                    padding: 0
-                  }}
-                />
-              </TableRow>
-            )}
-            {virtualRows.map((virtualRow) => {
-              const row = table.getRowModel().rows[virtualRow.index]
-              return (
-                <TableRow
-                  key={row.id}
-                  onClick={() => handleRowClick(row.original.symbol)}
+                  key={cell.id}
                   className={cn(
-                    'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-                    selectedAsset === row.original.symbol && 'bg-secondary'
+                    'font-medium whitespace-nowrap w-2/12',
+                    !isMobile
+                      ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
+                          'w-3/12'
+                      : 'w-full flex-1 shrink-0'
                   )}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    width: '100%',
-                    transform: `translateY(${virtualRow.start}px)`
-                  }}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell
-                      key={cell.id}
-                      className={cn(
-                        'font-medium whitespace-nowrap w-2/12',
-                        !isMobile
-                          ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
-                              'w-3/12'
-                          : 'w-full flex-1 shrink-0'
-                      )}
-                    >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              )
-            })}
-            {virtualRows.length > 0 && (
-              <TableRow
-                key="bottom-padding"
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  transform: `translateY(${virtualRows[virtualRows.length - 1].end}px)`
-                }}
-              >
-                <TableCell
-                  colSpan={columns.length}
-                  style={{
-                    height: `${totalSize - virtualRows[virtualRows.length - 1].end}px`,
-                    padding: 0
-                  }}
-                />
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-    </div>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          )
+        })}
+      </TableBody>
+    </Table>
   )
 }
 
