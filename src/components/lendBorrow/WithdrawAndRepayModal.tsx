@@ -4,11 +4,11 @@ import Modal from '../common/Modal'
 import Switch from '../common/Switch'
 import Loading from '../common/Loading'
 import { LENDBORROW_LOADING_MESSAGES } from '@/utils/constants'
-import { useToast } from '@/context/ToastContext'
 import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import Slider1 from '@/assets/images/slider_value.svg'
+import { toast } from 'sonner'
 
 interface WithdrawAndRepayModalProps {
   type: 'Withdraw' | 'Repay' | null
@@ -26,7 +26,6 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
   openModal
 }) => {
   const { withdrawAndRepayData } = lendBorrowData?.lendBorrow
-  const { showToast } = useToast()
   const [amount, setAmount] = useState('0.00')
   const [isChecked, setIsChecked] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState(false)
@@ -51,12 +50,14 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
       handleCloseModal()
       setTimeout(() => {
         setIsLoading(false)
-        showToast(
-          'success',
+        toast.success(
           type === 'Withdraw' ? 'Funds successfully withdrawn!' : 'Funds successfully repaid!',
-          type === 'Withdraw'
-            ? `You have withdrawn 3,000 USDC from the pool to your wallet.`
-            : 'You have repaid 1,500 USDC. Remaining debt: 500 USDC.'
+          {
+            description:
+              type === 'Withdraw'
+                ? `You have withdrawn 3,000 USDC from the pool to your wallet.`
+                : 'You have repaid 1,500 USDC. Remaining debt: 500 USDC.'
+          }
         )
       }, 500)
     }, 2000)
