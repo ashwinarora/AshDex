@@ -205,7 +205,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               variant="outline"
               className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
             >
-              <h1 className="text-white text-sm font-semibold">{selectedAsset}</h1>
+            <h1 className="text-white text-sm font-semibold">{selectedAsset}-USD</h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>

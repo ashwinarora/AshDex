@@ -135,7 +135,7 @@ const AssetTable = ({
                   )}
                 </button>
                 <div className="flex flex-col md:flex-row gap-1 md:gap-2">
-                  <p className="text-white">{symbol.split('-')[0]}-USDC</p>
+                  <p className="text-white">{symbol.split('-')[0]}-USD</p>
                   {maxLeverage && (
                     <p className="bg-primary/40 w-fit px-2 rounded-md text-xs">{maxLeverage}×</p>
                   )}
@@ -253,7 +253,7 @@ const AssetTable = ({
                     <IconStar size={16} className="opacity-50 text-white" />
                   )}
                 </button>
-                <p className="text-white">{symbol.split('-')[0]}-USDC</p>
+                <p className="text-white">{symbol.split('-')[0]}-USD</p>
                 {maxLeverage && (
                   <p className="bg-primary/40 px-2 rounded-md text-xs">{maxLeverage}×</p>
                 )}

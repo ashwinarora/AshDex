@@ -58,7 +58,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
   const { toggleFavorite, favorites } = useFavorites(true)
-  const { data: spotMeta, spotKeyToName } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { isMobile } = useScreenSize()
 
   const selectedAssetContext = useMemo(() => {
@@ -186,7 +186,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">
-                {spotKeyToName.get(selectedAsset)}
+                {spotKeyToName.get(selectedAsset)}/{spotKeyToBaseName.get(selectedAsset)}
               </h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>

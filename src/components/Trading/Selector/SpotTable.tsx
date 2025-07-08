@@ -64,7 +64,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       spotAssetContext: state.spotAssetContext
     }))
   )
-  const { data: spotMeta, spotKeyToName } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { toggleFavorite, favorites } = useFavorites(true)
   const { isMobile } = useScreenSize()
   // Create column helper for TanStack Table
@@ -128,7 +128,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                     <IconStar size={16} className="opacity-50 text-white" />
                   )}
                 </button>
-                <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
+                <p className="text-white">{spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}</p>
               </div>
             )
           },
@@ -244,7 +244,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
+              <p className="text-white">
+                {spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}
+              </p>
             </div>
           )
         },

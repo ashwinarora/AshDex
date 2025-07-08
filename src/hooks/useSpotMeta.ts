@@ -31,5 +31,15 @@ export const useSpotMeta = () => {
     )
   }, [query.data])
 
-  return { ...query, spotKeyToName }
+  const spotKeyToBaseName: Map<string, string> = useMemo(() => {
+    if (!query.data) return new Map()
+    return new Map(
+      query.data.universe.map((universe) => [
+        universe.name,
+        query.data?.tokens[universe.tokens[1]]?.name
+      ])
+    )
+  }, [query.data])
+
+  return { ...query, spotKeyToName, spotKeyToBaseName }
 }
