@@ -36,7 +36,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
     return (
       <div className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md w-full !h-10 overflow-hidden">
         <IconStar className="size-3 text-white/20" />
-        <p className="text-white/20 text-sm">No token added to favorites</p>
+        <p className="text-white/20 text-sm">No assets added to favorites.</p>
       </div>
     )
   }

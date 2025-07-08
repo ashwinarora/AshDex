@@ -54,8 +54,8 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
 
   return (
     <ToggleGroupItem
-      value={data.name || ''}
-      key={data.name}
+      value={assetKey}
+      key={assetKey}
       className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
       {data.isPositive ? (
