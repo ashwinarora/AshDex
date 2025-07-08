@@ -126,7 +126,9 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <ReactiveText
             className="text-xs"
             precision={0}
-            value={Number(selectedAssetContext.circulatingSupply) * Number(selectedAssetContext.markPx)}
+            value={
+              Number(selectedAssetContext.circulatingSupply) * Number(selectedAssetContext.markPx)
+            }
             type="currency"
           />
         ) : (
