@@ -11,12 +11,10 @@ import {
   IconInfoCircle,
   IconMeteor,
   IconRosette,
-  // IconShieldCheck,
-  // IconShieldQuestion,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
@@ -26,44 +24,34 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import PerpsCountdown from './PerpsCountdown'
+import { useShallow } from 'zustand/react/shallow'
 
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
 }
 
-const useCountdown = () => {
-  const [timeLeft, setTimeLeft] = useState('')
-
-  useEffect(() => {
-    const updateCountdown = () => {
-      const now = new Date()
-      const hours = now.getHours()
-      const minutes = now.getMinutes()
-      const seconds = now.getSeconds()
-      const timeLeft = 24 - hours - minutes / 60 - seconds / 3600
-      const formattedTime = `00:${Math.floor((timeLeft % 1) * 60)
-        .toString()
-        .padStart(2, '0')}:${Math.floor((((timeLeft % 1) * 60) % 1) * 60)
-        .toString()
-        .padStart(2, '0')}`
-      setTimeLeft(formattedTime)
-    }
-
-    updateCountdown()
-    const interval = setInterval(updateCountdown, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
-  return timeLeft
-}
+// Memoize tabs array outside component to prevent recreation
+const TABS = [
+  { label: 'All', icon: null },
+  { label: 'New', icon: <IconRosette className="size-3" /> },
+  { label: 'AI', icon: <IconBrain className="size-3" /> },
+  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
+] as const
 
 const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { perpAssetContext, perpsMeta } = useHyperliquid()
+  const { perpAssetContext, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpAssetContext: state.perpAssetContext,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')
-  // const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
@@ -74,20 +62,14 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     return { context: perpAssetContext[idx] || null }
   }, [selectedAsset, perpsMeta, perpAssetContext])
 
-  const countdown = useCountdown()
-
-  // const tabs = ['All', 'Recently Listed', 'AI', 'Defi', 'Gaming', 'Meme']
-  const tabs = [
-    { label: 'All' },
-    { label: 'New', icon: <IconRosette className="size-3" /> },
-    { label: 'AI', icon: <IconBrain className="size-3" /> },
-    { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-    { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-    { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-  ]
-
-  // Memoize market data calculation
+  // Memoize market data calculation with better dependency tracking
   const marketData = useMemo(() => {
+    type MarketDataItem = {
+      label: string
+      value: React.ReactNode
+      color?: string
+      hasCountdown?: boolean
+    }
     if (!selectedAssetContext) return []
 
     const calculate24hChange = () => {
@@ -100,9 +82,22 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     }
 
     const changeString = calculate24hChange()
-    const data = [
+    const data: MarketDataItem[] = [
       {
-        label: 'Oracle',
+        label: 'Mark Price',
+        value: selectedAssetContext?.markPx ? (
+          <ReactiveText
+            className="text-xs"
+            precision={2}
+            value={Number(selectedAssetContext.markPx)}
+            type="currency"
+          />
+        ) : (
+          <Skeleton size="md" />
+        )
+      },
+      {
+        label: 'Oracle Price',
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText
@@ -153,6 +148,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
       }
     ]
 
+    // Only add funding if the asset has funding data
     if ('funding' in selectedAssetContext && selectedAssetContext.funding !== undefined) {
       data.splice(data.length - 1, 0, {
         label: 'Funding/Countdown',
@@ -161,20 +157,21 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             <span
               className={`${Number(selectedAssetContext.funding!) > 0 ? 'text-green' : 'text-red'}`}
             >
-              {selectedAssetContext.funding!.toString()}
+              {(Number(selectedAssetContext.funding!) * 100).toFixed(4)}%
             </span>
             <span className="text-white/70">/</span>
-            <span className="text-white">{countdown}</span>
+            <span className="text-white">
+              {/* PerpsCountdown will be rendered conditionally in JSX */}
+            </span>
           </div>
         ),
-        color: undefined
+        color: undefined,
+        hasCountdown: true
       })
     }
 
     return data
-  }, [selectedAssetContext, countdown])
-
-  console.log(marketData)
+  }, [selectedAssetContext])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -221,7 +218,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               variant="outline"
               className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
             >
-              <h1 className="text-white text-sm font-semibold">{selectedAsset}</h1>
+              <h1 className="text-white text-sm font-semibold">{selectedAsset}-USD</h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
@@ -237,34 +234,6 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="p-2 focus:outline-none w-full text-left text-white text-sm"
               />
-              {/* <ToggleGroup
-                size={'sm'}
-                type="single"
-                className="bg-white/5"
-                value={isStrict ? 'Strict' : 'All'}
-                onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
-              >
-                <ToggleGroupItem
-                  value="Strict"
-                  className={cn(
-                    'px-4 py-1 rounded-l-md cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
-                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/50'
-                  )}
-                >
-                  <IconShieldCheck className="size-4" />
-                  Verified
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="All"
-                  className={cn(
-                    'px-4 py-1 rounded-r-md cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
-                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/50'
-                  )}
-                >
-                  <IconShieldQuestion className="size-4" />
-                  All
-                </ToggleGroupItem>
-              </ToggleGroup> */}
             </div>
             <ToggleGroup
               className="flex items-center bg-white/5 justify-between w-full"
@@ -277,7 +246,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 setSelectedTab(value)
               }}
             >
-              {tabs.map((tab) => (
+              {TABS.map((tab) => (
                 <ToggleGroupItem
                   className={cn(
                     'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
@@ -309,7 +278,23 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>
-              <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
+              <div className={`text-xs ${item.color || 'text-white'}`}>
+                {item.hasCountdown ? (
+                  <div className="flex items-center gap-1">
+                    <span
+                      className={`${Number(selectedAssetContext?.funding || 0) > 0 ? 'text-green' : 'text-red'}`}
+                    >
+                      {(Number(selectedAssetContext?.funding || 0) * 100).toFixed(4)}%
+                    </span>
+                    <span className="text-white/70">/</span>
+                    <span className="text-white">
+                      <PerpsCountdown />
+                    </span>
+                  </div>
+                ) : (
+                  item.value
+                )}
+              </div>
             </div>
           ))}
         </div>

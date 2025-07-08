@@ -7,16 +7,21 @@ import { splitSignature } from '@/utils/utils'
 import { toast } from 'sonner'
 import { agentTypes, getActionHash, phantomDomain } from '@/utils/hyperliquid/PlaceOrder'
 import { Hex } from 'viem'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import { useShallow } from 'zustand/react/shallow'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { data: referral } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { chainId } = useAccount()
-  const { agentWallet } = useHyperliquid()
+  const { agentWallet } = useHyperliquidStore(
+    useShallow((state) => ({
+      agentWallet: state.agentWallet
+    }))
+  )
 
   if (referral?.referrerState.stage === 'needToTrade') {
     const eligibleAmount = referral.referrerState.data.required

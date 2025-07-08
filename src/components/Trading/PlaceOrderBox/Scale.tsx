@@ -7,7 +7,7 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
@@ -35,6 +35,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Toggle } from '@/components/ui/toggle'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
+import { useShallow } from 'zustand/react/shallow'
 interface Order {
   price: number
   size: number
@@ -108,7 +109,15 @@ function calculateScaleOrdersByAssetSize(
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkExchangeClient } =
-    useHyperliquid()
+    useHyperliquidStore(
+      useShallow((state) => ({
+        agentWallet: state.agentWallet,
+        clearingHouseState: state.clearingHouseState,
+        allMids: state.allMids,
+        perpsMeta: state.perpsMeta,
+        sdkExchangeClient: state.sdkExchangeClient
+      }))
+    )
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()

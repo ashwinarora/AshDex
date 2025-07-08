@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import {
@@ -27,7 +28,12 @@ interface LeverageModalProps {
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
-  const { perpsMeta } = useHyperliquid()
+  const { perpsMeta, sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpsMeta: state.perpsMeta,
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
 
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length) return 1
@@ -36,7 +42,6 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
   }, [perpsMeta, asset])
 
   const [leverage, setLeverage] = useState<number>(asset.leverage.value)
-  const { sdkExchangeClient } = useHyperliquid()
 
   const marks = useMemo(() => [...getLeverageTicks(maxLeverage, 3)], [maxLeverage])
 

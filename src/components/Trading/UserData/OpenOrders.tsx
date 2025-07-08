@@ -14,7 +14,8 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
@@ -37,7 +38,13 @@ type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquid()
+  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkExchangeClient: state.sdkExchangeClient,
+      openOrders: state.openOrders,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const isSpot = useIsSpot()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [sorting, setSorting] = useState<SortingState>([])

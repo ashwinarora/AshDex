@@ -5,7 +5,8 @@ import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
@@ -14,7 +15,13 @@ interface IUserDataProps {
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
-  const { clearingHouseState, openOrders, spotState } = useHyperliquid()
+  const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      openOrders: state.openOrders,
+      spotState: state.spotState
+    }))
+  )
   const isSpot = useIsSpot()
   const { spotKeyToName } = useSpotMeta()
 
@@ -39,13 +46,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       {
         header: `Balances (${balanceCount})`,
         count: balanceCount,
-        element: (
-          <Balances
-            setSelectedAsset={setSelectedAsset}
-            clearingHouseState={clearingHouseState}
-            spotState={spotState}
-          />
-        )
+        element: <Balances setSelectedAsset={setSelectedAsset} />
       },
       {
         header: `Positions (${positionsCount})`,

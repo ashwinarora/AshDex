@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
 import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
 import { splitSignature } from '@/utils/utils'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import { toast } from 'sonner'
@@ -28,7 +29,12 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
-  const { clearingHouseState, spotState } = useHyperliquid()
+  const { clearingHouseState, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState
+    }))
+  )
   const [isLoading, setIsLoading] = useState(false)
   const { signTypedDataAsync } = useSignTypedData()
 

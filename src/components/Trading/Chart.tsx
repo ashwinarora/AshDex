@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import * as hl from '@nktkas/hyperliquid'
+import { useShallow } from 'zustand/react/shallow'
 
 // TODO: Need Contributor review to fix the types
 
@@ -156,7 +157,13 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
+  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient,
+      subscribeToCandle: state.subscribeToCandle,
+      unsubscribeFromCandle: state.unsubscribeFromCandle
+    }))
+  )
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval

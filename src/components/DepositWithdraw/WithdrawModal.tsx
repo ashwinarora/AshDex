@@ -3,7 +3,7 @@ import { useAccount, useSignTypedData, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
 import { splitSignature } from '@/utils/utils'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import Loading from '../common/Loading'
@@ -13,6 +13,7 @@ import { Separator } from '../ui/separator'
 import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'sonner'
+import { useShallow } from 'zustand/react/shallow'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -23,7 +24,11 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useAccount()
 
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState } = useHyperliquid()
+  const { clearingHouseState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState
+    }))
+  )
   const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
   const { switchChainAsync } = useSwitchChain()

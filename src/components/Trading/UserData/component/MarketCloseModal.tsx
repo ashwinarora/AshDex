@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import { AssetPosition } from '@nktkas/hyperliquid'
@@ -31,7 +32,15 @@ interface MarketCloseModalProps {
 
 const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
   const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
-    useHyperliquid()
+    useHyperliquidStore(
+      useShallow((state) => ({
+        clearingHouseState: state.clearingHouseState,
+        agentWallet: state.agentWallet,
+        allMids: state.allMids,
+        sdkExchangeClient: state.sdkExchangeClient,
+        perpsMeta: state.perpsMeta
+      }))
+    )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)

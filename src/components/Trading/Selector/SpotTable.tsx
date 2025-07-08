@@ -1,7 +1,7 @@
 'use client'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { IconSelector } from '@tabler/icons-react'
-import { useState, useMemo } from 'react'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
+import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
   useReactTable,
@@ -29,6 +29,8 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useVirtualizer } from '@tanstack/react-virtual'
+import { useShallow } from 'zustand/react/shallow'
 
 interface AssetTableProps {
   searchTerm: string
@@ -57,8 +59,12 @@ const formatPrice = (price: number | undefined | null) => {
 
 const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableProps) => {
   const [sorting, setSorting] = useState<SortingState>([])
-  const { spotAssetContext } = useHyperliquid()
-  const { data: spotMeta, spotKeyToName } = useSpotMeta()
+  const { spotAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotAssetContext: state.spotAssetContext
+    }))
+  )
+  const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { toggleFavorite, favorites } = useFavorites(true)
   const { isMobile } = useScreenSize()
   // Create column helper for TanStack Table
@@ -76,10 +82,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
         const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
         const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
-        const marketCap =
-          assetCtx.markPx && 'tokenContract' in assetCtx
-            ? Number(assetCtx.markPx) * Number(assetCtx.totalSupply || 1)
-            : 0
+        const marketCap = Number(assetCtx.circulatingSupply) * Number(assetCtx.markPx)
 
         return {
           symbol: assetCtx.coin,
@@ -97,12 +100,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Market
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Market</div>,
           cell: (info) => {
             const { symbol } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -122,7 +120,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                     <IconStar size={16} className="opacity-50 text-white" />
                   )}
                 </button>
-                <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
+                <p className="text-white">
+                  {spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}
+                </p>
               </div>
             )
           },
@@ -142,12 +142,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Volume
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Volume</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -160,12 +155,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => (
-            <div className="flex items-center gap-1">
-              Price / 24h
-              <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-            </div>
-          ),
+          header: () => <div className="flex items-center gap-1">Price / 24h</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -213,12 +203,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     return [
       columnHelper.accessor('symbol', {
         id: 'symbol',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Market
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Market</div>,
         cell: (info) => {
           const { symbol } = info.row.original
           const isFavorite = favorites.has(symbol)
@@ -238,7 +223,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                   <IconStar size={16} className="opacity-50 text-white" />
                 )}
               </button>
-              <p className="text-white">{spotKeyToName.get(symbol)}/USDC</p>
+              <p className="text-white">
+                {spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}
+              </p>
             </div>
           )
         },
@@ -256,12 +243,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('price', {
         id: 'price',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Price
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Price</div>,
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
@@ -271,12 +253,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('prevDayPrice', {
         id: 'prevDayPrice',
-        header: () => (
-          <div className="flex items-center gap-1">
-            24h Change
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">24h Change</div>,
         cell: (info) => {
           const { price, prevDayPrice } = info.row.original
           const difference = price - prevDayPrice
@@ -317,12 +294,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('volume', {
         id: 'volume',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Volume
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Volume</div>,
         cell: (info) => {
           const volume = info.getValue()
           return (
@@ -335,12 +307,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('marketCap', {
         id: 'marketCap',
-        header: () => (
-          <div className="flex items-center gap-1">
-            Market Cap
-            <IconSelector className="w-4 h-4 text-white/50 group-active:text-primary" />
-          </div>
-        ),
+        header: () => <div className="flex items-center gap-1">Market Cap</div>,
         cell: (info) => {
           const marketCap = info.getValue()
           return (
@@ -367,12 +334,24 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     getSortedRowModel: getSortedRowModel()
   })
 
+  const parentRef = useRef(null)
+
+  const rowVirtualizer = useVirtualizer({
+    count: table.getRowModel().rows.length,
+    estimateSize: () => 36,
+    getScrollElement: () => parentRef.current,
+    overscan: 5
+  })
+
+  const virtualRows = rowVirtualizer.getVirtualItems()
+  const totalSize = rowVirtualizer.getTotalSize()
+
   const handleRowClick = (assetKey: string) => {
     setSelectedAsset(assetKey)
   }
 
   return (
-    <Table>
+    <Table ref={parentRef}>
       <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow key={headerGroup.id}>
@@ -394,39 +373,54 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                   }
                 }}
               >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(header.column.columnDef.header, header.getContext())}
+                {header.isPlaceholder ? null : (
+                  <>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                    {header.column.columnDef.enableSorting ? (
+                      header.column.getIsSorted() === 'asc' ? (
+                        <IconChevronUp className="text-inherit size-4" />
+                      ) : header.column.getIsSorted() === 'desc' ? (
+                        <IconChevronDown className="text-inherit size-4" />
+                      ) : (
+                        <IconSelector className="text-inherit size-4" />
+                      )
+                    ) : null}
+                  </>
+                )}
               </TableHead>
             ))}
           </TableRow>
         ))}
       </TableHeader>
-      <TableBody className="scroll-smooth">
-        {table.getRowModel().rows.map((row) => (
-          <TableRow
-            key={row.id}
-            onClick={() => handleRowClick(row.original.symbol)}
-            className={cn(
-              'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-              selectedAsset === row.original.symbol && 'bg-secondary'
-            )}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <TableCell
-                key={cell.id}
-                className={cn(
-                  'font-medium whitespace-nowrap w-2/12',
-                  !isMobile
-                    ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') && 'w-3/12'
-                    : 'w-full flex-1 shrink-0'
-                )}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
+      <TableBody className="scroll-smooth" style={{ height: `${totalSize}px` }}>
+        {virtualRows.map((virtualRow) => {
+          const row = table.getRowModel().rows[virtualRow.index]
+          return (
+            <TableRow
+              key={row.id}
+              onClick={() => handleRowClick(row.original.symbol)}
+              className={cn(
+                'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
+                selectedAsset === row.original.symbol && 'bg-secondary'
+              )}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <TableCell
+                  key={cell.id}
+                  className={cn(
+                    'font-medium whitespace-nowrap w-2/12',
+                    !isMobile
+                      ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
+                          'w-3/12'
+                      : 'w-full flex-1 shrink-0'
+                  )}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          )
+        })}
       </TableBody>
     </Table>
   )

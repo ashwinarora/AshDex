@@ -6,7 +6,7 @@ import Filter1 from '../../assets/images/tabler-icon-layout-filled.svg'
 import Filter2 from '../../assets/images/tabler-icon-layout-filledAlt.svg'
 import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
 
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { generatePrecisionLabels } from '@/utils/utils'
 import { cn } from '@/lib/utils'
 import ReactiveText from '../common/ReactiveText'
@@ -24,6 +24,7 @@ import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useShallow } from 'zustand/react/shallow'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -31,7 +32,12 @@ interface IOrderBookProps {
 }
 
 const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
-  const { sdkSubscriptionClient, allMids } = useHyperliquid()
+  const { sdkSubscriptionClient, allMids } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkSubscriptionClient: state.sdkSubscriptionClient,
+      allMids: state.allMids
+    }))
+  )
   const [l2Book, setL2Book] = useState<Book>()
   const { isMobile, isTablet } = useScreenSize()
   const [isLoading, setIsLoading] = useState(true)
