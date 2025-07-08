@@ -128,7 +128,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                     <IconStar size={16} className="opacity-50 text-white" />
                   )}
                 </button>
-                <p className="text-white">{spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}</p>
+                <p className="text-white">
+                  {spotKeyToName.get(symbol)}/{spotKeyToBaseName.get(symbol)}
+                </p>
               </div>
             )
           },
