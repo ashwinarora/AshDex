@@ -51,6 +51,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           type="single"
           className="flex items-center gap-2 h-full"
           onValueChange={(asset) => {
+            if (!asset.length) return
             console.log('asset', asset)
             setSelectedAsset(asset)
           }}

@@ -90,6 +90,19 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
 
     return [
       {
+        label: 'Price',
+        value: selectedAssetContext?.markPx ? (
+          <ReactiveText
+            className="text-xs"
+            precision={3}
+            value={Number(selectedAssetContext.markPx)}
+            type="currency"
+          />
+        ) : (
+          <Skeleton size="md" />
+        )
+      },
+      {
         label: '24h Change',
         value: changeString ?? <Skeleton size="md" />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
@@ -113,7 +126,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <ReactiveText
             className="text-xs"
             precision={0}
-            value={Number(Number(selectedAssetContext.midPx))}
+            value={Number(selectedAssetContext.circulatingSupply) * Number(selectedAssetContext.markPx)}
             type="currency"
           />
         ) : (

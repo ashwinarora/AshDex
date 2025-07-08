@@ -84,7 +84,20 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [
       {
-        label: 'Oracle',
+        label: 'Mark Price',
+        value: selectedAssetContext?.markPx ? (
+          <ReactiveText
+            className="text-xs"
+            precision={2}
+            value={Number(selectedAssetContext.markPx)}
+            type="currency"
+          />
+        ) : (
+          <Skeleton size="md" />
+        )
+      },
+      {
+        label: 'Oracle Price',
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText

@@ -82,11 +82,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
         const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
         const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
-        const marketCap =
-          assetCtx.markPx && 'tokenContract' in assetCtx
-            ? Number(assetCtx.markPx) * Number(assetCtx.totalSupply || 1)
-            : 0
-
+        const marketCap = Number(assetCtx.circulatingSupply) * Number(assetCtx.markPx)
+        
         return {
           symbol: assetCtx.coin,
           price,
