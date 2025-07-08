@@ -11,7 +11,7 @@ import {
 import { Button } from '../ui/button'
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import PortfolioChart from './PortfolioChart'
-import { PortfolioPeriods, UserFees } from '@nktkas/hyperliquid'
+import { Hex, UserFees } from '@nktkas/hyperliquid'
 import {
   Dialog,
   DialogContent,
@@ -31,16 +31,12 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { cn } from '@/lib/utils'
 import ReactiveText from '../common/ReactiveText'
-import { UseQueryResult } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
+import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useAccount } from 'wagmi'
 
-const PortfolioStats = ({
-  portfolioData,
-  userFeeData
-}: {
-  portfolioData: UseQueryResult<PortfolioPeriods | undefined, Error>
-  userFeeData: UseQueryResult<UserFees | undefined, Error>
-}) => {
+const PortfolioStats = () => {
   const { isMobile, isTablet } = useScreenSize()
   const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
   const [sorting, setSorting] = useState<SortingState>([])
@@ -52,8 +48,24 @@ const PortfolioStats = ({
     overviewTimeFrame: 'alltime'
   })
 
+  const { address } = useAccount()
+
+  const { sdkInfoClient } = useHyperliquid()
+
+  const portfolioQuery = useQuery({
+    queryKey: ['portfolio'],
+    queryFn: () => sdkInfoClient?.portfolio({ user: address as Hex }),
+    refetchInterval: 2000
+  })
+
+  const { data: userFeeData, isLoading: userFeeLoading } = useQuery({
+    queryKey: ['userFeeData'],
+    queryFn: () => sdkInfoClient?.userFees({ user: address as Hex }),
+    refetchInterval: 25000
+  })
+
   const overviewTable = useMemo(() => {
-    const filteredData = portfolioData.data?.map((item) => ({
+    const filteredData = portfolioQuery.data?.map((item) => ({
       timeframe: item[0].includes('perp')
         ? item[0].replace('perp', '').toLowerCase()
         : item[0].toLowerCase(),
@@ -86,7 +98,7 @@ const PortfolioStats = ({
       'Vault Equity': '$0.00',
       'Staking Account': '0 HYPE'
     }
-  }, [portfolioData, selectedView.overviewTimeFrame, selectedView.overview])
+  }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
 
   const columns = useMemo(
     () => [
@@ -143,7 +155,7 @@ const PortfolioStats = ({
   )
 
   const table = useReactTable({
-    data: userFeeData?.data ? userFeeData?.data?.dailyUserVlm : [],
+    data: userFeeData ? userFeeData?.dailyUserVlm : [],
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -155,25 +167,25 @@ const PortfolioStats = ({
   if (isMobile || isTablet) {
     return (
       <div className="flex flex-col w-full h-fit gap-1">
-        <div className="flex bg-secondary rounded-md h-80 items-center justify-center w-full">
-          <PortfolioChart portfolioData={portfolioData?.data as PortfolioPeriods} />
+        <div className="flex bg-secondary rounded-md h-fit items-center justify-center w-full">
+          <PortfolioChart portfolioQuery={portfolioQuery} />
         </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
             <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4">
               <h2>30 Day Volume</h2>
-              {userFeeData?.isLoading ? (
+              {userFeeLoading ? (
                 <Skeleton className="w-36 h-12" />
               ) : (
                 <h1 className="text-3xl font-semibold text-white">
                   $
-                  {userFeeData?.data?.dailyUserVlm
+                  {userFeeData?.dailyUserVlm
                     ?.reduce((acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc, 0)
                     .toFixed(2) || 0}
                 </h1>
               )}
               <Dialog>
-                <DialogTrigger disabled={userFeeData?.data?.dailyUserVlm?.length === 0} asChild>
+                <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
                   <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
                     View Volume
                   </p>
@@ -189,70 +201,69 @@ const PortfolioStats = ({
                     </DialogDescription>
                   </DialogHeader>
                   <div className="flex flex-col items-center h-full w-full gap-2">
-                    {userFeeData?.data?.dailyUserVlm &&
-                      userFeeData?.data?.dailyUserVlm?.length > 0 && (
-                        <Table>
-                          <TableHeader>
-                            {table.getHeaderGroups().map((headerGroup) => (
-                              <TableRow key={headerGroup.id}>
-                                {headerGroup.headers.map((header) => (
-                                  <TableHead
-                                    key={header.id}
-                                    onClick={() => {
-                                      if (header.column.getCanSort()) {
-                                        header.column.toggleSorting()
-                                      }
-                                    }}
-                                    className={cn(
-                                      'cursor-pointer flex items-center gap-1 w-1/4 flex-1 shrink-0 !text-xs',
-                                      header.id === 'date' ? 'justify-start' : 'justify-end',
-                                      header.column.columnDef.enableSorting
-                                        ? 'hover:text-accent-foreground'
-                                        : 'hover:text-white/50',
-                                      header.column.getIsSorted() === 'asc' ||
-                                        header.column.getIsSorted() === 'desc'
-                                        ? 'text-accent-foreground'
-                                        : 'text-white/50'
-                                    )}
-                                  >
-                                    {header.isPlaceholder ? null : (
-                                      <>
-                                        {flexRender(
-                                          header.column.columnDef.header,
-                                          header.getContext()
-                                        )}
-                                        {header.column.columnDef.enableSorting ? (
-                                          header.column.getIsSorted() === 'asc' ? (
-                                            <IconChevronUp className="text-inherit size-4" />
-                                          ) : header.column.getIsSorted() === 'desc' ? (
-                                            <IconChevronDown className="text-inherit size-4" />
-                                          ) : (
-                                            <IconSelector className="text-inherit size-4" />
-                                          )
-                                        ) : null}
-                                      </>
-                                    )}
-                                  </TableHead>
-                                ))}
-                              </TableRow>
-                            ))}
-                          </TableHeader>
-                          <TableBody>
-                            {table.getRowModel().rows.map((row) => (
-                              <TableRow className="h-12" key={row.id}>
-                                {row.getVisibleCells().map((cell) => (
-                                  <TableCell
-                                    key={cell.id}
-                                    className="font-medium text-white text-xs first:text-left text-right"
-                                  >
-                                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                  </TableCell>
-                                ))}
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                      )}
+                    {userFeeData?.dailyUserVlm && userFeeData?.dailyUserVlm?.length > 0 && (
+                      <Table>
+                        <TableHeader>
+                          {table.getHeaderGroups().map((headerGroup) => (
+                            <TableRow key={headerGroup.id}>
+                              {headerGroup.headers.map((header) => (
+                                <TableHead
+                                  key={header.id}
+                                  onClick={() => {
+                                    if (header.column.getCanSort()) {
+                                      header.column.toggleSorting()
+                                    }
+                                  }}
+                                  className={cn(
+                                    'cursor-pointer flex items-center gap-1 w-1/4 flex-1 shrink-0 !text-xs',
+                                    header.id === 'date' ? 'justify-start' : 'justify-end',
+                                    header.column.columnDef.enableSorting
+                                      ? 'hover:text-accent-foreground'
+                                      : 'hover:text-white/50',
+                                    header.column.getIsSorted() === 'asc' ||
+                                      header.column.getIsSorted() === 'desc'
+                                      ? 'text-accent-foreground'
+                                      : 'text-white/50'
+                                  )}
+                                >
+                                  {header.isPlaceholder ? null : (
+                                    <>
+                                      {flexRender(
+                                        header.column.columnDef.header,
+                                        header.getContext()
+                                      )}
+                                      {header.column.columnDef.enableSorting ? (
+                                        header.column.getIsSorted() === 'asc' ? (
+                                          <IconChevronUp className="text-inherit size-4" />
+                                        ) : header.column.getIsSorted() === 'desc' ? (
+                                          <IconChevronDown className="text-inherit size-4" />
+                                        ) : (
+                                          <IconSelector className="text-inherit size-4" />
+                                        )
+                                      ) : null}
+                                    </>
+                                  )}
+                                </TableHead>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableHeader>
+                        <TableBody>
+                          {table.getRowModel().rows.map((row) => (
+                            <TableRow className="h-12" key={row.id}>
+                              {row.getVisibleCells().map((cell) => (
+                                <TableCell
+                                  key={cell.id}
+                                  className="font-medium text-white text-xs first:text-left text-right"
+                                >
+                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    )}
                   </div>
                 </DialogContent>
               </Dialog>
@@ -285,10 +296,10 @@ const PortfolioStats = ({
               </div>
               <h1 className="text-3xl font-semibold text-white">
                 {userFeeData &&
-                  userFeeData.data &&
+                  userFeeData &&
                   (selectedView.fees === 'perps'
-                    ? `${(parseFloat(userFeeData.data.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.data.userAddRate) * 100).toFixed(3)}%`
-                    : `${(parseFloat(userFeeData.data.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.data.userSpotAddRate) * 100).toFixed(3)}%`)}
+                    ? `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
+                    : `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`)}
               </h1>
               <p className="text-xs">View Fee Schedule</p>
             </div>
@@ -372,18 +383,18 @@ const PortfolioStats = ({
       <div className="basis-xs flex flex-col gap-1 rounded-md h-full">
         <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-1 p-4">
           <h2>30 Day Volume</h2>
-          {userFeeData?.isLoading ? (
+          {userFeeLoading ? (
             <Skeleton className="w-36 h-12" />
           ) : (
             <h1 className="text-5xl font-semibold text-white">
               $
-              {userFeeData?.data?.dailyUserVlm
+              {userFeeData?.dailyUserVlm
                 ?.reduce((acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc, 0)
                 .toFixed(2) || 0}
             </h1>
           )}
           <Dialog>
-            <DialogTrigger disabled={userFeeData?.data?.dailyUserVlm?.length === 0} asChild>
+            <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
               <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
                 View Volume
               </p>
@@ -399,7 +410,7 @@ const PortfolioStats = ({
                 </DialogDescription>
               </DialogHeader>
               <div className="flex flex-col items-center h-full w-full gap-2">
-                {userFeeData?.data?.dailyUserVlm && userFeeData?.data?.dailyUserVlm?.length > 0 && (
+                {userFeeData?.dailyUserVlm && userFeeData?.dailyUserVlm?.length > 0 && (
                   <Table>
                     <TableHeader>
                       {table.getHeaderGroups().map((headerGroup) => (
@@ -487,16 +498,16 @@ const PortfolioStats = ({
           </div>
           <h1 className="text-3xl font-semibold text-white">
             {userFeeData &&
-              userFeeData.data &&
+              userFeeData &&
               (selectedView.fees === 'perps'
-                ? `${(parseFloat(userFeeData.data.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.data.userAddRate) * 100).toFixed(3)}%`
-                : `${(parseFloat(userFeeData.data.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.data.userSpotAddRate) * 100).toFixed(3)}%`)}
+                ? `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
+                : `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`)}
           </h1>
           <p className="text-xs">View Fee Schedule</p>
         </div>
       </div>
       <div className="flex-1 flex bg-secondary rounded-md h-full items-center justify-center">
-        <PortfolioChart portfolioData={portfolioData?.data as PortfolioPeriods} />
+        <PortfolioChart portfolioQuery={portfolioQuery} />
       </div>
       <div className="basis-xs bg-secondary rounded-md h-full flex flex-col gap-2 p-2">
         <div className="flex items-center justify-between w-full">
