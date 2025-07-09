@@ -1,3 +1,4 @@
+'use client'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useMemo, useState } from 'react'
 import Balances from './Balances'
@@ -11,7 +12,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 interface IUserDataProps {
-  setSelectedAsset: (asset: string) => void
+  setSelectedAsset?: (asset: string) => void
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
@@ -46,12 +47,12 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       {
         header: `Balances (${balanceCount})`,
         count: balanceCount,
-        element: <Balances setSelectedAsset={setSelectedAsset} />
+        element: <Balances setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: `Positions (${positionsCount})`,
         count: positionsCount,
-        element: <Positions setSelectedAsset={setSelectedAsset} />
+        element: <Positions setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: `Open Orders (${openOrdersLength})`,
@@ -68,7 +69,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       }
     ]
     return tabs
-  }, [isSpot, positionsCount, openOrders.length])
+  }, [isSpot, positionsCount, openOrders.length, balanceCount])
 
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
