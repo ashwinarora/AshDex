@@ -76,27 +76,43 @@ const PortfolioStats = () => {
     }))
 
     // subtract min account value from max account value and divide by max account value
-    const maxDrawdownArray = filteredData?.find(item => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.accountValue
-    const maxValue = maxDrawdownArray?.length && maxDrawdownArray?.length > 0 ? parseFloat(maxDrawdownArray?.reduce((acc, curr) => {
-      return Number(acc[1]) > Number(curr[1]) ? acc : curr
-    })[1] || '0   ') : 0
+    const maxDrawdownArray = filteredData?.find(
+      (item) =>
+        item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview
+    )?.accountValue
+    const maxValue =
+      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
+        ? parseFloat(
+            maxDrawdownArray?.reduce((acc, curr) => {
+              return Number(acc[1]) > Number(curr[1]) ? acc : curr
+            })[1] || '0   '
+          )
+        : 0
 
-    const minValue = maxDrawdownArray?.length && maxDrawdownArray?.length > 0 ? parseFloat(maxDrawdownArray?.reduce((acc, curr) => {
-      return Number(acc[1]) < Number(curr[1]) ? acc : curr
-    })[1] || '0   ') : 0
-    
-    const maxDrawdown =  minValue - maxValue
+    const minValue =
+      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
+        ? parseFloat(
+            maxDrawdownArray?.reduce((acc, curr) => {
+              return Number(acc[1]) < Number(curr[1]) ? acc : curr
+            })[1] || '0   '
+          )
+        : 0
+
+    const maxDrawdown = minValue - maxValue
     const maxDrawdownPercentage = (maxDrawdown / maxValue) * 100
 
-
     const totalEquity =
-      parseFloat(filteredData
-        ?.find((item) => item.timeframe === 'alltime' && item.type === 'all')
-        ?.accountValue.at(-1)?.[1] || '0').toFixed(2) || '0'
+      parseFloat(
+        filteredData
+          ?.find((item) => item.timeframe === 'alltime' && item.type === 'all')
+          ?.accountValue.at(-1)?.[1] || '0'
+      ).toFixed(2) || '0'
     const perpEquity =
-      parseFloat(filteredData
-        ?.find((item) => item.timeframe === 'alltime' && item.type === 'perps')
-        ?.accountValue.at(-1)?.[1] || '0').toFixed(2) || '0'
+      parseFloat(
+        filteredData
+          ?.find((item) => item.timeframe === 'alltime' && item.type === 'perps')
+          ?.accountValue.at(-1)?.[1] || '0'
+      ).toFixed(2) || '0'
     const spotEquity = (parseFloat(totalEquity) - parseFloat(perpEquity)).toFixed(2)
 
     return {
@@ -329,7 +345,10 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}</p>
+                    <p>
+                      {selectedView.overview.charAt(0).toUpperCase() +
+                        selectedView.overview.slice(1)}
+                    </p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -349,7 +368,12 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overviewTimeFrame === 'alltime' ? 'All Time' : selectedView.overviewTimeFrame.charAt(0).toUpperCase() + selectedView.overviewTimeFrame.slice(1)}</p>
+                    <p>
+                      {selectedView.overviewTimeFrame === 'alltime'
+                        ? 'All Time'
+                        : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
+                          selectedView.overviewTimeFrame.slice(1)}
+                    </p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -529,7 +553,9 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}</p>
+                <p>
+                  {selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}
+                </p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -549,7 +575,12 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overviewTimeFrame === 'alltime' ? 'All Time' : selectedView.overviewTimeFrame.charAt(0).toUpperCase() + selectedView.overviewTimeFrame.slice(1)}</p>
+                <p>
+                  {selectedView.overviewTimeFrame === 'alltime'
+                    ? 'All Time'
+                    : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
+                      selectedView.overviewTimeFrame.slice(1)}
+                </p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
