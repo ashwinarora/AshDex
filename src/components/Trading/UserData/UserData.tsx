@@ -1,3 +1,4 @@
+'use client'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useMemo, useState } from 'react'
 import Balances from './Balances'
@@ -5,22 +6,33 @@ import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 
 interface IUserDataProps {
-  setSelectedAsset: (asset: string) => void
+  setSelectedAsset?: (asset: string) => void
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
-  const { clearingHouseState, openOrders } = useHyperliquid()
+  const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      openOrders: state.openOrders,
+      spotState: state.spotState
+    }))
+  )
   const isSpot = useIsSpot()
   const { spotKeyToName } = useSpotMeta()
 
   const positionsCount = useMemo(() => {
     return clearingHouseState?.assetPositions?.length || 0
   }, [clearingHouseState?.assetPositions])
+
+  const balanceCount = useMemo(() => {
+    return spotState?.balances?.filter((balance) => balance.coin !== 'USDC').length || 0
+  }, [spotState?.balances])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {
@@ -33,13 +45,14 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     }).length
     const tabs = [
       {
-        header: 'Balances',
-        element: <Balances setSelectedAsset={setSelectedAsset} />
+        header: `Balances (${balanceCount})`,
+        count: balanceCount,
+        element: <Balances setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: `Positions (${positionsCount})`,
         count: positionsCount,
-        element: <Positions setSelectedAsset={setSelectedAsset} />
+        element: <Positions setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: `Open Orders (${openOrdersLength})`,
@@ -56,13 +69,13 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       }
     ]
     return tabs
-  }, [isSpot, positionsCount, openOrders.length])
+  }, [isSpot, positionsCount, openOrders.length, balanceCount])
 
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 
   return (
     <div className="w-full bg-secondary h-full rounded-md overflow-x-hidden flex flex-col gap-2 p-2">
-      <div className="md:max-w-md xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start">
+      <div className="md:max-w-xl xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start">
         <ToggleGroup
           type="single"
           className="w-fit h-full bg-white/5 rounded-md"

@@ -2,8 +2,8 @@
 import { useAccount } from 'wagmi'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useState, useMemo, useEffect } from 'react'
-// import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import {
   createColumnHelper,
   flexRender,
@@ -22,10 +22,15 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
+import { useRouter } from 'next/navigation'
+
+type BalanceProps = {
+  setSelectedAsset: (asset: string) => void
+}
 
 type BalanceData = {
   coin: string
@@ -35,19 +40,50 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
+const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquid()
+  const { clearingHouseState, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState
+    }))
+  )
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
+  const router = useRouter()
 
   useEffect(() => {
     setIsMounted(true)
   }, [])
+
+  const combinedData = useMemo(() => {
+    if (!isConnected) return []
+
+    const perpData = {
+      coin: 'USDC(Perps)',
+      token: 'USDC',
+      total: clearingHouseState?.marginSummary?.accountValue || '-',
+      hold: clearingHouseState?.withdrawable || '-',
+      entryNtl: '-'
+    }
+
+    const spotData =
+      spotState?.balances?.map((state) => ({
+        ...state,
+        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
+      })) || []
+
+    return [perpData, ...spotData]
+  }, [
+    isConnected,
+    clearingHouseState?.marginSummary?.accountValue,
+    clearingHouseState?.withdrawable,
+    spotState?.balances
+  ])
 
   const columns = useMemo(
     () => [
@@ -63,7 +99,10 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
               variant="link"
               size="defaultLink"
               className="text-accent-foreground font-bold text-xs hover:text-accent-foreground transition-all hover:no-underline"
-              onClick={() => setSelectedAsset(coin)}
+              onClick={() => {
+                setSelectedAsset(coin)
+                router.push(`/spot`)
+              }}
             >
               {coin}
             </Button>
@@ -93,12 +132,12 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
         enableSorting: true,
         meta: { label: 'Hold' }
       }),
-      columnHelper.accessor('entryNtl', {
-        id: 'entryNtl',
-        header: () => <span className="flex justify-start items-center gap-1">Entry NTL</span>,
-        cell: (info) => info.getValue(),
+      columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
+        id: 'averagePrice',
+        header: () => <span className="flex justify-start items-center gap-1">Average Price</span>,
+        cell: (info) => (isNaN(info.getValue()) ? '-' : info.getValue().toFixed(2)),
         enableSorting: true,
-        meta: { label: 'Entry NTL' }
+        meta: { label: 'Average Price' }
       }),
       columnHelper.display({
         id: 'send',
@@ -127,32 +166,6 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
     ],
     [columnHelper, isSendModalOpen]
   )
-
-  const combinedData = useMemo(() => {
-    if (!isConnected) return []
-
-    const perpData = {
-      coin: 'USDC(Perps)',
-      token: 'USDC',
-      total: clearingHouseState?.marginSummary?.accountValue || '-',
-      hold: clearingHouseState?.withdrawable || '-',
-      entryNtl: '-'
-    }
-
-    const spotData =
-      spotState?.balances?.map((state) => ({
-        ...state,
-        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
-      })) || []
-
-    return [perpData, ...spotData]
-  }, [
-    isConnected,
-    clearingHouseState?.marginSummary?.accountValue,
-    clearingHouseState?.withdrawable,
-    spotState?.balances
-  ])
-
   const table = useReactTable({
     data: combinedData,
     columns,
@@ -240,11 +253,11 @@ const Balances = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => v
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

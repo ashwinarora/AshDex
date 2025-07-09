@@ -1,7 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import * as hl from '@nktkas/hyperliquid'
+import { useShallow } from 'zustand/react/shallow'
 
 // TODO: Need Contributor review to fix the types
 
@@ -156,7 +157,13 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquid()
+  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient,
+      subscribeToCandle: state.subscribeToCandle,
+      unsubscribeFromCandle: state.unsubscribeFromCandle
+    }))
+  )
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
 
   // Convert TradingView resolution to Hyperliquid interval
@@ -408,9 +415,16 @@ const TradingViewChart = ({
         locale: 'en',
         theme: 'dark',
         autosize: true,
+        // @ts-expect-error - enabled_features is not in the type
+        enabled_features: [
+          'hide_left_toolbar_by_default',
+          'hide_unresolved_symbols_in_legend',
+          'hide_image_invalid_symbol'
+        ],
         disabled_features: [
           'use_localstorage_for_settings',
           'header_symbol_search',
+          'widget_logo',
           'compare_symbols'
         ],
         overrides: {

@@ -6,15 +6,21 @@ import { FC, useState, useEffect } from 'react'
 
 import { IconCellSignal5, IconCellSignalOff } from '@tabler/icons-react'
 import dynamic from 'next/dynamic'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import { useShallow } from 'zustand/react/shallow'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
-  const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquid()
+  const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
+    useShallow((state) => ({
+      isWebSocketConnected: state.isWebSocketConnected,
+      getTimeSinceLastUpdate: state.getTimeSinceLastUpdate
+    }))
+  )
   const [timeSinceUpdate, setTimeSinceUpdate] = useState({
     allMids: '',
     webData2: '',

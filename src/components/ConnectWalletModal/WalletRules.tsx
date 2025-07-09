@@ -5,7 +5,7 @@ import { useAccount } from 'wagmi'
 import { useSignMessage } from 'wagmi'
 import axios from 'axios'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 
 interface WalletRulesProps {
   onClose: () => void
@@ -68,18 +68,12 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
               })
               console.log('terms res', res)
               await refetchUserTerms()
-              toast.update(toastId, {
-                render: 'Signature verified',
-                type: 'success',
-                isLoading: false,
-                autoClose: 3000
+              toast.success('Signature verified', {
+                id: toastId
               })
             } catch (err) {
-              toast.update(toastId, {
-                render: 'Failed to sign and verify terms. Please try again.',
-                type: 'error',
-                isLoading: false,
-                autoClose: 3000
+              toast.error('Failed to sign and verify terms. Please try again.', {
+                id: toastId
               })
               console.log('Error signing/verifying terms:', err)
             }

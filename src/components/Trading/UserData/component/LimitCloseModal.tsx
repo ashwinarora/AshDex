@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { IconChevronDown, IconRefresh } from '@tabler/icons-react'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import {
@@ -31,7 +32,15 @@ interface LimitCloseModalProps {
 
 const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
   const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
-    useHyperliquid()
+    useHyperliquidStore(
+      useShallow((state) => ({
+        clearingHouseState: state.clearingHouseState,
+        agentWallet: state.agentWallet,
+        allMids: state.allMids,
+        sdkExchangeClient: state.sdkExchangeClient,
+        perpsMeta: state.perpsMeta
+      }))
+    )
   const [price, setPrice] = useState<string>('')
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
@@ -154,40 +163,28 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.update(toastId, {
-          render: `✅ Position Closed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Position Closed Successfully', {
+          id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.update(toastId, {
-            render: `✅ Order Placed Successfully`,
-            type: 'success',
-            isLoading: false,
-            autoClose: 3000
+          toast.success('Order Placed Successfully', {
+            id: toastId
           })
         }
       }
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.update(toastId, {
-        render: '❌' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

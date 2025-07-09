@@ -1,20 +1,17 @@
 import React from 'react'
-import { useToast } from '@/context/ToastContext'
 import { REFERRALS_CLAIM_DESC } from '@/utils/constants'
+import { toast } from 'sonner'
 
 interface ClaimProps {
   isCreateCode?: boolean
   totalClaim: number
 }
 function Claim({ isCreateCode, totalClaim }: ClaimProps) {
-  const { showToast } = useToast()
   const handleSubmit = () => {
     setTimeout(() => {
-      showToast(
-        'success',
-        'Claim Successful!',
-        `You’ve successfully claimed $10. The funds have been added to your balance.`
-      )
+      toast.success('Claim Successful!', {
+        description: `You’ve successfully claimed $10. The funds have been added to your balance.`
+      })
     }, 1000)
   }
 

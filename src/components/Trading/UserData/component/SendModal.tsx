@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
 import { isTestnet } from '@/utils/constants'
 import { hyperliquidAxios } from '@/config/axios'
@@ -44,7 +45,12 @@ const SendModal: React.FC<SendModalProps> = ({
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
   const { chainId } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquid()
+  const { clearingHouseState, spotState } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      spotState: state.spotState
+    }))
+  )
   const { signTypedDataAsync } = useSignTypedData()
   const { data: spotMeta } = useSpotMeta()
 
@@ -90,29 +96,20 @@ const SendModal: React.FC<SendModalProps> = ({
         const res = await hyperliquidAxios.post('/exchange', body)
         if (res.data.status === 'err') {
           onClose()
-          toast.update(toastId, {
-            render: '❌' + res.data.response,
-            type: 'error',
-            isLoading: false,
-            autoClose: 4000
+          toast.error(res.data.response, {
+            id: toastId
           })
           return
         }
         onClose()
-        toast.update(toastId, {
-          render: '✅ Send successful',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('Send successful', {
+          id: toastId
         })
       } catch (error) {
         console.log(error)
         onClose()
-        toast.update(toastId, {
-          render: '❌ Send failed',
-          type: 'error',
-          isLoading: false,
-          autoClose: 4000
+        toast.error('Send failed', {
+          id: toastId
         })
       }
     } else {
@@ -135,27 +132,18 @@ const SendModal: React.FC<SendModalProps> = ({
         }
         const res = await hyperliquidAxios.post('/exchange', body)
         if (res.data.status === 'err') {
-          toast.update(toastId, {
-            render: '❌' + res.data.response,
-            type: 'error',
-            isLoading: false,
-            autoClose: 4000
+          toast.error(res.data.response, {
+            id: toastId
           })
           return
         }
-        toast.update(toastId, {
-          render: '✅ Send successful',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('Send successful', {
+          id: toastId
         })
       } catch (error) {
         console.log(error)
-        toast.update(toastId, {
-          render: '❌ Send failed',
-          type: 'error',
-          isLoading: false,
-          autoClose: 4000
+        toast.error('Send failed', {
+          id: toastId
         })
       }
     }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { AssetPosition } from '@nktkas/hyperliquid'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import {
@@ -28,10 +29,15 @@ interface IsolatedMarginModalProps {
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta, sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta,
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
-  const { sdkExchangeClient } = useHyperliquid()
 
   const marginAvailable = clearingHouseState?.withdrawable || 0
 
@@ -50,20 +56,14 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
       console.log(res)
       onClose()
-      toast.update(toastId, {
-        render: '✅ Margin updated successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
+      toast.success('Margin updated successfully', {
+        id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.update(toastId, {
-        render: '❌' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

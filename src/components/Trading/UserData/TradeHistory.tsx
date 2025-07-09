@@ -13,7 +13,7 @@ import {
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
 import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { IconArrowMoveDown, IconArrowMoveUp, IconArrowsMoveVertical } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import {
   Table,
@@ -24,7 +24,8 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { Fill } from '@nktkas/hyperliquid'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -106,7 +107,11 @@ const TradeHistoryTable: React.FC = () => {
   const { address, isConnected } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkInfoClient: state.sdkInfoClient
+    }))
+  )
   const { isTablet, isMobile } = useScreenSize()
   // Use useEffect to set mounted to true after hydration
   useEffect(() => {
@@ -264,11 +269,11 @@ const TradeHistoryTable: React.FC = () => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

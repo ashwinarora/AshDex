@@ -7,10 +7,10 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,7 +21,8 @@ import {
   IconInfoCircle,
   IconChevronDown,
   IconMinus,
-  IconPlus
+  IconPlus,
+  IconPercentage
 } from '@tabler/icons-react'
 import {
   DropdownMenu,
@@ -34,6 +35,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Toggle } from '@/components/ui/toggle'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
+import { useShallow } from 'zustand/react/shallow'
 interface Order {
   price: number
   size: number
@@ -107,7 +109,15 @@ function calculateScaleOrdersByAssetSize(
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkExchangeClient } =
-    useHyperliquid()
+    useHyperliquidStore(
+      useShallow((state) => ({
+        agentWallet: state.agentWallet,
+        clearingHouseState: state.clearingHouseState,
+        allMids: state.allMids,
+        perpsMeta: state.perpsMeta,
+        sdkExchangeClient: state.sdkExchangeClient
+      }))
+    )
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -201,36 +211,28 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
-        toast.update(toastId, {
-          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
-        })
+        toast.success(
+          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          {
+            id: toastId
+          }
+        )
       } else if ('resting' in status) {
-        toast.update(toastId, {
-          render: `✅ Order Placed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Order Placed Successfully', {
+          id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.update(toastId, {
-        render: 'Failed to place orders.',
-        type: 'error',
-        isLoading: false
+      toast.error('Failed to place orders.', {
+        id: toastId
       })
     }
   }
@@ -371,14 +373,20 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               max={100}
               value={[percent]}
               onValueChange={(value) => handlePercentChange(value[0])}
-              className="w-full"
+              className="flex-1 w-full"
             />
-            <Input
-              type="text"
-              value={percent}
-              onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
-              className={cn('w-20 text-xs text-right text-white placeholder:text-white')}
-            />
+            <div
+              className={cn(
+                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+              )}
+            >
+              <Input
+                className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+                value={percent}
+                onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
+              />
+              <IconPercentage className="size-3" />
+            </div>
           </div>
           <ToggleGroup
             size={'sm'}

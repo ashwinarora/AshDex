@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -17,7 +18,7 @@ import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { getFormattedPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
 import { hyperliquidAxios } from '@/config/axios'
@@ -120,7 +121,13 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const [tpLimitPrice, setTpLimitPrice] = useState('')
   const [slLimitPrice, setSlLimitPrice] = useState('')
 
-  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquid()
+  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpAssetContext: state.perpAssetContext,
+      agentWallet: state.agentWallet,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const assetCtx = useMemo(() => {
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)
@@ -287,20 +294,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       })
       console.log(res)
       onClose()
-      toast.update(toastId, {
-        render: '✅ TP/SL order placed successfully',
-        type: 'success',
-        isLoading: false,
-        autoClose: 2000
+      toast.success('TP/SL order placed successfully', {
+        id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.update(toastId, {
-        render: '❌ ' + error,
-        type: 'error',
-        isLoading: false,
-        autoClose: 2000
+      toast.error(error as string, {
+        id: toastId
       })
     }
   }

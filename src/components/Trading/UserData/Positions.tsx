@@ -11,7 +11,8 @@ import WalletNotConnected from '@/components/common/WalletNotConnected'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import LimitCloseModal from './component/LimitCloseModal'
 import MarketCloseModal from './component/MarketCloseModal'
 import MarkPxDisplay from './component/MarkPxDisplay'
@@ -19,11 +20,10 @@ import TPSL_Cell from './component/TPSL_Cell'
 import LeverageModal from './component/LeverageModal'
 import {
   IconPencil,
-  IconArrowMoveUp,
-  IconArrowsMoveVertical,
-  IconArrowMoveDown,
   IconChevronDown,
-  IconX
+  IconX,
+  IconSelector,
+  IconChevronUp
 } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
@@ -53,7 +53,13 @@ interface IPositionsProps {
 
 const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, allMids } = useHyperliquid()
+  const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      allMids: state.allMids,
+      agentWallet: state.agentWallet
+    }))
+  )
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const [isLimitCloseModalOpen, setIsLimitCloseModalOpen] = useState(false)
@@ -67,7 +73,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<AssetPosition['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
-  const { agentWallet } = useHyperliquid()
+
   const { isTablet, isMobile } = useScreenSize()
 
   useEffect(() => {
@@ -427,11 +433,11 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

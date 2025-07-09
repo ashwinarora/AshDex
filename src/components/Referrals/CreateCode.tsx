@@ -4,19 +4,24 @@ import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useAccount } from 'wagmi'
 import { splitSignature } from '@/utils/utils'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { agentTypes, getActionHash, phantomDomain } from '@/utils/hyperliquid/PlaceOrder'
 import { Hex } from 'viem'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
+import { useShallow } from 'zustand/react/shallow'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { data: referral } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { chainId } = useAccount()
-  const { agentWallet } = useHyperliquid()
+  const { agentWallet } = useHyperliquidStore(
+    useShallow((state) => ({
+      agentWallet: state.agentWallet
+    }))
+  )
 
   if (referral?.referrerState.stage === 'needToTrade') {
     const eligibleAmount = referral.referrerState.data.required
@@ -90,28 +95,19 @@ function CreateCode() {
                   isFrontend: true
                 })
                 if (res.data.status === 'err') {
-                  toast.update(toastId, {
-                    render: '❌' + res.data.response,
-                    type: 'error',
-                    isLoading: false,
-                    autoClose: 2000
+                  toast.error(res.data.response, {
+                    id: toastId
                   })
                 } else {
-                  toast.update(toastId, {
-                    render: '✅ Referral code created successfully',
-                    type: 'success',
-                    isLoading: false,
-                    autoClose: 2000
+                  toast.success('Referral code created successfully', {
+                    id: toastId
                   })
                   setCreatedCode('')
                 }
               } catch (error) {
                 console.log(error)
-                toast.update(toastId, {
-                  render: '❌' + error,
-                  type: 'error',
-                  isLoading: false,
-                  autoClose: 2000
+                toast.error(error as string, {
+                  id: toastId
                 })
               }
             }}

@@ -12,15 +12,11 @@ import {
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/common/WalletNotConnected'
 import dynamic from 'next/dynamic'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
-import {
-  IconArrowsMoveVertical,
-  IconArrowMoveDown,
-  IconArrowMoveUp,
-  IconX
-} from '@tabler/icons-react'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
+import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -42,7 +38,13 @@ type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquid()
+  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      sdkExchangeClient: state.sdkExchangeClient,
+      openOrders: state.openOrders,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const isSpot = useIsSpot()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [sorting, setSorting] = useState<SortingState>([])
@@ -80,18 +82,12 @@ const OpenOrders = () => {
               }
             ]
           })
-          toast.update(toastId, {
-            render: 'Order cancelled',
-            type: 'success',
-            isLoading: false,
-            autoClose: 2000
+          toast.success('Order cancelled', {
+            id: toastId
           })
         } catch (error: unknown) {
-          toast.update(toastId, {
-            render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-            type: 'error',
-            isLoading: false,
-            autoClose: 2000
+          toast.error(error instanceof Error ? error.message : String(error), {
+            id: toastId
           })
         }
       }
@@ -155,18 +151,12 @@ const OpenOrders = () => {
             })
             .filter((order) => !!order)
         })
-        toast.update(toastId, {
-          render: 'All orders cancelled',
-          type: 'success',
-          isLoading: false,
-          autoClose: 2000
+        toast.success('All orders cancelled', {
+          id: toastId
         })
       } catch (error: unknown) {
-        toast.update(toastId, {
-          render: '❌ ' + (error instanceof Error ? error.message : String(error)),
-          type: 'error',
-          isLoading: false,
-          autoClose: 2000
+        toast.error(error instanceof Error ? error.message : String(error), {
+          id: toastId
         })
       }
     }
@@ -390,11 +380,11 @@ const OpenOrders = () => {
                       {flexRender(header.column.columnDef.header, header.getContext())}
                       {header.column.columnDef.enableSorting ? (
                         header.column.getIsSorted() === 'asc' ? (
-                          <IconArrowMoveUp className="text-inherit size-4" />
+                          <IconChevronUp className="text-inherit size-4" />
                         ) : header.column.getIsSorted() === 'desc' ? (
-                          <IconArrowMoveDown className="text-inherit size-4" />
+                          <IconChevronDown className="text-inherit size-4" />
                         ) : (
-                          <IconArrowsMoveVertical className="text-inherit size-4" />
+                          <IconSelector className="text-inherit size-4" />
                         )
                       ) : null}
                     </>

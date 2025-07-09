@@ -8,7 +8,7 @@ import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useUser } from '@/context/UserContext'
 import Avatar from './common/Avatar'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import BridgeButton from './common/BridgeButton'
 import nexonlogo from '@/assets/images/logo.svg'
 import { useNexonReferral } from '@/hooks/useNexonReferral'
@@ -58,9 +58,9 @@ const Header: FC = () => {
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
     { name: 'Spot', path: '/spot', isComingSoon: false },
+    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
     { name: 'Referrals', path: '/referrals', isComingSoon: false }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
-    // { name: 'Predictions', path: '/predictions', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
     // { name: 'Vaults', path: '/vaults', isComingSoon: true }
   ]

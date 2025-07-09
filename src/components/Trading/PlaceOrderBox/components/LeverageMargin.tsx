@@ -3,11 +3,13 @@ import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
 import { useEffect, useMemo, useState } from 'react'
 
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Slider } from '@/components/ui/slider'
 import { cn, numberInputValidator } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Input } from '@/components/ui/input'
+import { IconX } from '@tabler/icons-react'
+import { useShallow } from 'zustand/react/shallow'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -16,7 +18,12 @@ interface LeverageMarginProps {
 }
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
-  const { clearingHouseState, perpsMeta } = useHyperliquid()
+  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      perpsMeta: state.perpsMeta
+    }))
+  )
 
   const [error, setError] = useState<{ isValid: boolean; error: string | null }>({
     isValid: true,
@@ -83,11 +90,22 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
           {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
             <MinusIcon className='size-4' />
           </Button> */}
-          <Input
-            className={cn('w-16 text-white', !error.isValid && 'bg-red/10 text-red')}
-            value={leverageInput}
-            onChange={(e) => handleLeverageChange(e.target.value)}
-          />
+          <div
+            className={cn(
+              'flex w-16 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
+              !error.isValid && 'bg-red/10 text-red'
+            )}
+          >
+            <Input
+              className={cn(
+                'flex-1 p-0 text-end text-white bg-transparent border-none',
+                !error.isValid && 'text-red'
+              )}
+              value={leverageInput}
+              onChange={(e) => handleLeverageChange(e.target.value)}
+            />
+            <IconX className="size-3" />
+          </div>
           {/* <Button onClick={() => setLeverage((prev) => Math.min(prev + 1, maxLeverage))} variant='outline' size='icon'>
             <PlusIcon className='size-4' />
           </Button> */}

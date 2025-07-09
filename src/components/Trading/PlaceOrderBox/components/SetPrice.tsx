@@ -1,7 +1,8 @@
 import { MAX_DECIMALS_PERP } from '@/utils/constants'
 import { MAX_DECIMALS_SPOT } from '@/utils/constants'
 import useIsSpot from '@/hooks/useIsSpot'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 import { getPerpsUniverseIndex, roundToSignificantFigures } from '@/utils/utils'
@@ -31,7 +32,12 @@ const SetPrice = ({
 }: ISetLastPriceProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
-  const { allMids, perpsMeta } = useHyperliquid()
+  const { allMids, perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      allMids: state.allMids,
+      perpsMeta: state.perpsMeta
+    }))
+  )
   const [priceInitialized, setPriceInitialized] = useState(false)
 
   useEffect(() => {
@@ -171,7 +177,7 @@ const SetPrice = ({
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={cn('w-full text-right text-white shrink-0')}
+        className={cn('w-full flex-1 text-right text-white')}
       />
       <Button
         variant="outline"

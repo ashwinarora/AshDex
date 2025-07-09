@@ -3,12 +3,18 @@ import { useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
 import { hyperliquidAxios } from '@/config/axios'
 import { Referral } from '@nktkas/hyperliquid'
 
 export const useNexonReferral = () => {
-  const { clearingHouseState, sdkExchangeClient } = useHyperliquid()
+  const { clearingHouseState, sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      clearingHouseState: state.clearingHouseState,
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
   const { isConnected, address } = useAccount()
   const { isAgentApproved } = useAgentApproval()
   const [isReferralSet, setIsReferralSet] = useState(false)

@@ -3,7 +3,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getSpotAssetContext } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
 import SpotTable from './SpotTable'
@@ -21,19 +21,35 @@ import {
   IconShieldCheck,
   IconShieldQuestion,
   IconStar,
-  IconStarFilled
+  IconStarFilled,
+  IconInfoCircle
 } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { useShallow } from 'zustand/react/shallow'
 
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
 }
 
+const tabs = [
+  { label: 'All', icon: null },
+  { label: 'New', icon: <IconRosette className="size-3" /> },
+  { label: 'AI', icon: <IconBrain className="size-3" /> },
+  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
+] as const
+
 const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
-  const { spotAssetContext } = useHyperliquid()
+  const { spotAssetContext } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotAssetContext: state.spotAssetContext
+    }))
+  )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTab, setSelectedTab] = useState('All')
@@ -42,9 +58,10 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
   const { toggleFavorite, favorites } = useFavorites(true)
-  const { data: spotMeta, spotKeyToName } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
+  const { isMobile } = useScreenSize()
 
-  const { context: selectedAssetContext, meta: selectedAssetMeta } = useMemo(() => {
+  const selectedAssetContext = useMemo(() => {
     if (spotMeta && spotAssetContext) {
       const spot = getSpotAssetContext({
         asset: selectedAsset,
@@ -52,19 +69,10 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         spotAssetContext
       })
       setTokenContract(spot?.meta?.tokenId)
-      return { context: spot?.context, meta: spot?.meta }
+      return spot?.context
     }
-    return { context: null, meta: null }
+    return null
   }, [selectedAsset, spotAssetContext, spotMeta])
-
-  const tabs = [
-    { label: 'All' },
-    { label: 'New', icon: <IconRosette className="size-3" /> },
-    { label: 'AI', icon: <IconBrain className="size-3" /> },
-    { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-    { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-    { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-  ]
 
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
@@ -81,6 +89,19 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     const changeString = calculate24hChange()
 
     return [
+      {
+        label: 'Price',
+        value: selectedAssetContext?.markPx ? (
+          <ReactiveText
+            className="text-xs"
+            precision={3}
+            value={Number(selectedAssetContext.markPx)}
+            type="currency"
+          />
+        ) : (
+          <Skeleton size="md" />
+        )
+      },
       {
         label: '24h Change',
         value: changeString ?? <Skeleton size="md" />,
@@ -105,7 +126,9 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           <ReactiveText
             className="text-xs"
             precision={0}
-            value={Number(Number(selectedAssetContext.midPx))}
+            value={
+              Number(selectedAssetContext.circulatingSupply) * Number(selectedAssetContext.markPx)
+            }
             type="currency"
           />
         ) : (
@@ -178,14 +201,14 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">
-                {spotKeyToName.get(selectedAsset) || selectedAssetMeta?.name}
+                {spotKeyToName.get(selectedAsset)}/{spotKeyToBaseName.get(selectedAsset)}
               </h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>
           </PopoverTrigger>
           <PopoverContent
             align="start"
-            className="w-xl md:w-3xl h-96 z-30 p-2 flex bg-accent flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-96 z-30 p-2 flex bg-accent flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
@@ -246,7 +269,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                   key={tab.label}
                   value={tab.label}
                 >
-                  {tab.icon}
+                  {!isMobile ? tab.icon : null}
                   {tab.label}
                 </ToggleGroupItem>
               ))}
@@ -269,6 +292,30 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
             </div>
           ))}
+        </div>
+        <div className="flex flex-1 h-full md:hidden items-center justify-end gap-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                disabled={marketData.length === 0}
+                variant="outline"
+                size="icon"
+                className="h-fit aspect-square flex items-center justify-center cursor-pointer"
+              >
+                <IconInfoCircle className="size-4 text-white" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
+              {marketData?.map((item, index) => (
+                <div key={index} className="flex flex-col gap-1 items-end flex-wrap justify-center">
+                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
+                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+            </PopoverContent>
+          </Popover>
         </div>
       </div>
     </div>

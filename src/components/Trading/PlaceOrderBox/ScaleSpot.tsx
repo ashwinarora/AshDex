@@ -6,9 +6,9 @@ import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { toast } from 'react-toastify'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -30,6 +30,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
+import { useShallow } from 'zustand/react/shallow'
 
 interface Order {
   price: number
@@ -70,7 +71,13 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, spotState, spotAssetContext, sdkExchangeClient } = useHyperliquid()
+  const { spotState, spotAssetContext, sdkExchangeClient } = useHyperliquidStore(
+    useShallow((state) => ({
+      spotState: state.spotState,
+      spotAssetContext: state.spotAssetContext,
+      sdkExchangeClient: state.sdkExchangeClient
+    }))
+  )
   const { data: spotMeta } = useSpotMeta()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -93,7 +100,6 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!spotMeta) return
-    if (!agentWallet) return
     if (!currentFeeApproval) return
     const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
     console.log(orders)
@@ -143,36 +149,28 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.update(toastId, {
-          render: '❌' + status.error,
-          type: 'error',
-          isLoading: false,
-          autoClose: 3000
+        toast.error(status.error, {
+          id: toastId
         })
       } else if ('filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
-        toast.update(toastId, {
-          render: `✅ ${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
-        })
+        toast.success(
+          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          {
+            id: toastId
+          }
+        )
       } else if ('resting' in status) {
-        toast.update(toastId, {
-          render: `✅ Order Placed Successfully`,
-          type: 'success',
-          isLoading: false,
-          autoClose: 3000
+        toast.success('Order Placed Successfully', {
+          id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.update(toastId, {
-        render: 'Failed to place orders.',
-        type: 'error',
-        isLoading: false
+      toast.error('Failed to place orders.', {
+        id: toastId
       })
     }
   }
