@@ -196,8 +196,16 @@ const PortfolioStats = () => {
         </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
-            <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} table={table} />
-            <PortfolioFeeCard userFeeData={userFeeData} selectedView={selectedView} setSelectedView={setSelectedView} />
+            <PortfolioVolumeCard
+              userFeeData={userFeeData}
+              userFeeLoading={userFeeLoading}
+              table={table}
+            />
+            <PortfolioFeeCard
+              userFeeData={userFeeData}
+              selectedView={selectedView}
+              setSelectedView={setSelectedView}
+            />
           </div>
           <div
             className={cn(
@@ -288,8 +296,16 @@ const PortfolioStats = () => {
   return (
     <div className="flex w-full h-80 gap-1">
       <div className="basis-xs flex flex-col gap-1 rounded-md h-full">
-        <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} table={table} />
-        <PortfolioFeeCard userFeeData={userFeeData} selectedView={selectedView} setSelectedView={setSelectedView} />
+        <PortfolioVolumeCard
+          userFeeData={userFeeData}
+          userFeeLoading={userFeeLoading}
+          table={table}
+        />
+        <PortfolioFeeCard
+          userFeeData={userFeeData}
+          selectedView={selectedView}
+          setSelectedView={setSelectedView}
+        />
       </div>
       <div className="flex-1 flex bg-secondary rounded-md h-full items-center justify-center">
         <PortfolioChart portfolioQuery={portfolioQuery} />
