@@ -33,7 +33,7 @@ import { cn } from '@/lib/utils'
 import ReactiveText from '../common/ReactiveText'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
-import { useHyperliquid } from '@/store/HyperliquidStore'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useAccount } from 'wagmi'
 
 const PortfolioStats = () => {
@@ -50,7 +50,7 @@ const PortfolioStats = () => {
 
   const { address } = useAccount()
 
-  const { sdkInfoClient } = useHyperliquid()
+  const { sdkInfoClient } = useHyperliquidStore()
 
   const portfolioQuery = useQuery({
     queryKey: ['portfolio'],
@@ -74,15 +74,30 @@ const PortfolioStats = () => {
       vlm: item[1].vlm,
       accountValue: item[1].accountValueHistory
     }))
+
+    // subtract min account value from max account value and divide by max account value
+    const maxDrawdownArray = filteredData?.find(item => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.accountValue
+    const maxValue = maxDrawdownArray?.length && maxDrawdownArray?.length > 0 ? parseFloat(maxDrawdownArray?.reduce((acc, curr) => {
+      return Number(acc[1]) > Number(curr[1]) ? acc : curr
+    })[1] || '0   ') : 0
+
+    const minValue = maxDrawdownArray?.length && maxDrawdownArray?.length > 0 ? parseFloat(maxDrawdownArray?.reduce((acc, curr) => {
+      return Number(acc[1]) < Number(curr[1]) ? acc : curr
+    })[1] || '0   ') : 0
+    
+    const maxDrawdown =  minValue - maxValue
+    const maxDrawdownPercentage = (maxDrawdown / maxValue) * 100
+
+
     const totalEquity =
-      filteredData
+      parseFloat(filteredData
         ?.find((item) => item.timeframe === 'alltime' && item.type === 'all')
-        ?.accountValue.at(-1)?.[1] || '0'
+        ?.accountValue.at(-1)?.[1] || '0').toFixed(2) || '0'
     const perpEquity =
-      filteredData
+      parseFloat(filteredData
         ?.find((item) => item.timeframe === 'alltime' && item.type === 'perps')
-        ?.accountValue.at(-1)?.[1] || '0'
-    const spotEquity = parseFloat(totalEquity) - parseFloat(perpEquity)
+        ?.accountValue.at(-1)?.[1] || '0').toFixed(2) || '0'
+    const spotEquity = (parseFloat(totalEquity) - parseFloat(perpEquity)).toFixed(2)
 
     return {
       PNL:
@@ -91,7 +106,7 @@ const PortfolioStats = () => {
       Volume:
         `$${filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm}` ||
         '$0.00',
-      'Max Drawdown': '0.00%',
+      'Max Drawdown': `${maxDrawdownPercentage.toFixed(2)}%`,
       'Total Equity': `$${totalEquity}`,
       'Perps Account Equity': `$${perpEquity}`,
       'Spot Account Equity': `$${spotEquity}`,
@@ -314,7 +329,7 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overview}</p>
+                    <p>{selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}</p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -334,7 +349,7 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overviewTimeFrame}</p>
+                    <p>{selectedView.overviewTimeFrame === 'alltime' ? 'All Time' : selectedView.overviewTimeFrame.charAt(0).toUpperCase() + selectedView.overviewTimeFrame.slice(1)}</p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -514,7 +529,7 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overview}</p>
+                <p>{selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}</p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -534,7 +549,7 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overviewTimeFrame}</p>
+                <p>{selectedView.overviewTimeFrame === 'alltime' ? 'All Time' : selectedView.overviewTimeFrame.charAt(0).toUpperCase() + selectedView.overviewTimeFrame.slice(1)}</p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
