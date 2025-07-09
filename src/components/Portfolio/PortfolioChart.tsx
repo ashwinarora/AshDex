@@ -231,7 +231,7 @@ const PortfolioChart = ({
                 isAnimationActive={false}
                 dataKey="value"
                 fill="url(#gradient)"
-                stroke="#5e46f9"
+                stroke="#5f46f9"
               />
               <defs>
                 <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">

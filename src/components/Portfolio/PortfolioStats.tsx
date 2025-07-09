@@ -61,10 +61,11 @@ const PortfolioStats = () => {
   const { data: userFeeData, isLoading: userFeeLoading } = useQuery({
     queryKey: ['userFeeData'],
     queryFn: () => sdkInfoClient?.userFees({ user: address as Hex }),
-    refetchInterval: 25000
+    refetchInterval: 2000
   })
 
   const overviewTable = useMemo(() => {
+    if (!portfolioQuery.data) return undefined
     const filteredData = portfolioQuery.data?.map((item) => ({
       timeframe: item[0].includes('perp')
         ? item[0].replace('perp', '').toLowerCase()
@@ -326,11 +327,15 @@ const PortfolioStats = () => {
                 </DropdownMenu>
               </div>
               <h1 className="text-3xl font-semibold text-white">
-                {userFeeData &&
-                  userFeeData &&
-                  (selectedView.fees === 'perps'
-                    ? `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
-                    : `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`)}
+                {userFeeData ? (
+                  selectedView.fees === 'perps' ? (
+                    `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
+                  ) : (
+                    `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
+                  )
+                ) : (
+                  <Skeleton className="w-36 h-9" />
+                )}
               </h1>
               <p className="text-xs">View Fee Schedule</p>
             </div>
@@ -405,12 +410,16 @@ const PortfolioStats = () => {
             </div>
             <Separator className="bg-white/5" />
             <div className="flex flex-col justify-between h-full gap-1 p-2">
-              {Object.entries(overviewTable).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between w-full">
-                  <p className="text-sm text-white/50">{key}</p>
-                  <p className="text-sm text-white">{value}</p>
-                </div>
-              ))}
+              {overviewTable
+                ? Object.entries(overviewTable).map(([key, value]) => (
+                    <div key={key} className="flex items-center justify-between w-full">
+                      <p className="text-sm text-white/50">{key}</p>
+                      <p className="text-sm text-white">{value}</p>
+                    </div>
+                  ))
+                : Array.from({ length: 8 }).map((_, index) => (
+                    <Skeleton key={index} className="w-full h-5" />
+                  ))}
             </div>
           </div>
         </div>
@@ -536,11 +545,15 @@ const PortfolioStats = () => {
             </DropdownMenu>
           </div>
           <h1 className="text-3xl font-semibold text-white">
-            {userFeeData &&
-              userFeeData &&
-              (selectedView.fees === 'perps'
-                ? `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
-                : `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`)}
+            {userFeeData ? (
+              selectedView.fees === 'perps' ? (
+                `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
+              ) : (
+                `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
+              )
+            ) : (
+              <Skeleton className="w-36 h-9" />
+            )}
           </h1>
           <p className="text-xs">View Fee Schedule</p>
         </div>
@@ -610,12 +623,16 @@ const PortfolioStats = () => {
         </div>
         <Separator className="bg-white/5" />
         <div className="flex flex-col justify-between h-full gap-1 p-2">
-          {Object.entries(overviewTable).map(([key, value]) => (
-            <div key={key} className="flex items-center justify-between w-full">
-              <p className="text-sm text-white/50">{key}</p>
-              <p className="text-sm text-white">{value}</p>
-            </div>
-          ))}
+          {overviewTable
+            ? Object.entries(overviewTable).map(([key, value]) => (
+                <div key={key} className="flex items-center justify-between w-full">
+                  <p className="text-sm text-white/50">{key}</p>
+                  <p className="text-sm text-white">{value}</p>
+                </div>
+              ))
+            : Array.from({ length: 8 }).map((_, index) => (
+                <Skeleton key={index} className="w-full h-5" />
+              ))}
         </div>
       </div>
     </div>

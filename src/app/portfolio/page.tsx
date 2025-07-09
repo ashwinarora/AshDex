@@ -1,4 +1,3 @@
-'use client'
 import PortfolioHeader from '@/components/Portfolio/PortfolioHeader'
 import PortfolioStats from '@/components/Portfolio/PortfolioStats'
 import UserData from '@/components/Trading/UserData/UserData'
@@ -13,7 +12,7 @@ const PortfolioPage = () => {
         <PortfolioStats />
       </div>
       <div className="w-full h-96">
-        <UserData setSelectedAsset={() => {}} />
+        <UserData />
       </div>
     </div>
   )
