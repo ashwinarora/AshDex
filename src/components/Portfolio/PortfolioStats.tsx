@@ -9,32 +9,24 @@ import {
   DropdownMenuTrigger
 } from '../ui/dropdown-menu'
 import { Button } from '../ui/button'
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import PortfolioChart from './PortfolioChart'
 import { Hex, UserFees } from '@nktkas/hyperliquid'
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger
-} from '../ui/dialog'
-import {
   createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable
 } from '@tanstack/react-table'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { cn } from '@/lib/utils'
 import ReactiveText from '../common/ReactiveText'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useAccount } from 'wagmi'
+import PortfolioFeeCard from './PortfolioFeeCard'
+import PortfolioVolumeCard from './PortfolioVolumeCard'
 
 const PortfolioStats = () => {
   const { isMobile, isTablet } = useScreenSize()
@@ -204,141 +196,8 @@ const PortfolioStats = () => {
         </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
-            <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4">
-              <h2>30 Day Volume</h2>
-              {userFeeLoading ? (
-                <Skeleton className="w-36 h-12" />
-              ) : (
-                <h1 className="text-3xl font-semibold text-white">
-                  $
-                  {userFeeData?.dailyUserVlm
-                    ?.reduce((acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc, 0)
-                    .toFixed(2) || 0}
-                </h1>
-              )}
-              <Dialog>
-                <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
-                  <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-                    View Volume
-                  </p>
-                </DialogTrigger>
-                <DialogContent className="w-fit !max-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
-                  <DialogHeader>
-                    <DialogTitle>Your Volume History</DialogTitle>
-                    <DialogDescription className="text-xs text-white/50">
-                      Dates are based on UTC time zone and do not include the current day. Your 14D
-                      maker volume share is 0.00%. <br />
-                      Perps and spot volume are counted together to determine your fee tier, and
-                      spot volume counts double toward your fee tier.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex flex-col items-center h-full w-full gap-2">
-                    {userFeeData?.dailyUserVlm && userFeeData?.dailyUserVlm?.length > 0 && (
-                      <Table>
-                        <TableHeader>
-                          {table.getHeaderGroups().map((headerGroup) => (
-                            <TableRow key={headerGroup.id}>
-                              {headerGroup.headers.map((header) => (
-                                <TableHead
-                                  key={header.id}
-                                  onClick={() => {
-                                    if (header.column.getCanSort()) {
-                                      header.column.toggleSorting()
-                                    }
-                                  }}
-                                  className={cn(
-                                    'cursor-pointer flex items-center gap-1 w-1/4 flex-1 shrink-0 !text-xs',
-                                    header.id === 'date' ? 'justify-start' : 'justify-end',
-                                    header.column.columnDef.enableSorting
-                                      ? 'hover:text-accent-foreground'
-                                      : 'hover:text-white/50',
-                                    header.column.getIsSorted() === 'asc' ||
-                                      header.column.getIsSorted() === 'desc'
-                                      ? 'text-accent-foreground'
-                                      : 'text-white/50'
-                                  )}
-                                >
-                                  {header.isPlaceholder ? null : (
-                                    <>
-                                      {flexRender(
-                                        header.column.columnDef.header,
-                                        header.getContext()
-                                      )}
-                                      {header.column.columnDef.enableSorting ? (
-                                        header.column.getIsSorted() === 'asc' ? (
-                                          <IconChevronUp className="text-inherit size-4" />
-                                        ) : header.column.getIsSorted() === 'desc' ? (
-                                          <IconChevronDown className="text-inherit size-4" />
-                                        ) : (
-                                          <IconSelector className="text-inherit size-4" />
-                                        )
-                                      ) : null}
-                                    </>
-                                  )}
-                                </TableHead>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableHeader>
-                        <TableBody>
-                          {table.getRowModel().rows.map((row) => (
-                            <TableRow className="h-12" key={row.id}>
-                              {row.getVisibleCells().map((cell) => (
-                                <TableCell
-                                  key={cell.id}
-                                  className="font-medium text-white text-xs first:text-left text-right"
-                                >
-                                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    )}
-                  </div>
-                </DialogContent>
-              </Dialog>
-            </div>
-            <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4">
-              <div className="flex items-center justify-between w-full">
-                <h2>Fees (Taker/Maker)</h2>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant={'outline'} size={'sm'} className="w-fit">
-                      <p>
-                        {selectedView.fees.charAt(0).toUpperCase() + selectedView.fees.slice(1)}
-                      </p>
-                      <IconChevronDown className="size-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start">
-                    <DropdownMenuItem
-                      onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}
-                    >
-                      <p>Perps</p>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onClick={() => setSelectedView({ ...selectedView, fees: 'all' })}
-                    >
-                      <p>Spot</p>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-              <h1 className="text-3xl font-semibold text-white">
-                {userFeeData ? (
-                  selectedView.fees === 'perps' ? (
-                    `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
-                  ) : (
-                    `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
-                  )
-                ) : (
-                  <Skeleton className="w-36 h-9" />
-                )}
-              </h1>
-              <p className="text-xs">View Fee Schedule</p>
-            </div>
+            <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} table={table} />
+            <PortfolioFeeCard userFeeData={userFeeData} selectedView={selectedView} setSelectedView={setSelectedView} />
           </div>
           <div
             className={cn(
@@ -429,134 +288,8 @@ const PortfolioStats = () => {
   return (
     <div className="flex w-full h-80 gap-1">
       <div className="basis-xs flex flex-col gap-1 rounded-md h-full">
-        <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-1 p-4">
-          <h2>30 Day Volume</h2>
-          {userFeeLoading ? (
-            <Skeleton className="w-36 h-12" />
-          ) : (
-            <h1 className="text-5xl font-semibold text-white">
-              $
-              {userFeeData?.dailyUserVlm
-                ?.reduce((acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc, 0)
-                .toFixed(2) || 0}
-            </h1>
-          )}
-          <Dialog>
-            <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
-              <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-                View Volume
-              </p>
-            </DialogTrigger>
-            <DialogContent className="w-fit !max-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
-              <DialogHeader>
-                <DialogTitle>Your Volume History</DialogTitle>
-                <DialogDescription className="text-xs text-white/50">
-                  Dates are based on UTC time zone and do not include the current day. Your 14D
-                  maker volume share is 0.00%. <br />
-                  Perps and spot volume are counted together to determine your fee tier, and spot
-                  volume counts double toward your fee tier.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="flex flex-col items-center h-full w-full gap-2">
-                {userFeeData?.dailyUserVlm && userFeeData?.dailyUserVlm?.length > 0 && (
-                  <Table>
-                    <TableHeader>
-                      {table.getHeaderGroups().map((headerGroup) => (
-                        <TableRow key={headerGroup.id}>
-                          {headerGroup.headers.map((header) => (
-                            <TableHead
-                              key={header.id}
-                              onClick={() => {
-                                if (header.column.getCanSort()) {
-                                  header.column.toggleSorting()
-                                }
-                              }}
-                              className={cn(
-                                'cursor-pointer flex items-center gap-1 w-1/4 flex-1 shrink-0 !text-xs',
-                                header.id === 'date' ? 'justify-start' : 'justify-end',
-                                header.column.columnDef.enableSorting
-                                  ? 'hover:text-accent-foreground'
-                                  : 'hover:text-white/50',
-                                header.column.getIsSorted() === 'asc' ||
-                                  header.column.getIsSorted() === 'desc'
-                                  ? 'text-accent-foreground'
-                                  : 'text-white/50'
-                              )}
-                            >
-                              {header.isPlaceholder ? null : (
-                                <>
-                                  {flexRender(header.column.columnDef.header, header.getContext())}
-                                  {header.column.columnDef.enableSorting ? (
-                                    header.column.getIsSorted() === 'asc' ? (
-                                      <IconChevronUp className="text-inherit size-4" />
-                                    ) : header.column.getIsSorted() === 'desc' ? (
-                                      <IconChevronDown className="text-inherit size-4" />
-                                    ) : (
-                                      <IconSelector className="text-inherit size-4" />
-                                    )
-                                  ) : null}
-                                </>
-                              )}
-                            </TableHead>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableHeader>
-                    <TableBody>
-                      {table.getRowModel().rows.map((row) => (
-                        <TableRow className="h-12" key={row.id}>
-                          {row.getVisibleCells().map((cell) => (
-                            <TableCell
-                              key={cell.id}
-                              className="font-medium text-white text-xs first:text-left text-right"
-                            >
-                              {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                )}
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-        <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-1 p-4">
-          <div className="flex items-center justify-between w-full">
-            <h2>Fees (Taker/Maker)</h2>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant={'outline'} size={'sm'} className="w-fit">
-                  <p>{selectedView.fees.charAt(0).toUpperCase() + selectedView.fees.slice(1)}</p>
-                  <IconChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start">
-                <DropdownMenuItem
-                  onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}
-                >
-                  <p>Perps</p>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'all' })}>
-                  <p>Spot</p>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-          <h1 className="text-3xl font-semibold text-white">
-            {userFeeData ? (
-              selectedView.fees === 'perps' ? (
-                `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
-              ) : (
-                `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
-              )
-            ) : (
-              <Skeleton className="w-36 h-9" />
-            )}
-          </h1>
-          <p className="text-xs">View Fee Schedule</p>
-        </div>
+        <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} table={table} />
+        <PortfolioFeeCard userFeeData={userFeeData} selectedView={selectedView} setSelectedView={setSelectedView} />
       </div>
       <div className="flex-1 flex bg-secondary rounded-md h-full items-center justify-center">
         <PortfolioChart portfolioQuery={portfolioQuery} />
