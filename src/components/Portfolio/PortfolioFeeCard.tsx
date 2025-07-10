@@ -20,6 +20,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import { Separator } from '../ui/separator'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
+import { formatWithKMB } from '@/utils/format'
 
 const PortfolioFeeCard = ({
   userFeeData,
@@ -118,35 +119,33 @@ const PortfolioFeeCard = ({
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-14">Tier</TableHead>
-                    <TableHead className="w-28 text-right justify-end">14D Volume</TableHead>
-                    <TableHead className="w-20 justify-end">Perps Taker</TableHead>
-                    <TableHead className="w-20 justify-end">Perps Maker</TableHead>
-                    <TableHead className="w-20 justify-end">Spot Taker</TableHead>
-                    <TableHead className="w-20 justify-end">Spot Maker</TableHead>
+                    <TableHead className="w-full">Tier</TableHead>
+                    <TableHead className="w-full text-right justify-end">14D Volume</TableHead>
+                    <TableHead className="w-full justify-end">Perps Taker</TableHead>
+                    <TableHead className="w-full justify-end">Perps Maker</TableHead>
+                    <TableHead className="w-full justify-end">Spot Taker</TableHead>
+                    <TableHead className="w-full justify-end">Spot Maker</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {userFeeData && (
                     <TableRow>
-                      <TableCell className="w-14">{0}</TableCell>
-                      <TableCell className="text-right w-28">{'< $5,000,000'}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(userFeeData?.feeSchedule.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(userFeeData?.feeSchedule.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(userFeeData?.feeSchedule.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(userFeeData?.feeSchedule.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="w-full">{0}</TableCell>
+                      <TableCell className="text-right w-full">{'< $5M'}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
                     </TableRow>
                   )}
                   {userFeeData?.feeSchedule.tiers.vip.map((item, index) => (
                     <TableRow key={index}>
-                      <TableCell className="w-14">{index + 1}</TableCell>
-                      <TableCell className="text-right w-28">{`> $${parseFloat(item.ntlCutoff)
-                        .toFixed(0)
-                        .replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(item.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(item.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(item.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-20">{`${(parseFloat(item.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="w-full">{index + 1}</TableCell>
+                      <TableCell className="text-right w-full">{`> $${formatWithKMB(parseFloat(item.ntlCutoff))}`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(item.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(item.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(item.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell className="text-right w-full">{`${(parseFloat(item.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
