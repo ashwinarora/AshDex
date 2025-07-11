@@ -11,27 +11,18 @@ import {
 import { Button } from '../ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import PortfolioChart from './PortfolioChart'
-import { Hex, UserFees } from '@nktkas/hyperliquid'
-import {
-  createColumnHelper,
-  getCoreRowModel,
-  getSortedRowModel,
-  SortingState,
-  useReactTable
-} from '@tanstack/react-table'
+import { Hex } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
-import ReactiveText from '../common/ReactiveText'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useAccount } from 'wagmi'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
+import { formatWithKMB } from '@/utils/format'
 
 const PortfolioStats = () => {
   const { isMobile, isTablet } = useScreenSize()
-  const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
-  const [sorting, setSorting] = useState<SortingState>([])
   const [selectedView, setSelectedView] = useState<{
     [key: string]: 'perps' | 'all' | 'day' | 'week' | 'month' | 'alltime'
   }>({
@@ -47,13 +38,15 @@ const PortfolioStats = () => {
   const portfolioQuery = useQuery({
     queryKey: ['portfolio'],
     queryFn: () => sdkInfoClient?.portfolio({ user: address as Hex }),
-    refetchInterval: 2000
+    refetchInterval: 2000,
+    enabled: !!address && !!sdkInfoClient
   })
 
   const { data: userFeeData, isLoading: userFeeLoading } = useQuery({
     queryKey: ['userFeeData'],
     queryFn: () => sdkInfoClient?.userFees({ user: address as Hex }),
-    refetchInterval: 2000
+    refetchInterval: 2000,
+    enabled: !!address && !!sdkInfoClient
   })
 
   const overviewTable = useMemo(() => {
@@ -110,83 +103,19 @@ const PortfolioStats = () => {
 
     return {
       PNL:
-        `$${filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.pnl.at(-1)?.[1]}` ||
-        '$0.00',
+        `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.pnl.at(-1)?.[1] || '0'))}` ||
+        '0.00',
       Volume:
-        `$${filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm}` ||
+        `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm || '0'))}` ||
         '$0.00',
       'Max Drawdown': `${maxDrawdownPercentage.toFixed(2)}%`,
-      'Total Equity': `$${totalEquity}`,
-      'Perps Account Equity': `$${perpEquity}`,
-      'Spot Account Equity': `$${spotEquity}`,
+      'Total Equity': `$${formatWithKMB(totalEquity)}`,
+      'Perps Account Equity': `$${formatWithKMB(perpEquity)}`,
+      'Spot Account Equity': `$${formatWithKMB(spotEquity)}`,
       'Vault Equity': '$0.00',
       'Staking Account': '0 HYPE'
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
-
-  const columns = useMemo(
-    () => [
-      columnHelper.accessor('date', {
-        header: 'Date',
-        cell: ({ row }) => {
-          return <div className="text-xs">{row.original.date}</div>
-        },
-        meta: { label: 'Date' },
-        enableSorting: true
-      }),
-      columnHelper.accessor('exchange', {
-        header: 'Exchange Volume',
-        cell: ({ row }) => (
-          <ReactiveText value={parseFloat(row.original.exchange)} type="currency" precision={2} />
-        ),
-        meta: { label: 'Exchange Volume' },
-        enableSorting: false
-      }),
-      columnHelper.accessor('userCross', {
-        header: 'Taker Volume',
-        cell: ({ row }) => (
-          <ReactiveText
-            className={cn(
-              '',
-              parseFloat(row.original.userCross) > 0 ? 'text-white' : 'text-white/50'
-            )}
-            value={parseFloat(row.original.userCross)}
-            type="currency"
-            precision={2}
-          />
-        ),
-        meta: { label: 'Weighted Taker Volume' },
-        enableSorting: false
-      }),
-      columnHelper.accessor('userAdd', {
-        header: 'Maker Volume',
-        cell: ({ row }) => (
-          <ReactiveText
-            className={cn(
-              '',
-              parseFloat(row.original.userAdd) > 0 ? 'text-white' : 'text-white/50'
-            )}
-            value={parseFloat(row.original.userAdd)}
-            type="currency"
-            precision={2}
-          />
-        ),
-        meta: { label: 'Weighted Maker Volume' },
-        enableSorting: false
-      })
-    ],
-    [columnHelper]
-  )
-
-  const table = useReactTable({
-    data: userFeeData ? userFeeData?.dailyUserVlm : [],
-    columns,
-    state: { sorting },
-    onSortingChange: setSorting,
-    getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    enableSorting: true
-  })
 
   if (isMobile || isTablet) {
     return (
@@ -196,11 +125,7 @@ const PortfolioStats = () => {
         </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
-            <PortfolioVolumeCard
-              userFeeData={userFeeData}
-              userFeeLoading={userFeeLoading}
-              table={table}
-            />
+            <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} />
             <PortfolioFeeCard
               userFeeData={userFeeData}
               selectedView={selectedView}
@@ -296,11 +221,7 @@ const PortfolioStats = () => {
   return (
     <div className="flex w-full h-80 gap-1">
       <div className="basis-xs flex flex-col gap-1 rounded-md h-full">
-        <PortfolioVolumeCard
-          userFeeData={userFeeData}
-          userFeeLoading={userFeeLoading}
-          table={table}
-        />
+        <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} />
         <PortfolioFeeCard
           userFeeData={userFeeData}
           selectedView={selectedView}
@@ -373,12 +294,28 @@ const PortfolioStats = () => {
         <Separator className="bg-white/5" />
         <div className="flex flex-col justify-between h-full gap-1 p-2">
           {overviewTable
-            ? Object.entries(overviewTable).map(([key, value]) => (
-                <div key={key} className="flex items-center justify-between w-full">
-                  <p className="text-sm text-white/50">{key}</p>
-                  <p className="text-sm text-white">{value}</p>
-                </div>
-              ))
+            ? Object.entries(overviewTable).map(([key, value]) => {
+                console.log(key, value)
+                return (
+                  <div key={key} className="flex items-center justify-between w-full">
+                    <p className="text-sm text-white/50">{key}</p>
+                    <p
+                      className={cn(
+                        'text-sm',
+                        key === 'PNL'
+                          ? parseFloat(value.slice(1)) > 0
+                            ? `text-green-500`
+                            : parseFloat(value.slice(1)) < 0
+                              ? `text-red-500`
+                              : 'text-white'
+                          : 'text-white'
+                      )}
+                    >
+                      {value}
+                    </p>
+                  </div>
+                )
+              })
             : Array.from({ length: 8 }).map((_, index) => (
                 <Skeleton key={index} className="w-full h-5" />
               ))}
