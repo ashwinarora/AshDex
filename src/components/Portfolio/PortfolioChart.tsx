@@ -15,6 +15,7 @@ import { IconCalendarWeek, IconChevronDown, IconTimeline } from '@tabler/icons-r
 import { PortfolioCalendar } from './PortfolioCalendar'
 import { UseQueryResult } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
+import { formatWithKMB } from '@/utils/format'
 
 const chartConfig = {
   accountValue: {
@@ -289,7 +290,9 @@ const PortfolioChart = ({
                 content={(props) => {
                   return (
                     <div className="bg-accent-foreground w-fit h-fit rounded-md p-2 flex flex-col gap-1">
-                      <p className="text-sm font-bold text-white">${props.payload?.[0]?.value}</p>
+                      <p className="text-sm font-bold text-white">
+                        ${props.payload?.[0]?.value && formatWithKMB(props.payload?.[0]?.value)}
+                      </p>
                       <p className="text-xs">
                         {new Date(props.payload?.[0]?.payload?.time).toLocaleDateString('en-US', {
                           month: 'short',

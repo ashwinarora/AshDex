@@ -192,6 +192,15 @@ const Header: FC = () => {
       </div>
       <div className="flex items-center gap-2">
         <BridgeButton />
+        {/* <Button variant={'outline'} size={'sm'} onClick={() => {
+          toast.success('Success')
+          toast.error('Error')
+          toast.info('Info')
+          toast.warning('Warning')
+          // toast.loading('Loading')
+        }}>
+          Check Toast
+        </Button> */}
         {isConnected && isRendered ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
