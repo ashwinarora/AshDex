@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import { Skeleton } from '../ui/skeleton'
 import {
   Dialog,
@@ -10,23 +10,88 @@ import {
 } from '../ui/dialog'
 import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from '../ui/table'
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
-import { flexRender } from '@tanstack/react-table'
+import {
+  flexRender,
+  useReactTable,
+  getCoreRowModel,
+  getSortedRowModel,
+  createColumnHelper,
+  SortingState
+} from '@tanstack/react-table'
 import { UserFees } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
-import { Table as ReactTable } from '@tanstack/react-table'
+import { formatWithKMB } from '@/utils/format'
 
 type PortfolioVolumeCardProps = {
   userFeeData: UserFees | undefined
   userFeeLoading: boolean
-  table: ReactTable<{
-    date: `${number}-${number}-${number}`
-    userCross: string
-    userAdd: string
-    exchange: string
-  }>
 }
 
-const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, table }: PortfolioVolumeCardProps) => {
+const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCardProps) => {
+  const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
+  const [sorting, setSorting] = useState<SortingState>([])
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('date', {
+        header: 'Date',
+        cell: ({ row }) => {
+          return <div className="text-xs">{row.original.date}</div>
+        },
+        meta: { label: 'Date' },
+        enableSorting: true
+      }),
+      columnHelper.accessor('exchange', {
+        header: 'Exchange Volume',
+        cell: ({ row }) => (
+          <div className="text-xs">{'$ ' + formatWithKMB(parseFloat(row.original.exchange))}</div>
+        ),
+        meta: { label: 'Exchange Volume' },
+        enableSorting: false
+      }),
+      columnHelper.accessor('userCross', {
+        header: 'Taker Volume',
+        cell: ({ row }) => (
+          <div
+            className={cn(
+              'text-xs',
+              parseFloat(row.original.userCross) > 0 ? 'text-white' : 'text-white/50'
+            )}
+          >
+            {'$ ' + formatWithKMB(parseFloat(row.original.userCross))}
+          </div>
+        ),
+        meta: { label: 'Weighted Taker Volume' },
+        enableSorting: false
+      }),
+      columnHelper.accessor('userAdd', {
+        header: 'Maker Volume',
+        cell: ({ row }) => (
+          <div
+            className={cn(
+              'text-xs',
+              parseFloat(row.original.userAdd) > 0 ? 'text-white' : 'text-white/50'
+            )}
+          >
+            {'$ ' + formatWithKMB(parseFloat(row.original.userAdd))}
+          </div>
+        ),
+        meta: { label: 'Weighted Maker Volume' },
+        enableSorting: false
+      })
+    ],
+    [columnHelper]
+  )
+
+  const table = useReactTable({
+    data: userFeeData ? userFeeData?.dailyUserVlm : [],
+    columns,
+    state: { sorting },
+    onSortingChange: setSorting,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    enableSorting: true
+  })
+
   return (
     <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-1 p-4">
       <h2>30 Day Volume</h2>
@@ -35,9 +100,12 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, table }: PortfolioVo
       ) : (
         <h1 className="text-5xl font-semibold text-white">
           $
-          {userFeeData?.dailyUserVlm
-            ?.reduce((acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc, 0)
-            .toFixed(2) || 0}
+          {formatWithKMB(
+            userFeeData?.dailyUserVlm?.reduce(
+              (acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc,
+              0
+            ) || 0
+          )}
         </h1>
       )}
       <Dialog>
@@ -46,7 +114,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, table }: PortfolioVo
             View Volume
           </p>
         </DialogTrigger>
-        <DialogContent className="w-fit !max-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
+        <DialogContent className="w-fit !max-w-xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
           <DialogHeader>
             <DialogTitle>Your Volume History</DialogTitle>
             <DialogDescription className="text-xs text-white/50">

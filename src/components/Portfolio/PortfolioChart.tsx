@@ -28,6 +28,7 @@ const PortfolioChart = ({
   portfolioQuery: UseQueryResult<PortfolioPeriods | undefined, Error>
 }) => {
   const [selectedChart, setSelectedChart] = useState<{
+    pnlType: 'unrealized' | 'realized' | 'total'
     type: 'area' | 'calendar'
     account: 'accountValue' | 'perp'
     range:
@@ -39,7 +40,7 @@ const PortfolioChart = ({
       | 'perpWeek'
       | 'perpMonth'
       | 'perpAllTime'
-  }>({ account: 'accountValue', range: 'day', type: 'area' })
+  }>({ account: 'accountValue', range: 'day', type: 'area', pnlType: 'realized' })
 
   const { data: portfolioData } = portfolioQuery
 
@@ -114,8 +115,8 @@ const PortfolioChart = ({
             Calendar
           </ToggleGroupItem>
         </ToggleGroup>
-        <div className="flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start">
-          {selectedChart.type === 'area' && (
+        {selectedChart.type === 'area' ? (
+          <div className="flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
@@ -171,38 +172,83 @@ const PortfolioChart = ({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          )}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
-                {selectedChart.account === 'accountValue' ? 'Total Equity' : 'Perps Equity'}
-                <IconChevronDown className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() =>
-                  setSelectedChart((prev) => ({
-                    ...prev,
-                    account: 'accountValue'
-                  }))
-                }
-              >
-                Total Equity
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() =>
-                  setSelectedChart((prev) => ({
-                    ...prev,
-                    account: 'perp'
-                  }))
-                }
-              >
-                Perps Equity
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
+                  {selectedChart.account === 'accountValue' ? 'Total Equity' : 'Perps Equity'}
+                  <IconChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedChart((prev) => ({
+                      ...prev,
+                      account: 'accountValue'
+                    }))
+                  }
+                >
+                  Total Equity
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedChart((prev) => ({
+                      ...prev,
+                      account: 'perp'
+                    }))
+                  }
+                >
+                  Perps Equity
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
+                  {selectedChart.pnlType.charAt(0).toUpperCase() +
+                    selectedChart.pnlType.slice(1) +
+                    ' PnL'}
+                  <IconChevronDown className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedChart((prev) => ({
+                      ...prev,
+                      pnlType: 'unrealized'
+                    }))
+                  }
+                >
+                  Unrealized PnL
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedChart((prev) => ({
+                      ...prev,
+                      pnlType: 'realized'
+                    }))
+                  }
+                >
+                  Realized PnL
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() =>
+                    setSelectedChart((prev) => ({
+                      ...prev,
+                      pnlType: 'total'
+                    }))
+                  }
+                >
+                  Total PnL
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )}
       </div>
       <div className="w-full h-60 flex-1">
         {selectedChart.type === 'area' && (
@@ -261,7 +307,7 @@ const PortfolioChart = ({
         )}
         {selectedChart.type === 'calendar' && (
           <div className="w-full h-full overflow-y-auto">
-            <PortfolioCalendar calendarData={displayCalendarData} />
+            <PortfolioCalendar calendarData={displayCalendarData} pnlType={selectedChart.pnlType} />
           </div>
         )}
       </div>
