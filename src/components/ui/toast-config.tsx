@@ -92,10 +92,10 @@ interface ToasterProps {
 export const Toast = () => {
   const { isMobile } = useScreenSize()
   const toastOptionsDesktop: ToasterProps = {
-    position: 'top-right',
+    position: 'bottom-left',
     richColors: true,
     swipeDirections: ['top', 'right', 'left'],
-    closeButton: true,
+    closeButton: false,
     visibleToasts: 9,
     duration: 3000,
     icons: {
@@ -108,13 +108,13 @@ export const Toast = () => {
     },
     toastOptions: {
       classNames: {
-        toast: '!border-white/10 !text-white !rounded-md !w-80',
-        closeButton: '!bg-accent !border-white/10 !text-white',
-        success: '!bg-green !text-white',
-        error: '!bg-red',
-        info: '!bg-accent-foreground',
-        warning: '!bg-yellow-600',
-        loading: '!bg-accent-foreground'
+        toast: '!rounded-md !w-80 !bg-accent',
+        closeButton: '!bg-accent !border-none !text-white !size-4',
+        success: '!text-green !border-green/50',
+        error: '!text-red !border-red/50',
+        info: '!text-accent-foreground !border-accent-foreground/50',
+        warning: '!text-yellow-600 !border-yellow-600/50',
+        loading: '!text-accent-foreground !border-accent-foreground/50'
       }
     }
   }
