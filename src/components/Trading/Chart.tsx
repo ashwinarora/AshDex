@@ -436,7 +436,6 @@ const TradingViewChart = ({
         disabled_features: [
           'use_localstorage_for_settings',
           'header_symbol_search',
-          'widget_logo',
           'compare_symbols'
         ],
         overrides: {
