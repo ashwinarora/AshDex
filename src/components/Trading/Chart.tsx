@@ -4,8 +4,6 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import * as hl from '@nktkas/hyperliquid'
 import { useShallow } from 'zustand/react/shallow'
 
-// TODO: Need Contributor review to fix the types
-
 interface BarData {
   time: number
   open: number
@@ -45,6 +43,10 @@ interface TradingViewWidgetInstance {
   onChartReady(callback: () => void): void
   activeChart(): {
     setSymbol: (symbol: string, interval: string) => void
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    createShape: (point: { price: number }, options: any) => Promise<string>
+    removeAllShapes: () => void
+    removeEntity: (shapeId: string) => void
   }
 }
 
@@ -157,14 +159,24 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
-  const { sdkInfoClient, subscribeToCandle, unsubscribeFromCandle } = useHyperliquidStore(
+  const {
+    sdkInfoClient,
+    subscribeToCandle,
+    unsubscribeFromCandle,
+    clearingHouseState,
+    openOrders
+  } = useHyperliquidStore(
     useShallow((state) => ({
       sdkInfoClient: state.sdkInfoClient,
       subscribeToCandle: state.subscribeToCandle,
-      unsubscribeFromCandle: state.unsubscribeFromCandle
+      unsubscribeFromCandle: state.unsubscribeFromCandle,
+      clearingHouseState: state.clearingHouseState,
+      openOrders: state.openOrders
     }))
   )
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
+  const orderToShape = useRef<Map<number, string>>(new Map())
+  const positionToShape = useRef<Map<string, string>>(new Map())
 
   // Convert TradingView resolution to Hyperliquid interval
   const convertedResolutionToInterval = (resolution: IntervalType) => {
@@ -741,8 +753,14 @@ const TradingViewChart = ({
         }
       })
 
-      widgetRef.current.onChartReady(() => {
+      widgetRef.current.onChartReady(async () => {
         console.log('TradingView chart ready')
+        // addStyledHorizontalLine(100000, 'Support LevelBoo', {
+        //   color: '#2fa766',
+        //   textColor: '#2fa766',
+        //   fontSize: 14,
+        //   backgroundColor: 'rgba(47, 167, 102, 0.1)'
+        // })
       })
     }
 
@@ -765,16 +783,130 @@ const TradingViewChart = ({
     }
   }, [datafeed])
 
+  const showOrderLineShape = async (isBuy: boolean, price: string, qty: string) => {
+    const chart = widgetRef.current?.activeChart()
+    if (!chart) return
+
+    // Draw a horizontal line + label
+    const shape = await chart.createShape(
+      { price: Number(price) },
+      {
+        shape: 'horizontal_line',
+        text: `${isBuy ? 'Buy' : 'Sell'} · ${qty} @ ${price}`,
+        // style it however you like:
+        overrides: {
+          showLabel: true,
+          labelBackgroundColor: 'rgba(47,167,102,0.1)',
+          textColor: '#2fa766',
+          fontSize: 13,
+          borderColor: '#2fa766',
+          borderWidth: 2,
+          OverrideLineStyle: 2
+        },
+        disableSelection: true,
+        disableSave: true,
+        lock: true
+      }
+    )
+    return shape
+  }
+
+  const showPositionLine = async (isLong: boolean, price: string, qty: string) => {
+    const chart = widgetRef.current?.activeChart()
+    if (!chart) return
+
+    const color = isLong ? '#2ae800' : '#ff0000' // green or red
+    const bg = isLong ? 'rgba(42,232,0,0.1)' : 'rgba(255,0,0,0.1)'
+
+    const shapeId = await chart.createShape(
+      { price: Number(price) },
+      {
+        shape: 'horizontal_line',
+        text: `${isLong ? 'Long' : 'Short'} · ${qty} @ ${price}`,
+        overrides: {
+          showLabel: true,
+          labelBackgroundColor: bg,
+          textColor: color,
+          fontColor: color,
+          fontSize: 13,
+          borderColor: color,
+          borderWidth: 2,
+          linecolor: color,
+          linewidth: 2,
+          linestyle: 0
+        },
+        disableSelection: true,
+        disableSave: true,
+        lock: true
+      }
+    )
+
+    return shapeId
+  }
+
   // Update chart when asset or interval changes
   useEffect(() => {
     if (widgetRef.current) {
       try {
         widgetRef.current.activeChart().setSymbol(selectedAsset, selectedInterval)
+        widgetRef.current.activeChart().removeAllShapes()
+        orderToShape.current.clear()
+        positionToShape.current.clear()
       } catch (e) {
         console.error('Chart update error:', e)
       }
     }
   }, [selectedAsset, selectedInterval])
+
+  useEffect(() => {
+    if (!widgetRef.current) return
+    openOrders.forEach(async (order) => {
+      if (order.coin !== selectedAsset) return
+      const shapeExists = orderToShape.current.get(order.oid)
+      if (shapeExists) return
+      const shapeId = await showOrderLineShape(order.side === 'B', order.limitPx, order.sz)
+      if (!shapeId) return
+      orderToShape.current.set(order.oid, shapeId)
+    })
+    if (openOrders.length !== orderToShape.current.size) {
+      // Find orders in orderToShape that are no longer in openOrders
+      const openOrderIds = new Set(openOrders.map((order) => order.oid))
+      for (const [orderId, shapeId] of orderToShape.current.entries()) {
+        if (!openOrderIds.has(orderId)) {
+          // Remove the shape from the chart
+          widgetRef.current.activeChart().removeEntity(shapeId)
+          orderToShape.current.delete(orderId)
+        }
+      }
+    }
+  }, [openOrders])
+
+  useEffect(() => {
+    if (!widgetRef.current) return
+    clearingHouseState?.assetPositions.forEach(async (p) => {
+      if (p.position.coin !== selectedAsset) return
+      const shapeExists = positionToShape.current.get(p.position.coin)
+      if (shapeExists) return
+      const shapeId = await showPositionLine(
+        Number(p.position.szi) > 0,
+        p.position.entryPx,
+        p.position.szi
+      )
+      if (!shapeId) return
+      positionToShape.current.set(p.position.coin, shapeId)
+    })
+    if (clearingHouseState?.assetPositions.length !== positionToShape.current.size) {
+      const positionIds = new Set(
+        clearingHouseState?.assetPositions.map((p) => p.position.coin) || []
+      )
+      for (const [positionId, shapeId] of positionToShape.current.entries()) {
+        if (!positionIds.has(positionId)) {
+          widgetRef.current.activeChart().removeEntity(shapeId)
+          positionToShape.current.delete(positionId)
+        }
+      }
+    }
+  }, [clearingHouseState])
 
   return (
     <div className="rounded-md p-2 bg-secondary w-full h-full md:h-[576px] xl:h-full">
