@@ -55,9 +55,7 @@ const SendModal: React.FC<SendModalProps> = ({
   const { data: spotMeta } = useSpotMeta()
 
   const spotData = useMemo(() => {
-    // HACK: SpotMeta has USDC-SPOT, but spotState has USDC. So we need to use USDC-SPOT here.
-    const tokenName = selectedToken === 'USDC' ? 'USDC-SPOT' : selectedToken
-    const token = spotMeta?.tokens.find((t) => t.name === tokenName)
+    const token = spotMeta?.tokens.find((t) => t.name === selectedToken)
     if (!token) return null
     return {
       tokenName: token.name.split('-')[0],
