@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
+import { getUsdClassTransferPayload } from '@/utils/hyperliquid/Transfer'
 import { splitSignature } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
@@ -25,7 +25,7 @@ interface ITransferModal {
   onClose: () => void
 }
 
-const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
+const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
@@ -167,4 +167,4 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
   )
 }
 
-export default TransferModal
+export default SpotToPerpTransferModal
