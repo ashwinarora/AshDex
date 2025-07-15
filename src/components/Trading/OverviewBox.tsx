@@ -160,7 +160,10 @@ function OverviewBox() {
         <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
       )}
       {isTransferModalOpen && (
-        <SpotToPerpTransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
+        <SpotToPerpTransferModal
+          isOpen={isTransferModalOpen}
+          onClose={() => setIsTransferModalOpen(false)}
+        />
       )}
       {isSendModalOpen && (
         <SendModal
