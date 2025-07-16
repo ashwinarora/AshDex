@@ -18,7 +18,7 @@ export const hyperliquidMainnet = {
   name: 'Hyperliquid Mainnet',
   nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.hyperliquid.xyz/evm'] },
+    default: { http: ['https://rpc.hyperliquid.xyz/evm'] }
   }
 } as const satisfies Chain
 
@@ -27,7 +27,7 @@ export const hyperliquidTestnet = {
   name: 'Hyperliquid Testnet',
   nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
   rpcUrls: {
-    default: { http: ['https://rpc.hyperliquid-testnet.xyz/evm'] },
+    default: { http: ['https://rpc.hyperliquid-testnet.xyz/evm'] }
   }
 } as const satisfies Chain
 
@@ -44,7 +44,19 @@ const coinbaseWalletConnector = coinbaseWallet({
 })
 
 export const config = createConfig({
-  chains: [arbitrumSepolia, arbitrum, mainnet, polygon, celo, avalanche, optimism, bsc, base, hyperliquidMainnet, hyperliquidTestnet],
+  chains: [
+    arbitrumSepolia,
+    arbitrum,
+    mainnet,
+    polygon,
+    celo,
+    avalanche,
+    optimism,
+    bsc,
+    base,
+    hyperliquidMainnet,
+    hyperliquidTestnet
+  ],
   connectors: [
     coinbaseWalletConnector,
     rabbyWalletConnector,

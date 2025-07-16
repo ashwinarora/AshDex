@@ -31,7 +31,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useAccount()
   const { data: balance } = useBalance({
     address: address,
-    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id,
+    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
   })
   const { switchChainAsync } = useSwitchChain()
 
@@ -117,7 +117,8 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         setIsLoading(false)
       }
     } else {
-      if (!chainId || chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id) return
+      if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))
+        return
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
@@ -206,24 +207,29 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
               </div>
             </div>
             <Separator />
-            {!toEvm ? chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id ? <Button
-              className="w-full"
-              onClick={switchChain}
-            >
-              Switch to Hyperliquid Network
-            </Button> : <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onTransferClick}
-            >
-              Transfer to Spot
-            </Button> : <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onTransferClick}
-            >
-              Transfer to EVM
-            </Button>}
+            {!toEvm ? (
+              chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id ? (
+                <Button className="w-full" onClick={switchChain}>
+                  Switch to Hyperliquid Network
+                </Button>
+              ) : (
+                <Button
+                  className="w-full"
+                  disabled={!amount || parseFloat(amount.toString()) === 0}
+                  onClick={onTransferClick}
+                >
+                  Transfer to Spot
+                </Button>
+              )
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={onTransferClick}
+              >
+                Transfer to EVM
+              </Button>
+            )}
           </>
         )}
       </DialogContent>
