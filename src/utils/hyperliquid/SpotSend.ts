@@ -7,8 +7,9 @@ export interface ISpotSendData {
   nonce: number
   destination: string
   amount: string
-  tokenName: string
-  tokenId: string
+  tokenName?: string
+  tokenId?: string
+  formattedToken?: string
 }
 
 export const getSpotSendPayload = ({
@@ -18,7 +19,8 @@ export const getSpotSendPayload = ({
   destination,
   amount,
   tokenName,
-  tokenId
+  tokenId,
+  formattedToken
 }: ISpotSendData): SignTypedDataVariables => {
   return {
     domain: {
@@ -34,7 +36,7 @@ export const getSpotSendPayload = ({
       destination: destination,
       amount: amount,
       time: nonce,
-      token: tokenName + ':' + tokenId
+      token: formattedToken ?? tokenName + ':' + tokenId
     },
     primaryType: 'HyperliquidTransaction:SpotSend',
     types: {

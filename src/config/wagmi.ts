@@ -11,6 +11,37 @@ import {
   polygon
 } from 'wagmi/chains'
 import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
+import { type Chain } from 'viem'
+
+export const hyperliquidMainnet = {
+  id: 999,
+  name: 'Hyperliquid Mainnet',
+  nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.hyperliquid.xyz/evm'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Hyperliquid Explorer',
+      url: 'https://hyperevmscan.io/'
+    }
+  }
+} as const satisfies Chain
+
+export const hyperliquidTestnet = {
+  id: 998,
+  name: 'Hyperliquid Testnet',
+  nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
+  rpcUrls: {
+    default: { http: ['https://rpc.hyperliquid-testnet.xyz/evm'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Hyperliquid Explorer',
+      url: 'https://testnet.purrsec.com/'
+    }
+  }
+} as const satisfies Chain
 
 const phantomWalletConnector = injected({
   target: 'phantom'
@@ -25,7 +56,19 @@ const coinbaseWalletConnector = coinbaseWallet({
 })
 
 export const config = createConfig({
-  chains: [arbitrumSepolia, arbitrum, mainnet, polygon, celo, avalanche, optimism, bsc, base],
+  chains: [
+    arbitrumSepolia,
+    arbitrum,
+    mainnet,
+    polygon,
+    celo,
+    avalanche,
+    optimism,
+    bsc,
+    base,
+    hyperliquidMainnet,
+    hyperliquidTestnet
+  ],
   connectors: [
     coinbaseWalletConnector,
     rabbyWalletConnector,
@@ -45,6 +88,8 @@ export const config = createConfig({
     [avalanche.id]: http(),
     [optimism.id]: http(),
     [bsc.id]: http(),
-    [base.id]: http()
+    [base.id]: http(),
+    [hyperliquidMainnet.id]: http(),
+    [hyperliquidTestnet.id]: http()
   }
 })

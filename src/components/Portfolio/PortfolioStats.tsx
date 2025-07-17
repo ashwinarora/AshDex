@@ -295,7 +295,6 @@ const PortfolioStats = () => {
         <div className="flex flex-col justify-between h-full gap-1 p-2">
           {overviewTable
             ? Object.entries(overviewTable).map(([key, value]) => {
-                console.log(key, value)
                 return (
                   <div key={key} className="flex items-center justify-between w-full">
                     <p className="text-sm text-white/50">{key}</p>
