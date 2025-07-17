@@ -29,7 +29,7 @@ import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { CORE_TO_EVM_MAPPING, isTestnet } from '@/utils/constants'
 import { hyperliquidAxios } from '@/config/axios'
 import { splitSignature } from '@/utils/utils'
-import { getSpotToEVMSendPayload } from '@/utils/hyperliquid/Transfer'
+import { getSpotSendPayload } from '@/utils/hyperliquid/SpotSend'
 import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
 import { erc20Abi, formatUnits, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -113,12 +113,13 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
-        const payload = getSpotToEVMSendPayload({
+        const payload = getSpotSendPayload({
           chainId: chainId,
           isTestnet: isTestnet,
           amount: amount,
           destination: destination,
-          token: token
+          nonce: Date.now(),
+          formattedToken: token
         })
         const sign = await signTypedDataAsync(payload)
         const body = {
@@ -196,7 +197,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Transfer between Spot and EVM</DialogTitle>
-          <DialogDescription>Transfer HYPE between Spot and EVM.</DialogDescription>
+          <DialogDescription>{`Transfer ${coin} between Spot and EVM.`}</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">

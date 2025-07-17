@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useAccount, useSignTypedData } from 'wagmi'
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/Transfer'
+import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
 import { splitSignature } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'

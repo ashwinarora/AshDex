@@ -19,6 +19,12 @@ export const hyperliquidMainnet = {
   nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.hyperliquid.xyz/evm'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Hyperliquid Explorer',
+      url: 'https://purrsec.com/'
+    }
   }
 } as const satisfies Chain
 
@@ -28,6 +34,12 @@ export const hyperliquidTestnet = {
   nativeCurrency: { name: 'HYPE', symbol: 'HYPE', decimals: 18 },
   rpcUrls: {
     default: { http: ['https://rpc.hyperliquid-testnet.xyz/evm'] }
+  },
+  blockExplorers: {
+    default: {
+      name: 'Hyperliquid Explorer',
+      url: 'https://hyperfoundation.org/'
+    }
   }
 } as const satisfies Chain
 
