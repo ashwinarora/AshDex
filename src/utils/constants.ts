@@ -30,6 +30,31 @@ export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163
 
 export const AGENT_PRIVATE_KEY = 'agentPrivateKey'
 
+export const CORE_TO_EVM_MAPPING: Record<string, Record<string, { destination: string; token: string, onChainAddress?: string }>> = {
+  testnet: {
+    HYPE: {
+      destination: '0x2222222222222222222222222222222222222222',
+      token: 'HYPE:0x7317beb7cceed72ef0b346074cc8e7ab'
+    },
+    PURR: {
+      destination: '0x2000000000000000000000000000000000000001',
+      token: 'PURR:0xc4bf3f870c0e9465323c0b6ed28096c2',
+      onChainAddress: '0xa9056c15938f9aff34CD497c722Ce33dB0C2fD57'
+    },
+    USDC: {
+      destination: '0x2000000000000000000000000000000000000000',
+      token: 'USDC:0xeb62eee3685fc4c43992febcd9e75443',
+      onChainAddress: '0xd9CBEC81df392A88AEff575E962d149d57F4d6bc'
+    }
+  },
+  mainnet: {
+    HYPE: {
+      destination: '0x2222222222222222222222222222222222222222',
+      token: 'HYPE:0x0d01dc56dcaaca66ad901c959b4011ec'
+    }
+  }
+}
+
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
 export const BUILDER_ADDRESS = isTestnet

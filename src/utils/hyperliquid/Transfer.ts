@@ -12,6 +12,8 @@ interface ISpotToEVMSendPayload {
   chainId: number
   isTestnet: boolean
   amount: string
+  destination: string
+  token: string
 }
 
 export const getUsdClassTransferPayload = ({
@@ -81,7 +83,9 @@ export const getUsdClassTransferPayload = ({
 export const getSpotToEVMSendPayload = ({
   chainId,
   isTestnet,
-  amount
+  amount,
+  destination,
+  token
 }: ISpotToEVMSendPayload): SignTypedDataVariables => {
   return {
     domain: {
@@ -91,8 +95,8 @@ export const getSpotToEVMSendPayload = ({
       verifyingContract: '0x0000000000000000000000000000000000000000'
     },
     message: {
-      destination: '0x2222222222222222222222222222222222222222',
-      token: `HYPE:${isTestnet ? '0x7317beb7cceed72ef0b346074cc8e7ab' : '0x0d01dc56dcaaca66ad901c959b4011ec'}`,
+      destination: destination,
+      token: token,
       amount: amount,
       time: Date.now(),
       type: 'spotSend',

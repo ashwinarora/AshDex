@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { useAccount, useBalance, useSendTransaction, useSignTypedData, useSwitchChain } from 'wagmi'
+import { useAccount, useBalance, useSendTransaction, useSignTypedData, useSwitchChain, useWriteContract } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
-import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { DialogDescription } from '@/components/ui/dialog'
 import { DialogTitle } from '@/components/ui/dialog'
 import { DialogHeader } from '@/components/ui/dialog'
@@ -15,12 +15,13 @@ import Loading from '@/components/common/Loading'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
-import { isTestnet } from '@/utils/constants'
+import { CORE_TO_EVM_MAPPING, isTestnet } from '@/utils/constants'
 import { hyperliquidAxios } from '@/config/axios'
 import { splitSignature } from '@/utils/utils'
 import { getSpotToEVMSendPayload } from '@/utils/hyperliquid/Transfer'
 import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
-import { formatUnits, parseUnits } from 'viem'
+import { erc20Abi, formatUnits, parseUnits } from 'viem'
+import { Skeleton } from '@/components/ui/skeleton'
 
 interface ITransferModal {
   isOpen: boolean
@@ -29,11 +30,9 @@ interface ITransferModal {
 
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useAccount()
-  const { data: balance } = useBalance({
-    address: address,
-    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
-  })
+
   const { switchChainAsync } = useSwitchChain()
+  const { writeContractAsync } = useWriteContract()
 
   const [amount, setAmount] = useState<string>('')
   const [toEvm, setToEvm] = useState(false)
@@ -42,6 +41,24 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       spotState: state.spotState
     }))
   )
+  const [coin, setCoin] = useState<string>('HYPE')
+
+  const supportedCoins = Object.keys(CORE_TO_EVM_MAPPING[isTestnet ? 'testnet' : 'mainnet'])
+  const { destination, token, onChainAddress } = CORE_TO_EVM_MAPPING[isTestnet ? 'testnet' : 'mainnet'][coin]
+
+  const { data: balanceEvm, isLoading: isLoadingBalanceEvm } = useBalance({
+    address: address,
+    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id,
+  })
+
+  const { data: balance, isLoading: isLoadingBalance } = useBalance({
+    address: address,
+    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id,
+    token: onChainAddress as `0x${string}`,
+    query: {
+      enabled: !!onChainAddress && !!address
+    }
+  })
 
   const { sendTransactionAsync } = useSendTransaction()
 
@@ -51,9 +68,12 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const getBalance = () => {
     if (toEvm) {
       return (
-        spotState?.balances?.find((balance) => balance.coin === 'HYPE')?.total.toString() ?? '0'
+        parseFloat(spotState?.balances?.find((balance) => balance.coin === coin)?.total.toString() ?? '0').toFixed(4)
       )
     } else {
+      if (coin === 'HYPE') {
+        return parseFloat(formatUnits(balanceEvm?.value ?? 0n, balanceEvm?.decimals ?? 18)).toFixed(4)
+      }
       return parseFloat(formatUnits(balance?.value ?? 0n, balance?.decimals ?? 18)).toFixed(4)
     }
   }
@@ -82,7 +102,9 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         const payload = getSpotToEVMSendPayload({
           chainId: chainId,
           isTestnet: isTestnet,
-          amount: amount
+          amount: amount,
+          destination: destination,
+          token: token
         })
         const sign = await signTypedDataAsync(payload)
         const body = {
@@ -122,11 +144,22 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
-        const res = await sendTransactionAsync({
-          to: '0x2222222222222222222222222222222222222222',
-          value: parseUnits(amount, 18),
-          chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
-        })
+        let res
+        if (coin === 'HYPE') {
+          res = await sendTransactionAsync({
+            to: destination as `0x${string}`,
+            value: parseUnits(amount, 18),
+            chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
+          })
+        } else {
+          res = await writeContractAsync({
+            abi: erc20Abi,
+            address: onChainAddress as `0x${string}`,
+            functionName: 'transfer',
+            args: [destination as `0x${string}`, parseUnits(amount, 18)],
+            chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
+          })
+        }
         console.log('Transfer response:', res)
         onClose()
         toast.success('Transfer successful', {
@@ -178,30 +211,39 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   <p>Amount</p>
                   <div className="flex items-center gap-1">
                     Available to transfer:
-                    <Button
-                      variant="link"
-                      onClick={() => setAmount(getBalance() ?? '0')}
-                      className="text-xs h-fit p-0"
-                    >
-                      {getBalance()} {'HYPE'}
-                    </Button>
+                    {isLoadingBalanceEvm || isLoadingBalance ?
+                      <Skeleton className='w-20 h-4 rounded-md' />
+                      : <Button
+                        variant="link"
+                        onClick={() => setAmount(getBalance() ?? '0')}
+                        className="text-xs h-fit p-0"
+                      >
+                        {getBalance()} {coin}
+                      </Button>}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 h-10"
+                    className="text-left flex-1 !text-xs h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
                   <DropdownMenu>
-                    <DropdownMenuTrigger asChild disabled>
-                      <Button variant="outline" className="w-fit">
-                        HYPE
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="w-20">
+                        {coin}
                         <IconChevronDown className="size-4" />
                       </Button>
                     </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-20">
+                      {supportedCoins.map((coin) => (
+                        <DropdownMenuItem key={coin} onClick={() => setCoin(coin)}>
+                          {coin}
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuContent>
                   </DropdownMenu>
                 </div>
               </div>
