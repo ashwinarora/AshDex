@@ -30,7 +30,10 @@ export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163
 
 export const AGENT_PRIVATE_KEY = 'agentPrivateKey'
 
-export const CORE_TO_EVM_MAPPING: Record<string, Record<string, { destination: string; token: string, onChainAddress?: string }>> = {
+export const CORE_TO_EVM_MAPPING: Record<
+  string,
+  Record<string, { destination: string; token: string; onChainAddress?: string }>
+> = {
   testnet: {
     HYPE: {
       destination: '0x2222222222222222222222222222222222222222',

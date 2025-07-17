@@ -1,10 +1,21 @@
 import { useState } from 'react'
-import { useAccount, useBalance, useSendTransaction, useSignTypedData, useSwitchChain, useWriteContract } from 'wagmi'
+import {
+  useAccount,
+  useBalance,
+  useSendTransaction,
+  useSignTypedData,
+  useSwitchChain,
+  useWriteContract
+} from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
-import { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
 import { DialogDescription } from '@/components/ui/dialog'
 import { DialogTitle } from '@/components/ui/dialog'
 import { DialogHeader } from '@/components/ui/dialog'
@@ -44,11 +55,12 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const [coin, setCoin] = useState<string>('HYPE')
 
   const supportedCoins = Object.keys(CORE_TO_EVM_MAPPING[isTestnet ? 'testnet' : 'mainnet'])
-  const { destination, token, onChainAddress } = CORE_TO_EVM_MAPPING[isTestnet ? 'testnet' : 'mainnet'][coin]
+  const { destination, token, onChainAddress } =
+    CORE_TO_EVM_MAPPING[isTestnet ? 'testnet' : 'mainnet'][coin]
 
   const { data: balanceEvm, isLoading: isLoadingBalanceEvm } = useBalance({
     address: address,
-    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id,
+    chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
   })
 
   const { data: balance, isLoading: isLoadingBalance } = useBalance({
@@ -67,12 +79,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   const getBalance = () => {
     if (toEvm) {
-      return (
-        parseFloat(spotState?.balances?.find((balance) => balance.coin === coin)?.total.toString() ?? '0').toFixed(4)
-      )
+      return parseFloat(
+        spotState?.balances?.find((balance) => balance.coin === coin)?.total.toString() ?? '0'
+      ).toFixed(4)
     } else {
       if (coin === 'HYPE') {
-        return parseFloat(formatUnits(balanceEvm?.value ?? 0n, balanceEvm?.decimals ?? 18)).toFixed(4)
+        return parseFloat(formatUnits(balanceEvm?.value ?? 0n, balanceEvm?.decimals ?? 18)).toFixed(
+          4
+        )
       }
       return parseFloat(formatUnits(balance?.value ?? 0n, balance?.decimals ?? 18)).toFixed(4)
     }
@@ -211,15 +225,17 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   <p>Amount</p>
                   <div className="flex items-center gap-1">
                     Available to transfer:
-                    {isLoadingBalanceEvm || isLoadingBalance ?
-                      <Skeleton className='w-20 h-4 rounded-md' />
-                      : <Button
+                    {isLoadingBalanceEvm || isLoadingBalance ? (
+                      <Skeleton className="w-20 h-4 rounded-md" />
+                    ) : (
+                      <Button
                         variant="link"
                         onClick={() => setAmount(getBalance() ?? '0')}
                         className="text-xs h-fit p-0"
                       >
                         {getBalance()} {coin}
-                      </Button>}
+                      </Button>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
