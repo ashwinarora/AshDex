@@ -23,7 +23,7 @@ export const hyperliquidMainnet = {
   blockExplorers: {
     default: {
       name: 'Hyperliquid Explorer',
-      url: 'https://purrsec.com/'
+      url: 'https://hyperevmscan.io/'
     }
   }
 } as const satisfies Chain
@@ -38,7 +38,7 @@ export const hyperliquidTestnet = {
   blockExplorers: {
     default: {
       name: 'Hyperliquid Explorer',
-      url: 'https://hyperfoundation.org/'
+      url: 'https://testnet.purrsec.com/'
     }
   }
 } as const satisfies Chain
