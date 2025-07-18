@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import DepositModal from '../DepositWithdraw/DepositModal'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../common/ReactiveText'
-import TransferModal from './UserData/component/TransferModal'
+import SpotToPerpTransferModal from './UserData/component/transfers/spot-to-perp'
 import SendModal from './UserData/component/SendModal'
 import { IconTransfer } from '@tabler/icons-react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -160,7 +160,10 @@ function OverviewBox() {
         <DepositModal isOpen={isDepositOpen} onClose={() => setIsDepositOpen(!isDepositOpen)} />
       )}
       {isTransferModalOpen && (
-        <TransferModal isOpen={isTransferModalOpen} onClose={() => setIsTransferModalOpen(false)} />
+        <SpotToPerpTransferModal
+          isOpen={isTransferModalOpen}
+          onClose={() => setIsTransferModalOpen(false)}
+        />
       )}
       {isSendModalOpen && (
         <SendModal

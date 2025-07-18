@@ -2,11 +2,12 @@
 import { useState } from 'react'
 import DepositModal from '@/components/DepositWithdraw/DepositModal'
 import SendModal from '@/components/Trading/UserData/component/SendModal'
-import TransferModal from '@/components/Trading/UserData/component/TransferModal'
 import { Button } from '../ui/button'
 import WithdrawModal from '../DepositWithdraw/WithdrawModal'
 import { IconCash, IconTransfer } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import SpotToPerpTransferModal from '../Trading/UserData/component/transfers/spot-to-perp'
+import SpotToEvmTransferModal from '../Trading/UserData/component/transfers/spot-to-evm'
 
 const PortfolioHeader = () => {
   const { isMobile } = useScreenSize()
@@ -14,7 +15,8 @@ const PortfolioHeader = () => {
     [key: string]: boolean
   }>({
     deposit: false,
-    transfer: false,
+    spotToPerp: false,
+    spotToEvm: false,
     withdraw: false,
     send: false
   })
@@ -36,7 +38,7 @@ const PortfolioHeader = () => {
             <Button
               className="flex-1 w-full"
               variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, transfer: true })}
+              onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
             >
               <p>Perps</p>
               <IconTransfer className="size-3" />
@@ -44,6 +46,14 @@ const PortfolioHeader = () => {
             </Button>
             <Button
               className="flex-1 w-full"
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
+            >
+              <p>EVM</p>
+              <IconTransfer className="size-3" />
+              <p>Spot</p>
+            </Button>
+            <Button
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
             >
@@ -64,10 +74,16 @@ const PortfolioHeader = () => {
             onClose={() => setIsModalOpen({ ...isModalOpen, deposit: false })}
           />
         )}
-        {isModalOpen.transfer && (
-          <TransferModal
-            isOpen={isModalOpen.transfer}
-            onClose={() => setIsModalOpen({ ...isModalOpen, transfer: false })}
+        {isModalOpen.spotToPerp && (
+          <SpotToPerpTransferModal
+            isOpen={isModalOpen.spotToPerp}
+            onClose={() => setIsModalOpen({ ...isModalOpen, spotToPerp: false })}
+          />
+        )}
+        {isModalOpen.spotToEvm && (
+          <SpotToEvmTransferModal
+            isOpen={isModalOpen.spotToEvm}
+            onClose={() => setIsModalOpen({ ...isModalOpen, spotToEvm: false })}
           />
         )}
         {isModalOpen.send && (
@@ -109,9 +125,18 @@ const PortfolioHeader = () => {
           <Button
             className="w-32"
             variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, transfer: true })}
+            onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
           >
             <p>Perps</p>
+            <IconTransfer className="size-3" />
+            <p>Spot</p>
+          </Button>
+          <Button
+            className="flex-1 w-full"
+            variant={'outline'}
+            onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
+          >
+            <p>EVM</p>
             <IconTransfer className="size-3" />
             <p>Spot</p>
           </Button>
@@ -130,10 +155,16 @@ const PortfolioHeader = () => {
           onClose={() => setIsModalOpen({ ...isModalOpen, deposit: false })}
         />
       )}
-      {isModalOpen.transfer && (
-        <TransferModal
-          isOpen={isModalOpen.transfer}
-          onClose={() => setIsModalOpen({ ...isModalOpen, transfer: false })}
+      {isModalOpen.spotToPerp && (
+        <SpotToPerpTransferModal
+          isOpen={isModalOpen.spotToPerp}
+          onClose={() => setIsModalOpen({ ...isModalOpen, spotToPerp: false })}
+        />
+      )}
+      {isModalOpen.spotToEvm && (
+        <SpotToEvmTransferModal
+          isOpen={isModalOpen.spotToEvm}
+          onClose={() => setIsModalOpen({ ...isModalOpen, spotToEvm: false })}
         />
       )}
       {isModalOpen.send && (

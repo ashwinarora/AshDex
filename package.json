@@ -82,8 +82,8 @@
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.1",
     "vaul": "^1.1.2",
-    "viem": "^2.23.11",
-    "wagmi": "^2.14.16",
+    "viem": "^2.31.7",
+    "wagmi": "^2.15.6",
     "zustand": "^5.0.4"
   },
   "devDependencies": {

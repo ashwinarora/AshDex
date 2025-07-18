@@ -32,6 +32,7 @@ import {
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 type MenuItem = {
   name: string
   path: string
@@ -59,7 +60,7 @@ const Header: FC = () => {
     { name: 'Futures', path: '/', isComingSoon: false },
     { name: 'Spot', path: '/spot', isComingSoon: false },
     { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
-    { name: 'Referrals', path: '/referrals', isComingSoon: false }
+    { name: 'Referrals', path: '/', isComingSoon: true }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
     // { name: 'Vaults', path: '/vaults', isComingSoon: true }
@@ -150,9 +151,13 @@ const Header: FC = () => {
                 <IconMenu className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-48" align="end">
+            <DropdownMenuContent className="min-w-48 w-fit" align="end">
               {desktopMenu?.map(({ name, path }) => (
-                <DropdownMenuItem key={name} onClick={() => router.push(path)}>
+                <DropdownMenuItem
+                  key={name}
+                  onClick={() => router.push(path)}
+                  className="flex items-center justify-between"
+                >
                   {name}
                 </DropdownMenuItem>
               ))}
@@ -162,13 +167,16 @@ const Header: FC = () => {
           <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
-                <div
-                  key={name}
-                  className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm"
-                >
-                  {name}
-                  {/* <Badge variant={'outline'} className='text-white/50 text-xs'>Coming Soon</Badge> */}
-                </div>
+                <HoverCard key={name}>
+                  <HoverCardTrigger>
+                    <div className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm">
+                      {name}
+                    </div>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-fit h-fit p-2" align="center">
+                    <p className="text-white text-xs">Coming Soon</p>
+                  </HoverCardContent>
+                </HoverCard>
               ) : (
                 <NavigationMenuItem
                   className="h-full flex items-center justify-center w-24"

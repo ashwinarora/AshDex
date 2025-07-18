@@ -25,7 +25,7 @@ interface ITransferModal {
   onClose: () => void
 }
 
-const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
+const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
@@ -167,4 +167,4 @@ const TransferModal = ({ isOpen, onClose }: ITransferModal) => {
   )
 }
 
-export default TransferModal
+export default SpotToPerpTransferModal
