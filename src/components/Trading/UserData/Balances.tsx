@@ -27,6 +27,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
@@ -42,16 +43,18 @@ type BalanceData = {
 
 const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { clearingHouseState, spotState, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      agentWallet: state.agentWallet
     }))
   )
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
+  const { isAgentApproved, openModal: openAgentModal } = useAgentApproval()
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
   const router = useRouter()
@@ -148,13 +151,14 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
 
           return (
             <Button
-              variant={'link'}
-              size={'sm'}
-              className="text-xs !p-0"
               onClick={() => {
+                if (!agentWallet || !isAgentApproved) return openAgentModal()
                 setCoin(() => coin)
                 setIsSendModalOpen(true)
               }}
+              variant={'link'}
+              size={'sm'}
+              className="text-xs !p-0"
             >
               Send
             </Button>
@@ -282,7 +286,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
           ))}
         </TableBody>
       </Table>
-      {isSendModalOpen && (
+      {agentWallet && isAgentApproved && isSendModalOpen && (
         <SendModal
           isOpen={isSendModalOpen}
           onClose={() => setIsSendModalOpen(false)}

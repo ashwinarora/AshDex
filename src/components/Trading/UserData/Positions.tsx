@@ -244,7 +244,9 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           <div className="flex items-center justify-end gap-2">
             <span className="text-white/50 text-xs">Action</span>
             <Button
-              onClick={() => setIsCloseAllModalOpen(true)}
+              onClick={() => {
+                if (!agentWallet || !isAgentApproved) return openAgentModal()
+                setIsCloseAllModalOpen(true)}}
               variant={'outline'}
               className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
             >
@@ -266,8 +268,8 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={() => {
-                    setTpslAsset(row.original)
                     if (!agentWallet || !isAgentApproved) return openAgentModal()
+                    setTpslAsset(row.original)
                     setIsTPSLModalOpen(true)
                   }}
                 >
@@ -275,6 +277,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
+                    if (!agentWallet || !isAgentApproved) return openAgentModal()
                     setClosingAsset(row.original.coin)
                     setIsLimitCloseModalOpen(true)
                   }}
@@ -283,6 +286,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
+                    if (!agentWallet || !isAgentApproved) return openAgentModal()
                     setClosingAsset(row.original.coin)
                     setIsMarketCloseModalOpen(true)
                   }}
@@ -361,35 +365,35 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
             tpslAsset={tpslAsset}
           />
         )}
-        {isLimitCloseModalOpen && closingAsset && (
+        {agentWallet && isAgentApproved && isLimitCloseModalOpen && closingAsset && (
           <LimitCloseModal
             isOpen={isLimitCloseModalOpen}
             onClose={() => setIsLimitCloseModalOpen(false)}
             closingAsset={closingAsset}
           />
         )}
-        {isMarketCloseModalOpen && closingAsset && (
+        {agentWallet && isAgentApproved && isMarketCloseModalOpen && closingAsset && (
           <MarketCloseModal
             isOpen={isMarketCloseModalOpen}
             onClose={() => setIsMarketCloseModalOpen(false)}
             closingAsset={closingAsset}
           />
         )}
-        {isLeverageModalOpen && leverageAsset && (
+        {agentWallet && isAgentApproved && isLeverageModalOpen && leverageAsset && (
           <LeverageModal
             isOpen={isLeverageModalOpen}
             onClose={() => setIsLeverageModalOpen(false)}
             asset={leverageAsset}
           />
         )}
-        {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+        {agentWallet && isAgentApproved && isIsolatedMarginModalOpen && isolatedMarginAsset && (
           <IsolatedMarginModal
             isOpen={isIsolatedMarginModalOpen}
             onClose={() => setIsIsolatedMarginModalOpen(false)}
             asset={isolatedMarginAsset}
           />
         )}
-        {isCloseAllModalOpen && (
+        {agentWallet && isAgentApproved && isCloseAllModalOpen && (
           <CloseAllModal
             isOpen={isCloseAllModalOpen}
             onClose={() => setIsCloseAllModalOpen(false)}
@@ -477,35 +481,35 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
           tpslAsset={tpslAsset}
         />
       )}
-      {isLimitCloseModalOpen && closingAsset && (
+      {agentWallet && isAgentApproved && isLimitCloseModalOpen && closingAsset && (
         <LimitCloseModal
           isOpen={isLimitCloseModalOpen}
           onClose={() => setIsLimitCloseModalOpen(false)}
           closingAsset={closingAsset}
         />
       )}
-      {isMarketCloseModalOpen && closingAsset && (
+      {agentWallet && isAgentApproved && isMarketCloseModalOpen && closingAsset && (
         <MarketCloseModal
           isOpen={isMarketCloseModalOpen}
           onClose={() => setIsMarketCloseModalOpen(false)}
           closingAsset={closingAsset}
         />
       )}
-      {isLeverageModalOpen && leverageAsset && (
+      {agentWallet && isAgentApproved && isLeverageModalOpen && leverageAsset && (
         <LeverageModal
           isOpen={isLeverageModalOpen}
           onClose={() => setIsLeverageModalOpen(false)}
           asset={leverageAsset}
         />
       )}
-      {isIsolatedMarginModalOpen && isolatedMarginAsset && (
+      {agentWallet && isAgentApproved && isIsolatedMarginModalOpen && isolatedMarginAsset && (
         <IsolatedMarginModal
           isOpen={isIsolatedMarginModalOpen}
           onClose={() => setIsIsolatedMarginModalOpen(false)}
           asset={isolatedMarginAsset}
         />
       )}
-      {isCloseAllModalOpen && (
+      {agentWallet && isAgentApproved && isCloseAllModalOpen && (
         <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
       )}
     </div>
