@@ -1,4 +1,5 @@
 'use client'
+import { Dialog } from '@/components/ui/dialog'
 import { config } from '@/config/wagmi'
 import dynamic from 'next/dynamic'
 import React, { createContext, useContext, useEffect, useState } from 'react'
@@ -33,7 +34,11 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   return (
     <WalletModalContext.Provider value={{ isModalOpen, toggleConnectWalletModal }}>
-      {isModalOpen && <ConnectWalletModal />}
+      {isModalOpen && (
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <ConnectWalletModal />
+        </Dialog>
+      )}
       {children}
     </WalletModalContext.Provider>
   )
