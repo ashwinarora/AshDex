@@ -246,7 +246,8 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
             <Button
               onClick={() => {
                 if (!agentWallet || !isAgentApproved) return openAgentModal()
-                setIsCloseAllModalOpen(true)}}
+                setIsCloseAllModalOpen(true)
+              }}
               variant={'outline'}
               className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
             >

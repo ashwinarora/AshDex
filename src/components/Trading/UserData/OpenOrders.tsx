@@ -16,7 +16,13 @@ import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { IconX, IconSelector, IconChevronDown, IconChevronUp, IconSignature } from '@tabler/icons-react'
+import {
+  IconX,
+  IconSelector,
+  IconChevronDown,
+  IconChevronUp,
+  IconSignature
+} from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -71,8 +77,8 @@ const OpenOrders = () => {
           if (!sdkExchangeClient) return
           const assetIndex = isSpot
             ? Number(
-              spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
-            ) + SPOT_DELTA
+                spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
+              ) + SPOT_DELTA
             : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
           if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
           await sdkExchangeClient.cancel({
@@ -99,13 +105,16 @@ const OpenOrders = () => {
 
   const renderCancelButton = useCallback(
     (row: { original: FrontendOrderWithAssetKey }) => {
-      if (!agentWallet || !isAgentApproved) return <Button
-        onClick={() => openAgentModal()}
-        variant="link"
-        className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
-      >
-        Enable Trading
-      </Button>
+      if (!agentWallet || !isAgentApproved)
+        return (
+          <Button
+            onClick={() => openAgentModal()}
+            variant="link"
+            className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+          >
+            Enable Trading
+          </Button>
+        )
       return (
         <Button
           onClick={() => handleCancelOrder(row)}
@@ -149,7 +158,7 @@ const OpenOrders = () => {
             .map((order) => {
               const assetIndex = isSpot
                 ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                SPOT_DELTA
+                  SPOT_DELTA
                 : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
               if (!assetIndex) return
               return {
@@ -185,19 +194,23 @@ const OpenOrders = () => {
     return (
       <div className="flex items-center justify-end gap-2">
         <span className="text-white/50 text-xs">Action</span>
-        {(!agentWallet || !isAgentApproved) ? <Button
-          onClick={() => openAgentModal()}
-          variant={'outline'}
-          className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
-        >
-          <IconSignature className="size-3" />
-        </Button> : <Button
-          onClick={() => handleCancelAll()}
-          variant={'outline'}
-          className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
-        >
-          <IconX className="size-3" />
-        </Button>}
+        {!agentWallet || !isAgentApproved ? (
+          <Button
+            onClick={() => openAgentModal()}
+            variant={'outline'}
+            className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+          >
+            <IconSignature className="size-3" />
+          </Button>
+        ) : (
+          <Button
+            onClick={() => handleCancelAll()}
+            variant={'outline'}
+            className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+          >
+            <IconX className="size-3" />
+          </Button>
+        )}
       </div>
     )
   }, [handleCancelAll])
