@@ -16,13 +16,7 @@ import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import {
-  IconX,
-  IconSelector,
-  IconChevronDown,
-  IconChevronUp,
-  IconSignature
-} from '@tabler/icons-react'
+import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
 import { FrontendOrder } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -100,7 +94,15 @@ const OpenOrders = () => {
       }
       cancelOrder()
     },
-    [sdkExchangeClient, isSpot, spotMeta, perpsMeta]
+    [
+      sdkExchangeClient,
+      isSpot,
+      spotMeta,
+      perpsMeta,
+      isAgentApproved,
+      openAgentModal,
+      currentFeeApproval
+    ]
   )
 
   const renderCancelButton = useCallback(
@@ -125,15 +127,7 @@ const OpenOrders = () => {
         </Button>
       )
     },
-    [
-      sdkExchangeClient,
-      isAgentApproved,
-      currentFeeApproval,
-      openAgentModal,
-      isSpot,
-      spotMeta,
-      perpsMeta
-    ]
+    [isAgentApproved, agentWallet, handleCancelOrder, openAgentModal]
   )
 
   const handleCancelAll = useCallback(() => {
@@ -194,26 +188,19 @@ const OpenOrders = () => {
     return (
       <div className="flex items-center justify-end gap-2">
         <span className="text-white/50 text-xs">Action</span>
-        {!agentWallet || !isAgentApproved ? (
-          <Button
-            onClick={() => openAgentModal()}
-            variant={'outline'}
-            className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
-          >
-            <IconSignature className="size-3" />
-          </Button>
-        ) : (
-          <Button
-            onClick={() => handleCancelAll()}
-            variant={'outline'}
-            className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
-          >
-            <IconX className="size-3" />
-          </Button>
-        )}
+        <Button
+          onClick={() => {
+            if (!agentWallet || !isAgentApproved) return openAgentModal()
+            handleCancelAll()
+          }}
+          variant={'outline'}
+          className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+        >
+          <IconX className="size-3" />
+        </Button>
       </div>
     )
-  }, [handleCancelAll])
+  }, [handleCancelAll, agentWallet, isAgentApproved, openAgentModal])
 
   const columns = useMemo(
     () => [

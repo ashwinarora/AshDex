@@ -54,7 +54,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
-  const { isAgentApproved, openModal: openAgentModal } = useAgentApproval()
+  const { isAgentApproved } = useAgentApproval()
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
   const router = useRouter()
@@ -152,7 +152,6 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
           return (
             <Button
               onClick={() => {
-                if (!agentWallet || !isAgentApproved) return openAgentModal()
                 setCoin(() => coin)
                 setIsSendModalOpen(true)
               }}
