@@ -9,10 +9,10 @@ import { WALLETS } from '@/utils/constants'
 import { WalletDisplay } from './WalletDisplay'
 import WalletRules from './WalletRules'
 import nexticon from '@/assets/images/next_icon.svg'
-import menuClose from '@/assets/images/close_icon.svg'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { toast } from 'sonner'
+import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 
 interface WalletConnectProvider {
   id: string
@@ -61,24 +61,11 @@ const ConnectWalletModal: React.FC = () => {
   const shouldShowRules = isWalletConnected && !isTermsLoading && !termsData?.signed
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50  backdrop-blur-sm" onClick={handleClose} />
-      {/* Modal Container */}
-      <div
-        className="relative bg-[#0F0816] border border-white/10 rounded-2xl shadow-lg max-w-md w-full p-6 mx-4"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium text-white">
-            {shouldShowRules ? 'Rules' : 'Connect Wallet'}
-          </h3>
-          <button onClick={handleClose} className="p-2 bg-[#322944] rounded-full">
-            <Image src={menuClose} alt="Close" width={16} height={16} />
-          </button>
-        </div>
-
+    <>
+      <DialogHeader>
+        <DialogTitle>Connect Wallet</DialogTitle>
+      </DialogHeader>
+      <DialogContent>
         {/* Content */}
         {shouldShowRules ? (
           <WalletRules onClose={handleClose} />
@@ -133,8 +120,14 @@ const ConnectWalletModal: React.FC = () => {
             </div>
           </div>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </>
+    // <div className="fixed inset-0 z-50 flex items-center justify-center">
+    //   {/* Backdrop */}
+    //   <div className="absolute inset-0 bg-black/50  backdrop-blur-sm" onClick={handleClose} />
+    //   {/* Modal Container */}
+    //
+    // </div>
   )
 }
 

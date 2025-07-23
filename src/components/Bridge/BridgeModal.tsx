@@ -1,8 +1,9 @@
 import {
   IconArrowRight,
+  IconBuildingBridge,
   IconChevronDown,
   IconLoader2,
-  IconSearch,
+  IconWallet,
   IconX
 } from '@tabler/icons-react'
 import { useState, useEffect, useRef } from 'react'
@@ -15,7 +16,6 @@ import { config } from '@/config/wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useBridge } from '@/context/BridgeContext'
 import { Messenger, FeePaymentMethod, RawEvmTransaction } from '@allbridge/bridge-core-sdk'
-import Switch from '@/components/common/Switch'
 import { formatSolanaAddress } from '@/utils/format'
 import { useTronTransfer } from './TronProvider'
 // Import all logos
@@ -51,9 +51,20 @@ import { ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
 import { useWallet as useSuiWallet, ConnectModal as SuiConnectModal } from '@suiet/wallet-kit'
 import Avatar from '../common/Avatar'
 import StellarProvider from './StellarProvider'
-import BridgeWalletModal from './BridgeWalletModal'
-import Accordion from '../common/Accordion'
-import TransactionsCard from './TransactionsCard'
+import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '../ui/dialog'
+import { Separator } from '../ui/separator'
+import { Button } from '../ui/button'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { Input } from '../ui/input'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '../ui/dropdown-menu'
+import { cn } from '@/lib/utils'
+import { useScreenSize } from '@/hooks/useScreenSize'
+import { Badge } from '../ui/badge'
 // Remove the Transaction interface since we're using BridgeTransaction from context
 interface ChainOption {
   name: string
@@ -83,7 +94,7 @@ interface Chain {
   tokens: Token[]
 }
 
-function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function BridgeModal({ onClose }: { onClose: () => void }) {
   // Wallet hooks
   const {
     publicKey: solanaAddress,
@@ -120,15 +131,15 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
     setAmount,
     amount,
     sdk,
-    setUseNativeTokenForGas,
+    // setUseNativeTokenForGas,
     useNativeTokenForGas,
     isTronAllowanceApproved,
     selectedMessenger,
     setSelectedMessenger,
-    showWalletsModal,
+    // showWalletsModal,
     setShowWalletsModal,
-    transactions,
-    nativeBalance,
+    // transactions,
+    // nativeBalance,
     addTransaction
   } = useBridge()
 
@@ -143,7 +154,6 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const [isToChainOpen, setIsToChainOpen] = useState(false)
   const [isFromTokenOpen, setIsFromTokenOpen] = useState(false)
   const [isToTokenOpen, setIsToTokenOpen] = useState(false)
-  const [isMessengerOpen, setIsMessengerOpen] = useState(false)
   const [isSwapping, setIsSwapping] = useState(false)
   const [gasFee, setGasFee] = useState<string | null>(null)
   const [supportedMessengers, setSupportedMessengers] = useState<Set<Messenger>>(new Set())
@@ -769,6 +779,7 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
 
   // Track if this is the initial load
   const [isInitialLoad, setIsInitialLoad] = useState(true)
+  const { isMobile } = useScreenSize()
 
   // Modify token dropdown open useEffects
   useEffect(() => {
@@ -793,517 +804,430 @@ function BridgeModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void
   const handleSolanaTransfer = useHandleSolanaTransfer()
 
   return (
-    <div
-      className={`${isOpen ? 'block' : 'hidden'} absolute top-0 left-0 w-full h-full bg-black/50`}
-    >
-      <div className="flex justify-center items-center bg-secondary/50 backdrop-blur-3xl p-6 min-h-screen filter">
-        <div className="flex flex-col gap-4 bg-secondary p-6 border-2 border-white/5 rounded-3xl min-w-lg max-w-full">
-          {/* Header */}
-          <BridgeWalletModal isOpen={showWalletsModal} onClose={() => setShowWalletsModal(false)} />
-          <div className="flex justify-between items-center">
-            <h2 className="text-white text-2xl">Bridging</h2>
-            <button onClick={onClose} className="text-gray-400 hover:text-white">
-              <IconX className="bg-white/5 p-1.5 rounded-full w-8 h-8 cursor-pointer" />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 px-2">
-            <Image
-              src={getLogoPath(
-                Object.values(chains).find((chain: Chain) => chain.name === selectedFromChain)
-                  ?.chainSymbol || 'ARB'
-              )}
-              alt="Logo"
-              width={20}
-              height={20}
-            />
-            {(() => {
-              switch (sourceToken?.chainSymbol) {
-                case 'TRX':
-                  if (isTronConnected) {
-                    return (
-                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
-                        <Avatar avatar={'1'} className="w-4 h-4" /> {tronAddress?.slice(0, 6)}...
-                        {tronAddress?.slice(-4)}
-                        <button
-                          onClick={disconnectTron}
-                          className="text-gray-400 hover:text-red-300 cursor-pointer"
-                        >
-                          <IconX className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )
-                  }
-                  return 'Not Connected'
-
-                case 'SOL':
-                  if (isSolanaConnected) {
-                    return (
-                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
-                        <Avatar avatar={'1'} className="w-4 h-4" />
-                        {solanaAddress && formatSolanaAddress(solanaAddress.toString())}
-                        <button
-                          onClick={() => disconnectSolana()}
-                          className="text-gray-400 hover:text-red-300 cursor-pointer"
-                        >
-                          <IconX className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )
-                  }
-                  return 'Not Connected'
-                case 'SUI':
-                  if (isSuiConnected) {
-                    return (
-                      <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
-                        <Avatar avatar={'1'} className="w-4 h-4" />{' '}
-                        {suiAddress?.address.slice(0, 6)}...{suiAddress?.address.slice(-4)}
-                        <button
-                          onClick={() => disconnectSui()}
-                          className="text-gray-400 hover:text-red-300 cursor-pointer"
-                        >
-                          <IconX className="w-4 h-4" />
-                        </button>
-                      </div>
-                    )
-                  }
-                  return 'Not Connected'
-
-                case 'SRB':
-                  return (
-                    <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
-                      {stellarAddress ? (
-                        <>
-                          <Avatar avatar={'1'} className="w-4 h-4" />
-                          {stellarAddress?.slice(0, 6)}...{stellarAddress?.slice(-4)}
-                          <button className="text-gray-400 hover:text-red-300 cursor-pointer">
-                            <IconX className="w-4 h-4" />
-                          </button>
-                        </>
-                      ) : (
-                        'Not Connected'
-                      )}
-                    </div>
-                  )
-                default:
-                  return (
-                    <div className="flex items-center gap-2 p-2 border-2 border-white/5 rounded-full hover:text-white text-sm">
-                      {isConnected ? (
-                        <>
-                          <Avatar avatar={'1'} className="w-4 h-4" /> {address?.slice(0, 6)}...
-                          {address?.slice(-4)}
-                          <button
-                            onClick={() => disconnect()}
-                            className="text-gray-400 hover:text-red-300 cursor-pointer"
-                          >
-                            <IconX className="w-4 h-4" />
-                          </button>
-                        </>
-                      ) : (
-                        <span>Not Connected</span>
-                      )}
-                    </div>
-                  )
-              }
-            })()}
-            {nativeBalance &&
-              useNativeTokenForGas &&
-              Number(nativeBalance) < Number(gasFee) &&
-              isConnected &&
-              !['TRX', 'SOL', 'SRB', 'SUI'].includes(sourceToken?.chainSymbol as string) && (
-                <div
-                  className={`flex   items-center gap-2 p-2 border    rounded-md text-sm text-center bg-red-800/10 border-red-900 visible' `}
-                >
-                  Not enough Gas Fees
-                </div>
-              )}
-          </div>
-          <div className="flex flex-col bg-white/5 border-2 border-white/5 rounded-2xl">
-            {/* Pay Section */}
-            <div className="p-4">
-              <div className="flex justify-between items-center">
-                <p className="mb-2 text-white text-sm">You Pay</p>
-                <p className="font-light text-white/30 text-sm text-right">
-                  Balance: {sourceTokenBalance} {sourceToken?.symbol}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2 mb-2">
-                <div
-                  onClick={() => setIsFromChainOpen(!isFromChainOpen)}
-                  className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md cursor-pointer"
-                >
-                  <DynamicDropdown
-                    selectedValue={selectedFromChain}
-                    setSelectedValue={handleFromChainChange}
-                    isOpen={isFromChainOpen}
-                    setIsOpen={setIsFromChainOpen}
-                    type="chain"
-                    getLogoPath={getLogoPath}
-                    selectedChain={selectedToChain}
-                    isSource={true}
-                  />
-                  <IconChevronDown className="w-4 h-4" />
-                </div>
-                <div className="flex items-center gap-2 bg-white/5 px-2 border-2 border-white/5 rounded-md cursor-pointer">
-                  <div
-                    onClick={() => setIsFromTokenOpen(!isFromTokenOpen)}
-                    className="flex items-center gap-2 px-2 h-full"
-                  >
-                    <DynamicDropdown
-                      selectedValue={selectedFromToken}
-                      setSelectedValue={handleFromTokenChange}
-                      isOpen={isFromTokenOpen}
-                      setIsOpen={setIsFromTokenOpen}
-                      type="token"
-                      selectedChain={selectedFromChain}
-                      getLogoPath={getLogoPath}
-                      isSource={true}
-                    />
-                    <IconChevronDown className="w-4 h-4" />
-                  </div>
-
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={amount || ''}
-                    onChange={(e) => setAmount(e.target.value)}
-                    className="flex-1 p-2 px-4 border-white/5 border-l-2 rounded-none outline-none active:outline-none ring-0 active:ring-offset-0 text-white text-left placeholder-white/30"
-                  />
-                  <button
-                    onClick={handleMaxClick}
-                    className="justify-center items-center bg-white/5 hover:bg-white/10 p-2 py-1 border border-white/20 rounded-md text-white/50 text-xs text-center cursor-pointer"
-                  >
-                    MAX
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative">
-              <hr className="border-white/5" />
-              {/* Swap button commented out
-              <button
-                onClick={handleChainSwap}
-                className="left-1/2 absolute bg-secondary hover:bg-white/5 p-2 border-2 border-white/5 rounded-full active:rotate-180 transition-all -translate-x-1/2 -translate-y-1/2 duration-300 cursor-pointer transform"
+    <>
+      <DialogHeader className="!h-fit items-start !w-full">
+        <div className="flex items-center gap-2 !h-fit !w-full text-white text-sm">
+          <IconBuildingBridge className="size-4" />
+          Bridge
+        </div>
+      </DialogHeader>
+      <Separator />
+      <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex justify-between gap-2 items-center">
+            <p className="text-white text-sm">You Pay</p>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleMaxClick}
+                variant={'link'}
+                size={'sm'}
+                className="flex !p-0 h-fit w-fit items-center gap-2 text-xs"
               >
-                <IconTransferVertical className={`w-4 h-4 transition-transform`} />
-              </button>
-              */}
-            </div>
-            {/* Receive Section */}
-            <div className="p-4">
-              <div className="flex justify-between items-center">
-                <p className="mb-2 text-white text-sm">You Receive</p>
-              </div>
-
-              <div className="flex items-center gap-2 mb-2 w-full">
-                <div
-                  onClick={() => setIsToChainOpen(!isToChainOpen)}
-                  className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md cursor-pointer"
-                >
-                  <DynamicDropdown
-                    selectedValue={selectedToChain}
-                    setSelectedValue={handleToChainChange}
-                    isOpen={isToChainOpen}
-                    setIsOpen={setIsToChainOpen}
-                    type="chain"
-                    getLogoPath={getLogoPath}
-                    selectedChain={selectedFromChain}
-                    isSource={false}
-                  />
-                  <IconChevronDown className="w-4 h-4" />
-                </div>
-                <div className="flex flex-1 items-center gap-2 bg-white/5 px-2 border-2 border-white/5 rounded-md w-max cursor-pointer">
-                  <div
-                    onClick={() => setIsToTokenOpen(!isToTokenOpen)}
-                    className="flex items-center gap-2 px-2 h-full"
-                  >
-                    <DynamicDropdown
-                      selectedValue={selectedToToken}
-                      setSelectedValue={handleToTokenChange}
-                      isOpen={isToTokenOpen}
-                      setIsOpen={setIsToTokenOpen}
-                      type="token"
-                      selectedChain={selectedToChain}
-                      getLogoPath={getLogoPath}
-                      isSource={false}
-                    />
-                    <IconChevronDown className="w-4 h-4" />
-                  </div>
-
-                  <input
-                    type="number"
-                    placeholder="0"
-                    value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}
-                    readOnly
-                    className="flex-1 p-2 px-4 border-white/5 border-l-2 rounded-none outline-none active:outline-none ring-0 active:ring-offset-0 font-dm-mono text-white text-left placeholder-white/30"
-                  />
-                </div>
-              </div>
+                Use Max ({sourceTokenBalance} {sourceToken?.symbol})
+              </Button>
             </div>
           </div>
-          {/* Info Section */}
-          <div className="flex justify-between items-center bg-white/5 border-2 border-white/5 rounded-2xl text-white/30 text-sm">
-            <div className="flex justify-around items-center gap-2 p-4 w-full align-middle">
-              {/* Messenger Selection */}
-              <div className="relative flex items-center gap-2 p-2 w-max text-white/50">
-                <div
-                  className="flex items-center gap-2 cursor-pointer"
-                  onClick={() => setIsMessengerOpen(!isMessengerOpen)}
-                >
-                  <Image
-                    src={
-                      messengerOptions.find((option) => option.messenger === selectedMessenger)
-                        ?.logo || allbridgeLogo
-                    }
-                    alt="Messenger Logo"
-                    width={20}
-                    height={20}
-                    className="w-5 h-5"
-                  />
-                  <span className="text-white">
-                    {messengerOptions.find((option) => option.messenger === selectedMessenger)
-                      ?.name || 'Allbridge'}
-                  </span>
-                  {supportedMessengers.has(selectedMessenger) &&
-                    messengerTransferTimes.get(selectedMessenger) && (
-                      <span className="text-white/50 text-xs">
-                        ≈{' '}
-                        {formatTransferTime(messengerTransferTimes.get(selectedMessenger) || null)}
-                      </span>
-                    )}
-                  <IconChevronDown className="w-4 h-4" />
-                </div>
-
-                {isMessengerOpen && (
-                  <div className="top-full right-0 left-0 z-50 absolute flex flex-col gap-2 bg-secondary mt-1 p-2 border-2 border-white/5 rounded-2xl w-max overflow-hidden">
-                    {messengerOptions.map((option) => (
-                      <div
-                        key={option.messenger}
-                        onClick={() => {
-                          if (supportedMessengers.has(option.messenger)) {
-                            setSelectedMessenger(option.messenger)
-                            setIsMessengerOpen(false)
-                          }
-                        }}
-                        className={`flex items-center gap-2 justify-between cursor-pointer p-2 rounded-md ${
-                          supportedMessengers.has(option.messenger)
-                            ? selectedMessenger === option.messenger
-                              ? 'text-white bg-white/10'
-                              : 'text-white/50 hover:text-white hover:bg-white/5'
-                            : 'text-white/20 cursor-not-allowed'
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={option.logo}
-                            alt={option.name}
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                          />
-                          {option.name}
-                        </div>
-                        {supportedMessengers.has(option.messenger) &&
-                          messengerTransferTimes.get(option.messenger) && (
-                            <span className="text-white/50 text-xs">
-                              ≈{' '}
-                              {formatTransferTime(
-                                messengerTransferTimes.get(option.messenger) || null
-                              )}
-                            </span>
-                          )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <p className="text-white/50">Relayer Fee ≈ {formatGasFee(gasFee)}</p>
-
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={getLogoPath(sourceToken?.chainSymbol || 'ETH')}
-                    alt={sourceToken?.chainSymbol || 'ETH'}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4"
-                  />
-                  <Switch
-                    isChecked={!useNativeTokenForGas}
-                    setIsChecked={(isChecked) => {
-                      setUseNativeTokenForGas(!isChecked)
-                      // Immediately fetch new gas fee options when switch changes
-                      setTimeout(fetchGasFeeOptions, 0)
-                    }}
-                    label=""
-                  />
-                  <Image
-                    src={getLogoPath(sourceToken?.symbol || 'USDC')}
-                    alt={sourceToken?.symbol || 'USDC'}
-                    width={16}
-                    height={16}
-                    className="w-4 h-4"
-                  />
-                </div>
-              </div>
+          <div className="flex justify-between gap-2 w-full items-center">
+            {!isMobile && (
+              <Input
+                type="number"
+                placeholder="0"
+                className="text-left text-white text-xs flex-2 w-full"
+                value={amount || ''}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            )}
+            <DynamicDropdown
+              selectedValue={selectedFromChain}
+              setSelectedValue={handleFromChainChange}
+              isOpen={isFromChainOpen}
+              setIsOpen={setIsFromChainOpen}
+              type="chain"
+              getLogoPath={getLogoPath}
+              selectedChain={selectedToChain}
+              isSource={true}
+            />
+            <DynamicDropdown
+              selectedValue={selectedFromToken}
+              setSelectedValue={handleFromTokenChange}
+              isOpen={isFromTokenOpen}
+              setIsOpen={setIsFromTokenOpen}
+              type="token"
+              selectedChain={selectedFromChain}
+              getLogoPath={getLogoPath}
+              isSource={true}
+            />
+          </div>
+          {isMobile && (
+            <div className="flex justify-between gap-2 w-full items-center">
+              <Input
+                type="number"
+                placeholder="0"
+                className="text-left text-white text-xs"
+                value={amount || ''}
+                onChange={(e) => setAmount(e.target.value)}
+              />
             </div>
-          </div>
-
-          {/* Confirm Button */}
-          <div
-            onClick={(e) => {
-              if (isLoading) {
-                e.preventDefault()
-                return
-              }
-              if (sourceToken?.chainSymbol === 'TRX' && !isTronConnected) {
-                e.preventDefault()
-                return
-              }
-              if (sourceToken?.chainSymbol === 'SOL' && !isSolanaConnected) {
-                e.preventDefault()
-                setShowWalletsModal(true)
-                return
-              }
-
-              if (sourceToken?.chainSymbol === 'TRX' && isTronConnected) {
-                handleTronTransfer()
-              } else if (sourceToken?.chainSymbol === 'SOL') {
-                handleSolanaTransfer()
-              } else if (sourceToken?.chainSymbol === 'SRB') {
-                handleStellarTransfer()
-              } else if (sourceToken?.chainSymbol === 'SUI' && isSuiConnected) {
-                // handleSuiTransfer()
-              } else if (sourceToken?.chainSymbol === 'SUI' && !isSuiConnected) {
-                return
-              } else if (
-                !['TRX', 'SOL', 'SRB', 'SUI'].includes(sourceToken?.chainSymbol as string) &&
-                isConnected
-              ) {
-                handleTransfer()
-              } else {
-                toggleConnectWalletModal()
-                onClose()
-              }
-            }}
-            className="flex justify-center items-center gap-2 disabled:opacity-50 w-full text-center nexon-button nexon-primary"
-          >
-            {(() => {
-              switch (sourceToken?.chainSymbol) {
-                case 'TRX':
-                  if (!isTronConnected) {
-                    return <ConnectTronWallet />
-                  }
-                  if (isLoading) {
-                    return (
-                      <>
-                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    )
-                  }
-                  return isTronAllowanceApproved ? (
-                    <>
-                      Send <IconArrowRight className="w-4 h-4" />
-                    </>
-                  ) : (
-                    <>
-                      Approve {sourceToken?.symbol} <IconArrowRight className="w-4 h-4" />
-                    </>
-                  )
-
-                case 'SOL':
-                  if (!isSolanaConnected) {
-                    return 'Connect Solana Wallet'
-                  }
-                  if (isLoading) {
-                    return (
-                      <>
-                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    )
-                  }
-                  return (
-                    <>
-                      Send <IconArrowRight className="w-4 h-4" />
-                    </>
-                  )
-
-                case 'SRB':
-                  if (!stellarAddress) {
-                    return `Connect ${sourceToken?.chainSymbol} Wallet`
-                  }
-                  if (isLoading) {
-                    return (
-                      <>
-                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    )
-                  }
-                  return (
-                    <>
-                      Send <IconArrowRight className="w-4 h-4" />
-                    </>
-                  )
-
-                case 'SUI':
-                  if (!isSuiConnected)
-                    return (
-                      <SuiConnectModal
-                        open={showSuiModal}
-                        onOpenChange={(open) => setShowSuiModal(open)}
-                      >
-                        <button>Connect Wallet</button>
-                      </SuiConnectModal>
-                    )
-
-                  if (isLoading) {
-                    return (
-                      <>
-                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    )
-                  }
-                  return (
-                    <>
-                      Send <IconArrowRight className="w-4 h-4" />
-                    </>
-                  )
-                default:
-                  if (!isConnected) {
-                    return 'Connect Wallet'
-                  }
-                  if (isLoading) {
-                    return (
-                      <>
-                        Processing <IconLoader2 className="w-4 h-4 animate-spin" />
-                      </>
-                    )
-                  }
-                  return (
-                    <>
-                      Send <IconArrowRight className="w-4 h-4" />
-                    </>
-                  )
-              }
-            })()}
-          </div>
-
-          {/* Transaction List */}
-          {transactions.length > 0 && (
-            <Accordion title="Recent Transactions" defaultOpen={true}>
-              <div className="space-y-2 max-h-60 overflow-y-auto">
-                {transactions.map((tx) => (
-                  <TransactionsCard key={tx.hash} transaction={tx} getLogoPath={getLogoPath} />
-                ))}
-              </div>
-            </Accordion>
           )}
         </div>
       </div>
-    </div>
+      <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
+        <div className="flex flex-col gap-2 w-full">
+          <div className="flex justify-between gap-2 items-center">
+            <p className="text-white text-sm">You Receive</p>
+          </div>
+          <div className="flex justify-between gap-2 w-full items-center">
+            {!isMobile && (
+              <Input
+                type="number"
+                placeholder="0"
+                className={cn(
+                  'text-left placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs w-full flex-2',
+                  isLoadingEstimate && 'animate-pulse'
+                )}
+                value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}
+                readOnly
+              />
+            )}
+            <DynamicDropdown
+              selectedValue={selectedToChain}
+              setSelectedValue={handleToChainChange}
+              isOpen={isToChainOpen}
+              setIsOpen={setIsToChainOpen}
+              type="chain"
+              getLogoPath={getLogoPath}
+              selectedChain={selectedToChain}
+              isSource={true}
+            />
+            <DynamicDropdown
+              selectedValue={selectedToToken}
+              setSelectedValue={handleToTokenChange}
+              isOpen={isToTokenOpen}
+              setIsOpen={setIsToTokenOpen}
+              type="token"
+              selectedChain={selectedToChain}
+              getLogoPath={getLogoPath}
+              isSource={true}
+            />
+          </div>
+          {isMobile && (
+            <div className="flex justify-between gap-2 w-full items-center">
+              <Input
+                type="number"
+                placeholder="0"
+                className={cn(
+                  'text-left placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs',
+                  isLoadingEstimate && 'animate-pulse'
+                )}
+                value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}
+                readOnly
+              />
+            </div>
+          )}
+        </div>
+      </div>
+      <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
+        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+          <p>Messenger Used:</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant={'outline'}
+                size={'sm'}
+                className="flex !p-1 h-fit w-fit items-center gap-2 text-xs"
+              >
+                <Image
+                  src={
+                    messengerOptions.find((option) => option.messenger === selectedMessenger)
+                      ?.logo || allbridgeLogo
+                  }
+                  alt="Messenger Logo"
+                  width={20}
+                  height={20}
+                  className="size-4"
+                />
+                <span className="text-white">
+                  {messengerOptions.find((option) => option.messenger === selectedMessenger)
+                    ?.name || 'Allbridge'}
+                </span>
+                {supportedMessengers.has(selectedMessenger) &&
+                  messengerTransferTimes.get(selectedMessenger) && (
+                    <span className="text-white/50 text-xs">
+                      ≈ {formatTransferTime(messengerTransferTimes.get(selectedMessenger) || null)}
+                    </span>
+                  )}
+                <IconChevronDown className="w-4 h-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {messengerOptions.map((option) => (
+                <DropdownMenuItem
+                  className={cn(
+                    'py-2 flex items-center gap-4 justify-between',
+                    selectedMessenger === option.messenger && 'bg-accent'
+                  )}
+                  onClick={() => {
+                    if (supportedMessengers.has(option.messenger)) {
+                      setSelectedMessenger(option.messenger)
+                    }
+                  }}
+                  key={option.messenger}
+                >
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src={option.logo}
+                      alt={option.name}
+                      width={20}
+                      height={20}
+                      className="size-4"
+                    />
+                    <p
+                      className={cn(
+                        'text-white text-xs',
+                        selectedMessenger === option.messenger && 'text-accent-foreground'
+                      )}
+                    >
+                      {option.name}
+                    </p>
+                  </div>
+                  {supportedMessengers.has(option.messenger) &&
+                    messengerTransferTimes.get(option.messenger) && (
+                      <span className="text-white/50 text-xs">
+                        ≈ {formatTransferTime(messengerTransferTimes.get(option.messenger) || null)}
+                      </span>
+                    )}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+          <p>Relayer Fee:</p>
+          <p className="text-white">≈ {formatGasFee(gasFee)}</p>
+        </div>
+        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+          <p>Current Account:</p>
+          {(() => {
+            switch (sourceToken?.chainSymbol) {
+              case 'TRX':
+                if (isTronConnected) {
+                  return (
+                    <Badge>
+                      <Avatar avatar={'1'} className="w-4 h-4" /> {tronAddress?.slice(0, 6)}...
+                      {tronAddress?.slice(-4)}
+                      <button
+                        onClick={disconnectTron}
+                        className="text-gray-400 hover:text-red-300 cursor-pointer"
+                      >
+                        <IconX className="w-4 h-4" />
+                      </button>
+                    </Badge>
+                  )
+                }
+                return 'Not Connected'
+              case 'SOL':
+                if (isSolanaConnected) {
+                  return (
+                    <Badge>
+                      <Avatar avatar={'1'} className="w-4 h-4" />
+                      {solanaAddress && formatSolanaAddress(solanaAddress.toString())}
+                      <button
+                        onClick={() => disconnectSolana()}
+                        className="text-gray-400 hover:text-red-300 cursor-pointer"
+                      >
+                        <IconX className="w-4 h-4" />
+                      </button>
+                    </Badge>
+                  )
+                }
+                return 'Not Connected'
+              case 'SUI':
+                if (isSuiConnected) {
+                  return (
+                    <Badge>
+                      <Avatar avatar={'1'} className="w-4 h-4" /> {suiAddress?.address.slice(0, 6)}
+                      ...{suiAddress?.address.slice(-4)}
+                      <button
+                        onClick={() => disconnectSui()}
+                        className="text-gray-400 hover:text-red-300 cursor-pointer"
+                      >
+                        <IconX className="w-4 h-4" />
+                      </button>
+                    </Badge>
+                  )
+                }
+                return 'Not Connected'
+              case 'SRB':
+                return (
+                  <Badge>
+                    {stellarAddress ? (
+                      <>
+                        <Avatar avatar={'1'} className="w-4 h-4" />
+                        {stellarAddress?.slice(0, 6)}...{stellarAddress?.slice(-4)}
+                        <button className="text-gray-400 hover:text-red-300 cursor-pointer">
+                          <IconX className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      'Not Connected'
+                    )}
+                  </Badge>
+                )
+              default:
+                return isConnected ? (
+                  <Badge
+                    onClick={() => disconnect()}
+                    className="bg-background hover:bg-red/10 cursor-pointer hover:text-red flex items-center gap-2 !p-1 rounded-md text-white/50 !text-xs"
+                  >
+                    <Avatar avatar={'1'} className="w-4 h-4" />
+                    {address?.slice(0, 6)}...
+                    {address?.slice(-4)}
+                    <IconX className="size-3" />
+                  </Badge>
+                ) : (
+                  <Badge
+                    onClick={() => toggleConnectWalletModal()}
+                    className="bg-background hover:bg-accent cursor-pointer hover:text-accent-foreground flex items-center gap-2 !p-1 rounded-md text-white/50 !text-xs"
+                  >
+                    <IconWallet className="size-3" />
+                    Connect Wallet
+                  </Badge>
+                )
+            }
+          })()}
+        </div>
+        <Button
+          className="w-full mt-2"
+          onClick={(e) => {
+            if (isLoading) {
+              e.preventDefault()
+              return
+            }
+            if (sourceToken?.chainSymbol === 'TRX' && !isTronConnected) {
+              e.preventDefault()
+              return
+            }
+            if (sourceToken?.chainSymbol === 'SOL' && !isSolanaConnected) {
+              e.preventDefault()
+              setShowWalletsModal(true)
+              return
+            }
+
+            if (sourceToken?.chainSymbol === 'TRX' && isTronConnected) {
+              handleTronTransfer()
+            } else if (sourceToken?.chainSymbol === 'SOL') {
+              handleSolanaTransfer()
+            } else if (sourceToken?.chainSymbol === 'SRB') {
+              handleStellarTransfer()
+            } else if (sourceToken?.chainSymbol === 'SUI' && isSuiConnected) {
+              // handleSuiTransfer()
+            } else if (sourceToken?.chainSymbol === 'SUI' && !isSuiConnected) {
+              return
+            } else if (
+              !['TRX', 'SOL', 'SRB', 'SUI'].includes(sourceToken?.chainSymbol as string) &&
+              isConnected
+            ) {
+              handleTransfer()
+            } else {
+              toggleConnectWalletModal()
+              onClose()
+            }
+          }}
+        >
+          {(() => {
+            switch (sourceToken?.chainSymbol) {
+              case 'TRX':
+                if (!isTronConnected) {
+                  return <ConnectTronWallet />
+                }
+                if (isLoading) {
+                  return (
+                    <>
+                      Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  )
+                }
+                return isTronAllowanceApproved ? <>Send</> : <>Approve {sourceToken?.symbol}</>
+
+              case 'SOL':
+                if (!isSolanaConnected) {
+                  return 'Connect Solana Wallet'
+                }
+                if (isLoading) {
+                  return (
+                    <>
+                      Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  )
+                }
+                return <>Send</>
+
+              case 'SRB':
+                if (!stellarAddress) {
+                  return `Connect ${sourceToken?.chainSymbol} Wallet`
+                }
+                if (isLoading) {
+                  return (
+                    <>
+                      Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  )
+                }
+                return (
+                  <>
+                    Send <IconArrowRight className="w-4 h-4" />
+                  </>
+                )
+
+              case 'SUI':
+                if (!isSuiConnected)
+                  return (
+                    <SuiConnectModal
+                      open={showSuiModal}
+                      onOpenChange={(open) => setShowSuiModal(open)}
+                    >
+                      <button>Connect Wallet</button>
+                    </SuiConnectModal>
+                  )
+
+                if (isLoading) {
+                  return (
+                    <>
+                      Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  )
+                }
+                return <>Send</>
+              default:
+                if (!isConnected) {
+                  return 'Connect Wallet'
+                }
+                if (isLoading) {
+                  return (
+                    <>
+                      Processing <IconLoader2 className="w-4 h-4 animate-spin" />
+                    </>
+                  )
+                }
+                return <>Send</>
+            }
+          })()}
+        </Button>
+      </div>
+    </>
+    //       {/* Transaction List */}
+    //       {transactions.length > 0 && (
+    //         <Accordion title="Recent Transactions" defaultOpen={true}>
+    //           <div className="space-y-2 max-h-60 overflow-y-auto">
+    //             {transactions.map((tx) => (
+    //               <TransactionsCard key={tx.hash} transaction={tx} getLogoPath={getLogoPath} />
+    //             ))}
+    //           </div>
+    //         </Accordion>
+    //       )}
+    //     </div>
+    //   </div>
+    // </div>
   )
 }
 
@@ -1372,11 +1296,6 @@ const DynamicDropdown: React.FC<{
     }
   }
 
-  const getTitle = () => {
-    const prefix = isSource ? 'Source' : 'Destination'
-    return type === 'chain' ? `Select ${prefix} Chain` : `Select ${prefix} Token`
-  }
-
   const getDisplayValue = (option: ChainOption | string) => {
     return typeof option === 'string' ? option : option.name
   }
@@ -1409,86 +1328,81 @@ const DynamicDropdown: React.FC<{
   }
 
   return (
-    <div className={` `}>
-      <div className="flex items-center gap-2">
-        <Image
-          src={getLogoPath(getSelectedChainSymbol())}
-          alt={getSelectedChainName()}
-          className="w-4 h-4"
-          width={16}
-          height={16}
-        />{' '}
-        {getSelectedChainName()}
-      </div>
-      {isOpen && (
-        <div className="top-0 left-0 z-50 absolute bg-secondary/50 backdrop-blur w-full h-full">
-          <dialog
-            open={isOpen}
-            onClick={(e) => e.stopPropagation()}
-            className="top-1/2 left-1/2 absolute flex flex-col gap-2 bg-secondary p-4 border-2 border-white/5 rounded-md -translate-x-1/2 -translate-y-1/2"
-          >
-            <div className="flex justify-between items-center">
-              <p className="text-white">{getTitle()}</p>
-              <IconX
-                className="bg-white/5 p-1 rounded-full w-6 h-6 text-white/50 cursor-pointer"
-                onClick={() => setIsOpen(false)}
-              />
-            </div>
-            <div className="flex items-center gap-2 bg-white/5 p-2 border-2 border-white/5 rounded-md text-white/50">
-              <IconSearch className="w-4 h-4" />
-              <input
-                type="text"
-                placeholder="Search"
-                className="bg-transparent outline-none font-proxima-nova text-white"
-              />
-            </div>
-            {getOptions().map((option) => (
-              <div
-                onClick={() => {
-                  const newValue = getDisplayValue(option)
-                  // Prevent selecting the same chain
-                  if (type === 'chain' && selectedChain === newValue) {
-                    return
-                  }
-                  // If selecting Nexon as destination, actually set Arbitrum
-                  if (!isSource && newValue === 'Nexon') {
-                    setSelectedValue('Arbitrum')
-                  } else {
-                    setSelectedValue(newValue)
-                  }
-                  setIsOpen(false)
-                }}
-                className="flex items-center gap-2 hover:bg-white/5 p-2 rounded-md max-h-60 overflow-y-auto text-white/50 hover:text-white text-nowrap cursor-pointer"
-                key={getDisplayValue(option)}
-              >
-                {type === 'chain' ? (
-                  <Image
-                    src={!isSource ? getLogoPath('Nexon') : (option as ChainOption).logo}
-                    alt={!isSource ? 'Nexon' : (option as ChainOption).name}
-                    width={24}
-                    height={24}
-                    className="w-4 h-4"
-                  />
-                ) : (
-                  <Image
-                    src={getLogoPath(getDisplayValue(option))}
-                    alt={getDisplayValue(option)}
-                    width={24}
-                    height={24}
-                    className="w-4 h-4"
-                  />
-                )}
-                {type === 'chain'
-                  ? !isSource
-                    ? 'Nexon'
-                    : getDisplayValue(option)
-                  : getDisplayValue(option)}
-              </div>
-            ))}
-          </dialog>
-        </div>
-      )}
-    </div>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant={'outline'}
+          size={'sm'}
+          className="flex h-fit w-full flex-1 !p-2 md:!px-2 shrink-0 items-center gap-2 text-white text-xs"
+        >
+          <Image
+            src={getLogoPath(getSelectedChainSymbol())}
+            alt={getSelectedChainName()}
+            className="size-3"
+            width={12}
+            height={12}
+          />{' '}
+          {getSelectedChainName()}
+          <IconChevronDown className="w-4 h-4" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="w-[80vw] max-w-xl h-fit flex flex-col items-center justify-start gap-2">
+        <DialogHeader className="!h-fit !w-full !items-start">
+          {type === 'chain' ? 'Choose Network' : 'Choose Token'}
+        </DialogHeader>
+        <Separator />
+        <ToggleGroup
+          type="single"
+          className="flex flex-col items-center justify-start gap-2 w-full"
+          value={selectedValue}
+          onValueChange={(value) => {
+            const newValue = getDisplayValue(value)
+            // Prevent selecting the same chain
+            if (type === 'chain' && selectedChain === newValue) {
+              return
+            }
+            // If selecting Nexon as destination, actually set Arbitrum
+            if (!isSource && newValue === 'Nexon') {
+              setSelectedValue('Arbitrum')
+            } else {
+              setSelectedValue(newValue)
+            }
+            setIsOpen(false)
+          }}
+        >
+          {getOptions().map((option, index) => (
+            <ToggleGroupItem
+              value={getDisplayValue(option)}
+              key={index}
+              className="flex h-fit w-full rounded-md flex-1 !shrink-0 !p-2 items-center gap-2 text-white text-xs"
+            >
+              {type === 'chain' ? (
+                <Image
+                  src={!isSource ? getLogoPath('Nexon') : (option as ChainOption).logo}
+                  alt={!isSource ? 'Nexon' : (option as ChainOption).name}
+                  width={24}
+                  height={24}
+                  className="w-4 h-4"
+                />
+              ) : (
+                <Image
+                  src={getLogoPath(getDisplayValue(option))}
+                  alt={getDisplayValue(option)}
+                  width={24}
+                  height={24}
+                  className="w-4 h-4"
+                />
+              )}
+              {type === 'chain'
+                ? !isSource
+                  ? 'Nexon'
+                  : getDisplayValue(option)
+                : getDisplayValue(option)}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </DialogContent>
+    </Dialog>
   )
 }
 

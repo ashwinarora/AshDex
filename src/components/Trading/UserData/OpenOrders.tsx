@@ -38,11 +38,12 @@ type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdkExchangeClient, openOrders, perpsMeta } = useHyperliquidStore(
+  const { sdkExchangeClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       sdkExchangeClient: state.sdkExchangeClient,
       openOrders: state.openOrders,
-      perpsMeta: state.perpsMeta
+      perpsMeta: state.perpsMeta,
+      agentWallet: state.agentWallet
     }))
   )
   const isSpot = useIsSpot()
@@ -93,11 +94,29 @@ const OpenOrders = () => {
       }
       cancelOrder()
     },
-    [sdkExchangeClient, isSpot, spotMeta, perpsMeta]
+    [
+      sdkExchangeClient,
+      isSpot,
+      spotMeta,
+      perpsMeta,
+      isAgentApproved,
+      openAgentModal,
+      currentFeeApproval
+    ]
   )
 
   const renderCancelButton = useCallback(
     (row: { original: FrontendOrderWithAssetKey }) => {
+      if (!agentWallet || !isAgentApproved)
+        return (
+          <Button
+            onClick={() => openAgentModal()}
+            variant="link"
+            className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+          >
+            Enable Trading
+          </Button>
+        )
       return (
         <Button
           onClick={() => handleCancelOrder(row)}
@@ -108,15 +127,7 @@ const OpenOrders = () => {
         </Button>
       )
     },
-    [
-      sdkExchangeClient,
-      isAgentApproved,
-      currentFeeApproval,
-      openAgentModal,
-      isSpot,
-      spotMeta,
-      perpsMeta
-    ]
+    [isAgentApproved, agentWallet, handleCancelOrder, openAgentModal]
   )
 
   const handleCancelAll = useCallback(() => {
@@ -178,7 +189,10 @@ const OpenOrders = () => {
       <div className="flex items-center justify-end gap-2">
         <span className="text-white/50 text-xs">Action</span>
         <Button
-          onClick={() => handleCancelAll()}
+          onClick={() => {
+            if (!agentWallet || !isAgentApproved) return openAgentModal()
+            handleCancelAll()
+          }}
           variant={'outline'}
           className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
         >
@@ -186,7 +200,7 @@ const OpenOrders = () => {
         </Button>
       </div>
     )
-  }, [handleCancelAll])
+  }, [handleCancelAll, agentWallet, isAgentApproved, openAgentModal])
 
   const columns = useMemo(
     () => [
@@ -272,7 +286,9 @@ const OpenOrders = () => {
 
       columnHelper.display({
         id: 'actions',
-        header: () => renderCancelAllButton(),
+        header: () => {
+          return renderCancelAllButton()
+        },
         cell: ({ row }) => renderCancelButton(row),
         enableSorting: false,
         meta: { label: 'Actions' }
