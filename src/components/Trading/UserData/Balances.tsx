@@ -45,8 +45,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const { clearingHouseState, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState,
-      agentWallet: state.agentWallet
+      spotState: state.spotState
     }))
   )
   const [sorting, setSorting] = useState<SortingState>([])
@@ -149,13 +148,13 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
 
           return (
             <Button
+              variant={'link'}
+              size={'sm'}
+              className="text-xs !p-0"
               onClick={() => {
                 setCoin(() => coin)
                 setIsSendModalOpen(true)
               }}
-              variant={'link'}
-              size={'sm'}
-              className="text-xs !p-0"
             >
               Send
             </Button>
