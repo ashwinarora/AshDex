@@ -27,7 +27,6 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
-import { useAgentApproval } from '@/context/EstablishConnection'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
@@ -43,7 +42,7 @@ type BalanceData = {
 
 const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState, agentWallet } = useHyperliquidStore(
+  const { clearingHouseState, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
       spotState: state.spotState,
@@ -54,7 +53,6 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
-  const { isAgentApproved } = useAgentApproval()
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
   const router = useRouter()
@@ -285,7 +283,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
           ))}
         </TableBody>
       </Table>
-      {agentWallet && isAgentApproved && isSendModalOpen && (
+      {isSendModalOpen && (
         <SendModal
           isOpen={isSendModalOpen}
           onClose={() => setIsSendModalOpen(false)}
