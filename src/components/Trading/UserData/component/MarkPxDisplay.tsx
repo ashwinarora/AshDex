@@ -14,9 +14,9 @@ const MarkPxDisplay = ({ asset }: MarkPxDisplayProps) => {
       perpsMeta: state.perpsMeta
     }))
   )
-  
+
   const assetCtx = useMemo(() => {
-    if(!perpsMeta) return null
+    if (!perpsMeta) return null
     const assetIndex = perpsMeta.universe.findIndex((item) => item.name === asset)
 
     return assetIndex !== -1 ? perpAssetContext[assetIndex] : null
