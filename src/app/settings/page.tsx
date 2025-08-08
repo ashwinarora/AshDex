@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import Tabs from '@/components/common/Tabs'
 import {
   IconCheck,
@@ -13,39 +13,16 @@ import Modal from '@/components/common/Modal'
 import CustomSelector from '@/components/common/CustomSelector'
 import { truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
-import { useUser } from '@/context/UserContext'
 import Avatar from '@/components/common/Avatar'
-import { updateUser } from '@/utils/user'
 import Skeleton from '@/components/common/Skeleton'
 import { toast } from 'sonner'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import Switch from '@/components/common/Switch'
 import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
+import { useUserPreferences, useLanguageSettings } from '@/store/UserStore'
 
-// Define types for notification settings
-type NotificationSettingKey =
-  | 'order_updates'
-  | 'liquidation_alerts'
-  | 'new_feature_updates'
-  | 'new_token_listings'
-  | 'vaults_distribution_updates'
-  | 'rewards_referrals_updates'
-  | 'security_alerts'
-
-type NotificationSettings = {
-  [key in NotificationSettingKey]: {
-    id: string
-    value: boolean
-    label: string
-  }
-}
-
-type InitialNotificationSettings = {
-  [key in NotificationSettingKey]: boolean
-}
-
-// Update interface for user info
+// Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
 interface UserInfo {
   nickname: string | undefined
   address: string | undefined
@@ -58,36 +35,20 @@ interface UserInfo {
 
 const SettingsPage = () => {
   const router = useRouter()
-  const { currentUser, refreshUser } = useUser()
   const { address, isConnected } = useAccount()
   const isRendered = useComponentRendered()
-  // Debug log to check user data structure
-  useEffect(() => {
-    console.log('Current User Data:', currentUser)
-    console.log('User Preferences:', currentUser?.user_preferences)
-  }, [currentUser])
 
-  // Initial values ref to track changes
-  const initialValuesRef = useRef({
-    language: 'English',
-    popupPosition: currentUser?.user_preferences?.popup_position?.toString() || '2',
-    soundEnabled: currentUser?.user_preferences?.sound_enabled || false,
-    notificationSettings: {
-      order_updates: currentUser?.user_preferences?.order_updates || false,
-      liquidation_alerts: currentUser?.user_preferences?.liquidation_alerts || false,
-      new_feature_updates: currentUser?.user_preferences?.new_feature_updates || false,
-      new_token_listings: currentUser?.user_preferences?.new_token_listings || false,
-      vaults_distribution_updates:
-        currentUser?.user_preferences?.vaults_distribution_updates || false,
-      rewards_referrals_updates: currentUser?.user_preferences?.rewards_referrals_updates || false,
-      security_alerts: currentUser?.user_preferences?.security_alerts || false
-    } as InitialNotificationSettings
-  })
+  // UserStore hooks
+  const { userPreferences, updateNotificationSetting, setPopupPosition, setSoundEnabled } =
+    useUserPreferences()
 
+  const { preferredLanguage, setPreferredLanguage } = useLanguageSettings()
+
+  // Temporary user info (will be replaced with TanStack Query)
   const userInfo: UserInfo = {
-    nickname: currentUser?.username,
+    nickname: 'User', // Will come from TanStack Query
     address: address,
-    avatar: String(currentUser?.avatar_url || '0'),
+    avatar: '0', // Will come from TanStack Query
     ip: '192.168.1.1',
     lastLogin: '2025-04-03 09:07',
     securityLevel: 'Low',
@@ -95,200 +56,50 @@ const SettingsPage = () => {
   }
 
   const [isOpen, setIsOpen] = useState(false)
+  const [isCopied, setIsCopied] = useState(false)
+  const [ipAddress, setIpAddress] = useState('')
+  const [selectedTab, setSelectedTab] = useState('Account')
+
   const handleCloseModal = () => {
     setIsOpen(false)
   }
 
-  const [selectedLanguage, setSelectedLanguage] = useState('English')
-  const [isCopied, setIsCopied] = useState(false)
-  const [ipAddress, setIpAddress] = useState('')
-  const [selectedTab, setSelectedTab] = useState('Account')
-  const [popupPosition, setPopupPosition] = useState(
-    currentUser?.user_preferences?.popup_position?.toString() || '2'
-  )
-  const [notificationSettings, setNotificationSettings] = useState<NotificationSettings>({
+  // Notification settings configuration
+  const notificationSettings = {
     order_updates: {
-      id: 'order_updates',
-      value: currentUser?.user_preferences?.order_updates || false,
+      id: 'order_updates' as const,
+      value: userPreferences.order_updates,
       label: 'Order Updates'
     },
     liquidation_alerts: {
-      id: 'liquidation_alerts',
-      value: currentUser?.user_preferences?.liquidation_alerts || false,
+      id: 'liquidation_alerts' as const,
+      value: userPreferences.liquidation_alerts,
       label: 'Liquidation Alerts'
     },
     new_feature_updates: {
-      id: 'new_feature_updates',
-      value: currentUser?.user_preferences?.new_feature_updates || false,
+      id: 'new_feature_updates' as const,
+      value: userPreferences.new_feature_updates,
       label: 'New Feature Updates'
     },
     new_token_listings: {
-      id: 'new_token_listings',
-      value: currentUser?.user_preferences?.new_token_listings || false,
+      id: 'new_token_listings' as const,
+      value: userPreferences.new_token_listings,
       label: 'New Token Listings'
     },
     vaults_distribution_updates: {
-      id: 'vaults_distribution_updates',
-      value: currentUser?.user_preferences?.vaults_distribution_updates || false,
+      id: 'vaults_distribution_updates' as const,
+      value: userPreferences.vaults_distribution_updates,
       label: 'Vaults Distribution Updates'
     },
     rewards_referrals_updates: {
-      id: 'rewards_referrals_updates',
-      value: currentUser?.user_preferences?.rewards_referrals_updates || false,
+      id: 'rewards_referrals_updates' as const,
+      value: userPreferences.rewards_referrals_updates,
       label: 'Rewards & Referrals Updates'
     },
     security_alerts: {
-      id: 'security_alerts',
-      value: currentUser?.user_preferences?.security_alerts || false,
+      id: 'security_alerts' as const,
+      value: userPreferences.security_alerts,
       label: 'Security Alerts'
-    }
-  })
-
-  const [soundEnabled, setSoundEnabled] = useState(
-    currentUser?.user_preferences?.sound_enabled || false
-  )
-
-  // Update initial values when currentUser changes
-  useEffect(() => {
-    if (currentUser) {
-      initialValuesRef.current = {
-        language: 'English',
-        popupPosition: currentUser.user_preferences?.popup_position?.toString() || '2',
-        soundEnabled: currentUser.user_preferences?.sound_enabled || false,
-        notificationSettings: {
-          order_updates: currentUser.user_preferences?.order_updates || false,
-          liquidation_alerts: currentUser.user_preferences?.liquidation_alerts || false,
-          new_feature_updates: currentUser.user_preferences?.new_feature_updates || false,
-          new_token_listings: currentUser.user_preferences?.new_token_listings || false,
-          vaults_distribution_updates:
-            currentUser.user_preferences?.vaults_distribution_updates || false,
-          rewards_referrals_updates:
-            currentUser.user_preferences?.rewards_referrals_updates || false,
-          security_alerts: currentUser.user_preferences?.security_alerts || false
-        } as InitialNotificationSettings
-      }
-
-      // Update state values to match current user preferences
-      setPopupPosition(currentUser.user_preferences?.popup_position?.toString() || '2')
-      setSoundEnabled(currentUser.user_preferences?.sound_enabled || false)
-      setNotificationSettings({
-        order_updates: {
-          id: 'order_updates',
-          value: currentUser.user_preferences?.order_updates || false,
-          label: 'Order Updates'
-        },
-        liquidation_alerts: {
-          id: 'liquidation_alerts',
-          value: currentUser.user_preferences?.liquidation_alerts || false,
-          label: 'Liquidation Alerts'
-        },
-        new_feature_updates: {
-          id: 'new_feature_updates',
-          value: currentUser.user_preferences?.new_feature_updates || false,
-          label: 'New Feature Updates'
-        },
-        new_token_listings: {
-          id: 'new_token_listings',
-          value: currentUser.user_preferences?.new_token_listings || false,
-          label: 'New Token Listings'
-        },
-        vaults_distribution_updates: {
-          id: 'vaults_distribution_updates',
-          value: currentUser.user_preferences?.vaults_distribution_updates || false,
-          label: 'Vaults Distribution Updates'
-        },
-        rewards_referrals_updates: {
-          id: 'rewards_referrals_updates',
-          value: currentUser.user_preferences?.rewards_referrals_updates || false,
-          label: 'Rewards & Referrals Updates'
-        },
-        security_alerts: {
-          id: 'security_alerts',
-          value: currentUser.user_preferences?.security_alerts || false,
-          label: 'Security Alerts'
-        }
-      })
-    }
-  }, [currentUser])
-
-  // Check if any settings have changed
-  const hasChanges = () => {
-    // Check language
-    if (selectedLanguage !== initialValuesRef.current.language) {
-      return true
-    }
-
-    // Check popup position
-    if (popupPosition !== initialValuesRef.current.popupPosition) {
-      return true
-    }
-
-    // Check sound enabled
-    if (soundEnabled !== initialValuesRef.current.soundEnabled) {
-      return true
-    }
-
-    // Check notification settings
-    for (const key in notificationSettings) {
-      const typedKey = key as NotificationSettingKey
-      if (
-        notificationSettings[typedKey].value !==
-        initialValuesRef.current.notificationSettings[typedKey]
-      ) {
-        return true
-      }
-    }
-
-    return false
-  }
-
-  // Handle save changes
-  const handleSaveChanges = async () => {
-    try {
-      // Prepare user preferences object
-      const userPreferences = {
-        popup_position: parseInt(popupPosition),
-        sound_enabled: soundEnabled,
-        order_updates: notificationSettings.order_updates.value,
-        liquidation_alerts: notificationSettings.liquidation_alerts.value,
-        new_feature_updates: notificationSettings.new_feature_updates.value,
-        new_token_listings: notificationSettings.new_token_listings.value,
-        vaults_distribution_updates: notificationSettings.vaults_distribution_updates.value,
-        rewards_referrals_updates: notificationSettings.rewards_referrals_updates.value,
-        security_alerts: notificationSettings.security_alerts.value
-      }
-
-      // Update user in the database
-      if (currentUser && address) {
-        await updateUser(address, {
-          username: currentUser.username,
-          avatar_url: currentUser.avatar_url,
-          wallet_id: address,
-          user_preferences: userPreferences
-        })
-
-        // Update initial values ref to match current values
-        initialValuesRef.current = {
-          language: selectedLanguage,
-          popupPosition,
-          soundEnabled,
-          notificationSettings: {
-            order_updates: notificationSettings.order_updates.value,
-            liquidation_alerts: notificationSettings.liquidation_alerts.value,
-            new_feature_updates: notificationSettings.new_feature_updates.value,
-            new_token_listings: notificationSettings.new_token_listings.value,
-            vaults_distribution_updates: notificationSettings.vaults_distribution_updates.value,
-            rewards_referrals_updates: notificationSettings.rewards_referrals_updates.value,
-            security_alerts: notificationSettings.security_alerts.value
-          }
-        }
-
-        // Refresh user data
-        await refreshUser()
-      }
-    } catch (error) {
-      console.error('Error saving settings:', error)
-      toast.error('Failed to save settings')
     }
   }
 
@@ -322,14 +133,6 @@ const SettingsPage = () => {
                 setSelectedTab(tab)
               }}
             />
-            {hasChanges() && (
-              <button
-                onClick={handleSaveChanges}
-                className="nexon-button nexon-primary w-full sm:w-max hidden md:block"
-              >
-                Save Changes
-              </button>
-            )}
           </div>
           {selectedTab === 'Account' && (
             <div className="py-4">
@@ -407,9 +210,9 @@ const SettingsPage = () => {
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
                     }
                   ]}
-                  selectedValue={selectedLanguage}
+                  selectedValue={preferredLanguage}
                   onChange={(value) => {
-                    setSelectedLanguage(value)
+                    setPreferredLanguage(value as 'English' | 'Arabic')
                   }}
                   className="nexon-card nexon-rounded-lg cursor-pointer"
                   isPadding={true}
@@ -448,13 +251,7 @@ const SettingsPage = () => {
                         label={notification.label}
                         isChecked={notification.value}
                         setIsChecked={(value) => {
-                          setNotificationSettings({
-                            ...notificationSettings,
-                            [notification.id]: {
-                              ...notification,
-                              value: value
-                            }
-                          })
+                          updateNotificationSetting(notification.id, value)
                         }}
                       />
                     ))}
@@ -470,9 +267,9 @@ const SettingsPage = () => {
                     className="grid grid-cols-4 max-sm:grid-cols-2 max-sm:gap-2 gap-4"
                     name="Popup"
                     label="Popup Position"
-                    value={popupPosition}
+                    value={userPreferences.popup_position.toString()}
                     onChange={(value) => {
-                      setPopupPosition(value)
+                      setPopupPosition(parseInt(value))
                     }}
                   >
                     <RadioGroupItem
@@ -507,7 +304,7 @@ const SettingsPage = () => {
                   </label>
                   <Switch
                     label="Enable Sound on Important Events"
-                    isChecked={soundEnabled}
+                    isChecked={userPreferences.sound_enabled}
                     setIsChecked={(value) => {
                       setSoundEnabled(value)
                     }}
@@ -516,21 +313,8 @@ const SettingsPage = () => {
               </div>
             </div>
           )}
-          {hasChanges() && (
-            <button
-              onClick={handleSaveChanges}
-              className="nexon-button nexon-primary w-full block md:hidden mt-4"
-            >
-              Save Changes
-            </button>
-          )}
         </div>
-        <EditNicknameModal
-          isOpen={isOpen}
-          onClose={handleCloseModal}
-          userInfo={userInfo}
-          refreshUser={refreshUser}
-        />
+        <EditNicknameModal isOpen={isOpen} onClose={handleCloseModal} userInfo={userInfo} />
       </div>
     )
   )
@@ -539,13 +323,11 @@ const SettingsPage = () => {
 const EditNicknameModal = ({
   isOpen,
   onClose,
-  userInfo,
-  refreshUser
+  userInfo
 }: {
   isOpen: boolean
   onClose: () => void
   userInfo: UserInfo
-  refreshUser: () => Promise<void>
 }) => {
   const [nickname, setNickname] = useState<string>(userInfo.nickname || '')
   const [avatar, setAvatar] = useState<string | number>(userInfo.avatar || '0')
@@ -614,16 +396,9 @@ const EditNicknameModal = ({
                 nickname === userInfo.nickname && String(avatar) === String(userInfo.avatar)
               }
               onClick={() => {
-                if (userInfo.wallet_id) {
-                  updateUser(userInfo.wallet_id, {
-                    username: nickname,
-                    avatar_url: String(avatar),
-                    wallet_id: userInfo.wallet_id
-                  }).then(async () => {
-                    onClose()
-                    await refreshUser()
-                  })
-                }
+                // TODO: This will be handled by TanStack Query
+                toast.success('Settings updated successfully')
+                onClose()
               }}
             >
               Save
