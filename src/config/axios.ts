@@ -6,21 +6,12 @@ import {
 } from '@/utils/constants'
 import axios from 'axios'
 
-const testnetAxios = axios.create({
-  baseURL: HYPERLIQUID_API_TESTNET,
+export const hyperliquidAxios = axios.create({
+  baseURL: isTestnet ? HYPERLIQUID_API_TESTNET : HYPERLIQUID_API_MAINNET,
   headers: {
     'Content-Type': 'application/json'
   }
 })
-
-const mainnetAxios = axios.create({
-  baseURL: HYPERLIQUID_API_MAINNET,
-  headers: {
-    'Content-Type': 'application/json'
-  }
-})
-
-export const hyperliquidAxios = isTestnet ? testnetAxios : mainnetAxios
 
 export const coinmarketAxios = axios.create({
   baseURL: COINMARKET_BASE_URL,

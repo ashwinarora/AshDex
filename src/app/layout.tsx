@@ -4,7 +4,6 @@ import { DM_Mono } from 'next/font/google'
 import Header from '@/components/Header'
 import { Provider } from './provider'
 import { WalletModalProvider } from '@/context/WalletModalContext'
-import { UserProvider } from '@/context/UserContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import '@/styles/table.css'
@@ -12,7 +11,6 @@ import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
-import SnackBar from '@/components/common/SnackBar'
 import dynamic from 'next/dynamic'
 
 const geistSans = Geist({
@@ -56,13 +54,11 @@ export default function RootLayout({
           <WalletModalProvider>
             <BridgeProvider>
               <EstablishConnectionProvider>
-                <UserProvider>
-                  <SnackBar />
-                  <Header />
-                  <OnboardingModal />
-                  <DynamicUseToastOptions />
-                  {children}
-                </UserProvider>
+                {/* <SnackBar /> */}
+                <Header />
+                <OnboardingModal />
+                <DynamicUseToastOptions />
+                {children}
               </EstablishConnectionProvider>
             </BridgeProvider>
           </WalletModalProvider>
