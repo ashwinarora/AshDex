@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { useUser } from '@/context/UserContext'
 import Avatar from './common/Avatar'
 import { toast } from 'sonner'
 import BridgeButton from './common/BridgeButton'
@@ -47,7 +46,6 @@ const Header: FC = () => {
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal } = useWalletModal()
-  const { currentUser } = useUser()
   const { isMobile } = useScreenSize()
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
@@ -209,7 +207,7 @@ const Header: FC = () => {
                   size={'sm'}
                   className="flex text-white text-xs items-center gap-2"
                 >
-                  <Avatar className="size-4" avatar={currentUser?.avatar_url || '0'} />
+                  <Avatar className="size-4" avatar={''} />
                   {/* <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span> */}
                   <span className="max-xl:hidden flex font-medium  truncate">
                     {truncateAddress(address!)}

@@ -20,7 +20,7 @@ import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import Switch from '@/components/common/Switch'
 import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
-import { useUserPreferences, useLanguageSettings } from '@/store/UserStore'
+import { useLanguageSettings, useUserPreferences } from '@/store/userStore'
 
 // Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
 interface UserInfo {
