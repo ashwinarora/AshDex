@@ -859,8 +859,15 @@ const TradingViewChart = ({
 
   useEffect(() => {
     if (!widgetRef.current) return
-    openOrders.forEach(async (order) => {
-      if (order.coin !== selectedAsset) return
+    // Only show order lines for the first and last open order for the selected asset
+    const filteredOrders = openOrders.filter(order => order.coin === selectedAsset)
+    const ordersToShow = []
+    if (filteredOrders.length === 1) {
+      ordersToShow.push(filteredOrders[0])
+    } else if (filteredOrders.length > 1) {
+      ordersToShow.push(filteredOrders[0], filteredOrders[filteredOrders.length - 1])
+    }
+    ordersToShow.forEach(async (order) => {
       const shapeExists = orderToShape.current.get(order.oid)
       if (shapeExists) return
       const shapeId = await showOrderLineShape(order.side === 'B', order.limitPx, order.sz)
