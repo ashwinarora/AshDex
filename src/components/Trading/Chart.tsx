@@ -860,7 +860,7 @@ const TradingViewChart = ({
   useEffect(() => {
     if (!widgetRef.current) return
     // Only show order lines for the first and last open order for the selected asset
-    const filteredOrders = openOrders.filter(order => order.coin === selectedAsset)
+    const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
     const ordersToShow = []
     if (filteredOrders.length === 1) {
       ordersToShow.push(filteredOrders[0])
