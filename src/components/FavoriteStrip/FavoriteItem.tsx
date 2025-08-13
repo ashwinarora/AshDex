@@ -8,6 +8,8 @@ import { ToggleGroupItem } from '../ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { IconTrendingDown, IconTrendingUp } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useFavorites } from '@/store/FavoritesStore'
+import { formatWithCommas } from '@/utils/format'
 
 interface FavoriteItemProps {
   assetKey: string
@@ -15,6 +17,7 @@ interface FavoriteItemProps {
 
 const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
   const isSpot = useIsSpot()
+  const { displayMode } = useFavorites(isSpot)
   const { spotAssetContext, perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       spotAssetContext: state.spotAssetContext,
@@ -27,26 +30,26 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
   const data = useMemo(() => {
     if (isSpot) {
       const asset = spotAssetContext.find((asset) => asset.coin === assetKey)
-      const change =
+      const changePercent =
         ((Number(asset?.markPx) - Number(asset?.prevDayPx)) / Number(asset?.prevDayPx)) * 100
       const name = spotKeyToName.get(assetKey)
       return {
         name,
         price: asset?.markPx,
-        change24h: isNaN(change) ? '-' : change.toFixed(2).concat('%'),
-        isPositive: change >= 0,
+        changePercent: isNaN(changePercent) ? '-' : changePercent.toFixed(2).concat('%'),
+        isPositive: changePercent >= 0,
         isPrice: true
       }
     } else {
       const index = perpsMeta?.universe.findIndex((asset) => asset.name === assetKey)
       const asset = perpAssetContext[index!]
-      const change =
+      const changePercent =
         ((Number(asset?.markPx) - Number(asset?.prevDayPx)) / Number(asset?.prevDayPx)) * 100
       return {
         name: assetKey,
         price: asset?.markPx,
-        change24h: isNaN(change) ? '-' : change.toFixed(2).concat('%'),
-        isPositive: change >= 0,
+        changePercent: isNaN(changePercent) ? '-' : changePercent.toFixed(2).concat('%'),
+        isPositive: changePercent >= 0,
         isPrice: false
       }
     }
@@ -69,7 +72,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
         {data.name}
       </p>
       <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>
-        {data.change24h}
+        {displayMode === 'usd' ? formatWithCommas(data.price ?? 0) : data.changePercent}
       </p>
     </ToggleGroupItem>
   )
