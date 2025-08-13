@@ -14,8 +14,15 @@ import {
   IconStar
 } from '@tabler/icons-react'
 import { Button } from '../ui/button'
+import clsx from 'clsx'
 
-const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
+const FavoriteStrip = ({
+  setSelectedAsset,
+  isRTL
+}: {
+  setSelectedAsset: (asset: string) => void
+  isRTL: boolean
+}) => {
   const isSpot = useIsSpot()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
@@ -57,22 +64,32 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
       >
         <ToggleGroup
           type="single"
-          className="flex items-center gap-2 h-full"
+          className={clsx('flex items-center gap-2 h-full', isRTL ? 'flex-row-reverse' : '')}
           onValueChange={(asset) => {
             if (!asset.length) return
             console.log('asset', asset)
             setSelectedAsset(asset)
           }}
         >
-          {Array.from(favorites).map((favorite) => (
-            <Fragment key={favorite}>
-              <FavoriteItem assetKey={favorite} />
-              <Separator orientation="vertical" className="!h-full last:hidden" />
-            </Fragment>
-          ))}
+          {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).map(
+            (favorite, index) => (
+              <Fragment key={favorite}>
+                <FavoriteItem assetKey={favorite} />
+                {index !==
+                  (isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).length - 1 && (
+                    <Separator orientation="vertical" className="!h-full last:hidden" />
+                  )}
+              </Fragment>
+            )
+          )}
         </ToggleGroup>
       </div>
-      <div className="flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1">
+      <div
+        className={clsx(
+          'flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1',
+          isRTL ? 'left-0' : 'right-0'
+        )}
+      >
         <Button onClick={scrollLeft} variant="outline" size="icon" className="h-full aspect-square">
           <IconChevronLeft className="size-4 text-white" />
         </Button>

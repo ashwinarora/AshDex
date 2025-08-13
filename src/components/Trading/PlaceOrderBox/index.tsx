@@ -23,30 +23,31 @@ type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MAR
 
 export interface IPlaceOrderProps {
   selectedAsset: string
+  isRTL: boolean
 }
 
-const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
+const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
   const isSpot = useIsSpot()
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'LIMIT':
-        return <LimitOrder selectedAsset={selectedAsset} />
+        return <LimitOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'MARKET':
-        return <MarketOrder selectedAsset={selectedAsset} />
+        return <MarketOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'TWAP':
-        return <TWAP />
+        return <TWAP isRTL={isRTL} />
       case 'SCALE':
         return isSpot ? (
-          <ScaleSpot selectedAsset={selectedAsset} />
+          <ScaleSpot selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <Scale selectedAsset={selectedAsset} />
+          <Scale selectedAsset={selectedAsset} isRTL={isRTL} />
         )
       case 'STOP_LIMIT':
-        return <StopLimit selectedAsset={selectedAsset} />
+        return <StopLimit selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'STOP_MARKET':
-        return <StopMarket selectedAsset={selectedAsset} />
+        return <StopMarket selectedAsset={selectedAsset} isRTL={isRTL} />
       default:
         return null
     }
@@ -62,10 +63,20 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full xl:h-[688px] overflow-y-auto no-scrollbar items-center justify-start">
-      <div className="w-full h-fit px-2 pt-2 flex items-center justify-start">
+      <div
+        className={cn(
+          'w-full h-fit px-2 pt-2 flex items-center justify-start',
+          isRTL && 'flex-row-reverse'
+        )}
+      >
         <ToggleGroup
           type="single"
-          className="w-2/3 bg-white/5 rounded-l-md rounded-r-none"
+          className={cn(
+            'w-2/3 bg-white/5',
+            isRTL
+              ? 'rounded-l-none rounded-r-md flex-row-reverse'
+              : 'rounded-l-md rounded-r-none flex-row'
+          )}
           value={activeTab}
           onValueChange={(value) => {
             if (value === '') {
@@ -74,10 +85,13 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setActiveTab(value as OrderTab)
           }}
         >
-          <ToggleGroupItem className="w-full rounded-l-md" value="LIMIT">
+          <ToggleGroupItem
+            className={cn('w-full', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
+            value="LIMIT"
+          >
             Limit
           </ToggleGroupItem>
-          <ToggleGroupItem className="w-full" value="MARKET">
+          <ToggleGroupItem className={cn('w-full')} value="MARKET">
             Market
           </ToggleGroupItem>
         </ToggleGroup>
@@ -85,10 +99,11 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           <DropdownMenuTrigger asChild>
             <div
               className={cn(
-                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 rounded-r-md flex items-center gap-2 justify-center text-sm',
+                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                 availableOptions.find((option) => option.value === activeTab)
                   ? 'bg-accent text-accent-foreground'
-                  : 'bg-white/5 text-white/50'
+                  : 'bg-white/5 text-white/50',
+                isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
               {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
@@ -96,14 +111,6 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {/* <DropdownMenuItem asChild>
-              <button
-                onClick={() => setActiveTab('TWAP')}
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
-              >
-                TWAP
-              </button>
-            </DropdownMenuItem> */}
             {availableOptions.map((option) => (
               <DropdownMenuItem
                 className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"

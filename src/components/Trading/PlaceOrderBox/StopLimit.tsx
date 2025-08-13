@@ -10,8 +10,9 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
 
-const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
+const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [stopPrice, setStopPrice] = useState(0)
   const [limitPrice, setLimitPrice] = useState('')
   const [isReduceOnly, setIsReduceOnly] = useState(false)
@@ -31,16 +32,17 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
         <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
         <LeverageMargin
           selectedAsset={selectedAsset}
           leverage={leverage}
           setLeverage={setLeverage}
+          isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="stopPrice" className="text-xs text-white/50">
+        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
           Stop Price
         </label>
         <Input
@@ -48,18 +50,24 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           placeholder="0"
           value={stopPrice}
           onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
-          className={'w-full shrink-0 text-right text-white placeholder:text-white'}
+          className={cn(
+            'w-full shrink-0 text-right text-white placeholder:text-white',
+            isRTL && 'text-left'
+          )}
         />
-        <label htmlFor="limitPrice" className="text-xs text-white/50">
+        <label htmlFor="limitPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
           Limit Price
         </label>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={limitPrice}
             onChange={(e) => handleLimitPriceChange(e)}
-            className={'w-full flex-1 text-right text-white placeholder:text-white'}
+            className={cn(
+              'w-full flex-1 text-right text-white placeholder:text-white',
+              isRTL && 'text-left'
+            )}
           />
           <Button variant={'outline'} size={'sm'} className="text-xs" disabled>
             USD
@@ -76,12 +84,18 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           leverage={leverage}
           isReduceOnly={isReduceOnly}
           isBuy={isBuy}
+          isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <div className="flex items-start w-full justify-start h-full gap-2">
+        <div
+          className={cn(
+            'flex items-start w-full justify-start h-full gap-2',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <Toggle
             size={'sm'}
-            className="bg-white/5 w-fit"
+            className={cn('bg-white/5 w-fit', isRTL && 'flex-row-reverse')}
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -91,7 +105,7 @@ const StopLimit = ({ selectedAsset }: IPlaceOrderProps) => {
           </Toggle>
         </div>
       </div>
-      <div className="flex flex-col gap-2 h-fit w-full p-2">
+      <div className={cn('flex flex-col gap-2 h-fit w-full p-2')}>
         <Separator orientation="horizontal" />
         <OrderButton
           selectedAsset={selectedAsset}

@@ -9,8 +9,9 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { useShallow } from 'zustand/react/shallow'
+import { cn } from '@/lib/utils'
 
-function OverviewBox() {
+function OverviewBox({ isRTL }: { isRTL: boolean }) {
   const [isDepositOpen, setIsDepositOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
@@ -65,7 +66,12 @@ function OverviewBox() {
 
   return (
     <div className="w-full h-full flex-1 flex flex-col gap-2 p-2 bg-secondary rounded-md">
-      <div className="flex items-center justify-center gap-2 w-full">
+      <div
+        className={cn(
+          'flex items-center justify-center gap-2 w-full',
+          isRTL ? 'flex-row-reverse' : 'flex-row'
+        )}
+      >
         <Button onClick={() => setIsSendModalOpen(true)} variant="outline" className="flex-1">
           Send
         </Button>
@@ -82,10 +88,20 @@ function OverviewBox() {
       <Button onClick={() => setIsDepositOpen(true)}>Deposit</Button>
       <Separator className="w-full" />
       <div className="flex flex-col gap-2 flex-1 h-full">
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white text-sm">Account Equity</p>
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Spot</p>
           <ReactiveText
             precision={2}
@@ -95,7 +111,12 @@ function OverviewBox() {
             value={spotAccountValue || 0}
           />
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Perps</p>
           <ReactiveText
             precision={2}
@@ -106,10 +127,20 @@ function OverviewBox() {
           />
         </div>
         <Separator className="w-full" />
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white text-sm">Perps Overview</p>
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Balance</p>
           <ReactiveText
             precision={2}
@@ -118,7 +149,12 @@ function OverviewBox() {
             value={crossAccountValue - totalUnrealizedPnl}
           />
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Unrealized PnL</p>
           <ReactiveText
             precision={2}
@@ -128,7 +164,12 @@ function OverviewBox() {
             value={totalUnrealizedPnl}
           />
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Cross Margin Ratio</p>
           <ReactiveText
             precision={2}
@@ -137,7 +178,12 @@ function OverviewBox() {
             className="text-xs"
           />
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Maintenance Margin</p>
           <ReactiveText
             precision={2}
@@ -146,7 +192,12 @@ function OverviewBox() {
             className="text-xs"
           />
         </div>
-        <div className="flex justify-between items-center gap-2 w-full">
+        <div
+          className={cn(
+            'flex justify-between items-center gap-2 w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p className="text-white/50 text-xs">Cross Account Leverage</p>
           <ReactiveText
             precision={2}

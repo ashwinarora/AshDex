@@ -20,6 +20,7 @@ interface ISetLastPriceProps {
   setUsdAmount: (amount: string) => void
   assetAmount: string
   disabled?: boolean
+  isRTL: boolean
 }
 
 const SetPrice = ({
@@ -28,7 +29,8 @@ const SetPrice = ({
   setLimitPrice,
   setUsdAmount,
   assetAmount,
-  disabled = false
+  disabled = false,
+  isRTL
 }: ISetLastPriceProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
@@ -169,7 +171,7 @@ const SetPrice = ({
   }
 
   return (
-    <div className="flex w-full gap-2 items-center">
+    <div className={cn('flex w-full gap-2 items-center', isRTL && 'flex-row-reverse')}>
       <Input
         type="text"
         placeholder="0"
@@ -177,7 +179,7 @@ const SetPrice = ({
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={cn('w-full flex-1 text-right text-white')}
+        className={cn('w-full flex-1 text-white', isRTL ? 'text-left' : 'text-right')}
       />
       <Button
         variant="outline"

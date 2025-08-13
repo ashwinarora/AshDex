@@ -31,6 +31,7 @@ import { formatWithCommas } from '@/utils/format'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
 type BalanceData = {
@@ -41,7 +42,7 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const Balances = ({ setSelectedAsset }: BalanceProps) => {
+const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquidStore(
     useShallow((state) => ({
@@ -90,7 +91,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>Coin</span>,
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
           if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
@@ -169,7 +170,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
   )
   const table = useReactTable({
     data: combinedData,
-    columns,
+    columns: isRTL ? columns.reverse() : columns,
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -240,7 +241,13 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'coin' ? 'justify-start' : 'justify-end',
+                    isRTL
+                      ? header.id === 'coin'
+                        ? 'justify-end'
+                        : 'justify-start'
+                      : header.id === 'coin'
+                        ? 'justify-start'
+                        : 'justify-end',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -274,7 +281,10 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="font-medium text-white text-xs first:text-left text-right"
+                  className={cn(
+                    'font-medium text-white text-xs',
+                    isRTL ? 'text-left last:text-right' : 'first:text-left text-right'
+                  )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

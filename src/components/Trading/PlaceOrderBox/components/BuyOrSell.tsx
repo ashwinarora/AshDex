@@ -5,22 +5,24 @@ import React from 'react'
 interface BuyOrSellProps {
   isBuy: boolean
   setIsBuy: (isBuy: boolean) => void
+  isRTL: boolean
 }
 
-const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
+const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy, isRTL }) => {
   return (
     <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
         size={'sm'}
-        className="w-full bg-white/5 rounded-md"
+        className={cn('w-full bg-white/5 rounded-md', isRTL ? '!flex-row-reverse' : '!flex-row')}
         type="single"
         value={isBuy ? 'buy' : 'sell'}
         onValueChange={(value) => value !== '' && setIsBuy(value === 'buy')}
       >
         <ToggleGroupItem
           className={cn(
-            'w-full rounded-l-md transition-colors font-semibold hover:!text-green',
-            isBuy && '!bg-green hover:!text-accent !text-accent'
+            'w-full transition-colors font-semibold hover:!text-green',
+            isBuy && '!bg-green hover:!text-accent !text-accent',
+            isRTL ? 'rounded-r-md' : 'rounded-l-md'
           )}
           value="buy"
         >
@@ -28,8 +30,9 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
-            'w-full rounded-r-md transition-colors font-semibold hover:!text-red',
-            !isBuy && '!bg-red hover:!text-accent !text-accent'
+            'w-full transition-colors font-semibold hover:!text-red',
+            !isBuy && '!bg-red hover:!text-accent !text-accent',
+            isRTL ? 'rounded-l-md' : 'rounded-r-md'
           )}
           value="sell"
         >

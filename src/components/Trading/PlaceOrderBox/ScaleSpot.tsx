@@ -71,7 +71,7 @@ function calculateScaleOrders(
 
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
-const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
+const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { spotState, spotAssetContext, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState,
@@ -197,7 +197,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="flex flex-col justify-start pt-4 w-full h-full">
       <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-3 px-2">
           <label htmlFor="startPrice" className="text-xs text-white/50">

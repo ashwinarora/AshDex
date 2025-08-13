@@ -26,10 +26,12 @@ import { Button } from '@/components/ui/button'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
+import clsx from 'clsx'
 
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
 // Memoize tabs array outside component to prevent recreation
@@ -42,7 +44,7 @@ const TABS = [
   { label: 'Meme', icon: <IconMeteor className="size-3" /> }
 ] as const
 
-const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
+const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       perpAssetContext: state.perpAssetContext,
@@ -198,8 +200,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }, [])
 
   return (
-    <div className="flex items-center justify-between p-2 h-14 bg-secondary rounded-md">
-      <div className="flex items-center gap-2 w-full h-full">
+    <div className={clsx('flex items-center justify-between p-2 h-14 bg-secondary rounded-md')}>
+      <div
+        className={clsx('flex items-center gap-2 w-full h-full', isRTL ? 'flex-row-reverse' : '')}
+      >
         <Button
           onClick={handleToggleFavorite}
           variant="outline"
@@ -274,7 +278,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverContent>
         </Popover>
         <Separator orientation="vertical" className="hidden md:block !h-full" />
-        <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+        <div
+          className={clsx(
+            'hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs',
+            isRTL ? 'flex-row-reverse' : ''
+          )}
+        >
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>
@@ -310,7 +319,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 <IconInfoCircle className="size-4 text-white" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
+            <PopoverContent align="end" className={clsx('w-fit h-fit flex flex-col gap-4')}>
               {marketData?.map((item, index) => (
                 <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
                   <div className="text-white/50 text-xs text-nowrap">{item.label}</div>

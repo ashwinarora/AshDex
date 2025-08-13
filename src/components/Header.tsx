@@ -33,6 +33,8 @@ import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
+import clsx from 'clsx'
+import useUserStore from '@/store/userStore'
 type MenuItem = {
   name: string
   path: string
@@ -48,6 +50,8 @@ const Header: FC = () => {
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -101,19 +105,6 @@ const Header: FC = () => {
   }
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        // setIsOpen(false)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
-
-  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -136,10 +127,18 @@ const Header: FC = () => {
   if (!isRendered) return null
 
   return (
-    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
+    <div
+      className={clsx(
+        'top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14',
+        isRTL && 'flex-row-reverse'
+      )}
+    >
       <div
         onClick={() => router.push('/')}
-        className="flex items-center gap-2 pr-4 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
+        className={clsx(
+          'flex items-center gap-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer',
+          isRTL ? 'pl-4' : 'pr-4'
+        )}
       >
         <Image
           style={{ width: 20, height: 'auto' }}
@@ -174,7 +173,12 @@ const Header: FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
+          <NavigationMenu
+            className={clsx(
+              'h-full md:flex hidden w-full items-center justify-start',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
                 <HoverCard key={name}>
@@ -208,7 +212,7 @@ const Header: FC = () => {
           </NavigationMenu>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
         {isConnected && isRendered ? (
           <div className="flex items-center gap-2">

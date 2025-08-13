@@ -21,7 +21,7 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 
-const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
+const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
@@ -72,25 +72,32 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
         {!isSpot && (
           <>
             <Separator orientation="horizontal" />
-            <MarginMode isCross={isCross} setIsCross={setIsCross} />
+            <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
             <LeverageMargin
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
+              isRTL={isRTL}
             />
           </>
         )}
         <Separator orientation="horizontal" />
         <div className="flex flex-col items-start rounded-md align-middle gap-2 w-full">
-          <div className="flex items-center justify-between gap-2">
+          <div
+            className={cn(
+              'flex items-center justify-between gap-2 w-full',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
           </div>
           <SetPrice
             selectedAsset={selectedAsset}
+            isRTL={isRTL}
             limitPrice={limitPrice}
             setLimitPrice={setLimitPrice}
             setUsdAmount={setUsdAmount}
@@ -106,6 +113,7 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setUsdAmount={setUsdAmount}
             limitPrice={limitPrice}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         ) : (
           <AmountInput
@@ -118,11 +126,17 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             leverage={leverage}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         )}
         <Separator orientation="horizontal" />
 
-        <div className="flex items-center justify-center h-fit gap-2">
+        <div
+          className={cn(
+            'flex items-center justify-center h-fit gap-2',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -172,12 +186,12 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <div className="flex w-full flex-col gap-2 text-xs">
           {!isSpot && (
             <>
-              <div className="flex justify-between">
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/50">Liquidation Price</p>
                 <p className="text-white">{liquidationPrice()}</p>
               </div>
 
-              <div className="flex justify-between">
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/50">Margin Required</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}
@@ -185,11 +199,11 @@ const LimitOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </>
           )}
-          <div className="flex justify-between">
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/50">Order Value</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-          <div className="flex justify-between">
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>

@@ -33,6 +33,7 @@ import { useShallow } from 'zustand/react/shallow'
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
 const tabs = [

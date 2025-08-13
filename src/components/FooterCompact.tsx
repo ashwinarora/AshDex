@@ -10,11 +10,14 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
+import { Switch } from './ui/switch'
+import useUserStore from '@/store/userStore'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
     useShallow((state) => ({
       isWebSocketConnected: state.isWebSocketConnected,
@@ -149,6 +152,15 @@ const FooterContent: FC = () => {
         </HoverCard>
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
+          <div className="flex items-center gap-2">
+            <span>Arabic</span>
+            <Switch
+              checked={isRTL}
+              onCheckedChange={() => {
+                useUserStore.setState({ preferredLanguage: isRTL ? 'English' : 'Arabic' })
+              }}
+            />
+          </div>
           <a
             href="/docs"
             target="_blank"

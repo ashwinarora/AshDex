@@ -2,7 +2,7 @@ import { useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import CheckBox from '@/components/common/CheckBox'
 
-const TWAP = () => {
+const TWAP = ({ isRTL }: { isRTL: boolean }) => {
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [size, setSize] = useState<number>(0)
   const [minutes, setMinutes] = useState<number>(0)
@@ -10,7 +10,7 @@ const TWAP = () => {
 
   return (
     <div className="flex flex-col w-full h-full">
-      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+      <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
       <div className="flex-1 overflow-y-auto no-scrollbar">
         <div className="space-y-1">
           <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">

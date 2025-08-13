@@ -24,6 +24,7 @@ interface AmountInputSpotProps {
   setUsdAmount: React.Dispatch<React.SetStateAction<string>>
   limitPrice: string
   isBuy: boolean
+  isRTL: boolean
 }
 
 const isMatch = (a: string, b: string): boolean => a.split('/')[0] === b.split('/')[0]
@@ -35,7 +36,8 @@ const AmountInputSpot = ({
   usdAmount,
   setUsdAmount,
   limitPrice,
-  isBuy
+  isBuy,
+  isRTL
 }: AmountInputSpotProps) => {
   const { spotState } = useHyperliquidStore(
     useShallow((state) => ({
@@ -136,14 +138,14 @@ const AmountInputSpot = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
+      <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
         <p className="font-medium text-white/50 text-xs whitespace-nowrap">Amount</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
           Available to Trade = {maxAllowed.toFixed(2)}{' '}
           {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
         </label>
       </div>
-      <div className="flex items-center gap-2">
+      <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <Input
           type="text"
           placeholder="0"
@@ -153,7 +155,7 @@ const AmountInputSpot = ({
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
-          className="w-full text-right text-white flex-1"
+          className={cn('w-full text-white flex-1', isRTL ? 'text-left' : 'text-right')}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -183,12 +185,16 @@ const AmountInputSpot = ({
         <Slider
           min={0}
           max={100}
+          dir={isRTL ? 'rtl' : 'ltr'}
           value={[usdPercent]}
           onValueChange={(value) => setUsdPercent(Number(value[0]))}
         />
         <ToggleGroup
           size={'sm'}
-          className="flex mt-1 bg-white/5 items-center justify-between w-full"
+          className={cn(
+            'flex mt-1 bg-white/5 items-center justify-between w-full',
+            isRTL && 'flex-row-reverse'
+          )}
           type="single"
           value={usdPercent.toString()}
           onValueChange={(value) => value !== '' && updateFromPercent(parseInt(value, 10))}
@@ -196,8 +202,9 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'25'}
             className={cn(
-              'rounded-l-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+              isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
             25%
@@ -223,8 +230,9 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'100'}
             className={cn(
-              'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+              isRTL ? 'rounded-l-md' : 'rounded-r-md'
             )}
           >
             100%

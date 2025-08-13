@@ -108,7 +108,7 @@ function calculateScaleOrdersByAssetSize(
   return orders
 }
 
-const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
+const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -266,25 +266,29 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
         <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+        <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
         <LeverageMargin
           selectedAsset={selectedAsset}
           leverage={leverage}
           setLeverage={setLeverage}
+          isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="startPrice" className="text-xs text-white/50">
+        <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
           Start Price
         </label>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={startPrice}
             onChange={(e) => setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-right text-white placeholder:text-white',
+              isRTL && 'text-left'
+            )}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -309,16 +313,19 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <label htmlFor="endPrice" className="text-xs text-white/50">
+        <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
           End Price
         </label>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={endPrice}
             onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-right text-white placeholder:text-white',
+              isRTL && 'text-left'
+            )}
           />
           <Button
             variant="outline"
@@ -333,19 +340,22 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           {/* */}
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-between">
-          <label htmlFor="percent" className="text-xs text-white/50">
+        <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
+          <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
             Total Size
           </label>
           <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
         </div>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={totalUsd}
             onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-right text-white placeholder:text-white',
+              isRTL && 'text-left'
+            )}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -369,22 +379,27 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex mt-2 flex-col gap-2 w-full items-center justify-center">
-          <div className="flex items-center w-full gap-3">
+        <div className={cn('flex mt-2 flex-col gap-2 w-full items-center justify-center')}>
+          <div className={cn('flex items-center w-full gap-3', isRTL && 'flex-row-reverse')}>
             <Slider
               min={1}
               max={100}
+              dir={isRTL ? 'rtl' : 'ltr'}
               value={[percent]}
               onValueChange={(value) => handlePercentChange(value[0])}
               className="flex-1 w-full"
             />
             <div
               className={cn(
-                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
+                isRTL && 'flex-row-reverse pr-0 pl-2'
               )}
             >
               <Input
-                className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+                className={cn(
+                  'flex-1 p-0 text-end text-white bg-transparent border-none',
+                  isRTL && 'text-left'
+                )}
                 value={percent}
                 onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
               />
@@ -393,7 +408,10 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <ToggleGroup
             size={'sm'}
-            className="flex mt-1 items-center bg-white/5 justify-between w-full"
+            className={cn(
+              'flex mt-1 items-center bg-white/5 justify-between w-full',
+              isRTL && 'flex-row-reverse'
+            )}
             type="single"
             value={percent.toString()}
             onValueChange={(value) => value !== '' && handlePercentChange(parseInt(value, 10))}
@@ -403,8 +421,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 key={`leverage-tick-${value}-${index}`}
                 value={value.toString()}
                 className={cn(
-                  'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                  'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+                  isRTL
+                    ? 'first:rounded-r-md last:rounded-l-md'
+                    : 'first:rounded-l-md last:rounded-r-md'
                 )}
               >
                 {value}%

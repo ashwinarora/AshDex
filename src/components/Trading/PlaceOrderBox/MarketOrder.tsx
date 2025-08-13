@@ -24,7 +24,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 
-const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
+const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids,
@@ -139,15 +139,16 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
         {!isSpot && (
           <>
             <Separator orientation="horizontal" />
-            <MarginMode isCross={isCross} setIsCross={setIsCross} />
+            <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
             <LeverageMargin
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
+              isRTL={isRTL}
             />
           </>
         )}
@@ -161,6 +162,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setUsdAmount={setUsdAmount}
             limitPrice={allMids[selectedAsset]?.toString() || '0'}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         ) : (
           <AmountInput
@@ -173,6 +175,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             leverage={leverage}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         )}
         <Separator orientation="horizontal" />
@@ -283,12 +286,12 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <div className="flex w-full flex-col gap-2 text-xs">
           {!isSpot && (
             <>
-              <div className="flex justify-between">
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/50">Liquidation Price</p>
                 <p className="text-white">{liquidationPrice}</p>
               </div>
 
-              <div className="flex justify-between">
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/50">Margin Required</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
@@ -296,11 +299,11 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
               </div>
             </>
           )}
-          <div className="flex justify-between">
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/50">Order Value</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-          <div className="flex justify-between">
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/50">Fees</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
