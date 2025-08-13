@@ -5,8 +5,10 @@ import { useShallow } from 'zustand/react/shallow'
 interface FavoritesState {
   perps: Set<string>
   spot: Set<string>
+  displayMode: 'usd' | 'percent'
   togglePerp: (item: string) => void
   toggleSpot: (item: string) => void
+  setDisplayMode: (mode: 'usd' | 'percent') => void
 }
 
 /**
@@ -24,6 +26,7 @@ const useFavoritesStore = create<FavoritesState>()(
     (set) => ({
       perps: new Set<string>(),
       spot: new Set<string>(),
+      displayMode: 'percent' as const,
 
       togglePerp: (item) =>
         set((state) => {
@@ -45,7 +48,9 @@ const useFavoritesStore = create<FavoritesState>()(
             spot.add(item)
           }
           return { spot }
-        })
+        }),
+
+      setDisplayMode: (mode) => set({ displayMode: mode })
     }),
     {
       name: 'favorites',
@@ -56,7 +61,8 @@ const useFavoritesStore = create<FavoritesState>()(
         ..._current,
         ...persisted,
         perps: new Set(persisted.perps ?? []),
-        spot: new Set(persisted.spot ?? [])
+        spot: new Set(persisted.spot ?? []),
+        displayMode: persisted.displayMode ?? 'percent'
       })
     }
   )
@@ -68,11 +74,15 @@ export const useFavorites = (isSpot: boolean) => {
       return isSpot
         ? {
             favorites: state.spot,
-            toggleFavorite: state.toggleSpot
+            toggleFavorite: state.toggleSpot,
+            displayMode: state.displayMode,
+            setDisplayMode: state.setDisplayMode
           }
         : {
             favorites: state.perps,
-            toggleFavorite: state.togglePerp
+            toggleFavorite: state.togglePerp,
+            displayMode: state.displayMode,
+            setDisplayMode: state.setDisplayMode
           }
     })
   )

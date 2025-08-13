@@ -27,6 +27,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
+import { formatWithCommas } from '@/utils/format'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
@@ -121,21 +122,21 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
       columnHelper.accessor('total', {
         id: 'total',
         header: () => <span className="flex justify-start items-center gap-1">Total Balance</span>,
-        cell: (info) => info.getValue(),
+        cell: (info) => formatWithCommas(info.getValue()),
         enableSorting: true,
         meta: { label: 'Total Balance' }
       }),
       columnHelper.accessor('hold', {
         id: 'hold',
         header: () => <span className="flex justify-start items-center gap-1">Hold</span>,
-        cell: (info) => info.getValue(),
+        cell: (info) => formatWithCommas(info.getValue()),
         enableSorting: true,
         meta: { label: 'Hold' }
       }),
       columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
         id: 'averagePrice',
         header: () => <span className="flex justify-start items-center gap-1">Average Price</span>,
-        cell: (info) => (isNaN(info.getValue()) ? '-' : info.getValue().toFixed(2)),
+        cell: (info) => (isNaN(info.getValue()) ? '-' : formatWithCommas(info.getValue())),
         enableSorting: true,
         meta: { label: 'Average Price' }
       }),

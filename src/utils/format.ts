@@ -34,3 +34,20 @@ export const formatWithKMB = (input: string | number): string => {
   const formatted = value.toFixed(2).replace(/\.00$/, '')
   return `${formatted}${suffixes[suffixIndex]}`
 }
+
+export const formatWithCommas = (input: string | number, toFixed: number = 2): string => {
+  let value: number
+
+  // Parse number
+  if (typeof input === 'string') {
+    value = parseFloat(input.replace(/[^0-9.]/g, ''))
+  } else {
+    value = input
+  }
+
+  // Format with commas and remove trailing .00
+  const formatted = value.toFixed(toFixed)
+  const withoutTrailingZeros = formatted.replace(/\.?0+$/, '')
+
+  return parseFloat(withoutTrailingZeros).toLocaleString('en-US')
+}
