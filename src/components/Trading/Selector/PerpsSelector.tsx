@@ -227,20 +227,27 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            align="start"
+            align={isRTL ? 'end' : 'start'}
             className="w-[100vw] md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
                 type="text"
+                dir={isRTL ? 'rtl' : 'ltr'}
                 placeholder="Search for an asset"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="p-2 focus:outline-none w-full text-left text-white text-sm"
+                className={cn(
+                  'p-2 focus:outline-none w-full text-left text-white text-sm',
+                  isRTL && 'text-right'
+                )}
               />
             </div>
             <ToggleGroup
-              className="flex items-center bg-white/5 justify-between w-full"
+              className={cn(
+                'flex items-center bg-white/5 justify-between w-full',
+                isRTL && 'flex-row-reverse'
+              )}
               type="single"
               value={selectedTab}
               onValueChange={(value) => {
@@ -253,7 +260,10 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
               {TABS.map((tab) => (
                 <ToggleGroupItem
                   className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    'cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    isRTL
+                      ? 'first:rounded-r-md last:rounded-l-md'
+                      : 'first:rounded-l-md last:rounded-r-md',
                     selectedTab === tab.label
                       ? '!bg-primary !text-white'
                       : 'bg-transparent text-white/50'
@@ -267,6 +277,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
               ))}
             </ToggleGroup>
             <PerpsTable
+              isRTL={isRTL}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}

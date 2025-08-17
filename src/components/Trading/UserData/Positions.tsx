@@ -49,9 +49,10 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
 interface IPositionsProps {
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
-const Positions = ({ setSelectedAsset }: IPositionsProps) => {
+const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
   const { isConnected } = useAccount()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -95,12 +96,14 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
     () => [
       helper.accessor('coin', {
         id: 'coin',
-        header: 'Position',
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>Position</span>,
         cell: (info) => {
           const coin = info.getValue()
           const { leverage } = info.row.original
           return (
-            <div className="flex items-center justify-start gap-2">
+            <div
+              className={cn('flex items-center justify-start gap-2', isRTL && 'flex-row-reverse')}
+            >
               <Button
                 variant="link"
                 size="defaultLink"
@@ -127,7 +130,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: 'Value',
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>Value</span>,
         meta: { label: 'Position Value' },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
@@ -409,7 +412,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       <Table>
         <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -421,9 +424,13 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                   className={cn(
                     'cursor-pointer flex-1',
                     header.id === 'coin'
-                      ? 'justify-start'
-                      : header.id === 'tp_sl'
+                      ? isRTL
                         ? 'justify-end'
+                        : 'justify-start'
+                      : header.id === 'tp_sl'
+                        ? isRTL
+                          ? 'justify-start'
+                          : 'justify-end'
                         : 'justify-center',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
@@ -454,16 +461,20 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
         </TableHeader>
         <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cn(
-                    'font-medium text-white text-xs first:text-left text-right',
+                    'font-medium text-white text-xs',
                     cell.column.id === 'coin'
-                      ? 'text-start justify-start'
+                      ? isRTL
+                        ? 'text-right'
+                        : 'text-left'
                       : cell.column.id === 'tp_sl'
-                        ? 'text-end justify-end'
+                        ? isRTL
+                          ? 'text-left'
+                          : 'text-right'
                         : 'text-center justify-center'
                   )}
                 >

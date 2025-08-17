@@ -58,20 +58,20 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       {
         header: isRTL ? `(${positionsCount}) Positions` : `Positions (${positionsCount})`,
         count: positionsCount,
-        element: <Positions setSelectedAsset={setSelectedAsset || (() => {})} />
+        element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: isRTL ? `(${openOrdersLength}) Open Orders` : `Open Orders (${openOrdersLength})`,
         count: openOrdersLength,
-        element: <OpenOrders />
+        element: <OpenOrders isRTL={isRTL} />
       },
       {
         header: 'Trade History',
-        element: <TradeHistory />
+        element: <TradeHistory isRTL={isRTL} />
       },
       {
         header: 'Orders History',
-        element: <OrderHistory />
+        element: <OrderHistory isRTL={isRTL} />
       }
     ]
     return isRTL ? tabs.reverse() : tabs

@@ -103,7 +103,7 @@ const columns = [
   })
 ]
 
-const TradeHistoryTable: React.FC = () => {
+const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { address, isConnected } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
@@ -242,9 +242,9 @@ const TradeHistoryTable: React.FC = () => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
-        <TableHeader className="sticky top-0 bg-secondary">
+        <TableHeader className={cn('sticky top-0 bg-secondary', isRTL && 'flex-row-reverse')}>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -255,7 +255,13 @@ const TradeHistoryTable: React.FC = () => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'timestamp' ? 'justify-start' : 'justify-end',
+                    header.id === 'timestamp'
+                      ? isRTL
+                        ? 'justify-end'
+                        : 'justify-start'
+                      : isRTL
+                        ? 'justify-start'
+                        : 'justify-end',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -285,11 +291,14 @@ const TradeHistoryTable: React.FC = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="font-medium text-white text-xs first:text-left text-right"
+                  className={cn(
+                    'font-medium text-white text-xs',
+                    isRTL ? 'first:text-right text-left' : 'first:text-left text-right'
+                  )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

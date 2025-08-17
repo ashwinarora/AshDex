@@ -36,7 +36,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
-const OpenOrders = () => {
+const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const { isConnected } = useAccount()
   const { sdkL1ActionClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -112,7 +112,10 @@ const OpenOrders = () => {
           <Button
             onClick={() => openAgentModal()}
             variant="link"
-            className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+            className={cn(
+              'p-0 h-fit text-xs w-full flex items-center gap-1',
+              isRTL ? 'justify-start' : 'justify-end'
+            )}
           >
             Enable Trading
           </Button>
@@ -121,7 +124,10 @@ const OpenOrders = () => {
         <Button
           onClick={() => handleCancelOrder(row)}
           variant="link"
-          className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+          className={cn(
+            'p-0 h-fit text-xs w-full flex items-center gap-1',
+            isRTL ? 'justify-start' : 'justify-end'
+          )}
         >
           Cancel
         </Button>
@@ -186,7 +192,7 @@ const OpenOrders = () => {
 
   const renderCancelAllButton = useCallback(() => {
     return (
-      <div className="flex items-center justify-end gap-2">
+      <div className={cn('flex items-center justify-end gap-2', isRTL && 'flex-row-reverse')}>
         <span className="text-white/50 text-xs">Action</span>
         <Button
           onClick={() => {
@@ -374,7 +380,7 @@ const OpenOrders = () => {
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -385,7 +391,13 @@ const OpenOrders = () => {
                   }}
                   className={cn(
                     'cursor-pointer hover:text-accent-foreground',
-                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
+                    header.id === 'timestamp'
+                      ? isRTL
+                        ? 'justify-end !w-36'
+                        : 'justify-start !w-36'
+                      : isRTL
+                        ? 'justify-start flex-2'
+                        : 'justify-end flex-2',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
                       : 'text-white/50'
@@ -412,15 +424,19 @@ const OpenOrders = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cn(
-                    'font-medium text-white text-xs first:text-left text-right',
+                    'font-medium text-white text-xs',
                     cell.column.id === 'timestamp'
-                      ? 'justify-start text-start !w-36'
-                      : 'justify-end text-end flex-2'
+                      ? isRTL
+                        ? 'justify-end !w-36'
+                        : 'justify-start !w-36'
+                      : isRTL
+                        ? 'justify-start flex-2'
+                        : 'justify-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

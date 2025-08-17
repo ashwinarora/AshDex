@@ -43,7 +43,7 @@ type RenderRowProps = {
   columns: ColumnType[]
 }
 
-const OrderHistoryTable: React.FC = () => {
+const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { address, isConnected } = useAccount()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -181,10 +181,24 @@ const OrderHistoryTable: React.FC = () => {
       }),
       columnHelper.accessor('status', {
         id: 'status',
-        header: () => 'Status',
+        header: () => (
+          <div
+            className={cn(
+              'flex !w-full justify-end items-center gap-2',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
+            Status
+          </div>
+        ),
         cell: (info) => {
           return (
-            <div className="flex w-full justify-end items-center gap-2">
+            <div
+              className={cn(
+                'flex !w-full justify-end items-center gap-2',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               {info.getValue() === 'filled' ? (
                 <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">
                   Filled
@@ -208,25 +222,6 @@ const OrderHistoryTable: React.FC = () => {
               )}
             </div>
           )
-          // <div></div>
-          // if (info.getValue() === 'filled') {
-          //   return <div className="bg-green/10 px-2 py-0.5 rounded-lg text-end  text-green text-xs w-fit">Filled</div>
-          // } else if (info.getValue() === 'rejected') {
-          //   return <div className="bg-red/10 px-2 py-0.5 rounded-lg text-end  text-red text-xs w-fit">Rejected</div>
-          // } else if (info.getValue() === 'canceled') {
-          //   return (
-          //     <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
-          //       Canceled
-          //     </div>
-          //   )
-          // } else if (info.getValue() === 'open') {
-          //   return (
-          //     <div className="bg-yellow-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-yellow-500 text-xs">
-          //       Open
-          //     </div>
-          //   )
-          // }
-          // return <p className=" ">{info.getValue()}</p>
         },
         enableSorting: true,
         meta: { label: 'Status' }
@@ -302,7 +297,7 @@ const OrderHistoryTable: React.FC = () => {
       <Table>
         <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -313,7 +308,13 @@ const OrderHistoryTable: React.FC = () => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
+                    header.id === 'timestamp' || header.id === 'status'
+                      ? isRTL
+                        ? 'justify-end !w-36'
+                        : 'justify-start !w-36'
+                      : isRTL
+                        ? 'justify-start flex-2'
+                        : 'justify-end flex-2',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -343,15 +344,19 @@ const OrderHistoryTable: React.FC = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cn(
-                    'font-medium text-white text-xs first:text-left text-right',
-                    cell.column.id === 'timestamp'
-                      ? 'justify-start text-start !w-36'
-                      : 'justify-end text-end flex-2'
+                    'font-medium text-white text-xs',
+                    cell.column.id === 'timestamp' || cell.column.id === 'status'
+                      ? isRTL
+                        ? 'justify-end text-end !w-36'
+                        : 'justify-start text-start !w-36'
+                      : isRTL
+                        ? 'justify-start text-start flex-2'
+                        : 'justify-end text-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -24,7 +24,7 @@ const FavoriteStrip = ({
   isRTL: boolean
 }) => {
   const isSpot = useIsSpot()
-  const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
+  const { favorites, displayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
 
   const scrollRight = () => {
@@ -77,8 +77,8 @@ const FavoriteStrip = ({
                 <FavoriteItem assetKey={favorite} />
                 {index !==
                   (isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).length - 1 && (
-                    <Separator orientation="vertical" className="!h-full last:hidden" />
-                  )}
+                  <Separator orientation="vertical" className="!h-full last:hidden" />
+                )}
               </Fragment>
             )
           )}

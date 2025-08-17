@@ -123,7 +123,9 @@ const Trading = () => {
             }}
           >
             <DrawerContent className="w-full h-full bg-secondary">
-              {mobileState.secondToggle === 'trade' && <PlaceOrder selectedAsset={selectedAsset} />}
+              {mobileState.secondToggle === 'trade' && (
+                <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
+              )}
               {mobileState.secondToggle === 'overview' && <OverviewBox isRTL={isRTL} />}
             </DrawerContent>
           </Drawer>
@@ -201,7 +203,7 @@ const Trading = () => {
                   </div>
                   <Separator orientation="vertical" className="mx-1" />
                   <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 ">
-                    <PlaceOrder selectedAsset={selectedAsset} />
+                    <PlaceOrder isRTL={isRTL} selectedAsset={selectedAsset} />
                   </div>
                 </div>
               )}
