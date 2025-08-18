@@ -1,227 +1,227 @@
 {
-    "header":{
-        "nav":{
-            "futures":{
-                "en": "Futures",
-                "ae": ""
-            },
-            "spot":{
-                "en": "Spot",
-                "ae": ""
-            },
-            "portfolio":{
-                "en": "Portfolio",
-                "ae": ""
-            },
-            "referrals":{
-                "en": "Referrals",
-                "ae": ""
-            },
-            "bridge":{
-                "en": "Bridge",
-                "ae": ""
-            },
-            "connect":{
-                "en": "Connect Wallet",
-                "ae": ""
-            }
-        },
-        "dropdown":{
-            "copy":{
-                "en": "Copy Address",
-                "ae": ""
-            },
-            "switch":{
-                "en": "Switch Wallet",
-                "ae": ""
-            },
-            "settings":{
-                "en": "Settings",
-                "ae": ""
-            },
-            "withdraw":{
-                "en": "Withdraw",
-                "ae": ""
-            },
-            "disconnect":{
-                "en": "Disconnect",
-                "ae": ""
-            }
-        }
+  "header": {
+    "nav": {
+      "futures": {
+        "en": "Futures",
+        "ae": ""
+      },
+      "spot": {
+        "en": "Spot",
+        "ae": ""
+      },
+      "portfolio": {
+        "en": "Portfolio",
+        "ae": ""
+      },
+      "referrals": {
+        "en": "Referrals",
+        "ae": ""
+      },
+      "bridge": {
+        "en": "Bridge",
+        "ae": ""
+      },
+      "connect": {
+        "en": "Connect Wallet",
+        "ae": ""
+      }
     },
-    "footer":{
-        "status":{
-            "online":{
-                "en": "Online",
-                "ae": ""
-            },
-            "offline":{
-                "en": "Offline",
-                "ae": ""
-            }
-        },
-        "nav":{
-            "docs":{
-                "en": "Docs",
-                "ae": ""
-            },
-            "support":{
-                "en": "Support",
-                "ae": ""
-            },
-            "terms":{
-                "en": "Terms",
-                "ae": ""
-            },
-            "privacy":{
-                "en": "Privacy",
-                "ae": ""
-            }
-        },
-        "social":{
-            "discord":{
-                "en": "Discord",
-                "ae": ""
-            },
-            "twitter":{
-                "en": "Twitter",
-                "ae": ""
-            },
-            "telegram":{
-                "en": "Telegram",
-                "ae": ""
-            },
-            "youtube":{
-                "en": "YouTube",
-                "ae": ""
-            },
-            "instagram":{
-                "en": "Instagram",
-                "ae": ""
-            },
-            "facebook":{
-                "en": "Facebook",
-                "ae": ""
-            },
-            "linkedin":{
-                "en": "LinkedIn",
-                "ae": ""
-            },
-            "github":{
-                "en": "GitHub",
-                "ae": ""
-            },
-            "medium":{
-                "en": "Medium",
-                "ae": ""
-            },
-            "reddit":{
-                "en": "Reddit",
-                "ae": ""
-            },
-            "x":{
-                "en": "X",
-                "ae": ""
-            },
-            "tiktok":{
-                "en": "TikTok",
-                "ae": ""
-            }
-        }
-    },
-    "futures":{},
-    "spot":{},
-    "portfolio":{},
-    "dialogs":{
-        "onboarding":{
-            "indicators":{
-                "1":{
-                    "en": "1",
-                    "ae": ""
-                },
-                "2":{
-                    "en": "2",
-                    "ae": ""
-                },
-                "3":{
-                    "en": "3",
-                    "ae": ""
-                },
-                "4":{
-                    "en": "4",
-                    "ae": ""
-                }
-            },
-            "buttons":{
-                "next":{
-                    "en": "Next",
-                    "ae": ""
-                },
-                "skip":{
-                    "en": "Skip",
-                    "ae": ""
-                },
-                "start":{
-                    "en": "Start Exploring",
-                    "ae": ""
-                }
-            },
-            "step1":{
-                "title":{
-                    "en": "Connect your wallet",
-                    "ae": ""
-                },
-                "subtitle":{
-                    "en": "The Future of DeFi is Here.",
-                    "ae": ""
-                },
-                "description":{
-                    "en": "A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.",
-                    "ae": ""
-                }
-            },
-            "step2":{
-                "title":{
-                    "en": "Trade with Deep Liquidity",
-                    "ae": ""
-                },
-                "subtitle":{
-                    "en": "Perpetual & Spot Trading, Fully On-Chain.",
-                    "ae": ""
-                },
-                "description":{
-                    "en": "Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.",
-                    "ae": ""
-                }
-            },
-            "step3":{
-                "title":{
-                    "en": "Earn, Borrow & Stake Securely",
-                    "ae": ""
-                },
-                "subtitle":{
-                    "en": "Decentralized Lending, Borrowing & Staking.",
-                    "ae": ""
-                },
-                "description":{
-                    "en": "Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.",
-                    "ae": ""
-                }
-            },
-            "step4":{
-                "title":{
-                    "en": "Predict & Get Rewarded",
-                    "ae": ""
-                },
-                "subtitle":{
-                    "en": "A Transparent, On-Chain Prediction Market.",
-                    "ae": ""
-                },
-                "description":{
-                    "en": "Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.",
-                    "ae": ""
-                }
-            }
-        }
+    "dropdown": {
+      "copy": {
+        "en": "Copy Address",
+        "ae": ""
+      },
+      "switch": {
+        "en": "Switch Wallet",
+        "ae": ""
+      },
+      "settings": {
+        "en": "Settings",
+        "ae": ""
+      },
+      "withdraw": {
+        "en": "Withdraw",
+        "ae": ""
+      },
+      "disconnect": {
+        "en": "Disconnect",
+        "ae": ""
+      }
     }
+  },
+  "footer": {
+    "status": {
+      "online": {
+        "en": "Online",
+        "ae": ""
+      },
+      "offline": {
+        "en": "Offline",
+        "ae": ""
+      }
+    },
+    "nav": {
+      "docs": {
+        "en": "Docs",
+        "ae": ""
+      },
+      "support": {
+        "en": "Support",
+        "ae": ""
+      },
+      "terms": {
+        "en": "Terms",
+        "ae": ""
+      },
+      "privacy": {
+        "en": "Privacy",
+        "ae": ""
+      }
+    },
+    "social": {
+      "discord": {
+        "en": "Discord",
+        "ae": ""
+      },
+      "twitter": {
+        "en": "Twitter",
+        "ae": ""
+      },
+      "telegram": {
+        "en": "Telegram",
+        "ae": ""
+      },
+      "youtube": {
+        "en": "YouTube",
+        "ae": ""
+      },
+      "instagram": {
+        "en": "Instagram",
+        "ae": ""
+      },
+      "facebook": {
+        "en": "Facebook",
+        "ae": ""
+      },
+      "linkedin": {
+        "en": "LinkedIn",
+        "ae": ""
+      },
+      "github": {
+        "en": "GitHub",
+        "ae": ""
+      },
+      "medium": {
+        "en": "Medium",
+        "ae": ""
+      },
+      "reddit": {
+        "en": "Reddit",
+        "ae": ""
+      },
+      "x": {
+        "en": "X",
+        "ae": ""
+      },
+      "tiktok": {
+        "en": "TikTok",
+        "ae": ""
+      }
+    }
+  },
+  "futures": {},
+  "spot": {},
+  "portfolio": {},
+  "dialogs": {
+    "onboarding": {
+      "indicators": {
+        "1": {
+          "en": "1",
+          "ae": ""
+        },
+        "2": {
+          "en": "2",
+          "ae": ""
+        },
+        "3": {
+          "en": "3",
+          "ae": ""
+        },
+        "4": {
+          "en": "4",
+          "ae": ""
+        }
+      },
+      "buttons": {
+        "next": {
+          "en": "Next",
+          "ae": ""
+        },
+        "skip": {
+          "en": "Skip",
+          "ae": ""
+        },
+        "start": {
+          "en": "Start Exploring",
+          "ae": ""
+        }
+      },
+      "step1": {
+        "title": {
+          "en": "Connect your wallet",
+          "ae": ""
+        },
+        "subtitle": {
+          "en": "The Future of DeFi is Here.",
+          "ae": ""
+        },
+        "description": {
+          "en": "A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.",
+          "ae": ""
+        }
+      },
+      "step2": {
+        "title": {
+          "en": "Trade with Deep Liquidity",
+          "ae": ""
+        },
+        "subtitle": {
+          "en": "Perpetual & Spot Trading, Fully On-Chain.",
+          "ae": ""
+        },
+        "description": {
+          "en": "Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.",
+          "ae": ""
+        }
+      },
+      "step3": {
+        "title": {
+          "en": "Earn, Borrow & Stake Securely",
+          "ae": ""
+        },
+        "subtitle": {
+          "en": "Decentralized Lending, Borrowing & Staking.",
+          "ae": ""
+        },
+        "description": {
+          "en": "Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.",
+          "ae": ""
+        }
+      },
+      "step4": {
+        "title": {
+          "en": "Predict & Get Rewarded",
+          "ae": ""
+        },
+        "subtitle": {
+          "en": "A Transparent, On-Chain Prediction Market.",
+          "ae": ""
+        },
+        "description": {
+          "en": "Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.",
+          "ae": ""
+        }
+      }
+    }
+  }
 }
