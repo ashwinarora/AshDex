@@ -24,7 +24,7 @@ const FavoriteStrip = ({
   isRTL: boolean
 }) => {
   const isSpot = useIsSpot()
-  const { favorites, displayMode } = useFavorites(isSpot)
+  const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
 
   const scrollRight = () => {
