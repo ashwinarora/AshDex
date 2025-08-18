@@ -8,8 +8,11 @@ import { IconCash, IconTransfer } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import SpotToPerpTransferModal from '../Trading/UserData/component/transfers/spot-to-perp'
 import SpotToEvmTransferModal from '../Trading/UserData/component/transfers/spot-to-evm'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 const PortfolioHeader = () => {
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
   const { isMobile } = useScreenSize()
   const [isModalOpen, setIsModalOpen] = useState<{
     [key: string]: boolean
@@ -25,7 +28,7 @@ const PortfolioHeader = () => {
     return (
       <>
         <div className="flex flex-col gap-4 bg-secondary rounded-md items-start justify-between w-full h-fit p-4">
-          <h1 className="text-2xl text-white text-left">Portfolio</h1>
+          <h1 className="text-2xl text-white text-start">Portfolio</h1>
           <div className="flex flex-wrap gap-2">
             <Button
               className="flex-1 w-full"
@@ -105,9 +108,14 @@ const PortfolioHeader = () => {
 
   return (
     <>
-      <div className="flex gap-4 bg-secondary rounded-md items-center justify-between w-full h-fit p-4">
+      <div
+        className={cn(
+          'flex gap-4 bg-secondary rounded-md items-center justify-between w-full h-fit p-4',
+          isRTL && 'flex-row-reverse'
+        )}
+      >
         <h1 className="text-3xl font-semibold text-white">Portfolio</h1>
-        <div className="flex gap-2">
+        <div className={cn('flex gap-2', isRTL && 'flex-row-reverse')}>
           <Button
             className="w-32"
             onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}

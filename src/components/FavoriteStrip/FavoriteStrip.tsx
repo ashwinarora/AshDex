@@ -15,6 +15,7 @@ import {
 } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 import clsx from 'clsx'
+import { cn } from '@/lib/utils'
 
 const FavoriteStrip = ({
   setSelectedAsset,
@@ -57,7 +58,12 @@ const FavoriteStrip = ({
   console.log('displayMode', displayMode)
 
   return (
-    <div className="flex bg-secondary p-1 rounded-md w-full !h-10 pr-32 relative overflow-hidden">
+    <div
+      className={cn(
+        'flex bg-secondary p-1 rounded-md w-full !h-10 relative overflow-hidden',
+        isRTL ? 'flex-row-reverse pl-32' : 'pr-32'
+      )}
+    >
       <div
         ref={favoriteStripRef}
         className="flex w-fit items-center gap-4 overflow-x-auto no-scrollbar"

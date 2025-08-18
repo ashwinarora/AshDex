@@ -14,6 +14,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
+  DialogHeader,
   DialogTitle,
   DialogTrigger
 } from '../ui/dialog'
@@ -21,11 +22,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { Separator } from '../ui/separator'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { formatWithKMB } from '@/utils/format'
+import { cn } from '@/lib/utils'
 
 const PortfolioFeeCard = ({
   userFeeData,
   selectedView,
-  setSelectedView
+  setSelectedView,
+  isRTL
 }: {
   userFeeData: UserFees | undefined
   selectedView: { [key: string]: 'perps' | 'all' | 'day' | 'month' | 'week' | 'alltime' }
@@ -34,6 +37,7 @@ const PortfolioFeeCard = ({
       [key: string]: 'perps' | 'all' | 'day' | 'month' | 'week' | 'alltime'
     }>
   >
+  isRTL: boolean
 }) => {
   const feeTier = userFeeData?.feeSchedule.stakingDiscountTiers.map((tier) => ({
     stakedHype: parseFloat(tier.bpsOfMaxSupply) * 100000,
@@ -45,8 +49,13 @@ const PortfolioFeeCard = ({
   )
 
   return (
-    <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4">
-      <div className="flex items-center justify-between w-full">
+    <div
+      className={cn(
+        'flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4',
+        isRTL && 'items-end'
+      )}
+    >
+      <div className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}>
         <h2>Fees (Taker/Maker)</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -55,7 +64,7 @@ const PortfolioFeeCard = ({
               <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start">
+          <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}>
               <p>Perps</p>
             </DropdownMenuItem>
@@ -82,15 +91,29 @@ const PortfolioFeeCard = ({
             View Fee Schedule
           </p>
         </DialogTrigger>
-        <DialogContent className="min-w-11/12 md:min-w-xl">
-          <DialogTitle>Fee Schedule</DialogTitle>
-          <DialogDescription className="text-xs">
-            If you have staked HYPE, you might be eligible for a lower fee tier. Choose how much
-            you&apos;ve staked below to see your current tier.
-          </DialogDescription>
+        <DialogContent isRTL={isRTL} className="min-w-11/12 md:min-w-xl">
+          <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
+            <DialogTitle>Fee Schedule</DialogTitle>
+            <DialogDescription className={cn('text-xs', isRTL ? 'text-end' : 'text-start')}>
+              If you have staked HYPE, you might be eligible for a lower fee tier. Choose how much
+              you&apos;ve staked below to see your current tier.
+            </DialogDescription>
+          </DialogHeader>
           <div className="flex flex-col items-center justify-between h-fit w-full max-w-full gap-2">
-            <div className="flex items-center justify-between w-full">
-              <p className="text-sm text-muted-foreground w-full text-left">HYPE Staked:</p>
+            <div
+              className={cn(
+                'flex items-center justify-between w-full',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
+              <p
+                className={cn(
+                  'text-sm text-muted-foreground w-full',
+                  isRTL ? 'text-end' : 'text-start'
+                )}
+              >
+                HYPE Staked:
+              </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -114,38 +137,86 @@ const PortfolioFeeCard = ({
               </DropdownMenu>
             </div>
             <Separator className="w-full mb-2" />
-            <h1 className="text-white/50 w-full text-left">Fee Tier</h1>
+            <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
+              Fee Tier
+            </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl  md:w-full h-full">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-full">Tier</TableHead>
-                    <TableHead className="w-full text-right justify-end">14D Volume</TableHead>
-                    <TableHead className="w-full justify-end">Perps Taker</TableHead>
-                    <TableHead className="w-full justify-end">Perps Maker</TableHead>
-                    <TableHead className="w-full justify-end">Spot Taker</TableHead>
-                    <TableHead className="w-full justify-end">Spot Maker</TableHead>
+                  <TableRow className={cn(isRTL ? 'flex-row-reverse' : '')}>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-end' : 'w-full justify-start')}
+                    >
+                      Tier
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      14D Volume
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      Perps Taker
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      Perps Maker
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      Spot Taker
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      Spot Maker
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {userFeeData && (
-                    <TableRow>
-                      <TableCell className="w-full">{0}</TableCell>
-                      <TableCell className="text-right w-full">{'< $5M'}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(userFeeData?.feeSchedule.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                    <TableRow className={cn(isRTL ? 'flex-row-reverse' : '')}>
+                      <TableCell className={cn(isRTL ? 'text-end' : 'text-start')}>{0}</TableCell>
+                      <TableCell className={cn(isRTL ? 'text-start' : 'text-end')}>
+                        {'< $5M'}
+                      </TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(userFeeData?.feeSchedule.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(userFeeData?.feeSchedule.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(userFeeData?.feeSchedule.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(userFeeData?.feeSchedule.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
                     </TableRow>
                   )}
                   {userFeeData?.feeSchedule.tiers.vip.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="w-full">{index + 1}</TableCell>
-                      <TableCell className="text-right w-full">{`> $${formatWithKMB(parseFloat(item.ntlCutoff))}`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(item.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(item.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(item.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
-                      <TableCell className="text-right w-full">{`${(parseFloat(item.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                    <TableRow key={index} className={cn(isRTL ? 'flex-row-reverse' : '')}>
+                      <TableCell className={cn(isRTL ? 'text-end' : 'text-start')}>
+                        {index + 1}
+                      </TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`> $${formatWithKMB(parseFloat(item.ntlCutoff))}`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(item.cross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(item.add) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(item.spotCross) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
+                      <TableCell
+                        className={cn(isRTL ? 'text-start' : 'text-end')}
+                      >{`${(parseFloat(item.spotAdd) * (1 - hypeStaked.discount) * 100).toFixed(3)}%`}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -153,26 +224,40 @@ const PortfolioFeeCard = ({
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
             <Separator className="w-full mb-2" />
-            <h1 className="text-white/50 w-full text-left">Maker Rebate Fee</h1>
+            <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
+              Maker Rebate Fee
+            </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl md:w-full h-full">
               <Table>
                 <TableHeader>
-                  <TableRow>
-                    <TableHead className="w-full flex-1">Tier</TableHead>
-                    <TableHead className="w-full flex-1 text-center justify-center">
+                  <TableRow className={cn(isRTL ? 'flex-row-reverse' : '')}>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-end' : 'w-full justify-start')}
+                    >
+                      Tier
+                    </TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
                       14D Maker Volume Share
                     </TableHead>
-                    <TableHead className="w-full flex-1 justify-end">Maker</TableHead>
+                    <TableHead
+                      className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
+                    >
+                      Maker
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {userFeeData?.feeSchedule.tiers.mm.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="w-full flex-1">{index + 1}</TableCell>
-                      <TableCell className="w-full flex-1 text-center justify-center">
+                    <TableRow key={index} className={cn(isRTL ? 'flex-row-reverse' : '')}>
+                      <TableCell className={cn(isRTL ? 'text-end' : 'text-start')}>
+                        {index + 1}
+                      </TableCell>
+                      <TableCell className={cn(isRTL ? 'text-start' : 'text-end')}>
                         {`${(parseFloat(item.makerFractionCutoff) * 100).toFixed(2)}%`}
                       </TableCell>
-                      <TableCell className="w-full flex-1 text-right justify-end">
+                      <TableCell className={cn(isRTL ? 'text-start' : 'text-end')}>
                         {`${(parseFloat(item.add) * 100).toFixed(3)}%`}
                       </TableCell>
                     </TableRow>
@@ -182,7 +267,12 @@ const PortfolioFeeCard = ({
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
           </div>
-          <DialogFooter className="text-xs flex w-full !flex-col text-center text-white/50">
+          <DialogFooter
+            className={cn(
+              'text-xs flex w-full !flex-col text-white/50',
+              isRTL ? 'text-end' : 'text-center'
+            )}
+          >
             <Separator className="w-full mb-2" />
             <p>
               Perps and spot volume are counted together to determine your fee tier, and spot volume

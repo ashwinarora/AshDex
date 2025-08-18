@@ -16,6 +16,7 @@ import { PortfolioCalendar } from './PortfolioCalendar'
 import { UseQueryResult } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { formatWithKMB } from '@/utils/format'
+import { cn } from '@/lib/utils'
 
 const chartConfig = {
   accountValue: {
@@ -24,9 +25,11 @@ const chartConfig = {
 } satisfies ChartConfig
 
 const PortfolioChart = ({
-  portfolioQuery
+  portfolioQuery,
+  isRTL
 }: {
   portfolioQuery: UseQueryResult<PortfolioPeriods | undefined, Error>
+  isRTL: boolean
 }) => {
   const [selectedChart, setSelectedChart] = useState<{
     pnlType: 'unrealized' | 'realized' | 'total'
@@ -94,11 +97,16 @@ const PortfolioChart = ({
 
   return (
     <div className="w-full h-full flex flex-col gap-2 p-2">
-      <div className="w-full h-fit shrink-0 flex gap-2 flex-col sm:flex-row items-center justify-between">
+      <div
+        className={cn(
+          'w-full h-fit shrink-0 flex gap-2 flex-col sm:flex-row items-center justify-between',
+          isRTL && 'sm:flex-row-reverse'
+        )}
+      >
         <ToggleGroup
           size="sm"
           type="single"
-          className="bg-secondary rounded-md w-full sm:w-fit"
+          className={cn('bg-secondary rounded-md w-full sm:w-fit', isRTL ? 'flex-row-reverse' : '')}
           value={selectedChart.type}
           onValueChange={(value) => {
             if (value === '') {
@@ -107,17 +115,28 @@ const PortfolioChart = ({
             setSelectedChart((prev) => ({ ...prev, type: value as 'area' | 'calendar' }))
           }}
         >
-          <ToggleGroupItem className="w-32 rounded-l-md bg-white/5" value="area">
+          <ToggleGroupItem
+            className={cn('w-32 bg-white/5', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
+            value="area"
+          >
             <IconTimeline className="size-4" />
             Performance
           </ToggleGroupItem>
-          <ToggleGroupItem className="w-32 rounded-r-md bg-white/5" value="calendar">
+          <ToggleGroupItem
+            className={cn('w-32 bg-white/5', isRTL ? 'rounded-l-md' : 'rounded-r-md')}
+            value="calendar"
+          >
             <IconCalendarWeek className="size-4" />
             Calendar
           </ToggleGroupItem>
         </ToggleGroup>
         {selectedChart.type === 'area' ? (
-          <div className="flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start">
+          <div
+            className={cn(
+              'flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start',
+              isRTL ? 'flex-row-reverse' : ''
+            )}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
@@ -310,7 +329,11 @@ const PortfolioChart = ({
         )}
         {selectedChart.type === 'calendar' && (
           <div className="w-full h-full overflow-y-auto">
-            <PortfolioCalendar calendarData={displayCalendarData} pnlType={selectedChart.pnlType} />
+            <PortfolioCalendar
+              calendarData={displayCalendarData}
+              pnlType={selectedChart.pnlType}
+              isRTL={isRTL}
+            />
           </div>
         )}
       </div>

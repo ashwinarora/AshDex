@@ -110,7 +110,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <IconChevronDown className="size-3" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
             {availableOptions.map((option) => (
               <DropdownMenuItem
                 className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
