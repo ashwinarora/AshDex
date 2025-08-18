@@ -469,12 +469,12 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                     'font-medium text-white text-xs',
                     cell.column.id === 'coin'
                       ? isRTL
-                        ? 'text-right'
-                        : 'text-left'
+                        ? 'text-end'
+                        : 'text-start'
                       : cell.column.id === 'tp_sl'
                         ? isRTL
-                          ? 'text-left'
-                          : 'text-right'
+                          ? 'text-start'
+                          : 'text-end'
                         : 'text-center justify-center'
                   )}
                 >

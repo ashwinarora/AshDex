@@ -294,18 +294,18 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                     <ReactiveText
                       precision={0}
                       type="number"
-                      className="text-left text-xs flex-1"
+                      className="text-start text-xs flex-1"
                       value={Number(buy.px) * Number(buy.cumulative)}
                     />
                   ) : (
                     <ReactiveText
                       precision={4}
                       type="number"
-                      className="text-left text-xs flex-1"
+                      className="text-start text-xs flex-1"
                       value={Number(buy.cumulative)}
                     />
                   )}
-                  <p className="font-medium text-xs flex-1 text-right text-green">{buy.px}</p>
+                  <p className="font-medium text-xs flex-1 text-end text-green">{buy.px}</p>
                 </div>
                 <div className="absolute last:rounded-b-md md:last:rounded-b-none flex items-center justify-end top-0 z-0 left-0 w-full h-full">
                   <div
@@ -325,20 +325,20 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               .map((sell, index) => (
                 <div className="relative  h-full w-full py-1 px-2 flex items-center" key={index}>
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                    <p className="font-medium text-xs text-left flex-1 text-red">{sell.px}</p>
+                    <p className="font-medium text-xs text-start flex-1 text-red">{sell.px}</p>
                     {/* <p className="font-medium text-xs">{sell.sz}</p> */}
                     {showPriceInUSD ? (
                       <ReactiveText
                         precision={3}
                         type="number"
-                        className="text-right flex-1 text-xs"
+                        className="text-end flex-1 text-xs"
                         value={Number(sell.px) * Number(sell.cumulative)}
                       />
                     ) : (
                       <ReactiveText
                         precision={4}
                         type="number"
-                        className="text-right flex-1 text-xs"
+                        className="text-end flex-1 text-xs"
                         value={Number(sell.cumulative)}
                       />
                     )}
@@ -467,11 +467,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       <div
         className={clsx('flex items-center justify-between px-2', isRTL ? 'flex-row-reverse' : '')}
       >
-        <p className="font-medium text-xs text-left">Price </p>
+        <p className="font-medium text-xs text-start">Price </p>
         <p className="font-medium text-xs text-center flex-1">
           Amount ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
-        <p className="font-medium text-xs text-right">
+        <p className="font-medium text-xs text-end">
           Total ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
@@ -514,7 +514,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   <p
                     className={clsx(
                       'font-medium text-xs flex-1 text-red',
-                      isRTL ? 'text-right' : 'text-left'
+                      isRTL ? 'text-end' : 'text-start'
                     )}
                   >
                     {sell.px}
@@ -524,14 +524,14 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                     <ReactiveText
                       precision={3}
                       type="number"
-                      className={clsx('flex-1 text-xs', isRTL ? 'text-left' : 'text-right')}
+                      className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                       value={Number(sell.px) * Number(sell.cumulative)}
                     />
                   ) : (
                     <ReactiveText
                       precision={4}
                       type="number"
-                      className={clsx('flex-1 text-xs', isRTL ? 'text-left' : 'text-right')}
+                      className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                       value={Number(sell.cumulative)}
                     />
                   )}
@@ -571,7 +571,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               )}
             </p>
             <p className="">{isNaN(spread) ? '-' : spread}</p>
-            <p className={clsx('flex-1', isRTL ? 'text-left' : 'text-right')}>
+            <p className={clsx('flex-1', isRTL ? 'text-start' : 'text-end')}>
               {isNaN(spread) || !allMids[selectedAsset]
                 ? '-'
                 : ((Number(spread) / Number(allMids[selectedAsset])) * 100).toFixed(3)}
@@ -589,7 +589,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 <p
                   className={clsx(
                     'font-medium text-xs flex-1 text-green',
-                    isRTL ? 'text-right' : 'text-left'
+                    isRTL ? 'text-end' : 'text-start'
                   )}
                 >
                   {buy.px}
@@ -599,14 +599,14 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   <ReactiveText
                     precision={0}
                     type="number"
-                    className={clsx('flex-1 text-xs', isRTL ? 'text-left' : 'text-right')}
+                    className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                     value={Number(buy.px) * Number(buy.cumulative)}
                   />
                 ) : (
                   <ReactiveText
                     precision={4}
                     type="number"
-                    className={clsx('flex-1 text-xs', isRTL ? 'text-left' : 'text-right')}
+                    className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                     value={Number(buy.cumulative)}
                   />
                 )}

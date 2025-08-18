@@ -160,7 +160,7 @@ const AssetTable = ({
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-right">
+              <div className="text-end">
                 <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
               </div>
             )
@@ -178,8 +178,8 @@ const AssetTable = ({
             const className = isPositive ? 'text-green' : 'text-red'
             return (
               <div className="flex flex-col gap-1">
-                <div className="text-right text-white text-xs">${formattedPrice}</div>
-                <div className={`text-right text-xs ${className}`}>
+                <div className="text-end text-white text-xs">${formattedPrice}</div>
+                <div className={`text-end text-xs ${className}`}>
                   <div className="flex justify-end items-center">
                     {isPositive ? (
                       <IconTriangleFilled className="size-2 mr-1" />
@@ -263,7 +263,7 @@ const AssetTable = ({
             const price = info.getValue()
             const formattedPrice = formatPrice(price)
             return (
-              <div className={cn('text-white text-xs', isRTL ? 'text-left' : 'text-right')}>
+              <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>
                 ${formattedPrice}
               </div>
             )
@@ -279,7 +279,7 @@ const AssetTable = ({
             const isPositive = difference >= 0
             const className = isPositive ? 'text-green' : 'text-red'
             return (
-              <div className={cn('text-xs', isRTL ? 'text-left' : 'text-right', className)}>
+              <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
                 <div
                   className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
                 >
@@ -320,7 +320,7 @@ const AssetTable = ({
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className={cn(isRTL ? 'text-left' : 'text-right')}>
+              <div className={cn(isRTL ? 'text-start' : 'text-end')}>
                 <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
               </div>
             )
@@ -333,7 +333,7 @@ const AssetTable = ({
           cell: (info) => {
             const openInterest = info.getValue()
             return (
-              <div className={cn(isRTL ? 'text-left' : 'text-right')}>
+              <div className={cn(isRTL ? 'text-start' : 'text-end')}>
                 <ReactiveText
                   value={Number(openInterest || 0)}
                   className="text-xs text-white/50"

@@ -38,7 +38,7 @@ const MarketTable = () => {
             {columns?.map((col) => (
               <th
                 key={col?.key}
-                className="pt-3 pb-1 pr-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-1 pr-7 text-sm font-normal text-[#8B8BA0] text-start"
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image

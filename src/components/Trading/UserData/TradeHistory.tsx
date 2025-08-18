@@ -297,7 +297,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                   key={cell.id}
                   className={cn(
                     'font-medium text-white text-xs',
-                    isRTL ? 'first:text-right text-left' : 'first:text-left text-right'
+                    isRTL ? 'first:text-end text-start' : 'first:text-start text-end'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -238,8 +238,8 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn(
-                  'p-2 focus:outline-none w-full text-left text-white text-sm',
-                  isRTL && 'text-right'
+                  'p-2 focus:outline-none w-full text-start text-white text-sm',
+                  isRTL && 'text-end'
                 )}
               />
             </div>

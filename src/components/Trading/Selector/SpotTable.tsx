@@ -147,7 +147,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-right text-xs">
+              <div className="text-end text-xs">
                 <ReactiveText value={Number(volume || 0)} type="currency" />
               </div>
             )
@@ -165,8 +165,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
             const className = isPositive ? 'text-green' : 'text-red'
             return (
               <div className="flex flex-col gap-1">
-                <div className="text-right text-white text-xs">${formattedPrice}</div>
-                <div className={`text-right text-xs ${className}`}>
+                <div className="text-end text-white text-xs">${formattedPrice}</div>
+                <div className={`text-end text-xs ${className}`}>
                   <div className="flex justify-end items-center">
                     {isPositive ? (
                       <IconTriangleFilled className="size-2 mr-1" />
@@ -243,7 +243,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
           return (
-            <div className={cn('text-white text-xs', isRTL ? 'text-left' : 'text-right')}>
+            <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>
               ${formattedPrice}
             </div>
           )
@@ -260,7 +260,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
           const className = isPositive ? 'text-green' : 'text-red'
 
           return (
-            <div className={cn('text-xs', isRTL ? 'text-left' : 'text-right', className)}>
+            <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
               <div
                 className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
               >
@@ -299,7 +299,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
         cell: (info) => {
           const volume = info.getValue()
           return (
-            <div className={cn(isRTL ? 'text-left' : 'text-right')}>
+            <div className={cn(isRTL ? 'text-start' : 'text-end')}>
               <ReactiveText value={Number(volume || 0)} type="currency" />
             </div>
           )
@@ -312,7 +312,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
         cell: (info) => {
           const marketCap = info.getValue()
           return (
-            <div className={cn(isRTL ? 'text-left' : 'text-right')}>
+            <div className={cn(isRTL ? 'text-start' : 'text-end')}>
               <ReactiveText
                 className="text-white/50"
                 value={Number(marketCap || 0)}

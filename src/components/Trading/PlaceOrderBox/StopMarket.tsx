@@ -39,7 +39,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
           Stop Price
         </label>
         <Input
@@ -48,8 +48,8 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           value={stopPrice}
           onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
           className={cn(
-            'w-full text-right shrink-0 text-white placeholder:text-white',
-            isRTL && 'text-left'
+            'w-full text-end shrink-0 text-white placeholder:text-white',
+            isRTL && 'text-start'
           )}
         />
         <Separator orientation="horizontal" />

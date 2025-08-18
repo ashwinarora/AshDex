@@ -211,7 +211,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
               <Input
                 type="number"
                 value={price}
-                className="text-white flex-1 text-left h-9"
+                className="text-white flex-1 text-start h-9"
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder="Enter price"
               />
@@ -235,7 +235,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
               <Input
                 type="number"
                 value={size}
-                className="text-white flex-1 text-left h-9"
+                className="text-white flex-1 text-start h-9"
                 onChange={(e) => {
                   if (!perpsMeta) return
                   const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)

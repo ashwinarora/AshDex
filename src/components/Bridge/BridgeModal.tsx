@@ -832,7 +832,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
               <Input
                 type="number"
                 placeholder="0"
-                className="text-left text-white text-xs flex-2 w-full"
+                className="text-start text-white text-xs flex-2 w-full"
                 value={amount || ''}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -863,7 +863,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
               <Input
                 type="number"
                 placeholder="0"
-                className="text-left text-white text-xs"
+                className="text-start text-white text-xs"
                 value={amount || ''}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -882,7 +882,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 type="number"
                 placeholder="0"
                 className={cn(
-                  'text-left placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs w-full flex-2',
+                  'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs w-full flex-2',
                   isLoadingEstimate && 'animate-pulse'
                 )}
                 value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}
@@ -916,7 +916,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 type="number"
                 placeholder="0"
                 className={cn(
-                  'text-left placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs',
+                  'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs',
                   isLoadingEstimate && 'animate-pulse'
                 )}
                 value={isLoadingEstimate ? 'Calculating...' : estimatedReceiveAmount}

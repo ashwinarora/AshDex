@@ -121,7 +121,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 h-10"
+                    className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />

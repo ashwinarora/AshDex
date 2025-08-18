@@ -179,7 +179,7 @@ const SetPrice = ({
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={cn('w-full flex-1 text-white', isRTL ? 'text-left' : 'text-right')}
+        className={cn('w-full flex-1 text-white', isRTL ? 'text-start' : 'text-end')}
       />
       <Button
         variant="outline"

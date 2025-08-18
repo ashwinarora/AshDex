@@ -211,7 +211,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <DropdownMenu>
               <DropdownMenuTrigger disabled asChild>
@@ -244,7 +244,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               placeholder="0"
               value={endPrice}
               onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <Button
               variant="outline"
@@ -275,7 +275,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <DropdownMenu>
               <DropdownMenuTrigger disabled asChild>

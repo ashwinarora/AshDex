@@ -42,7 +42,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
           Stop Price
         </label>
         <Input
@@ -51,11 +51,11 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           value={stopPrice}
           onChange={(e) => setStopPrice(parseFloat(e.target.value) || 0)}
           className={cn(
-            'w-full shrink-0 text-right text-white placeholder:text-white',
-            isRTL && 'text-left'
+            'w-full shrink-0 text-end text-white placeholder:text-white',
+            isRTL && 'text-start'
           )}
         />
-        <label htmlFor="limitPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+        <label htmlFor="limitPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
           Limit Price
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -65,8 +65,8 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             value={limitPrice}
             onChange={(e) => handleLimitPriceChange(e)}
             className={cn(
-              'w-full flex-1 text-right text-white placeholder:text-white',
-              isRTL && 'text-left'
+              'w-full flex-1 text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
             )}
           />
           <Button variant={'outline'} size={'sm'} className="text-xs" disabled>

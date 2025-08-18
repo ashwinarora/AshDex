@@ -39,7 +39,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
         <div className="flex items-center justify-between mb-4">
-          <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
+          <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-start">
             <p className="text-sm mb-1.5 font-medium text-[#8B8BA0]">From</p>
             <p className="text-base font-medium text-white">Staking Balance</p>
             <p className="text-xs text-[#8B8BA0] font-medium">
@@ -49,7 +49,7 @@ const TransferModal: React.FC<TransferModalProps> = ({ isOpen, onClose }) => {
           <div className="mx-3">
             <Image src={arrowsorticon} alt="Swap" style={{ width: 17, height: 'auto' }} />
           </div>
-          <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-left">
+          <div className="flex-1 border-2 border-white/10 bg-gradient-to-b from-white/5 to-gray-500/5 px-4 py-3 rounded-xl text-start">
             <p className="text-sm mb-1.5 font-medium text-[#8B8BA0]">To</p>
             <p className="text-base font-medium text-white">Spot Balance</p>
             <p className="text-xs text-[#8B8BA0] font-medium">

@@ -196,7 +196,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             <div
               className={cn(
                 'flex !w-full justify-end items-center gap-2',
-                isRTL && 'flex-row-reverse'
+                isRTL && 'flex-row-reverse justify-start'
               )}
             >
               {info.getValue() === 'filled' ? (
@@ -217,7 +217,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                 </div>
               ) : (
                 <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
-                  {info.getValue()}
+                  {info.getValue().slice(0, 15)}...
                 </div>
               )}
             </div>

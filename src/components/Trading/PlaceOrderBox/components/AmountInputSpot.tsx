@@ -155,7 +155,7 @@ const AmountInputSpot = ({
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
-          className={cn('w-full text-white flex-1', isRTL ? 'text-left' : 'text-right')}
+          className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -262,7 +262,7 @@ const AmountInputSpot = ({
   //                 ? updateFromUsdAmount(e.target.value)
   //                 : updateFromAssetAmount(e.target.value)
   //             }
-  //             className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-right focus:none focus:none"
+  //             className="p-1.5 rounded-md focus:outline-none w-full font-medium text-sm text-end focus:none focus:none"
   //           />
   //           <select
   //             value={isInputUsd ? 'usdc' : 'asset'}
@@ -304,7 +304,7 @@ const AmountInputSpot = ({
   //             maxLength={3}
   //             minLength={1}
   //             readOnly={true}
-  //             className="px-2 py-1 outline-none w-10 h-8 text-xs text-right"
+  //             className="px-2 py-1 outline-none w-10 h-8 text-xs text-end"
   //             value={Number(usdPercent) || 0}
   //           />
   //           <IconPercentage className="mr-2 w-4 h-4" />

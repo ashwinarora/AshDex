@@ -117,7 +117,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             <Input
               type="number"
               value={amount}
-              className="h-10 text-left text-white"
+              className="h-10 text-start text-white"
               onChange={(e) => setAmount(e.target.value)}
               placeholder="Amount"
             />

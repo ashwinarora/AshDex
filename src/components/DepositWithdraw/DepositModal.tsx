@@ -115,7 +115,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 h-10"
+                    className="text-start flex-1 h-10"
                     value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
                     onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
                   />

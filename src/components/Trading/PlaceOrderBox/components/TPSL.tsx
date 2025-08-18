@@ -161,10 +161,10 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
       <div className="flex flex-col gap-2 w-full">
         <div className="flex flex-col w-full items-start gap-2">
           <div className="flex items-center w-full justify-between gap-2">
-            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
+            <span className="flex-1 text-start text-nowrap font-medium text-white/50 text-xs">
               TP Value
             </span>
-            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
+            <span className="flex-1 text-end text-nowrap font-medium text-white/50 text-xs">
               TP %
             </span>
           </div>
@@ -172,7 +172,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right flex-1"
+              className="text-white text-sm text-end flex-1"
               value={tpsl.takeProfit || ''}
               onChange={handleTakeProfitValueChange}
               placeholder="0.00"
@@ -180,7 +180,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right w-16"
+              className="text-white text-sm text-end w-16"
               value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
               onChange={handleTakeProfitPercentageChange}
               placeholder="0.00"
@@ -189,10 +189,10 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         </div>
         <div className="flex flex-col w-full items-start gap-2">
           <div className="flex items-center w-full justify-between gap-2">
-            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
+            <span className="flex-1 text-start text-nowrap font-medium text-white/50 text-xs">
               SL Value
             </span>
-            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
+            <span className="flex-1 text-end text-nowrap font-medium text-white/50 text-xs">
               SL %
             </span>
           </div>
@@ -200,7 +200,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right flex-1"
+              className="text-white text-sm text-end flex-1"
               value={tpsl.stopLoss || ''}
               onChange={handleStopLossValueChange}
               placeholder="0.00"
@@ -208,7 +208,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right w-16"
+              className="text-white text-sm text-end w-16"
               value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
               onChange={handleStopLossPercentageChange}
               placeholder="0.00"

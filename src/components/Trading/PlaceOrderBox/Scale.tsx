@@ -276,7 +276,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+        <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
           Start Price
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -286,8 +286,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             value={startPrice}
             onChange={(e) => setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
             className={cn(
-              'w-full text-right text-white placeholder:text-white',
-              isRTL && 'text-left'
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
             )}
           />
           <DropdownMenu>
@@ -313,7 +313,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+        <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
           End Price
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -323,8 +323,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             value={endPrice}
             onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
             className={cn(
-              'w-full text-right text-white placeholder:text-white',
-              isRTL && 'text-left'
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
             )}
           />
           <Button
@@ -341,7 +341,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         </div>
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
-          <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-right')}>
+          <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
             Total Size
           </label>
           <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
@@ -353,8 +353,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             value={totalUsd}
             onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
             className={cn(
-              'w-full text-right text-white placeholder:text-white',
-              isRTL && 'text-left'
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
             )}
           />
           <DropdownMenu>
@@ -398,7 +398,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Input
                 className={cn(
                   'flex-1 p-0 text-end text-white bg-transparent border-none',
-                  isRTL && 'text-left'
+                  isRTL && 'text-start'
                 )}
                 value={percent}
                 onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}

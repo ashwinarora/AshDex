@@ -283,7 +283,7 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
                   key={cell.id}
                   className={cn(
                     'font-medium text-white text-xs',
-                    isRTL ? 'text-left last:text-right' : 'first:text-left text-right'
+                    isRTL ? 'text-start last:text-end' : 'first:text-start text-end'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
