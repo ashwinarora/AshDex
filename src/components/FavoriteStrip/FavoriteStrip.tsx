@@ -3,10 +3,16 @@
 import { useFavorites } from '@/store/FavoritesStore'
 import FavoriteItem from './FavoriteItem'
 import useIsSpot from '@/hooks/useIsSpot'
-import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { ToggleGroup } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
 import { Fragment, useRef } from 'react'
-import { IconChevronLeft, IconChevronRight, IconStar } from '@tabler/icons-react'
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconCurrencyDollar,
+  IconPercentage,
+  IconStar
+} from '@tabler/icons-react'
 import { Button } from '../ui/button'
 
 const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string) => void }) => {
@@ -17,7 +23,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
   const scrollRight = () => {
     if (favoriteStripRef.current) {
       favoriteStripRef.current.scrollBy({
-        left: favoriteStripRef.current?.clientWidth - 96 || 0,
+        left: favoriteStripRef.current?.clientWidth - 128 || 0,
         behavior: 'smooth'
       })
     }
@@ -26,7 +32,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
   const scrollLeft = () => {
     if (favoriteStripRef.current) {
       favoriteStripRef.current.scrollBy({
-        left: -(favoriteStripRef.current?.clientWidth - 96 || 0),
+        left: -(favoriteStripRef.current?.clientWidth - 128 || 0),
         behavior: 'smooth'
       })
     }
@@ -44,34 +50,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
   console.log('displayMode', displayMode)
 
   return (
-    <div className="flex bg-secondary p-1 rounded-md w-full !h-10 pr-24 relative overflow-hidden">
-      {/* Toggle Selector Button */}
-      <div className="flex items-center gap-2 mr-3">
-        <ToggleGroup
-          type="single"
-          value={displayMode}
-          onValueChange={(value) => value && setDisplayMode(value as 'usd' | 'percent')}
-          variant="outline"
-          size="sm"
-          className="bg-gray-800 border-gray-600/30 rounded-md overflow-hidden ml-4"
-        >
-          <ToggleGroupItem
-            value="usd"
-            aria-label="USD"
-            className="px-3 py-1 text-sm font-medium text-white border-0 rounded-l-md rounded-r-none data-[state=on]:bg-white data-[state=on]:text-gray-900 data-[state=on]:border-white data-[state=on]:shadow-sm hover:bg-gray-700/50 transition-all duration-200"
-          >
-            $
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            value="percent"
-            aria-label="Percent"
-            className="px-3 py-1 text-sm font-medium text-white border-0 rounded-none data-[state=on]:bg-blue-500 data-[state=on]:text-white data-[state=on]:border-blue-500 data-[state=on]:shadow-sm hover:bg-gray-700/50 transition-all duration-200"
-          >
-            %
-          </ToggleGroupItem>
-        </ToggleGroup>
-      </div>
-
+    <div className="flex bg-secondary p-1 rounded-md w-full !h-10 pr-32 relative overflow-hidden">
       <div
         ref={favoriteStripRef}
         className="flex w-fit items-center gap-4 overflow-x-auto no-scrollbar"
@@ -95,7 +74,19 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
       </div>
       <div className="flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1">
         <Button onClick={scrollLeft} variant="outline" size="icon" className="h-full aspect-square">
-          <IconChevronLeft className="size-4 text-white/50" />
+          <IconChevronLeft className="size-4 text-white" />
+        </Button>
+        <Button
+          onClick={() => setDisplayMode(displayMode === 'usd' ? 'percent' : 'usd')}
+          variant="outline"
+          size="icon"
+          className="h-full text-white aspect-square"
+        >
+          {displayMode === 'usd' ? (
+            <IconCurrencyDollar className="size-4" />
+          ) : (
+            <IconPercentage className="size-4" />
+          )}
         </Button>
         <Button
           onClick={scrollRight}
@@ -103,7 +94,7 @@ const FavoriteStrip = ({ setSelectedAsset }: { setSelectedAsset: (asset: string)
           size="icon"
           className="h-full aspect-square"
         >
-          <IconChevronRight className="size-4 text-white/50" />
+          <IconChevronRight className="size-4 text-white" />
         </Button>
       </div>
     </div>
