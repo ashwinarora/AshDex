@@ -11,7 +11,7 @@ import {
   IconChevronRight,
   IconCurrencyDollar,
   IconPercentage,
-  IconStar,
+  IconStar
 } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 
