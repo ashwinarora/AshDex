@@ -4,7 +4,7 @@ export interface User {
   id: number
   wallet_id: string
   username: string
-  avatar_url?: string
+  avatar_url?: number
   preferred_language_id?: number
   user_preferences?: {
     popup_position?: number

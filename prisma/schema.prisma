@@ -18,7 +18,7 @@ model User {
   id                     Int      @id @default(autoincrement())
   wallet_id              String   @unique @db.VarChar(42)
   username               String   @unique @db.VarChar(50)
-  avatar_url             String?  @db.VarChar(255)
+  avatar_url             Int?
   preferred_language_id  Int?
   created_at             DateTime @default(now())
   updated_at             DateTime @updatedAt
