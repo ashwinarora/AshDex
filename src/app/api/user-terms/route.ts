@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import TermsManager from '@/services/TermsManager'
+import TermsManager from '@/services/Terms.manager'
 import { verifyMessage } from 'viem'
 
 export async function GET(request: NextRequest) {

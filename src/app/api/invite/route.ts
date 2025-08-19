@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import InviteService from '@/lib/invite'
+import InviteService from '@/services/Invite.manager'
 import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 

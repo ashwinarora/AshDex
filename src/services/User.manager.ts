@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma'
-import { User, Prisma } from '@prisma/client'
+import { User } from '@prisma/client'
 
 class UserManager {
   private static instance: UserManager
@@ -32,8 +32,7 @@ class UserManager {
         },
         data: {
           username: userData.username,
-          avatar_url: userData.avatar_url ? userData.avatar_url : undefined,
-          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+          avatar_url: userData.avatar_url ? userData.avatar_url : undefined
         }
       })
 
@@ -44,8 +43,7 @@ class UserManager {
         data: {
           wallet_id: userData.wallet_id,
           username: userData.username || '',
-          avatar_url: userData.avatar_url ? userData.avatar_url : null,
-          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+          avatar_url: userData.avatar_url ? userData.avatar_url : null
         }
       })
     }
@@ -58,10 +56,7 @@ class UserManager {
       },
       data: {
         ...(updateData.username !== undefined && { username: updateData.username }),
-        ...(updateData.avatar_url !== undefined && { avatar_url: updateData.avatar_url }),
-        ...(updateData.user_preferences !== undefined && {
-          user_preferences: updateData.user_preferences as Prisma.InputJsonValue
-        })
+        ...(updateData.avatar_url !== undefined && { avatar_url: updateData.avatar_url })
       }
     })
 
