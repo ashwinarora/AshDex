@@ -58,7 +58,7 @@ const ConnectWalletModal: React.FC = () => {
 
   useEffect(() => {
     if (isConnected && address) {
-      createOrUpdateUser.mutate({ wallet_id: address})
+      createOrUpdateUser.mutate({ wallet_id: address })
     }
   }, [isConnected, address])
 

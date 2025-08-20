@@ -46,9 +46,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
                 src={name === 'Metamask' ? metamask : icon}
                 alt={name}
                 style={{ width: 80, height: 80 }}
-                className={`transition-all duration-300 ${
-                  isDisconnected ? 'grayscale' : ''
-                }`}
+                className={`transition-all duration-300 ${isDisconnected ? 'grayscale' : ''}`}
               />
               <div className="text-white/50 font-medium mt-4 text-md">
                 {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : 'Wallet'}
