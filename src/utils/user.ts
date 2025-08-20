@@ -111,3 +111,8 @@ export async function updateUser(
     return null
   }
 }
+
+/*
+1. An PATCH api to add invited_by field with validations
+2. A api to validate nexon-referral
+*/

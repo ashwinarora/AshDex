@@ -1,12 +1,6 @@
 import { Invite, PrismaClient } from '@prisma/client'
 import { Address } from 'viem'
 
-interface UseInviteResult {
-  success: boolean
-  invite?: Invite
-  error?: string
-}
-
 interface User {
   id: number
   username: string
@@ -124,38 +118,31 @@ class InviteService {
   /*
   Uses an invite code for a user
   */
-  public async useInviteCode(wallet_id: Address, inviteCode: string): Promise<UseInviteResult> {
+  public async claimInviteCode(wallet_id: Address, inviteCode: string) {
     const normalizedCode = this.normalizeCode(inviteCode)
 
     const invite = await this.getInvite(normalizedCode)
     if (!invite) {
-      return { success: false, error: 'Invalid invite code' }
+      throw new Error('Invalid invite code')
     }
 
     const user = await this.prisma.user.findUnique({ where: { wallet_id } })
     if (!user) {
-      return { success: false, error: 'User not found' }
+      throw new Error('User not found')
     }
 
     if (user.invited_by) {
-      return { success: false, error: 'User already used an invite code' }
-    }
-
-    if (!user.is_nexon_referred) {
-      return { success: false, error: 'User is not a Nexon Referred User' }
+      throw new Error('User already used an invite code')
     }
 
     if (invite.user_id === user.id) {
-      return { success: false, error: 'Cannot use your own invite code' }
+      throw new Error('Cannot use your own invite code')
     }
 
     await this.prisma.user.update({
       where: { id: user.id },
       data: { invited_by: invite.id }
     })
-
-    console.log(`User ${wallet_id} used invite code: ${normalizedCode}`)
-    return { success: true, invite }
   }
 
   // returns all users who have used a given invite code
