@@ -264,7 +264,7 @@ const TradingViewChart = ({
           // Get sdkInfoClient from store dynamically instead of depending on it
           const store = useHyperliquidStore.getState()
           const sdkInfoClient = store.sdkInfoClient
-          
+
           if (!sdkInfoClient || !currentAsset) {
             onErrorCallback('SDK or asset not available')
             return
@@ -339,7 +339,7 @@ const TradingViewChart = ({
           // Get sdkInfoClient from store dynamically instead of depending on it
           const store = useHyperliquidStore.getState()
           const sdkInfoClient = store.sdkInfoClient
-          
+
           if (!sdkInfoClient || !currentAsset) return
 
           const interval = convertedResolutionToInterval(
@@ -870,7 +870,7 @@ const TradingViewChart = ({
   // Clear wallet-specific shapes when wallet disconnects
   useEffect(() => {
     if (!widgetRef.current) return
-    
+
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) {
       // Wallet disconnected, clear all wallet-specific shapes
@@ -886,11 +886,11 @@ const TradingViewChart = ({
 
   useEffect(() => {
     if (!widgetRef.current) return
-    
+
     // Only show order lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
-    
+
     // Only show order lines for the first and last open order for the selected asset
     const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
     const ordersToShow = []
@@ -921,11 +921,11 @@ const TradingViewChart = ({
 
   useEffect(() => {
     if (!widgetRef.current) return
-    
+
     // Only show position lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
-    
+
     clearingHouseState?.assetPositions.forEach(async (p) => {
       if (p.position.coin !== selectedAsset) return
       const shapeExists = positionToShape.current.get(p.position.coin)
