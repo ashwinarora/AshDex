@@ -9,7 +9,7 @@ const PatchHandler = async (request: AuthenticatedRequest) => {
   const wallet_id = request.wallet_id as Address
 
   try {
-    await InviteService.useInviteCode(wallet_id, inviteCode)
+    await InviteService.claimInviteCode(wallet_id, inviteCode)
     return NextResponse.json({ message: 'Invite code claimed' })
   } catch (error) {
     return NextResponse.json(

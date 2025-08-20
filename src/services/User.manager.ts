@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
+import { getReferral } from '@/lib/referral'
 import { User } from '@prisma/client'
+import { Address } from 'viem'
 
 class UserManager {
   private static instance: UserManager
@@ -49,7 +51,28 @@ class UserManager {
     }
   }
 
-  async updateUser(walletId: string, updateData: Partial<User>) {
+  async validateReferral(walletId: Address): Promise<boolean> {
+    const referral = await getReferral(walletId)
+
+    if (referral?.referrer == '0x0000000000000000000000000000000000000000') {
+      this.updateUser(walletId, { is_nexon_referred: true })
+      return true
+    }
+
+    this.updateUser(walletId, { is_nexon_referred: false })
+    return false
+  }
+
+  async getReferralStatus(walletId: Address, validate: boolean = false) {
+    if (validate) {
+      return this.validateReferral(walletId)
+    }
+
+    const user = await this.findUserByWalletId(walletId)
+    return user?.is_nexon_referred
+  }
+
+  async updateUser(walletId: Address, updateData: Partial<User>) {
     await prisma.user.updateMany({
       where: {
         wallet_id: walletId
