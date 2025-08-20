@@ -54,7 +54,10 @@ class UserManager {
   async validateReferral(walletId: Address): Promise<boolean> {
     const referral = await getReferral(walletId)
 
-    if (referral?.referrer == '0x0000000000000000000000000000000000000000') {
+    if (
+      referral?.referrer == '0x1710022f671b4032d6c7262107ba231f41f84ce8' &&
+      referral.code == 'ASHWIN'
+    ) {
       this.updateUser(walletId, { is_nexon_referred: true })
       return true
     }
