@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import userManager from '@/services/UserManager'
+import userManager from '@/services/User.manager'
 
 // GET handler to retrieve users
 export async function GET(request: NextRequest) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json()
-    const { wallet_id, username, avatar_url, user_preferences } = body
+    const { wallet_id, username, avatar_url } = body
 
     if (!wallet_id) {
       return NextResponse.json({ error: 'Missing required field: wallet_id' }, { status: 400 })
@@ -52,8 +52,7 @@ export async function PATCH(request: NextRequest) {
 
     const result = await userManager.updateUser(wallet_id, {
       username,
-      avatar_url,
-      user_preferences
+      avatar_url
     })
 
     if (!result) {

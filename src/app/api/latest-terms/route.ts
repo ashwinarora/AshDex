@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import TermsManager from '@/services/TermsManager'
+import TermsManager from '@/services/Terms.manager'
 
 export async function GET() {
   try {
