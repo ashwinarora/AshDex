@@ -15,15 +15,21 @@ datasource db {
 }
 
 model User {
-  id                    Int                  @id @default(autoincrement())
-  wallet_id             String               @unique @db.VarChar(42)
-  username              String               @db.VarChar(50)
-  avatar_url            Int?
-  preferred_language_id Int?
-  created_at            DateTime             @default(now())
-  updated_at            DateTime             @updatedAt
-  user_preferences      Json?
-  terms_signatures      UserTermsSignature[]
+  id                     Int      @id @default(autoincrement())
+  wallet_id              String   @unique @db.VarChar(42)
+  username               String   @unique @db.VarChar(50)
+  avatar_url             Int?
+  created_at             DateTime @default(now())
+  updated_at             DateTime @updatedAt
+  terms_signatures       UserTermsSignature[]
+  invited_by             Int?
+  is_nexon_referred      Boolean   @default(true)
+  
+  // Relations
+  invites                Invite[] @relation("InviteCodes")
+  invite_used            Invite?  @relation("InvitedBy", fields: [invited_by], references: [id])
+
+  @@map("users")
 }
 
 model Terms {
@@ -44,4 +50,20 @@ model UserTermsSignature {
   Terms Terms @relation(fields: [terms_id], references: [id])
 
   @@id([user_id, terms_id])
+}
+
+
+model Invite {
+  id         Int      @id @default(autoincrement())
+  user_id    Int
+  code       String   @unique @db.VarChar(6)
+  created_at DateTime @default(now()) @db.Timestamp(6)
+  updated_at DateTime @updatedAt @db.Timestamp(6)
+
+  // Relations
+  user       User     @relation("InviteCodes", fields: [user_id], references: [id], onDelete: Cascade)
+  used_by    User[]   @relation("InvitedBy")
+
+  @@index([user_id])
+  @@map("invites")
 }

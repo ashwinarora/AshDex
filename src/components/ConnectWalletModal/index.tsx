@@ -1,8 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { useConnect, useDisconnect } from 'wagmi'
+import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { TrustWallet } from '@trustwallet/web3-react-trust-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { WALLETS } from '@/utils/constants'
@@ -13,6 +13,7 @@ import { useWalletModal } from '@/context/WalletModalContext'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { toast } from 'sonner'
 import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
+import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
 
 interface WalletConnectProvider {
   id: string
@@ -24,11 +25,12 @@ const ConnectWalletModal: React.FC = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { disconnect } = useDisconnect()
+  const { address, isConnected } = useAccount()
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
-  const [isWalletConnected, setIsWalletConnected] = useState<boolean | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
 
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
+  const createOrUpdateUser = useCreateOrUpdateUser()
 
   const handleClose = () => {
     if (!termsData?.signed) {
@@ -37,7 +39,6 @@ const ConnectWalletModal: React.FC = () => {
     }
     toggleConnectWalletModal()
     setSelectedConnector(null)
-    setIsWalletConnected(null)
     reset()
   }
 
@@ -50,15 +51,19 @@ const ConnectWalletModal: React.FC = () => {
       } else if (wallet.id === 'trustWallet') {
         await trustWallet.activate()
       }
-      setIsWalletConnected(true)
     } catch (error) {
       console.error('Error connecting wallet:', error)
-      setIsWalletConnected(false)
     }
   }
 
+  useEffect(() => {
+    if (isConnected && address) {
+      createOrUpdateUser.mutate({ wallet_id: address })
+    }
+  }, [isConnected, address])
+
   // Show rules if wallet is connected and terms are not signed
-  const shouldShowRules = isWalletConnected && !isTermsLoading && !termsData?.signed
+  const shouldShowRules = isConnected && !isTermsLoading && !termsData?.signed
 
   return (
     <>
@@ -70,7 +75,7 @@ const ConnectWalletModal: React.FC = () => {
         {shouldShowRules ? (
           <WalletRules onClose={handleClose} />
         ) : selectedConnector ? (
-          isWalletConnected && isTermsLoading ? (
+          isConnected && isTermsLoading ? (
             <div className="flex flex-col items-center justify-center py-8">
               <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
               <p className="text-white mt-4">Loading terms...</p>
@@ -78,14 +83,12 @@ const ConnectWalletModal: React.FC = () => {
           ) : (
             <WalletDisplay
               onBack={() => {
-                setIsWalletConnected(null)
                 setSelectedConnector(null)
                 reset()
               }}
               onClose={handleClose}
               name={selectedConnector.name}
               icon={selectedConnector.icon}
-              isWalletConnected={isWalletConnected}
               hasAgreedToRules={!!termsData?.signed}
             />
           )
