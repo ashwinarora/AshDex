@@ -31,8 +31,14 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
   }, [clearingHouseState?.assetPositions])
 
   const balanceCount = useMemo(() => {
-    return spotState?.balances?.filter((balance) => balance.coin !== 'USDC').length || 0
-  }, [spotState?.balances])
+    const baseCount = spotState?.balances?.length || 0
+    const perpsAccountValue = Number(clearingHouseState?.marginSummary?.accountValue || 0)
+    const hasPerpsUsdc = perpsAccountValue > 0
+    return baseCount + (hasPerpsUsdc ? 1 : 0)
+  }, [
+    spotState?.balances,
+    clearingHouseState?.marginSummary?.accountValue
+  ])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {
