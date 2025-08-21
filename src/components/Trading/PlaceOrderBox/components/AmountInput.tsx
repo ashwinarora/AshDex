@@ -195,7 +195,7 @@ const AmountInput = ({
             min={0}
             max={100}
             value={[usdPercent]}
-            onValueChange={(value) => setUsdPercent(value[0])}
+            onValueChange={(value) => handleUsdPercentChange(value[0])}
             className="flex-1 w-full"
           />
           <div
@@ -206,7 +206,7 @@ const AmountInput = ({
             <Input
               className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
               value={usdPercent.toString()}
-              onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+              onChange={(e) => handleUsdPercentChange(parseInt(e.target.value, 10))}
             />
             <IconPercentage className="size-3" />
           </div>
