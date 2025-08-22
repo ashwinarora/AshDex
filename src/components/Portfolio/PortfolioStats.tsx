@@ -24,7 +24,7 @@ import { useUserFee } from '@/hooks/useUserFee'
 import useUserStore from '@/store/userStore'
 
 const PortfolioStats = () => {
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
   const { isMobile, isTablet } = useScreenSize()
   const [selectedView, setSelectedView] = useState<{
     [key: string]: 'perps' | 'all' | 'day' | 'week' | 'month' | 'alltime'

@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
 
 const PortfolioHeader = () => {
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
   const { isMobile } = useScreenSize()
   const [isModalOpen, setIsModalOpen] = useState<{
     [key: string]: boolean

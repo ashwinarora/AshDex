@@ -26,7 +26,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     }))
   )
   const isSpot = useIsSpot()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
   const { spotKeyToName } = useSpotMeta()
 
   const positionsCount = useMemo(() => {

@@ -12,12 +12,16 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
 import { Switch } from './ui/switch'
 import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
+import { setLanguage } from '@/tolgee/language'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const { t } = useTranslate()
+
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
     useShallow((state) => ({
       isWebSocketConnected: state.isWebSocketConnected,
@@ -113,12 +117,12 @@ const FooterContent: FC = () => {
               {isWebSocketConnected ? (
                 <>
                   <IconCellSignal5 className="size-4" />
-                  Online
+                  {t('Online')}
                 </>
               ) : (
                 <>
                   <IconCellSignalOff className="size-4" />
-                  Offline
+                  {t('Offline')}
                 </>
               )}
             </div>
@@ -153,11 +157,12 @@ const FooterContent: FC = () => {
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
           <div className="flex items-center gap-2">
-            <span>Arabic</span>
+            <span>{t('language')}</span>
             <Switch
               checked={isRTL}
               onCheckedChange={() => {
-                useUserStore.setState({ preferredLanguage: isRTL ? 'English' : 'Arabic' })
+                useUserStore.setState({ preferredLanguage: isRTL ? 'en' : 'ar' })
+                setLanguage(isRTL ? 'en' : 'ar')
               }}
             />
           </div>
@@ -167,7 +172,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/50 transition-colors"
           >
-            Docs
+            {t('Docs')}
           </a>
           <a
             href="/support"
@@ -175,7 +180,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/50 transition-colors"
           >
-            Support
+            {t('Support')}
           </a>
           <a
             href="/terms"
@@ -183,7 +188,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/50 transition-colors"
           >
-            Terms
+            {t('Terms')}
           </a>
           <a
             href="/privacy"
@@ -191,7 +196,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/50 transition-colors"
           >
-            Privacy Policy
+            {t('Privacy Policy')}
           </a>
         </div>
       </div>

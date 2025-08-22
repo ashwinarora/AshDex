@@ -45,6 +45,8 @@
         "@tanstack/react-query": "^5.67.3",
         "@tanstack/react-query-devtools": "^5.67.3",
         "@tanstack/react-table": "^8.21.3",
+        "@tolgee/react": "^6.2.7",
+        "@tolgee/web": "^6.2.7",
         "@tronweb3/tronwallet-abstract-adapter": "^1.1.9",
         "@tronweb3/tronwallet-adapter-react-hooks": "^1.1.10",
         "@tronweb3/tronwallet-adapter-react-ui": "^1.1.11",
@@ -1481,6 +1483,12 @@
     "@tanstack/table-core": ["@tanstack/table-core@8.21.3", "", {}, "sha512-ldZXEhOBb8Is7xLs01fR3YEc3DERiz5silj8tnGkFZytt1abEvl/GhUmCE0PMLaMPTa3Jk4HbKmRlHmu+gCftg=="],
 
     "@tanstack/virtual-core": ["@tanstack/virtual-core@3.13.10", "", {}, "sha512-sPEDhXREou5HyZYqSWIqdU580rsF6FGeN7vpzijmP3KTiOGjOMZASz4Y6+QKjiFQwhWrR58OP8izYaNGVxvViA=="],
+
+    "@tolgee/core": ["@tolgee/core@6.2.7", "", {}, "sha512-0Au+m9R23/gmeaLJY0X6lKcR2LSy9dW7hEFrpFvPdJoGvxc8XCNZpKlgnm1N534CwmtIBJ4rzOK6vOrSKbl45w=="],
+
+    "@tolgee/react": ["@tolgee/react@6.2.7", "", { "dependencies": { "@tolgee/web": "6.2.7" }, "peerDependencies": { "react": "^16.14.0 || ^17.0.1 || ^18.1.0 || ^19" } }, "sha512-acZ2bThetoFp/VIWxStrza4RtXX+M7Bfy/f3uMBu2h+fXj3u+BxTR/3YAX67umbhF5RNoOTBPt74EOD+bDtcpQ=="],
+
+    "@tolgee/web": ["@tolgee/web@6.2.7", "", { "dependencies": { "@tolgee/core": "6.2.7" } }, "sha512-MAgHGkL5RYREwAjUansJt98fCuQFV4uDfP11NLOCHan2Hx9rpuszv88eXX7enq9CE8eS/Ed2pELiSwb5rlYiKg=="],
 
     "@toruslabs/base-controllers": ["@toruslabs/base-controllers@5.11.0", "", { "dependencies": { "@ethereumjs/util": "^9.0.3", "@toruslabs/broadcast-channel": "^10.0.2", "@toruslabs/http-helpers": "^6.1.1", "@toruslabs/openlogin-jrpc": "^8.3.0", "@toruslabs/openlogin-utils": "^8.2.1", "async-mutex": "^0.5.0", "bignumber.js": "^9.1.2", "bowser": "^2.11.0", "jwt-decode": "^4.0.0", "loglevel": "^1.9.1" }, "peerDependencies": { "@babel/runtime": "7.x" } }, "sha512-5AsGOlpf3DRIsd6PzEemBoRq+o2OhgSFXj5LZD6gXcBlfe0OpF+ydJb7Q8rIt5wwpQLNJCs8psBUbqIv7ukD2w=="],
 

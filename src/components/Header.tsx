@@ -35,6 +35,7 @@ import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 type MenuItem = {
   name: string
   path: string
@@ -44,13 +45,14 @@ type MenuItem = {
 const Header: FC = () => {
   const router = useRouter()
   const pathname = usePathname()
+  const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'Arabic')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
 
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
@@ -71,10 +73,10 @@ const Header: FC = () => {
   }, [isConnected, termsData?.signed, isModalOpen])
 
   const desktopMenu: MenuItem[] = [
-    { name: 'Futures', path: '/', isComingSoon: false },
-    { name: 'Spot', path: '/spot', isComingSoon: false },
-    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
-    { name: 'Referrals', path: '/', isComingSoon: true }
+    { name: t('Futures'), path: '/', isComingSoon: false },
+    { name: t('Spot'), path: '/spot', isComingSoon: false },
+    { name: t('Portfolio'), path: '/portfolio', isComingSoon: false },
+    { name: t('Referrals'), path: '/', isComingSoon: true }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
     // { name: 'Vaults', path: '/vaults', isComingSoon: true }
@@ -89,11 +91,11 @@ const Header: FC = () => {
     // { name: 'Stats', path: '/stats' },
     // { name: 'Docs', path: '/docs' },
     // { name: 'Vocabulary for novices', path: '/vocabulary' },
-    { name: 'Settings', path: '/settings' }
+    { name: t('Settings'), path: '/settings' }
   ]
 
   const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
-    if (pathname === '/' || pathname === '') return 'Futures'
+    if (pathname === '/' || pathname === '') return t('Futures')
     const firstSegment = pathname?.split('/')[1]
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
@@ -101,7 +103,7 @@ const Header: FC = () => {
 
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
-    toast.success('Copied to clipboard')
+    toast.success(t('Copied to clipboard'))
   }
 
   useEffect(() => {
@@ -188,7 +190,7 @@ const Header: FC = () => {
                     </div>
                   </HoverCardTrigger>
                   <HoverCardContent className="w-fit h-fit p-2" align="center">
-                    <p className="text-white text-xs">Coming Soon</p>
+                    <p className="text-white text-xs">{t('Coming Soon')}</p>
                   </HoverCardContent>
                 </HoverCard>
               ) : (
@@ -234,27 +236,27 @@ const Header: FC = () => {
               <DropdownMenuContent className="w-48" align="end">
                 <DropdownMenuItem onClick={handleCopy}>
                   <IconCopy className="size-4 text-inherit" />
-                  Copy Address
+                  {t('Copy Address')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={toggleConnectWalletModal}>
                   <IconWallet className="size-4 text-inherit" />
-                  Switch Wallet
+                  {t('Switch Wallet')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => router.push('/settings')}>
                   <IconSettings className="size-4 text-inherit" />
-                  Settings
+                  {t('Settings')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
                   <IconStackPop className="size-4 text-inherit" />
-                  Withdraw
+                  {t('Withdraw')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => disconnect()} variant="destructive">
                   <IconLogout className="size-4 text-inherit" />
-                  Disconnect
+                  {t('Disconnect')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -266,7 +268,7 @@ const Header: FC = () => {
             className="flex items-center gap-2"
           >
             <IconWallet className="size-4" />
-            <span className="text-xs">Connect Wallet</span>
+            <span className="text-xs">{t('Connect Wallet')}</span>
           </Button>
         )}
       </div>

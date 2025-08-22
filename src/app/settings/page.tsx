@@ -21,6 +21,8 @@ import { useRouter } from 'next/navigation'
 import Switch from '@/components/common/Switch'
 import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
 import { useLanguageSettings, useUserPreferences } from '@/store/userStore'
+import { useTolgee } from '@tolgee/react'
+import { setLanguage } from '@/tolgee/language'
 
 // Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
 interface UserInfo {
@@ -37,6 +39,9 @@ const SettingsPage = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
   const isRendered = useComponentRendered()
+
+  // const tolgee = useTolgee(['language'])
+  // const language = tolgee.getLanguage()
 
   // UserStore hooks
   const { userPreferences, updateNotificationSetting, setPopupPosition, setSoundEnabled } =
@@ -200,19 +205,20 @@ const SettingsPage = () => {
                 <CustomSelector
                   options={[
                     {
-                      value: 'English',
+                      value: 'en',
                       label: 'English',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
                     },
                     {
-                      value: 'Arabic',
+                      value: 'ar',
                       label: 'العربية',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
                     }
                   ]}
                   selectedValue={preferredLanguage}
                   onChange={(value) => {
-                    setPreferredLanguage(value as 'English' | 'Arabic')
+                    setPreferredLanguage(value as 'en' | 'ar')
+                    setLanguage(value as 'en' | 'ar')
                   }}
                   className="nexon-card nexon-rounded-lg cursor-pointer"
                   isPadding={true}
