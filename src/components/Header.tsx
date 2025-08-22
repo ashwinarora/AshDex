@@ -32,6 +32,7 @@ import {
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import { useTermsSignature } from '@/hooks/useTermsSignature'
 type MenuItem = {
   name: string
   path: string
@@ -45,14 +46,25 @@ const Header: FC = () => {
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const isRendered = useComponentRendered()
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const { data: termsData } = useTermsSignature()
   useNexonReferral()
+
+  // if user is connected and terms are not signed, disconnect and show error
+  useEffect(() => {
+    if (!isConnected) return
+    if (!termsData) return
+    if (termsData.signed) return
+    if (isModalOpen) return
+    disconnect()
+    toast.error('Please sign the terms to continue')
+  }, [isConnected, termsData?.signed, isModalOpen])
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
