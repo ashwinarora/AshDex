@@ -135,9 +135,7 @@ const ConnectWalletModal: React.FC = () => {
       <DialogHeader>
         <DialogTitle>Connect Wallet</DialogTitle>
       </DialogHeader>
-      <DialogContent>
-        {renderDialogContent()}
-      </DialogContent>
+      <DialogContent>{renderDialogContent()}</DialogContent>
     </>
   )
 }
