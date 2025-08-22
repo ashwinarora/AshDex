@@ -21,7 +21,7 @@ import { useRouter } from 'next/navigation'
 import Switch from '@/components/common/Switch'
 import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
 import { useLanguageSettings, useUserPreferences } from '@/store/userStore'
-import { useTolgee } from '@tolgee/react'
+// import { useTolgee } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
 
 // Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
