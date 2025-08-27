@@ -25,7 +25,9 @@ const TWAP = ({ isRTL }: { isRTL: boolean }) => {
             />
           </div>
           <div className="mb-1 px-4 border-[#FFFFFF0F] border-b">
-            <label className="block mb-0.5 font-medium text-[#8B8BA0] text-xs">{t('Minutes')}</label>
+            <label className="block mb-0.5 font-medium text-[#8B8BA0] text-xs">
+              {t('Minutes')}
+            </label>
             <input
               type="text"
               value={minutes}

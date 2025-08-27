@@ -45,7 +45,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-          {t('Stop Price')} 
+          {t('Stop Price')}
         </label>
         <Input
           type="text"

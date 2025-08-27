@@ -25,7 +25,6 @@ import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabl
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
 
-
 const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
@@ -235,7 +234,9 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <p className="text-xs text-white/50">
-                  {t('Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.')}
+                  {t(
+                    'Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.'
+                  )}
                 </p>
                 <div className="flex items-center gap-3">
                   <Slider

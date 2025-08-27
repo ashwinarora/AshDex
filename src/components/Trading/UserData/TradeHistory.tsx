@@ -44,7 +44,6 @@ type RenderRowProps = {
 
 const columnHelper = createColumnHelper<Fill>()
 
-
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
   const { address, isConnected } = useAccount()
@@ -75,66 +74,69 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     initialData: []
   })
 
-  const columns = useMemo(() => [
-    columnHelper.accessor('time', {
-      id: 'timestamp',
-      header: () => t('Time'),
-      cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
-      enableSorting: false,
-      meta: { label: t('Time') }
-    }),
-    columnHelper.accessor('coin', {
-      id: 'coin',
-      header: () => t('Coin'),
-      cell: (info) => info.getValue(),
-      enableSorting: false,
-      meta: { label: t('Coin') }
-    }),
-    columnHelper.accessor('dir', {
-      id: 'dir',
-      header: () => t('Direction'),
-      cell: (info) => (
-        <p className={`${info.getValue().includes('Close') ? 'text-green' : 'text-red'}`}>
-          {info.getValue()}
-        </p>
-      ),
-      enableSorting: false,
-      meta: { label: t('Direction') }
-    }),
-    columnHelper.accessor('px', {
-      id: 'px',
-      header: () => t('Price'),
-      cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
-      enableSorting: true,
-      sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
-      meta: { label: t('Price') }
-    }),
-    columnHelper.accessor('sz', {
-      id: 'sz',
-      header: () => t('Size'),
-      cell: (info) => info.getValue(),
-      enableSorting: true,
-      sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz),
-      meta: { label: t('Size') }
-    }),
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('time', {
+        id: 'timestamp',
+        header: () => t('Time'),
+        cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
+        enableSorting: false,
+        meta: { label: t('Time') }
+      }),
+      columnHelper.accessor('coin', {
+        id: 'coin',
+        header: () => t('Coin'),
+        cell: (info) => info.getValue(),
+        enableSorting: false,
+        meta: { label: t('Coin') }
+      }),
+      columnHelper.accessor('dir', {
+        id: 'dir',
+        header: () => t('Direction'),
+        cell: (info) => (
+          <p className={`${info.getValue().includes('Close') ? 'text-green' : 'text-red'}`}>
+            {info.getValue()}
+          </p>
+        ),
+        enableSorting: false,
+        meta: { label: t('Direction') }
+      }),
+      columnHelper.accessor('px', {
+        id: 'px',
+        header: () => t('Price'),
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
+        enableSorting: true,
+        sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
+        meta: { label: t('Price') }
+      }),
+      columnHelper.accessor('sz', {
+        id: 'sz',
+        header: () => t('Size'),
+        cell: (info) => info.getValue(),
+        enableSorting: true,
+        sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz),
+        meta: { label: t('Size') }
+      }),
 
-    columnHelper.accessor('closedPnl', {
-      id: 'closedPnl',
-      header: () => t('Closed PnL'),
-      cell: (info) => info.getValue(),
-      enableSorting: true,
-      sortingFn: (rowA, rowB) => Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
-      meta: { label: t('Closed PnL') }
-    }),
-    columnHelper.accessor('crossed', {
-      id: 'crossed',
-      header: () => t('Crossed'),
-      cell: (info) => (info.getValue() ? t('Yes') : t('No')),
-      enableSorting: false,
-      meta: { label: t('Crossed') }
-    })
-  ]
-    , [t, columnHelper])
+      columnHelper.accessor('closedPnl', {
+        id: 'closedPnl',
+        header: () => t('Closed PnL'),
+        cell: (info) => info.getValue(),
+        enableSorting: true,
+        sortingFn: (rowA, rowB) =>
+          Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
+        meta: { label: t('Closed PnL') }
+      }),
+      columnHelper.accessor('crossed', {
+        id: 'crossed',
+        header: () => t('Crossed'),
+        cell: (info) => (info.getValue() ? t('Yes') : t('No')),
+        enableSorting: false,
+        meta: { label: t('Crossed') }
+      })
+    ],
+    [t, columnHelper]
+  )
 
   const table = useReactTable({
     data: tradeHistory,
@@ -159,12 +161,13 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             <span className="text-[#8B8BA0]">{col?.label}</span>
             <span className={col?.key === 'contract' ? 'truncate' : ''}>
               <span
-                className={`flex items-center gap-x-2 ${col?.key === 'crossed'
-                  ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
-                  : col?.key === 'side'
-                    ? 'text-red'
-                    : ''
-                  }`}
+                className={`flex items-center gap-x-2 ${
+                  col?.key === 'crossed'
+                    ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
+                    : col?.key === 'side'
+                      ? 'text-red'
+                      : ''
+                }`}
               >
                 {String(formatValue(col?.key, item[col?.key]))}
               </span>

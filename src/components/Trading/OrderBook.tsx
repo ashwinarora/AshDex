@@ -471,10 +471,12 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       >
         <p className="font-medium text-xs text-start">{t('Price')}</p>
         <p className="font-medium text-xs text-center flex-1">
-          {t('Amount')} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {t('Amount')} (
+          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
         <p className="font-medium text-xs text-end">
-          {t('Total')} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {t('Total')} (
+          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/5 -mb-1" />

@@ -19,7 +19,7 @@ export type TPSLType = {
 const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   const { t } = useTranslate()
   const setIsTpsl = (isTpsl: boolean) => {
-    setTpsl({ ...tpsl, isTpsl })  
+    setTpsl({ ...tpsl, isTpsl })
   }
 
   const calculateTakeProfitPercentage = (value: number | string): number => {

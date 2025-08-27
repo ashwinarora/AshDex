@@ -37,8 +37,6 @@ interface ISelectorProps {
   isRTL: boolean
 }
 
-
-
 const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
   const { spotAssetContext } = useHyperliquidStore(
@@ -57,14 +55,17 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
   const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { isMobile } = useScreenSize()
 
-  const tabs = useMemo(() => [
-    { label: t('All'), icon: null },
-    { label: t('New'), icon: <IconRosette className="size-3" /> },
-    { label: t('AI'), icon: <IconBrain className="size-3" /> },
-    { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-    { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-    { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
-  ], [t])
+  const tabs = useMemo(
+    () => [
+      { label: t('All'), icon: null },
+      { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('AI'), icon: <IconBrain className="size-3" /> },
+      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+    ],
+    [t]
+  )
 
   const selectedAssetContext = useMemo(() => {
     if (spotMeta && spotAssetContext) {

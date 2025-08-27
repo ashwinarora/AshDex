@@ -88,7 +88,9 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         <DialogHeader>
           <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
           <DialogDescription>
-            {t('USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.')}
+            {t(
+              'USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
+            )}
           </DialogDescription>
         </DialogHeader>
         <Separator />
@@ -105,7 +107,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <p>{t('Amount')}</p> 
+                  <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     {t('Available to withdraw:')}
                     <Button

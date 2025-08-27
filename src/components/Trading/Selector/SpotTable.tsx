@@ -199,7 +199,9 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
       columnHelper.accessor('symbol', {
         id: 'symbol',
         header: () => (
-          <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>{t('Market')}</div>
+          <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>
+            {t('Market')}
+          </div>
         ),
         cell: (info) => {
           const { symbol } = info.row.original

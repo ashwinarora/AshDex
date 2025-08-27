@@ -124,7 +124,9 @@ const EstablishConnectionModal = () => {
           <DialogTitle>{t('Establish Connection')}</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          {t('This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.')}
+          {t(
+            'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
+          )}
         </DialogDescription>
         {getButton()}
       </DialogContent>

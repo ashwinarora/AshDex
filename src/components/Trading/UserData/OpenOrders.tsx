@@ -267,7 +267,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
       }),
       columnHelper.accessor('origSz', {
         id: 'orderValue',
-        header: () => t('Order Value') ,
+        header: () => t('Order Value'),
         cell: (info) => (
           <ReactiveText
             value={Number(info.getValue()) * Number(info.row.original.limitPx)}

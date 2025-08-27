@@ -98,7 +98,9 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
     () => [
       helper.accessor('coin', {
         id: 'coin',
-        header: () => <span className={cn('flex justify-start items-center gap-1')}>{t('Position')}</span>,
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Position')}</span>
+        ),
         cell: (info) => {
           const coin = info.getValue()
           const { leverage } = info.row.original
@@ -132,7 +134,9 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: () => <span className={cn('flex justify-start items-center gap-1')}>{t('Value')}</span>,
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Value')}</span>
+        ),
         meta: { label: t('Position Value') },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
@@ -195,7 +199,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-          header: () => t('Margin'),
+        header: () => t('Margin'),
         meta: { label: t('Margin') },
         cell: (info) => {
           return (

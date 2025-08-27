@@ -32,7 +32,6 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
   const { t } = useTranslate()
 
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'LIMIT':
@@ -109,7 +108,8 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
-              {availableOptions.find((option) => option.value === activeTab)?.label || t('Advanced')}
+              {availableOptions.find((option) => option.value === activeTab)?.label ||
+                t('Advanced')}
               <IconChevronDown className="size-3" />
             </div>
           </DropdownMenuTrigger>

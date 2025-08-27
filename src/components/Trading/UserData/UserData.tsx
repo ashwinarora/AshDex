@@ -58,12 +58,16 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         element: <Balances setSelectedAsset={setSelectedAsset || (() => {})} isRTL={isRTL} />
       },
       {
-        header: isRTL ? `(${positionsCount}) ${t('Positions')}` : `(${positionsCount}) ${t('Positions')}`,
+        header: isRTL
+          ? `(${positionsCount}) ${t('Positions')}`
+          : `(${positionsCount}) ${t('Positions')}`,
         count: positionsCount,
         element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
-        header: isRTL ? `(${openOrdersLength}) ${t('Open Orders')}` : `(${openOrdersLength}) ${t('Open Orders')}`,
+        header: isRTL
+          ? `(${openOrdersLength}) ${t('Open Orders')}`
+          : `(${openOrdersLength}) ${t('Open Orders')}`,
         count: openOrdersLength,
         element: <OpenOrders isRTL={isRTL} />
       },

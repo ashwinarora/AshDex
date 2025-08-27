@@ -176,7 +176,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       }),
       columnHelper.accessor((row) => row.order.reduceOnly, {
         id: 'reduceOnly',
-          header: () => t('Reduce Only'),
+        header: () => t('Reduce Only'),
         cell: (info) => (info.row.original.order.reduceOnly ? t('Yes') : t('No')),
         enableSorting: false,
         meta: { label: t('Reduce Only') }
@@ -281,7 +281,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === t('Coin') || item === t('Trigger') ) && (
+                    {(item === t('Coin') || item === t('Trigger')) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>

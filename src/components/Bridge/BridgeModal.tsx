@@ -301,7 +301,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
 
   // Format transfer time from milliseconds to minutes and seconds
   const formatTransferTime = (ms: number | null): string => {
-    if (!ms) return t("–")
+    if (!ms) return t('–')
     const minutes = Math.floor(ms / 60000)
     const seconds = Math.floor((ms % 60000) / 1000)
     if (minutes === 0) {
@@ -312,7 +312,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
 
   // Format fee with the chain's native token symbol
   const formatGasFee = (fee: string | null): string => {
-    if (!fee || !sourceToken) return t("–")
+    if (!fee || !sourceToken) return t('–')
     // Limit to 6 decimal places
     const formattedFee = parseFloat(fee).toFixed(6)
     // Add the token symbol based on the payment method
@@ -495,14 +495,14 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
           setGasFee(feeOptions.native.float)
         } else {
           setGasFee(null)
-          toast.error(t("Native token payment not available for this transfer"))
+          toast.error(t('Native token payment not available for this transfer'))
         }
       } else {
         if (feeOptions.stablecoin) {
           setGasFee(feeOptions.stablecoin.float)
         } else {
           setGasFee(null)
-          toast.error(t("Stablecoin payment not available for this transfer"))
+          toast.error(t('Stablecoin payment not available for this transfer'))
         }
       }
     } catch (error) {
@@ -585,7 +585,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
   // Function to switch to the selected network
   const switchToNetwork = async (chainName: string) => {
     if (!isConnected) {
-      toast.error(t("Please connect your wallet first"))
+      toast.error(t('Please connect your wallet first'))
       return false
     }
 
@@ -636,17 +636,17 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
   // Modify handleTransfer to check status periodically
   const handleTransfer = async () => {
     if (!isConnected) {
-      toast.error(t("Please connect your wallet first"))
+      toast.error(t('Please connect your wallet first'))
       return
     }
 
     if (!sourceToken || !destinationToken || !amount) {
-      toast.error(t("Please fill in all required fields"))
+      toast.error(t('Please fill in all required fields'))
       return
     }
 
     if (!sdk) {
-      toast.error(t("Bridge SDK not initialized"))
+      toast.error(t('Bridge SDK not initialized'))
       return
     }
 
@@ -669,17 +669,17 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       const feeOptions = await getGasFeeOptions(sourceToken, destinationToken, selectedMessenger)
 
       if (!feeOptions) {
-        toast.error(t("Failed to get fee options"))
+        toast.error(t('Failed to get fee options'))
         return
       }
 
       // Validate that the selected payment method is available
       if (useNativeTokenForGas && !feeOptions.native) {
-        toast.error(t("Native token payment not available for this transfer"))
+        toast.error(t('Native token payment not available for this transfer'))
         return
       }
       if (!useNativeTokenForGas && !feeOptions.stablecoin) {
-        toast.error(t("Stablecoin payment not available for this transfer"))
+        toast.error(t('Stablecoin payment not available for this transfer'))
         return
       }
 
@@ -745,12 +745,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
 
           console.log('Bridge transaction hash:', hash)
 
-          toast.success(t("Transaction initiated successfully!"))
+          toast.success(t('Transaction initiated successfully!'))
         }
       }
     } catch (err) {
       console.error('Transfer failed:', err)
-      toast.error(t("Transaction failed. Please try again."))
+      toast.error(t('Transaction failed. Please try again.'))
       setIsLoading(false)
       // Clear interval on error
       if (statusCheckIntervalRef.current) {
@@ -810,14 +810,14 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       <DialogHeader className="!h-fit items-start !w-full">
         <div className="flex items-center gap-2 !h-fit !w-full text-white text-sm">
           <IconBuildingBridge className="size-4" />
-          {t("Bridge")}
+          {t('Bridge')}
         </div>
       </DialogHeader>
       <Separator />
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex justify-between gap-2 items-center">
-            <p className="text-white text-sm">{t("You Pay")}</p>
+            <p className="text-white text-sm">{t('You Pay')}</p>
             <div className="flex items-center gap-2">
               <Button
                 onClick={handleMaxClick}
@@ -825,7 +825,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 size={'sm'}
                 className="flex !p-0 h-fit w-fit items-center gap-2 text-xs"
               >
-                {t("Use Max")} ({sourceTokenBalance} {sourceToken?.symbol})
+                {t('Use Max')} ({sourceTokenBalance} {sourceToken?.symbol})
               </Button>
             </div>
           </div>
@@ -876,7 +876,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
           <div className="flex justify-between gap-2 items-center">
-            <p className="text-white text-sm">{t("You Receive")}</p>
+            <p className="text-white text-sm">{t('You Receive')}</p>
           </div>
           <div className="flex justify-between gap-2 w-full items-center">
             {!isMobile && (
@@ -887,7 +887,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                   'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs w-full flex-2',
                   isLoadingEstimate && 'animate-pulse'
                 )}
-                value={isLoadingEstimate ? t("Calculating...") : estimatedReceiveAmount}
+                value={isLoadingEstimate ? t('Calculating...') : estimatedReceiveAmount}
                 readOnly
               />
             )}
@@ -921,7 +921,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                   'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs',
                   isLoadingEstimate && 'animate-pulse'
                 )}
-                value={isLoadingEstimate ? t("Calculating...") : estimatedReceiveAmount}
+                value={isLoadingEstimate ? t('Calculating...') : estimatedReceiveAmount}
                 readOnly
               />
             </div>
@@ -930,7 +930,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       </div>
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
-          <p>{t("Messenger Used:")}</p>
+          <p>{t('Messenger Used:')}</p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
@@ -943,14 +943,14 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     messengerOptions.find((option) => option.messenger === selectedMessenger)
                       ?.logo || allbridgeLogo
                   }
-                  alt={t("Messenger Logo")}
+                  alt={t('Messenger Logo')}
                   width={20}
                   height={20}
                   className="size-4"
                 />
                 <span className="text-white">
                   {messengerOptions.find((option) => option.messenger === selectedMessenger)
-                    ?.name || t("Allbridge")}
+                    ?.name || t('Allbridge')}
                 </span>
                 {supportedMessengers.has(selectedMessenger) &&
                   messengerTransferTimes.get(selectedMessenger) && (
@@ -1004,11 +1004,11 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
           </DropdownMenu>
         </div>
         <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
-          <p>{t("Relayer Fee:")}</p>
+          <p>{t('Relayer Fee:')}</p>
           <p className="text-white">≈ {formatGasFee(gasFee)}</p>
         </div>
         <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
-          <p>{t("Current Account:")}</p>
+          <p>{t('Current Account:')}</p>
           {(() => {
             switch (sourceToken?.chainSymbol) {
               case 'TRX':
@@ -1026,7 +1026,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     </Badge>
                   )
                 }
-                return t("Not Connected")
+                return t('Not Connected')
               case 'SOL':
                 if (isSolanaConnected) {
                   return (
@@ -1042,7 +1042,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     </Badge>
                   )
                 }
-                return t("Not Connected")
+                return t('Not Connected')
               case 'SUI':
                 if (isSuiConnected) {
                   return (
@@ -1058,7 +1058,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     </Badge>
                   )
                 }
-                return t("Not Connected")
+                return t('Not Connected')
               case 'SRB':
                 return (
                   <Badge>
@@ -1071,7 +1071,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                         </button>
                       </>
                     ) : (
-                      t("Not Connected")
+                      t('Not Connected')
                     )}
                   </Badge>
                 )
@@ -1092,7 +1092,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     className="bg-background hover:bg-accent cursor-pointer hover:text-accent-foreground flex items-center gap-2 !p-1 rounded-md text-white/50 !text-xs"
                   >
                     <IconWallet className="size-3" />
-                    {t("Connect Wallet")}
+                    {t('Connect Wallet')}
                   </Badge>
                 )
             }
@@ -1145,24 +1145,30 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 if (isLoading) {
                   return (
                     <>
-                      {t("Processing")} <IconLoader2 className="w-4 h-4 animate-spin" />
+                      {t('Processing')} <IconLoader2 className="w-4 h-4 animate-spin" />
                     </>
                   )
                 }
-                return isTronAllowanceApproved ? <>{t("Send")}</> : <>{t("Approve")} {sourceToken?.symbol}</>
+                return isTronAllowanceApproved ? (
+                  <>{t('Send')}</>
+                ) : (
+                  <>
+                    {t('Approve')} {sourceToken?.symbol}
+                  </>
+                )
 
               case 'SOL':
                 if (!isSolanaConnected) {
-                  return t("Connect Solana Wallet")
+                  return t('Connect Solana Wallet')
                 }
                 if (isLoading) {
                   return (
                     <>
-                      {t("Processing")} <IconLoader2 className="w-4 h-4 animate-spin" />
+                      {t('Processing')} <IconLoader2 className="w-4 h-4 animate-spin" />
                     </>
                   )
                 }
-                return <>{t("Send")}</>
+                return <>{t('Send')}</>
 
               case 'SRB':
                 if (!stellarAddress) {
@@ -1171,13 +1177,13 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 if (isLoading) {
                   return (
                     <>
-                      {t("Processing")} <IconLoader2 className="w-4 h-4 animate-spin" />
+                      {t('Processing')} <IconLoader2 className="w-4 h-4 animate-spin" />
                     </>
                   )
                 }
                 return (
                   <>
-                    {t("Send")} <IconArrowRight className="w-4 h-4" />
+                    {t('Send')} <IconArrowRight className="w-4 h-4" />
                   </>
                 )
 
@@ -1188,30 +1194,30 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                       open={showSuiModal}
                       onOpenChange={(open) => setShowSuiModal(open)}
                     >
-                      <button>{t("Connect Wallet")}</button>
+                      <button>{t('Connect Wallet')}</button>
                     </SuiConnectModal>
                   )
 
                 if (isLoading) {
                   return (
                     <>
-                      {t("Processing")} <IconLoader2 className="w-4 h-4 animate-spin" />
+                      {t('Processing')} <IconLoader2 className="w-4 h-4 animate-spin" />
                     </>
                   )
                 }
-                return <>{t("Send")}</>
+                return <>{t('Send')}</>
               default:
                 if (!isConnected) {
-                  return t("Connect Wallet")
+                  return t('Connect Wallet')
                 }
                 if (isLoading) {
                   return (
                     <>
-                      {t("Processing")} <IconLoader2 className="w-4 h-4 animate-spin" />
+                      {t('Processing')} <IconLoader2 className="w-4 h-4 animate-spin" />
                     </>
                   )
                 }
-                return <>{t("Send")}</>
+                return <>{t('Send')}</>
             }
           })()}
         </Button>
@@ -1323,7 +1329,7 @@ const DynamicDropdown: React.FC<{
     if (type === 'chain') {
       // Always return Nexon for destination chain
       if (!isSource) {
-        return t("Nexon")
+        return t('Nexon')
       }
       return selectedValue
     }
@@ -1351,7 +1357,7 @@ const DynamicDropdown: React.FC<{
       </DialogTrigger>
       <DialogContent className="w-[80vw] max-w-xl h-fit flex flex-col items-center justify-start gap-2">
         <DialogHeader className="!h-fit !w-full !items-start">
-          {type === 'chain' ? t("Choose Network") : t("Choose Token")}
+          {type === 'chain' ? t('Choose Network') : t('Choose Token')}
         </DialogHeader>
         <Separator />
         <ToggleGroup
@@ -1398,7 +1404,7 @@ const DynamicDropdown: React.FC<{
               )}
               {type === 'chain'
                 ? !isSource
-                  ? t("Nexon")
+                  ? t('Nexon')
                   : getDisplayValue(option)
                 : getDisplayValue(option)}
             </ToggleGroupItem>

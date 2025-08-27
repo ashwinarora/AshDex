@@ -38,14 +38,17 @@ interface ISelectorProps {
 const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
 
-  const TABS = useMemo(() => [
-    { label: t('All'), icon: null },
-    { label: t('New'), icon: <IconRosette className="size-3" /> },
-    { label: t('AI'), icon: <IconBrain className="size-3" /> },
-    { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-    { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-    { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
-  ], [t])
+  const TABS = useMemo(
+    () => [
+      { label: t('All'), icon: null },
+      { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('AI'), icon: <IconBrain className="size-3" /> },
+      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+    ],
+    [t]
+  )
 
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
@@ -136,8 +139,8 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
         label: t('Open Interest'),
         value:
           'openInterest' in selectedAssetContext &&
-            selectedAssetContext.openInterest &&
-            selectedAssetContext.oraclePx ? (
+          selectedAssetContext.openInterest &&
+          selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}

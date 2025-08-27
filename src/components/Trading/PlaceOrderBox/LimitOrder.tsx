@@ -95,7 +95,9 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               isRTL && 'flex-row-reverse'
             )}
           >
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Limit price (USD)')}</p>
+            <p className="font-medium text-white/50 text-xs whitespace-nowrap">
+              {t('Limit price (USD)')}
+            </p>
           </div>
           <SetPrice
             selectedAsset={selectedAsset}

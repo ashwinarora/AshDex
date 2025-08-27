@@ -93,7 +93,9 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => <span className={cn('flex justify-start items-center gap-1')}>{t('Coin')}</span>,
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Coin')}</span>
+        ),
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
           if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
@@ -124,7 +126,9 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
       }),
       columnHelper.accessor('total', {
         id: 'total',
-        header: () => <span className="flex justify-start items-center gap-1">{t('Total Balance')}</span>,
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Total Balance')}</span>
+        ),
         cell: (info) => formatWithCommas(info.getValue()),
         enableSorting: true,
         meta: { label: t('Total Balance') }
@@ -138,7 +142,9 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
       }),
       columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
         id: 'averagePrice',
-        header: () => <span className="flex justify-start items-center gap-1">{t('Average Price')}</span>,
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Average Price')}</span>
+        ),
         cell: (info) => (isNaN(info.getValue()) ? '-' : formatWithCommas(info.getValue())),
         enableSorting: true,
         meta: { label: t('Average Price') }
@@ -165,7 +171,7 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
           )
         },
         enableSorting: false,
-        meta: { label: t('Send')}
+        meta: { label: t('Send') }
       })
     ],
     [columnHelper, isSendModalOpen, t]

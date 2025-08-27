@@ -43,7 +43,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     const toastId = toast.loading(t('Switching to Arbitrum network…'))
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
-        toast.success(t('Switched to Arbitrum network.')    , {
+        toast.success(t('Switched to Arbitrum network.'), {
           id: toastId
         })
       })
@@ -59,7 +59,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       await switchChainAsync({ chainId: 42161 })
     }
     if (!usdc) return
-    const toastId = toast.loading(t('Deposit in progress…'))  
+    const toastId = toast.loading(t('Deposit in progress…'))
     try {
       setIsLoading(true)
       await writeContractAsync({

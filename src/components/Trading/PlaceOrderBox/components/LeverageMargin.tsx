@@ -87,7 +87,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
             error.isValid ? 'text-white/50' : 'text-red'
           )}
         >
-          {t('Leverage')} 
+          {t('Leverage')}
         </p>
         <div className="flex items-center gap-2">
           {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
