@@ -21,6 +21,7 @@ import {
 import { UserFees } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
 import { formatWithKMB } from '@/utils/format'
+import { useTranslate } from '@tolgee/react'
 
 type PortfolioVolumeCardProps = {
   userFeeData: UserFees | undefined
@@ -29,6 +30,7 @@ type PortfolioVolumeCardProps = {
 }
 
 const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVolumeCardProps) => {
+  const { t } = useTranslate()
   const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo(
@@ -100,7 +102,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         isRTL && 'items-end'
       )}
     >
-      <h2>30 Day Volume</h2>
+      <h2>{t('30 Day Volume')}</h2>
       {userFeeLoading ? (
         <Skeleton className="w-36 h-12" />
       ) : (
@@ -117,7 +119,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
       <Dialog>
         <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
           <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-            View Volume
+            {t('View Volume')}
           </p>
         </DialogTrigger>
         <DialogContent
@@ -125,14 +127,13 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           className="w-fit !max-w-xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2"
         >
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
-            <DialogTitle>Your Volume History</DialogTitle>
+            <DialogTitle>{t('Your Volume History')}</DialogTitle>
             <DialogDescription
               className={cn('text-xs text-white/50', isRTL ? 'text-end' : 'text-start')}
             >
-              Dates are based on UTC time zone and do not include the current day. Your 14D maker
-              volume share is 0.00%. <br />
-              Perps and spot volume are counted together to determine your fee tier, and spot volume
-              counts double toward your fee tier.
+              {t(
+                '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. <br /> Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center h-full w-full gap-2">

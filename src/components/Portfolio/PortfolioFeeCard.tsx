@@ -23,6 +23,7 @@ import { Separator } from '../ui/separator'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { formatWithKMB } from '@/utils/format'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 const PortfolioFeeCard = ({
   userFeeData,
@@ -39,6 +40,7 @@ const PortfolioFeeCard = ({
   >
   isRTL: boolean
 }) => {
+  const { t } = useTranslate()
   const feeTier = userFeeData?.feeSchedule.stakingDiscountTiers.map((tier) => ({
     stakedHype: parseFloat(tier.bpsOfMaxSupply) * 100000,
     discount: parseFloat(tier.discount)
@@ -56,7 +58,7 @@ const PortfolioFeeCard = ({
       )}
     >
       <div className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}>
-        <h2>Fees (Taker/Maker)</h2>
+        <h2>{t('Fees (Taker/Maker)')}</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant={'outline'} size={'sm'} className="w-fit">
@@ -66,10 +68,10 @@ const PortfolioFeeCard = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}>
-              <p>Perps</p>
+              <p>{t('Perps')}</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'all' })}>
-              <p>Spot</p>
+              <p>{t('Spot')}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -88,15 +90,16 @@ const PortfolioFeeCard = ({
       <Dialog>
         <DialogTrigger asChild>
           <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-            View Fee Schedule
+            {t('View Fee Schedule')}
           </p>
         </DialogTrigger>
         <DialogContent isRTL={isRTL} className="min-w-11/12 md:min-w-xl">
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
-            <DialogTitle>Fee Schedule</DialogTitle>
+            <DialogTitle>{t('Fee Schedule')}</DialogTitle>
             <DialogDescription className={cn('text-xs', isRTL ? 'text-end' : 'text-start')}>
-              If you have staked HYPE, you might be eligible for a lower fee tier. Choose how much
-              you&apos;ve staked below to see your current tier.
+              {t(
+                'If you have staked HYPE, you might be eligible for a lower fee tier. Choose how much you&apos;ve staked below to see your current tier.'
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center justify-between h-fit w-full max-w-full gap-2">
@@ -112,7 +115,7 @@ const PortfolioFeeCard = ({
                   isRTL ? 'text-end' : 'text-start'
                 )}
               >
-                HYPE Staked:
+                {t('HYPE Staked:')}
               </p>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -138,7 +141,7 @@ const PortfolioFeeCard = ({
             </div>
             <Separator className="w-full mb-2" />
             <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
-              Fee Tier
+              {t('Fee Tier')}
             </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl  md:w-full h-full">
               <Table>
@@ -147,32 +150,32 @@ const PortfolioFeeCard = ({
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-end' : 'w-full justify-start')}
                     >
-                      Tier
+                      {t('Tier')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      14D Volume
+                      {t('14D Volume')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      Perps Taker
+                      {t('Perps Taker')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      Perps Maker
+                      {t('Perps Maker')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      Spot Taker
+                      {t('Spot Taker')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      Spot Maker
+                      {t('Spot Maker')}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -225,7 +228,7 @@ const PortfolioFeeCard = ({
             </ScrollArea>
             <Separator className="w-full mb-2" />
             <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
-              Maker Rebate Fee
+              {t('Maker Rebate Fee')}
             </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl md:w-full h-full">
               <Table>
@@ -234,17 +237,17 @@ const PortfolioFeeCard = ({
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-end' : 'w-full justify-start')}
                     >
-                      Tier
+                      {t('Tier')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      14D Maker Volume Share
+                      {t('14D Maker Volume Share')}
                     </TableHead>
                     <TableHead
                       className={cn(isRTL ? 'w-full justify-start' : 'w-full justify-end')}
                     >
-                      Maker
+                      {t('Maker')}
                     </TableHead>
                   </TableRow>
                 </TableHeader>
@@ -275,10 +278,13 @@ const PortfolioFeeCard = ({
           >
             <Separator className="w-full mb-2" />
             <p>
-              Perps and spot volume are counted together to determine your fee tier, and spot volume
-              counts double toward your fee tier.
+              {t(
+                'Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
+              )}
             </p>
-            <p>Negative fees are rebates. Staking discounts do not apply to maker rebates.</p>
+            <p>
+              {t('Negative fees are rebates. Staking discounts do not apply to maker rebates.')}
+            </p>
           </DialogFooter>
         </DialogContent>
       </Dialog>

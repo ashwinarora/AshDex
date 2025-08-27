@@ -17,6 +17,7 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { formatWithKMB } from '@/utils/format'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 const chartConfig = {
   accountValue: {
@@ -31,6 +32,7 @@ const PortfolioChart = ({
   portfolioQuery: UseQueryResult<PortfolioPeriods | undefined, Error>
   isRTL: boolean
 }) => {
+  const { t } = useTranslate()
   const [selectedChart, setSelectedChart] = useState<{
     pnlType: 'unrealized' | 'realized' | 'total'
     type: 'area' | 'calendar'
@@ -120,14 +122,14 @@ const PortfolioChart = ({
             value="area"
           >
             <IconTimeline className="size-4" />
-            Performance
+            {t('Performance')}
           </ToggleGroupItem>
           <ToggleGroupItem
             className={cn('w-32 bg-white/5', isRTL ? 'rounded-l-md' : 'rounded-r-md')}
             value="calendar"
           >
             <IconCalendarWeek className="size-4" />
-            Calendar
+            {t('Calendar')}
           </ToggleGroupItem>
         </ToggleGroup>
         {selectedChart.type === 'area' ? (
@@ -158,7 +160,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Day
+                  {t('Day')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -168,7 +170,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Week
+                  {t('Week')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -178,7 +180,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Month
+                  {t('Month')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -188,14 +190,14 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  All Time
+                  {t('All Time')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
-                  {selectedChart.account === 'accountValue' ? 'Total Equity' : 'Perps Equity'}
+                  {selectedChart.account === 'accountValue' ? t('Total Equity') : t('Perps Equity')}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -208,7 +210,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Total Equity
+                  {t('Total Equity')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -218,7 +220,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Perps Equity
+                  {t('Perps Equity')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -243,7 +245,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Unrealized PnL
+                  {t('Unrealized PnL')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -253,7 +255,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Realized PnL
+                  {t('Realized PnL')}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -263,7 +265,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  Total PnL
+                  {t('Total PnL')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

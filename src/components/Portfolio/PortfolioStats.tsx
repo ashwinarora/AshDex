@@ -22,8 +22,10 @@ import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
 import { useUserFee } from '@/hooks/useUserFee'
 import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 
 const PortfolioStats = () => {
+  const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
   const { isMobile, isTablet } = useScreenSize()
   const [selectedView, setSelectedView] = useState<{
@@ -156,12 +158,12 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
                   >
-                    <p>Perps</p>
+                    <p>{t('Perps')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
                   >
-                    <p>Perps+Spot+Vault</p>
+                    <p>{t('Perps+Spot+Vault')}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -170,7 +172,7 @@ const PortfolioStats = () => {
                   <Button variant={'outline'} size={'sm'} className="w-fit">
                     <p>
                       {selectedView.overviewTimeFrame === 'alltime'
-                        ? 'All Time'
+                        ? t('All Time')
                         : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
                           selectedView.overviewTimeFrame.slice(1)}
                     </p>
@@ -181,24 +183,24 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
                   >
-                    <p>Day</p>
+                    <p>{t('Day')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
                   >
-                    <p>Week</p>
+                    <p>{t('Week')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
                   >
-                    <p>Month</p>
+                    <p>{t('Month')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
                       setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })
                     }
                   >
-                    <p>All Time</p>
+                    <p>{t('All Time')}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -259,12 +261,12 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
               >
-                <p>Perps</p>
+                <p>{t('Perps')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
               >
-                <p>Perps+Spot+Vault</p>
+                <p>{t('Perps+Spot+Vault')}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -273,7 +275,7 @@ const PortfolioStats = () => {
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
                   {selectedView.overviewTimeFrame === 'alltime'
-                    ? 'All Time'
+                    ? t('All Time')
                     : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
                       selectedView.overviewTimeFrame.slice(1)}
                 </p>
@@ -284,22 +286,22 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
               >
-                <p>Day</p>
+                <p>{t('Day')} </p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
               >
-                <p>Week</p>
+                <p>{t('Week')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
               >
-                <p>Month</p>
+                <p>{t('Month')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })}
               >
-                <p>All Time</p>
+                <p>{t('All Time')} </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
