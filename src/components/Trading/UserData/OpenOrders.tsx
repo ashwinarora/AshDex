@@ -33,10 +33,12 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useTranslate } from '@tolgee/react'
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
 const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
+  const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { sdkL1ActionClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -193,7 +195,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const renderCancelAllButton = useCallback(() => {
     return (
       <div className={cn('flex items-center justify-end gap-2', isRTL && 'flex-row-reverse')}>
-        <span className="text-white/50 text-xs">Action</span>
+        <span className="text-white/50 text-xs">{t('Action')}</span>
         <Button
           onClick={() => {
             if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -212,60 +214,60 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
     () => [
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
-        header: () => 'Time',
+        header: () => t('Time'),
         cell: (info) => <>{new Date(info.getValue()).toLocaleString('en-US')}</>,
         enableSorting: true,
-        meta: { label: 'Time' }
+        meta: { label: t('Time') }
       }),
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => 'Coin',
+        header: () => t('Coin'),
         cell: (info) => <>{info.getValue()}</>,
         enableSorting: false,
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       columnHelper.accessor('orderType', {
         id: 'orderType',
-        header: () => 'Type',
+        header: () => t('Type'),
         cell: (info) => info.getValue(),
-        meta: { label: 'Type' }
+        meta: { label: t('Type') }
       }),
       columnHelper.accessor('side', {
         id: 'side',
-        header: () => 'Direction',
+        header: () => t('Direction'),
         cell: (info) => (
           <span className={`capitalize ${info.getValue() === 'B' ? 'text-green' : 'text-red'}`}>
             {info.getValue() === 'B' ? 'Buy' : 'Sell'}
           </span>
         ),
         enableSorting: false,
-        meta: { label: 'Direction' }
+        meta: { label: t('Direction') }
       }),
       columnHelper.accessor('limitPx', {
         id: 'px',
-        header: () => 'Price',
+        header: () => t('Price'),
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
-        meta: { label: 'Limit Price' }
+        meta: { label: t('Limit Price') }
       }),
       columnHelper.accessor('sz', {
         id: 'sz',
-        header: () => 'Size',
+        header: () => t('Size'),
         cell: (info) => (
           <>
             <ReactiveText value={info.getValue()} type="number" precision={4} />
           </>
         ),
-        meta: { label: 'Original Size' }
+        meta: { label: t('Original Size') }
       }),
       columnHelper.accessor('origSz', {
         id: 'origSz',
-        header: () => 'Original Size',
+        header: () => t('Original Size'),
         cell: (info) => <ReactiveText value={info.getValue()} type="number" precision={4} />,
-        meta: { label: 'Original Size' }
+        meta: { label: t('Original Size') }
       }),
       columnHelper.accessor('origSz', {
         id: 'orderValue',
-        header: () => 'Order Value',
+        header: () => t('Order Value') ,
         cell: (info) => (
           <ReactiveText
             value={Number(info.getValue()) * Number(info.row.original.limitPx)}
@@ -273,21 +275,21 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             precision={2}
           />
         ),
-        meta: { label: 'Order Value' }
+        meta: { label: t('Order Value') }
       }),
       columnHelper.accessor('reduceOnly', {
         id: 'reduceOnly',
-        header: () => 'Reduce Only',
-        cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+        header: () => t('Reduce Only'),
+        cell: (info) => (info.getValue() ? t('Yes') : t('No')),
         enableSorting: false,
-        meta: { label: 'Reduce Only' }
+        meta: { label: t('Reduce Only') }
       }),
       columnHelper.accessor('triggerCondition', {
         id: 'triggerCondition',
-        header: () => 'Trigger',
+        header: () => t('Trigger'),
         cell: (info) => info.getValue(),
         enableSorting: false,
-        meta: { label: 'Trigger Condition' }
+        meta: { label: t('Trigger Condition') }
       }),
 
       columnHelper.display({
@@ -297,10 +299,10 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         },
         cell: ({ row }) => renderCancelButton(row),
         enableSorting: false,
-        meta: { label: 'Actions' }
+        meta: { label: t('Actions') }
       })
     ],
-    [renderCancelButton, renderCancelAllButton]
+    [renderCancelButton, renderCancelAllButton, t]
   )
 
   const data = useMemo(() => {
@@ -362,7 +364,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === 'Coin' || item === 'Trigger') && (
+                    {(item === t('Coin') || item === t('Trigger')) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>

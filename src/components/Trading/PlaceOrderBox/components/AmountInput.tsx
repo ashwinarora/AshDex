@@ -18,6 +18,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -44,6 +45,7 @@ const AmountInput = ({
   isBuy,
   isRTL
 }: AmountInputProps) => {
+  const { t } = useTranslate()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
@@ -151,9 +153,9 @@ const AmountInput = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/50 text-xs whitespace-nowrap">Position Size</p>
+        <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Position Size')}</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
-          Max ={' '}
+          {t('Max')} ={' '}
           {isInputUsd
             ? `${maxAllowedUsd.toFixed(2)} USD`
             : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${selectedAsset}`}

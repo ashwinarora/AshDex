@@ -47,12 +47,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
+import { useTranslate } from '@tolgee/react'
 interface IPositionsProps {
   setSelectedAsset: (asset: string) => void
   isRTL: boolean
 }
 
 const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
+  const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -96,7 +98,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
     () => [
       helper.accessor('coin', {
         id: 'coin',
-        header: () => <span className={cn('flex justify-start items-center gap-1')}>Position</span>,
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>{t('Position')}</span>,
         cell: (info) => {
           const coin = info.getValue()
           const { leverage } = info.row.original
@@ -126,18 +128,18 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
             </div>
           )
         },
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: () => <span className={cn('flex justify-start items-center gap-1')}>Value</span>,
-        meta: { label: 'Position Value' },
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>{t('Value')}</span>,
+        meta: { label: t('Position Value') },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.accessor('szi', {
         id: 'szi',
-        header: 'Size',
-        meta: { label: 'Size' },
+        header: () => t('Size'),
+        meta: { label: t('Size') },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -150,26 +152,26 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.accessor('entryPx', {
         id: 'entryPx',
-        header: 'Entry',
-        meta: { label: 'Entry Price' },
+        header: () => t('Entry'),
+        meta: { label: t('Entry Price') },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.display({
         id: 'markPx',
-        header: 'Mark',
-        meta: { label: 'Mark Price' },
+        header: () => t('Mark'),
+        meta: { label: t('Mark Price') },
         cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
-        header: 'Funding PnL',
-        meta: { label: 'Funding PnL' }
+        header: () => t('Funding PnL'),
+        meta: { label: t('Funding PnL') }
       }),
 
       helper.accessor('unrealizedPnl', {
         id: 'unrealizedPnl',
-        header: 'Unrealized PnL',
-        meta: { label: 'Unrealized PnL' },
+        header: () => t('Unrealized PnL'),
+        meta: { label: t('Unrealized PnL') },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -183,8 +185,8 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.accessor('liquidationPx', {
         id: 'liquidationPx',
-        header: 'Liq. Price',
-        meta: { label: 'Liq. Price' },
+        header: () => t('Liq. Price'),
+        meta: { label: t('Liq. Price') },
         cell: (info) => {
           const value = info.getValue()
           if (!value) return '-'
@@ -193,8 +195,8 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-        header: 'Margin',
-        meta: { label: 'Margin' },
+          header: () => t('Margin'),
+        meta: { label: t('Margin') },
         cell: (info) => {
           return (
             <div className="flex flex-col gap-1 items-center justify-center font-medium text-xs">
@@ -231,21 +233,21 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
       }),
       helper.display({
         id: 'status',
-        header: 'Status',
+        header: () => t('Status'),
         cell: () => {
           return (
             <span className="bg-green/20 px-2 py-1 rounded-md font-medium text-green text-xs">
-              Open
+              {t('Open')}
             </span>
           )
         },
-        meta: { label: 'Status' }
+        meta: { label: t('Status') }
       }),
       helper.display({
         id: 'tp_sl',
         header: () => (
           <div className="flex items-center justify-end gap-2">
-            <span className="text-white/50 text-xs">Action</span>
+            <span className="text-white/50 text-xs">{t('Action')}</span>
             <Button
               onClick={() => {
                 if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -266,7 +268,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                   variant={'outline'}
                   className="!py-1 !px-2 text-xs w-full h-fit flex items-center justify-between gap-1"
                 >
-                  More <IconChevronDown className="size-3" />
+                  {t('More')} <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -277,7 +279,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                     setIsTPSLModalOpen(true)
                   }}
                 >
-                  <span>Set TP/SL</span>
+                  <span>{t('Set TP/SL')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -286,7 +288,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                     setIsLimitCloseModalOpen(true)
                   }}
                 >
-                  <span>Close on Limit</span>
+                  <span>{t('Close on Limit')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -295,16 +297,16 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                     setIsMarketCloseModalOpen(true)
                   }}
                 >
-                  <span>Close on Market</span>
+                  <span>{t('Close on Market')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )
         },
-        meta: { label: 'TP/SL' }
+        meta: { label: t('TP/SL') }
       })
     ],
-    [helper, isAgentApproved, currentFeeApproval, openAgentModal]
+    [helper, isAgentApproved, currentFeeApproval, openAgentModal, t]
   )
 
   const tableData = useMemo(() => {
@@ -352,7 +354,7 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === 'Position' || item === 'Margin') && (
+                    {(item === t('Position') || item === t('Margin')) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>

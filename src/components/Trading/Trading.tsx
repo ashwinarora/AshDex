@@ -18,8 +18,10 @@ import { IconTransform, IconUserBitcoin } from '@tabler/icons-react'
 import { Separator } from '../ui/separator'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 
 const Trading = () => {
+  const { t } = useTranslate()
   const isSpot = useIsSpot()
   const [selectedAsset, setSelectedAsset] = useState<string>(
     isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
@@ -70,10 +72,10 @@ const Trading = () => {
           }}
         >
           <ToggleGroupItem className="rounded-l-md bg-white/5 h-full" value="chart">
-            <p>Chart</p>
+            <p>{t('Chart')}</p>
           </ToggleGroupItem>
           <ToggleGroupItem className="rounded-r-md h-full bg-white/5" value="orderbook">
-            <p>Orderbook</p>
+            <p>{t('Orderbook')}</p>
           </ToggleGroupItem>
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
@@ -106,11 +108,11 @@ const Trading = () => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>Trade</p>
+              <p>{t('Trade')}</p>
             </ToggleGroupItem>
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="overview">
               <IconUserBitcoin className="size-4" />
-              <p>Overview</p>
+              <p>{t('Overview')}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer
@@ -181,7 +183,7 @@ const Trading = () => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>Trade</p>
+              <p>{t('Trade')}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer

@@ -23,6 +23,8 @@ import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
+
 
 const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
@@ -33,6 +35,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }))
   )
   const [isBuy, setIsBuy] = useState<boolean>(true)
+  const { t } = useTranslate()
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
@@ -188,7 +191,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -201,7 +204,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                TP/SL
+                {t('TP/SL')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -225,16 +228,14 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Slippage
+                {t('Slippage')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <p className="text-xs text-white/50">
-                  Max slippage only affects market orders placed from the order form. Closing
-                  positions will use max slippage of 8% and market TP/SL orders will use max
-                  slippage of 10%.
+                  {t('Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.')}
                 </p>
                 <div className="flex items-center gap-3">
                   <Slider
@@ -287,12 +288,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           {!isSpot && (
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">Liquidation Price</p>
+                <p className="text-white/50">{t('Liquidation Price')}</p>
                 <p className="text-white">{liquidationPrice}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">Margin Required</p>
+                <p className="text-white/50">{t('Margin Required')}</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
                 </p>
@@ -300,11 +301,11 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">Order Value</p>
+            <p className="text-white/50">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">Fees</p>
+            <p className="text-white/50">{t('Fees')}</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>

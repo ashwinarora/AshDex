@@ -31,6 +31,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useTranslate } from '@tolgee/react'
 
 type ColumnType = {
   key: string
@@ -44,6 +45,7 @@ type RenderRowProps = {
 }
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
+  const { t } = useTranslate()
   const { address, isConnected } = useAccount()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -112,39 +114,39 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     () => [
       columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
         id: 'timestamp',
-        header: () => 'Time',
+        header: () => t('Time'),
         cell: (info) => info.getValue(),
         enableSorting: true,
-        meta: { label: 'Time' }
+        meta: { label: t('Time') }
       }),
       columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
-        header: () => 'Coin',
+        header: () => t('Coin'),
         cell: (info) => info.getValue(),
         enableSorting: true,
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       columnHelper.accessor((row) => row.order.side, {
         id: 'side',
-        header: () => 'Direction',
+        header: () => t('Direction'),
         cell: (info) => (
           <p className={`${info.getValue()?.toLowerCase() === 'buy' ? 'text-green' : 'text-red'}`}>
             {info.getValue()}
           </p>
         ),
         enableSorting: true,
-        meta: { label: 'Direction' }
+        meta: { label: t('Direction') }
       }),
       columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
-        header: () => 'Price',
+        header: () => t('Price'),
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
         enableSorting: true,
-        meta: { label: 'Price' }
+        meta: { label: t('Price') }
       }),
       columnHelper.accessor((row) => row.order.sz, {
         id: 'sz',
-        header: () => 'Size',
+        header: () => t('Size'),
         cell: (info) => (
           <>
             {info.row.original.order.origSz === info.getValue() ? (
@@ -155,11 +157,11 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           </>
         ),
         enableSorting: true,
-        meta: { label: 'Size' }
+        meta: { label: t('Size') }
       }),
       columnHelper.accessor((row) => row.order.origSz, {
         id: 'origSz',
-        header: () => 'Filled Size',
+        header: () => t('Filled Size'),
         cell: (info) => (
           <>
             {info.row.original.order.sz !== info.getValue() ? (
@@ -170,14 +172,14 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           </>
         ),
         enableSorting: true,
-        meta: { label: 'Size' }
+        meta: { label: t('Size') }
       }),
       columnHelper.accessor((row) => row.order.reduceOnly, {
         id: 'reduceOnly',
-        header: () => 'Reduce Only',
-        cell: (info) => (info.row.original.order.reduceOnly ? 'Yes' : 'No'),
+          header: () => t('Reduce Only'),
+        cell: (info) => (info.row.original.order.reduceOnly ? t('Yes') : t('No')),
         enableSorting: false,
-        meta: { label: 'Reduce Only' }
+        meta: { label: t('Reduce Only') }
       }),
       columnHelper.accessor('status', {
         id: 'status',
@@ -188,7 +190,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
               isRTL && 'flex-row-reverse'
             )}
           >
-            Status
+            {t('Status')}
           </div>
         ),
         cell: (info) => {
@@ -224,17 +226,17 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           )
         },
         enableSorting: true,
-        meta: { label: 'Status' }
+        meta: { label: t('Status') }
       }),
       columnHelper.accessor((row) => row.order.oid, {
         id: 'orderId',
-        header: () => 'Order ID',
+        header: () => t('Order ID'),
         cell: (info) => info.getValue().toString(),
         enableSorting: true,
-        meta: { label: 'Order ID' }
+        meta: { label: t('Order ID') }
       })
     ],
-    [columnHelper]
+    [columnHelper, t]
   )
 
   const table = useReactTable({
@@ -279,7 +281,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === 'Coin' || item === 'Trigger') && (
+                    {(item === t('Coin') || item === t('Trigger') ) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>

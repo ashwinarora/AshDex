@@ -27,6 +27,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
+import { useTranslate } from '@tolgee/react'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -34,17 +35,18 @@ interface ISelectorProps {
   isRTL: boolean
 }
 
-// Memoize tabs array outside component to prevent recreation
-const TABS = [
-  { label: 'All', icon: null },
-  { label: 'New', icon: <IconRosette className="size-3" /> },
-  { label: 'AI', icon: <IconBrain className="size-3" /> },
-  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-] as const
-
 const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
+  const { t } = useTranslate()
+
+  const TABS = useMemo(() => [
+    { label: t('All'), icon: null },
+    { label: t('New'), icon: <IconRosette className="size-3" /> },
+    { label: t('AI'), icon: <IconBrain className="size-3" /> },
+    { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+    { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+    { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  ], [t])
+
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       perpAssetContext: state.perpAssetContext,
@@ -86,7 +88,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [
       {
-        label: 'Mark Price',
+        label: t('Mark Price'),
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
             className="text-xs"
@@ -99,7 +101,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
         )
       },
       {
-        label: 'Oracle Price',
+        label: t('Oracle Price'),
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText
@@ -113,12 +115,12 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
           )
       },
       {
-        label: '24h Change',
+        label: t('24h Change'),
         value: changeString ?? <Skeleton size="md" />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
-        label: '24h Volume',
+        label: t('24h Volume'),
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
             className="text-xs"
@@ -131,11 +133,11 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
         )
       },
       {
-        label: 'Open Interest',
+        label: t('Open Interest'),
         value:
           'openInterest' in selectedAssetContext &&
-          selectedAssetContext.openInterest &&
-          selectedAssetContext.oraclePx ? (
+            selectedAssetContext.openInterest &&
+            selectedAssetContext.oraclePx ? (
             <ReactiveText
               className="text-xs"
               precision={0}
@@ -153,7 +155,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     // Only add funding if the asset has funding data
     if ('funding' in selectedAssetContext && selectedAssetContext.funding !== undefined) {
       data.splice(data.length - 1, 0, {
-        label: 'Funding/Countdown',
+        label: t('Funding/Countdown'),
         value: (
           <div className="flex items-center gap-1">
             <span
@@ -173,7 +175,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     }
 
     return data
-  }, [selectedAssetContext])
+  }, [selectedAssetContext, t])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -234,7 +236,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
               <Input
                 type="text"
                 dir={isRTL ? 'rtl' : 'ltr'}
-                placeholder="Search for an asset"
+                placeholder={t('Search for an asset')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn(

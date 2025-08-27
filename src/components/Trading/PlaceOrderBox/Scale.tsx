@@ -37,6 +37,7 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 interface Order {
   price: number
   size: number
@@ -110,15 +111,16 @@ function calculateScaleOrdersByAssetSize(
 
 const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
-    useHyperliquidStore(
-      useShallow((state) => ({
-        agentWallet: state.agentWallet,
-        clearingHouseState: state.clearingHouseState,
-        allMids: state.allMids,
-        perpsMeta: state.perpsMeta,
-        sdkL1ActionClient: state.sdkL1ActionClient
-      }))
-    )
+  useHyperliquidStore(
+    useShallow((state) => ({
+      agentWallet: state.agentWallet,
+      clearingHouseState: state.clearingHouseState,
+      allMids: state.allMids,
+      perpsMeta: state.perpsMeta,
+      sdkL1ActionClient: state.sdkL1ActionClient
+    }))
+  )
+  const { t } = useTranslate()
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -277,7 +279,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-          Start Price
+          {t('Start Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -314,7 +316,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </DropdownMenu>
         </div>
         <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-          End Price
+          {t('End Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -342,9 +344,9 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
           <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-            Total Size
+            {t('Total Size')}
           </label>
-          <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
+          <p className="text-xs text-white/50">{t('Max')}: {maxAllowedUsd} USDC</p>
         </div>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -442,7 +444,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -455,14 +457,14 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Order Count
+                {t('Order Count')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
                 <label htmlFor="orderCount" className="text-xs text-white/50">
-                  Order Count
+                  {t('Order Count')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
@@ -496,14 +498,14 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Skew
+                {t('Skew')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
                 <label htmlFor="sizeSkew" className="text-xs text-white/50">
-                  Size Skew
+                  {t('Size Skew')}
                 </label>
                 <Input
                   type="text"
@@ -526,7 +528,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              Enable Trading
+              {t('Enable Trading')}
             </Button>
           ) : (
             <Button
@@ -540,7 +542,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
             >
-              Scale Buy ({totalOrders} Orders)
+              {t('Scale Buy')} ({totalOrders} {t('Orders')})
             </Button>
           )}
         </div>

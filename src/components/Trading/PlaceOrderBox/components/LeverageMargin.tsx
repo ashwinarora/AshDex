@@ -10,6 +10,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Input } from '@/components/ui/input'
 import { IconX } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface LeverageMarginProps {
   selectedAsset: string
@@ -19,6 +20,7 @@ interface LeverageMarginProps {
 }
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: LeverageMarginProps) => {
+  const { t } = useTranslate()
   const { clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -85,7 +87,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
             error.isValid ? 'text-white/50' : 'text-red'
           )}
         >
-          Leverage
+          {t('Leverage')} 
         </p>
         <div className="flex items-center gap-2">
           {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>

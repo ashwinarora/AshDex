@@ -11,8 +11,10 @@ import { Button } from '@/components/ui/button'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
+  const { t } = useTranslate()
   const [stopPrice, setStopPrice] = useState(0)
   const [limitPrice, setLimitPrice] = useState('')
   const [isReduceOnly, setIsReduceOnly] = useState(false)
@@ -43,7 +45,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-          Stop Price
+          {t('Stop Price')} 
         </label>
         <Input
           type="text"
@@ -56,7 +58,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           )}
         />
         <label htmlFor="limitPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
-          Limit Price
+          {t('Limit Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -100,7 +102,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
         </div>

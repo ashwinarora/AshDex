@@ -1,6 +1,7 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import React from 'react'
+import { useTranslate } from '@tolgee/react'
 
 interface BuyOrSellProps {
   isBuy: boolean
@@ -9,6 +10,7 @@ interface BuyOrSellProps {
 }
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy, isRTL }) => {
+  const { t } = useTranslate()
   return (
     <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
@@ -26,7 +28,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy, isRTL }) => {
           )}
           value="buy"
         >
-          Buy
+          {t('Buy')}
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
@@ -36,7 +38,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy, isRTL }) => {
           )}
           value="sell"
         >
-          Sell
+          {t('Sell')}
         </ToggleGroupItem>
       </ToggleGroup>
     </div>

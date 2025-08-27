@@ -17,6 +17,7 @@ import {
 import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useTranslate } from '@tolgee/react'
 
 /** Define the possible tab options */
 type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
@@ -29,6 +30,8 @@ export interface IPlaceOrderProps {
 const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
   const isSpot = useIsSpot()
+  const { t } = useTranslate()
+
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -54,11 +57,11 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   }
 
   const availableOptions = isSpot
-    ? [{ value: 'SCALE', label: 'Scale' }]
+    ? [{ value: 'SCALE', label: t('Scale') }]
     : [
-        { value: 'SCALE', label: 'Scale' },
-        { value: 'STOP_LIMIT', label: 'Stop Limit' },
-        { value: 'STOP_MARKET', label: 'Stop Market' }
+        { value: 'SCALE', label: t('Scale') },
+        { value: 'STOP_LIMIT', label: t('Stop Limit') },
+        { value: 'STOP_MARKET', label: t('Stop Market') }
       ]
 
   return (
@@ -89,10 +92,10 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             className={cn('w-full', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
             value="LIMIT"
           >
-            Limit
+            {t('Limit')}
           </ToggleGroupItem>
           <ToggleGroupItem className={cn('w-full')} value="MARKET">
-            Market
+            {t('Market')}
           </ToggleGroupItem>
         </ToggleGroup>
         <DropdownMenu>
@@ -106,7 +109,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
-              {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
+              {availableOptions.find((option) => option.value === activeTab)?.label || t('Advanced')}
               <IconChevronDown className="size-3" />
             </div>
           </DropdownMenuTrigger>

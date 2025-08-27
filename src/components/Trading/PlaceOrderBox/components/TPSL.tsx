@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { useTranslate } from '@tolgee/react'
 
 interface TPSLProps {
   limitPrice: string
@@ -16,8 +17,9 @@ export type TPSLType = {
 }
 
 const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
+  const { t } = useTranslate()
   const setIsTpsl = (isTpsl: boolean) => {
-    setTpsl({ ...tpsl, isTpsl })
+    setTpsl({ ...tpsl, isTpsl })  
   }
 
   const calculateTakeProfitPercentage = (value: number | string): number => {
@@ -155,17 +157,17 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
       <div className="flex items-center space-x-2">
         {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
         <label htmlFor="tpsl" className="text-xs font-semibold">
-          Set Take Profit and Stop Loss Values
+          {t('Set Take Profit and Stop Loss Values')}
         </label>
       </div>
       <div className="flex flex-col gap-2 w-full">
         <div className="flex flex-col w-full items-start gap-2">
           <div className="flex items-center w-full justify-between gap-2">
             <span className="flex-1 text-start text-nowrap font-medium text-white/50 text-xs">
-              TP Value
+              {t('TP Value')}
             </span>
             <span className="flex-1 text-end text-nowrap font-medium text-white/50 text-xs">
-              TP %
+              {t('TP %')}
             </span>
           </div>
           <div className="flex items-center gap-2 w-full">
@@ -190,10 +192,10 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         <div className="flex flex-col w-full items-start gap-2">
           <div className="flex items-center w-full justify-between gap-2">
             <span className="flex-1 text-start text-nowrap font-medium text-white/50 text-xs">
-              SL Value
+              {t('SL Value')}
             </span>
             <span className="flex-1 text-end text-nowrap font-medium text-white/50 text-xs">
-              SL %
+              {t('SL %')}
             </span>
           </div>
           <div className="flex items-center gap-2 w-full">
@@ -222,7 +224,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         onClick={() => setIsTpsl(!tpsl.isTpsl)}
         className="w-full"
       >
-        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+        {tpsl.isTpsl ? t('Clear TP/SL') : t('Set TP/SL')}
       </Button>
     </div>
   )

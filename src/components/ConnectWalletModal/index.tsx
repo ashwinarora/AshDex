@@ -13,6 +13,7 @@ import { useWalletModal } from '@/context/WalletModalContext'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
+import { useTranslate } from '@tolgee/react'
 
 interface WalletConnectProvider {
   id: string
@@ -21,6 +22,7 @@ interface WalletConnectProvider {
 }
 
 const ConnectWalletModal: React.FC = () => {
+  const { t } = useTranslate()
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
@@ -31,6 +33,7 @@ const ConnectWalletModal: React.FC = () => {
   const createOrUpdateUser = useCreateOrUpdateUser()
 
   const handleClose = () => {
+
     toggleConnectWalletModal()
     setSelectedConnector(null)
     reset()
@@ -84,9 +87,9 @@ const ConnectWalletModal: React.FC = () => {
         </button>
       ))}
       <div className="mt-6 text-center">
-        <p className="text-sm text-white mb-2">Don&apos;t have a wallet?</p>
+        <p className="text-sm text-white mb-2">{t("Don't have a wallet?")}</p>
         <button className="px-6 py-3 bg-[#1c1624] text-white font-bold rounded-xl hover:bg-[#36303b]">
-          Create
+          {t('Create')}
         </button>
       </div>
     </div>
@@ -96,7 +99,7 @@ const ConnectWalletModal: React.FC = () => {
   const renderTermsLoading = () => (
     <div className="flex flex-col items-center justify-center py-8">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white"></div>
-      <p className="text-white mt-4">Loading terms...</p>
+      <p className="text-white mt-4">{t('Loading terms...')}</p>
     </div>
   )
 
@@ -104,12 +107,14 @@ const ConnectWalletModal: React.FC = () => {
   const renderWalletDisplay = () => (
     <WalletDisplay
       onBack={() => {
+        setIsWalletConnected(null)
         setSelectedConnector(null)
         reset()
       }}
       onClose={handleClose}
-      name={selectedConnector!.name}
-      icon={selectedConnector!.icon}
+      name={selectedConnector.name}
+      icon={selectedConnector.icon}
+      isWalletConnected={isWalletConnected}
       hasAgreedToRules={!!termsData?.signed}
     />
   )
@@ -133,7 +138,7 @@ const ConnectWalletModal: React.FC = () => {
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Connect Wallet</DialogTitle>
+        <DialogTitle>{t('Connect Wallet')}</DialogTitle>
       </DialogHeader>
       <DialogContent>{renderDialogContent()}</DialogContent>
     </>

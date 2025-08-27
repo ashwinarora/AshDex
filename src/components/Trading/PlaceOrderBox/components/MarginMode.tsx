@@ -2,6 +2,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { IconArrowRight, IconArrowsShuffle } from '@tabler/icons-react'
 import React from 'react'
+import { useTranslate } from '@tolgee/react'
 
 interface MarginModeProps {
   isCross: boolean
@@ -10,11 +11,12 @@ interface MarginModeProps {
 }
 
 const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
+  const { t } = useTranslate()
   return (
     <div
       className={cn('flex items-center justify-between rounded-md', isRTL && 'flex-row-reverse')}
     >
-      <p className="text-xs font-medium text-white/50">Margin Mode</p>
+      <p className="text-xs font-medium text-white/50">{t('Margin Mode')}</p>
       <ToggleGroup
         size={'sm'}
         type="single"
@@ -31,7 +33,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
           )}
         >
           <IconArrowsShuffle className="size-4" />
-          Cross
+          {t('Cross')}
         </ToggleGroupItem>
         <ToggleGroupItem
           value="isolated"
@@ -42,7 +44,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
           )}
         >
           <IconArrowRight className="size-4" />
-          Isolated
+          {t('Isolated')}
         </ToggleGroupItem>
       </ToggleGroup>
       {/* <div className="flex rounded-lg">

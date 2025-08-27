@@ -26,6 +26,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
+import { useTranslate } from '@tolgee/react'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -42,6 +43,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   )
   const [l2Book, setL2Book] = useState<Book>()
   const { isMobile, isTablet } = useScreenSize()
+  const { t } = useTranslate()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -362,7 +364,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       <div
         className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
       >
-        <h1 className="text-white text-sm font-semibold">Order Book</h1>
+        <h1 className="text-white text-sm font-semibold">{t('Order Book')}</h1>
         <ToggleGroup
           size={'sm'}
           type="single"
@@ -467,12 +469,12 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       <div
         className={clsx('flex items-center justify-between px-2', isRTL ? 'flex-row-reverse' : '')}
       >
-        <p className="font-medium text-xs text-start">Price </p>
+        <p className="font-medium text-xs text-start">{t('Price')}</p>
         <p className="font-medium text-xs text-center flex-1">
-          Amount ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {t('Amount')} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
         <p className="font-medium text-xs text-end">
-          Total ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {t('Total')} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/5 -mb-1" />

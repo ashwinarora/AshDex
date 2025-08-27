@@ -20,8 +20,10 @@ import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
+  const { t } = useTranslate()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
@@ -93,7 +95,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               isRTL && 'flex-row-reverse'
             )}
           >
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">Limit price (USD)</p>
+            <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Limit price (USD)')}</p>
           </div>
           <SetPrice
             selectedAsset={selectedAsset}
@@ -144,7 +146,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -157,7 +159,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                TP/SL
+                {t('TP/SL')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -178,7 +180,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsPostOnly}
           >
             {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Post Only</p>
+            <p className="text-xs font-semibold">{t('Post Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
         </div>
@@ -187,12 +189,12 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           {!isSpot && (
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">Liquidation Price</p>
+                <p className="text-white/50">{t('Liquidation Price')}</p>
                 <p className="text-white">{liquidationPrice()}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">Margin Required</p>
+                <p className="text-white/50">{t('Margin Required')}</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}
                 </p>
@@ -200,11 +202,11 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">Order Value</p>
+            <p className="text-white/50">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">Fees</p>
+            <p className="text-white/50">{t('Fees')}</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>

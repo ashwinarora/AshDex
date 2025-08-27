@@ -12,12 +12,14 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 interface IUserDataProps {
   setSelectedAsset?: (asset: string) => void
 }
 
 const UserData = ({ setSelectedAsset }: IUserDataProps) => {
+  const { t } = useTranslate()
   const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -51,31 +53,31 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     }).length
     const tabs = [
       {
-        header: isRTL ? `(${balanceCount}) Balances` : `Balances (${balanceCount})`,
+        header: isRTL ? `(${balanceCount}) ${t('Balances')}` : `(${balanceCount}) ${t('Balances')}`,
         count: balanceCount,
         element: <Balances setSelectedAsset={setSelectedAsset || (() => {})} isRTL={isRTL} />
       },
       {
-        header: isRTL ? `(${positionsCount}) Positions` : `Positions (${positionsCount})`,
+        header: isRTL ? `(${positionsCount}) ${t('Positions')}` : `(${positionsCount}) ${t('Positions')}`,
         count: positionsCount,
         element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
-        header: isRTL ? `(${openOrdersLength}) Open Orders` : `Open Orders (${openOrdersLength})`,
+        header: isRTL ? `(${openOrdersLength}) ${t('Open Orders')}` : `(${openOrdersLength}) ${t('Open Orders')}`,
         count: openOrdersLength,
         element: <OpenOrders isRTL={isRTL} />
       },
       {
-        header: 'Trade History',
+        header: t('Trade History'),
         element: <TradeHistory isRTL={isRTL} />
       },
       {
-        header: 'Orders History',
+        header: t('Orders History'),
         element: <OrderHistory isRTL={isRTL} />
       }
     ]
     return isRTL ? tabs.reverse() : tabs
-  }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL])
+  }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, t])
 
   const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
 

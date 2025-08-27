@@ -29,6 +29,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface ISelectorProps {
   selectedAsset: string
@@ -36,16 +37,10 @@ interface ISelectorProps {
   isRTL: boolean
 }
 
-const tabs = [
-  { label: 'All', icon: null },
-  { label: 'New', icon: <IconRosette className="size-3" /> },
-  { label: 'AI', icon: <IconBrain className="size-3" /> },
-  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-] as const
+
 
 const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
+  const { t } = useTranslate()
   const { spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
       spotAssetContext: state.spotAssetContext
@@ -61,6 +56,15 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
   const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { isMobile } = useScreenSize()
+
+  const tabs = useMemo(() => [
+    { label: t('All'), icon: null },
+    { label: t('New'), icon: <IconRosette className="size-3" /> },
+    { label: t('AI'), icon: <IconBrain className="size-3" /> },
+    { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+    { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+    { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  ], [t])
 
   const selectedAssetContext = useMemo(() => {
     if (spotMeta && spotAssetContext) {
@@ -91,7 +95,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
 
     return [
       {
-        label: 'Price',
+        label: t('Price'),
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
             className="text-xs"
@@ -104,12 +108,12 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
         )
       },
       {
-        label: '24h Change',
+        label: t('24h Change'),
         value: changeString ?? <Skeleton size="md" />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
-        label: '24h Volume',
+        label: t('24h Volume'),
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
             className="text-xs"
@@ -122,7 +126,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
         )
       },
       {
-        label: 'Market Cap',
+        label: t('Market Cap'),
         value: selectedAssetContext?.midPx ? (
           <ReactiveText
             className="text-xs"
@@ -137,7 +141,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
         )
       },
       {
-        label: 'Contract',
+        label: t('Contract'),
         value: tokenContract ? (
           <div className="group flex gap-1 cursor-pointer">
             <a
@@ -154,7 +158,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
         )
       }
     ]
-  }, [selectedAssetContext, tokenContract])
+  }, [selectedAssetContext, tokenContract, t])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -217,7 +221,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
               <Input
                 type="text"
                 dir={isRTL ? 'rtl' : 'ltr'}
-                placeholder="Search for an asset"
+                placeholder={t('Search for an asset')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn(
@@ -241,7 +245,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
                   )}
                 >
                   <IconShieldCheck className="size-4" />
-                  Verified
+                  {t('Verified')}
                 </ToggleGroupItem>
                 <ToggleGroupItem
                   value="All"
@@ -252,7 +256,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
                   )}
                 >
                   <IconShieldQuestion className="size-4" />
-                  All
+                  {t('All')}
                 </ToggleGroupItem>
               </ToggleGroup>
             </div>

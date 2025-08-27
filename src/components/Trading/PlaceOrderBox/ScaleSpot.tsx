@@ -32,6 +32,7 @@ import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 
 interface Order {
   price: number
@@ -72,13 +73,14 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const { spotState, spotAssetContext, sdkL1ActionClient } = useHyperliquidStore(
+  const { spotState, spotAssetContext, sdkL1ActionClient } =useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState,
       spotAssetContext: state.spotAssetContext,
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
+  const { t } = useTranslate()
   const { data: spotMeta } = useSpotMeta()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -201,7 +203,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-3 px-2">
           <label htmlFor="startPrice" className="text-xs text-white/50">
-            Start Price
+            {t('Start Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -236,7 +238,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         </div>
         <div className="flex flex-col gap-3 px-2">
           <label htmlFor="endPrice" className="text-xs text-white/50">
-            End Price
+            {t('End Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -263,9 +265,9 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <div className="flex flex-col gap-3 px-2">
           <div className="flex items-center justify-between">
             <label htmlFor="percent" className="text-xs text-white/50">
-              Total Size
+              {t('Total Size')}
             </label>
-            <p className="text-xs text-white/50">Max: {Number(maxAllowed).toFixed(2)} USDC</p>
+            <p className="text-xs text-white/50">{t('Max')}: {Number(maxAllowed).toFixed(2)} USDC</p>
           </div>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -335,7 +337,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -348,14 +350,14 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Order Count
+                {t('Order Count')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <label htmlFor="orderCount" className="text-xs text-white/50">
-                  Order Count
+                  {t('Order Count')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
@@ -389,14 +391,14 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Skew
+                {t('Skew')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <label htmlFor="sizeSkew" className="text-xs text-white/50">
-                  Size Skew
+                  {t('Size Skew')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Input
@@ -421,7 +423,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              Enable Trading
+              {t('Enable Trading')}
             </Button>
           ) : (
             <Button
@@ -430,7 +432,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalSize! > Number(maxAllowed)}
             >
-              Scale Buy ({totalOrders} Orders)
+              {t('Scale Buy')} ({totalOrders} {t('Orders')}) 
             </Button>
           )}
         </div>
