@@ -44,7 +44,7 @@ class UserManager {
       return prisma.user.create({
         data: {
           wallet_id: userData.wallet_id,
-          username: userData.username || '',
+          username: userData.username || 'user_' + userData.wallet_id,
           avatar_url: userData.avatar_url ? userData.avatar_url : null
         }
       })
