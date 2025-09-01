@@ -31,6 +31,7 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
+import { useUserFee } from '@/hooks/useUserFee'
 
 interface Order {
   price: number
@@ -89,7 +90,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdPercent, setUsdPercent] = useState(0)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-
+  const { getAdjustedBuilderFee } = useUserFee()
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
@@ -130,11 +131,12 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     const toastId = toast.loading(`Placing ${totalOrders} orders...`)
     try {
       if (!sdkExchangeClient) return
+      const adjustedBuilderFee = getAdjustedBuilderFee()
       const placeOrderRes = await sdkExchangeClient.order({
         grouping: 'na',
         builder: {
           b: BUILDER_ADDRESS,
-          f: currentFeeApproval
+          f: adjustedBuilderFee
         },
         orders: ordersData.map((order) => ({
           a: order.assetIndex,

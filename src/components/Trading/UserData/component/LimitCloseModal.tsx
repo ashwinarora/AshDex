@@ -23,6 +23,8 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
+import { BUILDER_ADDRESS } from '@/utils/constants'
+import { useUserFee } from '@/hooks/useUserFee'
 
 interface LimitCloseModalProps {
   isOpen: boolean
@@ -47,6 +49,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
+  const { getAdjustedBuilderFee } = useUserFee()
 
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
@@ -142,8 +145,13 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     const toastId = toast.loading('Closing position...')
     try {
       if (!sdkExchangeClient) return
+      const adjustedBuilderFee = getAdjustedBuilderFee()
       const order = await sdkExchangeClient.order({
         grouping: 'na',
+        builder: {
+          b: BUILDER_ADDRESS,
+          f: adjustedBuilderFee
+        },
         orders: [
           {
             a: assetIndex,

@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
+import { useUserFee } from '@/hooks/useUserFee'
+import { BUILDER_ADDRESS } from '@/utils/constants'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -32,6 +34,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
         perpsMeta: state.perpsMeta
       }))
     )
+  const { getAdjustedBuilderFee } = useUserFee()
 
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkExchangeClient)
@@ -68,8 +71,13 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       //   grouping: 'na',
       //   orders: orders
       // })
+      const adjustedBuilderFee = getAdjustedBuilderFee(true)
       const orderRes = await sdkExchangeClient.order({
         grouping: 'na',
+        builder: {
+          b: BUILDER_ADDRESS,
+          f: adjustedBuilderFee
+        },
         orders: orders.map((order) => ({
           a: order.assetIndex,
           b: order.isBuy,
