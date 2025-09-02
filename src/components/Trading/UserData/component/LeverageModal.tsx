@@ -28,10 +28,10 @@ interface LeverageModalProps {
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
-  const { perpsMeta, sdkExchangeClient } = useHyperliquidStore(
+  const { perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       perpsMeta: state.perpsMeta,
-      sdkExchangeClient: state.sdkExchangeClient
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
 
@@ -49,10 +49,10 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     if (!asset) return
     const toastId = toast.loading('⏳ Updating leverage...')
     try {
-      if (!sdkExchangeClient) return
+      if (!sdkL1ActionClient) return
       if (!perpsMeta) return
       const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
-      const res = await sdkExchangeClient.updateLeverage({
+      const res = await sdkL1ActionClient.updateLeverage({
         asset: assetIndex,
         isCross: asset.leverage.type === 'cross',
         leverage: leverage

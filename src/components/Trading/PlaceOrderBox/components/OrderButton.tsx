@@ -49,11 +49,11 @@ const OrderButton = ({
   isMarket
 }: OrderButtonProps) => {
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkExchangeClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
+  const { agentWallet, sdkL1ActionClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
     useHyperliquidStore(
       useShallow((state) => ({
         agentWallet: state.agentWallet,
-        sdkExchangeClient: state.sdkExchangeClient,
+        sdkL1ActionClient: state.sdkL1ActionClient,
         perpsMeta: state.perpsMeta,
         pushNewOpenOrders: state.pushNewOpenOrders,
         pushNewPosition: state.pushNewPosition
@@ -123,7 +123,7 @@ const OrderButton = ({
     const adjustedBuilderFee = getAdjustedBuilderFee(isMarket)
     if (isSpot) {
       await placeSpotOrder({
-        sdkExchangeClient,
+        sdkL1ActionClient,
         spotMeta,
         selectedAsset,
         isBuy,
@@ -136,7 +136,7 @@ const OrderButton = ({
       })
     } else {
       await placePerpOrder({
-        sdkExchangeClient,
+        sdkL1ActionClient,
         selectedAsset,
         isCross,
         leverage,

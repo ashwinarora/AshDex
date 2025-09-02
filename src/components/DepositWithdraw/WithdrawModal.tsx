@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
-import { useAccount, useSignTypedData, useSwitchChain } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
-import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
-import { splitSignature } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import Loading from '../common/Loading'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
@@ -14,6 +11,7 @@ import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
+import { ApiRequestError } from '@nktkas/hyperliquid'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -22,14 +20,13 @@ interface WithdrawModalProps {
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useAccount()
-
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState } = useHyperliquidStore(
+  const { clearingHouseState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState
+      clearingHouseState: state.clearingHouseState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
-  const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
   const { switchChainAsync } = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
@@ -51,45 +48,35 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   const onWithdrawClick = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
     if (!address) return
     const toastId = toast.loading('Signing in progress…')
+    setIsLoading(true)
     try {
-      const payload = getWithrawalPayload({
-        chainId: chainId,
-        isTestnet: isTestnet,
+      const res = await sdkUserSignerClient.withdraw3({
         amount: amount,
-        destination: address,
-        nonce: Date.now()
+        destination: address
       })
-      const sign = await signTypedDataAsync(payload)
-      setIsLoading(true)
-      toast.loading('Withdrawal in progress…', {
-        id: toastId
-      })
-      const body = {
-        action: {
-          type: payload.message.type,
-          amount: payload.message.amount,
-          destination: payload.message.destination,
-          time: payload.message.time,
-          signatureChainId: payload.message.signatureChainId,
-          hyperliquidChain: payload.message.hyperliquidChain
-        },
-        nonce: payload.message.time,
-        signature: splitSignature(sign)
-      }
-      const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Withdraw response:', res)
       onClose()
       toast.success('Withdrawal confirmed.', {
         id: toastId
       })
     } catch (error) {
+      setIsLoading(false)
       onClose()
       console.error('Error withdrawing:', error)
-      toast.error('Withdrawal failed. Please try again.', {
-        id: toastId
-      })
+      if (error instanceof ApiRequestError) {
+        toast.error(error.message, {
+          id: toastId
+        })
+      } else {
+        toast.error('Withdrawal failed.', {
+          id: toastId
+        })
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 

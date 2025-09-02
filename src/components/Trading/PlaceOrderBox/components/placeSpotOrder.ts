@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 
 export const placeSpotOrder = async ({
-  sdkExchangeClient,
+  sdkL1ActionClient,
   spotMeta,
   selectedAsset,
   isBuy,
@@ -14,7 +14,7 @@ export const placeSpotOrder = async ({
   spotKeyToName,
   pushNewOpenOrders
 }: {
-  sdkExchangeClient: ExchangeClient | null
+  sdkL1ActionClient: ExchangeClient | null
   spotMeta?: SpotMeta
   selectedAsset: string
   isBuy: boolean
@@ -26,12 +26,12 @@ export const placeSpotOrder = async ({
   pushNewOpenOrders: (order: FrontendOrder[]) => void
 }) => {
   if (!spotMeta?.tokens.length) return
-  if (!sdkExchangeClient) return
+  if (!sdkL1ActionClient) return
   const assetIndex = spotMeta.universe.find((asset) => asset.name === selectedAsset)?.index
   if (assetIndex === -1 || assetIndex === undefined) return
   const toastId = toast.loading('⏳ Loading…')
   try {
-    const res = await sdkExchangeClient.order({
+    const res = await sdkL1ActionClient.order({
       grouping: 'na',
       builder: {
         b: BUILDER_ADDRESS,

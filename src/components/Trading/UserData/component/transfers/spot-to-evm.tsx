@@ -3,7 +3,6 @@ import {
   useAccount,
   useBalance,
   useSendTransaction,
-  useSignTypedData,
   useSwitchChain,
   useWriteContract
 } from 'wagmi'
@@ -27,12 +26,10 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { CORE_TO_EVM_MAPPING, isTestnet } from '@/utils/constants'
-import { hyperliquidAxios } from '@/config/axios'
-import { splitSignature } from '@/utils/utils'
-import { getSpotSendPayload } from '@/utils/hyperliquid/SpotSend'
 import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
-import { erc20Abi, formatUnits, parseUnits } from 'viem'
+import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
+import { ApiRequestError } from '@nktkas/hyperliquid'
 
 interface ITransferModal {
   isOpen: boolean
@@ -47,9 +44,10 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   const [amount, setAmount] = useState<string>('')
   const [toEvm, setToEvm] = useState(false)
-  const { spotState } = useHyperliquidStore(
+  const { spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
-      spotState: state.spotState
+      spotState: state.spotState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
   const [coin, setCoin] = useState<string>('HYPE')
@@ -75,7 +73,6 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { sendTransactionAsync } = useSendTransaction()
 
   const [isLoading, setIsLoading] = useState(false)
-  const { signTypedDataAsync } = useSignTypedData()
 
   const getBalance = () => {
     if (toEvm) {
@@ -110,36 +107,17 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const onTransferClick = async () => {
     if (toEvm) {
       if (!chainId) return
+      if (!sdkUserSignerClient) return
+      if (!isAddress(destination)) return
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
-        const payload = getSpotSendPayload({
-          chainId: chainId,
-          isTestnet: isTestnet,
-          amount: amount,
+        const res = await sdkUserSignerClient.spotSend({
           destination: destination,
-          nonce: Date.now(),
-          formattedToken: token
+          amount: amount,
+          token: token
         })
-        const sign = await signTypedDataAsync(payload)
-        const body = {
-          action: {
-            amount: payload.message.amount,
-            destination: payload.message.destination,
-            hyperliquidChain: payload.message.hyperliquidChain,
-            signatureChainId: payload.message.signatureChainId,
-            time: payload.message.time,
-            token: payload.message.token,
-            type: payload.message.type
-          },
-          isFrontend: true,
-          nonce: payload.message.time,
-          signature: splitSignature(sign),
-          vaultAddress: null
-        }
-        const res = await hyperliquidAxios.post('/exchange', body)
-
-        console.log('Transfer response:', res.data)
+        console.log('Transfer response:', res)
         onClose()
         toast.success('Transfer successful', {
           id: toastId
@@ -148,10 +126,16 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       } catch (error) {
         console.error('Transfer failed:', error)
         onClose()
-        toast.error('Transfer failed', {
-          id: toastId
-        })
         setIsLoading(false)
+        if (error instanceof ApiRequestError) {
+          toast.error(error.message, {
+            id: toastId
+          })
+        } else {
+          toast.error('Transfer failed', {
+            id: toastId
+          })
+        }
       }
     } else {
       if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))

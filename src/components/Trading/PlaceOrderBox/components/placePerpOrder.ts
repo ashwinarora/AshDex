@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
 export const placePerpOrder = async ({
-  sdkExchangeClient,
+  sdkL1ActionClient,
   selectedAsset,
   isCross,
   leverage,
@@ -23,7 +23,7 @@ export const placePerpOrder = async ({
   pushNewOpenOrders,
   pushNewPosition
 }: {
-  sdkExchangeClient: ExchangeClient | null
+  sdkL1ActionClient: ExchangeClient | null
   selectedAsset: string
   isCross: boolean
   leverage: number
@@ -111,14 +111,14 @@ export const placePerpOrder = async ({
   }
   const toastId = toast.loading('⏳ Loading…')
   try {
-    if (!sdkExchangeClient) return
-    const res = await sdkExchangeClient.updateLeverage({
+    if (!sdkL1ActionClient) return
+    const res = await sdkL1ActionClient.updateLeverage({
       asset: assetIndex,
       isCross: isCross,
       leverage: leverage
     })
     console.log(res)
-    const placeOrderRes = await sdkExchangeClient.order({
+    const placeOrderRes = await sdkL1ActionClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
         b: BUILDER_ADDRESS,

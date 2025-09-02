@@ -109,14 +109,14 @@ function calculateScaleOrdersByAssetSize(
 }
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkExchangeClient } =
+  const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
       useShallow((state) => ({
         agentWallet: state.agentWallet,
         clearingHouseState: state.clearingHouseState,
         allMids: state.allMids,
         perpsMeta: state.perpsMeta,
-        sdkExchangeClient: state.sdkExchangeClient
+        sdkL1ActionClient: state.sdkL1ActionClient
       }))
     )
   const [totalUsd, setTotalUsd] = useState<number>()
@@ -193,9 +193,9 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     }))
     const toastId = toast.loading(`Placing ${totalOrders} orders...`)
     try {
-      if (!sdkExchangeClient) return
+      if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
-      const placeOrderRes = await sdkExchangeClient.order({
+      const placeOrderRes = await sdkL1ActionClient.order({
         grouping: 'na',
         builder: {
           b: BUILDER_ADDRESS,

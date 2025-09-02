@@ -1,26 +1,23 @@
 import React, { useEffect, useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
-import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE, isTestnet } from '@/utils/constants'
-import { getApproveAgentPayload } from '@/utils/hyperliquid/ApproveAgent'
+import { useAccount } from 'wagmi'
+import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE } from '@/utils/constants'
 import { toast } from 'sonner'
-import { splitSignature } from '@/utils/utils'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { getApproveBuilderFeePayload } from '@/utils/hyperliquid/ApproveBuilderFee'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { hyperliquidAxios } from '@/config/axios'
 import { Dialog } from '@radix-ui/react-dialog'
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
+import { ApiRequestError } from '@nktkas/hyperliquid'
 
 const EstablishConnectionModal = () => {
   const { chainId } = useAccount()
-  const { agentWallet } = useHyperliquidStore(
+  const { agentWallet, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
-      agentWallet: state.agentWallet
+      agentWallet: state.agentWallet,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
-  const { signTypedDataAsync } = useSignTypedData()
   const [isApproving, setIsApproving] = useState(false)
   const {
     closeModal,
@@ -45,35 +42,14 @@ const EstablishConnectionModal = () => {
           variant={'default'}
           onClick={async () => {
             if (!chainId) return
-            const payload = getApproveAgentPayload({
-              agentAddress: agentWallet?.address || '',
-              agentName: AGENT_NAME,
-              chainId: chainId,
-              isTestnet: isTestnet,
-              nonce: Date.now()
-            })
-            const sign = await signTypedDataAsync(payload)
+            if (!sdkUserSignerClient) return
+            if (!agentWallet) return
             const toastId = toast.loading('⏳ Approving agent…')
             try {
-              const body = {
-                action: {
-                  type: payload.message.type,
-                  agentAddress: payload.message.agentAddress,
-                  agentName: payload.message.agentName,
-                  nonce: payload.message.nonce,
-                  signatureChainId: payload.message.signatureChainId,
-                  hyperliquidChain: payload.message.hyperliquidChain
-                },
-                nonce: payload.message.nonce,
-                signature: splitSignature(sign)
-              }
-              const res = await hyperliquidAxios.post('/exchange', body)
-              if (res.data.status === 'err') {
-                toast.error(res.data.response, {
-                  id: toastId
-                })
-                return
-              }
+              await sdkUserSignerClient.approveAgent({
+                agentAddress: agentWallet.address,
+                agentName: AGENT_NAME
+              })
               await refetchAgentApproval()
               setIsApproving(true)
               toast.success('Agent approved successfully', {
@@ -81,9 +57,15 @@ const EstablishConnectionModal = () => {
               })
             } catch (error) {
               console.error('Error approving agent:', error)
-              toast.error(error as string, {
-                id: toastId
-              })
+              if (error instanceof ApiRequestError) {
+                toast.error(error.message, {
+                  id: toastId
+                })
+              } else {
+                toast.error('An unexpected error occurred', {
+                  id: toastId
+                })
+              }
             }
           }}
         >
@@ -97,38 +79,28 @@ const EstablishConnectionModal = () => {
           variant={'default'}
           onClick={async () => {
             if (!chainId) return
-            const payload = getApproveBuilderFeePayload({
-              chainId: chainId,
-              isTestnet: isTestnet,
-              builder: BUILDER_ADDRESS,
-              nonce: Date.now(),
-              feePercentage: BUILDER_FEE
-            })
-            const sign = await signTypedDataAsync(payload)
+            if (!sdkUserSignerClient) return
             const toastId = toast.loading('Approving fee…')
             try {
-              const body = {
-                action: {
-                  type: payload.message.type,
-                  builder: payload.message.builder,
-                  maxFeeRate: payload.message.maxFeeRate,
-                  nonce: payload.message.nonce,
-                  signatureChainId: payload.message.signatureChainId,
-                  hyperliquidChain: payload.message.hyperliquidChain
-                },
-                nonce: payload.message.nonce,
-                signature: splitSignature(sign)
-              }
-              await hyperliquidAxios.post('/exchange', body)
+              await sdkUserSignerClient.approveBuilderFee({
+                builder: BUILDER_ADDRESS,
+                maxFeeRate: BUILDER_FEE
+              })
               await refetchCurrentFeeApproval()
               toast.success('Fee approved successfully', {
                 id: toastId
               })
             } catch (error) {
-              console.error('Error approving agent:', error)
-              toast.error(error as string, {
-                id: toastId
-              })
+              console.error('Error approving fee:', error)
+              if (error instanceof ApiRequestError) {
+                toast.error(error.message, {
+                  id: toastId
+                })
+              } else {
+                toast.error('An unexpected error occurred', {
+                  id: toastId
+                })
+              }
             }
           }}
         >

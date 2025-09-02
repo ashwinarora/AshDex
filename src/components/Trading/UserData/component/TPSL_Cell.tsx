@@ -3,8 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
-import { useAgentApproval } from '@/context/EstablishConnection'
-import { AssetPosition } from '@nktkas/hyperliquid'
+import { ApiRequestError, AssetPosition } from '@nktkas/hyperliquid'
 import {
   Dialog,
   DialogContent,
@@ -17,17 +16,17 @@ import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
-import { BUILDER_ADDRESS, isTestnet } from '@/utils/constants'
+import { BUILDER_ADDRESS } from '@/utils/constants'
 import { toast } from 'sonner'
 import { getFormattedPrice, getPerpsUniverseIndex } from '@/utils/utils'
-import { OrderData, placeOrder } from '@/utils/hyperliquid/PlaceOrder'
-import { hyperliquidAxios } from '@/config/axios'
+import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import { useUserFee } from '@/hooks/useUserFee'
 
 interface TPSLCellProps {
   asset: string
@@ -94,19 +93,6 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   isOpen,
   onClose
 }: TPSLCellProps) => {
-  // const { openOrders } = useHyperliquid()
-  const { currentFeeApproval } = useAgentApproval()
-
-  // const triggerPrices = useMemo(() => {
-  //   const assetOrders = openOrders.filter((order) => order.coin === asset)
-  //   const tpOrder = assetOrders.find((order) => order.orderType === 'Take Profit Limit')
-  //   const slOrder = assetOrders.find((order) => order.orderType === 'Stop Limit')
-  //   return {
-  //     tp: tpOrder?.triggerPx,
-  //     sl: slOrder?.triggerPx
-  //   }
-  // }, [openOrders, asset])
-
   const [tpTriggerPrice, setTpTriggerPrice] = useState('')
   const [slTriggerPrice, setSlTriggerPrice] = useState('')
   const [tpValue, setTpValue] = useState('')
@@ -121,13 +107,15 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const [tpLimitPrice, setTpLimitPrice] = useState('')
   const [slLimitPrice, setSlLimitPrice] = useState('')
 
-  const { perpAssetContext, agentWallet, perpsMeta } = useHyperliquidStore(
+  const { perpAssetContext, agentWallet, perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       perpAssetContext: state.perpAssetContext,
       agentWallet: state.agentWallet,
-      perpsMeta: state.perpsMeta
+      perpsMeta: state.perpsMeta,
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
+  const { getAdjustedBuilderFee } = useUserFee()
 
   const assetCtx = useMemo(() => {
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)
@@ -221,6 +209,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const handleClick = async () => {
     if (!agentWallet) return
     if (!perpsMeta) return
+    if (!sdkL1ActionClient) return
     const orders: OrderData[] = []
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, tpslAsset.coin)
     const isBuy = !(Number(tpslAsset.szi) > 0)
@@ -284,13 +273,21 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     }
     const toastId = toast.loading('Placing TP/SL order...')
     try {
-      const res = await placeOrder(agentWallet, isTestnet, hyperliquidAxios, {
-        orders: orders,
+      const adjustedBuilderFee = getAdjustedBuilderFee()
+      const res = await sdkL1ActionClient.order({
         grouping: 'positionTpsl',
         builder: {
-          address: BUILDER_ADDRESS,
-          fee: currentFeeApproval
-        }
+          b: BUILDER_ADDRESS,
+          f: adjustedBuilderFee
+        },
+        orders: orders.map((order) => ({
+          a: order.assetIndex,
+          b: order.isBuy,
+          p: order.price,
+          s: order.size,
+          r: order.reduceOnly,
+          t: order.orderType
+        }))
       })
       console.log(res)
       onClose()
@@ -300,9 +297,15 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     } catch (error) {
       console.error(error)
       onClose()
-      toast.error(error as string, {
-        id: toastId
-      })
+      if (error instanceof ApiRequestError) {
+        toast.error(error.message, {
+          id: toastId
+        })
+      } else {
+        toast.error('Failed to place TP/SL order.', {
+          id: toastId
+        })
+      }
     }
   }
 

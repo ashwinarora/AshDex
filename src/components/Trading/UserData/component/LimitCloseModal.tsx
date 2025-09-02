@@ -33,13 +33,13 @@ interface LimitCloseModalProps {
 }
 
 const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
-  const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
+  const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
         clearingHouseState: state.clearingHouseState,
         agentWallet: state.agentWallet,
         allMids: state.allMids,
-        sdkExchangeClient: state.sdkExchangeClient,
+        sdkL1ActionClient: state.sdkL1ActionClient,
         perpsMeta: state.perpsMeta
       }))
     )
@@ -144,9 +144,9 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
 
     const toastId = toast.loading('Closing position...')
     try {
-      if (!sdkExchangeClient) return
+      if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
-      const order = await sdkExchangeClient.order({
+      const order = await sdkL1ActionClient.order({
         grouping: 'na',
         builder: {
           b: BUILDER_ADDRESS,

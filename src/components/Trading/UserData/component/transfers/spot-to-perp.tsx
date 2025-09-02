@@ -1,11 +1,7 @@
 import { useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
-import { splitSignature } from '@/utils/utils'
+import { useAccount } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -19,6 +15,7 @@ import Loading from '@/components/common/Loading'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
+import { ApiRequestError } from '@nktkas/hyperliquid'
 
 interface ITransferModal {
   isOpen: boolean
@@ -29,14 +26,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { signTypedDataAsync } = useSignTypedData()
 
   const getBalance = () => {
     if (toPerp) {
@@ -50,31 +47,12 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   const onTransferClick = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
     const toastId = toast.loading('Transferring...')
     try {
       setIsLoading(true)
-      const payload = getUsdClassTransferPayload({
-        chainId: chainId,
-        isTestnet: isTestnet,
-        amount: amount,
-        toPerp: toPerp,
-        nonce: Date.now()
-      })
-      const sign = await signTypedDataAsync(payload)
-      const body = {
-        action: {
-          type: payload.message.type,
-          amount: payload.message.amount,
-          toPerp: payload.message.toPerp,
-          nonce: payload.message.nonce,
-          signatureChainId: payload.message.signatureChainId,
-          hyperliquidChain: payload.message.hyperliquidChain
-        },
-        nonce: payload.message.nonce,
-        signature: splitSignature(sign)
-      }
-      const res = await hyperliquidAxios.post('/exchange', body)
-      console.log('Transfer response:', res.data)
+      const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
+      console.log('Transfer response:', res)
       onClose()
       toast.success('Transfer successful', {
         id: toastId
@@ -83,9 +61,15 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     } catch (error) {
       console.error('Transfer failed:', error)
       onClose()
-      toast.error('Transfer failed', {
-        id: toastId
-      })
+      if (error instanceof ApiRequestError) {
+        toast.error(error.message, {
+          id: toastId
+        })
+      } else {
+        toast.error('Transfer failed', {
+          id: toastId
+        })
+      }
       setIsLoading(false)
     }
   }
