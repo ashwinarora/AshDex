@@ -1,11 +1,5 @@
 import { useState } from 'react'
-import {
-  useAccount,
-  useBalance,
-  useSendTransaction,
-  useSwitchChain,
-  useWriteContract
-} from 'wagmi'
+import { useAccount, useBalance, useSendTransaction, useSwitchChain, useWriteContract } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
