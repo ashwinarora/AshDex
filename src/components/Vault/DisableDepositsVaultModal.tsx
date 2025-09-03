@@ -57,7 +57,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             </p>{' '}
             <button
               onClick={handleCloseModal}
-              className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-3xl text-white/50 hover:text-white cursor-pointer"
             >
               <Image
                 width={20}
@@ -87,7 +87,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             className="border border-white/10 mt-6 rounded-2xl p-4 space-y-3"
           >
             <div className="flex justify-between items-center text-sm">
-              <span className="text-white/50opacity-50 text-sm font-normal">Current Status:</span>
+              <span className="text-white/50 opacity-50 text-sm font-normal">Current Status:</span>
               <span
                 className={`rounded-lg py-0.5 px-2 font-medium flex items-center gap-x-2 ${isDepositsDisabled ? 'bg-[#FF3B3B1A] text-[#FF3B3B]' : 'bg-[#1F1F30] text-green'}`}
               >
@@ -96,7 +96,7 @@ const DisableDepositsVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             </div>
             {disableDepositsDetails?.map((item, index) => (
               <div key={index} className="flex justify-between items-center text-sm">
-                <span className="text-white/50opacity-50 text-sm font-normal">{item?.label}:</span>
+                <span className="text-white/50 opacity-50 text-sm font-normal">{item?.label}:</span>
                 <span className="text-white text-sm font-medium flex items-center gap-x-2">
                   {item?.value}
                 </span>

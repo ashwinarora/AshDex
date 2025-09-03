@@ -43,7 +43,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
         >
           {distributeSuccessDetails?.map((item, index) => (
             <div key={index} className="flex justify-between items-center text-sm">
-              <span className="text-white/50opacity-50 text-sm font-normal">{item?.label}:</span>
+              <span className="text-white/50 opacity-50 text-sm font-normal">{item?.label}:</span>
               <span className="text-white text-sm font-medium flex items-center gap-x-2">
                 {item?.value}
               </span>
@@ -100,7 +100,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
             </p>
             <button
               onClick={openVaultsModal}
-              className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-3xl text-white/50 hover:text-white cursor-pointer"
             >
               <Image
                 width={20}
