@@ -118,7 +118,7 @@ export default function VaultDetails() {
             <div className="flex justify-end mb-1">
               <button
                 onClick={handleCloseVaultActionMenu}
-                className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
+                className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
               >
                 <Image
                   width={20}

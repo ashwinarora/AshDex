@@ -50,7 +50,7 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
       </div>
       <div className="border-t font-medium tracking-normal border-b border-white/10 py-4 px-4 min-2xl:px-8">
         <div className="flex justify-between gap-x-2">
-          <span className="text-base opacity-50 text-[#E8E0F1] ">Trades Referred</span>
+          <span className="text-base opacity-50 text-white/50">Trades Referred</span>
           <span className="text-white text-lg">{referralsDetails?.builderRewards || '0'}</span>
         </div>
         <div className="flex justify-between gap-x-2">

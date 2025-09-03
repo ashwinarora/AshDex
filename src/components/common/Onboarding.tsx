@@ -127,7 +127,7 @@ export default function OnboardingModal() {
         <div className="flex-1 flex flex-col justify-between max-md:px-2 max-md:py-3 p-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-2xl gap-x-1 flex items-center text-[#E8E0F1] font-semibold">
+              <span className="text-2xl gap-x-1 flex items-center text-white/50font-semibold">
                 <Image
                   height={20}
                   width={20}
@@ -154,8 +154,8 @@ export default function OnboardingModal() {
                 })}
               </div>
             </div>
-            <p className="text-2xl mt-5 text-[#E8E0F1] font-medium">{current.title}</p>
-            <p className="text-[#E8E0F1] text-lg tracking-normal font-medium">{current.subtitle}</p>
+            <p className="text-2xl mt-5 text-white/50font-medium">{current.title}</p>
+            <p className="text-white/50text-lg tracking-normal font-medium">{current.subtitle}</p>
             <p className="text-sm font-normal text-white tracking-normal mt-2">
               {current.description}
             </p>
