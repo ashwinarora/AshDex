@@ -41,7 +41,7 @@ const TWAP = ({ isRTL }: { isRTL: boolean }) => {
               setIsChecked={(checked) => setRandomize(checked)}
               isChecked={randomize}
             />
-            <span className="font-medium text-[#E8E0F1] text-xs">{t('Randomize')}</span>
+            <span className="font-medium text-white/50 text-xs">Randomize</span>
           </label>
         </div>
       </div>

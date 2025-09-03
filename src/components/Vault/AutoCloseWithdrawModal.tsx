@@ -68,7 +68,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
                   ? 'Disable Auto-Close on Withdraw'
                   : 'Enable Auto-Close on Withdraw'}
               </span>{' '}
-              <span className="text-[#E8E0F1] opacity-40 mt-1 text-sm font-normal tracking-normal">
+              <span className="text-white/50opacity-40 mt-1 text-sm font-normal tracking-normal">
                 {isAutoCloseWithdraw
                   ? 'Withdrawals may exceed the threshold, and the vault will remain open unless closed manually.'
                   : 'When enabled, the vault will automatically close when withdrawals exceed the set threshold.'}
@@ -76,7 +76,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
             </p>
             <button
               onClick={handleCloseModal}
-              className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
             >
               <Image
                 src={menuClose}
@@ -105,7 +105,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
             className="border border-white/10 max-md:mt-1 mt-6 rounded-2xl p-4 space-y-3"
           >
             <div className="flex justify-between items-center text-sm">
-              <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
+              <span className="text-white/50opacity-50 text-sm font-normal">
                 Auto-Close Status:
               </span>
               <span
@@ -116,9 +116,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
             </div>
             {autoCloseWithdrawDetails?.map((item, index) => (
               <div key={index} className="flex justify-between items-center text-sm">
-                <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
-                  {item?.label}:
-                </span>
+                <span className="text-white/50opacity-50 text-sm font-normal">{item?.label}:</span>
                 <span className="text-white text-sm font-medium flex items-center gap-x-2">
                   {item?.value}
                 </span>

@@ -48,7 +48,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
             <p className="text-lg text-white font-semibold tracking-[0em]"> {'Close Vault'}</p>{' '}
             <button
               onClick={handleCloseModal}
-              className="p-2 bg-[#322944] rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
             >
               <Image
                 height={20}
@@ -76,9 +76,7 @@ const CloseVaultModal: React.FC<DisableDepositsVaultModalProps> = ({
           >
             {closeVaultDetails?.map((item, index) => (
               <div key={index} className="flex justify-between gap-x-2 items-center text-sm">
-                <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
-                  {item?.label}:
-                </span>
+                <span className="text-white/50opacity-50 text-sm font-normal">{item?.label}:</span>
                 <span className="text-white text-sm font-medium flex items-center ">
                   {item?.value}
                 </span>
