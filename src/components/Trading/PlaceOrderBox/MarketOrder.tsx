@@ -318,6 +318,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           tpsl={tpsl}
+          isMarket={true}
         />
       </div>
     </div>

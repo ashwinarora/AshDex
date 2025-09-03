@@ -36,6 +36,7 @@ import { Toggle } from '@/components/ui/toggle'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
+import { useUserFee } from '@/hooks/useUserFee'
 interface Order {
   price: number
   size: number
@@ -108,14 +109,14 @@ function calculateScaleOrdersByAssetSize(
 }
 
 const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkExchangeClient } =
+  const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
       useShallow((state) => ({
         agentWallet: state.agentWallet,
         clearingHouseState: state.clearingHouseState,
         allMids: state.allMids,
         perpsMeta: state.perpsMeta,
-        sdkExchangeClient: state.sdkExchangeClient
+        sdkL1ActionClient: state.sdkL1ActionClient
       }))
     )
   const [totalUsd, setTotalUsd] = useState<number>()
@@ -132,6 +133,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
   const [isInputUsd, setIsInputUsd] = useState<boolean>(true)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const { getAdjustedBuilderFee } = useUserFee()
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
@@ -191,12 +193,13 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
     }))
     const toastId = toast.loading(`Placing ${totalOrders} orders...`)
     try {
-      if (!sdkExchangeClient) return
-      const placeOrderRes = await sdkExchangeClient.order({
+      if (!sdkL1ActionClient) return
+      const adjustedBuilderFee = getAdjustedBuilderFee()
+      const placeOrderRes = await sdkL1ActionClient.order({
         grouping: 'na',
         builder: {
           b: BUILDER_ADDRESS,
-          f: currentFeeApproval
+          f: adjustedBuilderFee
         },
         orders: ordersData.map((order) => ({
           a: order.assetIndex,

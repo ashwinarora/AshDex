@@ -14,6 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
+import { useUserFee } from '@/hooks/useUserFee'
+import { BUILDER_ADDRESS } from '@/utils/constants'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -22,19 +24,20 @@ interface CloseAllModalProps {
 
 const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
-  const { clearingHouseState, agentWallet, allMids, sdkExchangeClient, perpsMeta } =
+  const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
         clearingHouseState: state.clearingHouseState,
         agentWallet: state.agentWallet,
         allMids: state.allMids,
-        sdkExchangeClient: state.sdkExchangeClient,
+        sdkL1ActionClient: state.sdkL1ActionClient,
         perpsMeta: state.perpsMeta
       }))
     )
+  const { getAdjustedBuilderFee } = useUserFee()
 
   const handleCloseAll = async () => {
-    if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkExchangeClient)
+    if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)
       return
     const toastId = toast.loading('Closing all positions...')
     try {
@@ -68,8 +71,13 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       //   grouping: 'na',
       //   orders: orders
       // })
-      const orderRes = await sdkExchangeClient.order({
+      const adjustedBuilderFee = getAdjustedBuilderFee(true)
+      const orderRes = await sdkL1ActionClient.order({
         grouping: 'na',
+        builder: {
+          b: BUILDER_ADDRESS,
+          f: adjustedBuilderFee
+        },
         orders: orders.map((order) => ({
           a: order.assetIndex,
           b: order.isBuy,

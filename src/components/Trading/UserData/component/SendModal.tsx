@@ -2,12 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
-import { isTestnet } from '@/utils/constants'
-import { hyperliquidAxios } from '@/config/axios'
-import { splitSignature } from '@/utils/utils'
-import { useAccount, useSignTypedData } from 'wagmi'
-import { getSpotSendPayload } from '@/utils/hyperliquid/SpotSend'
+import { useAccount } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
   Dialog,
@@ -26,6 +21,8 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconSend } from '@tabler/icons-react'
+import { isAddress, isHex } from 'viem'
+import { ApiRequestError } from '@nktkas/hyperliquid'
 
 interface SendModalProps {
   spotDefaultName?: string
@@ -45,13 +42,13 @@ const SendModal: React.FC<SendModalProps> = ({
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
   const { chainId } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
-  const { signTypedDataAsync } = useSignTypedData()
   const { data: spotMeta } = useSpotMeta()
 
   const spotData = useMemo(() => {
@@ -75,30 +72,18 @@ const SendModal: React.FC<SendModalProps> = ({
 
   const handleSend = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
+    if (!isAddress(destination)) {
+      toast.error('Destination must be a valid hex address')
+      return
+    }
     const toastId = toast.loading('Sending...')
     if (isPerp) {
       try {
-        const payload = getUsdSendPayload({
+        await sdkUserSignerClient.usdSend({
           destination: destination,
-          amount: amount,
-          chainId: chainId,
-          isTestnet: isTestnet,
-          nonce: Date.now()
+          amount: amount
         })
-        const sign = await signTypedDataAsync(payload)
-        const body = {
-          action: payload.message,
-          nonce: payload.message.time,
-          signature: splitSignature(sign)
-        }
-        const res = await hyperliquidAxios.post('/exchange', body)
-        if (res.data.status === 'err') {
-          onClose()
-          toast.error(res.data.response, {
-            id: toastId
-          })
-          return
-        }
         onClose()
         toast.success('Send successful', {
           id: toastId
@@ -106,43 +91,40 @@ const SendModal: React.FC<SendModalProps> = ({
       } catch (error) {
         console.log(error)
         onClose()
-        toast.error('Send failed', {
-          id: toastId
-        })
+        if (error instanceof ApiRequestError) {
+          toast.error(error.message, {
+            id: toastId
+          })
+        } else {
+          toast.error('Send failed', {
+            id: toastId
+          })
+        }
       }
     } else {
       if (!spotData) return
+      if (!isHex(spotData.tokenId)) return
       try {
-        const payload = getSpotSendPayload({
+        await sdkUserSignerClient.spotSend({
           destination: destination,
           amount: amount,
-          chainId: chainId,
-          isTestnet: isTestnet,
-          nonce: Date.now(),
-          tokenName: spotData.tokenName,
-          tokenId: spotData.tokenId
+          token: `${spotData.tokenName}:${spotData.tokenId}`
         })
-        const sign = await signTypedDataAsync(payload)
-        const body = {
-          action: payload.message,
-          nonce: payload.message.time,
-          signature: splitSignature(sign)
-        }
-        const res = await hyperliquidAxios.post('/exchange', body)
-        if (res.data.status === 'err') {
-          toast.error(res.data.response, {
-            id: toastId
-          })
-          return
-        }
         toast.success('Send successful', {
           id: toastId
         })
       } catch (error) {
         console.log(error)
-        toast.error('Send failed', {
-          id: toastId
-        })
+        onClose()
+        if (error instanceof ApiRequestError) {
+          toast.error(error.message, {
+            id: toastId
+          })
+        } else {
+          toast.error('Send failed', {
+            id: toastId
+          })
+        }
       }
     }
   }

@@ -38,9 +38,9 @@ type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
 const OpenOrders = () => {
   const { isConnected } = useAccount()
-  const { sdkExchangeClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
+  const { sdkL1ActionClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
-      sdkExchangeClient: state.sdkExchangeClient,
+      sdkL1ActionClient: state.sdkL1ActionClient,
       openOrders: state.openOrders,
       perpsMeta: state.perpsMeta,
       agentWallet: state.agentWallet
@@ -68,14 +68,14 @@ const OpenOrders = () => {
         }
         const toastId = toast.loading('Cancelling order...')
         try {
-          if (!sdkExchangeClient) return
+          if (!sdkL1ActionClient) return
           const assetIndex = isSpot
             ? Number(
                 spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
               ) + SPOT_DELTA
             : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
           if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
-          await sdkExchangeClient.cancel({
+          await sdkL1ActionClient.cancel({
             cancels: [
               {
                 a: assetIndex,
@@ -95,7 +95,7 @@ const OpenOrders = () => {
       cancelOrder()
     },
     [
-      sdkExchangeClient,
+      sdkL1ActionClient,
       isSpot,
       spotMeta,
       perpsMeta,
@@ -138,7 +138,7 @@ const OpenOrders = () => {
       }
       const toastId = toast.loading('Cancelling all orders...')
       try {
-        if (!sdkExchangeClient) return
+        if (!sdkL1ActionClient) return
         const allOrders = openOrders.filter((order) => {
           if (isSpot) {
             return !!spotKeyToName.get(order.coin)
@@ -147,7 +147,7 @@ const OpenOrders = () => {
             return !spotKeyToName.get(order.coin)
           }
         })
-        await sdkExchangeClient.cancel({
+        await sdkL1ActionClient.cancel({
           cancels: allOrders
             .map((order) => {
               const assetIndex = isSpot
@@ -176,7 +176,7 @@ const OpenOrders = () => {
     isAgentApproved,
     currentFeeApproval,
     openAgentModal,
-    sdkExchangeClient,
+    sdkL1ActionClient,
     openOrders,
     isSpot,
     spotMeta,

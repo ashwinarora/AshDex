@@ -20,6 +20,7 @@ import { useAccount } from 'wagmi'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
+import { useUserFee } from '@/hooks/useUserFee'
 
 const PortfolioStats = () => {
   const { isMobile, isTablet } = useScreenSize()
@@ -33,21 +34,16 @@ const PortfolioStats = () => {
 
   const { address } = useAccount()
 
-  const { sdkInfoClient } = useHyperliquidStore()
+  const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
 
   const portfolioQuery = useQuery({
-    queryKey: ['portfolio'],
+    queryKey: ['portfolio', address],
     queryFn: () => sdkInfoClient?.portfolio({ user: address as Hex }),
     refetchInterval: 2000,
     enabled: !!address && !!sdkInfoClient
   })
 
-  const { data: userFeeData, isLoading: userFeeLoading } = useQuery({
-    queryKey: ['userFeeData'],
-    queryFn: () => sdkInfoClient?.userFees({ user: address as Hex }),
-    refetchInterval: 2000,
-    enabled: !!address && !!sdkInfoClient
-  })
+  const { data: userFeeData, isLoading: userFeeLoading } = useUserFee()
 
   const overviewTable = useMemo(() => {
     if (!portfolioQuery.data) return undefined

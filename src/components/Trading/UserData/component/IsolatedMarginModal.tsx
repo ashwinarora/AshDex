@@ -29,11 +29,11 @@ interface IsolatedMarginModalProps {
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { clearingHouseState, perpsMeta, sdkExchangeClient } = useHyperliquidStore(
+  const { clearingHouseState, perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
       perpsMeta: state.perpsMeta,
-      sdkExchangeClient: state.sdkExchangeClient
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
   const [amount, setAmount] = useState('')
@@ -46,10 +46,10 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
     const toastId = toast.loading('Updating margin...')
     const realAmount = Number(amount) * 10 ** 6
     try {
-      if (!sdkExchangeClient) return
+      if (!sdkL1ActionClient) return
       if (!perpsMeta) return
       const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
-      const res = await sdkExchangeClient.updateIsolatedMargin({
+      const res = await sdkL1ActionClient.updateIsolatedMargin({
         asset: assetIndex,
         isBuy: isBuy,
         ntli: action === 'Add' ? realAmount : -realAmount

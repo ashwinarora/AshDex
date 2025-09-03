@@ -1,6 +1,6 @@
 'use client'
 
-import { useAccount } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { useInitHyperliquid } from '@/store/HyperliquidStore'
 import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
@@ -18,10 +18,11 @@ const HyperLiquidInitializer = () => {
     checkWebSocketStatus,
     updateUserActiveAddress
   } = useInitHyperliquid()
+  const { data: walletClient } = useWalletClient()
 
   useEffect(() => {
-    initSdk(address ?? zeroAddress)
-  }, [address, initSdk])
+    initSdk(address ?? zeroAddress, walletClient)
+  }, [address, initSdk, walletClient])
 
   useEffect(() => {
     if (!address) return

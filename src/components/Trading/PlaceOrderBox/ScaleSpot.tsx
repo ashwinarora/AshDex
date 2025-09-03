@@ -31,6 +31,7 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
+import { useUserFee } from '@/hooks/useUserFee'
 
 interface Order {
   price: number
@@ -71,11 +72,11 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
-  const { spotState, spotAssetContext, sdkExchangeClient } = useHyperliquidStore(
+  const { spotState, spotAssetContext, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState,
       spotAssetContext: state.spotAssetContext,
-      sdkExchangeClient: state.sdkExchangeClient
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
   const { data: spotMeta } = useSpotMeta()
@@ -89,7 +90,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   const [usdPercent, setUsdPercent] = useState(0)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-
+  const { getAdjustedBuilderFee } = useUserFee()
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
@@ -129,12 +130,13 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     // console.log(res)
     const toastId = toast.loading(`Placing ${totalOrders} orders...`)
     try {
-      if (!sdkExchangeClient) return
-      const placeOrderRes = await sdkExchangeClient.order({
+      if (!sdkL1ActionClient) return
+      const adjustedBuilderFee = getAdjustedBuilderFee()
+      const placeOrderRes = await sdkL1ActionClient.order({
         grouping: 'na',
         builder: {
           b: BUILDER_ADDRESS,
-          f: currentFeeApproval
+          f: adjustedBuilderFee
         },
         orders: ordersData.map((order) => ({
           a: order.assetIndex,
