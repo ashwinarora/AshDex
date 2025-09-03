@@ -17,8 +17,8 @@ export function TolgeeBase() {
         apiKey,
         apiUrl,
         staticData: {
-          en: () => import('../../messages/en.json'),
-          ar: () => import('../../messages/ar.json')
+          en: () => import('../../messages/en-US.json'),
+          ar: () => import('../../messages/ar-SA.json')
         }
       })
   )
