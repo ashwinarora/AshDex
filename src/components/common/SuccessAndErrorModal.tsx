@@ -39,7 +39,7 @@ const SuccessAndErrorModal: React.FC<SuccessAndErrorModalProps> = ({
           <div className="flex justify-end mb-8">
             <button
               onClick={onClose}
-              className="p-2 bg-[#322944] rounded-3xl text-white/50hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-3xl text-white/50 hover:text-white cursor-pointer"
             >
               <Image
                 width={20}

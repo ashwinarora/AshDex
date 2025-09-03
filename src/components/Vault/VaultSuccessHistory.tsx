@@ -59,7 +59,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
         {isFinalSuccess ? (
           <>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-white/50opacity-50 text-sm font-normal">
+              <span className="text-white/50 opacity-50 text-sm font-normal">
                 Confirmation time:
               </span>
               <span className="text-green text-sm font-medium flex items-center gap-x-2">
@@ -68,7 +68,7 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
               </span>
             </div>
             <div className="flex justify-between items-center text-sm">
-              <span className="text-white/50opacity-50 text-sm font-normal">Total time:</span>
+              <span className="text-white/50 opacity-50 text-sm font-normal">Total time:</span>
               <span className="text-green text-sm font-medium flex items-center gap-x-2">
                 00h 00m 04s{' '}
                 <Image src={checkIcon} alt="check" style={{ width: 14, height: 'auto' }} />
@@ -77,11 +77,11 @@ const VaultSuccessHistory: React.FC<VaultSuccessHistoryProps> = ({ onClose, isFi
           </>
         ) : (
           <>
-            <div className="flex justify-between items-center text-white/50 text-sm font-normal">
+            <div className="flex justify-between items-center text-white/50  text-sm font-normal">
               <span className="opacity-50">Reason:</span>
               <span className="text-sm font-medium text-red">Network problem</span>
             </div>
-            <p className="text-white/50opacity-50 text-sm font-normal">
+            <p className="text-white/50 opacity-50 text-sm font-normal">
               Please try again or come back later.
             </p>
           </>
