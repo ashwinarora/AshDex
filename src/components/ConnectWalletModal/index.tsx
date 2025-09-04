@@ -27,7 +27,7 @@ const ConnectWalletModal: React.FC = () => {
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
-  const { disconnectAsync } = useDisconnect()
+  const { disconnect } = useDisconnect()
   const [dialogTitle, setDialogTitle] = useState<string>('Connect Wallet')
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
@@ -55,8 +55,8 @@ const ConnectWalletModal: React.FC = () => {
     }
   }
 
-  const disconnectWallet = async () => {
-    await disconnectAsync()
+  const disconnectWallet = () => {
+    disconnect()
   }
 
   useEffect(() => {
