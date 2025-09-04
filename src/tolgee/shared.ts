@@ -14,8 +14,8 @@ export function TolgeeBase() {
         BackendFetch({
           prefix: 'https://cdn.tolg.ee/da5ee4daf2d82cec829b573b541906ff',
           next: {
-            revalidate: 60, // cache CDN data for one minute
-          },
+            revalidate: 60 // cache CDN data for one minute
+          }
         })
       )
       .use(FormatSimple())
@@ -25,8 +25,8 @@ export function TolgeeBase() {
         apiKey,
         apiUrl,
         staticData: {
-          "en-US": () => import('../../messages/en-US.json'),
-          "ar-SA": () => import('../../messages/ar-SA.json')
+          'en-US': () => import('../../messages/en-US.json'),
+          'ar-SA': () => import('../../messages/ar-SA.json')
         }
       })
   )
