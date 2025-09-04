@@ -42,7 +42,7 @@ const FooterContent: FC = () => {
       {/* Top Section */}
       <div className="flex flex-col md:flex-row justify-start md:justify-between items-start md:items-center">
         <div className="mt-4 md:mt-0">
-          <h1 className="flex items-center mr-12 gap-2 py-2 text-[#E8E0F1] text-3xl rounded-md   font-semibold">
+          <h1 className="flex items-center mr-12 gap-2 py-2 text-white/50 text-3xl rounded-md   font-semibold">
             <Image
               src={nexonLogo}
               alt="Nexon Logo"
@@ -57,7 +57,7 @@ const FooterContent: FC = () => {
         <div className="flex space-x-2 mt-4 md:mt-0">
           <button
             onClick={() => window.open('https://x.com/Nexon_xyz', '_blank')}
-            className="p-3 bg-white/10 rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer"
+            className="p-3 bg-white/10 rounded-3xl text-white/50 hover:text-white cursor-pointer"
           >
             <Image
               src={forwardicon}
@@ -67,7 +67,7 @@ const FooterContent: FC = () => {
               className="md:w-[15px] md:h-[15px] w-[14px] h-[14px]"
             />
           </button>
-          <button className="p-3 bg-white/10 rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer">
+          <button className="p-3 bg-white/10 rounded-3xl text-white/50 hover:text-white cursor-pointer">
             <Image
               // onClick={() => window.open('https://t.me/nexon_official', '_blank')}
               src={linkicon}
@@ -77,7 +77,7 @@ const FooterContent: FC = () => {
               className="w-[13px] h-[13px] md:w-[14px] md:h-[14px]"
             />
           </button>
-          <button className="p-3 bg-white/10 rounded-3xl text-[#E8E0F1] hover:text-white cursor-pointer">
+          <button className="p-3 bg-white/10 rounded-3xl text-white/50 hover:text-white cursor-pointer">
             <Image
               // onClick={() => window.open('https://discord.gg/nexon', '_blank')}
               src={roboticon}
