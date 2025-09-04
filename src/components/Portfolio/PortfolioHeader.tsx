@@ -14,7 +14,7 @@ import { useTranslate } from '@tolgee/react'
 
 const PortfolioHeader = () => {
   const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile } = useScreenSize()
   const [isModalOpen, setIsModalOpen] = useState<{
     [key: string]: boolean

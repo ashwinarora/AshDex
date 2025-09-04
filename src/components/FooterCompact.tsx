@@ -19,7 +19,7 @@ const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { t } = useTranslate()
 
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
@@ -161,8 +161,8 @@ const FooterContent: FC = () => {
             <Switch
               checked={isRTL}
               onCheckedChange={() => {
-                useUserStore.setState({ preferredLanguage: isRTL ? 'en' : 'ar' })
-                setLanguage(isRTL ? 'en' : 'ar')
+                useUserStore.setState({ preferredLanguage: isRTL ? 'en-US' : 'ar-SA' })
+                setLanguage(isRTL ? 'en-US' : 'ar-SA')
               }}
             />
           </div>

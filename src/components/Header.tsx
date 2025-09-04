@@ -52,7 +52,7 @@ const Header: FC = () => {
   const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)

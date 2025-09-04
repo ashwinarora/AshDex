@@ -26,7 +26,7 @@ import { useTranslate } from '@tolgee/react'
 
 const PortfolioStats = () => {
   const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile, isTablet } = useScreenSize()
   const [selectedView, setSelectedView] = useState<{
     [key: string]: 'perps' | 'all' | 'day' | 'week' | 'month' | 'alltime'

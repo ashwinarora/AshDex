@@ -27,7 +27,7 @@ const Trading = () => {
     isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
   ) // @1035 and @107 is HYPE
 
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isTablet, isMobile } = useScreenSize()
 
   const [drawerOpen, setDrawerOpen] = useState(false)
