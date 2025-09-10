@@ -56,8 +56,8 @@ export default async function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary no-scrollbar`}
       >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
-        <Provider>
-          <TolgeeNextProvider language={locale} staticData={staticData}>
+        <TolgeeNextProvider language={locale} staticData={staticData}>
+          <Provider>
             <HyperLiquidInitializer />
             <WalletModalProvider>
               <BridgeProvider>
@@ -70,8 +70,8 @@ export default async function RootLayout({
                 </EstablishConnectionProvider>
               </BridgeProvider>
             </WalletModalProvider>
-          </TolgeeNextProvider>
-        </Provider>
+          </Provider>
+        </TolgeeNextProvider>
       </body>
     </html>
   )
