@@ -241,7 +241,7 @@ const AmountInput = ({
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 25
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50',
+                : 'bg-transparent text-white/50'
               // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
