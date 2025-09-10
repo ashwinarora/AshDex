@@ -210,7 +210,7 @@ const AmountInput = ({
           />
           <div
             className={cn(
-              'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
+              'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/50 rounded-md gap-2',
               isRTL && 'flex-row-reverse pr-0 pl-2'
             )}
           >

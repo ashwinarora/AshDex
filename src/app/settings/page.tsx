@@ -205,20 +205,20 @@ const SettingsPage = () => {
                 <CustomSelector
                   options={[
                     {
-                      value: 'en',
+                      value: 'en-US',
                       label: 'English',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
                     },
                     {
-                      value: 'ar',
+                      value: 'ar-SA',
                       label: 'العربية',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
                     }
                   ]}
                   selectedValue={preferredLanguage}
                   onChange={(value) => {
-                    setPreferredLanguage(value as 'en' | 'ar')
-                    setLanguage(value as 'en' | 'ar')
+                    setPreferredLanguage(value as 'en-US' | 'ar-SA')
+                    setLanguage(value as 'en-US' | 'ar-SA')
                   }}
                   className="nexon-card nexon-rounded-lg cursor-pointer"
                   isPadding={true}
