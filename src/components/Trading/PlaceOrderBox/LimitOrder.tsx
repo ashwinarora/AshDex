@@ -7,7 +7,6 @@ import TPSL, { TPSLType } from './components/TPSL'
 import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
-import MarginMode from './components/MarginMode'
 import SetPrice from './components/SetPrice'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { calculateLiquidationPrice } from '@/utils/utils'
@@ -73,21 +72,28 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
-        {!isSpot && (
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+        />
+        {!isSpot ? (
           <>
-            <Separator orientation="horizontal" />
-            <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
             <LeverageMargin
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
               isRTL={isRTL}
             />
+            <Separator orientation="horizontal" />
           </>
+        ) : (
+          <Separator orientation="horizontal" className="bg-transparent" />
         )}
-        <Separator orientation="horizontal" />
         <div className="flex flex-col items-start rounded-md align-middle gap-2 w-full">
           <div
             className={cn(
@@ -156,7 +162,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-2 text-xs',
+                  'flex-2 text-xs',
                   tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
                 )}
                 size={'sm'}

@@ -186,7 +186,7 @@ const SetPrice = ({
       <Button
         variant="outline"
         size={'sm'}
-        className="text-xs"
+        className="text-xs w-16 bg-transparent hover:bg-transparent"
         disabled={disabled}
         // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}

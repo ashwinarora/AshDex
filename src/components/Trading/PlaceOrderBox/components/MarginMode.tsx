@@ -1,8 +1,14 @@
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
-import { IconArrowRight, IconArrowsShuffle } from '@tabler/icons-react'
+import { IconChevronDown } from '@tabler/icons-react'
 import React from 'react'
 import { useTranslate } from '@tolgee/react'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 interface MarginModeProps {
   isCross: boolean
@@ -14,55 +20,23 @@ const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
   const { t } = useTranslate()
   return (
     <div
-      className={cn('flex items-center justify-between rounded-md', isRTL && 'flex-row-reverse')}
+      className={cn(
+        'flex w-full items-center justify-between rounded-md',
+        isRTL && 'flex-row-reverse'
+      )}
     >
-      <p className="text-xs font-medium text-white/50">{t('Margin Mode')}</p>
-      <ToggleGroup
-        size={'sm'}
-        type="single"
-        className={cn('bg-white/5', isRTL ? '!flex-row-reverse' : '!flex-row')}
-        value={isCross ? 'cross' : 'isolated'}
-        onValueChange={(value) => value !== '' && setIsCross(value === 'cross')}
-      >
-        <ToggleGroupItem
-          value="cross"
-          className={cn(
-            'px-4 py-1 cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-            isCross ? 'bg-primary text-white' : 'bg-transparent text-white/50',
-            isRTL ? 'rounded-r-md' : 'rounded-l-md'
-          )}
-        >
-          <IconArrowsShuffle className="size-4" />
-          {t('Cross')}
-        </ToggleGroupItem>
-        <ToggleGroupItem
-          value="isolated"
-          className={cn(
-            'px-4 py-1 cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-            !isCross ? 'bg-primary text-white' : 'bg-transparent text-white/50',
-            isRTL ? 'rounded-l-md' : 'rounded-r-md'
-          )}
-        >
-          <IconArrowRight className="size-4" />
-          {t('Isolated')}
-        </ToggleGroupItem>
-      </ToggleGroup>
-      {/* <div className="flex rounded-lg">
-        <button
-          className={`px-4 py-1 rounded-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none ${isCross ? 'bg-primary text-white' : 'bg-transparent text-[#8B8BA0]'}`}
-          onClick={() => setIsCross(true)}
-          type="button"
-        >
-          Cross
-        </button>
-        <button
-          className={`px-4 py-1 cursor-pointer rounded-md text-xs font-semibold transition-colors duration-150 focus:outline-none ${!isCross ? 'bg-primary text-white' : 'bg-transparent text-[#8B8BA0]'}`}
-          onClick={() => setIsCross(false)}
-          type="button"
-        >
-          Isolated
-        </button>
-      </div> */}
+      <DropdownMenu>
+        <DropdownMenuTrigger className="w-full h-8" asChild>
+          <Button variant="outline">
+            {t(isCross ? 'Cross' : 'Isolated')}
+            <IconChevronDown className="size-3" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem onClick={() => setIsCross(true)}>{t('Cross')}</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => setIsCross(false)}>{t('Isolated')}</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   )
 }

@@ -4,7 +4,6 @@ import OrderButton from './components/OrderButton'
 import LeverageMargin from './components/LeverageMargin'
 import AmountInput from './components/AmountInput'
 import BuyOrSell from './components/BuyOrSell'
-import MarginMode from './components/MarginMode'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Separator } from '@/components/ui/separator'
 import { Input } from '@/components/ui/input'
@@ -30,10 +29,15 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
-        <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+        />
         <LeverageMargin
           selectedAsset={selectedAsset}
           leverage={leverage}
@@ -76,7 +80,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <Toggle
             size={'sm'}
-            className={cn('bg-white/5 w-fit', isRTL && 'flex-row-reverse')}
+            className={cn('bg-white/5 w-full', isRTL && 'flex-row-reverse')}
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >

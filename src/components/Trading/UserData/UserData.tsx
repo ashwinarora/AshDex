@@ -13,6 +13,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import { Separator } from '@/components/ui/separator'
 
 interface IUserDataProps {
   setSelectedAsset?: (asset: string) => void
@@ -98,13 +99,13 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
     >
       <div
         className={cn(
-          'md:max-w-xl xl:max-w-3xl w-full h-10 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
+          'md:max-w-xl xl:max-w-3xl w-full h-8 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
           isRTL ? 'flex-row-reverse' : ''
         )}
       >
         <ToggleGroup
           type="single"
-          className="w-fit h-full bg-white/5 rounded-md"
+          className="w-fit h-full rounded-md"
           value={activeTab.toString()}
           onValueChange={(value) => {
             if (value === '') {
@@ -116,7 +117,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
           {tabs.map((tab, index) => (
             <ToggleGroupItem
               key={tab.header}
-              className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 first:rounded-l-md last:rounded-r-md"
+              className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 data-[state=on]:bg-transparent"
               value={index.toString()}
             >
               {tab.header}
@@ -124,6 +125,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
           ))}
         </ToggleGroup>
       </div>
+      <Separator orientation="horizontal" />
       <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         {tabs[activeTab] && <div className="w-full h-full">{tabs[activeTab].element}</div>}
       </div>

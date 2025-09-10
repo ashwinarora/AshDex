@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconPercentage } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
@@ -164,7 +164,7 @@ const AmountInputSpot = ({
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-start"
+              className="text-xs w-16 flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">
@@ -183,18 +183,42 @@ const AmountInputSpot = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="flex flex-1 mt-2 flex-col gap-4 w-full items-center justify-center">
-        <Slider
-          min={0}
-          max={100}
-          dir={isRTL ? 'rtl' : 'ltr'}
-          value={[usdPercent]}
-          onValueChange={(value) => setUsdPercent(Number(value[0]))}
-        />
+      <div className="flex flex-1 flex-col gap-2 mt-2 w-full items-center justify-center">
+        <div
+          className={cn(
+            'w-full flex items-center justify-center gap-2',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
+          <Slider
+            min={0}
+            max={100}
+            dir={isRTL ? 'rtl' : 'ltr'}
+            value={[usdPercent]}
+            onValueChange={(value) => setUsdPercent(value[0])}
+            className="flex-1 w-full"
+          />
+          <div
+            className={cn(
+              'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+              isRTL && 'flex-row-reverse pr-0 pl-2'
+            )}
+          >
+            <Input
+              className={cn(
+                'flex-1 p-0 text-end text-white bg-transparent border-none',
+                isRTL && 'text-start'
+              )}
+              value={usdPercent.toString()}
+              onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+            />
+            <IconPercentage className="size-3" />
+          </div>
+        </div>
         <ToggleGroup
           size={'sm'}
           className={cn(
-            'flex mt-1 bg-white/5 items-center justify-between w-full',
+            'flex mt-1 items-center justify-between w-full',
             isRTL && 'flex-row-reverse'
           )}
           type="single"
@@ -204,9 +228,9 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'25'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50',
-              isRTL ? 'rounded-r-md' : 'rounded-l-md'
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
+              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
             25%
@@ -214,7 +238,7 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'50'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               usdPercent === 50 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
             )}
           >
@@ -223,7 +247,7 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'75'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               usdPercent === 75 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
             )}
           >
@@ -232,9 +256,9 @@ const AmountInputSpot = ({
           <ToggleGroupItem
             value={'100'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50',
-              isRTL ? 'rounded-l-md' : 'rounded-r-md'
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
+              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              // isRTL ? 'rounded-l-md' : 'rounded-r-md'
             )}
           >
             100%

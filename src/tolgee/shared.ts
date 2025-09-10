@@ -27,7 +27,8 @@ export function TolgeeBase() {
         staticData: {
           'en-US': () => import('../../messages/en-US.json'),
           'ar-SA': () => import('../../messages/ar-SA.json')
-        }
+        },
+        defaultLanguage: DEFAULT_LANGUAGE
       })
   )
 }

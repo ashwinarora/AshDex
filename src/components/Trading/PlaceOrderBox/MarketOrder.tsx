@@ -8,7 +8,6 @@ import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
-import MarginMode from './components/MarginMode'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
@@ -140,21 +139,28 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
-        {!isSpot && (
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+        />
+        {!isSpot ? (
           <>
-            <Separator orientation="horizontal" />
-            <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
             <LeverageMargin
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
               isRTL={isRTL}
             />
+            <Separator orientation="horizontal" />
           </>
+        ) : (
+          <Separator orientation="horizontal" className="bg-transparent" />
         )}
-        <Separator orientation="horizontal" />
         {isSpot ? (
           <AmountInputSpot
             selectedAsset={selectedAsset}

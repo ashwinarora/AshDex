@@ -228,7 +228,7 @@ const AmountInput = ({
         <ToggleGroup
           size={'sm'}
           className={cn(
-            'flex mt-1 bg-white/5 items-center justify-between w-full',
+            'flex mt-1 items-center h-8 justify-between w-full',
             isRTL && 'flex-row-reverse'
           )}
           type="single"
@@ -238,11 +238,11 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'25'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 25
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50',
-              isRTL ? 'rounded-r-md' : 'rounded-l-md'
+              // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
             25%
@@ -250,7 +250,7 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'50'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent  transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 50
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50'
@@ -261,7 +261,7 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'75'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 75
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50'

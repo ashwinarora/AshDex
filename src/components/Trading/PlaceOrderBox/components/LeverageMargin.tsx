@@ -95,8 +95,8 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
           </Button> */}
           <div
             className={cn(
-              'flex w-16 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
-              !error.isValid && 'bg-red/10 text-red',
+              'flex w-16 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+              !error.isValid && 'text-red',
               isRTL && 'flex-row-reverse pl-2'
             )}
           >
@@ -128,7 +128,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
         <ToggleGroup
           size={'sm'}
           className={cn(
-            'flex mt-1 items-center bg-white/5 justify-between w-full',
+            'flex mt-1 items-center h-8 justify-between w-full',
             isRTL && 'flex-row-reverse'
           )}
           type="single"
@@ -140,11 +140,8 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
               key={`leverage-tick-${value}-${index}`}
               value={value.toString()}
               className={cn(
-                'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                isRTL
-                  ? 'first:rounded-r-md last:rounded-l-md'
-                  : 'first:rounded-l-md last:rounded-r-md',
-                leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none'
+                // leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
               )}
             >
               {value}x

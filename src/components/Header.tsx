@@ -131,7 +131,7 @@ const Header: FC = () => {
   return (
     <div
       className={clsx(
-        'top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14',
+        'top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-12',
         isRTL && 'flex-row-reverse'
       )}
     >
@@ -201,8 +201,8 @@ const Header: FC = () => {
                   <NavigationMenuLink
                     href={path}
                     className={cn(
-                      'text-white/50 hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
-                      activeMenu === name && 'text-white bg-border font-semibold'
+                      'text-white hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
+                      activeMenu === name && 'text-primary hover:text-primary font-semibold'
                     )}
                   >
                     {name}

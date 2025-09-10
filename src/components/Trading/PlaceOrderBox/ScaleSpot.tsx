@@ -197,11 +197,12 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
+    <div className="flex flex-col w-full h-full justify-between flex-1">
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} isMarginEnabled={false} />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <label htmlFor="startPrice" className="text-xs text-white/50">
             {t('Start Price')}
           </label>
@@ -221,7 +222,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                   variant="outline"
                   size={'sm'}
                   disabled
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  className="text-xs w-16 flex items-center justify-start"
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{'USDC'}</p>
@@ -236,7 +237,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <label htmlFor="endPrice" className="text-xs text-white/50">
             {t('End Price')}
           </label>
@@ -251,7 +252,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-center"
+              className="text-xs w-16 bg-transparent hover:bg-transparent flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={() => {}}
             >
@@ -262,7 +263,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="percent" className="text-xs text-white/50">
               {t('Total Size')}
@@ -286,7 +287,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 <Button
                   variant="outline"
                   size={'sm'}
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  className="text-xs w-16 flex items-center justify-start"
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
@@ -300,7 +301,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-1 mt-1 flex-col gap-3 w-full items-center justify-center">
+          <div className="flex flex-1 flex-col gap-3 mt-1 w-full items-center justify-center">
             <Slider
               min={1}
               max={100}
@@ -310,7 +311,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             />
             <ToggleGroup
               size={'sm'}
-              className="flex mt-1 items-center bg-white/5 justify-between w-full"
+              className="flex mt-1 items-center  justify-between w-full"
               type="single"
               value={usdPercent.toString()}
               onValueChange={(value) => value !== '' && handleUsdPercentChange(parseInt(value, 10))}
@@ -320,7 +321,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                   key={`leverage-tick-${value}-${index}`}
                   value={value.toString()}
                   className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
                     usdPercent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
                   )}
                 >
@@ -331,7 +332,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3 px-2">
+        <div className="flex items-center justify-center h-fit gap-3">
           <Toggle
             size={'sm'}
             className="bg-white/5"

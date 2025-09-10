@@ -74,7 +74,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <ToggleGroup
           type="single"
           className={cn(
-            'w-2/3 bg-white/5',
+            'w-2/3',
             isRTL
               ? 'rounded-l-none rounded-r-md flex-row-reverse'
               : 'rounded-l-md rounded-r-none flex-row'
@@ -88,12 +88,15 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           }}
         >
           <ToggleGroupItem
-            className={cn('w-full', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
+            className={cn(
+              'w-full data-[state=on]:bg-transparent',
+              isRTL ? 'rounded-r-md' : 'rounded-l-md'
+            )}
             value="LIMIT"
           >
             {t('Limit')}
           </ToggleGroupItem>
-          <ToggleGroupItem className={cn('w-full')} value="MARKET">
+          <ToggleGroupItem className={cn('w-full data-[state=on]:bg-transparent')} value="MARKET">
             {t('Market')}
           </ToggleGroupItem>
         </ToggleGroup>
@@ -103,8 +106,8 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               className={cn(
                 'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                 availableOptions.find((option) => option.value === activeTab)
-                  ? 'bg-accent text-accent-foreground'
-                  : 'bg-white/5 text-white/50',
+                  ? 'text-accent-foreground'
+                  : 'text-white/50',
                 isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >

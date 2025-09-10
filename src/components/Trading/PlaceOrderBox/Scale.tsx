@@ -8,7 +8,6 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
@@ -267,10 +266,15 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} />
-        <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+        />
         <LeverageMargin
           selectedAsset={selectedAsset}
           leverage={leverage}
@@ -298,7 +302,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 variant="outline"
                 size={'sm'}
                 disabled
-                className="text-xs min-w-18 w-fit flex items-center justify-start"
+                className="text-xs w-16 flex items-center justify-start"
                 // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
@@ -332,14 +336,14 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           <Button
             variant="outline"
             size={'sm'}
-            className="text-xs min-w-18 w-fit flex items-center justify-center"
+            className="text-xs w-16 bg-transparent hover:bg-transparent"
+            disabled={true}
             // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-            onClick={() => {}}
+            // onClick={() => setLimitPrice(getFormattedPrice())}
           >
             <IconRefresh className="size-3" />
-            Last
+            {t('Last')}
           </Button>
-          {/* */}
         </div>
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
@@ -366,7 +370,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant="outline"
                 size={'sm'}
-                className="text-xs min-w-18 w-fit flex items-center justify-start"
+                className="text-xs w-16 flex items-center justify-start"
                 // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">USDC</p>
@@ -395,7 +399,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             />
             <div
               className={cn(
-                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
+                'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
                 isRTL && 'flex-row-reverse pr-0 pl-2'
               )}
             >
@@ -413,7 +417,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           <ToggleGroup
             size={'sm'}
             className={cn(
-              'flex mt-1 items-center bg-white/5 justify-between w-full',
+              'flex mt-1 items-center  justify-between w-full',
               isRTL && 'flex-row-reverse'
             )}
             type="single"
@@ -425,7 +429,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 key={`leverage-tick-${value}-${index}`}
                 value={value.toString()}
                 className={cn(
-                  'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                  'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
                   percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
                   isRTL
                     ? 'first:rounded-r-md last:rounded-l-md'
