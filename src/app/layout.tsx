@@ -62,7 +62,7 @@ export default async function RootLayout({
             <WalletModalProvider>
               <BridgeProvider>
                 <EstablishConnectionProvider>
-                  <div className='overscroll-none'>
+                  <div className="overscroll-none">
                     {/* <SnackBar /> */}
                     <Header />
                     <OnboardingModal />

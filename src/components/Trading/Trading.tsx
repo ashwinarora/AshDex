@@ -59,7 +59,7 @@ const Trading = () => {
             isRTL={isRTL}
           />
         )}
-        <FavoriteStrip  setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+        <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary p-1 gap-1"
@@ -141,8 +141,10 @@ const Trading = () => {
 
   if (isTablet) {
     return (
-      <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-fit w-full">
+      <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-dvh w-full">
+        <div className='h-fit shrink-0'>
         <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+        </div>
         {isSpot ? (
           <SpotSelector
             selectedAsset={selectedAsset}
@@ -161,14 +163,10 @@ const Trading = () => {
             <Chart selectedAsset={selectedAsset} selectedInterval="30" />
           </div>
         </div>
-
-        <div className="flex items-start justify-center w-full h-[484px] gap-1">
-          <div className="h-full flex-1 flex-col basis-sm gap-2 ">
+        <div className="flex items-start justify-center w-full h-full flex-1 gap-1">
+          <div className="h-full flex-1 flex-col pb-12 basis-sm gap-2 ">
             <UserData setSelectedAsset={setSelectedAsset} />
           </div>
-          {/* <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 ">
-            <OverviewBox />
-          </div> */}
         </div>
         <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
           <ToggleGroup
@@ -220,10 +218,26 @@ const Trading = () => {
   }
 
   return (
-    <div className='hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full'>
-      <div className='h-[688px] 2xl:h-5/12 shrink-0 w-full flex items-start gap-1' ref={parentContainerRef}>
-        <div className={clsx('w-full h-full flex-2 flex flex-col gap-1', isRTL ? '-order-1' : 'order-1')}>
-          <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} width={orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? parentContainerRef.current.clientWidth - (orderBookRef.current.clientWidth * 2) - 8 : 0} />
+    <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
+      <div
+        className="h-[688px] 2xl:h-5/12 shrink-0 w-full flex items-start gap-1"
+        ref={parentContainerRef}
+      >
+        <div
+          className={clsx(
+            'w-full h-full flex-2 flex flex-col gap-1',
+            isRTL ? '-order-1' : 'order-1'
+          )}
+        >
+          <FavoriteStrip
+            setSelectedAsset={setSelectedAsset}
+            isRTL={isRTL}
+            width={
+              orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth
+                ? parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
+                : 0
+            }
+          />
           {isSpot ? (
             <SpotSelector
               selectedAsset={selectedAsset}
@@ -239,18 +253,26 @@ const Trading = () => {
           )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
-        <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')} ref={orderBookRef}>
+        <div
+          className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')}
+          ref={orderBookRef}
+        >
           <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
         <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}>
           <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
       </div>
-      <div className='h-full 2xl:h-5/12 flex-1 w-full mb-1 flex items-start gap-1'>
+      <div className="h-full 2xl:h-5/12 flex-1 w-full mb-1 flex items-start gap-1">
         <div className={clsx('w-full h-full', isRTL ? '-order-1' : 'order-1')}>
           <UserData setSelectedAsset={setSelectedAsset} />
         </div>
-        <div className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')} style={{ width: orderBookRef.current?.clientWidth ? orderBookRef.current.clientWidth : 320 }}>
+        <div
+          className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')}
+          style={{
+            width: orderBookRef.current?.clientWidth ? orderBookRef.current.clientWidth : 320
+          }}
+        >
           <OverviewBox isRTL={isRTL} />
         </div>
       </div>

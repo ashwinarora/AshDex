@@ -50,7 +50,10 @@ const FavoriteStrip = ({
 
   if (favorites.size === 0) {
     return (
-      <div style={{ width: width }} className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md !h-10 overflow-hidden">
+      <div
+        style={{ width: width }}
+        className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md !h-10 overflow-hidden"
+      >
         <IconStar className="size-3 text-white/20" />
         <p className="text-white/20 text-sm">No assets added to favorites.</p>
       </div>
@@ -87,8 +90,8 @@ const FavoriteStrip = ({
                 <FavoriteItem assetKey={favorite} />
                 {index !==
                   (isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).length - 1 && (
-                    <Separator orientation="vertical" className="!h-full last:hidden" />
-                  )}
+                  <Separator orientation="vertical" className="!h-full last:hidden" />
+                )}
               </Fragment>
             )
           )}
