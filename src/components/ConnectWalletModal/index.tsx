@@ -107,14 +107,12 @@ const ConnectWalletModal: React.FC = () => {
   const renderWalletDisplay = () => (
     <WalletDisplay
       onBack={() => {
-        setIsWalletConnected(null)
         setSelectedConnector(null)
         reset()
       }}
       onClose={handleClose}
-      name={selectedConnector.name}
-      icon={selectedConnector.icon}
-      isWalletConnected={isWalletConnected}
+      name={selectedConnector!.name}
+      icon={selectedConnector!.icon}
       hasAgreedToRules={!!termsData?.signed}
     />
   )
