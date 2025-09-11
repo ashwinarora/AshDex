@@ -142,8 +142,8 @@ const Trading = () => {
   if (isTablet) {
     return (
       <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-dvh w-full">
-        <div className='h-fit shrink-0'>
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+        <div className="h-fit shrink-0">
+          <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
         </div>
         {isSpot ? (
           <SpotSelector
