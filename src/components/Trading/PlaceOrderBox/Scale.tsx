@@ -110,15 +110,15 @@ function calculateScaleOrdersByAssetSize(
 
 const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
-  useHyperliquidStore(
-    useShallow((state) => ({
-      agentWallet: state.agentWallet,
-      clearingHouseState: state.clearingHouseState,
-      allMids: state.allMids,
-      perpsMeta: state.perpsMeta,
-      sdkL1ActionClient: state.sdkL1ActionClient
-    }))
-  )
+    useHyperliquidStore(
+      useShallow((state) => ({
+        agentWallet: state.agentWallet,
+        clearingHouseState: state.clearingHouseState,
+        allMids: state.allMids,
+        perpsMeta: state.perpsMeta,
+        sdkL1ActionClient: state.sdkL1ActionClient
+      }))
+    )
   const { t } = useTranslate()
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()

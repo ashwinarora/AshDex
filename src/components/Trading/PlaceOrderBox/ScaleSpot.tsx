@@ -73,7 +73,7 @@ function calculateScaleOrders(
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
 const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const { spotState, spotAssetContext, sdkL1ActionClient } =useHyperliquidStore(
+  const { spotState, spotAssetContext, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState,
       spotAssetContext: state.spotAssetContext,

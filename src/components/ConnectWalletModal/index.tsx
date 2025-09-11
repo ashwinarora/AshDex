@@ -33,7 +33,6 @@ const ConnectWalletModal: React.FC = () => {
   const createOrUpdateUser = useCreateOrUpdateUser()
 
   const handleClose = () => {
-
     toggleConnectWalletModal()
     setSelectedConnector(null)
     reset()
