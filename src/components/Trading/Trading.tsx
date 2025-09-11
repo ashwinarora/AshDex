@@ -224,7 +224,7 @@ const Trading = () => {
         <Skeleton className="w-full h-11 bg-secondary" />
       )}
       <div
-        className="h-[688px] 2xl:h-5/12 shrink-0 w-full flex items-start gap-1"
+        className="h-[688px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
         ref={parentContainerRef}
       >
         <div
