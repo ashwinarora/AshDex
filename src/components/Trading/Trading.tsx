@@ -19,6 +19,7 @@ import { Separator } from '../ui/separator'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
+import { Skeleton } from '../ui/skeleton'
 
 const Trading = () => {
   const { t } = useTranslate()
@@ -219,6 +220,9 @@ const Trading = () => {
 
   return (
     <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
+      {(!orderBookRef.current?.clientWidth || !parentContainerRef.current?.clientWidth) && (
+        <Skeleton className="w-full h-11 bg-secondary" />
+      )}
       <div
         className="h-[688px] 2xl:h-5/12 shrink-0 w-full flex items-start gap-1"
         ref={parentContainerRef}
@@ -229,15 +233,17 @@ const Trading = () => {
             isRTL ? '-order-1' : 'order-1'
           )}
         >
-          <FavoriteStrip
-            setSelectedAsset={setSelectedAsset}
-            isRTL={isRTL}
-            width={
-              orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth
-                ? parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
-                : 0
-            }
-          />
+          {orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? (
+            <FavoriteStrip
+              setSelectedAsset={setSelectedAsset}
+              isRTL={isRTL}
+              width={
+                parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
+              }
+            />
+          ) : (
+            <Skeleton className="w-full h-10 bg-secondary" />
+          )}
           {isSpot ? (
             <SpotSelector
               selectedAsset={selectedAsset}
