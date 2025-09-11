@@ -126,7 +126,7 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         </ToggleGroup>
       </div>
       <Separator orientation="horizontal" />
-      <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+      <div className="w-full pb-8 h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         {tabs[activeTab] && <div className="w-full h-full">{tabs[activeTab].element}</div>}
       </div>
     </div>

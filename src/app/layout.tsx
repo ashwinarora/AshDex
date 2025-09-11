@@ -51,7 +51,7 @@ export default async function RootLayout({
   // serializable data that are passed to client components
   const staticData = await tolgee.loadRequired()
   return (
-    <html lang={locale}>
+    <html suppressHydrationWarning lang={locale}>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary no-scrollbar`}
       >
@@ -62,11 +62,13 @@ export default async function RootLayout({
             <WalletModalProvider>
               <BridgeProvider>
                 <EstablishConnectionProvider>
-                  {/* <SnackBar /> */}
-                  <Header />
-                  <OnboardingModal />
-                  <DynamicUseToastOptions />
-                  {children}
+                  <div className='overscroll-none'>
+                    {/* <SnackBar /> */}
+                    <Header />
+                    <OnboardingModal />
+                    <DynamicUseToastOptions />
+                    {children}
+                  </div>
                 </EstablishConnectionProvider>
               </BridgeProvider>
             </WalletModalProvider>

@@ -360,7 +360,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-[688px] text-white/50">
+    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/50">
       <div
         className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
       >

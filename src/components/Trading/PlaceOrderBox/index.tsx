@@ -64,7 +64,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       ]
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full xl:h-[688px] overflow-y-auto no-scrollbar items-center justify-start">
+    <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full overflow-y-auto no-scrollbar items-center justify-start">
       <div
         className={cn(
           'w-full h-fit px-2 pt-2 flex items-center justify-start',

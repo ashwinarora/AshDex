@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { isTestnet } from '@/utils/constants'
 import Chart from './Chart'
 import OrderBook from './OrderBook'
@@ -30,6 +30,9 @@ const Trading = () => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isTablet, isMobile } = useScreenSize()
 
+  const parentContainerRef = useRef<HTMLDivElement>(null)
+  const orderBookRef = useRef<HTMLDivElement>(null)
+
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const [mobileState, setMobileState] = useState<{
@@ -56,7 +59,7 @@ const Trading = () => {
             isRTL={isRTL}
           />
         )}
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+        <FavoriteStrip  setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary p-1 gap-1"
@@ -217,15 +220,10 @@ const Trading = () => {
   }
 
   return (
-    <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-fit w-full">
-      <div className={`flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden`}>
-        <div
-          className={clsx(
-            `col-span-10 h-full flex-1 basis-xl flex flex-col gap-1`,
-            isRTL ? '-order-1' : 'order-1'
-          )}
-        >
-          <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+    <div className='hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full'>
+      <div className='h-[688px] 2xl:h-5/12 shrink-0 w-full flex items-start gap-1' ref={parentContainerRef}>
+        <div className={clsx('w-full h-full flex-2 flex flex-col gap-1', isRTL ? '-order-1' : 'order-1')}>
+          <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} width={orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? parentContainerRef.current.clientWidth - (orderBookRef.current.clientWidth * 2) - 8 : 0} />
           {isSpot ? (
             <SpotSelector
               selectedAsset={selectedAsset}
@@ -241,33 +239,74 @@ const Trading = () => {
           )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
-        <div
-          className={clsx(
-            `col-span-4 h-full flex-col basis-sm gap-2`,
-            isRTL ? '-order-2' : 'order-2'
-          )}
-        >
+        <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')} ref={orderBookRef}>
           <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
-        <div
-          className={clsx(
-            `col-span-4 h-full flex-col basis-sm gap-2`,
-            isRTL ? '-order-3' : 'order-3'
-          )}
-        >
+        <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}>
           <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
       </div>
-      <div className="grid grid-cols-18 gap-1 h-fit">
-        <div className={clsx(`col-span-14 h-full w-full`, isRTL ? '-order-1' : 'order-1')}>
+      <div className='h-full 2xl:h-5/12 flex-1 w-full mb-1 flex items-start gap-1'>
+        <div className={clsx('w-full h-full', isRTL ? '-order-1' : 'order-1')}>
           <UserData setSelectedAsset={setSelectedAsset} />
         </div>
-        <div className={clsx(`col-span-4 h-full w-full`, isRTL ? '-order-2' : 'order-2')}>
+        <div className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')} style={{ width: orderBookRef.current?.clientWidth ? orderBookRef.current.clientWidth : 320 }}>
           <OverviewBox isRTL={isRTL} />
         </div>
       </div>
       <FooterCompact />
     </div>
+    // <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-fit w-full">
+    //   <div className={`flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden`}>
+    //     <div
+    //       className={clsx(
+    //         `col-span-10 h-full flex-1 basis-xl flex flex-col gap-1`,
+    //         isRTL ? '-order-1' : 'order-1'
+    //       )}
+    //     >
+    //       <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+    //       {isSpot ? (
+    //         <SpotSelector
+    //           selectedAsset={selectedAsset}
+    //           setSelectedAsset={setSelectedAsset}
+    //           isRTL={isRTL}
+    //         />
+    //       ) : (
+    //         <PerpsSelector
+    //           selectedAsset={selectedAsset}
+    //           setSelectedAsset={setSelectedAsset}
+    //           isRTL={isRTL}
+    //         />
+    //       )}
+    //       <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+    //     </div>
+    //     <div
+    //       className={clsx(
+    //         `col-span-4 h-full flex-col basis-sm gap-2`,
+    //         isRTL ? '-order-2' : 'order-2'
+    //       )}
+    //     >
+    //       <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
+    //     </div>
+    //     <div
+    //       className={clsx(
+    //         `col-span-4 h-full flex-col basis-sm gap-2`,
+    //         isRTL ? '-order-3' : 'order-3'
+    //       )}
+    //     >
+    //       <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
+    //     </div>
+    //   </div>
+    //   <div className="grid grid-cols-18 gap-1 h-fit">
+    //     <div className={clsx(`col-span-14 h-full w-full`, isRTL ? '-order-1' : 'order-1')}>
+    //       <UserData setSelectedAsset={setSelectedAsset} />
+    //     </div>
+    //     <div className={clsx(`col-span-4 h-full w-full`, isRTL ? '-order-2' : 'order-2')}>
+    //       <OverviewBox isRTL={isRTL} />
+    //     </div>
+    //   </div>
+    //   <FooterCompact />
+    // </div>
   )
 }
 
