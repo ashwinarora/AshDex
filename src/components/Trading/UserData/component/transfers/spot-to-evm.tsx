@@ -221,7 +221,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 !text-xs h-10"
+                    className="text-start flex-1 !text-xs h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />

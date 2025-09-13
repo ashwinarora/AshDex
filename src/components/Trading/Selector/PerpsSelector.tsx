@@ -26,23 +26,30 @@ import { Button } from '@/components/ui/button'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
+import clsx from 'clsx'
+import { useTranslate } from '@tolgee/react'
 
 interface ISelectorProps {
   selectedAsset: string
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
-// Memoize tabs array outside component to prevent recreation
-const TABS = [
-  { label: 'All', icon: null },
-  { label: 'New', icon: <IconRosette className="size-3" /> },
-  { label: 'AI', icon: <IconBrain className="size-3" /> },
-  { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
-  { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
-  { label: 'Meme', icon: <IconMeteor className="size-3" /> }
-] as const
+const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
+  const { t } = useTranslate()
 
-const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
+  const TABS = useMemo(
+    () => [
+      { label: t('All'), icon: null },
+      { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('AI'), icon: <IconBrain className="size-3" /> },
+      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+    ],
+    [t]
+  )
+
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       perpAssetContext: state.perpAssetContext,
@@ -84,7 +91,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [
       {
-        label: 'Mark Price',
+        label: t('Mark Price'),
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
             className="text-xs"
@@ -97,7 +104,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         )
       },
       {
-        label: 'Oracle Price',
+        label: t('Oracle Price'),
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText
@@ -111,12 +118,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           )
       },
       {
-        label: '24h Change',
+        label: t('24h Change'),
         value: changeString ?? <Skeleton size="md" />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
-        label: '24h Volume',
+        label: t('24h Volume'),
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
             className="text-xs"
@@ -129,7 +136,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
         )
       },
       {
-        label: 'Open Interest',
+        label: t('Open Interest'),
         value:
           'openInterest' in selectedAssetContext &&
           selectedAssetContext.openInterest &&
@@ -151,7 +158,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     // Only add funding if the asset has funding data
     if ('funding' in selectedAssetContext && selectedAssetContext.funding !== undefined) {
       data.splice(data.length - 1, 0, {
-        label: 'Funding/Countdown',
+        label: t('Funding/Countdown'),
         value: (
           <div className="flex items-center gap-1">
             <span
@@ -171,7 +178,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
     }
 
     return data
-  }, [selectedAssetContext])
+  }, [selectedAssetContext, t])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -198,8 +205,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
   }, [])
 
   return (
-    <div className="flex items-center justify-between p-2 h-14 bg-secondary rounded-md">
-      <div className="flex items-center gap-2 w-full h-full">
+    <div className={clsx('flex items-center justify-between p-2 h-14 bg-secondary rounded-md')}>
+      <div
+        className={clsx('flex items-center gap-2 w-full h-full', isRTL ? 'flex-row-reverse' : '')}
+      >
         <Button
           onClick={handleToggleFavorite}
           variant="outline"
@@ -223,20 +232,27 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
             </Button>
           </PopoverTrigger>
           <PopoverContent
-            align="start"
+            align={isRTL ? 'end' : 'start'}
             className="w-[100vw] md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
                 type="text"
-                placeholder="Search for an asset"
+                dir={isRTL ? 'rtl' : 'ltr'}
+                placeholder={t('Search for an asset')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="p-2 focus:outline-none w-full text-left text-white text-sm"
+                className={cn(
+                  'p-2 focus:outline-none w-full text-start text-white text-sm',
+                  isRTL && 'text-end'
+                )}
               />
             </div>
             <ToggleGroup
-              className="flex items-center bg-white/5 justify-between w-full"
+              className={cn(
+                'flex items-center bg-white/5 justify-between w-full',
+                isRTL && 'flex-row-reverse'
+              )}
               type="single"
               value={selectedTab}
               onValueChange={(value) => {
@@ -249,7 +265,10 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               {TABS.map((tab) => (
                 <ToggleGroupItem
                   className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    'cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    isRTL
+                      ? 'first:rounded-r-md last:rounded-l-md'
+                      : 'first:rounded-l-md last:rounded-r-md',
                     selectedTab === tab.label
                       ? '!bg-primary !text-white'
                       : 'bg-transparent text-white/50'
@@ -263,6 +282,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
               ))}
             </ToggleGroup>
             <PerpsTable
+              isRTL={isRTL}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
@@ -274,7 +294,12 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
           </PopoverContent>
         </Popover>
         <Separator orientation="vertical" className="hidden md:block !h-full" />
-        <div className="hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs">
+        <div
+          className={clsx(
+            'hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs',
+            isRTL ? 'flex-row-reverse' : ''
+          )}
+        >
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
               <div className="text-white/50 text-xs">{item.label}</div>
@@ -310,7 +335,7 @@ const Selector = ({ selectedAsset, setSelectedAsset }: ISelectorProps) => {
                 <IconInfoCircle className="size-4 text-white" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end" className="w-fit h-fit flex flex-col gap-4">
+            <PopoverContent align="end" className={clsx('w-fit h-fit flex flex-col gap-4')}>
               {marketData?.map((item, index) => (
                 <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
                   <div className="text-white/50 text-xs text-nowrap">{item.label}</div>

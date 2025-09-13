@@ -28,9 +28,11 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { formatWithCommas } from '@/utils/format'
+import { useTranslate } from '@tolgee/react'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
 type BalanceData = {
@@ -41,7 +43,8 @@ type BalanceData = {
   entryNtl: string | number
 }
 
-const Balances = ({ setSelectedAsset }: BalanceProps) => {
+const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
+  const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { clearingHouseState, spotState } = useHyperliquidStore(
     useShallow((state) => ({
@@ -90,7 +93,9 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => <span className="flex justify-start items-center gap-1">Coin</span>,
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Coin')}</span>
+        ),
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
           if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
@@ -110,39 +115,43 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       columnHelper.accessor('token', {
         id: 'token',
-        header: () => <span className="flex justify-start items-center gap-1">Tokens</span>,
+        header: () => <span className="flex justify-start items-center gap-1">{t('Tokens')}</span>,
         cell: (info) => info.getValue(),
         enableSorting: true,
-        meta: { label: 'Tokens' }
+        meta: { label: t('Tokens') }
       }),
       columnHelper.accessor('total', {
         id: 'total',
-        header: () => <span className="flex justify-start items-center gap-1">Total Balance</span>,
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Total Balance')}</span>
+        ),
         cell: (info) => formatWithCommas(info.getValue()),
         enableSorting: true,
-        meta: { label: 'Total Balance' }
+        meta: { label: t('Total Balance') }
       }),
       columnHelper.accessor('hold', {
         id: 'hold',
-        header: () => <span className="flex justify-start items-center gap-1">Hold</span>,
+        header: () => <span className="flex justify-start items-center gap-1">{t('Hold')}</span>,
         cell: (info) => formatWithCommas(info.getValue()),
         enableSorting: true,
-        meta: { label: 'Hold' }
+        meta: { label: t('Hold') }
       }),
       columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
         id: 'averagePrice',
-        header: () => <span className="flex justify-start items-center gap-1">Average Price</span>,
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Average Price')}</span>
+        ),
         cell: (info) => (isNaN(info.getValue()) ? '-' : formatWithCommas(info.getValue())),
         enableSorting: true,
-        meta: { label: 'Average Price' }
+        meta: { label: t('Average Price') }
       }),
       columnHelper.display({
         id: 'send',
-        header: () => <span className="flex justify-start items-center gap-1">Send</span>,
+        header: () => <span className="flex justify-start items-center gap-1">{t('Send')}</span>,
         cell: (info) => {
           const coin = info.row.original.coin
           if (coin === 'USDC(Perps)') return '--'
@@ -157,19 +166,19 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
                 setIsSendModalOpen(true)
               }}
             >
-              Send
+              {t('Send')}
             </Button>
           )
         },
         enableSorting: false,
-        meta: { label: 'Send' }
+        meta: { label: t('Send') }
       })
     ],
-    [columnHelper, isSendModalOpen]
+    [columnHelper, isSendModalOpen, t]
   )
   const table = useReactTable({
     data: combinedData,
-    columns,
+    columns: isRTL ? columns.reverse() : columns,
     state: { sorting },
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
@@ -206,7 +215,7 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {item === 'Coin' && <Separator className="w-full bg-white/10" />}
+                    {item === t('Coin') && <Separator className="w-full bg-white/10" />}
                   </div>
                 ))}
                 {isSendModalOpen && (
@@ -240,7 +249,13 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'coin' ? 'justify-start' : 'justify-end',
+                    isRTL
+                      ? header.id === 'coin'
+                        ? 'justify-end'
+                        : 'justify-start'
+                      : header.id === 'coin'
+                        ? 'justify-start'
+                        : 'justify-end',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -274,7 +289,10 @@ const Balances = ({ setSelectedAsset }: BalanceProps) => {
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className="font-medium text-white text-xs first:text-left text-right"
+                  className={cn(
+                    'font-medium text-white text-xs',
+                    isRTL ? 'text-start last:text-end' : 'first:text-start text-end'
+                  )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

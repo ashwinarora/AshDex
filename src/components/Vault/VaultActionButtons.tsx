@@ -46,7 +46,7 @@ export default function VaultActionButtons({
         return (
           <button
             key={action?.key}
-            className={`w-full max-lg:text-sm text-base font-medium cursor-pointer text-left flex rounded-xl items-center gap-x-2.5 max-lg:px-2 px-4 py-2 ${
+            className={`w-full max-lg:text-sm text-base font-medium cursor-pointer text-start flex rounded-xl items-center gap-x-2.5 max-lg:px-2 px-4 py-2 ${
               action?.key === activeVaultAction ? 'bg-white/10' : ''
             } ${'textColor' in action ? action?.textColor : 'text-[#E8E0F1]'} hover:bg-white/10`}
             onClick={(e) => {

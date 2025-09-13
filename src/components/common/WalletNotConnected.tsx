@@ -1,7 +1,7 @@
 'use client'
-import Image from 'next/image'
 import { useWalletModal } from '@/context/WalletModalContext'
-import noordericon from '@/assets/images/noorder_icon.svg'
+import { Button } from '../ui/button'
+import { IconWalletOff } from '@tabler/icons-react'
 
 type WalletNotConnectedProps = {
   title?: string
@@ -10,33 +10,16 @@ type WalletNotConnectedProps = {
 }
 
 const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
-  title = 'Your wallet is currently disconnected',
-  description = 'Connect your wallet to access your balance, deposit funds, and manage your vaults.',
-  type
+  title = 'Your Wallet is Disconnected',
+  description = 'Connect your wallet to access your balance, deposit funds, and trade.'
 }) => {
   const { toggleConnectWalletModal } = useWalletModal()
   return (
-    <div className="flex my-8 max-[1025px]:pt-0 pt-7 flex-col text-center justify-center items-center w-full">
-      <Image
-        src={noordericon}
-        style={{ width: 90, height: 'auto' }}
-        alt={title}
-        className="h-[93px] w-[93px] max-[770px]:w-[70px] max-[770px]:h-[70px]"
-      />
-      <span className="font-medium text-center mt-2.5 text-base text-white">{title}</span>
-      {description && (
-        <p className="text-[#8B8BA0] text-sm mt-1.5 mb-2 font-normal max-w-[300px]">
-          {description}
-        </p>
-      )}
-      {type !== 'Referrals' && (
-        <button
-          onClick={toggleConnectWalletModal}
-          className="2xl:px-[20px] max-[770px]:mt-1 mt-5 px-[11px] flex items-center py-[10px] bg-[#5F46F9] font-bold text-[#FFFFFF] text-sm rounded-md md:rounded-xl cursor-pointer"
-        >
-          Connect Wallet
-        </button>
-      )}
+    <div className="flex flex-col w-full h-full justify-center gap-4 items-center">
+      <IconWalletOff className="size-10 text-white" />
+      <h1 className="text-2xl font-bold text-white">{title}</h1>
+      <p className="text-sm text-white/50 -mt-2">{description}</p>
+      <Button onClick={toggleConnectWalletModal}>Connect Wallet</Button>
     </div>
   )
 }

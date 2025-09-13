@@ -154,7 +154,7 @@ const SendModal: React.FC<SendModalProps> = ({
               <Input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="h-10 text-left placeholder:text-white/50 text-white"
+                className="h-10 text-start placeholder:text-white/50 text-white"
                 placeholder="Address (0x...)"
               />
             </div>
@@ -187,7 +187,7 @@ const SendModal: React.FC<SendModalProps> = ({
               <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="h-10 text-left placeholder:text-white/50 text-white"
+                className="h-10 text-start placeholder:text-white/50 text-white"
                 placeholder="Amount"
                 type="number"
                 min="0"

@@ -13,7 +13,7 @@ export type NotificationSettingKey =
   | 'security_alerts'
 
 // Acceptable languages
-export const ACCEPTABLE_LANGUAGES = ['English', 'Arabic'] as const
+export const ACCEPTABLE_LANGUAGES = ['en-US', 'ar-SA'] as const
 export type AcceptableLanguage = (typeof ACCEPTABLE_LANGUAGES)[number]
 
 export interface UserPreferences {
@@ -59,7 +59,7 @@ const useUserStore = create<UserStoreState>()(
   persist(
     (set) => ({
       // Initial state
-      preferredLanguage: 'English' as AcceptableLanguage,
+      preferredLanguage: 'en-US' as AcceptableLanguage,
       userPreferences: defaultUserPreferences,
 
       // Actions

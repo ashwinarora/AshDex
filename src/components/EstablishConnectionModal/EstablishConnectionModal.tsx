@@ -9,8 +9,10 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../
 import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 const EstablishConnectionModal = () => {
+  const { t } = useTranslate()
   const { chainId } = useAccount()
   const { agentWallet, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -52,7 +54,7 @@ const EstablishConnectionModal = () => {
               })
               await refetchAgentApproval()
               setIsApproving(true)
-              toast.success('Agent approved successfully', {
+              toast.success(t('Agent approved successfully'), {
                 id: toastId
               })
             } catch (error) {
@@ -69,7 +71,7 @@ const EstablishConnectionModal = () => {
             }
           }}
         >
-          Establish Connection
+          {t('Establish Connection')}
         </Button>
       )
     }
@@ -87,7 +89,7 @@ const EstablishConnectionModal = () => {
                 maxFeeRate: BUILDER_FEE
               })
               await refetchCurrentFeeApproval()
-              toast.success('Fee approved successfully', {
+              toast.success(t('Fee approved successfully'), {
                 id: toastId
               })
             } catch (error) {
@@ -104,13 +106,13 @@ const EstablishConnectionModal = () => {
             }
           }}
         >
-          Approve Fee
+          {t('Approve Fee')}
         </Button>
       )
     }
     return (
       <Button variant={'outline'} onClick={closeModal}>
-        Close
+        {t('Close')}
       </Button>
     )
   }
@@ -119,11 +121,12 @@ const EstablishConnectionModal = () => {
     <Dialog open={isModalOpen} onOpenChange={closeModal}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Establish Connection</DialogTitle>
+          <DialogTitle>{t('Establish Connection')}</DialogTitle>
         </DialogHeader>
         <DialogDescription>
-          This signature is gas-free. It opens a decentralized channel for instant and gasless
-          deposits.
+          {t(
+            'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
+          )}
         </DialogDescription>
         {getButton()}
       </DialogContent>

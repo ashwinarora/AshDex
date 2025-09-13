@@ -25,13 +25,16 @@ import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
+import clsx from 'clsx'
+import { useTranslate } from '@tolgee/react'
 
 interface IOrderBookProps {
   selectedAsset: string
   layout?: 'horizontal' | 'vertical'
+  isRTL: boolean
 }
 
-const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
+const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquidStore(
     useShallow((state) => ({
       sdkSubscriptionClient: state.sdkSubscriptionClient,
@@ -40,6 +43,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   )
   const [l2Book, setL2Book] = useState<Book>()
   const { isMobile, isTablet } = useScreenSize()
+  const { t } = useTranslate()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -292,18 +296,18 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                     <ReactiveText
                       precision={0}
                       type="number"
-                      className="text-left text-xs flex-1"
+                      className="text-start text-xs flex-1"
                       value={Number(buy.px) * Number(buy.cumulative)}
                     />
                   ) : (
                     <ReactiveText
                       precision={4}
                       type="number"
-                      className="text-left text-xs flex-1"
+                      className="text-start text-xs flex-1"
                       value={Number(buy.cumulative)}
                     />
                   )}
-                  <p className="font-medium text-xs flex-1 text-right text-green">{buy.px}</p>
+                  <p className="font-medium text-xs flex-1 text-end text-green">{buy.px}</p>
                 </div>
                 <div className="absolute last:rounded-b-md md:last:rounded-b-none flex items-center justify-end top-0 z-0 left-0 w-full h-full">
                   <div
@@ -323,20 +327,20 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               .map((sell, index) => (
                 <div className="relative  h-full w-full py-1 px-2 flex items-center" key={index}>
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                    <p className="font-medium text-xs text-left flex-1 text-red">{sell.px}</p>
+                    <p className="font-medium text-xs text-start flex-1 text-red">{sell.px}</p>
                     {/* <p className="font-medium text-xs">{sell.sz}</p> */}
                     {showPriceInUSD ? (
                       <ReactiveText
                         precision={3}
                         type="number"
-                        className="text-right flex-1 text-xs"
+                        className="text-end flex-1 text-xs"
                         value={Number(sell.px) * Number(sell.cumulative)}
                       />
                     ) : (
                       <ReactiveText
                         precision={4}
                         type="number"
-                        className="text-right flex-1 text-xs"
+                        className="text-end flex-1 text-xs"
                         value={Number(sell.cumulative)}
                       />
                     )}
@@ -356,9 +360,11 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-[688px] text-white/50">
-      <div className="flex justify-between items-center px-2">
-        <h1 className="text-white text-sm font-semibold">Order Book</h1>
+    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/50">
+      <div
+        className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
+      >
+        <h1 className="text-white text-sm font-semibold">{t('Order Book')}</h1>
         <ToggleGroup
           size={'sm'}
           type="single"
@@ -388,7 +394,12 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           ))}
         </ToggleGroup>
       </div>
-      <div className="flex items-center gap-2 px-2 justify-between">
+      <div
+        className={clsx(
+          'flex items-center gap-2 px-2 justify-between',
+          isRTL ? 'flex-row-reverse' : ''
+        )}
+      >
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
@@ -455,13 +466,17 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
         </DropdownMenu>
       </div>
       <Separator orientation="horizontal" />
-      <div className="flex items-center justify-between px-2">
-        <p className="font-medium text-xs text-left">Price </p>
+      <div
+        className={clsx('flex items-center justify-between px-2', isRTL ? 'flex-row-reverse' : '')}
+      >
+        <p className="font-medium text-xs text-start">{t('Price')}</p>
         <p className="font-medium text-xs text-center flex-1">
-          Amount ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {t('Amount')} (
+          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
-        <p className="font-medium text-xs text-right">
-          Total ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+        <p className="font-medium text-xs text-end">
+          {t('Total')} (
+          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/5 -mb-1" />
@@ -490,22 +505,37 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
           {barData?.sells
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
-              <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
-                <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                  <p className="font-medium text-xs text-left flex-1 text-red">{sell.px}</p>
+              <div
+                className={clsx('relative h-full w-full py-1 px-2 flex items-center')}
+                key={index}
+              >
+                <div
+                  className={clsx(
+                    'flex items-center z-10 w-full justify-between text-sm text-white',
+                    isRTL ? 'flex-row-reverse' : ''
+                  )}
+                >
+                  <p
+                    className={clsx(
+                      'font-medium text-xs flex-1 text-red',
+                      isRTL ? 'text-end' : 'text-start'
+                    )}
+                  >
+                    {sell.px}
+                  </p>
                   <p className="font-medium text-xs">{sell.sz}</p>
                   {showPriceInUSD ? (
                     <ReactiveText
                       precision={3}
                       type="number"
-                      className="text-right flex-1 text-xs"
+                      className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                       value={Number(sell.px) * Number(sell.cumulative)}
                     />
                   ) : (
                     <ReactiveText
                       precision={4}
                       type="number"
-                      className="text-right flex-1 text-xs"
+                      className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                       value={Number(sell.cumulative)}
                     />
                   )}
@@ -518,10 +548,16 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
                 </div>
               </div>
             ))}
-          <div className="flex items-center justify-between px-2 w-full text-xs h-10 bg-accent py-3 z-10">
+          <div
+            className={clsx(
+              'flex items-center justify-between px-2 w-full text-xs h-10 bg-accent py-3 z-10',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             <p
               className={cn(
                 'text-sm flex-1 font-semibold flex items-center gap-2',
+                isRTL ? 'flex-row-reverse' : '',
                 priceChange === 'up'
                   ? 'text-green'
                   : priceChange === 'down'
@@ -539,7 +575,7 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
               )}
             </p>
             <p className="">{isNaN(spread) ? '-' : spread}</p>
-            <p className="text-right flex-1">
+            <p className={clsx('flex-1', isRTL ? 'text-start' : 'text-end')}>
               {isNaN(spread) || !allMids[selectedAsset]
                 ? '-'
                 : ((Number(spread) / Number(allMids[selectedAsset])) * 100).toFixed(3)}
@@ -547,27 +583,43 @@ const OrderBook = ({ selectedAsset }: IOrderBookProps) => {
             </p>
           </div>
           {barData?.buys.map((buy, index) => (
-            <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
-              <div className="flex items-center z-10 w-full justify-between text-sm text-white">
-                <p className="font-medium text-xs text-left flex-1 text-green">{buy.px}</p>
+            <div className={clsx('relative h-full w-full py-1 px-2 flex items-center')} key={index}>
+              <div
+                className={clsx(
+                  'flex items-center z-10 w-full justify-between text-sm text-white',
+                  isRTL ? 'flex-row-reverse' : ''
+                )}
+              >
+                <p
+                  className={clsx(
+                    'font-medium text-xs flex-1 text-green',
+                    isRTL ? 'text-end' : 'text-start'
+                  )}
+                >
+                  {buy.px}
+                </p>
                 <p className="font-medium text-xs">{buy.sz}</p>
                 {showPriceInUSD ? (
                   <ReactiveText
                     precision={0}
                     type="number"
-                    className="text-right flex-1 text-xs"
+                    className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                     value={Number(buy.px) * Number(buy.cumulative)}
                   />
                 ) : (
                   <ReactiveText
                     precision={4}
                     type="number"
-                    className="text-right flex-1 text-xs"
+                    className={clsx('flex-1 text-xs', isRTL ? 'text-start' : 'text-end')}
                     value={Number(buy.cumulative)}
                   />
                 )}
               </div>
-              <div className="absolute last:rounded-b-md flex items-center justify-end top-0 z-0 left-0 w-full h-full">
+              <div
+                className={cn(
+                  'absolute last:rounded-b-md flex items-center justify-end top-0 z-0 w-full h-full left-0'
+                )}
+              >
                 <div
                   className={cn(
                     'bg-green/20 h-full',

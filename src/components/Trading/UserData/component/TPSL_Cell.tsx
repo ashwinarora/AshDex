@@ -339,7 +339,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full items-start gap-2">
             <div className="flex items-center w-full justify-between gap-2">
-              <span className="flex-1 text-left text-nowrap font-medium text-white text-xs">
+              <span className="flex-1 text-start text-nowrap font-medium text-white text-xs">
                 TP Price
               </span>
             </div>
@@ -349,14 +349,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                 onChange={(e) => handleTpPriceChange(e.target.value)}
                 type="number"
                 inputMode="decimal"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <Input
                 value={tpMode === '%' ? tpPercent : tpValue}
                 onChange={(e) => handleTpValueChange(e.target.value)}
                 type="number"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <DropdownMenu>
@@ -389,7 +389,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           </div>
           <div className="flex flex-col w-full items-start gap-2">
             <div className="flex items-center w-full justify-between gap-2">
-              <span className="flex-1 text-left text-nowrap font-medium text-white text-xs">
+              <span className="flex-1 text-start text-nowrap font-medium text-white text-xs">
                 SL Value
               </span>
             </div>
@@ -399,14 +399,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                 onChange={(e) => handleSlPriceChange(e.target.value)}
                 type="number"
                 inputMode="decimal"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <Input
                 value={slMode === '%' ? slPercent : slValue}
                 onChange={(e) => handleSlValueChange(e.target.value)}
                 type="number"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <DropdownMenu>
@@ -462,7 +462,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               disabled={!configureAmount}
-              className="w-20 text-right"
+              className="w-20 text-end"
               type="number"
               inputMode="decimal"
             />
@@ -478,7 +478,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           </div>
           <div className="flex items-center gap-2 w-full">
             <Input
-              className="w-full text-left"
+              className="w-full text-start"
               disabled={!limitPrice}
               value={tpLimitPrice}
               onChange={(e) => setTpLimitPrice(e.target.value)}
@@ -486,7 +486,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               type="number"
             />
             <Input
-              className="w-full text-right"
+              className="w-full text-end"
               disabled={!limitPrice}
               value={slLimitPrice}
               onChange={(e) => setSlLimitPrice(e.target.value)}

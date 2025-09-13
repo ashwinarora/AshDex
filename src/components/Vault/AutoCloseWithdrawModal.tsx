@@ -164,7 +164,7 @@ const AutoCloseWithdrawModal: React.FC<AutoCloseWithdrawModalProps> = ({
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-left text-white"
+                        className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-start text-white"
                         value={usdPercent}
                         onChange={handleUsdPercentChange}
                       />
