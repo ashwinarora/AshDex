@@ -1,10 +1,7 @@
 import React, { useState } from 'react'
-import { useAccount, useSignTypedData, useSwitchChain } from 'wagmi'
+import { useAccount, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
-import { getWithrawalPayload } from '@/utils/hyperliquid/Withdraw'
-import { splitSignature } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { hyperliquidAxios } from '@/config/axios'
 import { isTestnet } from '@/utils/constants'
 import Loading from '../common/Loading'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
@@ -14,6 +11,8 @@ import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
+import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -21,29 +20,29 @@ interface WithdrawModalProps {
 }
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
+  const { t } = useTranslate()
   const { address, chainId } = useAccount()
-
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState } = useHyperliquidStore(
+  const { clearingHouseState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState
+      clearingHouseState: state.clearingHouseState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
-  const { signTypedDataAsync } = useSignTypedData()
   const [isLoading, setIsLoading] = useState(false)
   const { switchChainAsync } = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
-    const toastId = toast.loading('Switching to Arbitrum network…')
+    const toastId = toast.loading(t('Switching to Arbitrum network…'))
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
-        toast.success('Switched to Arbitrum network.', {
+        toast.success(t('Switched to Arbitrum network.'), {
           id: toastId
         })
       })
       .catch(() => {
-        toast.error('Failed to switch to Arbitrum network.', {
+        toast.error(t('Failed to switch to Arbitrum network.'), {
           id: toastId
         })
       })
@@ -51,45 +50,35 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   const onWithdrawClick = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
     if (!address) return
     const toastId = toast.loading('Signing in progress…')
+    setIsLoading(true)
     try {
-      const payload = getWithrawalPayload({
-        chainId: chainId,
-        isTestnet: isTestnet,
+      const res = await sdkUserSignerClient.withdraw3({
         amount: amount,
-        destination: address,
-        nonce: Date.now()
+        destination: address
       })
-      const sign = await signTypedDataAsync(payload)
-      setIsLoading(true)
-      toast.loading('Withdrawal in progress…', {
-        id: toastId
-      })
-      const body = {
-        action: {
-          type: payload.message.type,
-          amount: payload.message.amount,
-          destination: payload.message.destination,
-          time: payload.message.time,
-          signatureChainId: payload.message.signatureChainId,
-          hyperliquidChain: payload.message.hyperliquidChain
-        },
-        nonce: payload.message.time,
-        signature: splitSignature(sign)
-      }
-      const res = await hyperliquidAxios.post('/exchange', body)
       console.log('Withdraw response:', res)
       onClose()
-      toast.success('Withdrawal confirmed.', {
+      toast.success(t('Withdrawal confirmed.'), {
         id: toastId
       })
     } catch (error) {
+      setIsLoading(false)
       onClose()
       console.error('Error withdrawing:', error)
-      toast.error('Withdrawal failed. Please try again.', {
-        id: toastId
-      })
+      if (error instanceof ApiRequestError) {
+        toast.error(error.message, {
+          id: toastId
+        })
+      } else {
+        toast.error('Withdrawal failed.', {
+          id: toastId
+        })
+      }
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -97,18 +86,19 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Withdraw to Wallet</DialogTitle>
+          <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
           <DialogDescription>
-            USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be
-            deducted from the withdrawal amount. Processing usually takes under 5 minutes.
+            {t(
+              'USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
+            )}
           </DialogDescription>
         </DialogHeader>
         <Separator />
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={'Withdrawal in progress…'}
-              subTitle={'You will need to sign this transaction in your wallet:'}
+              title={t('Withdrawal in progress…')}
+              subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -117,9 +107,9 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <p>Amount</p>
+                  <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
-                    Available to withdraw:
+                    {t('Available to withdraw:')}
                     <Button
                       variant="link"
                       onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
@@ -133,7 +123,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 h-10"
+                    className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
@@ -157,7 +147,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   await switchChain()
                 }}
               >
-                Switch to Arbitrum
+                {t('Switch to Arbitrum')}
               </Button>
             ) : (
               <Button
@@ -167,7 +157,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   await onWithdrawClick()
                 }}
               >
-                Withdraw
+                {t('Withdraw')}
               </Button>
             )}
           </>

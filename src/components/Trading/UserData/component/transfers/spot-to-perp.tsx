@@ -1,11 +1,7 @@
 import { useState } from 'react'
-import { useAccount, useSignTypedData } from 'wagmi'
-import { getUsdClassTransferPayload } from '@/utils/hyperliquid/UsdClassTransfer'
-import { splitSignature } from '@/utils/utils'
+import { useAccount } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -19,6 +15,8 @@ import Loading from '@/components/common/Loading'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
+import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 interface ITransferModal {
   isOpen: boolean
@@ -27,16 +25,17 @@ interface ITransferModal {
 
 const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
+  const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { signTypedDataAsync } = useSignTypedData()
 
   const getBalance = () => {
     if (toPerp) {
@@ -50,31 +49,12 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   const onTransferClick = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
     const toastId = toast.loading('Transferring...')
     try {
       setIsLoading(true)
-      const payload = getUsdClassTransferPayload({
-        chainId: chainId,
-        isTestnet: isTestnet,
-        amount: amount,
-        toPerp: toPerp,
-        nonce: Date.now()
-      })
-      const sign = await signTypedDataAsync(payload)
-      const body = {
-        action: {
-          type: payload.message.type,
-          amount: payload.message.amount,
-          toPerp: payload.message.toPerp,
-          nonce: payload.message.nonce,
-          signatureChainId: payload.message.signatureChainId,
-          hyperliquidChain: payload.message.hyperliquidChain
-        },
-        nonce: payload.message.nonce,
-        signature: splitSignature(sign)
-      }
-      const res = await hyperliquidAxios.post('/exchange', body)
-      console.log('Transfer response:', res.data)
+      const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
+      console.log('Transfer response:', res)
       onClose()
       toast.success('Transfer successful', {
         id: toastId
@@ -83,9 +63,15 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     } catch (error) {
       console.error('Transfer failed:', error)
       onClose()
-      toast.error('Transfer failed', {
-        id: toastId
-      })
+      if (error instanceof ApiRequestError) {
+        toast.error(error.message, {
+          id: toastId
+        })
+      } else {
+        toast.error('Transfer failed', {
+          id: toastId
+        })
+      }
       setIsLoading(false)
     }
   }
@@ -94,14 +80,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer between Perp and Spot</DialogTitle>
-          <DialogDescription>Transfer USDC between Perp and Spot.</DialogDescription>
+          <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
+          <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={'Transfer in progress…'}
-              subTitle={'You will need to sign this transaction in your wallet:'}
+              title={t('Transfer in progress…')}
+              subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -109,21 +95,21 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
           <>
             <div className="flex items-center gap-2 justify-between">
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? 'Perp' : 'Spot'}
+                {toPerp ? t('Perp') : t('Spot')}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? 'Spot' : 'Perp'}
+                {toPerp ? t('Spot') : t('Perp')}
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <p>Amount</p>
+                  <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
-                    Available to transfer:
+                    {t('Available to transfer:')}
                     <Button
                       variant="link"
                       onClick={() => setAmount(getBalance())}
@@ -137,7 +123,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   <Input
                     type="text"
                     id="amount"
-                    className="text-left flex-1 h-10"
+                    className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
@@ -158,7 +144,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
               disabled={!amount || parseFloat(amount.toString()) === 0}
               onClick={onTransferClick}
             >
-              Transfer
+              {t('Transfer')}
             </Button>
           </>
         )}

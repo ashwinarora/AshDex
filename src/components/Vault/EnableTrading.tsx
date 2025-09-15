@@ -55,7 +55,7 @@ function EnableTrading({ enableModal, handleEnableTrading, setTradingEnabled }: 
           )}{' '}
           <button
             onClick={handleCloseModal}
-            className="p-2 bg-[#322944] rounded-full text-[#E8E0F1] hover:text-white"
+            className="p-2 bg-[#322944] rounded-full text-white/50 hover:text-white"
           >
             <Image src={menuClose} alt="close" width={13} height={13} />
           </button>
@@ -148,7 +148,7 @@ function EnableTrading({ enableModal, handleEnableTrading, setTradingEnabled }: 
             className="border-2 border-white/10 rounded-2xl px-4 py-4 text-white text-sm mb-6 flex items-center justify-between"
           >
             <span className="text-white text-sm font-medium">Deposit USDC to Nexon</span>
-            <span className="text-[#E8E0F1] opacity-50 tracking-normal flex items-center gap-x-1 text-sm font-medium">
+            <span className="text-white/50 opacity-50 tracking-normal flex items-center gap-x-1 text-sm font-medium">
               Not Signed
             </span>
           </div>

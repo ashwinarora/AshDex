@@ -4,7 +4,7 @@ import {
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
-import { zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
+import { type WalletClient, zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
@@ -15,7 +15,8 @@ interface HyperliquidState {
   userActiveAddress: Hex
   sdkTransport: hl.HttpTransport
   sdkSocketTransport: hl.WebSocketTransport
-  sdkExchangeClient: hl.ExchangeClient | null
+  sdkUserSignerClient: hl.ExchangeClient | null
+  sdkL1ActionClient: hl.ExchangeClient | null
   sdkInfoClient: hl.InfoClient | null
   sdkSubscriptionClient: hl.SubscriptionClient | null
   agentWallet: PrivateKeyAccount | null
@@ -41,7 +42,7 @@ interface HyperliquidState {
 }
 
 interface HyperliquidActions {
-  initSdk: (address: Hex) => Promise<void>
+  initSdk: (address: Hex, walletClient?: WalletClient) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => void
   subscribeWebData2: (address: Hex) => void
@@ -68,7 +69,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     sdkSocketTransport: new hl.WebSocketTransport({
       url: isTestnet ? WEBSOCKET_TESTNET_URL : WEBSOCKET_MAINNET_URL
     }),
-    sdkExchangeClient: null,
+    sdkUserSignerClient: null,
+    sdkL1ActionClient: null,
     sdkInfoClient: null,
     sdkSubscriptionClient: null,
     agentWallet: null,
@@ -89,7 +91,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     subsManager: {}
   },
   (set, get) => ({
-    initSdk: async (address: Hex) => {
+    initSdk: async (address: Hex, walletClient?: WalletClient) => {
       if (typeof window === 'undefined') return
       if (!address) return
       const privateKey = (() => {
@@ -108,7 +110,14 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       set((state) => ({
         agentWallet: agentWallet,
-        sdkExchangeClient: new hl.ExchangeClient({
+        sdkUserSignerClient: walletClient
+          ? new hl.ExchangeClient({
+              transport: state.sdkTransport,
+              wallet: walletClient,
+              isTestnet: isTestnet
+            })
+          : null,
+        sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
           wallet: agentWallet,
           isTestnet: isTestnet
@@ -214,10 +223,15 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       interval: hl.EventCandleParameters['interval'],
       callback: (data: hl.Candle) => void
     ) => {
-      const { sdkSubscriptionClient } = get()
+      const { sdkSubscriptionClient, subsManager } = get()
       if (!sdkSubscriptionClient) return
 
       const subscriptionKey = `${asset}-${interval}`
+
+      // Unsubscribe from existing subscription if it exists
+      if (subsManager.candles) {
+        subsManager.candles.unsubscribe()
+      }
 
       const candleSub = await sdkSubscriptionClient.candle(
         {
@@ -250,6 +264,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       if (!subsManager.candles) return
 
       const subscriptionKey = `${asset}-${interval}`
+
       subsManager.candles.unsubscribe()
 
       set((state) => {
@@ -259,6 +274,10 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           lastUpdates: {
             ...state.lastUpdates,
             candles: remainingCandles
+          },
+          subsManager: {
+            ...state.subsManager,
+            candles: undefined
           }
         }
       })

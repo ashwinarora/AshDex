@@ -9,10 +9,10 @@ import { hyperliquidAxios } from '@/config/axios'
 import { Referral } from '@nktkas/hyperliquid'
 
 export const useNexonReferral = () => {
-  const { clearingHouseState, sdkExchangeClient } = useHyperliquidStore(
+  const { clearingHouseState, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      sdkExchangeClient: state.sdkExchangeClient
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
   const { isConnected, address } = useAccount()
@@ -46,8 +46,8 @@ export const useNexonReferral = () => {
     if (isReferralSet) return
 
     const setNexonReferral = async () => {
-      if (!sdkExchangeClient) return
-      await sdkExchangeClient.setReferrer({
+      if (!sdkL1ActionClient) return
+      await sdkL1ActionClient.setReferrer({
         code: NEXON_REFERRAL_CODE
       })
       setIsReferralSet(true)

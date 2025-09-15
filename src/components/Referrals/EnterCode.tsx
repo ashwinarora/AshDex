@@ -11,9 +11,9 @@ import { useShallow } from 'zustand/react/shallow'
 function EnterCode() {
   const [code, setCode] = useState('')
   const { data: referral } = useReferralsInfo()
-  const { sdkExchangeClient } = useHyperliquidStore(
+  const { sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
-      sdkExchangeClient: state.sdkExchangeClient
+      sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
 
@@ -21,8 +21,8 @@ function EnterCode() {
 
   const { mutate, isSuccess } = useMutation({
     mutationFn: async () => {
-      if (!sdkExchangeClient) return
-      const res = await sdkExchangeClient.setReferrer({
+      if (!sdkL1ActionClient) return
+      const res = await sdkL1ActionClient.setReferrer({
         code: code
       })
       if ('error' in res) {

@@ -2,12 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
-import { isTestnet } from '@/utils/constants'
-import { hyperliquidAxios } from '@/config/axios'
-import { splitSignature } from '@/utils/utils'
-import { useAccount, useSignTypedData } from 'wagmi'
-import { getSpotSendPayload } from '@/utils/hyperliquid/SpotSend'
+import { useAccount } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
   Dialog,
@@ -26,6 +21,9 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconSend } from '@tabler/icons-react'
+import { isAddress, isHex } from 'viem'
+import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 interface SendModalProps {
   spotDefaultName?: string
@@ -40,18 +38,19 @@ const SendModal: React.FC<SendModalProps> = ({
   isOpen,
   onClose
 }) => {
+  const { t } = useTranslate()
   const [destination, setDestination] = useState('')
   const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
   const { chainId } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
-  const { signTypedDataAsync } = useSignTypedData()
   const { data: spotMeta } = useSpotMeta()
 
   const spotData = useMemo(() => {
@@ -75,30 +74,18 @@ const SendModal: React.FC<SendModalProps> = ({
 
   const handleSend = async () => {
     if (!chainId) return
+    if (!sdkUserSignerClient) return
+    if (!isAddress(destination)) {
+      toast.error('Destination must be a valid hex address')
+      return
+    }
     const toastId = toast.loading('Sending...')
     if (isPerp) {
       try {
-        const payload = getUsdSendPayload({
+        await sdkUserSignerClient.usdSend({
           destination: destination,
-          amount: amount,
-          chainId: chainId,
-          isTestnet: isTestnet,
-          nonce: Date.now()
+          amount: amount
         })
-        const sign = await signTypedDataAsync(payload)
-        const body = {
-          action: payload.message,
-          nonce: payload.message.time,
-          signature: splitSignature(sign)
-        }
-        const res = await hyperliquidAxios.post('/exchange', body)
-        if (res.data.status === 'err') {
-          onClose()
-          toast.error(res.data.response, {
-            id: toastId
-          })
-          return
-        }
         onClose()
         toast.success('Send successful', {
           id: toastId
@@ -106,43 +93,40 @@ const SendModal: React.FC<SendModalProps> = ({
       } catch (error) {
         console.log(error)
         onClose()
-        toast.error('Send failed', {
-          id: toastId
-        })
+        if (error instanceof ApiRequestError) {
+          toast.error(error.message, {
+            id: toastId
+          })
+        } else {
+          toast.error('Send failed', {
+            id: toastId
+          })
+        }
       }
     } else {
       if (!spotData) return
+      if (!isHex(spotData.tokenId)) return
       try {
-        const payload = getSpotSendPayload({
+        await sdkUserSignerClient.spotSend({
           destination: destination,
           amount: amount,
-          chainId: chainId,
-          isTestnet: isTestnet,
-          nonce: Date.now(),
-          tokenName: spotData.tokenName,
-          tokenId: spotData.tokenId
+          token: `${spotData.tokenName}:${spotData.tokenId}`
         })
-        const sign = await signTypedDataAsync(payload)
-        const body = {
-          action: payload.message,
-          nonce: payload.message.time,
-          signature: splitSignature(sign)
-        }
-        const res = await hyperliquidAxios.post('/exchange', body)
-        if (res.data.status === 'err') {
-          toast.error(res.data.response, {
-            id: toastId
-          })
-          return
-        }
         toast.success('Send successful', {
           id: toastId
         })
       } catch (error) {
         console.log(error)
-        toast.error('Send failed', {
-          id: toastId
-        })
+        onClose()
+        if (error instanceof ApiRequestError) {
+          toast.error(error.message, {
+            id: toastId
+          })
+        } else {
+          toast.error('Send failed', {
+            id: toastId
+          })
+        }
       }
     }
   }
@@ -162,41 +146,45 @@ const SendModal: React.FC<SendModalProps> = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Send Tokens</DialogTitle>
-          <DialogDescription>Send tokens to another account on Nexon</DialogDescription>
+          <DialogTitle>{t('Send Tokens')}</DialogTitle>
+          <DialogDescription>{t('Send tokens to another account on Nexon')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 w-full items-end">
             <div className="flex-1 flex flex-col gap-2">
-              <h1 className="text-xs text-white/50">Destination Address</h1>
+              <h1 className="text-xs text-white/50">{t('Destination Address')}</h1>
               <Input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="h-10 text-left placeholder:text-white/50 text-white"
-                placeholder="Address (0x...)"
+                className="h-10 text-start placeholder:text-white/50 text-white"
+                placeholder={t('Address (0x...)')}
               />
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="w-32">
-                  {isPerp ? 'Perps Account' : 'Spot Account'}
+                  {isPerp ? t('Perps Account') : t('Spot Account')}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40" align="end">
-                <DropdownMenuItem onClick={() => setIsPerp(true)}>Perps Account</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsPerp(false)}>Spot Account</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsPerp(true)}>
+                  {t('Perps Account')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsPerp(false)}>
+                  {t('Spot Account')}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
           <div className="flex items-center justify-between -mb-2">
-            <h1 className="text-xs text-white/50">Amount</h1>
+            <h1 className="text-xs text-white/50">{t('Amount')}</h1>
             <Button
               variant="link"
               className="text-accent-foreground h-fit text-xs p-0"
               onClick={() => setAmount(maxAmount.toString())}
             >
-              Use Max ({Number(maxAmount).toFixed(4)}{' '}
+              {t('Use Max')} ({Number(maxAmount).toFixed(4)}{' '}
               {isPerp ? 'USDC' : selectedToken.split('(')[0]})
             </Button>
           </div>
@@ -205,8 +193,8 @@ const SendModal: React.FC<SendModalProps> = ({
               <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="h-10 text-left placeholder:text-white/50 text-white"
-                placeholder="Amount"
+                className="h-10 text-start placeholder:text-white/50 text-white"
+                placeholder={t('Amount')}
                 type="number"
                 min="0"
                 max={maxAmount}
@@ -242,7 +230,7 @@ const SendModal: React.FC<SendModalProps> = ({
             }
             onClick={handleSend}
           >
-            Send
+            {t('Send')}
           </Button>
         </div>
       </DialogContent>

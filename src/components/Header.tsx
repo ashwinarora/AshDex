@@ -32,6 +32,10 @@ import {
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
+import { useTermsSignature } from '@/hooks/useTermsSignature'
+import clsx from 'clsx'
+import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 type MenuItem = {
   name: string
   path: string
@@ -41,24 +45,38 @@ type MenuItem = {
 const Header: FC = () => {
   const router = useRouter()
   const pathname = usePathname()
+  const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const isRendered = useComponentRendered()
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+
   // const [isOpen, setIsOpen] = useState(false)
   // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
+  const { data: termsData } = useTermsSignature()
   useNexonReferral()
 
+  // if user is connected and terms are not signed, disconnect and show error
+  useEffect(() => {
+    if (!isConnected) return
+    if (!termsData) return
+    if (termsData.signed) return
+    if (isModalOpen) return
+    disconnect()
+    toast.error('Please sign the terms to continue')
+  }, [isConnected, termsData?.signed, isModalOpen])
+
   const desktopMenu: MenuItem[] = [
-    { name: 'Futures', path: '/', isComingSoon: false },
-    { name: 'Spot', path: '/spot', isComingSoon: false },
-    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
-    { name: 'Referrals', path: '/', isComingSoon: true }
+    { name: t('Futures'), path: '/', isComingSoon: false },
+    { name: t('Spot'), path: '/spot', isComingSoon: false },
+    { name: t('Portfolio'), path: '/portfolio', isComingSoon: false },
+    { name: t('Referrals'), path: '/', isComingSoon: true }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
     // { name: 'Vaults', path: '/vaults', isComingSoon: true }
@@ -73,11 +91,11 @@ const Header: FC = () => {
     // { name: 'Stats', path: '/stats' },
     // { name: 'Docs', path: '/docs' },
     // { name: 'Vocabulary for novices', path: '/vocabulary' },
-    { name: 'Settings', path: '/settings' }
+    { name: t('Settings'), path: '/settings' }
   ]
 
   const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
-    if (pathname === '/' || pathname === '') return 'Futures'
+    if (pathname === '/' || pathname === '') return t('Futures')
     const firstSegment = pathname?.split('/')[1]
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
@@ -85,21 +103,8 @@ const Header: FC = () => {
 
   const handleCopy = () => {
     if (address) navigator.clipboard.writeText(address)
-    toast.success('Copied to clipboard')
+    toast.success(t('Copied to clipboard'))
   }
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        // setIsOpen(false)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    handleResize()
-    return () => {
-      window.removeEventListener('resize', handleResize)
-    }
-  }, [])
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -124,10 +129,18 @@ const Header: FC = () => {
   if (!isRendered) return null
 
   return (
-    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-14">
+    <div
+      className={clsx(
+        'top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-12',
+        isRTL && 'flex-row-reverse'
+      )}
+    >
       <div
         onClick={() => router.push('/')}
-        className="flex items-center gap-2 pr-4 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer"
+        className={clsx(
+          'flex items-center gap-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer',
+          isRTL ? 'pl-4' : 'pr-4'
+        )}
       >
         <Image
           style={{ width: 20, height: 'auto' }}
@@ -162,7 +175,12 @@ const Header: FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
+          <NavigationMenu
+            className={clsx(
+              'h-full md:flex hidden w-full items-center justify-start',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
                 <HoverCard key={name}>
@@ -172,7 +190,7 @@ const Header: FC = () => {
                     </div>
                   </HoverCardTrigger>
                   <HoverCardContent className="w-fit h-fit p-2" align="center">
-                    <p className="text-white text-xs">Coming Soon</p>
+                    <p className="text-white text-xs">{t('Coming Soon')}</p>
                   </HoverCardContent>
                 </HoverCard>
               ) : (
@@ -183,8 +201,8 @@ const Header: FC = () => {
                   <NavigationMenuLink
                     href={path}
                     className={cn(
-                      'text-white/50 hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
-                      activeMenu === name && 'text-white bg-border font-semibold'
+                      'text-white hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
+                      activeMenu === name && 'text-primary hover:text-primary font-semibold'
                     )}
                   >
                     {name}
@@ -196,7 +214,7 @@ const Header: FC = () => {
           </NavigationMenu>
         )}
       </div>
-      <div className="flex items-center gap-2">
+      <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
         {isConnected && isRendered ? (
           <div className="flex items-center gap-2">
@@ -218,27 +236,27 @@ const Header: FC = () => {
               <DropdownMenuContent className="w-48" align="end">
                 <DropdownMenuItem onClick={handleCopy}>
                   <IconCopy className="size-4 text-inherit" />
-                  Copy Address
+                  {t('Copy Address')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={toggleConnectWalletModal}>
                   <IconWallet className="size-4 text-inherit" />
-                  Switch Wallet
+                  {t('Switch Wallet')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => router.push('/settings')}>
                   <IconSettings className="size-4 text-inherit" />
-                  Settings
+                  {t('Settings')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
                   <IconStackPop className="size-4 text-inherit" />
-                  Withdraw
+                  {t('Withdraw')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => disconnect()} variant="destructive">
                   <IconLogout className="size-4 text-inherit" />
-                  Disconnect
+                  {t('Disconnect')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -250,7 +268,7 @@ const Header: FC = () => {
             className="flex items-center gap-2"
           >
             <IconWallet className="size-4" />
-            <span className="text-xs">Connect Wallet</span>
+            <span className="text-xs">{t('Connect Wallet')}</span>
           </Button>
         )}
       </div>

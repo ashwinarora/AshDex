@@ -8,7 +8,6 @@ import { IPlaceOrderProps } from '.'
 import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
-import MarginMode from './components/MarginMode'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
@@ -23,8 +22,9 @@ import { Slider } from '@/components/ui/slider'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
-const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
+const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids,
@@ -33,6 +33,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
     }))
   )
   const [isBuy, setIsBuy] = useState<boolean>(true)
+  const { t } = useTranslate()
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
@@ -138,20 +139,28 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-        {!isSpot && (
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+        />
+        {!isSpot ? (
           <>
-            <Separator orientation="horizontal" />
-            <MarginMode isCross={isCross} setIsCross={setIsCross} />
             <LeverageMargin
               selectedAsset={selectedAsset}
               leverage={leverage}
               setLeverage={setLeverage}
+              isRTL={isRTL}
             />
+            <Separator orientation="horizontal" />
           </>
+        ) : (
+          <Separator orientation="horizontal" className="bg-transparent" />
         )}
-        <Separator orientation="horizontal" />
         {isSpot ? (
           <AmountInputSpot
             selectedAsset={selectedAsset}
@@ -161,6 +170,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setUsdAmount={setUsdAmount}
             limitPrice={allMids[selectedAsset]?.toString() || '0'}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         ) : (
           <AmountInput
@@ -173,6 +183,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             leverage={leverage}
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
+            isRTL={isRTL}
           />
         )}
         <Separator orientation="horizontal" />
@@ -185,7 +196,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -198,7 +209,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                TP/SL
+                {t('TP/SL')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -222,16 +233,16 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Slippage
+                {t('Slippage')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <p className="text-xs text-white/50">
-                  Max slippage only affects market orders placed from the order form. Closing
-                  positions will use max slippage of 8% and market TP/SL orders will use max
-                  slippage of 10%.
+                  {t(
+                    'Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.'
+                  )}
                 </p>
                 <div className="flex items-center gap-3">
                   <Slider
@@ -283,25 +294,25 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
         <div className="flex w-full flex-col gap-2 text-xs">
           {!isSpot && (
             <>
-              <div className="flex justify-between">
-                <p className="text-white/50">Liquidation Price</p>
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+                <p className="text-white/50">{t('Liquidation Price')}</p>
                 <p className="text-white">{liquidationPrice}</p>
               </div>
 
-              <div className="flex justify-between">
-                <p className="text-white/50">Margin Required</p>
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+                <p className="text-white/50">{t('Margin Required')}</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
                 </p>
               </div>
             </>
           )}
-          <div className="flex justify-between">
-            <p className="text-white/50">Order Value</p>
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+            <p className="text-white/50">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-          <div className="flex justify-between">
-            <p className="text-white/50">Fees</p>
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+            <p className="text-white/50">{t('Fees')}</p>
             <p className="text-white">0.0% / 0.0%</p>
           </div>
         </div>
@@ -318,6 +329,7 @@ const MarketOrder = ({ selectedAsset }: IPlaceOrderProps) => {
           isPostOnly={false}
           isReduceOnly={isReduceOnly}
           tpsl={tpsl}
+          isMarket={true}
         />
       </div>
     </div>

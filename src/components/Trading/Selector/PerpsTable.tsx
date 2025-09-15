@@ -33,6 +33,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
+import { useTranslate } from '@tolgee/react'
 
 interface AssetTableProps {
   searchTerm: string
@@ -41,6 +42,8 @@ interface AssetTableProps {
   selectedAsset: string
 
   setIsOpen: (isOpen: boolean) => void
+
+  isRTL: boolean
 }
 
 interface PerpAssetData {
@@ -66,8 +69,10 @@ const AssetTable = ({
   searchTerm,
   setSelectedAsset,
   selectedAsset,
-  setIsOpen
+  setIsOpen,
+  isRTL
 }: AssetTableProps) => {
+  const { t } = useTranslate()
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
@@ -110,7 +115,7 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => <div className="flex items-center gap-1">Market</div>,
+          header: () => <div className="flex items-center gap-1">{t('Market')}</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -153,11 +158,11 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => <div className="flex items-center gap-1">Volume</div>,
+          header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-right">
+              <div className="text-end">
                 <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
               </div>
             )
@@ -166,7 +171,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => <div className="flex items-center gap-1">Price / 24h</div>,
+          header: () => <div className="flex items-center gap-1">{t('Price / 24h')}</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -175,8 +180,8 @@ const AssetTable = ({
             const className = isPositive ? 'text-green' : 'text-red'
             return (
               <div className="flex flex-col gap-1">
-                <div className="text-right text-white text-xs">${formattedPrice}</div>
-                <div className={`text-right text-xs ${className}`}>
+                <div className="text-end text-white text-xs">${formattedPrice}</div>
+                <div className={`text-end text-xs ${className}`}>
                   <div className="flex justify-end items-center">
                     {isPositive ? (
                       <IconTriangleFilled className="size-2 mr-1" />
@@ -214,12 +219,12 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => <div className="flex items-center gap-1">Market</div>,
+          header: () => <div className="flex items-center gap-1">{t('Market')}</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
             return (
-              <div className="flex items-center gap-2 text-xs">
+              <div className={cn('flex items-center gap-2 text-xs', isRTL && 'flex-row-reverse')}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -255,32 +260,38 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => <div className="flex items-center gap-1">Price</div>,
+          header: () => <div className="flex items-center gap-1">{t('Price')}</div>,
           cell: (info) => {
             const price = info.getValue()
             const formattedPrice = formatPrice(price)
-            return <div className="text-right text-white text-xs">${formattedPrice}</div>
+            return (
+              <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>
+                ${formattedPrice}
+              </div>
+            )
           },
           enableSorting: true
         }),
         columnHelper.accessor('prevDayPrice', {
           id: 'prevDayPrice',
-          header: () => <div className="flex items-center gap-1">24h Change</div>,
+          header: () => <div className="flex items-center gap-1">{t('24h Change')}</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const difference = price - prevDayPrice
             const isPositive = difference >= 0
             const className = isPositive ? 'text-green' : 'text-red'
             return (
-              <div className={`text-right text-xs ${className}`}>
-                <div className="flex justify-end items-center">
+              <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
+                <div
+                  className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
+                >
                   {isPositive ? (
                     <IconTriangleFilled className="size-2 mr-1" />
                   ) : (
                     <IconTriangleInvertedFilled className="size-2 mr-1" />
                   )}
                   {difference !== undefined && prevDayPrice !== 0 && (
-                    <>
+                    <div className="flex items-center">
                       <ReactiveText
                         precision={2}
                         className="text-xs"
@@ -297,7 +308,7 @@ const AssetTable = ({
                         isStatic={true}
                       />
                       )
-                    </>
+                    </div>
                   )}
                 </div>
               </div>
@@ -307,11 +318,11 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => <div className="flex items-center gap-1">Volume</div>,
+          header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-right">
+              <div className={cn(isRTL ? 'text-start' : 'text-end')}>
                 <ReactiveText value={Number(volume || 0)} className="text-xs" type="currency" />
               </div>
             )
@@ -320,11 +331,11 @@ const AssetTable = ({
         }),
         columnHelper.accessor('openInterest', {
           id: 'openInterest',
-          header: () => <div className="flex items-center gap-1">Open Interest</div>,
+          header: () => <div className="flex items-center gap-1">{t('Open Interest')}</div>,
           cell: (info) => {
             const openInterest = info.getValue()
             return (
-              <div className="text-right">
+              <div className={cn(isRTL ? 'text-start' : 'text-end')}>
                 <ReactiveText
                   value={Number(openInterest || 0)}
                   className="text-xs text-white/50"
@@ -337,7 +348,7 @@ const AssetTable = ({
         })
       ]
     }
-  }, [columnHelper, toggleFavorite, favorites, isMobile])
+  }, [columnHelper, toggleFavorite, favorites, isMobile, isRTL])
 
   const table = useReactTable({
     data: tableData,
@@ -370,13 +381,19 @@ const AssetTable = ({
     <Table ref={parentRef}>
       <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
                 className={cn(
                   'cursor-pointer hover:text-accent-foreground w-full',
-                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  header.id === 'symbol'
+                    ? isRTL
+                      ? 'justify-end'
+                      : 'justify-start'
+                    : isRTL
+                      ? 'justify-start'
+                      : 'justify-end',
                   !isMobile
                     ? header.id === 'symbol' || header.id === 'prevDayPrice'
                       ? 'w-3/12'
@@ -417,7 +434,8 @@ const AssetTable = ({
               onClick={() => handleRowClick(row.original.symbol)}
               className={cn(
                 'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-                selectedAsset === row.original.symbol && 'bg-secondary'
+                selectedAsset === row.original.symbol && 'bg-secondary',
+                isRTL && 'flex-row-reverse'
               )}
             >
               {row.getVisibleCells().map((cell) => (

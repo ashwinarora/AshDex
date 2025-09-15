@@ -32,7 +32,7 @@ export const AGENT_PRIVATE_KEY = 'agentPrivateKey'
 
 export const CORE_TO_EVM_MAPPING: Record<
   string,
-  Record<string, { destination: string; token: string; onChainAddress?: string }>
+  Record<string, { destination: string; token: `${string}:${Hex}`; onChainAddress?: string }>
 > = {
   testnet: {
     HYPE: {
@@ -56,7 +56,7 @@ export const CORE_TO_EVM_MAPPING: Record<
       token: 'HYPE:0x0d01dc56dcaaca66ad901c959b4011ec'
     }
   }
-}
+} as const
 
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
@@ -309,7 +309,7 @@ export const WALLETS = [
     name: 'Rabby Wallet',
     icon: rabbywallet
   },
-  { id: 'other', name: 'Other wallets', icon: '' }
+  { id: 'other', name: 'Other wallets', icon: 'IconWallet' }
 ] as const
 
 export const INFOTAB_DESC = `

@@ -18,10 +18,10 @@ const Accordion: React.FC<AccordionProps> = ({
 
   return (
     <div className={`border-white/5 border-t ${className}`}>
-      <div className="flex justify-between items-center p-2 px-4 w-full text-left">
+      <div className="flex justify-between items-center p-2 px-4 w-full text-start">
         <div
           onClick={() => setIsOpen(!isOpen)}
-          className="flex justify-between items-center w-full text-left duration-200 cursor-pointer"
+          className="flex justify-between items-center w-full text-start duration-200 cursor-pointer"
         >
           <h3 className="text-white text-sm">{title}</h3>
         </div>

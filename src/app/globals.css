@@ -36,7 +36,7 @@ html {
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: #150a1e;
-  /* #1c1033 */
+  /* #1b0c28 */
   --popover-foreground: #787878;
   --primary: oklch(0.208 0.042 265.755);
   --primary-foreground: oklch(0.984 0.003 247.858);
@@ -44,12 +44,12 @@ html {
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: #ffffff0a;
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: #1c1033;
+  --accent: #1b0c28;
   --accent-foreground: #5e46f9;
   --destructive: #e2464a;
   --border: #27163c;
   --input: oklch(0.929 0.013 255.508);
-  --ring: #1c1033;
+  --ring: #1b0c28;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -158,7 +158,7 @@ input[type='number'] {
 }
 body {
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background: #28163b;
+  background: #1b0c28;
   -ms-overflow-style: none;
   scrollbar-width: none;
   height: 100%;

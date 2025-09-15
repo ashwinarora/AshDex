@@ -32,7 +32,7 @@ function Referrals() {
     return (
       <div className="w-full text-white/50 h-full max-h-screen flex flex-col gap-1 p-1">
         <div className="flex flex-col gap-4 bg-secondary rounded-md items-start justify-between w-full h-fit p-4">
-          <h1 className="text-2xl text-white text-left">Referrals</h1>
+          <h1 className="text-2xl text-white text-start">Referrals</h1>
         </div>
       </div>
     )
@@ -40,7 +40,7 @@ function Referrals() {
   return (
     <div className="w-full text-white/50 h-full max-h-screen flex flex-col gap-1 p-1">
       <div className="flex gap-4 bg-secondary rounded-md items-center justify-between w-full h-fit p-4">
-        <h1 className="text-2xl text-white text-left">Referrals</h1>
+        <h1 className="text-2xl text-white text-start">Referrals</h1>
         <div className="flex flex-wrap gap-2">
           {/* <Button
             className="flex-1 w-full"

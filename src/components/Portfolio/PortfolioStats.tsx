@@ -20,8 +20,13 @@ import { useAccount } from 'wagmi'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
+import { useUserFee } from '@/hooks/useUserFee'
+import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 
 const PortfolioStats = () => {
+  const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile, isTablet } = useScreenSize()
   const [selectedView, setSelectedView] = useState<{
     [key: string]: 'perps' | 'all' | 'day' | 'week' | 'month' | 'alltime'
@@ -33,21 +38,16 @@ const PortfolioStats = () => {
 
   const { address } = useAccount()
 
-  const { sdkInfoClient } = useHyperliquidStore()
+  const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
 
   const portfolioQuery = useQuery({
-    queryKey: ['portfolio'],
+    queryKey: ['portfolio', address],
     queryFn: () => sdkInfoClient?.portfolio({ user: address as Hex }),
     refetchInterval: 2000,
     enabled: !!address && !!sdkInfoClient
   })
 
-  const { data: userFeeData, isLoading: userFeeLoading } = useQuery({
-    queryKey: ['userFeeData'],
-    queryFn: () => sdkInfoClient?.userFees({ user: address as Hex }),
-    refetchInterval: 2000,
-    enabled: !!address && !!sdkInfoClient
-  })
+  const { data: userFeeData, isLoading: userFeeLoading } = useUserFee()
 
   const overviewTable = useMemo(() => {
     if (!portfolioQuery.data) return undefined
@@ -121,12 +121,17 @@ const PortfolioStats = () => {
     return (
       <div className="flex flex-col w-full h-fit gap-1">
         <div className="flex bg-secondary rounded-md h-fit items-center justify-center w-full">
-          <PortfolioChart portfolioQuery={portfolioQuery} />
+          <PortfolioChart portfolioQuery={portfolioQuery} isRTL={isRTL} />
         </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
-            <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} />
+            <PortfolioVolumeCard
+              userFeeData={userFeeData}
+              userFeeLoading={userFeeLoading}
+              isRTL={isRTL}
+            />
             <PortfolioFeeCard
+              isRTL={isRTL}
               userFeeData={userFeeData}
               selectedView={selectedView}
               setSelectedView={setSelectedView}
@@ -153,12 +158,12 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
                   >
-                    <p>Perps</p>
+                    <p>{t('Perps')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
                   >
-                    <p>Perps+Spot+Vault</p>
+                    <p>{t('Perps+Spot+Vault')}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -167,7 +172,7 @@ const PortfolioStats = () => {
                   <Button variant={'outline'} size={'sm'} className="w-fit">
                     <p>
                       {selectedView.overviewTimeFrame === 'alltime'
-                        ? 'All Time'
+                        ? t('All Time')
                         : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
                           selectedView.overviewTimeFrame.slice(1)}
                     </p>
@@ -178,24 +183,24 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
                   >
-                    <p>Day</p>
+                    <p>{t('Day')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
                   >
-                    <p>Week</p>
+                    <p>{t('Week')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
                   >
-                    <p>Month</p>
+                    <p>{t('Month')}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
                       setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })
                     }
                   >
-                    <p>All Time</p>
+                    <p>{t('All Time')}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -219,20 +224,30 @@ const PortfolioStats = () => {
     )
   }
   return (
-    <div className="flex w-full h-80 gap-1">
+    <div className={cn('flex w-full h-80 gap-1', isRTL ? 'flex-row-reverse' : '')}>
       <div className="basis-xs flex flex-col gap-1 rounded-md h-full">
-        <PortfolioVolumeCard userFeeData={userFeeData} userFeeLoading={userFeeLoading} />
+        <PortfolioVolumeCard
+          userFeeData={userFeeData}
+          userFeeLoading={userFeeLoading}
+          isRTL={isRTL}
+        />
         <PortfolioFeeCard
           userFeeData={userFeeData}
           selectedView={selectedView}
           setSelectedView={setSelectedView}
+          isRTL={isRTL}
         />
       </div>
       <div className="flex-1 flex bg-secondary rounded-md h-full items-center justify-center">
-        <PortfolioChart portfolioQuery={portfolioQuery} />
+        <PortfolioChart portfolioQuery={portfolioQuery} isRTL={isRTL} />
       </div>
       <div className="basis-xs bg-secondary rounded-md h-full flex flex-col gap-2 p-2">
-        <div className="flex items-center justify-between w-full">
+        <div
+          className={cn(
+            'flex items-center justify-between w-full',
+            isRTL ? 'flex-row-reverse' : ''
+          )}
+        >
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
@@ -246,12 +261,12 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
               >
-                <p>Perps</p>
+                <p>{t('Perps')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
               >
-                <p>Perps+Spot+Vault</p>
+                <p>{t('Perps+Spot+Vault')}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -260,7 +275,7 @@ const PortfolioStats = () => {
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
                   {selectedView.overviewTimeFrame === 'alltime'
-                    ? 'All Time'
+                    ? t('All Time')
                     : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
                       selectedView.overviewTimeFrame.slice(1)}
                 </p>
@@ -271,22 +286,22 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
               >
-                <p>Day</p>
+                <p>{t('Day')} </p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
               >
-                <p>Week</p>
+                <p>{t('Week')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
               >
-                <p>Month</p>
+                <p>{t('Month')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })}
               >
-                <p>All Time</p>
+                <p>{t('All Time')} </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -296,7 +311,13 @@ const PortfolioStats = () => {
           {overviewTable
             ? Object.entries(overviewTable).map(([key, value]) => {
                 return (
-                  <div key={key} className="flex items-center justify-between w-full">
+                  <div
+                    key={key}
+                    className={cn(
+                      'flex items-center justify-between w-full',
+                      isRTL ? 'flex-row-reverse' : ''
+                    )}
+                  >
                     <p className="text-sm text-white/50">{key}</p>
                     <p
                       className={cn(

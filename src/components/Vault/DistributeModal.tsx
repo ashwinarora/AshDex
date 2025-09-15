@@ -47,14 +47,14 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
           <div className="flex items-start justify-between max-md:mb-0 mb-4 w-full">
             <p className="flex flex-col">
               <span className="text-lg text-white font-semibold tracking-[0em]">Distribute</span>
-              <span className="text-[#E8E0F1] opacity-40 mt-1 text-sm font-normal tracking-normal">
+              <span className="text-white/50 opacity-40 mt-1 text-sm font-normal tracking-normal">
                 Distribute the available profit between the vault leader and depositors. Once
                 distributed, funds will be credited to respective accounts.
               </span>
             </p>
             <button
               onClick={handleCloseModal}
-              className="p-2 bg-[#322944] rounded-full text-[#E8E0F1] hover:text-white cursor-pointer"
+              className="p-2 bg-[#322944] rounded-full text-white/50 hover:text-white cursor-pointer"
             >
               <Image
                 src={menuClose}
@@ -92,7 +92,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                   <div className="relative">
                     <input
                       type="text"
-                      className="w-16 h-10 px-2 rounded-md border-2 border-white/10 bg-white/10 outline-none text-left text-white"
+                      className="w-16 h-10 px-2 rounded-md border-2 border-white/10 bg-white/10 outline-none text-start text-white"
                       value={usdPercent}
                       onChange={handleUsdPercentChange}
                     />
@@ -150,7 +150,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
                     <div className="relative">
                       <input
                         type="text"
-                        className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-left text-white"
+                        className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-start text-white"
                         value={usdPercent}
                         onChange={handleUsdPercentChange}
                       />
@@ -164,9 +164,7 @@ const DistributeModal: React.FC<DistributeModalProps> = ({ isVaultModal, openVau
             )}
             {distributeDetails?.map((item, index) => (
               <div key={index} className="flex justify-between items-center text-sm">
-                <span className="text-[#E8E0F1] opacity-50 text-sm font-normal">
-                  {item?.label}:
-                </span>
+                <span className="text-white/50 opacity-50 text-sm font-normal">{item?.label}:</span>
                 <span
                   className={`text-sm font-medium flex items-center gap-x-2 ${
                     index === 0

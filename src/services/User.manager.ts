@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma'
-import { User, Prisma } from '@prisma/client'
+import { getReferral } from '@/lib/referral'
+import { User } from '@prisma/client'
+import { Address } from 'viem'
 
 class UserManager {
   private static instance: UserManager
@@ -32,8 +34,7 @@ class UserManager {
         },
         data: {
           username: userData.username,
-          avatar_url: userData.avatar_url ? userData.avatar_url : undefined,
-          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+          avatar_url: userData.avatar_url ? userData.avatar_url : undefined
         }
       })
 
@@ -43,25 +44,45 @@ class UserManager {
       return prisma.user.create({
         data: {
           wallet_id: userData.wallet_id,
-          username: userData.username || '',
-          avatar_url: userData.avatar_url ? userData.avatar_url : null,
-          user_preferences: userData.user_preferences as Prisma.InputJsonValue
+          username: userData.username || 'user_' + userData.wallet_id,
+          avatar_url: userData.avatar_url ? userData.avatar_url : null
         }
       })
     }
   }
 
-  async updateUser(walletId: string, updateData: Partial<User>) {
+  async validateReferral(walletId: Address): Promise<boolean> {
+    const referral = await getReferral(walletId)
+
+    if (
+      referral?.referrer == '0x1710022f671b4032d6c7262107ba231f41f84ce8' &&
+      referral.code == 'ASHWIN'
+    ) {
+      this.updateUser(walletId, { is_nexon_referred: true })
+      return true
+    }
+
+    this.updateUser(walletId, { is_nexon_referred: false })
+    return false
+  }
+
+  async getReferralStatus(walletId: Address, validate: boolean = false) {
+    if (validate) {
+      return this.validateReferral(walletId)
+    }
+
+    const user = await this.findUserByWalletId(walletId)
+    return user?.is_nexon_referred
+  }
+
+  async updateUser(walletId: Address, updateData: Partial<User>) {
     await prisma.user.updateMany({
       where: {
         wallet_id: walletId
       },
       data: {
         ...(updateData.username !== undefined && { username: updateData.username }),
-        ...(updateData.avatar_url !== undefined && { avatar_url: updateData.avatar_url }),
-        ...(updateData.user_preferences !== undefined && {
-          user_preferences: updateData.user_preferences as Prisma.InputJsonValue
-        })
+        ...(updateData.avatar_url !== undefined && { avatar_url: updateData.avatar_url })
       }
     })
 

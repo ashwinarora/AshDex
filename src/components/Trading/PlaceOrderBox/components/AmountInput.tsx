@@ -18,6 +18,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface AmountInputProps {
   selectedAsset: string
@@ -29,6 +30,7 @@ interface AmountInputProps {
   leverage: number
   isReduceOnly: boolean
   isBuy: boolean
+  isRTL: boolean
 }
 
 const AmountInput = ({
@@ -40,8 +42,10 @@ const AmountInput = ({
   limitPrice,
   leverage,
   isReduceOnly,
-  isBuy
+  isBuy,
+  isRTL
 }: AmountInputProps) => {
+  const { t } = useTranslate()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
@@ -148,16 +152,16 @@ const AmountInput = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between gap-2">
-        <p className="font-medium text-white/50 text-xs whitespace-nowrap">Position Size</p>
+      <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
+        <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Position Size')}</p>
         <label className="block font-medium text-white/10 text-xs whitespace-nowrap">
-          Max ={' '}
+          {t('Max')} ={' '}
           {isInputUsd
             ? `${maxAllowedUsd.toFixed(2)} USD`
             : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${selectedAsset}`}
         </label>
       </div>
-      <div className="flex items-center gap-2">
+      <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <Input
           type="text"
           placeholder="0"
@@ -165,7 +169,7 @@ const AmountInput = ({
             isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
           }
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
-          className="flex-1 text-right text-white shrink-0"
+          className={cn('flex-1 text-white shrink-0', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -190,30 +194,43 @@ const AmountInput = ({
         </DropdownMenu>
       </div>
       <div className="flex flex-1 flex-col gap-2 mt-2 w-full items-center justify-center">
-        <div className="w-full flex items-center justify-center gap-2">
+        <div
+          className={cn(
+            'w-full flex items-center justify-center gap-2',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <Slider
             min={0}
             max={100}
+            dir={isRTL ? 'rtl' : 'ltr'}
             value={[usdPercent]}
-            onValueChange={(value) => setUsdPercent(value[0])}
+            onValueChange={(value) => handleUsdPercentChange(value[0])}
             className="flex-1 w-full"
           />
           <div
             className={cn(
-              'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+              'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/50 rounded-md gap-2',
+              isRTL && 'flex-row-reverse pr-0 pl-2'
             )}
           >
             <Input
-              className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+              className={cn(
+                'flex-1 p-0 text-end text-white bg-transparent border-none',
+                isRTL && 'text-start'
+              )}
               value={usdPercent.toString()}
-              onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+              onChange={(e) => handleUsdPercentChange(parseInt(e.target.value, 10))}
             />
             <IconPercentage className="size-3" />
           </div>
         </div>
         <ToggleGroup
           size={'sm'}
-          className="flex mt-1 bg-white/5 items-center justify-between w-full"
+          className={cn(
+            'flex mt-1 items-center h-8 justify-between w-full',
+            isRTL && 'flex-row-reverse'
+          )}
           type="single"
           value={usdPercent.toString()}
           onValueChange={(value) => value !== '' && handleUsdPercentChange(parseInt(value, 10))}
@@ -221,10 +238,11 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'25'}
             className={cn(
-              'rounded-l-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 25
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50'
+              // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
             25%
@@ -232,7 +250,7 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'50'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent  transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 50
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50'
@@ -243,7 +261,7 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'75'}
             className={cn(
-              'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 75
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/50'
@@ -257,7 +275,8 @@ const AmountInput = ({
               'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 100
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50'
+                : 'bg-transparent text-white/50',
+              isRTL ? 'rounded-l-md' : 'rounded-r-md'
             )}
           >
             100%

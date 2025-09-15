@@ -21,6 +21,8 @@ import { useRouter } from 'next/navigation'
 import Switch from '@/components/common/Switch'
 import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
 import { useLanguageSettings, useUserPreferences } from '@/store/userStore'
+// import { useTolgee } from '@tolgee/react'
+import { setLanguage } from '@/tolgee/language'
 
 // Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
 interface UserInfo {
@@ -37,6 +39,9 @@ const SettingsPage = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
   const isRendered = useComponentRendered()
+
+  // const tolgee = useTolgee(['language'])
+  // const language = tolgee.getLanguage()
 
   // UserStore hooks
   const { userPreferences, updateNotificationSetting, setPopupPosition, setSoundEnabled } =
@@ -200,19 +205,20 @@ const SettingsPage = () => {
                 <CustomSelector
                   options={[
                     {
-                      value: 'English',
+                      value: 'en-US',
                       label: 'English',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
                     },
                     {
-                      value: 'Arabic',
+                      value: 'ar-SA',
                       label: 'العربية',
                       flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
                     }
                   ]}
                   selectedValue={preferredLanguage}
                   onChange={(value) => {
-                    setPreferredLanguage(value as 'English' | 'Arabic')
+                    setPreferredLanguage(value as 'en-US' | 'ar-SA')
+                    setLanguage(value as 'en-US' | 'ar-SA')
                   }}
                   className="nexon-card nexon-rounded-lg cursor-pointer"
                   isPadding={true}
@@ -346,7 +352,7 @@ const EditNicknameModal = ({
         <div className="w-96 rounded-xl  p-4 shadow-xl text-white gap-4 flex flex-col">
           <button
             onClick={onClose}
-            className="w-8 h-8 float-right ml-auto text-[#E8E0F1] hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
+            className="w-8 h-8 float-right ml-auto text-white/50hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
           >
             <IconX className="w-4 h-4" />
           </button>
@@ -361,7 +367,7 @@ const EditNicknameModal = ({
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-white text-sm placeholder-gray-400 w-full outline-none border-none"
               />
-              <button className="text-[#E8E0F1] hover:text-white">
+              <button className="text-white/50hover:text-white">
                 <IconEdit className="h-4 w-4" />
               </button>
             </div>

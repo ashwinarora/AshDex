@@ -226,10 +226,8 @@ const TradingViewChart = ({
     }
   }, [selectedAsset])
 
-  // Create datafeed once when SDK is available
+  // Create datafeed once - don't recreate when SDK changes
   useEffect(() => {
-    if (!sdkInfoClient) return
-
     const datafeed: Datafeed = {
       onReady: (cb: DatafeedCallback) =>
         setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
@@ -263,6 +261,10 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
+          // Get sdkInfoClient from store dynamically instead of depending on it
+          const store = useHyperliquidStore.getState()
+          const sdkInfoClient = store.sdkInfoClient
+
           if (!sdkInfoClient || !currentAsset) {
             onErrorCallback('SDK or asset not available')
             return
@@ -334,6 +336,12 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
+          // Get fresh store functions and state
+          const store = useHyperliquidStore.getState()
+          const sdkInfoClient = store.sdkInfoClient
+          const subscribeToCandle = store.subscribeToCandle
+          const unsubscribeFromCandle = store.unsubscribeFromCandle
+
           if (!sdkInfoClient || !currentAsset) return
 
           const interval = convertedResolutionToInterval(
@@ -401,7 +409,7 @@ const TradingViewChart = ({
       Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
       tvSubscribersRef.current = {}
     }
-  }, [sdkInfoClient])
+  }, [subscribeToCandle, unsubscribeFromCandle]) // Include subscription functions as dependencies
 
   // Initialize TradingView widget
   useEffect(() => {
@@ -783,6 +791,7 @@ const TradingViewChart = ({
   }, [datafeed])
 
   const showOrderLineShape = async (isBuy: boolean, price: string, qty: string) => {
+    if (!widgetRef.current) return
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
@@ -799,7 +808,9 @@ const TradingViewChart = ({
           textColor: '#2fa766',
           fontSize: 13,
           borderColor: '#2fa766',
-          borderWidth: 2,
+          borderWidth: 1,
+          linewidth: 1,
+          linestyle: 2,
           OverrideLineStyle: 2
         },
         disableSelection: true,
@@ -811,6 +822,7 @@ const TradingViewChart = ({
   }
 
   const showPositionLine = async (isLong: boolean, price: string, qty: string) => {
+    if (!widgetRef.current) return
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
@@ -829,10 +841,10 @@ const TradingViewChart = ({
           fontColor: color,
           fontSize: 13,
           borderColor: color,
-          borderWidth: 2,
+          borderWidth: 1,
           linecolor: color,
-          linewidth: 2,
-          linestyle: 0
+          linewidth: 1,
+          linestyle: 2
         },
         disableSelection: true,
         disableSave: true,
@@ -857,8 +869,40 @@ const TradingViewChart = ({
     }
   }, [selectedAsset, selectedInterval])
 
+  // Handle asset changes by updating subscriptions
+  useEffect(() => {
+    // Clean up existing subscriptions when asset changes
+    Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
+    tvSubscribersRef.current = {}
+
+    // The TradingView widget will automatically call subscribeBars again
+    // with the new asset when setSymbol is called above
+  }, [selectedAsset])
+
+  // Clear wallet-specific shapes when wallet disconnects
   useEffect(() => {
     if (!widgetRef.current) return
+
+    const store = useHyperliquidStore.getState()
+    if (!store.sdkInfoClient) {
+      // Wallet disconnected, clear all wallet-specific shapes
+      try {
+        widgetRef.current.activeChart().removeAllShapes()
+        orderToShape.current.clear()
+        positionToShape.current.clear()
+      } catch (e) {
+        console.error('Error clearing shapes:', e)
+      }
+    }
+  }, [sdkInfoClient])
+
+  useEffect(() => {
+    if (!widgetRef.current) return
+
+    // Only show order lines if we have a wallet connection
+    const store = useHyperliquidStore.getState()
+    if (!store.sdkInfoClient) return
+
     // Only show order lines for the first and last open order for the selected asset
     const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
     const ordersToShow = []
@@ -889,6 +933,11 @@ const TradingViewChart = ({
 
   useEffect(() => {
     if (!widgetRef.current) return
+
+    // Only show position lines if we have a wallet connection
+    const store = useHyperliquidStore.getState()
+    if (!store.sdkInfoClient) return
+
     clearingHouseState?.assetPositions.forEach(async (p) => {
       if (p.position.coin !== selectedAsset) return
       const shapeExists = positionToShape.current.get(p.position.coin)

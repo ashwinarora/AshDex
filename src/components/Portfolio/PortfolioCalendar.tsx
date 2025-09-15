@@ -38,13 +38,15 @@ const fillDays = (
 
 export function PortfolioCalendar({
   calendarData,
-  pnlType
+  pnlType,
+  isRTL
 }: {
   calendarData: {
     time: number
     value: string
   }[]
   pnlType: 'unrealized' | 'realized' | 'total'
+  isRTL: boolean
 }) {
   const { address } = useAccount()
   const { sdkInfoClient } = useHyperliquidStore(
@@ -141,7 +143,10 @@ export function PortfolioCalendar({
   }
 
   return (
-    <div className="w-full h-full grid place-content-stretch overflow-y-auto grid-cols-1 sm:grid-cols-7 gap-1">
+    <div
+      dir={isRTL ? 'rtl' : 'ltr'}
+      className="w-full h-full grid place-content-stretch overflow-y-auto grid-cols-1 sm:grid-cols-7 gap-1"
+    >
       {(pnlType === 'unrealized'
         ? formattedDataUnrealizedPnl
         : pnlType === 'realized'

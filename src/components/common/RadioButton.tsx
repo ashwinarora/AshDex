@@ -56,7 +56,7 @@ const RadioButton: React.FC<RadioButtonProps> = ({
           )}
         </div>
       </div>
-      {label && <span className="text-[#E8E0F1] text-xs font-medium tracking-tight">{label}</span>}
+      {label && <span className="text-white/50 text-xs font-medium tracking-tight">{label}</span>}
     </label>
   )
 }
