@@ -336,9 +336,11 @@ const TradingViewChart = ({
       ) => {
         try {
           const currentAsset = selectedAssetRef.current
-          // Get sdkInfoClient from store dynamically instead of depending on it
+          // Get fresh store functions and state
           const store = useHyperliquidStore.getState()
           const sdkInfoClient = store.sdkInfoClient
+          const subscribeToCandle = store.subscribeToCandle
+          const unsubscribeFromCandle = store.unsubscribeFromCandle
 
           if (!sdkInfoClient || !currentAsset) return
 
@@ -407,7 +409,7 @@ const TradingViewChart = ({
       Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
       tvSubscribersRef.current = {}
     }
-  }, []) // Remove sdkInfoClient dependency
+  }, [subscribeToCandle, unsubscribeFromCandle]) // Include subscription functions as dependencies
 
   // Initialize TradingView widget
   useEffect(() => {
@@ -866,6 +868,16 @@ const TradingViewChart = ({
       }
     }
   }, [selectedAsset, selectedInterval])
+
+  // Handle asset changes by updating subscriptions
+  useEffect(() => {
+    // Clean up existing subscriptions when asset changes
+    Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
+    tvSubscribersRef.current = {}
+    
+    // The TradingView widget will automatically call subscribeBars again
+    // with the new asset when setSymbol is called above
+  }, [selectedAsset])
 
   // Clear wallet-specific shapes when wallet disconnects
   useEffect(() => {

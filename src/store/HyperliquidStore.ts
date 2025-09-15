@@ -223,10 +223,15 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       interval: hl.EventCandleParameters['interval'],
       callback: (data: hl.Candle) => void
     ) => {
-      const { sdkSubscriptionClient } = get()
+      const { sdkSubscriptionClient, subsManager } = get()
       if (!sdkSubscriptionClient) return
 
       const subscriptionKey = `${asset}-${interval}`
+
+      // Unsubscribe from existing subscription if it exists
+      if (subsManager.candles) {
+        subsManager.candles.unsubscribe()
+      }
 
       const candleSub = await sdkSubscriptionClient.candle(
         {
@@ -259,6 +264,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       if (!subsManager.candles) return
 
       const subscriptionKey = `${asset}-${interval}`
+      
       subsManager.candles.unsubscribe()
 
       set((state) => {
@@ -268,6 +274,10 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           lastUpdates: {
             ...state.lastUpdates,
             candles: remainingCandles
+          },
+          subsManager: {
+            ...state.subsManager,
+            candles: undefined
           }
         }
       })
