@@ -299,30 +299,26 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             {estPnl ? (estPnl > 0 ? '+' : '') : ''}$
             {estPnl
               ? estPnl.toLocaleString(undefined, {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+              })
               : '0.00'}
           </span>
         </div>
         <Separator />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
-          <Button
-            onClick={async () => openAgentModal()}
-            className="w-full font-semibold cursor-pointer"
-          >
-            {' '}
-            {t('Enable Trading')}
-          </Button>
-        ) : (
-          <Button
-            onClick={handleClosePosition}
-            className="w-full"
-            disabled={!isAgentApproved || currentFeeApproval === 0}
-          >
-            {t('Confirm')}
-          </Button>
-        )}
+        {
+          (!isAgentApproved || currentFeeApproval === 0) ?
+            <Button
+              onClick={async () => openAgentModal()}
+              className="w-full font-semibold cursor-pointer"
+            >
+              {' '}
+              {t('Enable Trading')}
+            </Button>
+            : <Button onClick={handleClosePosition} className="w-full" disabled={!isAgentApproved || currentFeeApproval === 0}>
+              {t('Confirm')}
+            </Button>
+        }
       </DialogContent>
     </Dialog>
   )
