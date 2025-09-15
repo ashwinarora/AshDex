@@ -12,6 +12,7 @@ import { IconRefresh } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 interface ISetLastPriceProps {
   selectedAsset: string
@@ -20,6 +21,7 @@ interface ISetLastPriceProps {
   setUsdAmount: (amount: string) => void
   assetAmount: string
   disabled?: boolean
+  isRTL: boolean
 }
 
 const SetPrice = ({
@@ -28,8 +30,10 @@ const SetPrice = ({
   setLimitPrice,
   setUsdAmount,
   assetAmount,
-  disabled = false
+  disabled = false,
+  isRTL
 }: ISetLastPriceProps) => {
+  const { t } = useTranslate()
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const { allMids, perpsMeta } = useHyperliquidStore(
@@ -169,7 +173,7 @@ const SetPrice = ({
   }
 
   return (
-    <div className="flex w-full gap-2 items-center">
+    <div className={cn('flex w-full gap-2 items-center', isRTL && 'flex-row-reverse')}>
       <Input
         type="text"
         placeholder="0"
@@ -177,18 +181,18 @@ const SetPrice = ({
         onChange={handleLimitPriceChange}
         onBlur={handleBlur}
         disabled={disabled}
-        className={cn('w-full flex-1 text-right text-white')}
+        className={cn('w-full flex-1 text-white', isRTL ? 'text-start' : 'text-end')}
       />
       <Button
         variant="outline"
         size={'sm'}
-        className="text-xs"
+        className="text-xs w-16 bg-transparent hover:bg-transparent"
         disabled={disabled}
         // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
         onClick={() => setLimitPrice(getFormattedPrice())}
       >
         <IconRefresh className="size-3" />
-        Last
+        {t('Last')}
       </Button>
       {/* */}
     </div>

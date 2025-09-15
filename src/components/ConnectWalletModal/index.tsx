@@ -14,6 +14,7 @@ import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
 import { Button } from '../ui/button'
 import { IconLoader, IconWallet } from '@tabler/icons-react'
+import { useTranslate } from '@tolgee/react'
 
 interface WalletConnectProvider {
   id: string
@@ -22,6 +23,7 @@ interface WalletConnectProvider {
 }
 
 const ConnectWalletModal: React.FC = () => {
+  const { t } = useTranslate()
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
@@ -87,7 +89,7 @@ const ConnectWalletModal: React.FC = () => {
           isConnected && isTermsLoading ? (
             <div className="w-full h-80 flex flex-col gap-4 items-center justify-center">
               <IconLoader className="size-10 animate-spin" />
-              <p className="text-white">Loading terms...</p>
+              <p className="text-white">{t('Loading terms...')}</p>
             </div>
           ) : (
             <WalletDisplay

@@ -27,6 +27,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 
 interface TPSLCellProps {
   asset: string
@@ -93,6 +94,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   isOpen,
   onClose
 }: TPSLCellProps) => {
+  const { t } = useTranslate()
   const [tpTriggerPrice, setTpTriggerPrice] = useState('')
   const [slTriggerPrice, setSlTriggerPrice] = useState('')
   const [tpValue, setTpValue] = useState('')
@@ -313,25 +315,27 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>TP/SL for {tpslAsset.coin}</DialogTitle>
+          <DialogTitle>
+            {t('TP/SL for')} {tpslAsset.coin}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <div className="flex w-full items-center justify-between gap-1">
-            <span className="text-xs text-white/50">Coin</span>
+            <span className="text-xs text-white/50">{t('Coin')}</span>
             <span className="text-xs text-white">{asset}</span>
           </div>
           <div className="flex w-full items-center justify-between gap-1">
-            <span className="text-xs text-white/50">Position</span>
+            <span className="text-xs text-white/50">{t('Position')}</span>
             <span className="text-xs text-white">
               {position} {asset}
             </span>
           </div>
           <div className="flex w-full items-center justify-between gap-1">
-            <span className="text-xs text-white/50">Entry Price</span>
+            <span className="text-xs text-white/50">{t('Entry Price')}</span>
             <span className="text-xs text-white">{entryPrice.toLocaleString()}</span>
           </div>
           <div className="flex w-full items-center justify-between gap-1">
-            <span className="text-xs text-white/50">Mark Price</span>
+            <span className="text-xs text-white/50">{t('Mark Price')}</span>
             <span className="text-xs text-white">{markPrice.toLocaleString()}</span>
           </div>
         </div>
@@ -339,8 +343,8 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         <div className="flex flex-col gap-2 w-full">
           <div className="flex flex-col w-full items-start gap-2">
             <div className="flex items-center w-full justify-between gap-2">
-              <span className="flex-1 text-left text-nowrap font-medium text-white text-xs">
-                TP Price
+              <span className="flex-1 text-start text-nowrap font-medium text-white text-xs">
+                {t('TP Price')}
               </span>
             </div>
             <div className="flex items-center gap-2 w-full">
@@ -349,14 +353,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                 onChange={(e) => handleTpPriceChange(e.target.value)}
                 type="number"
                 inputMode="decimal"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <Input
                 value={tpMode === '%' ? tpPercent : tpValue}
                 onChange={(e) => handleTpValueChange(e.target.value)}
                 type="number"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <DropdownMenu>
@@ -367,7 +371,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                     className="w-20 !p-2 !h-fit flex items-center justify-between gap-1"
                   >
                     <span className="text-xs text-white/50">
-                      {tpMode === '%' ? 'TP %' : 'TP $'}
+                      {tpMode === '%' ? t('TP %') : t('TP $')}
                     </span>
                     <IconChevronDown className="size-3" />
                   </Button>
@@ -380,7 +384,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
             </div>
           </div>
           <div className="text-xs text-white/50 mb-2">
-            Expected profit:{' '}
+            {t('Expected profit:')}{' '}
             {tpTriggerPrice
               ? tpMode === '%'
                 ? `${((Number(tpTriggerPrice) - entryPrice) * position).toFixed(2)} $`
@@ -389,8 +393,8 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           </div>
           <div className="flex flex-col w-full items-start gap-2">
             <div className="flex items-center w-full justify-between gap-2">
-              <span className="flex-1 text-left text-nowrap font-medium text-white text-xs">
-                SL Value
+              <span className="flex-1 text-start text-nowrap font-medium text-white text-xs">
+                {t('SL Value')}
               </span>
             </div>
             <div className="flex items-center gap-2 w-full">
@@ -399,14 +403,14 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                 onChange={(e) => handleSlPriceChange(e.target.value)}
                 type="number"
                 inputMode="decimal"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <Input
                 value={slMode === '%' ? slPercent : slValue}
                 onChange={(e) => handleSlValueChange(e.target.value)}
                 type="number"
-                className="text-white text-sm text-right flex-1"
+                className="text-white text-sm text-end flex-1"
                 placeholder="0.00"
               />
               <DropdownMenu>
@@ -417,7 +421,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                     className="w-20 !p-2 !h-fit flex items-center justify-between gap-1"
                   >
                     <span className="text-xs text-white/50">
-                      {slMode === '%' ? 'SL %' : 'SL $'}
+                      {slMode === '%' ? t('SL %') : t('SL $')}
                     </span>
                     <IconChevronDown className="size-3" />
                   </Button>
@@ -430,7 +434,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
             </div>
           </div>
           <div className="text-xs text-white/50 mb-2">
-            Expected loss:{' '}
+            {t('Expected loss:')}{' '}
             {slTriggerPrice
               ? slMode === '%'
                 ? `${((entryPrice - Number(slTriggerPrice)) * position).toFixed(2)} $`
@@ -441,7 +445,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/50">Configure Amount</span>
+            <span className="text-xs text-white/50">{t('Configure Amount')}</span>
             <Switch
               checked={configureAmount}
               onCheckedChange={() => setConfigureAmount(!configureAmount)}
@@ -462,7 +466,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
               disabled={!configureAmount}
-              className="w-20 text-right"
+              className="w-20 text-end"
               type="number"
               inputMode="decimal"
             />
@@ -473,36 +477,34 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         </div>
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2">
-            <span className="text-xs text-white/50">Limit Price</span>
+            <span className="text-xs text-white/50">{t('Limit Price')}</span>
             <Switch checked={limitPrice} onCheckedChange={() => setLimitPrice(!limitPrice)} />
           </div>
           <div className="flex items-center gap-2 w-full">
             <Input
-              className="w-full text-left"
+              className="w-full text-start"
               disabled={!limitPrice}
               value={tpLimitPrice}
               onChange={(e) => setTpLimitPrice(e.target.value)}
-              placeholder="TP Limit Price"
+              placeholder={t('TP Limit Price')}
               type="number"
             />
             <Input
-              className="w-full text-right"
+              className="w-full text-end"
               disabled={!limitPrice}
               value={slLimitPrice}
               onChange={(e) => setSlLimitPrice(e.target.value)}
-              placeholder="SL Limit Price"
+              placeholder={t('SL Limit Price')}
               type="number"
             />
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <Button onClick={handleClick}>Confirm</Button>
+        <Button onClick={handleClick}>{t('Confirm')}</Button>
         <DialogFooter className="text-xs text-white/50 text-center">
-          Note: By default take-profit and stop-loss orders apply to the entire position.
-          Take-profit and stop-loss automatically cancel after closing the position. A market order
-          is triggered when the stop loss or take profit price is reached. If the order size is
-          configured above, the TP/SL order will be for that size no matter how the position changes
-          in the future.
+          {t(
+            'Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and stop-loss automatically cancel after closing the position. A market order is triggered when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.'
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

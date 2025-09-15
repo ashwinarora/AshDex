@@ -30,7 +30,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, selected, onSelect, classN
           {options.map((option) => (
             <button
               key={option}
-              className={`block w-full text-left px-4 py-1 ${className}`}
+              className={`block w-full text-start px-4 py-1 ${className}`}
               onClick={() => {
                 onSelect(option)
                 setIsOpen(false)

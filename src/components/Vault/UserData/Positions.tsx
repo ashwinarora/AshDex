@@ -142,7 +142,7 @@ const Positions = () => {
             {columns.map((col) => (
               <th
                 key={col.key}
-                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-left"
+                className="pt-3 pb-1 px-7 text-sm font-normal text-[#8B8BA0] text-start"
               >
                 <div className="flex justify-start items-center gap-1">
                   <Image
@@ -161,10 +161,10 @@ const Positions = () => {
                 </div>
               </th>
             ))}
-            <th className="pt-3 pb-1 px-7 text-left text-sm font-normal text-[#7D67FF]">
+            <th className="pt-3 pb-1 px-7 text-start text-sm font-normal text-[#7D67FF]">
               Close all positions
             </th>
-            <th className="pt-3 pb-1 pl-2 pr-10 text-left text-sm font-normal text-[#8B8BA0]">
+            <th className="pt-3 pb-1 pl-2 pr-10 text-start text-sm font-normal text-[#8B8BA0]">
               <div className="flex justify-start items-center gap-1">
                 <Image
                   src={sortingIcon}

@@ -5,6 +5,7 @@ import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import { IconChevronDown, IconRefresh } from '@tabler/icons-react'
 import { AssetPosition } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,7 @@ interface LimitCloseModalProps {
 }
 
 const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
+  const { t } = useTranslate()
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -201,19 +203,19 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Limit Close</DialogTitle>
-          <DialogDescription>Close your position at a specific price.</DialogDescription>
+          <DialogTitle>{t('Limit Close')}</DialogTitle>
+          <DialogDescription>{t('Close your position at a specific price.')}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">Price</h1>
+            <h1 className="text-xs text-white/50">{t('Price')}</h1>
             <div className="flex w-full items-center gap-2">
               <Input
                 type="number"
                 value={price}
-                className="text-white flex-1 text-left h-9"
+                className="text-white flex-1 text-start h-9"
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="Enter price"
+                placeholder={t('Enter price')}
               />
               <Button
                 onClick={() => {
@@ -230,12 +232,12 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">Size</h1>
+            <h1 className="text-xs text-white/50">{t('Size')}</h1>
             <div className="flex w-full items-center gap-2">
               <Input
                 type="number"
                 value={size}
-                className="text-white flex-1 text-left h-9"
+                className="text-white flex-1 text-start h-9"
                 onChange={(e) => {
                   if (!perpsMeta) return
                   const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
@@ -243,12 +245,12 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                   setSize(trimDecimals(e.target.value, szDecimals))
                   setLastChanged('size')
                 }}
-                placeholder="Enter Size"
+                placeholder={t('Enter Size')}
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="h-9 w-20">
-                    <span>{sizeType === 'asset' ? closingAsset : 'USD'}</span>
+                    <span>{sizeType === 'asset' ? closingAsset : t('USD')}</span>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -257,7 +259,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                     <span>{closingAsset}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSizeType('usd')}>
-                    <span>USD</span>
+                    <span>{t('USD')}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -281,7 +283,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-white/50">Estimated closed PnL (without fees):</span>
+          <span className="text-xs text-white/50">{t('Estimated closed PnL (without fees):')}</span>
           <span
             className={cn(
               'text-xs text-white/50',
@@ -305,7 +307,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         </div>
         <Separator />
         <Button onClick={handleClosePosition} className="w-full">
-          Confirm
+          {t('Confirm')}
         </Button>
       </DialogContent>
     </Dialog>

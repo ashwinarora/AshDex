@@ -47,11 +47,14 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
+import { useTranslate } from '@tolgee/react'
 interface IPositionsProps {
   setSelectedAsset: (asset: string) => void
+  isRTL: boolean
 }
 
-const Positions = ({ setSelectedAsset }: IPositionsProps) => {
+const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
+  const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -95,12 +98,16 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
     () => [
       helper.accessor('coin', {
         id: 'coin',
-        header: 'Position',
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Position')}</span>
+        ),
         cell: (info) => {
           const coin = info.getValue()
           const { leverage } = info.row.original
           return (
-            <div className="flex items-center justify-start gap-2">
+            <div
+              className={cn('flex items-center justify-start gap-2', isRTL && 'flex-row-reverse')}
+            >
               <Button
                 variant="link"
                 size="defaultLink"
@@ -123,18 +130,20 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
             </div>
           )
         },
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
-        header: 'Value',
-        meta: { label: 'Position Value' },
+        header: () => (
+          <span className={cn('flex justify-start items-center gap-1')}>{t('Value')}</span>
+        ),
+        meta: { label: t('Position Value') },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.accessor('szi', {
         id: 'szi',
-        header: 'Size',
-        meta: { label: 'Size' },
+        header: () => t('Size'),
+        meta: { label: t('Size') },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -147,26 +156,26 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.accessor('entryPx', {
         id: 'entryPx',
-        header: 'Entry',
-        meta: { label: 'Entry Price' },
+        header: () => t('Entry'),
+        meta: { label: t('Entry Price') },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.display({
         id: 'markPx',
-        header: 'Mark',
-        meta: { label: 'Mark Price' },
+        header: () => t('Mark'),
+        meta: { label: t('Mark Price') },
         cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
-        header: 'Funding PnL',
-        meta: { label: 'Funding PnL' }
+        header: () => t('Funding PnL'),
+        meta: { label: t('Funding PnL') }
       }),
 
       helper.accessor('unrealizedPnl', {
         id: 'unrealizedPnl',
-        header: 'Unrealized PnL',
-        meta: { label: 'Unrealized PnL' },
+        header: () => t('Unrealized PnL'),
+        meta: { label: t('Unrealized PnL') },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -180,8 +189,8 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.accessor('liquidationPx', {
         id: 'liquidationPx',
-        header: 'Liq. Price',
-        meta: { label: 'Liq. Price' },
+        header: () => t('Liq. Price'),
+        meta: { label: t('Liq. Price') },
         cell: (info) => {
           const value = info.getValue()
           if (!value) return '-'
@@ -190,8 +199,8 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-        header: 'Margin',
-        meta: { label: 'Margin' },
+        header: () => t('Margin'),
+        meta: { label: t('Margin') },
         cell: (info) => {
           return (
             <div className="flex flex-col gap-1 items-center justify-center font-medium text-xs">
@@ -228,21 +237,21 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       }),
       helper.display({
         id: 'status',
-        header: 'Status',
+        header: () => t('Status'),
         cell: () => {
           return (
             <span className="bg-green/20 px-2 py-1 rounded-md font-medium text-green text-xs">
-              Open
+              {t('Open')}
             </span>
           )
         },
-        meta: { label: 'Status' }
+        meta: { label: t('Status') }
       }),
       helper.display({
         id: 'tp_sl',
         header: () => (
           <div className="flex items-center justify-end gap-2">
-            <span className="text-white/50 text-xs">Action</span>
+            <span className="text-white/50 text-xs">{t('Action')}</span>
             <Button
               onClick={() => {
                 if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -263,7 +272,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                   variant={'outline'}
                   className="!py-1 !px-2 text-xs w-full h-fit flex items-center justify-between gap-1"
                 >
-                  More <IconChevronDown className="size-3" />
+                  {t('More')} <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -274,7 +283,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                     setIsTPSLModalOpen(true)
                   }}
                 >
-                  <span>Set TP/SL</span>
+                  <span>{t('Set TP/SL')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -283,7 +292,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                     setIsLimitCloseModalOpen(true)
                   }}
                 >
-                  <span>Close on Limit</span>
+                  <span>{t('Close on Limit')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -292,16 +301,16 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                     setIsMarketCloseModalOpen(true)
                   }}
                 >
-                  <span>Close on Market</span>
+                  <span>{t('Close on Market')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )
         },
-        meta: { label: 'TP/SL' }
+        meta: { label: t('TP/SL') }
       })
     ],
-    [helper, isAgentApproved, currentFeeApproval, openAgentModal]
+    [helper, isAgentApproved, currentFeeApproval, openAgentModal, t]
   )
 
   const tableData = useMemo(() => {
@@ -349,7 +358,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === 'Position' || item === 'Margin') && (
+                    {(item === t('Position') || item === t('Margin')) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>
@@ -409,7 +418,7 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
       <Table>
         <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -421,9 +430,13 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
                   className={cn(
                     'cursor-pointer flex-1',
                     header.id === 'coin'
-                      ? 'justify-start'
-                      : header.id === 'tp_sl'
+                      ? isRTL
                         ? 'justify-end'
+                        : 'justify-start'
+                      : header.id === 'tp_sl'
+                        ? isRTL
+                          ? 'justify-start'
+                          : 'justify-end'
                         : 'justify-center',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
@@ -454,16 +467,20 @@ const Positions = ({ setSelectedAsset }: IPositionsProps) => {
         </TableHeader>
         <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cn(
-                    'font-medium text-white text-xs first:text-left text-right',
+                    'font-medium text-white text-xs',
                     cell.column.id === 'coin'
-                      ? 'text-start justify-start'
+                      ? isRTL
+                        ? 'text-end'
+                        : 'text-start'
                       : cell.column.id === 'tp_sl'
-                        ? 'text-end justify-end'
+                        ? isRTL
+                          ? 'text-start'
+                          : 'text-end'
                         : 'text-center justify-center'
                   )}
                 >

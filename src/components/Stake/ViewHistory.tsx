@@ -71,7 +71,7 @@ const ViewHistory: React.FC<ViewHistoryProps> = ({ setIsViewHistory }) => {
                 {STAKE_VIEWHISTORY_COLUMN?.map((col) => (
                   <th
                     key={col.key}
-                    className="pt-2.5 pb-1 md:px-0 px-7 text-sm font-normal text-[#8B8BA0] text-left"
+                    className="pt-2.5 pb-1 md:px-0 px-7 text-sm font-normal text-[#8B8BA0] text-start"
                   >
                     <div className="flex justify-start items-center gap-1">
                       {col.label === 'Time' && (
