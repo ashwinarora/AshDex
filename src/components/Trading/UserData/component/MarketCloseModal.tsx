@@ -198,7 +198,9 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>{t('Market Close')}</DialogTitle>
-          <DialogDescription>{t('Close your position at the current market price.')}</DialogDescription>
+          <DialogDescription>
+            {t('Close your position at the current market price.')}
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">

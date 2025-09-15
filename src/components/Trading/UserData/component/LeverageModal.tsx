@@ -79,8 +79,9 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         <DialogHeader>
           <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
           <DialogDescription>
-            {t('Control the leverage used for')} {asset.coin} {t('positions. The maximum leverage is')} {' '}
-            {maxLeverage}x. {t('Max position size decreases the higher your leverage.')}
+            {t('Control the leverage used for')} {asset.coin}{' '}
+            {t('positions. The maximum leverage is')} {maxLeverage}x.{' '}
+            {t('Max position size decreases the higher your leverage.')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">

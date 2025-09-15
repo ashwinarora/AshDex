@@ -315,7 +315,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>{t('TP/SL for')} {tpslAsset.coin}</DialogTitle>
+          <DialogTitle>
+            {t('TP/SL for')} {tpslAsset.coin}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <div className="flex w-full items-center justify-between gap-1">
@@ -500,7 +502,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         <Separator orientation="horizontal" />
         <Button onClick={handleClick}>{t('Confirm')}</Button>
         <DialogFooter className="text-xs text-white/50 text-center">
-          {t('Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and stop-loss automatically cancel after closing the position. A market order is triggered when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.')}
+          {t(
+            'Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and stop-loss automatically cancel after closing the position. A market order is triggered when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.'
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

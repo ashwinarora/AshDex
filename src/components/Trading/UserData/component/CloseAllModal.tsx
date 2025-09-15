@@ -138,11 +138,14 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           </ToggleGroupItem>
         </ToggleGroup>
         <Button onClick={handleCloseAll}>
-          {selected === 'market' ? t('Confirm Market Close') : t('Confirm Limit Close at Mid Price')}
+          {selected === 'market'
+            ? t('Confirm Market Close')
+            : t('Confirm Limit Close at Mid Price')}
         </Button>
         <DialogFooter>
           <span className="text-red text-xs text-center w-full">
-            {t('This will close all your positions and cancel their associated TP/SL orders.')} <br /> {t('You cannot undo this action.')}
+            {t('This will close all your positions and cancel their associated TP/SL orders.')}{' '}
+            <br /> {t('You cannot undo this action.')}
           </span>
         </DialogFooter>
       </DialogContent>

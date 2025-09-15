@@ -168,8 +168,12 @@ const SendModal: React.FC<SendModalProps> = ({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent className="w-40" align="end">
-                <DropdownMenuItem onClick={() => setIsPerp(true)}>{t('Perps Account')}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsPerp(false)}>{t('Spot Account')}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsPerp(true)}>
+                  {t('Perps Account')}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setIsPerp(false)}>
+                  {t('Spot Account')}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

@@ -76,13 +76,17 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         <DialogHeader>
           <DialogTitle>{t('Adjust Margin')}</DialogTitle>
           <DialogDescription>
-            {t('Decrease the chance of liquidation by adding more margin or remove excess margin to use for other positions.')}
+            {t(
+              'Decrease the chance of liquidation by adding more margin or remove excess margin to use for other positions.'
+            )}
           </DialogDescription>
         </DialogHeader>
         <Separator />
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-white/50">{t('Current margin for')} {asset.coin}-USD</span>
+            <span className="text-white/50">
+              {t('Current margin for')} {asset.coin}-USD
+            </span>
             <span className="font-medium text-white">
               {Number(asset.marginUsed).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -131,13 +135,15 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-20">
                 <DropdownMenuItem onClick={() => setAction('Add')}>{t('Add')}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setAction('Remove')}>{t('Remove')}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAction('Remove')}>
+                  {t('Remove')}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
         <Button onClick={handleMarginChange} className="w-full">
-          {t('Confirm')}  
+          {t('Confirm')}
         </Button>
       </DialogContent>
     </Dialog>
