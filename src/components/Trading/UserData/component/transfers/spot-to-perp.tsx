@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 interface ITransferModal {
   isOpen: boolean
@@ -24,6 +25,7 @@ interface ITransferModal {
 
 const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId } = useAccount()
+  const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
   const [toPerp, setToPerp] = useState(false)
   const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
@@ -78,14 +80,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer between Perp and Spot</DialogTitle>
-          <DialogDescription>Transfer USDC between Perp and Spot.</DialogDescription>
+          <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
+          <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={'Transfer in progress…'}
-              subTitle={'You will need to sign this transaction in your wallet:'}
+              title={t('Transfer in progress…')}
+              subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -93,21 +95,21 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
           <>
             <div className="flex items-center gap-2 justify-between">
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? 'Perp' : 'Spot'}
+                {toPerp ? t('Perp') : t('Spot')}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? 'Spot' : 'Perp'}
+                {toPerp ? t('Spot') : t('Perp')}
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <p>Amount</p>
+                  <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
-                    Available to transfer:
+                    {t('Available to transfer:')}
                     <Button
                       variant="link"
                       onClick={() => setAmount(getBalance())}
@@ -142,7 +144,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
               disabled={!amount || parseFloat(amount.toString()) === 0}
               onClick={onTransferClick}
             >
-              Transfer
+              {t('Transfer')}
             </Button>
           </>
         )}

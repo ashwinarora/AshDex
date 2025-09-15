@@ -20,6 +20,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
+import { useTranslate } from '@tolgee/react'
 
 interface LeverageModalProps {
   isOpen: boolean
@@ -28,6 +29,7 @@ interface LeverageModalProps {
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
+  const { t } = useTranslate()
   const { perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       perpsMeta: state.perpsMeta,
@@ -47,7 +49,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   const handleLeverageChange = async () => {
     if (!asset) return
-    const toastId = toast.loading('⏳ Updating leverage...')
+    const toastId = toast.loading(t('⏳ Updating leverage...'))
     try {
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
@@ -59,12 +61,12 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       })
       console.log(res)
       onClose()
-      toast.success('Leverage updated successfully', {
+      toast.success(t('Leverage updated successfully'), {
         id: toastId
       })
     } catch (error) {
       onClose()
-      console.error('Error updating leverage:', error)
+      console.error(t('Error updating leverage:'), error)
       toast.error(error as string, {
         id: toastId
       })
@@ -75,10 +77,10 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>Adjust Leverage</DialogTitle>
+          <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
           <DialogDescription>
-            Control the leverage used for {asset.coin} positions. The maximum leverage is{' '}
-            {maxLeverage}x. Max position size decreases the higher your leverage.
+            {t('Control the leverage used for')} {asset.coin} {t('positions. The maximum leverage is')} {' '}
+            {maxLeverage}x. {t('Max position size decreases the higher your leverage.')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
@@ -86,7 +88,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             <p
               className={cn('text-xs font-medium transition-colors duration-150', 'text-white/50')}
             >
-              Leverage
+              {t('Leverage')}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -141,11 +143,11 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         </div>
         <Separator />
         <Button onClick={handleLeverageChange} className="w-full">
-          Confirm
+          {t('Confirm')}
         </Button>
         <DialogFooter className="text-xs text-white/50">
           <span className="text-center w-full">
-            Note that setting a higher leverage increases the risk of liquidation.
+            {t('Note that setting a higher leverage increases the risk of liquidation.')}
           </span>
         </DialogFooter>
       </DialogContent>
