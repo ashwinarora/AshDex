@@ -874,7 +874,7 @@ const TradingViewChart = ({
     // Clean up existing subscriptions when asset changes
     Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
     tvSubscribersRef.current = {}
-    
+
     // The TradingView widget will automatically call subscribeBars again
     // with the new asset when setSymbol is called above
   }, [selectedAsset])

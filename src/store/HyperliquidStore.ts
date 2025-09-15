@@ -264,7 +264,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       if (!subsManager.candles) return
 
       const subscriptionKey = `${asset}-${interval}`
-      
+
       subsManager.candles.unsubscribe()
 
       set((state) => {
