@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
-
+import { useAgentApproval } from '@/context/EstablishConnection'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
@@ -40,7 +40,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   )
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
-
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const marginAvailable = clearingHouseState?.withdrawable || 0
 
   const handleMarginChange = async () => {
@@ -142,9 +142,23 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             </DropdownMenu>
           </div>
         </div>
-        <Button onClick={handleMarginChange} className="w-full">
-          {t('Confirm')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleMarginChange}
+            className="w-full"
+            disabled={!isAgentApproved || currentFeeApproval === 0}
+          >
+            {t('Confirm')}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )

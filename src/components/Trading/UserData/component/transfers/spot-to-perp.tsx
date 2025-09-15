@@ -17,17 +17,20 @@ import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface ITransferModal {
   isOpen: boolean
   onClose: () => void
+  defaultToPerp?: boolean
 }
 
-const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
+const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
   const { chainId } = useAccount()
   const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
-  const [toPerp, setToPerp] = useState(false)
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+  const [toPerp, setToPerp] = useState(defaultToPerp || false)
   const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -95,13 +98,13 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
           <>
             <div className="flex items-center gap-2 justify-between">
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? t('Perp') : t('Spot')}
+                {toPerp ? t('Spot') : t('Perp')}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? t('Spot') : t('Perp')}
+                {toPerp ? t('Perp') : t('Spot')}
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -139,13 +142,23 @@ const SpotToPerpTransferModal = ({ isOpen, onClose }: ITransferModal) => {
               </div>
             </div>
             <Separator />
-            <Button
-              className="w-full"
-              disabled={!amount || parseFloat(amount.toString()) === 0}
-              onClick={onTransferClick}
-            >
-              {t('Transfer')}
-            </Button>
+            {!isAgentApproved || currentFeeApproval === 0 ? (
+              <Button
+                onClick={async () => openAgentModal()}
+                className="w-full font-semibold cursor-pointer"
+              >
+                {' '}
+                {t('Enable Trading')}
+              </Button>
+            ) : (
+              <Button
+                className="w-full"
+                disabled={!amount || parseFloat(amount.toString()) === 0}
+                onClick={onTransferClick}
+              >
+                {t('Transfer')}
+              </Button>
+            )}
           </>
         )}
       </DialogContent>

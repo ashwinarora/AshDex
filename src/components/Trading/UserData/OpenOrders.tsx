@@ -426,7 +426,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
+            <TableRow className={cn('h-10', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
@@ -434,11 +434,11 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                     'font-medium text-white text-xs',
                     cell.column.id === 'timestamp'
                       ? isRTL
-                        ? 'justify-end !w-36'
-                        : 'justify-start !w-36'
+                        ? 'text-end !w-36'
+                        : 'text-start !w-36'
                       : isRTL
-                        ? 'justify-start flex-2'
-                        : 'justify-end flex-2'
+                        ? 'text-start flex-2'
+                        : 'text-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

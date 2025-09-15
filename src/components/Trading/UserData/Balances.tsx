@@ -29,6 +29,7 @@ import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { formatWithCommas } from '@/utils/format'
 import { useTranslate } from '@tolgee/react'
+import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
@@ -52,9 +53,13 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
       spotState: state.spotState
     }))
   )
+
+  console.log('🚀 ~ Balances ~ spotState:', spotState)
+
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
@@ -72,13 +77,15 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
       token: 'USDC',
       total: clearingHouseState?.marginSummary?.accountValue || '-',
       hold: clearingHouseState?.withdrawable || '-',
-      entryNtl: '-'
+      entryNtl: Number(clearingHouseState?.marginSummary?.accountValue) || '1'
     }
 
     const spotData =
       spotState?.balances?.map((state) => ({
         ...state,
-        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin
+        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
+        entryNtl: state.coin === 'USDC' ? Number(state.total) : state.entryNtl,
+        hold: Number(state.total) - Number(state.hold)
       })) || []
 
     return [perpData, ...spotData]
@@ -117,37 +124,93 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         enableSorting: true,
         meta: { label: t('Coin') }
       }),
-      columnHelper.accessor('token', {
-        id: 'token',
-        header: () => <span className="flex justify-start items-center gap-1">{t('Tokens')}</span>,
-        cell: (info) => info.getValue(),
-        enableSorting: true,
-        meta: { label: t('Tokens') }
-      }),
-      columnHelper.accessor('total', {
+      // columnHelper.accessor('token', {
+      //   id: 'token',
+      //   header: () => <span className="flex justify-start items-center gap-1">{t('Tokens')}</span>,
+      //   cell: (info) => info.getValue(),
+      //   enableSorting: true,
+      //   meta: { label: t('Tokens') }
+      // }),
+      columnHelper.accessor((row) => ({ total: row.total, coin: row.coin }), {
         id: 'total',
         header: () => (
           <span className="flex justify-start items-center gap-1">{t('Total Balance')}</span>
         ),
-        cell: (info) => formatWithCommas(info.getValue()),
+        cell: (info) => {
+          return (
+            <div className="flex justify-start items-center gap-1">
+              <span className="text-white font-semibold">
+                {formatWithCommas(Number(info.getValue().total))}{' '}
+              </span>
+              <span className="text-white/50 text-xs">
+                {info.getValue().coin === 'USDC(Spot)' || info.getValue().coin === 'USDC(Perps)'
+                  ? 'USDC'
+                  : info.getValue().coin}
+              </span>
+            </div>
+          )
+        },
         enableSorting: true,
         meta: { label: t('Total Balance') }
       }),
-      columnHelper.accessor('hold', {
+      columnHelper.accessor((row) => ({ hold: row.hold, coin: row.coin }), {
         id: 'hold',
-        header: () => <span className="flex justify-start items-center gap-1">{t('Hold')}</span>,
-        cell: (info) => formatWithCommas(info.getValue()),
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Available Balance')}</span>
+        ),
+        cell: (info) => {
+          return (
+            <div className="flex justify-start items-center gap-1">
+              <span className="text-white font-semibold">
+                {formatWithCommas(Number(info.getValue().hold))}{' '}
+              </span>
+              <span className="text-white/50 text-xs">
+                {info.getValue().coin === 'USDC(Spot)' || info.getValue().coin === 'USDC(Perps)'
+                  ? 'USDC'
+                  : info.getValue().coin}
+              </span>
+            </div>
+          )
+        },
         enableSorting: true,
         meta: { label: t('Hold') }
       }),
-      columnHelper.accessor((row) => Number(row.entryNtl) / Number(row.total), {
+      columnHelper.accessor('entryNtl', {
         id: 'averagePrice',
         header: () => (
-          <span className="flex justify-start items-center gap-1">{t('Average Price')}</span>
+          <span className="flex justify-start items-center gap-1">{t('USDC Value')}</span>
         ),
-        cell: (info) => (isNaN(info.getValue()) ? '-' : formatWithCommas(info.getValue())),
+        cell: (info) => {
+          const value = formatWithCommas(Number(info.getValue())) ?? 0
+          return <span className="text-white text-start text-xs">$ {value}</span>
+        },
         enableSorting: true,
-        meta: { label: t('Average Price') }
+        meta: { label: t('USDC Value') }
+      }),
+      columnHelper.display({
+        id: 'transfer',
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Transfer')}</span>
+        ),
+        cell: (info) => {
+          if (info.row.original.coin !== 'USDC(Perps)' && info.row.original.coin !== 'USDC(Spot)')
+            return '--'
+          return (
+            <Button
+              variant={'link'}
+              size={'sm'}
+              className="text-xs !p-0"
+              onClick={() => {
+                setCoin(() => coin)
+                setIsTransferModalOpen(true)
+              }}
+            >
+              {coin === 'USDC(Perps)' ? t('Transfer to Spot') : t('Transfer to Perp')}
+            </Button>
+          )
+        },
+        enableSorting: false,
+        meta: { label: t('Transfer') }
       }),
       columnHelper.display({
         id: 'send',
@@ -207,7 +270,7 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
             return (
               <div
                 key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
+                className="w-full flex flex-col justify-between rounded-md h-fit gap-2 bg-accent p-4"
               >
                 {header.map((item, index) => (
                   <div className="flex flex-col gap-3" key={index}>
@@ -250,12 +313,12 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
                   className={cn(
                     'cursor-pointer w-full',
                     isRTL
-                      ? header.id === 'coin'
-                        ? 'justify-end'
-                        : 'justify-start'
-                      : header.id === 'coin'
+                      ? header.id === 'send' || header.id === 'transfer'
                         ? 'justify-start'
-                        : 'justify-end',
+                        : 'justify-end'
+                      : header.id === 'send' || header.id === 'transfer'
+                        ? 'justify-end'
+                        : 'justify-start',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/50',
@@ -285,18 +348,27 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <TableCell
-                  key={cell.id}
-                  className={cn(
-                    'font-medium text-white text-xs',
-                    isRTL ? 'text-start last:text-end' : 'first:text-start text-end'
-                  )}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </TableCell>
-              ))}
+            <TableRow className="h-10" key={row.id}>
+              {row.getVisibleCells().map((cell) => {
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      'font-medium text-white text-xs',
+                      // isRTL ? 'first:text-start text-end' : 'text-start last:text-end'
+                      isRTL
+                        ? cell.column.id === 'send' || cell.column.id === 'transfer'
+                          ? 'text-start'
+                          : 'text-end'
+                        : cell.column.id === 'send' || cell.column.id === 'transfer'
+                          ? 'text-end'
+                          : 'text-start'
+                    )}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </TableCell>
+                )
+              })}
             </TableRow>
           ))}
         </TableBody>
@@ -306,6 +378,13 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
           isOpen={isSendModalOpen}
           onClose={() => setIsSendModalOpen(false)}
           spotDefaultName={coin}
+        />
+      )}
+      {isTransferModalOpen && (
+        <SpotToPerpTransferModal
+          isOpen={isTransferModalOpen}
+          onClose={() => setIsTransferModalOpen(false)}
+          defaultToPerp={coin !== 'USDC(Perps)'}
         />
       )}
     </div>

@@ -21,7 +21,7 @@ import { cn } from '@/lib/utils'
 import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
-
+import { useAgentApproval } from '@/context/EstablishConnection'
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
@@ -36,7 +36,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
-
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length) return 1
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
@@ -143,9 +143,23 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
           </div>
         </div>
         <Separator />
-        <Button onClick={handleLeverageChange} className="w-full">
-          {t('Confirm')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleLeverageChange}
+            className="w-full"
+            disabled={!isAgentApproved || currentFeeApproval === 0}
+          >
+            {t('Confirm')}
+          </Button>
+        )}
         <DialogFooter className="text-xs text-white/50">
           <span className="text-center w-full">
             {t('Note that setting a higher leverage increases the risk of liquidation.')}

@@ -274,7 +274,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
+            <TableRow className={cn('h-10', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
