@@ -116,24 +116,24 @@ const PortfolioHeader = () => {
           isRTL && 'flex-row-reverse'
         )}
       >
-        <h1 className="text-3xl font-semibold text-white">{t('Portfolio')}</h1>
-        <div className={cn('flex gap-2', isRTL && 'flex-row-reverse')}>
+        <h1 className="text-3xl shrink-0 font-semibold text-white">{t('Portfolio')}</h1>
+        <div className={cn('flex flex-1 w-full gap-2 justify-end', isRTL && 'flex-row-reverse')}>
           <Button
-            className="w-32"
+            className="w-fit"
             onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
           >
             <IconCash className="size-4" />
             {t('Deposit')}
           </Button>
           <Button
-            className="w-32"
+            className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
           >
             {t('Withdraw')}
           </Button>
           <Button
-            className="w-32"
+            className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
           >
@@ -142,7 +142,7 @@ const PortfolioHeader = () => {
             <p>{t('Spot')}</p>
           </Button>
           <Button
-            className="flex-1 w-full"
+            className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
           >
@@ -151,7 +151,7 @@ const PortfolioHeader = () => {
             <p>{t('Spot')}</p>
           </Button>
           <Button
-            className="w-32"
+            className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
           >

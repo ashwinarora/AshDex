@@ -25,6 +25,7 @@ import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import useUserStore from '@/store/userStore'
 
 interface ITransferModal {
   isOpen: boolean
@@ -34,6 +35,7 @@ interface ITransferModal {
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useAccount()
   const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   const { switchChainAsync } = useSwitchChain()
   const { writeContractAsync } = useWriteContract()
@@ -177,7 +179,11 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Spot and EVM')}</DialogTitle>
-          <DialogDescription>{`${t('Transfer')} ${coin} ${t('between Spot and EVM.')}`}</DialogDescription>
+          <DialogDescription>
+            {isRTL
+              ? `تحويل ${coin} بين المحفظة الفعلية وشبكة أي في أم.`
+              : `Transfer ${coin} between Spot and EVM.`}
+          </DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
