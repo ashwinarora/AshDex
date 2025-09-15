@@ -24,6 +24,7 @@ import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
 import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 
 interface ITransferModal {
   isOpen: boolean
@@ -32,6 +33,7 @@ interface ITransferModal {
 
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useAccount()
+  const { t } = useTranslate()
 
   const { switchChainAsync } = useSwitchChain()
   const { writeContractAsync } = useWriteContract()
@@ -174,14 +176,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Transfer between Spot and EVM</DialogTitle>
-          <DialogDescription>{`Transfer ${coin} between Spot and EVM.`}</DialogDescription>
+          <DialogTitle>{t('Transfer between Spot and EVM')}</DialogTitle>
+          <DialogDescription>{`${t('Transfer')} ${coin} ${t('between Spot and EVM.')}`}</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={'Transfer in progress…'}
-              subTitle={'You will need to sign this transaction in your wallet:'}
+              title={t('Transfer in progress…')}
+              subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -189,21 +191,21 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
           <>
             <div className="flex items-center gap-2 justify-between">
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toEvm ? 'Spot' : 'EVM'}
+                {toEvm ? t('Spot') : t('EVM')}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToEvm((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toEvm ? 'EVM' : 'Spot'}
+                {toEvm ? t('EVM') : t('Spot')}
               </div>
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
                 <div className="flex items-center justify-between text-xs text-white/50">
-                  <p>Amount</p>
+                  <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
-                    Available to transfer:
+                    {t('Available to transfer:')}
                     {isLoadingBalanceEvm || isLoadingBalance ? (
                       <Skeleton className="w-20 h-4 rounded-md" />
                     ) : (
@@ -247,7 +249,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             {!toEvm ? (
               chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id ? (
                 <Button className="w-full" onClick={switchChain}>
-                  Switch to Hyperliquid Network
+                  {t('Switch to Hyperliquid Network')}
                 </Button>
               ) : (
                 <Button
@@ -255,7 +257,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   disabled={!amount || parseFloat(amount.toString()) === 0}
                   onClick={onTransferClick}
                 >
-                  Transfer to Spot
+                  {t('Transfer to Spot')}
                 </Button>
               )
             ) : (
@@ -264,7 +266,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                 disabled={!amount || parseFloat(amount.toString()) === 0}
                 onClick={onTransferClick}
               >
-                Transfer to EVM
+                {t('Transfer to EVM')}
               </Button>
             )}
           </>

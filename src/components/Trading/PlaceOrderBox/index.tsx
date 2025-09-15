@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
-import TWAP from './TWAP'
 import Scale from './Scale'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
@@ -20,7 +19,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useTranslate } from '@tolgee/react'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
+type OrderTab = 'LIMIT' | 'MARKET' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
 
 export interface IPlaceOrderProps {
   selectedAsset: string
@@ -38,8 +37,6 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         return <LimitOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} isRTL={isRTL} />
-      case 'TWAP':
-        return <TWAP isRTL={isRTL} />
       case 'SCALE':
         return isSpot ? (
           <ScaleSpot selectedAsset={selectedAsset} isRTL={isRTL} />

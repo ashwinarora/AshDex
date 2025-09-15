@@ -16,7 +16,6 @@ import { Button } from '../ui/button'
 import { IconLoader, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 
-
 interface WalletConnectProvider {
   id: string
   name: string

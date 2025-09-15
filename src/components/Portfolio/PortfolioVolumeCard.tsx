@@ -132,7 +132,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
               className={cn('text-xs text-white/50', isRTL ? 'text-end' : 'text-start')}
             >
               {t(
-                '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. <br /> Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
+                '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
               )}
             </DialogDescription>
           </DialogHeader>

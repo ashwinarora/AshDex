@@ -21,6 +21,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown } from '@tabler/icons-react'
+import { useTranslate } from '@tolgee/react'
 
 interface IsolatedMarginModalProps {
   isOpen: boolean
@@ -29,6 +30,7 @@ interface IsolatedMarginModalProps {
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
+  const { t } = useTranslate()
   const { clearingHouseState, perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -72,26 +74,29 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>Adjust Margin</DialogTitle>
+          <DialogTitle>{t('Adjust Margin')}</DialogTitle>
           <DialogDescription>
-            Decrease the chance of liquidation by adding more margin or remove excess margin to use
-            for other positions.
+            {t(
+              'Decrease the chance of liquidation by adding more margin or remove excess margin to use for other positions.'
+            )}
           </DialogDescription>
         </DialogHeader>
         <Separator />
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center text-xs">
-            <span className="text-white/50">Current margin for {asset.coin}-USD</span>
+            <span className="text-white/50">
+              {t('Current margin for')} {asset.coin}-USD
+            </span>
             <span className="font-medium text-white">
               {Number(asset.marginUsed).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}{' '}
-              USD USD
+              USD
             </span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-white/50">Margin available to add</span>
+            <span className="text-white/50">{t('Margin available to add')}</span>
             <span className="font-medium text-white">
               {marginAvailable.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -104,13 +109,13 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         <Separator />
         <div className="flex flex-col text-xs text-white/50 w-full gap-2">
           <div className="flex items-center justify-between">
-            <span>Amount</span>
+            <span>{t('Amount')}</span>
             <Button
               variant={'link'}
               className="p-0 h-fit"
               onClick={() => setAmount(marginAvailable.toString())}
             >
-              Max
+              {t('Max')}
             </Button>
           </div>
           <div className="flex items-center gap-2">
@@ -119,7 +124,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
               value={amount}
               className="h-10 text-start text-white"
               onChange={(e) => setAmount(e.target.value)}
-              placeholder="Amount"
+              placeholder={t('Amount')}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -129,14 +134,16 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-20">
-                <DropdownMenuItem onClick={() => setAction('Add')}>Add</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setAction('Remove')}>Remove</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAction('Add')}>{t('Add')}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAction('Remove')}>
+                  {t('Remove')}
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
         <Button onClick={handleMarginChange} className="w-full">
-          Confirm
+          {t('Confirm')}
         </Button>
       </DialogContent>
     </Dialog>

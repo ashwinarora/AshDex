@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import { AssetPosition } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
@@ -33,6 +34,7 @@ interface MarketCloseModalProps {
 }
 
 const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
+  const { t } = useTranslate()
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -195,12 +197,14 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
-          <DialogTitle>Market Close</DialogTitle>
-          <DialogDescription>Close your position at the current market price.</DialogDescription>
+          <DialogTitle>{t('Market Close')}</DialogTitle>
+          <DialogDescription>
+            {t('Close your position at the current market price.')}
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">Size</h1>
+            <h1 className="text-xs text-white/50">{t('Size')}</h1>
             <div className="flex w-full items-center gap-2">
               <Input
                 type="number"
@@ -213,7 +217,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                   setSize(trimDecimals(e.target.value, szDecimals))
                   setLastChanged('size')
                 }}
-                placeholder="Enter Size"
+                placeholder={t('Enter Size')}
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -251,7 +255,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-white/50">Estimated closed PnL (without fees):</span>
+          <span className="text-xs text-white/50">{t('Estimated closed PnL (without fees):')}</span>
           <span
             className={cn(
               'text-xs text-white/50',
@@ -275,7 +279,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
         </div>
         <Separator />
         <Button onClick={handleClosePosition} className="w-full">
-          Confirm
+          {t('Confirm')}
         </Button>
       </DialogContent>
     </Dialog>

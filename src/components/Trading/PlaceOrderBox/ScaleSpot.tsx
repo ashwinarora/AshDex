@@ -200,7 +200,14 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
         <Separator className="my-1" orientation="horizontal" />
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} isRTL={isRTL} isMarginEnabled={false} />
+        <BuyOrSell
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+          isMarginEnabled={false}
+          isCross={false}
+          setIsCross={() => {}}
+        />
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-3">
           <label htmlFor="startPrice" className="text-xs text-white/50">
