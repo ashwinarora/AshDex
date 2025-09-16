@@ -49,7 +49,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   const handleLeverageChange = async () => {
     if (!asset) return
-    const toastId = toast.loading(t('⏳ Updating leverage...'))
+    const toastId = toast.loading(t('Updating leverage...'))
     try {
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
@@ -66,8 +66,8 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       })
     } catch (error) {
       onClose()
-      console.error(t('Error updating leverage:'), error)
-      toast.error(error as string, {
+      console.error('Error updating leverage:', error)
+      toast.error(`${t('Failed to update leverage.')} ${error as string}`, {
         id: toastId
       })
     }

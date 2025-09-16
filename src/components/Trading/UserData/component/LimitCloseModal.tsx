@@ -173,19 +173,19 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(status.error, {
+        toast.error(`${t('Failed to close position.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success('Position Closed Successfully', {
+        toast.success(t('Position Closed Successfully'), {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success('Order Placed Successfully', {
+          toast.success(t('Order Placed Successfully'), {
             id: toastId
           })
         }
@@ -193,7 +193,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(error as string, {
+      toast.error(`${t('Failed to close position.')} ${error as string}`, {
         id: toastId
       })
     }

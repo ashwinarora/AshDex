@@ -45,7 +45,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
 
   const handleMarginChange = async () => {
     const isBuy = Number(asset.szi) > 0
-    const toastId = toast.loading('Updating margin...')
+    const toastId = toast.loading(t('Updating margin...'))
     const realAmount = Number(amount) * 10 ** 6
     try {
       if (!sdkL1ActionClient) return
@@ -58,13 +58,13 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
       console.log(res)
       onClose()
-      toast.success('Margin updated successfully', {
+      toast.success(t('Margin updated successfully'), {
         id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.error(error as string, {
+      toast.error(`${t('Failed to update margin.')} ${error as string}`, {
         id: toastId
       })
     }

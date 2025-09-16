@@ -53,13 +53,13 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
   const onTransferClick = async () => {
     if (!chainId) return
     if (!sdkUserSignerClient) return
-    const toastId = toast.loading('Transferring...')
+    const toastId = toast.loading(t('Transferring...'))
     try {
       setIsLoading(true)
       const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
       console.log('Transfer response:', res)
       onClose()
-      toast.success('Transfer successful', {
+      toast.success(t('Transfer successful'), {
         id: toastId
       })
       setIsLoading(false)
@@ -67,11 +67,11 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
       console.error('Transfer failed:', error)
       onClose()
       if (error instanceof ApiRequestError) {
-        toast.error(error.message, {
+        toast.error(`${t('Transfer failed.')} ${error.message}`, {
           id: toastId
         })
       } else {
-        toast.error('Transfer failed', {
+        toast.error(t('Transfer failed.'), {
           id: toastId
         })
       }

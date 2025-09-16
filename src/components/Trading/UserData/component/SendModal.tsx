@@ -76,10 +76,10 @@ const SendModal: React.FC<SendModalProps> = ({
     if (!chainId) return
     if (!sdkUserSignerClient) return
     if (!isAddress(destination)) {
-      toast.error('Destination must be a valid hex address')
+      toast.error(t('Destination must be a valid hex address'))
       return
     }
-    const toastId = toast.loading('Sending...')
+    const toastId = toast.loading(t('Sending...'))
     if (isPerp) {
       try {
         await sdkUserSignerClient.usdSend({
@@ -87,18 +87,18 @@ const SendModal: React.FC<SendModalProps> = ({
           amount: amount
         })
         onClose()
-        toast.success('Send successful', {
+        toast.success(t('Send successful'), {
           id: toastId
         })
       } catch (error) {
         console.log(error)
         onClose()
         if (error instanceof ApiRequestError) {
-          toast.error(error.message, {
+          toast.error(`${t('Send failed.')} ${error.message}`, {
             id: toastId
           })
         } else {
-          toast.error('Send failed', {
+          toast.error(t('Send failed.'), {
             id: toastId
           })
         }
@@ -112,18 +112,18 @@ const SendModal: React.FC<SendModalProps> = ({
           amount: amount,
           token: `${spotData.tokenName}:${spotData.tokenId}`
         })
-        toast.success('Send successful', {
+        toast.success(t('Send successful'), {
           id: toastId
         })
       } catch (error) {
         console.log(error)
         onClose()
         if (error instanceof ApiRequestError) {
-          toast.error(error.message, {
+          toast.error(`${t('Send failed.')} ${error.message}`, {
             id: toastId
           })
         } else {
-          toast.error('Send failed', {
+          toast.error(t('Send failed.'), {
             id: toastId
           })
         }
@@ -139,7 +139,7 @@ const SendModal: React.FC<SendModalProps> = ({
             variant="link"
             className="text-accent-foreground !p-0 h-fit w-full flex items-center gap-1 justify-end"
           >
-            <h1 className="text-xs">Send</h1>
+            <h1 className="text-xs">{t('Send')}</h1>
             <IconSend className="size-3" />
           </Button>
         )}

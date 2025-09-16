@@ -34,7 +34,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
-    const toastId = toast.loading(t('Switching to Arbitrum network…'))
+    const toastId = toast.loading(t('Switching to Arbitrum network...'))
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
         toast.success(t('Switched to Arbitrum network.'), {
@@ -52,7 +52,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     if (!chainId) return
     if (!sdkUserSignerClient) return
     if (!address) return
-    const toastId = toast.loading('Signing in progress…')
+    const toastId = toast.loading(t('Signing in progress...'))
     setIsLoading(true)
     try {
       const res = await sdkUserSignerClient.withdraw3({
@@ -69,11 +69,11 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       onClose()
       console.error('Error withdrawing:', error)
       if (error instanceof ApiRequestError) {
-        toast.error(error.message, {
+        toast.error(`${t('Withdrawal failed.')} ${error.message}`, {
           id: toastId
         })
       } else {
-        toast.error('Withdrawal failed.', {
+        toast.error(t('Withdrawal failed.'), {
           id: toastId
         })
       }
@@ -97,7 +97,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Withdrawal in progress…')}
+              title={t('Withdrawal in progress...')}
               subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />

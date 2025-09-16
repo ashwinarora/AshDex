@@ -139,7 +139,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       finalSize = parseFloat(size).toFixed(szDecimals)
     }
 
-    const toastId = toast.loading('Closing position...')
+    const toastId = toast.loading(t('Closing position...'))
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee(true)
@@ -168,19 +168,19 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(status.error, {
+        toast.error(`${t('Failed to close position.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success('Position Closed Successfully', {
+        toast.success(t('Position Closed Successfully'), {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success('Order Placed Successfully', {
+          toast.success(t('Order Placed Successfully'), {
             id: toastId
           })
         }
@@ -188,7 +188,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(error as string, {
+      toast.error(`${t('Failed to close position.')} ${error as string}`, {
         id: toastId
       })
     }
