@@ -30,6 +30,7 @@ import { useRouter } from 'next/navigation'
 import { formatWithCommas } from '@/utils/format'
 import { useTranslate } from '@tolgee/react'
 import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
@@ -42,25 +43,30 @@ type BalanceData = {
   total: string | number
   hold: string | number
   entryNtl: string | number
+  usdcValue: string | number
+  pnl: string | number
+  pnlPercentage: string | number
 }
 
 const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
-  const { clearingHouseState, spotState } = useHyperliquidStore(
+  const { spotKeyToName } = useSpotMeta()
+
+  const { clearingHouseState, spotState, spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      spotState: state.spotState
+      spotState: state.spotState,
+      spotAssetContext: state.spotAssetContext
     }))
   )
-
-  console.log('🚀 ~ Balances ~ spotState:', spotState)
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [coin, setCoin] = useState('')
+  const [defaultToPerp, setDefaultToPerp] = useState(false)
   const columnHelper = useMemo(() => createColumnHelper<BalanceData>(), [])
   const { isTablet, isMobile } = useScreenSize()
   const router = useRouter()
@@ -77,23 +83,39 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
       token: 'USDC',
       total: clearingHouseState?.marginSummary?.accountValue || '-',
       hold: clearingHouseState?.withdrawable || '-',
-      entryNtl: Number(clearingHouseState?.marginSummary?.accountValue) || '1'
+      usdcValue: Number(clearingHouseState?.marginSummary?.accountValue),
+      pnl: '--',
+      pnlPercentage: '--',
+      entryNtl: '--'
     }
 
     const spotData =
-      spotState?.balances?.map((state) => ({
-        ...state,
-        coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
-        entryNtl: state.coin === 'USDC' ? Number(state.total) : state.entryNtl,
-        hold: Number(state.total) - Number(state.hold)
-      })) || []
+      spotState?.balances?.map((state) => {
+        const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
+        const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
+        const usdcValue = Number(state.total) * Number(markPx)
+        const pnl = usdcValue - Number(state.entryNtl)
+        const pnlPercentage = (pnl / Number(state.entryNtl)) * 100
+
+        return {
+          ...state,
+          coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
+          entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
+          pnl: state.coin === 'USDC' ? '--' : pnl,
+          pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
+          usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
+          hold: Number(state.total) - Number(state.hold)
+        }
+      }) || []
 
     return [perpData, ...spotData]
   }, [
     isConnected,
     clearingHouseState?.marginSummary?.accountValue,
     clearingHouseState?.withdrawable,
-    spotState?.balances
+    spotState?.balances,
+    spotAssetContext,
+    spotKeyToName
   ])
 
   const columns = useMemo(
@@ -124,13 +146,6 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         enableSorting: true,
         meta: { label: t('Coin') }
       }),
-      // columnHelper.accessor('token', {
-      //   id: 'token',
-      //   header: () => <span className="flex justify-start items-center gap-1">{t('Tokens')}</span>,
-      //   cell: (info) => info.getValue(),
-      //   enableSorting: true,
-      //   meta: { label: t('Tokens') }
-      // }),
       columnHelper.accessor((row) => ({ total: row.total, coin: row.coin }), {
         id: 'total',
         header: () => (
@@ -175,17 +190,47 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         enableSorting: true,
         meta: { label: t('Hold') }
       }),
-      columnHelper.accessor('entryNtl', {
-        id: 'averagePrice',
+      columnHelper.accessor('usdcValue', {
+        id: 'usdcValue',
         header: () => (
           <span className="flex justify-start items-center gap-1">{t('USDC Value')}</span>
         ),
         cell: (info) => {
-          const value = formatWithCommas(Number(info.getValue())) ?? 0
+          const value = formatWithCommas(Number(info.getValue())) ?? '--'
           return <span className="text-white text-start text-xs">$ {value}</span>
         },
         enableSorting: true,
         meta: { label: t('USDC Value') }
+      }),
+      columnHelper.accessor((row) => ({ pnl: row.pnl, pnlPercentage: row.pnlPercentage }), {
+        id: 'pnl',
+        header: () => <span className="flex justify-start items-center gap-1">{t('PNL')}</span>,
+        cell: (info) => {
+          // const value =  formatWithCommas(Number(info.getValue().pnl)) ?? '--'
+          const value = isNaN(Number(info.getValue().pnl))
+            ? '--'
+            : formatWithCommas(Number(info.getValue().pnl))
+          const percentage = isNaN(Number(info.getValue().pnlPercentage))
+            ? '--'
+            : formatWithCommas(Number(info.getValue().pnlPercentage))
+          // const percentage = formatWithCommas(Number(info.getValue().pnlPercentage)) ?? '--'
+          return (
+            <span
+              className={cn(
+                'text-white text-start text-xs',
+                value === '--'
+                  ? 'text-white/50'
+                  : Number(info.getValue().pnl) > 0
+                    ? 'text-green'
+                    : 'text-red'
+              )}
+            >
+              {value === '--' ? '--' : `$${value} (${percentage}%)`}
+            </span>
+          )
+        },
+        enableSorting: true,
+        meta: { label: t('PNL') }
       }),
       columnHelper.display({
         id: 'transfer',
@@ -194,18 +239,21 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         ),
         cell: (info) => {
           if (info.row.original.coin !== 'USDC(Perps)' && info.row.original.coin !== 'USDC(Spot)')
-            return '--'
+            return <span className="text-white/50">--</span>
+
           return (
             <Button
               variant={'link'}
               size={'sm'}
               className="text-xs !p-0"
               onClick={() => {
-                setCoin(() => coin)
+                setDefaultToPerp(info.row.original.coin !== 'USDC(Perps)')
                 setIsTransferModalOpen(true)
               }}
             >
-              {coin === 'USDC(Perps)' ? t('Transfer to Spot') : t('Transfer to Perp')}
+              {info.row.original.coin === 'USDC(Perps)'
+                ? t('Transfer to Spot')
+                : t('Transfer to Perp')}
             </Button>
           )
         },
@@ -217,14 +265,17 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         header: () => <span className="flex justify-start items-center gap-1">{t('Send')}</span>,
         cell: (info) => {
           const coin = info.row.original.coin
-          if (coin === 'USDC(Perps)') return '--'
-
           return (
             <Button
               variant={'link'}
               size={'sm'}
               className="text-xs !p-0"
               onClick={() => {
+                if (coin === 'USDC(Perps)') {
+                  setCoin(() => '')
+                  setIsSendModalOpen(true)
+                  return
+                }
                 setCoin(() => coin)
                 setIsSendModalOpen(true)
               }}
@@ -239,6 +290,7 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
     ],
     [columnHelper, isSendModalOpen, t]
   )
+
   const table = useReactTable({
     data: combinedData,
     columns: isRTL ? columns.reverse() : columns,
@@ -384,7 +436,7 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         <SpotToPerpTransferModal
           isOpen={isTransferModalOpen}
           onClose={() => setIsTransferModalOpen(false)}
-          defaultToPerp={coin !== 'USDC(Perps)'}
+          defaultToPerp={defaultToPerp}
         />
       )}
     </div>
