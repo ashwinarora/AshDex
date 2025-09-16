@@ -229,7 +229,9 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
                     : 'text-red'
               )}
             >
-              {value === '--' ? '--' : `${Number(value) < 0 ? '-' : ''} $${Math.abs(Number(value))} (${percentage}%)`}
+              {value === '--'
+                ? '--'
+                : `${Number(value) < 0 ? '-' : ''} $${Math.abs(Number(value))} (${percentage}%)`}
             </span>
           )
         },
