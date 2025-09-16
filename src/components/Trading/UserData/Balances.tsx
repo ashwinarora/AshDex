@@ -153,7 +153,9 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         ),
         cell: (info) => {
           return (
-            <div className="flex justify-start items-center gap-1">
+            <div
+              className={cn('flex justify-start items-center gap-1', isRTL && 'flex-row-reverse')}
+            >
               <span className="text-white font-semibold">
                 {formatWithCommas(Number(info.getValue().total))}{' '}
               </span>
@@ -175,11 +177,13 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
         ),
         cell: (info) => {
           return (
-            <div className="flex justify-start items-center gap-1">
+            <div
+              className={cn('flex justify-start items-center gap-1', isRTL && 'flex-row-reverse')}
+            >
               <span className="text-white font-semibold">
                 {formatWithCommas(Number(info.getValue().hold))}{' '}
               </span>
-              <span className="text-white/50 text-xs">
+              <span className={cn('text-white/50 text-xs')}>
                 {info.getValue().coin === 'USDC(Spot)' || info.getValue().coin === 'USDC(Perps)'
                   ? 'USDC'
                   : info.getValue().coin}

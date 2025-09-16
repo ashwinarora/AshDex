@@ -264,7 +264,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               onClick={() => {}}
             >
               <IconRefresh className="size-3" />
-              Last
+              {t('Last')}
             </Button>
             {/* */}
           </div>

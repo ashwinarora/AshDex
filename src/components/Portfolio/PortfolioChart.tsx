@@ -145,9 +145,9 @@ const PortfolioChart = ({
                   {selectedChart.account === 'perp'
                     ? selectedChart.range
                         .split('perp')
-                        .map((item) => item.charAt(0).toUpperCase() + item.slice(1))
+                        .map((item) => t(item.charAt(0).toUpperCase() + item.slice(1)))
                         .join(' ')
-                    : selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1)}
+                    : t(selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1))}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
