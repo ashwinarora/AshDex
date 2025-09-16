@@ -26,7 +26,7 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
-
+import { useAgentApproval } from '@/context/EstablishConnection'
 interface LimitCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -52,7 +52,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()
-
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
@@ -173,19 +173,19 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(status.error, {
+        toast.error(`${t('Failed to close position.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success('Position Closed Successfully', {
+        toast.success(t('Position Closed Successfully'), {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success('Order Placed Successfully', {
+          toast.success(t('Order Placed Successfully'), {
             id: toastId
           })
         }
@@ -193,7 +193,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(error as string, {
+      toast.error(`${t('Failed to close position.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -306,9 +306,23 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           </span>
         </div>
         <Separator />
-        <Button onClick={handleClosePosition} className="w-full">
-          {t('Confirm')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleClosePosition}
+            className="w-full"
+            disabled={!isAgentApproved || currentFeeApproval === 0}
+          >
+            {t('Confirm')}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )

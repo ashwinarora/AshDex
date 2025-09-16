@@ -252,7 +252,9 @@ const PortfolioStats = () => {
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
-                  {selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}
+                  {t(
+                    selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)
+                  )}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
@@ -276,8 +278,10 @@ const PortfolioStats = () => {
                 <p>
                   {selectedView.overviewTimeFrame === 'alltime'
                     ? t('All Time')
-                    : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
-                      selectedView.overviewTimeFrame.slice(1)}
+                    : t(
+                        selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
+                          selectedView.overviewTimeFrame.slice(1)
+                      )}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
@@ -318,7 +322,7 @@ const PortfolioStats = () => {
                       isRTL ? 'flex-row-reverse' : ''
                     )}
                   >
-                    <p className="text-sm text-white/50">{key}</p>
+                    <p className="text-sm text-white/50">{t(key)}</p>
                     <p
                       className={cn(
                         'text-sm',

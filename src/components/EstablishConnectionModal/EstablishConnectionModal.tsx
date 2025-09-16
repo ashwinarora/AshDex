@@ -46,7 +46,7 @@ const EstablishConnectionModal = () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
             if (!agentWallet) return
-            const toastId = toast.loading('⏳ Approving agent…')
+            const toastId = toast.loading(t('Approving agent...'))
             try {
               await sdkUserSignerClient.approveAgent({
                 agentAddress: agentWallet.address,
@@ -60,11 +60,11 @@ const EstablishConnectionModal = () => {
             } catch (error) {
               console.error('Error approving agent:', error)
               if (error instanceof ApiRequestError) {
-                toast.error(error.message, {
+                toast.error(`${t('Agent approval failed.')} ${error.message}`, {
                   id: toastId
                 })
               } else {
-                toast.error('An unexpected error occurred', {
+                toast.error(t('An unexpected error occurred. Please try again.'), {
                   id: toastId
                 })
               }
@@ -82,7 +82,7 @@ const EstablishConnectionModal = () => {
           onClick={async () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
-            const toastId = toast.loading('Approving fee…')
+            const toastId = toast.loading(t('Approving fee...'))
             try {
               await sdkUserSignerClient.approveBuilderFee({
                 builder: BUILDER_ADDRESS,
@@ -95,11 +95,11 @@ const EstablishConnectionModal = () => {
             } catch (error) {
               console.error('Error approving fee:', error)
               if (error instanceof ApiRequestError) {
-                toast.error(error.message, {
+                toast.error(`${t('Fee approval failed.')} ${error.message}`, {
                   id: toastId
                 })
               } else {
-                toast.error('An unexpected error occurred', {
+                toast.error(t('An unexpected error occurred'), {
                   id: toastId
                 })
               }

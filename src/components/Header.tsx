@@ -69,7 +69,7 @@ const Header: FC = () => {
     if (termsData.signed) return
     if (isModalOpen) return
     disconnect()
-    toast.error('Please sign the terms to continue')
+    toast.error(t('Please sign the terms to continue'))
   }, [isConnected, termsData?.signed, isModalOpen])
 
   const desktopMenu: MenuItem[] = [

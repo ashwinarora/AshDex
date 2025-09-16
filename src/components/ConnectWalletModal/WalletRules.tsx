@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import { IconAlertCircle, IconLoader } from '@tabler/icons-react'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { Button } from '../ui/button'
+import { useTranslate } from '@tolgee/react'
 
 interface WalletRulesProps {
   onClose: () => void
@@ -32,14 +33,14 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
     }
   })
   const { refetch: refetchUserTerms } = useTermsSignature()
-
+  const { t } = useTranslate()
   const handleSignTerms = async () => {
     if (!terms?.content) return
     const signature = await signMessageAsync({
       message: terms.content
     })
     console.log('signature', signature)
-    const toastId = toast.loading('Verifying Signature...')
+    const toastId = toast.loading(t('Verifying Signature...'))
     try {
       const res = await axios.post('/api/user-terms', {
         wallet_id: address,
@@ -47,11 +48,11 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
       })
       console.log('terms res', res)
       await refetchUserTerms()
-      toast.success('Signature verified', {
+      toast.success(t('Signature verified'), {
         id: toastId
       })
     } catch (err) {
-      toast.error('Failed to sign and verify terms. Please try again.', {
+      toast.error(t('Failed to sign and verify terms. Please try again.'), {
         id: toastId
       })
       console.log('Error signing/verifying terms:', err)
@@ -70,7 +71,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
     return (
       <div className="w-full h-80 flex flex-col gap-4 items-center justify-center">
         <IconAlertCircle className="size-10 text-red" />
-        <div className="text-red text-sm">Error loading terms</div>
+        <div className="text-red text-sm">{t('Error loading terms')}</div>
       </div>
     )
   }
@@ -83,10 +84,10 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
       </ScrollArea>
       <div className="w-full flex flex-col shrink-0 items-center justify-center gap-2">
         <Button className="w-full" onClick={handleSignTerms}>
-          I agree to the Rules
+          {t('I agree to the Rules')}
         </Button>
         <Button className="w-full" variant={'link'} onClick={onClose}>
-          Cancel
+          {t('Cancel')}
         </Button>
       </div>
     </div>

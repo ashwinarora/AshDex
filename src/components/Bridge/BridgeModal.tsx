@@ -593,7 +593,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     const selectedChain = Object.values(chains).find((chain) => chain.name === chainName)
 
     if (!selectedChain) {
-      toast.error(t(`Chain ${chainName} not found`))
+      toast.error(`${t('Chain')} ${chainName} ${t(`not found`)} }`)
       return false
     }
 
@@ -617,7 +617,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     const supportedChainId = supportedChainIds[chainName]
 
     if (!supportedChainId) {
-      toast.error(t(`Chain ${chainName} is not supported for network switching`))
+      toast.error(`${t('Chain')} ${chainName} ${t('is not supported for network switching')}`)
       return false
     }
 
@@ -625,11 +625,11 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       // Request network switch using the supported chain ID
       console.log('Switching to network:', supportedChainId)
       await switchChain(config, { chainId: supportedChainId })
-      toast.success(t(`Switched to ${chainName} network`))
+      toast.success(`${t('Switched to')} ${chainName} ${t('network')}`)
       return true
     } catch (error) {
       console.error('Failed to switch network:', error)
-      toast.error(t(`Failed to switch to ${chainName} network`))
+      toast.error(`${t('Failed to switch to')} ${chainName} ${t('network')}`)
       return false
     }
   }
@@ -658,7 +658,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     if (sourceChainName) {
       const networkSwitched = await switchToNetwork(sourceChainName)
       if (!networkSwitched) {
-        toast.error(t(`Please switch to ${sourceChainName} network to proceed`))
+        toast.error(t(`${t('Please switch to')} ${sourceChainName} ${t('network to proceed')}`))
         return
       }
     }

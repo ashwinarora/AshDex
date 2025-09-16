@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import { useUserFee } from '@/hooks/useUserFee'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useTranslate } from '@tolgee/react'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -37,7 +38,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       }))
     )
   const { getAdjustedBuilderFee } = useUserFee()
-
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)
       return
@@ -92,7 +93,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       const status = orderRes.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(status.error, {
+        toast.error(`${t('Failed to close all positions.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -104,7 +105,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error(t('Error closing all positions:'), error)
       onClose()
-      toast.error(error as string, {
+      toast.error(`${t('Failed to close all positions.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -137,11 +138,21 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
             {t('Limit Close at Mid Price')}
           </ToggleGroupItem>
         </ToggleGroup>
-        <Button onClick={handleCloseAll}>
-          {selected === 'market'
-            ? t('Confirm Market Close')
-            : t('Confirm Limit Close at Mid Price')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button onClick={handleCloseAll} disabled={!isAgentApproved || currentFeeApproval === 0}>
+            {selected === 'market'
+              ? t('Confirm Market Close')
+              : t('Confirm Limit Close at Mid Price')}
+          </Button>
+        )}
         <DialogFooter>
           <span className="text-red text-xs text-center w-full">
             {t('This will close all your positions and cancel their associated TP/SL orders.')}{' '}

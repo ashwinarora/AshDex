@@ -192,7 +192,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         }
       }
     }))
-    const toastId = toast.loading(`Placing ${totalOrders} orders...`)
+    const toastId = toast.loading(`${t('Placing')} ${totalOrders} ${t('orders')}...`)
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
@@ -215,7 +215,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.error(status.error, {
+        toast.error(`${t('Failed to place orders.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -223,19 +223,19 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
         toast.success(
-          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          `${filled.totalSz} ${assetName} ${action} ${t('at an average price of')} ${filled.avgPx}`,
           {
             id: toastId
           }
         )
       } else if ('resting' in status) {
-        toast.success('Order Placed Successfully', {
+        toast.success(t('Order Placed Successfully'), {
           id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.error('Failed to place orders.', {
+      toast.error(`${t('Failed to place orders.')} ${error as string}`, {
         id: toastId
       })
     }

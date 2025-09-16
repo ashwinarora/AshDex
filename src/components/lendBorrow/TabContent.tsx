@@ -9,6 +9,7 @@ import lendBorrowData from '@/utils/lendBorrow.json'
 import ethicon from '../../assets/images/eth_icon.svg'
 import wethicon from '../../assets/images/weth_icon.svg'
 import { toast } from 'sonner'
+import { useTranslate } from '@tolgee/react'
 
 interface ITabContentProps {
   activeTab: 'Supply' | 'Borrow'
@@ -25,13 +26,13 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
   const { toggleConnectWalletModal } = useWalletModal()
   const [amount, setAmount] = useState('0.00')
   const [isChecked, setIsChecked] = useState<boolean>(true)
-
+  const { t } = useTranslate()
   const onTabClick = (tab: 'Supply' | 'Borrow') => {
     setIsLoading(true)
     setTimeout(() => {
       setActiveTab(tab)
       setIsLoading(false)
-      toast.success('Asset successfully deposited!', {
+      toast.success(t('Asset successfully deposited!'), {
         description: `You have added 5,000 USDC to the pool. You are now earning 2.9% APY.`
       })
       // showToast(

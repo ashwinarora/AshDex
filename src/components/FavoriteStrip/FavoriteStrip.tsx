@@ -16,6 +16,7 @@ import {
 import { Button } from '../ui/button'
 import clsx from 'clsx'
 import { cn } from '@/lib/utils'
+import { useTranslate } from '@tolgee/react'
 
 const FavoriteStrip = ({
   setSelectedAsset,
@@ -29,7 +30,7 @@ const FavoriteStrip = ({
   const isSpot = useIsSpot()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
-
+  const { t } = useTranslate()
   const scrollRight = () => {
     if (favoriteStripRef.current) {
       favoriteStripRef.current.scrollBy({
@@ -55,7 +56,7 @@ const FavoriteStrip = ({
         className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md !h-10 overflow-hidden"
       >
         <IconStar className="size-3 text-white/20" />
-        <p className="text-white/20 text-sm">No assets added to favorites.</p>
+        <p className="text-white/20 text-sm">{t('No assets added to favorites.')}</p>
       </div>
     )
   }

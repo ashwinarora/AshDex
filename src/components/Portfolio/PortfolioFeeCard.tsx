@@ -62,7 +62,7 @@ const PortfolioFeeCard = ({
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant={'outline'} size={'sm'} className="w-fit">
-              <p>{selectedView.fees.charAt(0).toUpperCase() + selectedView.fees.slice(1)}</p>
+              <p>{t(selectedView.fees.charAt(0).toUpperCase() + selectedView.fees.slice(1))}</p>
               <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -93,7 +93,7 @@ const PortfolioFeeCard = ({
             {t('View Fee Schedule')}
           </p>
         </DialogTrigger>
-        <DialogContent isRTL={isRTL} className="min-w-11/12 md:min-w-xl">
+        <DialogContent isRTL={isRTL} className="min-w-11/12 md:min-w-2xl">
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
             <DialogTitle>{t('Fee Schedule')}</DialogTitle>
             <DialogDescription className={cn('text-xs', isRTL ? 'text-end' : 'text-start')}>
@@ -124,16 +124,14 @@ const PortfolioFeeCard = ({
                     size={'sm'}
                     className="w-fit text-xs flex items-center gap-2"
                   >
-                    {`${hypeStaked.stakedHype} HYPE (${hypeStaked.discount * 100}% discount)`}
+                    {t(`${hypeStaked.stakedHype} HYPE (${hypeStaked.discount * 100}% discount)`)}
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {feeTier?.map((tier) => (
                     <DropdownMenuItem key={tier.stakedHype} onClick={() => setHypeStaked(tier)}>
-                      <p>
-                        {tier.stakedHype} HYPE ({tier.discount * 100}% discount)
-                      </p>
+                      <p>{t(`${tier.stakedHype} HYPE (${tier.discount * 100}% discount)`)}</p>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
