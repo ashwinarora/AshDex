@@ -818,7 +818,9 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       <Separator />
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
-          <div className={cn("flex justify-between gap-2 items-center", isRTL && "flex-row-reverse")}>
+          <div
+            className={cn('flex justify-between gap-2 items-center', isRTL && 'flex-row-reverse')}
+          >
             <p className="text-white text-sm">{t('You Pay')}</p>
             <div className="flex items-center gap-2">
               <Button
@@ -831,7 +833,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
               </Button>
             </div>
           </div>
-          <div className={cn("flex justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+          <div
+            className={cn(
+              'flex justify-between gap-2 w-full items-center',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {!isMobile && (
               <Input
                 type="number"
@@ -863,7 +870,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           {isMobile && (
-            <div className={cn("flex justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+            <div
+              className={cn(
+                'flex justify-between gap-2 w-full items-center',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               <Input
                 type="number"
                 placeholder="0"
@@ -877,10 +889,17 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       </div>
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
-          <div className={cn("flex justify-between gap-2 items-center", isRTL && "flex-row-reverse")}>
+          <div
+            className={cn('flex justify-between gap-2 items-center', isRTL && 'flex-row-reverse')}
+          >
             <p className="text-white text-sm">{t('You Receive')}</p>
           </div>
-          <div className={cn("flex justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+          <div
+            className={cn(
+              'flex justify-between gap-2 w-full items-center',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {!isMobile && (
               <Input
                 type="number"
@@ -915,7 +934,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           {isMobile && (
-            <div className={cn("flex justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+            <div
+              className={cn(
+                'flex justify-between gap-2 w-full items-center',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               <Input
                 type="number"
                 placeholder="0"
@@ -931,7 +955,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
-        <div className={cn("flex text-xs text-white/50 justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Messenger Used:')}</p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1005,11 +1034,21 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className={cn("flex text-xs text-white/50 justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Relayer Fee:')}</p>
           <p className="text-white">≈ {formatGasFee(gasFee)}</p>
         </div>
-        <div className={cn("flex text-xs text-white/50 justify-between gap-2 w-full items-center", isRTL && "flex-row-reverse")}>
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Current Account:')}</p>
           {(() => {
             switch (sourceToken?.chainSymbol) {
@@ -1101,7 +1140,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
           })()}
         </div>
         <Button
-          className={cn("w-full mt-2", isRTL && "flex-row-reverse")}    
+          className={cn('w-full mt-2', isRTL && 'flex-row-reverse')}
           onClick={(e) => {
             if (isLoading) {
               e.preventDefault()

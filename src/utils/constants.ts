@@ -308,7 +308,7 @@ export const WALLETS = [
     id: 'rabby',
     name: 'Rabby Wallet',
     icon: rabbywallet
-  },
+  }
 ] as const
 
 export const INFOTAB_DESC = `

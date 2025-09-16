@@ -110,7 +110,10 @@ const ConnectWalletModal: React.FC = () => {
           <div className="flex flex-col gap-2">
             {WALLETS.map((wallet) => (
               <Button
-                className={cn("w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/5 hover:bg-accent", isRTL && "flex-row-reverse")}
+                className={cn(
+                  'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/5 hover:bg-accent',
+                  isRTL && 'flex-row-reverse'
+                )}
                 variant={'secondary'}
                 key={wallet.id}
                 onClick={() => connectWallet(wallet)}

@@ -1,7 +1,12 @@
 'use client'
 import React from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { IconAlertCircle, IconLoader, IconRosetteDiscountCheck, IconWallet } from '@tabler/icons-react'
+import {
+  IconAlertCircle,
+  IconLoader,
+  IconRosetteDiscountCheck,
+  IconWallet
+} from '@tabler/icons-react'
 import { useAccount } from 'wagmi'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
@@ -34,7 +39,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
             <IconRosetteDiscountCheck className="size-10 text-green" />
             <h1 className="text-white font-medium text-lg">{t('Wallet connected!')}</h1>
             <h2 className="text-white/50 font-medium text-sm">
-              {t("You are ready to deposit, trade, and manage your assets.")}
+              {t('You are ready to deposit, trade, and manage your assets.')}
             </h2>
           </div>
           <Button className="w-full shrink-0" onClick={onClose}>
@@ -48,7 +53,9 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
               <div className="size-10 rounded-md bg-white/10 flex items-center justify-center">
                 <IconWallet className="size-6 text-white" />
               </div>
-            ) : (<Image src={icon} alt={name} width={80} height={80} className={cn('size-20')} />)}
+            ) : (
+              <Image src={icon} alt={name} width={80} height={80} className={cn('size-20')} />
+            )}
             <h1 className="text-white font-medium text-lg">
               {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : t('Wallet')}
             </h1>
