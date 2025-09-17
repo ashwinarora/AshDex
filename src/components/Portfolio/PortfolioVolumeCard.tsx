@@ -36,7 +36,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
   const columns = useMemo(
     () => [
       columnHelper.accessor('date', {
-        header: t('Date'),
+        header: () => t('Date'),
         cell: ({ row }) => {
           return <div className="text-xs">{row.original.date}</div>
         },
@@ -44,7 +44,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: true
       }),
       columnHelper.accessor('exchange', {
-        header: t('Exchange Volume'),
+        header: () => t('Exchange Volume'),
         cell: ({ row }) => (
           <div className="text-xs">{'$ ' + formatWithKMB(parseFloat(row.original.exchange))}</div>
         ),
@@ -52,7 +52,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userCross', {
-        header: t('Taker Volume'),
+        header: () => t('Taker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -67,7 +67,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userAdd', {
-        header: t('Maker Volume'),
+        header: () => t('Maker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -123,7 +123,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           </p>
         </DialogTrigger>
         <DialogContent
-          isRTL={isRTL}
+          dir={isRTL ? 'rtl' : 'ltr'}
           className="min-w-11/12 md:min-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2"
         >
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>

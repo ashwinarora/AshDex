@@ -22,6 +22,7 @@ import { IconMinus, IconPlus } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import useUserStore from '@/store/userStore'
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
@@ -30,6 +31,7 @@ interface LeverageModalProps {
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
   const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       perpsMeta: state.perpsMeta,
@@ -78,14 +80,14 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       <DialogContent className="flex flex-col gap-4">
         <DialogHeader>
           <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className={cn(isRTL && 'text-end')}>
             {t('Control the leverage used for')} {asset.coin}{' '}
             {t('positions. The maximum leverage is')} {maxLeverage}x.{' '}
             {t('Max position size decreases the higher your leverage.')}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between">
+          <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
             <p
               className={cn('text-xs font-medium transition-colors duration-150', 'text-white/50')}
             >
@@ -117,12 +119,16 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             <Slider
               min={1}
               max={maxLeverage}
+              dir={isRTL ? 'rtl' : 'ltr'}
               value={[leverage]}
               onValueChange={(value) => setLeverage(value[0])}
             />
             <ToggleGroup
               size={'sm'}
-              className="flex mt-1 items-center bg-white/5 justify-between w-full"
+              className={cn(
+                'flex mt-1 items-center bg-white/5 justify-between w-full',
+                isRTL && 'flex-row-reverse'
+              )}
               type="single"
               value={leverage.toString()}
               onValueChange={(value) => value !== '' && setLeverage(parseInt(value, 10))}
@@ -132,8 +138,11 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
                   key={`leverage-tick-${value}-${index}`}
                   value={value.toString()}
                   className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                    leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                    'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+                    isRTL
+                      ? 'first:rounded-r-md last:rounded-l-md'
+                      : 'first:rounded-l-md last:rounded-r-md'
                   )}
                 >
                   {value}x

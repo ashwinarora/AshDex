@@ -52,69 +52,106 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     buys: 9
   }
   const [selectedLayoutType, setSelectedLayouttype] = useState<number>(1)
-  const [selectedPrecision, setSelectedPrecision] = useState<{ value: string; label: string }>({
-    value: '4',
-    label: '0.0001'
+  const [selectedPrecision, setSelectedPrecision] = useState<{
+    value: number | null
+    label: string
+  }>({
+    value: null,
+    label: '--'
   })
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
+  const subRef = useRef<{ unsubscribe: () => void } | null>(null)
 
   useEffect(() => {
     if (!sdkSubscriptionClient || !selectedAsset) return
 
-    let isMounted = true
-    let sub: { unsubscribe: () => void } | null = null
+    let mountedRef = true
+    // Use refs to track subscription state across async operations
 
-    const nSigFigs = Number(selectedPrecision.value)
+    const nSigFigs = selectedPrecision.value === null ? null : Number(selectedPrecision.value)
     let mantissa = null
     const handler = (data: Book) => {
-      if (isMounted) {
+      if (mountedRef) {
         setL2Book(data)
         setIsLoading(false)
       }
     }
+
     setIsLoading(true)
     if (nSigFigs === 5) {
-      mantissa = 5
-    } else if (nSigFigs === 6) {
       mantissa = 2
-    } else if (nSigFigs === 7) {
-      mantissa = null
     }
 
-    // Use an async IIFE to use await inside useEffect
+    // Create a subscription controller
+    const abortController = new AbortController()
+
+    // Use an async IIFE to create subscription
     ;(async () => {
-      sub = await sdkSubscriptionClient.l2Book(
-        {
-          coin: selectedAsset,
-          nSigFigs: Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'],
-          mantissa: mantissa as EventL2BookParameters['mantissa']
-        },
-        handler
-      )
+      try {
+        // Don't create subscription if component unmounted
+        if (!mountedRef) return
+
+        const newSub = await sdkSubscriptionClient.l2Book(
+          {
+            coin: selectedAsset,
+            nSigFigs: nSigFigs
+              ? (Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'])
+              : null,
+            mantissa: mantissa as EventL2BookParameters['mantissa']
+          },
+          handler
+        )
+
+        // Check if the component is still mounted before storing subscription
+        if (!mountedRef || abortController.signal.aborted) {
+          newSub.unsubscribe()
+          return
+        }
+
+        // Store the subscription for later cleanup
+        subRef.current = newSub
+      } catch (error) {
+        console.error(`[OrderBook] Error creating subscription:`, error)
+      }
     })()
 
-    // Cleanup
+    // Cleanup function to properly handle subscription lifecycle
     return () => {
-      isMounted = false
-      if (sub) {
-        sub.unsubscribe()
+      mountedRef = false
+      abortController.abort()
+
+      if (subRef.current) {
+        subRef.current.unsubscribe()
+        subRef.current = null
       }
     }
   }, [sdkSubscriptionClient, selectedAsset, selectedPrecision.value])
 
-  // Initialize precision label when component mounts or asset changes
+  // Reset precision when asset changes
   useEffect(() => {
-    const initialOption = generatePrecisionLabels(Number(allMids[selectedAsset]) || 0).find(
-      (option) =>
-        (option.value === null ? 'null' : option.value.toString()) === selectedPrecision.value
-    )
-    if (initialOption) {
-      setSelectedPrecision({
-        value: initialOption.value?.toString() ?? '0',
-        label: initialOption.label
-      })
+    setSelectedPrecision({
+      value: null,
+      label: '--'
+    })
+  }, [selectedAsset])
+
+  // Initialize precision label when component mounts or mid price changes
+  useEffect(() => {
+    if (!selectedAsset || !allMids[selectedAsset]) return
+
+    // Only update if not already set
+    if (selectedPrecision.value === null) {
+      const precisionOptions = generatePrecisionLabels(Number(allMids[selectedAsset]) || 0)
+      // Select a default precision option
+      const defaultOption = precisionOptions[precisionOptions.length - 1] // Choose second option if available, otherwise first
+      if (defaultOption) {
+        setSelectedPrecision({
+          value: defaultOption.value,
+          label: defaultOption.label
+        })
+      }
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
@@ -181,7 +218,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     return () => {}
   }, [rawBuys, rawSells])
 
-  const handlePrecision = (precision: string, label: string) => {
+  const handlePrecision = (precision: number | null, label: string) => {
     setSelectedPrecision({ value: precision, label })
   }
 
@@ -227,7 +264,6 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 variant="outline"
                 size={'sm'}
                 className="text-xs w-20 flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">{selectedPrecision.label}</p>
                 <IconChevronDown className="size-3" />
@@ -245,7 +281,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                       : 'bg-transparent text-white/50'
                   )}
                   key={index}
-                  onClick={() => handlePrecision(level.value?.toString() ?? '0', level.label)}
+                  onClick={() => handlePrecision(level.value, level.label)}
                 >
                   <p className="text-xs w-full text-center">{level.label}</p>
                 </DropdownMenuItem>
@@ -258,7 +294,6 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 variant="outline"
                 size={'sm'}
                 className="text-xs w-20 flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">
                   {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
@@ -406,7 +441,6 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               variant="outline"
               size={'sm'}
               className="text-xs w-20 flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{selectedPrecision.label}</p>
               <IconChevronDown className="size-3" />
@@ -424,7 +458,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                     : 'bg-transparent text-white/50'
                 )}
                 key={index}
-                onClick={() => handlePrecision(level.value?.toString() ?? '0', level.label)}
+                onClick={() => handlePrecision(level.value, level.label)}
               >
                 <p className="text-xs w-full text-center">{level.label}</p>
               </DropdownMenuItem>
@@ -437,7 +471,6 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               variant="outline"
               size={'sm'}
               className="text-xs w-20 flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">
                 {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}

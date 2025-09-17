@@ -5,6 +5,7 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 
 import { cn } from '@/lib/utils'
 import { IconX } from '@tabler/icons-react'
+import useUserStore from '@/store/userStore'
 
 function Dialog({ ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
   return <DialogPrimitive.Root data-slot="dialog" {...props} />
@@ -42,12 +43,11 @@ function DialogContent({
   className,
   children,
   showCloseButton = true,
-  isRTL = false,
   ...props
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
-  isRTL?: boolean
 }) {
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -64,7 +64,7 @@ function DialogContent({
           <DialogPrimitive.Close
             data-slot="dialog-close"
             className={cn(
-              "ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+              "ring-offset-background cursor-pointer focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
               isRTL ? 'left-4' : 'right-4'
             )}
           >
@@ -78,10 +78,15 @@ function DialogContent({
 }
 
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   return (
     <div
       data-slot="dialog-header"
-      className={cn('flex flex-col gap-2 text-center sm:text-start', className)}
+      className={cn(
+        'flex flex-col gap-2 text-center sm:text-start',
+        className,
+        isRTL && 'items-end'
+      )}
       {...props}
     />
   )

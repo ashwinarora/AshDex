@@ -256,8 +256,7 @@ const FACTORS: [SigFig, number][] = [
   [2, 1], // 1 × base step
   [3, 0.1], // 1/10 × base step
   [4, 0.01], // 1/100 × base step
-  [5, 0.005], // 1/200 × base step
-  [6, 0.002], // 1/500 × base step
+  [5, 0.001], // 1/1 000 × base step
   [null, 0.001] // 1/1 000 × base step
 ]
 
@@ -273,13 +272,20 @@ export function generatePrecisionLabels(marketPrice: number): LabelEntry[] {
   if (!Number.isFinite(price) || price === 0) return []
 
   /* 1. Determine the “base step”.
-   *    For 123 456  -> 10 000
-   *    For 7 500    ->    100
-   *    For 0.00891  ->  0.0001                                     */
+   *    For 123 456  -> 10 0000
+   *    For 7 500    ->    1000
+   *    For 0.00891  ->  0.001                                     */
   const exponent = Math.floor(Math.log10(price))
+
   const baseStep = 10 ** (exponent - 1) // 10^(k-1)
 
   /* 2. Scale every nominal factor by the base step, format nicely.   */
+  if (exponent <= 4) {
+    return FACTORS.filter(([value]) => value !== 5)?.map(([value, factor]) => ({
+      value,
+      label: toCleanString(baseStep * factor)
+    }))
+  }
   return FACTORS.map(([value, factor]) => ({
     value,
     label: toCleanString(baseStep * (exponent > 4 && value === null ? factor / 10 : factor))

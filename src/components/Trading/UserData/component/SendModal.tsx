@@ -24,6 +24,8 @@ import { IconChevronDown, IconSend } from '@tabler/icons-react'
 import { isAddress, isHex } from 'viem'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 interface SendModalProps {
   spotDefaultName?: string
@@ -52,7 +54,7 @@ const SendModal: React.FC<SendModalProps> = ({
     }))
   )
   const { data: spotMeta } = useSpotMeta()
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const spotData = useMemo(() => {
     const token = spotMeta?.tokens.find((t) => t.name === selectedToken)
     if (!token) return null
@@ -151,12 +153,15 @@ const SendModal: React.FC<SendModalProps> = ({
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 w-full items-end">
-            <div className="flex-1 flex flex-col gap-2">
+            <div className={cn('flex-1 flex flex-col gap-2')}>
               <h1 className="text-xs text-white/50">{t('Destination Address')}</h1>
               <Input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
-                className="h-10 text-start placeholder:text-white/50 text-white"
+                className={cn(
+                  'h-10 text-start placeholder:text-white/50 text-white',
+                  isRTL && 'text-end'
+                )}
                 placeholder={t('Address (0x...)')}
               />
             </div>
@@ -177,23 +182,30 @@ const SendModal: React.FC<SendModalProps> = ({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex items-center justify-between -mb-2">
+          <div
+            className={cn('flex items-center justify-between -mb-2', isRTL && 'flex-row-reverse')}
+          >
             <h1 className="text-xs text-white/50">{t('Amount')}</h1>
             <Button
               variant="link"
-              className="text-accent-foreground h-fit text-xs p-0"
+              className={cn(
+                'text-accent-foreground h-fit text-xs p-0',
+                isRTL && 'flex-row-reverse'
+              )}
               onClick={() => setAmount(maxAmount.toString())}
             >
-              {t('Use Max')} ({Number(maxAmount).toFixed(4)}{' '}
-              {isPerp ? 'USDC' : selectedToken.split('(')[0]})
+              {`${t('Use Max')} (${Number(maxAmount).toFixed(4)} ${isPerp ? 'USDC' : selectedToken.split('(')[0]})}`}
             </Button>
           </div>
           <div className="flex gap-2 w-full items-end">
-            <div className="flex-1 flex flex-col gap-1">
+            <div className={cn('flex-1 flex flex-col gap-1', isRTL && 'flex-row-reverse')}>
               <Input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="h-10 text-start placeholder:text-white/50 text-white"
+                className={cn(
+                  'h-10 text-start placeholder:text-white/50 text-white',
+                  isRTL && 'text-end'
+                )}
                 placeholder={t('Amount')}
                 type="number"
                 min="0"
@@ -202,7 +214,7 @@ const SendModal: React.FC<SendModalProps> = ({
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger disabled={isPerp} asChild>
-                <Button variant="outline" className="w-24">
+                <Button variant="outline" className={cn('w-24', isRTL && 'flex-row-reverse')}>
                   {isPerp ? 'USDC' : selectedToken.split('(')[0]}
                   <IconChevronDown className="size-4" />
                 </Button>
@@ -224,7 +236,7 @@ const SendModal: React.FC<SendModalProps> = ({
             </DropdownMenu>
           </div>
           <Button
-            className="mt-2"
+            className={cn('mt-2', isRTL && 'flex-row-reverse')}
             disabled={
               !destination || !amount || Number(amount) <= 0 || Number(amount) > Number(maxAmount)
             }

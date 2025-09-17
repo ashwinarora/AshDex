@@ -13,6 +13,8 @@ import { Separator } from '../ui/separator'
 import Loading from '../common/Loading'
 import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 interface DepositModalProps {
   isOpen: boolean
@@ -36,7 +38,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     }
   })
   const { writeContractAsync } = useWriteContract()
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
@@ -101,7 +103,12 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     <Button
@@ -113,11 +120,11 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 h-10"
+                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
                     onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
                   />
