@@ -123,7 +123,6 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           </p>
         </DialogTrigger>
         <DialogContent
-          dir={isRTL ? 'rtl' : 'ltr'}
           className="min-w-11/12 md:min-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2"
         >
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
