@@ -1,20 +1,8 @@
 import { NextResponse } from 'next/server'
-import { KMSClient } from '@aws-sdk/client-kms'
 import { makeKmsWallet } from '@/services/kmsSign'
 import { isTestnet } from '@/utils/constants'
 import { splitSignature } from '@/utils/utils'
 import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
-
-// Initialize KMS client
-const kmsClient = new KMSClient({
-  region: process.env.AWS_REGION || 'us-east-1',
-  credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
-  }
-})
-
-const KMS_KEY_ID = process.env.KMS_KEY_ID!
 
 export async function POST() {
   try {
@@ -23,7 +11,7 @@ export async function POST() {
     const chainId = '42161'
 
     // Create KMS wallet
-    const kmsWallet = await makeKmsWallet(kmsClient, KMS_KEY_ID)
+    const kmsWallet = await makeKmsWallet()
 
     // Generate the USD send action manually to avoid HTTP transport issues
     console.log('Attempting USD send with:', { destination, amount, address: kmsWallet.address })

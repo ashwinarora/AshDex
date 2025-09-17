@@ -181,8 +181,19 @@ async function kmsSignTypedData(params: {
 }
 
 /** Make a "wallet" that Hyperliquid signers can call. */
-export async function makeKmsWallet(kms: KMSClient, keyId: string) {
+export async function makeKmsWallet() {
+  // Create KMS client with default configuration
+  const kms = new KMSClient({
+    region: process.env.AWS_REGION || 'us-east-1',
+    credentials: {
+      accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!
+    }
+  })
+
+  const keyId = process.env.KMS_KEY_ID!
   const address = await getEthAddress() // from your existing code
+  
   return {
     address, // handy if a client needs it
     async signTypedData<T extends TypedData>(td: T): Promise<Hex> {
