@@ -19,7 +19,7 @@ const KMS_KEY_ID = process.env.KMS_KEY_ID!
 export async function POST() {
   try {
     const destination = '0x1710022f671b4032d6C7262107Ba231f41F84cE8'
-    const amount = '10'
+    const amount = '5'
     const chainId = '42161'
 
     // Create KMS wallet

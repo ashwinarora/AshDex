@@ -1,5 +1,5 @@
 import { KMSClient, SignCommand } from '@aws-sdk/client-kms'
-import { hashTypedData, type Hex, type Address } from 'viem'
+import { hashTypedData, type Hex, type Address, recoverAddress, keccak256 } from 'viem'
 import { secp256k1 } from '@noble/curves/secp256k1'
 import { hexToBytes } from 'viem/utils'
 import { getEthAddress } from './admin'
@@ -93,22 +93,94 @@ async function kmsSignTypedData(params: {
   const r = toHex32(sig.r)
   const s = toHex32(sig.s)
 
-  // 4) For now, use a simple approach to determine v
-  // In a production environment, you might want to implement proper recovery
-  // For EIP-712 signatures, v is typically 27 or 28
+  // 4) Properly determine v by trying both values and validating against expected address
+  const expectedAddress = params.address.toLowerCase()
+  
+  console.log('KMS Signature Recovery Debug:', {
+    expectedAddress,
+    digest,
+    r,
+    s,
+    signatureLength: (r + s.slice(2)).length
+  })
+  
+  // Try v = 27 first
   let v = 27
-
-  // Simple heuristic: if s > n/2, use v = 28, otherwise v = 27
-  // This is a common approach to ensure low-s values
-  const n = BigInt('0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFEBAAEDCE6AF48A03BBFD25E8CD0364141')
-  if (sig.s > n / BigInt(2)) {
-    v = 28
+  let recoveredAddress: string
+  
+  try {
+    const signatureWithV27 = (r + s.slice(2) + '1b') as Hex // 0x1b = 27
+    console.log('Attempting recovery with v=27, signature:', signatureWithV27)
+    
+    recoveredAddress = await recoverAddress({
+      hash: digest,
+      signature: signatureWithV27
+    })
+    
+    console.log('Recovery with v=27 result:', recoveredAddress)
+    
+    if (recoveredAddress.toLowerCase() !== expectedAddress) {
+      // Try v = 28
+      v = 28
+      const signatureWithV28 = (r + s.slice(2) + '1c') as Hex // 0x1c = 28
+      console.log('Attempting recovery with v=28, signature:', signatureWithV28)
+      
+      recoveredAddress = await recoverAddress({
+        hash: digest,
+        signature: signatureWithV28
+      })
+      
+      console.log('Recovery with v=28 result:', recoveredAddress)
+    }
+  } catch (error) {
+    console.log('Viem recoverAddress failed, using manual recovery:', error)
+    
+    // Fallback to manual recovery using secp256k1
+    const messageHash = digest
+    const messageHashBytes = hexToBytes(messageHash)
+    
+    // Try v = 27
+    const sig27 = new secp256k1.Signature(sig.r, sig.s, 27)
+    const pubKey27 = sig27.recoverPublicKey(messageHashBytes)
+    const address27 = '0x' + keccak256(pubKey27.toRawBytes(false).slice(1)).slice(26)
+    
+    console.log('Manual recovery v=27 result:', address27)
+    
+    if (address27.toLowerCase() === expectedAddress) {
+      v = 27
+      recoveredAddress = address27
+    } else {
+      // Try v = 28
+      v = 28
+      const sig28 = new secp256k1.Signature(sig.r, sig.s, 28)
+      const pubKey28 = sig28.recoverPublicKey(messageHashBytes)
+      const address28 = '0x' + keccak256(pubKey28.toRawBytes(false).slice(1)).slice(26)
+      
+      console.log('Manual recovery v=28 result:', address28)
+      recoveredAddress = address28
+    }
+  }
+  
+  console.log('Final signature recovery result:', {
+    expectedAddress,
+    recoveredAddress,
+    v,
+    match: recoveredAddress.toLowerCase() === expectedAddress
+  })
+  
+  // Validate that the recovered address matches the expected address
+  if (recoveredAddress.toLowerCase() !== expectedAddress) {
+    throw new Error(
+      `Signature recovery failed: expected ${expectedAddress}, got ${recoveredAddress}. ` +
+      `This indicates a problem with the KMS signing process. ` +
+      `Digest: ${digest}, R: ${r}, S: ${s}, V: ${v}`
+    )
   }
 
   return { r, s, v }
 }
 
-/** Make a “wallet” that Hyperliquid signers can call. */
+/** Make a "wallet" that Hyperliquid signers can call. */
 export async function makeKmsWallet(kms: KMSClient, keyId: string) {
   const address = await getEthAddress() // from your existing code
   return {
