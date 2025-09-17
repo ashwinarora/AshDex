@@ -17,6 +17,6 @@ export const useKMSAddress = () => {
     queryKey: ['kmsAddress'],
     queryFn: fetchKMSAddress,
     staleTime: 1000 * 60 * 5, // 5 minutes
-    retry: 3,
+    retry: 3
   })
 }

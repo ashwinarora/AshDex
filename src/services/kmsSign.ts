@@ -193,7 +193,7 @@ export async function makeKmsWallet() {
 
   const keyId = process.env.KMS_KEY_ID!
   const address = await getEthAddress() // from your existing code
-  
+
   return {
     address, // handy if a client needs it
     async signTypedData<T extends TypedData>(td: T): Promise<Hex> {
