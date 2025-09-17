@@ -10,6 +10,7 @@ import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
   const { t } = useTranslate()
@@ -27,7 +28,10 @@ const EstablishConnectionModal = () => {
     isAgentApproved,
     currentFeeApproval,
     refetchCurrentFeeApproval,
-    isModalOpen
+    isModalOpen,
+    openDepositModal,
+    closeDepositModal,
+    isDepositModalOpen
   } = useAgentApproval()
 
   useEffect(() => {
@@ -60,9 +64,21 @@ const EstablishConnectionModal = () => {
             } catch (error) {
               console.error('Error approving agent:', error)
               if (error instanceof ApiRequestError) {
-                toast.error(`${t('Agent approval failed.')} ${error.message}`, {
-                  id: toastId
-                })
+                if (error.message.includes('Must deposit before performing actions')) {
+                  toast.info(
+                    t(
+                      'Your wallet seems to be new. Please deposit some funds to establish connection.'
+                    ),
+                    {
+                      id: toastId
+                    }
+                  )
+                  openDepositModal()
+                } else {
+                  toast.error(`${t('Agent approval failed.')} ${error.message}`, {
+                    id: toastId
+                  })
+                }
               } else {
                 toast.error(t('An unexpected error occurred. Please try again.'), {
                   id: toastId
@@ -118,19 +134,24 @@ const EstablishConnectionModal = () => {
   }
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={closeModal}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('Establish Connection')}</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>
-          {t(
-            'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
-          )}
-        </DialogDescription>
-        {getButton()}
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('Establish Connection')}</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {t(
+              'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
+            )}
+          </DialogDescription>
+          {getButton()}
+        </DialogContent>
+      </Dialog>
+      {isDepositModalOpen && (
+        <DepositModal isOpen={isDepositModalOpen} onClose={() => closeDepositModal()} />
+      )}
+    </>
   )
 }
 

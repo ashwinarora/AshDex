@@ -15,16 +15,18 @@ import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface DepositModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen?: boolean
+  onClose?: () => void
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslate()
   const { address, chainId } = useAccount()
   const { switchChainAsync } = useSwitchChain()
+  const { closeDepositModal, isDepositModalOpen } = useAgentApproval()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
@@ -71,13 +73,15 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
         args: [HYPERLIQUID_DEPOSIT, amount]
       })
       setIsLoading(false)
-      onClose()
+      onClose?.()
+      closeDepositModal()
       toast.success(t('Deposit confirmed. Balance will update on the next block.'), {
         id: toastId
       })
     } catch (error) {
       console.error('Deposit error:', error)
-      onClose()
+      onClose?.()
+      closeDepositModal()
       toast.error(t('Deposit failed. Please try again.'), {
         id: toastId
       })
@@ -85,7 +89,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen || isDepositModalOpen} onOpenChange={onClose || closeDepositModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Deposit to Nexon')}</DialogTitle>
