@@ -45,4 +45,3 @@ export async function getEthAddress(): Promise<Address> {
   const uncompressed = await getKmsUncompressedPublicKey()
   return uncompressedPublicKeyToAddress(uncompressed)
 }
-
