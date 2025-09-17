@@ -59,14 +59,20 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       {
         header: isRTL ? `(${balanceCount}) ${t('Balances')}` : `(${balanceCount}) ${t('Balances')}`,
         count: balanceCount,
-        element: <Balances setSelectedAsset={setSelectedAsset || (() => { })} isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
+        element: (
+          <Balances
+            setSelectedAsset={setSelectedAsset || (() => {})}
+            isRTL={isRTL}
+            isHideSmallBalances={isHideSmallBalances}
+          />
+        )
       },
       {
         header: isRTL
           ? `(${positionsCount}) ${t('Positions')}`
           : `(${positionsCount}) ${t('Positions')}`,
         count: positionsCount,
-        element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => { })} />
+        element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => {})} />
       },
       {
         header: isRTL
@@ -100,7 +106,12 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
         isRTL ? 'items-end' : ''
       )}
     >
-      <div className={cn('flex items-center justify-between gap-2 w-full', isRTL && 'flex-row-reverse')}>
+      <div
+        className={cn(
+          'flex items-center justify-between gap-2 w-full',
+          isRTL && 'flex-row-reverse'
+        )}
+      >
         <div
           className={cn(
             'md:max-w-xl xl:max-w-3xl w-full h-8 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
@@ -129,10 +140,25 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
             ))}
           </ToggleGroup>
         </div>
-        {(isRTL ? activeTab === tabs.length - 1 : activeTab === 0) && <Toggle className={cn('flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/50 gap-2', isRTL && 'flex-row-reverse')} pressed={isHideSmallBalances} onPressedChange={(value) => setIsHideSmallBalances(value)}>
-          <p className={cn('text-xs', isHideSmallBalances && 'text-accent-foreground')}>{t('Hide Small Balances')}</p>
-          {isHideSmallBalances ? <IconCheckbox className="size-4" /> : <IconSquare className="size-4" />}
-        </Toggle>}
+        {(isRTL ? activeTab === tabs.length - 1 : activeTab === 0) && (
+          <Toggle
+            className={cn(
+              'flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/50 gap-2',
+              isRTL && 'flex-row-reverse'
+            )}
+            pressed={isHideSmallBalances}
+            onPressedChange={(value) => setIsHideSmallBalances(value)}
+          >
+            <p className={cn('text-xs', isHideSmallBalances && 'text-accent-foreground')}>
+              {t('Hide Small Balances')}
+            </p>
+            {isHideSmallBalances ? (
+              <IconCheckbox className="size-4" />
+            ) : (
+              <IconSquare className="size-4" />
+            )}
+          </Toggle>
+        )}
       </div>
       <Separator orientation="horizontal" />
       <div className="w-full pb-8 h-full overflow-y-auto overflow-x-hidden no-scrollbar">
