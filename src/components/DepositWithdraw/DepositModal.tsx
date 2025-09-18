@@ -13,16 +13,20 @@ import { Separator } from '../ui/separator'
 import Loading from '../common/Loading'
 import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface DepositModalProps {
-  isOpen: boolean
-  onClose: () => void
+  isOpen?: boolean
+  onClose?: () => void
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslate()
   const { address, chainId } = useAccount()
   const { switchChainAsync } = useSwitchChain()
+  const { closeDepositModal, isDepositModalOpen } = useAgentApproval()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
@@ -36,11 +40,11 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     }
   })
   const { writeContractAsync } = useWriteContract()
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const supportedChain = isTestnet ? 421614 : 42161
 
   const switchChain = async () => {
-    const toastId = toast.loading(t('Switching to Arbitrum network…'))
+    const toastId = toast.loading(t('Switching to Arbitrum network...'))
     await switchChainAsync({ chainId: supportedChain })
       .then(() => {
         toast.success(t('Switched to Arbitrum network.'), {
@@ -59,7 +63,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       await switchChainAsync({ chainId: 42161 })
     }
     if (!usdc) return
-    const toastId = toast.loading(t('Deposit in progress…'))
+    const toastId = toast.loading(t('Deposit in progress...'))
     try {
       setIsLoading(true)
       await writeContractAsync({
@@ -69,13 +73,15 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
         args: [HYPERLIQUID_DEPOSIT, amount]
       })
       setIsLoading(false)
-      onClose()
+      onClose?.()
+      closeDepositModal()
       toast.success(t('Deposit confirmed. Balance will update on the next block.'), {
         id: toastId
       })
     } catch (error) {
       console.error('Deposit error:', error)
-      onClose()
+      onClose?.()
+      closeDepositModal()
       toast.error(t('Deposit failed. Please try again.'), {
         id: toastId
       })
@@ -83,7 +89,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen || isDepositModalOpen} onOpenChange={onClose || closeDepositModal}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Deposit to Nexon')}</DialogTitle>
@@ -101,7 +107,12 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     <Button
@@ -113,11 +124,11 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 h-10"
+                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
                     onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
                   />

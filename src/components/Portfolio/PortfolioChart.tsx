@@ -145,13 +145,13 @@ const PortfolioChart = ({
                   {selectedChart.account === 'perp'
                     ? selectedChart.range
                         .split('perp')
-                        .map((item) => item.charAt(0).toUpperCase() + item.slice(1))
+                        .map((item) => t(item.charAt(0).toUpperCase() + item.slice(1)))
                         .join(' ')
-                    : selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1)}
+                    : t(selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1))}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
                 <DropdownMenuItem
                   onClick={() =>
                     setSelectedChart((prev) => ({
@@ -160,7 +160,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Day')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -170,7 +170,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Week')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Week')}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -180,7 +180,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Month')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Month')}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -190,7 +190,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('All Time')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')}</p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -201,7 +201,7 @@ const PortfolioChart = ({
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
                 <DropdownMenuItem
                   onClick={() =>
                     setSelectedChart((prev) => ({
@@ -210,7 +210,9 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Total Equity')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                    {t('Total Equity')}
+                  </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -220,7 +222,9 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Perps Equity')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                    {t('Perps Equity')}
+                  </p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -236,7 +240,7 @@ const PortfolioChart = ({
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent>
+              <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
                 <DropdownMenuItem
                   onClick={() =>
                     setSelectedChart((prev) => ({
@@ -245,7 +249,9 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Unrealized PnL')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                    {t('Unrealized PnL')}
+                  </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -255,7 +261,9 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Realized PnL')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                    {t('Realized PnL')}
+                  </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -265,7 +273,9 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  {t('Total PnL')}
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                    {t('Total PnL')}
+                  </p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

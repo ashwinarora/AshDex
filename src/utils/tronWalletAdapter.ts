@@ -3,6 +3,7 @@ import { WalletConnectAdapter } from '@tronweb3/tronwallet-adapter-walletconnect
 import { useWallet } from '@tronweb3/tronwallet-adapter-react-hooks'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
+import { useTranslate } from '@tolgee/react'
 
 interface TronWalletAdapter {
   connect: () => Promise<void>
@@ -91,15 +92,16 @@ export const useTronWallet = () => {
 export const useTronConnect = () => {
   const [isConnecting, setIsConnecting] = useState(false)
   const { connectTron, disconnectTron, isTronConnected, tronAddress } = useTronWallet()
+  const { t } = useTranslate()
 
   const connect = useCallback(async () => {
     try {
       setIsConnecting(true)
       await connectTron()
-      toast.success('Tron wallet connected successfully')
+      toast.success(t('Tron wallet connected successfully'))
     } catch (error) {
       console.error('Error connecting to Tron wallet:', error)
-      toast.error('Failed to connect Tron wallet')
+      toast.error(t('Failed to connect Tron wallet'))
       throw error
     } finally {
       setIsConnecting(false)
@@ -109,10 +111,10 @@ export const useTronConnect = () => {
   const disconnect = useCallback(async () => {
     try {
       await disconnectTron()
-      toast.success('Tron wallet disconnected successfully')
+      toast.success(t('Tron wallet disconnected successfully'))
     } catch (error) {
       console.error('Error disconnecting Tron wallet:', error)
-      toast.error('Failed to disconnect Tron wallet')
+      toast.error(t('Failed to disconnect Tron wallet'))
       throw error
     }
   }, [disconnectTron])

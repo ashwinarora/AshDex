@@ -26,7 +26,8 @@ import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
-
+import { useAgentApproval } from '@/context/EstablishConnection'
+import useUserStore from '@/store/userStore'
 interface LimitCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -52,7 +53,8 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
@@ -173,19 +175,19 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(status.error, {
+        toast.error(`${t('Failed to close position.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success('Position Closed Successfully', {
+        toast.success(t('Position Closed Successfully'), {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success('Order Placed Successfully', {
+          toast.success(t('Order Placed Successfully'), {
             id: toastId
           })
         }
@@ -193,7 +195,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(error as string, {
+      toast.error(`${t('Failed to close position.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -208,12 +210,14 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">{t('Price')}</h1>
-            <div className="flex w-full items-center gap-2">
+            <h1 className={cn('text-xs text-start text-white/50', isRTL && 'text-end')}>
+              {t('Price')}
+            </h1>
+            <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
                 type="number"
                 value={price}
-                className="text-white flex-1 text-start h-9"
+                className={cn('text-white flex-1 text-start h-9', isRTL && 'text-end')}
                 onChange={(e) => setPrice(e.target.value)}
                 placeholder={t('Enter price')}
               />
@@ -232,8 +236,10 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             </div>
           </div>
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">{t('Size')}</h1>
-            <div className="flex w-full items-center gap-2">
+            <h1 className={cn('text-xs text-start text-white/50', isRTL && 'text-end')}>
+              {t('Size')}
+            </h1>
+            <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
                 type="number"
                 value={size}
@@ -264,26 +270,29 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex w-full items-center gap-2 mt-1">
+            <div className={cn('flex w-full items-center gap-2 mt-1', isRTL && 'flex-row-reverse')}>
               <Slider
                 min={0}
                 max={100}
                 step={0.01}
                 value={[percent]}
+                dir={isRTL ? 'rtl' : 'ltr'}
                 onValueChange={(value) => {
                   setPercent(Math.round(value[0]))
                   setLastChanged('percent')
                 }}
                 className="flex-1"
               />
-              <div className="flex bg-white/5 p-2 rounded-md w-16 items-center justify-center gap-2">
+              <div className="flex p-2 rounded-md w-16 items-center justify-center gap-2">
                 <span className="text-xs text-white/50">{percent.toFixed(2)}%</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-white/50">{t('Estimated closed PnL (without fees):')}</span>
+        <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+          <span className={cn('text-xs text-start text-white/50')}>
+            {t('Estimated closed PnL (without fees):')}
+          </span>
           <span
             className={cn(
               'text-xs text-white/50',
@@ -306,9 +315,23 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           </span>
         </div>
         <Separator />
-        <Button onClick={handleClosePosition} className="w-full">
-          {t('Confirm')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleClosePosition}
+            className="w-full"
+            disabled={!isAgentApproved || currentFeeApproval === 0}
+          >
+            {t('Confirm')}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )

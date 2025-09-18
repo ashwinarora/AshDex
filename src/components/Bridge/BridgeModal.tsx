@@ -66,6 +66,7 @@ import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Badge } from '../ui/badge'
 import { useTranslate } from '@tolgee/react'
+import useUserStore from '@/store/userStore'
 // Remove the Transaction interface since we're using BridgeTransaction from context
 interface ChainOption {
   name: string
@@ -171,6 +172,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
   const [selectedToChain, setSelectedToChain] = useState(destinationChain?.name || '')
   const [selectedFromToken, setSelectedFromToken] = useState(sourceToken?.symbol || '')
   const [selectedToToken, setSelectedToToken] = useState(destinationToken?.symbol || '')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   // Update local state when context values change
   useEffect(() => {
@@ -593,7 +595,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     const selectedChain = Object.values(chains).find((chain) => chain.name === chainName)
 
     if (!selectedChain) {
-      toast.error(t(`Chain ${chainName} not found`))
+      toast.error(`${t('Chain')} ${chainName} ${t(`not found`)} }`)
       return false
     }
 
@@ -617,7 +619,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     const supportedChainId = supportedChainIds[chainName]
 
     if (!supportedChainId) {
-      toast.error(t(`Chain ${chainName} is not supported for network switching`))
+      toast.error(`${t('Chain')} ${chainName} ${t('is not supported for network switching')}`)
       return false
     }
 
@@ -625,11 +627,11 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       // Request network switch using the supported chain ID
       console.log('Switching to network:', supportedChainId)
       await switchChain(config, { chainId: supportedChainId })
-      toast.success(t(`Switched to ${chainName} network`))
+      toast.success(`${t('Switched to')} ${chainName} ${t('network')}`)
       return true
     } catch (error) {
       console.error('Failed to switch network:', error)
-      toast.error(t(`Failed to switch to ${chainName} network`))
+      toast.error(`${t('Failed to switch to')} ${chainName} ${t('network')}`)
       return false
     }
   }
@@ -658,7 +660,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     if (sourceChainName) {
       const networkSwitched = await switchToNetwork(sourceChainName)
       if (!networkSwitched) {
-        toast.error(t(`Please switch to ${sourceChainName} network to proceed`))
+        toast.error(t(`${t('Please switch to')} ${sourceChainName} ${t('network to proceed')}`))
         return
       }
     }
@@ -816,7 +818,9 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       <Separator />
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
-          <div className="flex justify-between gap-2 items-center">
+          <div
+            className={cn('flex justify-between gap-2 items-center', isRTL && 'flex-row-reverse')}
+          >
             <p className="text-white text-sm">{t('You Pay')}</p>
             <div className="flex items-center gap-2">
               <Button
@@ -829,12 +833,17 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
               </Button>
             </div>
           </div>
-          <div className="flex justify-between gap-2 w-full items-center">
+          <div
+            className={cn(
+              'flex justify-between gap-2 w-full items-center',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {!isMobile && (
               <Input
                 type="number"
                 placeholder="0"
-                className="text-start text-white text-xs flex-2 w-full"
+                className={cn('text-start text-white text-xs flex-2 w-full', isRTL && 'text-end')}
                 value={amount || ''}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -861,11 +870,16 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           {isMobile && (
-            <div className="flex justify-between gap-2 w-full items-center">
+            <div
+              className={cn(
+                'flex justify-between gap-2 w-full items-center',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               <Input
                 type="number"
                 placeholder="0"
-                className="text-start text-white text-xs"
+                className={cn('text-start text-white text-xs', isRTL && 'text-end')}
                 value={amount || ''}
                 onChange={(e) => setAmount(e.target.value)}
               />
@@ -875,16 +889,24 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       </div>
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div className="flex flex-col gap-2 w-full">
-          <div className="flex justify-between gap-2 items-center">
+          <div
+            className={cn('flex justify-between gap-2 items-center', isRTL && 'flex-row-reverse')}
+          >
             <p className="text-white text-sm">{t('You Receive')}</p>
           </div>
-          <div className="flex justify-between gap-2 w-full items-center">
+          <div
+            className={cn(
+              'flex justify-between gap-2 w-full items-center',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
             {!isMobile && (
               <Input
                 type="number"
                 placeholder="0"
                 className={cn(
                   'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs w-full flex-2',
+                  isRTL && 'text-end',
                   isLoadingEstimate && 'animate-pulse'
                 )}
                 value={isLoadingEstimate ? t('Calculating...') : estimatedReceiveAmount}
@@ -913,12 +935,18 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             />
           </div>
           {isMobile && (
-            <div className="flex justify-between gap-2 w-full items-center">
+            <div
+              className={cn(
+                'flex justify-between gap-2 w-full items-center',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               <Input
                 type="number"
                 placeholder="0"
                 className={cn(
                   'text-start placeholder:text-accent-foreground text-accent-foreground bg-accent text-xs',
+                  isRTL && 'text-end',
                   isLoadingEstimate && 'animate-pulse'
                 )}
                 value={isLoadingEstimate ? t('Calculating...') : estimatedReceiveAmount}
@@ -929,7 +957,12 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
         </div>
       </div>
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
-        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Messenger Used:')}</p>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1003,11 +1036,21 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Relayer Fee:')}</p>
           <p className="text-white">≈ {formatGasFee(gasFee)}</p>
         </div>
-        <div className="flex text-xs text-white/50 justify-between gap-2 w-full items-center">
+        <div
+          className={cn(
+            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <p>{t('Current Account:')}</p>
           {(() => {
             switch (sourceToken?.chainSymbol) {
@@ -1099,7 +1142,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
           })()}
         </div>
         <Button
-          className="w-full mt-2"
+          className={cn('w-full mt-2', isRTL && 'flex-row-reverse')}
           onClick={(e) => {
             if (isLoading) {
               e.preventDefault()

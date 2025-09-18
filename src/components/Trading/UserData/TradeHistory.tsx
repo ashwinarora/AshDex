@@ -30,6 +30,7 @@ import { Fill } from '@nktkas/hyperliquid'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 type ColumnType = {
   key: string
@@ -47,6 +48,7 @@ const columnHelper = createColumnHelper<Fill>()
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
   const { address, isConnected } = useAccount()
+  const { spotKeyToName } = useSpotMeta()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { sdkInfoClient } = useHyperliquidStore(
@@ -86,7 +88,13 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.accessor('coin', {
         id: 'coin',
         header: () => t('Coin'),
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          const coinName = info.getValue()
+          if (coinName.includes('@')) {
+            return spotKeyToName.get(coinName)
+          }
+          return coinName
+        },
         enableSorting: false,
         meta: { label: t('Coin') }
       }),
@@ -274,7 +282,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
+            <TableRow className={cn('h-10', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}

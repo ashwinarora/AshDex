@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
-
+import { useAgentApproval } from '@/context/EstablishConnection'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
@@ -40,12 +40,12 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   )
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
-
+  const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const marginAvailable = clearingHouseState?.withdrawable || 0
 
   const handleMarginChange = async () => {
     const isBuy = Number(asset.szi) > 0
-    const toastId = toast.loading('Updating margin...')
+    const toastId = toast.loading(t('Updating margin...'))
     const realAmount = Number(amount) * 10 ** 6
     try {
       if (!sdkL1ActionClient) return
@@ -58,13 +58,13 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
       console.log(res)
       onClose()
-      toast.success('Margin updated successfully', {
+      toast.success(t('Margin updated successfully'), {
         id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.error(error as string, {
+      toast.error(`${t('Failed to update margin.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -142,9 +142,23 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             </DropdownMenu>
           </div>
         </div>
-        <Button onClick={handleMarginChange} className="w-full">
-          {t('Confirm')}
-        </Button>
+        {!isAgentApproved || currentFeeApproval === 0 ? (
+          <Button
+            onClick={async () => openAgentModal()}
+            className="w-full font-semibold cursor-pointer"
+          >
+            {' '}
+            {t('Enable Trading')}
+          </Button>
+        ) : (
+          <Button
+            onClick={handleMarginChange}
+            className="w-full"
+            disabled={!isAgentApproved || currentFeeApproval === 0}
+          >
+            {t('Confirm')}
+          </Button>
+        )}
       </DialogContent>
     </Dialog>
   )

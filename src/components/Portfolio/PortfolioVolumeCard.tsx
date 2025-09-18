@@ -36,7 +36,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
   const columns = useMemo(
     () => [
       columnHelper.accessor('date', {
-        header: 'Date',
+        header: () => t('Date'),
         cell: ({ row }) => {
           return <div className="text-xs">{row.original.date}</div>
         },
@@ -44,7 +44,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: true
       }),
       columnHelper.accessor('exchange', {
-        header: 'Exchange Volume',
+        header: () => t('Exchange Volume'),
         cell: ({ row }) => (
           <div className="text-xs">{'$ ' + formatWithKMB(parseFloat(row.original.exchange))}</div>
         ),
@@ -52,7 +52,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userCross', {
-        header: 'Taker Volume',
+        header: () => t('Taker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -67,7 +67,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userAdd', {
-        header: 'Maker Volume',
+        header: () => t('Maker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -122,10 +122,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
             {t('View Volume')}
           </p>
         </DialogTrigger>
-        <DialogContent
-          isRTL={isRTL}
-          className="w-fit !max-w-xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2"
-        >
+        <DialogContent className="min-w-11/12 md:min-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
             <DialogTitle>{t('Your Volume History')}</DialogTitle>
             <DialogDescription

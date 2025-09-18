@@ -68,7 +68,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
           openAgentModal()
           return
         }
-        const toastId = toast.loading('Cancelling order...')
+        const toastId = toast.loading(t('Cancelling order...'))
         try {
           if (!sdkL1ActionClient) return
           const assetIndex = isSpot
@@ -85,13 +85,16 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
               }
             ]
           })
-          toast.success('Order cancelled', {
+          toast.success(t('Order cancelled'), {
             id: toastId
           })
         } catch (error: unknown) {
-          toast.error(error instanceof Error ? error.message : String(error), {
-            id: toastId
-          })
+          toast.error(
+            `${t('Failed to cancel order.')} ${error instanceof Error ? error.message : String(error)}`,
+            {
+              id: toastId
+            }
+          )
         }
       }
       cancelOrder()
@@ -144,7 +147,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         openAgentModal()
         return
       }
-      const toastId = toast.loading('Cancelling all orders...')
+      const toastId = toast.loading(t('Cancelling all orders...'))
       try {
         if (!sdkL1ActionClient) return
         const allOrders = openOrders.filter((order) => {
@@ -170,13 +173,16 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             })
             .filter((order) => !!order)
         })
-        toast.success('All orders cancelled', {
+        toast.success(t('All orders cancelled'), {
           id: toastId
         })
       } catch (error: unknown) {
-        toast.error(error instanceof Error ? error.message : String(error), {
-          id: toastId
-        })
+        toast.error(
+          `${t('Failed to cancel all orders.')} ${error instanceof Error ? error.message : String(error)}`,
+          {
+            id: toastId
+          }
+        )
       }
     }
     cancelAll()
@@ -426,7 +432,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
+            <TableRow className={cn('h-10', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
@@ -434,11 +440,11 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                     'font-medium text-white text-xs',
                     cell.column.id === 'timestamp'
                       ? isRTL
-                        ? 'justify-end !w-36'
-                        : 'justify-start !w-36'
+                        ? 'text-end !w-36'
+                        : 'text-start !w-36'
                       : isRTL
-                        ? 'justify-start flex-2'
-                        : 'justify-end flex-2'
+                        ? 'text-start flex-2'
+                        : 'text-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

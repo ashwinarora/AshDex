@@ -25,6 +25,8 @@ import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import useUserStore from '@/store/userStore'
+import { cn } from '@/lib/utils'
 
 interface ITransferModal {
   isOpen: boolean
@@ -34,6 +36,7 @@ interface ITransferModal {
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useAccount()
   const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   const { switchChainAsync } = useSwitchChain()
   const { writeContractAsync } = useWriteContract()
@@ -86,15 +89,15 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   }
 
   const switchChain = async () => {
-    const toastId = toast.loading('Switching to Hyperliquid network…')
+    const toastId = toast.loading(t('Switching to Hyperliquid network...'))
     await switchChainAsync({ chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id })
       .then(() => {
-        toast.success('Switched to Hyperliquid network.', {
+        toast.success(t('Switched to Hyperliquid network.'), {
           id: toastId
         })
       })
       .catch(() => {
-        toast.error('Failed to switch to Hyperliquid network.', {
+        toast.error(t('Failed to switch to Hyperliquid network.'), {
           id: toastId
         })
       })
@@ -105,7 +108,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       if (!chainId) return
       if (!sdkUserSignerClient) return
       if (!isAddress(destination)) return
-      const toastId = toast.loading('Transferring...')
+      const toastId = toast.loading(t('Transferring...'))
       try {
         setIsLoading(true)
         const res = await sdkUserSignerClient.spotSend({
@@ -115,7 +118,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         })
         console.log('Transfer response:', res)
         onClose()
-        toast.success('Transfer successful', {
+        toast.success(t('Transfer successful'), {
           id: toastId
         })
         setIsLoading(false)
@@ -124,11 +127,11 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         onClose()
         setIsLoading(false)
         if (error instanceof ApiRequestError) {
-          toast.error(error.message, {
+          toast.error(`${t('Transfer failed.')} ${error.message}`, {
             id: toastId
           })
         } else {
-          toast.error('Transfer failed', {
+          toast.error(t('Transfer failed.'), {
             id: toastId
           })
         }
@@ -136,7 +139,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     } else {
       if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))
         return
-      const toastId = toast.loading('Transferring...')
+      const toastId = toast.loading(t('Transferring...'))
       try {
         setIsLoading(true)
         let res
@@ -157,14 +160,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         }
         console.log('Transfer response:', res)
         onClose()
-        toast.success('Transfer successful', {
+        toast.success(t('Transfer successful'), {
           id: toastId
         })
         setIsLoading(false)
       } catch (error) {
         console.error('Transfer failed:', error)
         onClose()
-        toast.error('Transfer failed', {
+        toast.error(t('Transfer failed.'), {
           id: toastId
         })
         setIsLoading(false)
@@ -177,19 +180,25 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Spot and EVM')}</DialogTitle>
-          <DialogDescription>{`${t('Transfer')} ${coin} ${t('between Spot and EVM.')}`}</DialogDescription>
+          <DialogDescription>
+            {isRTL
+              ? `تحويل ${coin} بين المحفظة الفعلية وشبكة أي في أم.`
+              : `Transfer ${coin} between Spot and EVM.`}
+          </DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Transfer in progress…')}
+              title={t('Transfer in progress...')}
               subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 justify-between">
+            <div
+              className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
+            >
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
                 {toEvm ? t('Spot') : t('EVM')}
               </div>
@@ -202,7 +211,12 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     {t('Available to transfer:')}
@@ -219,17 +233,17 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 !text-xs h-10"
+                    className={cn('text-start flex-1 !text-xs h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-20">
+                      <Button variant="outline" className={cn('w-20', isRTL && 'flex-row-reverse')}>
                         {coin}
                         <IconChevronDown className="size-4" />
                       </Button>

@@ -308,8 +308,7 @@ export const WALLETS = [
     id: 'rabby',
     name: 'Rabby Wallet',
     icon: rabbywallet
-  },
-  { id: 'other', name: 'Other wallets', icon: 'IconWallet' }
+  }
 ] as const
 
 export const INFOTAB_DESC = `

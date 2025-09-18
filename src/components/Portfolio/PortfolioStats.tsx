@@ -252,21 +252,25 @@ const PortfolioStats = () => {
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
-                  {selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)}
+                  {t(
+                    selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)
+                  )}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
               >
-                <p>{t('Perps')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Perps')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
               >
-                <p>{t('Perps+Spot+Vault')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
+                  {t('Perps+Spot+Vault')}
+                </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -276,32 +280,34 @@ const PortfolioStats = () => {
                 <p>
                   {selectedView.overviewTimeFrame === 'alltime'
                     ? t('All Time')
-                    : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
-                      selectedView.overviewTimeFrame.slice(1)}
+                    : t(
+                        selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
+                          selectedView.overviewTimeFrame.slice(1)
+                      )}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
               >
-                <p>{t('Day')} </p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')} </p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
               >
-                <p>{t('Week')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Week')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
               >
-                <p>{t('Month')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Month')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })}
               >
-                <p>{t('All Time')} </p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')} </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -318,7 +324,7 @@ const PortfolioStats = () => {
                       isRTL ? 'flex-row-reverse' : ''
                     )}
                   >
-                    <p className="text-sm text-white/50">{key}</p>
+                    <p className="text-sm text-white/50">{t(key)}</p>
                     <p
                       className={cn(
                         'text-sm',

@@ -1,15 +1,16 @@
 import React from 'react'
 import { REFERRALS_CLAIM_DESC } from '@/utils/constants'
 import { toast } from 'sonner'
-
+import { useTranslate } from '@tolgee/react'
 interface ClaimProps {
   isCreateCode?: boolean
   totalClaim: number
 }
 function Claim({ isCreateCode, totalClaim }: ClaimProps) {
+  const { t } = useTranslate()
   const handleSubmit = () => {
     setTimeout(() => {
-      toast.success('Claim Successful!', {
+      toast.success(t('Claim Successful!'), {
         description: `You’ve successfully claimed $10. The funds have been added to your balance.`
       })
     }, 1000)
