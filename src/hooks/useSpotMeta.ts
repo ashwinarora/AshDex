@@ -2,7 +2,6 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { SpotMeta } from '@nktkas/hyperliquid'
 import { useQuery } from '@tanstack/react-query'
-import { useMemo } from 'react'
 
 export const useSpotMeta = () => {
   const { sdkInfoClient } = useHyperliquidStore(
@@ -21,25 +20,42 @@ export const useSpotMeta = () => {
     enabled: !!sdkInfoClient
   })
 
-  const spotKeyToName: Map<string, string> = useMemo(() => {
-    if (!query.data) return new Map()
-    return new Map(
-      query.data.universe.map((universe) => [
-        universe.name,
-        query.data?.tokens[universe.tokens[0]]?.name
-      ])
-    )
-  }, [query.data])
+  // Store computed Maps in TanStack Query cache to avoid duplication
+  const spotKeyToNameQuery = useQuery<Map<string, string>>({
+    queryKey: ['spotKeyToName'],
+    queryFn: () => {
+      if (!query.data) return new Map()
+      return new Map(
+        query.data.universe.map((universe) => [
+          universe.name,
+          query.data?.tokens[universe.tokens[0]]?.name
+        ])
+      )
+    },
+    enabled: !!query.data,
+    staleTime: Infinity, // These computed values don't change unless spotMeta changes
+    gcTime: Infinity, // Keep in cache indefinitely since they're derived from spotMeta
+  })
 
-  const spotKeyToBaseName: Map<string, string> = useMemo(() => {
-    if (!query.data) return new Map()
-    return new Map(
-      query.data.universe.map((universe) => [
-        universe.name,
-        query.data?.tokens[universe.tokens[1]]?.name
-      ])
-    )
-  }, [query.data])
+  const spotKeyToBaseNameQuery = useQuery<Map<string, string>>({
+    queryKey: ['spotKeyToBaseName'],
+    queryFn: () => {
+      if (!query.data) return new Map()
+      return new Map(
+        query.data.universe.map((universe) => [
+          universe.name,
+          query.data?.tokens[universe.tokens[1]]?.name
+        ])
+      )
+    },
+    enabled: !!query.data,
+    staleTime: Infinity, // These computed values don't change unless spotMeta changes
+    gcTime: Infinity, // Keep in cache indefinitely since they're derived from spotMeta
+  })
 
-  return { ...query, spotKeyToName, spotKeyToBaseName }
+  return { 
+    ...query, 
+    spotKeyToName: spotKeyToNameQuery.data || new Map(), 
+    spotKeyToBaseName: spotKeyToBaseNameQuery.data || new Map() 
+  }
 }

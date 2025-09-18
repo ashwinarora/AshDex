@@ -21,7 +21,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
-import { EventL2BookParameters, Book, BookLevel } from '@nktkas/hyperliquid'
+import { EventL2BookParameters, Book, BookLevel, type Subscription } from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
@@ -62,7 +62,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
-  const subRef = useRef<{ unsubscribe: () => void } | null>(null)
+  const subRef = useRef<Subscription | null>(null)
 
   useEffect(() => {
     if (!sdkSubscriptionClient || !selectedAsset) return
