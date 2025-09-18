@@ -3,7 +3,21 @@ import { useEffect, useRef, useState } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import * as hl from '@nktkas/hyperliquid'
 import { useShallow } from 'zustand/react/shallow'
-import { BarData, customThemes, Datafeed, DatafeedCallback, ErrorCallback, HistoryCallback, INTERVALS, IntervalType, PeriodParams, RealtimeCallback, SymbolInfo, TradingViewWidget, TradingViewWidgetInstance } from './ChartTypes'
+import {
+  BarData,
+  customThemes,
+  Datafeed,
+  DatafeedCallback,
+  ErrorCallback,
+  HistoryCallback,
+  INTERVALS,
+  IntervalType,
+  PeriodParams,
+  RealtimeCallback,
+  SymbolInfo,
+  TradingViewWidget,
+  TradingViewWidgetInstance
+} from './ChartTypes'
 
 const getIntervalMinutes = (res: IntervalType): number => {
   const map: Record<IntervalType, number> = {
@@ -76,7 +90,6 @@ const getEtcGMTTimezone = () => {
   return `Etc/GMT${sign}${hours}:${minutes}`
 }
 
-
 declare global {
   interface Window {
     TradingView: {
@@ -115,7 +128,6 @@ const TradingViewChart = ({
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
   const orderToShape = useRef<Map<number, string>>(new Map())
   const positionToShape = useRef<Map<string, string>>(new Map())
-
 
   // Update asset ref and initialize cache when asset changes
   useEffect(() => {
