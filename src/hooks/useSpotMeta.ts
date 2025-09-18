@@ -34,7 +34,7 @@ export const useSpotMeta = () => {
     },
     enabled: !!query.data,
     staleTime: Infinity, // These computed values don't change unless spotMeta changes
-    gcTime: Infinity, // Keep in cache indefinitely since they're derived from spotMeta
+    gcTime: Infinity // Keep in cache indefinitely since they're derived from spotMeta
   })
 
   const spotKeyToBaseNameQuery = useQuery<Map<string, string>>({
@@ -50,12 +50,12 @@ export const useSpotMeta = () => {
     },
     enabled: !!query.data,
     staleTime: Infinity, // These computed values don't change unless spotMeta changes
-    gcTime: Infinity, // Keep in cache indefinitely since they're derived from spotMeta
+    gcTime: Infinity // Keep in cache indefinitely since they're derived from spotMeta
   })
 
-  return { 
-    ...query, 
-    spotKeyToName: spotKeyToNameQuery.data || new Map(), 
-    spotKeyToBaseName: spotKeyToBaseNameQuery.data || new Map() 
+  return {
+    ...query,
+    spotKeyToName: spotKeyToNameQuery.data || new Map(),
+    spotKeyToBaseName: spotKeyToBaseNameQuery.data || new Map()
   }
 }
