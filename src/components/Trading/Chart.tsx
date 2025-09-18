@@ -193,7 +193,9 @@ const TradingViewChart = ({
     }
   }
 
-  const convertToHyperliquidInterval = (resolution: IntervalType): hl.EventCandleParameters['interval'] => {
+  const convertToHyperliquidInterval = (
+    resolution: IntervalType
+  ): hl.EventCandleParameters['interval'] => {
     const intervalMap: Record<IntervalType, hl.EventCandleParameters['interval']> = {
       '1': '1m',
       '5': '5m',
@@ -207,7 +209,7 @@ const TradingViewChart = ({
       '1w': '1w',
       '1M': '1M'
     }
-    
+
     return intervalMap[resolution]
   }
 
@@ -289,7 +291,8 @@ const TradingViewChart = ({
             onErrorCallback('SDK or asset not available')
             return
           }
-          const intervalSeconds = getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
+          const intervalSeconds =
+            getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
           const now = Math.floor(Date.now() / 1000)
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
