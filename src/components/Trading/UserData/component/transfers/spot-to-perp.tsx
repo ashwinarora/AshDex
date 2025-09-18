@@ -18,6 +18,8 @@ import { DropdownMenu } from '@/components/ui/dropdown-menu'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 interface ITransferModal {
   isOpen: boolean
@@ -39,7 +41,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const getBalance = () => {
     if (toPerp) {
       return (
@@ -96,7 +98,9 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 justify-between">
+            <div
+              className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
+            >
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
                 {toPerp ? t('Spot') : t('Perp')}
               </div>
@@ -109,7 +113,12 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     {t('Available to transfer:')}
@@ -122,17 +131,20 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 h-10"
+                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
-                      <Button variant="outline" className="w-fit">
+                      <Button
+                        variant="outline"
+                        className={cn('w-fit', isRTL && 'flex-row-reverse')}
+                      >
                         USDC
                         <IconChevronDown className="size-4" />
                       </Button>

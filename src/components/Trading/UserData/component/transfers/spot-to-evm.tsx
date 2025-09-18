@@ -26,6 +26,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
+import { cn } from '@/lib/utils'
 
 interface ITransferModal {
   isOpen: boolean
@@ -195,7 +196,9 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
           </div>
         ) : (
           <>
-            <div className="flex items-center gap-2 justify-between">
+            <div
+              className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
+            >
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
                 {toEvm ? t('Spot') : t('EVM')}
               </div>
@@ -208,7 +211,12 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             </div>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     {t('Available to transfer:')}
@@ -225,17 +233,17 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                     )}
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 !text-xs h-10"
+                    className={cn('text-start flex-1 !text-xs h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-20">
+                      <Button variant="outline" className={cn('w-20', isRTL && 'flex-row-reverse')}>
                         {coin}
                         <IconChevronDown className="size-4" />
                       </Button>

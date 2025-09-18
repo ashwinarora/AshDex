@@ -469,10 +469,13 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
-                <label htmlFor="orderCount" className="text-xs text-white/50">
+                <label
+                  htmlFor="orderCount"
+                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                >
                   {t('Order Count')}
                 </label>
-                <div className="flex items-center gap-3 rounded-lg">
+                <div className={cn('flex items-center gap-3 rounded-lg')}>
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
                     <IconMinus className="size-3" />
                   </Button>
@@ -510,7 +513,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
-                <label htmlFor="sizeSkew" className="text-xs text-white/50">
+                <label
+                  htmlFor="sizeSkew"
+                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                >
                   {t('Size Skew')}
                 </label>
                 <Input

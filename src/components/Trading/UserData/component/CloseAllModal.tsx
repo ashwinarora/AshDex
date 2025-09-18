@@ -18,6 +18,8 @@ import { useUserFee } from '@/hooks/useUserFee'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import useUserStore from '@/store/userStore'
+import { cn } from '@/lib/utils'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -27,6 +29,7 @@ interface CloseAllModalProps {
 const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslate()
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -117,7 +120,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
         <DialogHeader>
           <DialogTitle>{t('Close All Positions')}</DialogTitle>
         </DialogHeader>
-        <DialogDescription>
+        <DialogDescription className={cn(isRTL && 'text-end')}>
           {t('This will close all your positions and cancel their associated TP/SL orders.')}
         </DialogDescription>
         <ToggleGroup

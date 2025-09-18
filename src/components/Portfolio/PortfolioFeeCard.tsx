@@ -68,10 +68,10 @@ const PortfolioFeeCard = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}>
-              <p>{t('Perps')}</p>
+              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Perps')}</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'all' })}>
-              <p>{t('Spot')}</p>
+              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Spot')}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -93,7 +93,7 @@ const PortfolioFeeCard = ({
             {t('View Fee Schedule')}
           </p>
         </DialogTrigger>
-        <DialogContent isRTL={isRTL} className="min-w-11/12 md:min-w-2xl">
+        <DialogContent className="min-w-11/12 md:min-w-2xl">
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
             <DialogTitle>{t('Fee Schedule')}</DialogTitle>
             <DialogDescription className={cn('text-xs', isRTL ? 'text-end' : 'text-start')}>

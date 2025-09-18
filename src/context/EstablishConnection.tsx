@@ -24,12 +24,16 @@ interface ConnectionContextType {
   refetchCurrentFeeApproval: (
     options?: RefetchOptions | undefined
   ) => Promise<QueryObserverResult<number, Error>>
+  openDepositModal: () => void
+  closeDepositModal: () => void
+  isDepositModalOpen: boolean
 }
 
 const ConnectionContext = createContext<ConnectionContextType | undefined>(undefined)
 
 export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
   const { address, isConnected } = useAccount()
   const { agentWallet, sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -75,6 +79,8 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
 
   const closeModal = useCallback(() => setIsModalOpen(false), [])
   const openModal = useCallback(() => setIsModalOpen(true), [])
+  const openDepositModal = useCallback(() => setIsDepositModalOpen(true), [])
+  const closeDepositModal = useCallback(() => setIsDepositModalOpen(false), [])
 
   return (
     <ConnectionContext.Provider
@@ -85,7 +91,10 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
         isAgentApproved,
         currentFeeApproval,
         isModalOpen,
-        refetchCurrentFeeApproval
+        refetchCurrentFeeApproval,
+        isDepositModalOpen,
+        openDepositModal,
+        closeDepositModal
       }}
     >
       {isModalOpen && <EstablishConnectionModal />}

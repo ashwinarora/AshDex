@@ -27,6 +27,7 @@ import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import useUserStore from '@/store/userStore'
 interface MarketCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -51,6 +52,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset && perpsMeta) {
@@ -205,12 +207,14 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-xs text-white/50">{t('Size')}</h1>
-            <div className="flex w-full items-center gap-2">
+            <h1 className={cn('text-xs text-start text-white/50', isRTL && 'text-end')}>
+              {t('Size')}
+            </h1>
+            <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
                 type="number"
                 value={size}
-                className="text-white flex-1 text-start h-9"
+                className={cn('text-white flex-1 text-start h-9', isRTL && 'text-end')}
                 onChange={(e) => {
                   if (!perpsMeta) return
                   const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
@@ -237,25 +241,26 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <div className="flex w-full items-center gap-2 mt-1">
+            <div className={cn('flex w-full items-center gap-2 mt-1', isRTL && 'flex-row-reverse')}>
               <Slider
                 min={0}
                 max={100}
                 step={0.01}
                 value={[percent]}
+                dir={isRTL ? 'rtl' : 'ltr'}
                 onValueChange={(value) => {
                   setPercent(Math.round(value[0]))
                   setLastChanged('percent')
                 }}
                 className="flex-1"
               />
-              <div className="flex bg-white/5 p-2 rounded-md w-16 items-center justify-center gap-2">
+              <div className="flex p-2 rounded-md w-16 items-center justify-center gap-2">
                 <span className="text-xs text-white/50">{percent.toFixed(2)}%</span>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
           <span className="text-xs text-white/50">{t('Estimated closed PnL (without fees):')}</span>
           <span
             className={cn(

@@ -244,11 +244,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     'Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.'
                   )}
                 </p>
-                <div className="flex items-center gap-3">
+                <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>
                   <Slider
                     min={0.1}
                     max={100}
                     step={0.1}
+                    dir={isRTL ? 'rtl' : 'ltr'}
                     value={[slippage]}
                     onValueChange={(value) => setSlippage(value[0])}
                   />
@@ -258,6 +259,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     min="0.1"
                     max="100"
                     step="0.1"
+                    dir={isRTL ? 'rtl' : 'ltr'}
                     value={slippage}
                     className="w-20 shrink-0"
                     onChange={(e) => setSlippage(Number(e.target.value))}
@@ -266,7 +268,10 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 </div>
                 <ToggleGroup
                   size={'sm'}
-                  className="flex mt-1 items-center bg-white/5 justify-between w-full"
+                  className={cn(
+                    'flex mt-1 items-center bg-white/5 justify-between w-full',
+                    isRTL && 'flex-row-reverse'
+                  )}
                   type="single"
                   value={slippage.toString()}
                   onValueChange={(value) => value !== '' && setSlippage(parseInt(value, 10))}
@@ -276,10 +281,13 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                       key={`leverage-tick-${value}-${index}`}
                       value={value.toString()}
                       className={cn(
-                        'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                        'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
                         slippage === value
                           ? 'bg-primary text-white'
-                          : 'bg-transparent text-white/50'
+                          : 'bg-transparent text-white/50',
+                        isRTL
+                          ? 'first:rounded-r-md last:rounded-l-md'
+                          : 'first:rounded-l-md last:rounded-r-md'
                       )}
                     >
                       {value}%

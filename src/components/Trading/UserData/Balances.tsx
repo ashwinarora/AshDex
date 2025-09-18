@@ -35,6 +35,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 type BalanceProps = {
   setSelectedAsset: (asset: string) => void
   isRTL: boolean
+  isHideSmallBalances: boolean
 }
 
 type BalanceData = {
@@ -48,7 +49,7 @@ type BalanceData = {
   pnlPercentage: string | number
 }
 
-const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
+const Balances = ({ setSelectedAsset, isRTL, isHideSmallBalances }: BalanceProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { spotKeyToName } = useSpotMeta()
@@ -90,23 +91,25 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
     }
 
     const spotData =
-      spotState?.balances?.map((state) => {
-        const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
-        const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
-        const usdcValue = Number(state.total) * Number(markPx)
-        const pnl = usdcValue - Number(state.entryNtl)
-        const pnlPercentage = (pnl / Number(state.entryNtl)) * 100
+      spotState?.balances
+        ?.map((state) => {
+          const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
+          const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
+          const usdcValue = Number(state.total) * Number(markPx)
+          const pnl = usdcValue - Number(state.entryNtl)
+          const pnlPercentage = (pnl / Number(state.entryNtl)) * 100
 
-        return {
-          ...state,
-          coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
-          entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
-          pnl: state.coin === 'USDC' ? '--' : pnl,
-          pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
-          usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
-          hold: Number(state.total) - Number(state.hold)
-        }
-      }) || []
+          return {
+            ...state,
+            coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
+            entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
+            pnl: state.coin === 'USDC' ? '--' : pnl,
+            pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
+            usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
+            hold: Number(state.total) - Number(state.hold)
+          }
+        })
+        .filter((state) => state.usdcValue > (isHideSmallBalances ? 1 : 0)) || []
 
     return [perpData, ...spotData]
   }, [
@@ -115,7 +118,8 @@ const Balances = ({ setSelectedAsset, isRTL }: BalanceProps) => {
     clearingHouseState?.withdrawable,
     spotState?.balances,
     spotAssetContext,
-    spotKeyToName
+    spotKeyToName,
+    isHideSmallBalances
   ])
 
   const columns = useMemo(
