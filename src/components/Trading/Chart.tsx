@@ -180,15 +180,35 @@ const TradingViewChart = ({
 
   // Convert TradingView resolution to Hyperliquid interval
   const convertedResolutionToInterval = (resolution: IntervalType) => {
-    return resolution.endsWith('D')
-      ? '1d'
-      : resolution.endsWith('W')
-        ? '1w'
-        : resolution.endsWith('M')
-          ? '1M'
-          : Number(resolution) >= 60
-            ? `${Number(resolution) / 60}h`
-            : `${Number(resolution)}m`
+    if (resolution.endsWith('D')) {
+      return '1d'
+    } else if (resolution.endsWith('W')) {
+      return '1w'
+    } else if (resolution.endsWith('M')) {
+      return '1M'
+    } else if (Number(resolution) >= 60) {
+      return `${Number(resolution) / 60}h`
+    } else {
+      return `${Number(resolution)}`
+    }
+  }
+
+  const convertToHyperliquidInterval = (resolution: IntervalType): hl.EventCandleParameters['interval'] => {
+    const intervalMap: Record<IntervalType, hl.EventCandleParameters['interval']> = {
+      '1': '1m',
+      '5': '5m',
+      '15': '15m',
+      '30': '30m',
+      '60': '1h',
+      '1h': '1h',
+      '4h': '4h',
+      '240': '4h',
+      '1d': '1d',
+      '1w': '1w',
+      '1M': '1M'
+    }
+    
+    return intervalMap[resolution]
   }
 
   // Get current timezone offset
@@ -269,13 +289,12 @@ const TradingViewChart = ({
             onErrorCallback('SDK or asset not available')
             return
           }
-          const intervalSeconds =
-            getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
+          const intervalSeconds = getIntervalMinutes(convertedResolutionToInterval(resolution) as IntervalType) * 60
           const now = Math.floor(Date.now() / 1000)
           const to = periodParams.to || now
           const countBack = periodParams?.countBack || 300
           const from = to - countBack * intervalSeconds
-          const interval = convertedResolutionToInterval(resolution)
+          const interval = convertToHyperliquidInterval(resolution)
 
           const rawCandles = await sdkInfoClient.candleSnapshot({
             coin: currentAsset,
@@ -344,7 +363,7 @@ const TradingViewChart = ({
 
           if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertedResolutionToInterval(
+          const interval = convertToHyperliquidInterval(
             resolution
           ) as hl.EventCandleParameters['interval']
           let lastBar: BarData | undefined
