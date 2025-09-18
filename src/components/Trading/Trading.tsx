@@ -1,7 +1,7 @@
 'use client'
 import { useRef, useState } from 'react'
 import { isTestnet } from '@/utils/constants'
-import Chart from './Chart'
+import Chart from './Chart/Chart'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
