@@ -90,7 +90,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         header: () => t('Coin'),
         cell: (info) => {
           const coinName = info.getValue()
-          if(coinName.includes('@')){
+          if (coinName.includes('@')) {
             return spotKeyToName.get(coinName)
           }
           return coinName
