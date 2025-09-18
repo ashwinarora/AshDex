@@ -13,6 +13,8 @@ import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
+import useUserStore from '@/store/userStore'
+import { cn } from '@/lib/utils'
 
 interface WithdrawModalProps {
   isOpen: boolean
@@ -32,7 +34,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const { switchChainAsync } = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const switchChain = async () => {
     const toastId = toast.loading(t('Switching to Arbitrum network...'))
     await switchChainAsync({ chainId: supportedChain })
@@ -106,7 +108,12 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between text-xs text-white/50">
+                <div
+                  className={cn(
+                    'flex items-center justify-between text-xs text-white/50',
+                    isRTL && 'flex-row-reverse'
+                  )}
+                >
                   <p>{t('Amount')}</p>
                   <div className="flex items-center gap-1">
                     {t('Available to withdraw:')}
@@ -119,11 +126,11 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     </Button>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
                   <Input
                     type="text"
                     id="amount"
-                    className="text-start flex-1 h-10"
+                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
