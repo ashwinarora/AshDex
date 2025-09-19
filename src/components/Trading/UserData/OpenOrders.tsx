@@ -161,21 +161,21 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
 
         await sdkL1ActionClient.cancel({
           cancels: allOrders
-          .map((order) => {
-            const assetIndex = isSpot
-              ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                SPOT_DELTA
-              : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
-  
-            if (assetIndex === undefined || assetIndex < 0) {
-              return
-            }
-            return {
-              a: assetIndex,
-              o: order.oid
-            }
-          })
-          .filter((order) => !!order)
+            .map((order) => {
+              const assetIndex = isSpot
+                ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
+                  SPOT_DELTA
+                : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
+
+              if (assetIndex === undefined || assetIndex < 0) {
+                return
+              }
+              return {
+                a: assetIndex,
+                o: order.oid
+              }
+            })
+            .filter((order) => !!order)
         })
         toast.success(t('All orders cancelled'), {
           id: toastId
