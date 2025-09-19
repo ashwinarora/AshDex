@@ -42,6 +42,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     () => [
       { label: t('All'), icon: null },
       { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
       { label: t('AI'), icon: <IconBrain className="size-3" /> },
       { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
       { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
@@ -283,6 +284,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
             </ToggleGroup>
             <PerpsTable
               isRTL={isRTL}
+              selectedTab={selectedTab}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}

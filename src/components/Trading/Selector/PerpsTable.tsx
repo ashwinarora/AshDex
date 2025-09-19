@@ -38,7 +38,7 @@ import { useTranslate } from '@tolgee/react'
 
 interface AssetTableProps {
   searchTerm: string
-
+  selectedTab: string
   setSelectedAsset: (asset: string) => void
   selectedAsset: string
 
@@ -68,6 +68,7 @@ const formatPrice = (price: number | undefined | null) => {
 
 const AssetTable = ({
   searchTerm,
+  selectedTab,
   setSelectedAsset,
   selectedAsset,
   setIsOpen,
@@ -105,9 +106,16 @@ const AssetTable = ({
           maxLeverage
         }
       })
+      .filter((asset) => {
+        if (selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌') {
+          return favorites.has(asset.symbol)
+        } else {
+          return true
+        }
+      })
       .filter((asset) => asset.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
     return data
-  }, [perpsMeta, perpAssetContext, searchTerm])
+  }, [perpsMeta, perpAssetContext, searchTerm, selectedTab, favorites])
 
   const columnHelper = createColumnHelper<PerpAssetData>()
 
@@ -448,7 +456,7 @@ const AssetTable = ({
                     'font-medium whitespace-nowrap w-2/12',
                     !isMobile
                       ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
-                          'w-3/12'
+                      'w-3/12'
                       : 'w-full flex-1 shrink-0'
                   )}
                 >

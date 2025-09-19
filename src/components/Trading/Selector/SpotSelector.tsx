@@ -59,6 +59,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
     () => [
       { label: t('All'), icon: null },
       { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
       { label: t('AI'), icon: <IconBrain className="size-3" /> },
       { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
       { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
@@ -298,6 +299,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
               isRTL={isRTL}
               searchTerm={searchTerm}
               selectedAsset={selectedAsset}
+              selectedTab={selectedTab}
               setSelectedAsset={(asset) => {
                 setSelectedAsset(asset)
                 setIsOpen(false)
