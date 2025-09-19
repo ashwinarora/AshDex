@@ -69,6 +69,15 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     return { context: perpAssetContext[idx] || null }
   }, [selectedAsset, perpsMeta, perpAssetContext])
 
+  const calculate24hChange = () => {
+    if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
+    const prev = Number(selectedAssetContext.prevDayPx)
+    const change = Number(selectedAssetContext.midPx) - prev
+    const percent = (change / prev) * 100
+    const sign = change >= 0 ? '+' : ''
+    return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
+  }
+
   // Memoize market data calculation with better dependency tracking
   const marketData = useMemo(() => {
     type MarketDataItem = {
@@ -78,15 +87,6 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
       hasCountdown?: boolean
     }
     if (!selectedAssetContext) return []
-
-    const calculate24hChange = () => {
-      if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
-      const prev = Number(selectedAssetContext.prevDayPx)
-      const change = Number(selectedAssetContext.midPx) - prev
-      const percent = (change / prev) * 100
-      const sign = change >= 0 ? '+' : ''
-      return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
-    }
 
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [

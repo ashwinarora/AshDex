@@ -1,6 +1,11 @@
 'use client'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
+import {
+  IconChevronUp,
+  IconChevronDown,
+  IconSelector,
+  IconMinus
+} from '@tabler/icons-react'
 import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
@@ -260,23 +265,25 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: Asse
         cell: (info) => {
           const { price, prevDayPrice } = info.row.original
           const difference = price - prevDayPrice
-          const isPositive = difference > 0
-          const className = isPositive ? 'text-green' : 'text-red'
+          const className =
+            difference > 0 ? 'text-green' : difference < 0 ? 'text-red' : 'text-white'
 
           return (
             <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
               <div
                 className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
               >
-                {isPositive ? (
-                  <IconTriangleFilled className="size-2 mr-1" />
+                {className === 'text-green' ? (
+                  <IconTriangleFilled className="size-2 mr-1 text-green" />
+                ) : className === 'text-red' ? (
+                  <IconTriangleInvertedFilled className="size-2 mr-1 text-red" />
                 ) : (
-                  <IconTriangleInvertedFilled className="size-2 mr-1" />
+                  <IconMinus className="size-2 mr-1 text-white" />
                 )}
                 {difference !== undefined && (
                   <div className="flex items-center">
                     <ReactiveText
-                      precision={2}
+                      precision={Math.abs(difference) < 0.01 ? 4 : 2}
                       value={difference}
                       type="currency"
                       isStatic={true}

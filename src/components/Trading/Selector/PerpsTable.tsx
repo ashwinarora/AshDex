@@ -3,6 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import {
   IconChevronDown,
   IconChevronUp,
+  IconMinus,
   IconSelector,
   IconStar,
   IconStarFilled,
@@ -278,22 +279,24 @@ const AssetTable = ({
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const difference = price - prevDayPrice
-            const isPositive = difference >= 0
-            const className = isPositive ? 'text-green' : 'text-red'
+            const className =
+              difference > 0 ? 'text-green' : difference < 0 ? 'text-red' : 'text-white'
             return (
               <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
                 <div
                   className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
                 >
-                  {isPositive ? (
-                    <IconTriangleFilled className="size-2 mr-1" />
+                  {className === 'text-green' ? (
+                    <IconTriangleFilled className="size-2 mr-1 text-green" />
+                  ) : className === 'text-red' ? (
+                    <IconTriangleInvertedFilled className="size-2 mr-1 text-red" />
                   ) : (
-                    <IconTriangleInvertedFilled className="size-2 mr-1" />
+                    <IconMinus className="size-2 mr-1 text-white" />
                   )}
                   {difference !== undefined && prevDayPrice !== 0 && (
                     <div className="flex items-center">
                       <ReactiveText
-                        precision={2}
+                        precision={Math.abs(difference) < 0.01 ? 4 : 2}
                         className="text-xs"
                         value={difference}
                         type="currency"

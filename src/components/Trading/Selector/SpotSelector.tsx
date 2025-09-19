@@ -80,17 +80,17 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
     return null
   }, [selectedAsset, spotAssetContext, spotMeta])
 
+  const calculate24hChange = () => {
+    if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
+    const prev = Number(selectedAssetContext.prevDayPx)
+    const change = Number(selectedAssetContext.midPx) - prev
+    const percent = (change / prev) * 100
+    const sign = change >= 0 ? '+' : ''
+    return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
+  }
+
   const marketData = useMemo(() => {
     if (!selectedAssetContext) return []
-
-    const calculate24hChange = () => {
-      if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
-      const prev = Number(selectedAssetContext.prevDayPx)
-      const change = Number(selectedAssetContext.midPx) - prev
-      const percent = (change / prev) * 100
-      const sign = change >= 0 ? '+' : ''
-      return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
-    }
 
     const changeString = calculate24hChange()
 
