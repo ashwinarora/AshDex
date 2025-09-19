@@ -60,7 +60,13 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL, selectedTab }: AssetTableProps) => {
+const AssetTable = ({
+  searchTerm,
+  setSelectedAsset,
+  selectedAsset,
+  isRTL,
+  selectedTab
+}: AssetTableProps) => {
   const { t } = useTranslate()
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquidStore(
@@ -433,7 +439,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL, select
                     'font-medium whitespace-nowrap w-2/12',
                     !isMobile
                       ? (cell.column.id === 'symbol' || cell.column.id === 'prevDayPrice') &&
-                      'w-3/12'
+                          'w-3/12'
                       : 'w-full flex-1 shrink-0'
                   )}
                 >
