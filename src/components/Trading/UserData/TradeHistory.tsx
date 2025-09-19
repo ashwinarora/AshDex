@@ -102,7 +102,9 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         id: 'dir',
         header: () => t('Direction'),
         cell: (info) => (
-          <p className={`${info.getValue().includes('Open') || info.getValue().includes('Buy') ? 'text-green' : 'text-red'}`}>
+          <p
+            className={`${info.getValue().includes('Open') || info.getValue().includes('Buy') ? 'text-green' : 'text-red'}`}
+          >
             {info.getValue()}
           </p>
         ),
