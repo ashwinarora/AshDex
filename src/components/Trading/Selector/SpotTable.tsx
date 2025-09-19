@@ -1,11 +1,6 @@
 'use client'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import {
-  IconChevronUp,
-  IconChevronDown,
-  IconSelector,
-  IconMinus
-} from '@tabler/icons-react'
+import { IconChevronUp, IconChevronDown, IconSelector, IconMinus } from '@tabler/icons-react'
 import { useState, useMemo, useRef } from 'react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
