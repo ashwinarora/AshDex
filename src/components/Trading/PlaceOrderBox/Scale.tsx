@@ -193,8 +193,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       }
     }))
 
-    if (ordersData.findIndex(item => Number(item.price) * Number(item.size) < 10) !== -1) {
-      console.error(`Minimum order must be at the least $10. One of your order's value is less than $10`)
+    if (ordersData.findIndex((item) => Number(item.price) * Number(item.size) < 10) !== -1) {
+      console.error(
+        `Minimum order must be at the least $10. One of your order's value is less than $10`
+      )
       toast.error(`Marign Insufficient`, {
         description: `One or more individual order's value is less than $10`
       })
@@ -312,7 +314,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 size={'sm'}
                 disabled
                 className="text-xs w-16 flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
                 <IconChevronDown className="size-3" />
@@ -347,8 +348,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             size={'sm'}
             className="text-xs w-16 bg-transparent hover:bg-transparent"
             disabled={true}
-          // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-          // onClick={() => setLimitPrice(getFormattedPrice())}
           >
             <IconRefresh className="size-3" />
             {t('Last')}
@@ -380,7 +379,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 variant="outline"
                 size={'sm'}
                 className="text-xs w-16 flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               >
                 <p className="text-xs flex-1 w-full">USDC</p>
                 <IconChevronDown className="size-3" />
