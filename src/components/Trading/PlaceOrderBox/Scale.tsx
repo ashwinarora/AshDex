@@ -193,11 +193,11 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       }
     }))
 
-    if (ordersData.findIndex((item) => Number(item.price) * Number(item.size) < 10) !== -1) {
+    if (ordersData.some((item) => Number(item.price) * Number(item.size) < 10)) {
       console.error(
         `Minimum order must be at the least $10. One of your order's value is less than $10`
       )
-      toast.error(`Marign Insufficient`, {
+      toast.error(`Margin Insufficient`, {
         description: `One or more individual order's value is less than $10`
       })
       return
