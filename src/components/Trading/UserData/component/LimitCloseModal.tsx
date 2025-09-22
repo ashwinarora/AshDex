@@ -55,6 +55,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const { getAdjustedBuilderFee } = useUserFee()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+  
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
@@ -67,6 +68,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           }
           return prev
         })
+        setSize(Math.abs(Number(pos.position.szi)).toString())
       }
     }
   }, [clearingHouseState, closingAsset])
@@ -136,6 +138,8 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     const szDecimals = perpsMeta.universe[assetIndex].szDecimals
     const tif = 'Gtc'
     const isBuy = !(Number(position.szi) > 0)
+    const mid = allMids[position.coin]
+    const orderPrice = isBuy ? Number(mid) * 1.1 : Number(mid) * 0.9
 
     let finalSize = size
     if (sizeType === 'usd') {
@@ -160,7 +164,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           {
             a: assetIndex,
             b: isBuy,
-            p: formatPrice(Number(price), szDecimals).toString(),
+            p: formatPrice(Number(orderPrice), szDecimals).toString(),
             s: finalSize.replace(/\.?0+$/, ''),
             r: true,
             t: {

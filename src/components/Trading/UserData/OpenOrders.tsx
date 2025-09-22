@@ -158,6 +158,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             return !spotKeyToName.get(order.coin)
           }
         })
+
         await sdkL1ActionClient.cancel({
           cancels: allOrders
             .map((order) => {
@@ -165,7 +166,10 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                 ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
                   SPOT_DELTA
                 : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
-              if (!assetIndex) return
+
+              if (assetIndex === undefined || assetIndex < 0) {
+                return
+              }
               return {
                 a: assetIndex,
                 o: order.oid
