@@ -40,6 +40,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isBuy={isBuy}
           setIsBuy={setIsBuy}
           isRTL={isRTL}
+          selectedAsset={selectedAsset}
         />
         <LeverageMargin
           selectedAsset={selectedAsset}

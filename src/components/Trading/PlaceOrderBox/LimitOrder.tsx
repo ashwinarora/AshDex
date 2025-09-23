@@ -80,6 +80,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isBuy={isBuy}
           setIsBuy={setIsBuy}
           isRTL={isRTL}
+          selectedAsset={selectedAsset}
         />
         {!isSpot ? (
           <>

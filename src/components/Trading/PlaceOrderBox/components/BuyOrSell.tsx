@@ -11,6 +11,7 @@ interface BuyOrSellProps {
   isMarginEnabled?: boolean
   isCross: boolean
   setIsCross: React.Dispatch<React.SetStateAction<boolean>>
+  selectedAsset: string
 }
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({
@@ -19,7 +20,8 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
   isRTL,
   isCross,
   setIsCross,
-  isMarginEnabled = true
+  isMarginEnabled = true,
+  selectedAsset
 }) => {
   const { t } = useTranslate()
   return (
@@ -58,7 +60,12 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
       </ToggleGroup>
       {isMarginEnabled && (
         <div className="w-1/4">
-          <MarginMode isCross={isCross} setIsCross={setIsCross} isRTL={isRTL} />
+          <MarginMode
+            isCross={isCross}
+            setIsCross={setIsCross}
+            isRTL={isRTL}
+            selectedAsset={selectedAsset}
+          />
         </div>
       )}
     </div>

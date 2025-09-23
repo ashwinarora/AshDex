@@ -1,5 +1,5 @@
 'use client'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isTestnet } from '@/utils/constants'
 import Chart from './Chart/Chart'
 import OrderBook from './OrderBook'
@@ -20,10 +20,14 @@ import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { Skeleton } from '../ui/skeleton'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
+import { useAccount } from 'wagmi'
 
 const Trading = () => {
   const { t } = useTranslate()
   const isSpot = useIsSpot()
+  const { address } = useAccount()
   const [selectedAsset, setSelectedAsset] = useState<string>(
     isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
   ) // @1035 and @107 is HYPE
@@ -43,6 +47,21 @@ const Trading = () => {
     firstToggle: 'chart',
     secondToggle: ''
   })
+
+  const { subscribeToActiveAssetData, unsubscribeFromActiveAssetData } = useHyperliquidStore(
+    useShallow((state) => ({
+      subscribeToActiveAssetData: state.subscribeToActiveAssetData,
+      unsubscribeFromActiveAssetData: state.unsubscribeFromActiveAssetData
+    }))
+  )
+
+  useEffect(() => {
+    if (!address) return
+    subscribeToActiveAssetData(address, selectedAsset)
+    return () => {
+      unsubscribeFromActiveAssetData()
+    }
+  }, [address, subscribeToActiveAssetData, selectedAsset])
 
   if (isMobile) {
     return (
@@ -284,57 +303,6 @@ const Trading = () => {
       </div>
       <FooterCompact />
     </div>
-    // <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-fit w-full">
-    //   <div className={`flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden`}>
-    //     <div
-    //       className={clsx(
-    //         `col-span-10 h-full flex-1 basis-xl flex flex-col gap-1`,
-    //         isRTL ? '-order-1' : 'order-1'
-    //       )}
-    //     >
-    //       <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
-    //       {isSpot ? (
-    //         <SpotSelector
-    //           selectedAsset={selectedAsset}
-    //           setSelectedAsset={setSelectedAsset}
-    //           isRTL={isRTL}
-    //         />
-    //       ) : (
-    //         <PerpsSelector
-    //           selectedAsset={selectedAsset}
-    //           setSelectedAsset={setSelectedAsset}
-    //           isRTL={isRTL}
-    //         />
-    //       )}
-    //       <Chart selectedAsset={selectedAsset} selectedInterval="30" />
-    //     </div>
-    //     <div
-    //       className={clsx(
-    //         `col-span-4 h-full flex-col basis-sm gap-2`,
-    //         isRTL ? '-order-2' : 'order-2'
-    //       )}
-    //     >
-    //       <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
-    //     </div>
-    //     <div
-    //       className={clsx(
-    //         `col-span-4 h-full flex-col basis-sm gap-2`,
-    //         isRTL ? '-order-3' : 'order-3'
-    //       )}
-    //     >
-    //       <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
-    //     </div>
-    //   </div>
-    //   <div className="grid grid-cols-18 gap-1 h-fit">
-    //     <div className={clsx(`col-span-14 h-full w-full`, isRTL ? '-order-1' : 'order-1')}>
-    //       <UserData setSelectedAsset={setSelectedAsset} />
-    //     </div>
-    //     <div className={clsx(`col-span-4 h-full w-full`, isRTL ? '-order-2' : 'order-2')}>
-    //       <OverviewBox isRTL={isRTL} />
-    //     </div>
-    //   </div>
-    //   <FooterCompact />
-    // </div>
   )
 }
 
