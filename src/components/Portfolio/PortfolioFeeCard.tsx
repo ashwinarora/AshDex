@@ -124,14 +124,14 @@ const PortfolioFeeCard = ({
                     size={'sm'}
                     className="w-fit text-xs flex items-center gap-2"
                   >
-                    {`${hypeStaked.stakedHype} HYPE (${hypeStaked.discount * 100}% ${(t('discount'))})`}
+                    {`${hypeStaked.stakedHype} HYPE (${hypeStaked.discount * 100}% ${t('discount')})`}
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   {feeTier?.map((tier) => (
                     <DropdownMenuItem key={tier.stakedHype} onClick={() => setHypeStaked(tier)}>
-                      <p>{`${tier.stakedHype} HYPE (${tier.discount * 100}% ${(t('discount'))})`}</p>
+                      <p>{`${tier.stakedHype} HYPE (${tier.discount * 100}% ${t('discount')})`}</p>
                     </DropdownMenuItem>
                   ))}
                 </DropdownMenuContent>
