@@ -55,7 +55,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const { getAdjustedBuilderFee } = useUserFee()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  
+
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
