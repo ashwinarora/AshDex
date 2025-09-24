@@ -71,9 +71,9 @@ const ConnectWalletModal: React.FC = () => {
 
   useEffect(() => {
     if (shouldShowRules) {
-      setDialogTitle(t('Terms of Service'))
+      setDialogTitle('Terms of Service')
     } else {
-      setDialogTitle(t('Connect Wallet'))
+      setDialogTitle('Connect Wallet')
     }
   }, [shouldShowRules])
 

@@ -204,7 +204,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isBuy={isBuy}
           setIsBuy={setIsBuy}
           isRTL={isRTL}
-          isMarginEnabled={false}
           isCross={false}
           setIsCross={() => {}}
         />

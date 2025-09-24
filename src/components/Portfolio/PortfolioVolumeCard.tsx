@@ -82,7 +82,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       })
     ],
-    [columnHelper]
+    [columnHelper, t]
   )
 
   const table = useReactTable({
