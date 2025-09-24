@@ -33,6 +33,23 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
     error: null
   })
   const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
+  const [isEdited, setIsEdited] = useState<boolean>(false)
+
+  const { activeAssetData } = useHyperliquidStore(
+    useShallow((state) => ({
+      activeAssetData: state.activeAssetData
+    }))
+  )
+
+  useEffect(() => {
+    if (!activeAssetData) return
+    if (isEdited) return
+    setLeverage(activeAssetData.leverage.value)
+  }, [activeAssetData])
+
+  useEffect(() => {
+    setIsEdited(false)
+  }, [selectedAsset])
 
   useEffect(() => {
     const { isValid, error } = numberInputValidator({
@@ -53,6 +70,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
 
   const handleLeverageChange = (value: string) => {
     setLeverageInput(value)
+    setIsEdited(true)
   }
 
   // set the leverage to the existing position leverage
@@ -123,7 +141,10 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
           dir={isRTL ? 'rtl' : 'ltr'}
           className={cn('w-full')}
           value={[leverage]}
-          onValueChange={(value) => setLeverage(value[0])}
+          onValueChange={(value) => {
+            setLeverage(value[0])
+            setIsEdited(true)
+          }}
         />
         <ToggleGroup
           size={'sm'}

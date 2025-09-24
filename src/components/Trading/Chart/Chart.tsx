@@ -317,7 +317,7 @@ const TradingViewChart = ({
 
           // Store cleanup callback
           tvSubscribersRef.current[subscriberUID] = () => {
-            unsubscribeFromCandle(currentAsset, interval)
+            unsubscribeFromCandle(currentAsset, interval).catch(console.error)
           }
         } catch (e) {
           console.error('Subscription error:', e)

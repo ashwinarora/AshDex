@@ -34,7 +34,7 @@ const HyperLiquidInitializer = () => {
 
     subscribeToAllMids()
     return () => {
-      unsubscribeFromAllMids()
+      unsubscribeFromAllMids().catch(console.error)
     }
   }, [sdkSubscriptionClient, subscribeToAllMids, unsubscribeFromAllMids])
 
@@ -42,7 +42,7 @@ const HyperLiquidInitializer = () => {
     if (!sdkSubscriptionClient) return
     subscribeWebData2(address ?? zeroAddress)
     return () => {
-      unsubscribeWebData2(address ?? zeroAddress)
+      unsubscribeWebData2().catch(console.error)
     }
   }, [sdkSubscriptionClient, address, subscribeWebData2, unsubscribeWebData2])
 

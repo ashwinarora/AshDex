@@ -1,6 +1,6 @@
 import { cn } from '@/lib/utils'
 import { IconChevronDown } from '@tabler/icons-react'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslate } from '@tolgee/react'
 import {
   DropdownMenu,
@@ -9,15 +9,35 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
+import { useShallow } from 'zustand/react/shallow'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
 
 interface MarginModeProps {
   isCross: boolean
   setIsCross: React.Dispatch<React.SetStateAction<boolean>>
   isRTL: boolean
+  selectedAsset?: string
 }
 
-const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
+const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModeProps) => {
   const { t } = useTranslate()
+  const { activeAssetData } = useHyperliquidStore(
+    useShallow((state) => ({
+      activeAssetData: state.activeAssetData
+    }))
+  )
+  const [isEdited, setIsEdited] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!activeAssetData) return
+    if (isEdited) return
+    setIsCross(activeAssetData.leverage.type === 'cross' ? true : false)
+  }, [activeAssetData])
+
+  useEffect(() => {
+    setIsEdited(false)
+  }, [selectedAsset])
+
   return (
     <div
       className={cn(
@@ -33,8 +53,22 @@ const MarginMode = ({ setIsCross, isCross, isRTL }: MarginModeProps) => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={() => setIsCross(true)}>{t('Cross')}</DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsCross(false)}>{t('Isolated')}</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setIsCross(true)
+              setIsEdited(true)
+            }}
+          >
+            {t('Cross')}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => {
+              setIsCross(false)
+              setIsEdited(true)
+            }}
+          >
+            {t('Isolated')}
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
