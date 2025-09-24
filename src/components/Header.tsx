@@ -95,8 +95,22 @@ const Header: FC = () => {
   ]
 
   const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
-    if (pathname === '/' || pathname === '') return t('Futures')
+    // Check if path is root or starts with an asset parameter
+    if (
+      pathname === '/' ||
+      pathname === '' ||
+      (pathname.startsWith('/') &&
+        pathname.split('/').length > 1 &&
+        !isNaN(Number(pathname.split('/')[1]?.charAt(0))))
+    )
+      return t('Futures')
+
+    // Get first segment of path to check against menu items
     const firstSegment = pathname?.split('/')[1]
+
+    // Special case for spot paths with asset parameter
+    if (firstSegment === 'spot') return t('Spot')
+
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
   const activeMenu = getActiveMenu(pathname, mobileMenu)

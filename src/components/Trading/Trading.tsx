@@ -23,14 +23,18 @@ import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useAccount } from 'wagmi'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const Trading = () => {
+interface TradingProps {
+  defaultAsset?: string
+}
+
+const Trading = ({ defaultAsset }: TradingProps = {}) => {
   const { t } = useTranslate()
   const isSpot = useIsSpot()
   const { address } = useAccount()
-  const [selectedAsset, setSelectedAsset] = useState<string>(
-    isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
-  ) // @1035 and @107 is HYPE
+  const { spotKeyToName } = useSpotMeta()
+  const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isTablet, isMobile } = useScreenSize()
@@ -62,6 +66,19 @@ const Trading = () => {
       unsubscribeFromActiveAssetData()
     }
   }, [address, subscribeToActiveAssetData, selectedAsset])
+  useEffect(() => {
+    setSelectedAsset(
+      isSpot
+        ? defaultAsset && spotKeyToName.size > 0
+          ? spotKeyToName.entries().find(([, value]) => value === defaultAsset)?.[0]
+          : isTestnet
+            ? '@1035'
+            : '@107'
+        : defaultAsset
+          ? defaultAsset
+          : 'BTC'
+    )
+  }, [defaultAsset, spotKeyToName, isSpot])
 
   if (isMobile) {
     return (

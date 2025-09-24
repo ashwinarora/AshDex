@@ -6,6 +6,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { ToggleGroup } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
 import { Fragment, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -28,6 +29,7 @@ const FavoriteStrip = ({
   width?: number
 }) => {
   const isSpot = useIsSpot()
+  const router = useRouter()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslate()
@@ -61,8 +63,6 @@ const FavoriteStrip = ({
     )
   }
 
-  console.log('displayMode', displayMode)
-
   return (
     <div
       style={{ width: width }}
@@ -81,8 +81,11 @@ const FavoriteStrip = ({
           className={clsx('flex items-center gap-2 h-full', isRTL ? 'flex-row-reverse' : '')}
           onValueChange={(asset) => {
             if (!asset.length) return
-            console.log('asset', asset)
+            // Update UI immediately
             setSelectedAsset(asset)
+            // Navigate to the asset-specific URL
+            const baseUrl = isSpot ? '/spot/' : '/'
+            router.push(`${baseUrl}${asset}`)
           }}
         >
           {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).map(

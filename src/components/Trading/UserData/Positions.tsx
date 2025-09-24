@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   createColumnHelper,
   flexRender,
@@ -56,6 +57,7 @@ interface IPositionsProps {
 const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
+  const router = useRouter()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -78,7 +80,6 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   const { isTablet, isMobile } = useScreenSize()
-
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -112,7 +113,12 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                 variant="link"
                 size="defaultLink"
                 className="text-white hover:text-accent-foreground transition-all hover:no-underline"
-                onClick={() => setSelectedAsset(coin)}
+                onClick={() => {
+                  // Call the setSelectedAsset function for immediate UI update
+                  setSelectedAsset(coin)
+                  // Navigate to the asset-specific URL
+                  router.push(`/${coin}`)
+                }}
               >
                 {coin || ''}
               </Button>

@@ -140,7 +140,7 @@ const Balances = ({ setSelectedAsset, isRTL, isHideSmallBalances }: BalanceProps
               className="text-accent-foreground font-bold text-xs hover:text-accent-foreground transition-all hover:no-underline"
               onClick={() => {
                 setSelectedAsset(coin)
-                router.push(`/spot`)
+                router.push(`/spot/${info.getValue()}`)
               }}
             >
               {coin}
