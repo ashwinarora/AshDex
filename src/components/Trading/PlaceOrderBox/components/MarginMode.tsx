@@ -16,7 +16,7 @@ interface MarginModeProps {
   isCross: boolean
   setIsCross: React.Dispatch<React.SetStateAction<boolean>>
   isRTL: boolean
-  selectedAsset: string
+  selectedAsset?: string
 }
 
 const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModeProps) => {

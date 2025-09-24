@@ -3,15 +3,15 @@ import { cn } from '@/lib/utils'
 import React from 'react'
 import { useTranslate } from '@tolgee/react'
 import MarginMode from './MarginMode'
+import useIsSpot from '@/hooks/useIsSpot'
 
 interface BuyOrSellProps {
   isBuy: boolean
   setIsBuy: (isBuy: boolean) => void
   isRTL: boolean
-  isMarginEnabled?: boolean
   isCross: boolean
   setIsCross: React.Dispatch<React.SetStateAction<boolean>>
-  selectedAsset: string
+  selectedAsset?: string
 }
 
 const BuyOrSell: React.FC<BuyOrSellProps> = ({
@@ -20,10 +20,10 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
   isRTL,
   isCross,
   setIsCross,
-  isMarginEnabled = true,
   selectedAsset
 }) => {
   const { t } = useTranslate()
+  const isSpot = useIsSpot()
   return (
     <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
@@ -31,7 +31,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
         className={cn(
           ' bg-white/5 rounded-md',
           isRTL ? '!flex-row-reverse' : '!flex-row',
-          isMarginEnabled ? 'w-3/4' : 'w-full'
+          isSpot ? 'w-3/4' : 'w-full'
         )}
         type="single"
         value={isBuy ? 'buy' : 'sell'}
@@ -58,7 +58,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           {t('Sell')}
         </ToggleGroupItem>
       </ToggleGroup>
-      {isMarginEnabled && (
+      {isSpot && (
         <div className="w-1/4">
           <MarginMode
             isCross={isCross}
