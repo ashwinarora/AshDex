@@ -131,7 +131,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
 
   // Reset precision when asset changes
   useEffect(() => {
-    if(!selectedAsset) return
+    if (!selectedAsset) return
     setSelectedPrecision({
       value: null,
       label: '--'
@@ -200,7 +200,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const maxCumulative = Math.max(maxSellCumulative, maxBuyCumulative)
 
   useEffect(() => {
-    if(!selectedAsset) return
+    if (!selectedAsset) return
     if (allMids[selectedAsset]) {
       const currentPrice = allMids[selectedAsset]
       if (prevPriceRef.current !== null) {
