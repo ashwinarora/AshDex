@@ -50,11 +50,10 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
 interface IPositionsProps {
-  setSelectedAsset: (asset: string) => void
   isRTL: boolean
 }
 
-const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
+const Positions = ({ isRTL }: IPositionsProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
   const router = useRouter()
@@ -114,9 +113,6 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                 size="defaultLink"
                 className="text-white hover:text-accent-foreground transition-all hover:no-underline"
                 onClick={() => {
-                  // Call the setSelectedAsset function for immediate UI update
-                  setSelectedAsset(coin)
-                  // Navigate to the asset-specific URL
                   router.push(`/${coin}`)
                 }}
               >

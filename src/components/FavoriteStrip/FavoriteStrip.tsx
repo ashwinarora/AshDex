@@ -18,18 +18,12 @@ import { Button } from '../ui/button'
 import clsx from 'clsx'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const FavoriteStrip = ({
-  setSelectedAsset,
-  isRTL,
-  width
-}: {
-  setSelectedAsset: (asset: string) => void
-  isRTL: boolean
-  width?: number
-}) => {
+const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => {
   const isSpot = useIsSpot()
   const router = useRouter()
+  const { spotKeyToName } = useSpotMeta()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslate()
@@ -81,11 +75,7 @@ const FavoriteStrip = ({
           className={clsx('flex items-center gap-2 h-full', isRTL ? 'flex-row-reverse' : '')}
           onValueChange={(asset) => {
             if (!asset.length) return
-            // Update UI immediately
-            setSelectedAsset(asset)
-            // Navigate to the asset-specific URL
-            const baseUrl = isSpot ? '/spot/' : '/'
-            router.push(`${baseUrl}${asset}`)
+            router.push(`${isSpot ? '/spot/' : '/'}${isSpot ? spotKeyToName.get(asset) : asset}`)
           }}
         >
           {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).map(
