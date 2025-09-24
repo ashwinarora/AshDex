@@ -60,12 +60,13 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
   )
 
   useEffect(() => {
-    if (!address) return
+    if (!address || !selectedAsset) return
     subscribeToActiveAssetData(address, selectedAsset)
     return () => {
       unsubscribeFromActiveAssetData()
     }
   }, [address, subscribeToActiveAssetData, selectedAsset])
+
   useEffect(() => {
     setSelectedAsset(
       isSpot

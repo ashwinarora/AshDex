@@ -131,6 +131,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
 
   // Reset precision when asset changes
   useEffect(() => {
+    if(!selectedAsset) return
     setSelectedPrecision({
       value: null,
       label: '--'
@@ -199,6 +200,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const maxCumulative = Math.max(maxSellCumulative, maxBuyCumulative)
 
   useEffect(() => {
+    if(!selectedAsset) return
     if (allMids[selectedAsset]) {
       const currentPrice = allMids[selectedAsset]
       if (prevPriceRef.current !== null) {
@@ -223,7 +225,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   }
 
   if (isMobile || isTablet) {
-    if (isLoading) {
+    if (isLoading || !selectedAsset) {
       return (
         <div className="flex flex-col p-1 gap-1 bg-secondary rounded-md items-center justify-start w-full h-96">
           <div className="flex items-center justify-between w-full h-12 px-1">
@@ -513,7 +515,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/5 -mb-1" />
-      {isLoading ? (
+      {isLoading || !selectedAsset ? (
         <div className="flex p-2 h-full w-full flex-1 flex-col gap-1 items-center justify-between">
           {Array(visibleRows.sells)
             .fill(0)

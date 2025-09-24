@@ -101,7 +101,8 @@ const Header: FC = () => {
       pathname === '' ||
       (pathname.startsWith('/') &&
         pathname.split('/').length > 1 &&
-        !isNaN(Number(pathname.split('/')[1]?.charAt(0))))
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        !isNaN(pathname.split('/')[1]?.charAt(0) as any))
     )
       return t('Futures')
 
