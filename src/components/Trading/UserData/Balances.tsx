@@ -33,7 +33,6 @@ import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 type BalanceProps = {
-  setSelectedAsset: (asset: string) => void
   isRTL: boolean
   isHideSmallBalances: boolean
 }
@@ -49,7 +48,7 @@ type BalanceData = {
   pnlPercentage: string | number
 }
 
-const Balances = ({ setSelectedAsset, isRTL, isHideSmallBalances }: BalanceProps) => {
+const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { spotKeyToName } = useSpotMeta()
@@ -139,8 +138,7 @@ const Balances = ({ setSelectedAsset, isRTL, isHideSmallBalances }: BalanceProps
               size="defaultLink"
               className="text-accent-foreground font-bold text-xs hover:text-accent-foreground transition-all hover:no-underline"
               onClick={() => {
-                setSelectedAsset(coin)
-                router.push(`/spot`)
+                router.push(`/spot/${info.getValue()}`)
               }}
             >
               {coin}

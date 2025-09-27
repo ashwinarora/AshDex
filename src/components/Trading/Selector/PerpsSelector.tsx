@@ -28,14 +28,14 @@ import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
 import { useTranslate } from '@tolgee/react'
+import { useRouter } from 'next/navigation'
 
 interface ISelectorProps {
   selectedAsset: string
-  setSelectedAsset: (asset: string) => void
   isRTL: boolean
 }
 
-const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
+const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
 
   const TABS = useMemo(
@@ -63,7 +63,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
   const { isMobile } = useScreenSize()
-
+  const router = useRouter()
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
     return { context: perpAssetContext[idx] || null }
@@ -287,7 +287,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
               setSelectedAsset={(asset) => {
-                setSelectedAsset(asset)
+                router.push(`/${asset}`)
                 setIsOpen(false)
               }}
             />

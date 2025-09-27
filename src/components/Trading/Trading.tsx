@@ -23,14 +23,18 @@ import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useAccount } from 'wagmi'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const Trading = () => {
+interface TradingProps {
+  defaultAsset?: string
+}
+
+const Trading = ({ defaultAsset }: TradingProps = {}) => {
   const { t } = useTranslate()
   const isSpot = useIsSpot()
   const { address } = useAccount()
-  const [selectedAsset, setSelectedAsset] = useState<string>(
-    isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
-  ) // @1035 and @107 is HYPE
+  const { spotKeyToName } = useSpotMeta()
+  const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isTablet, isMobile } = useScreenSize()
@@ -56,30 +60,36 @@ const Trading = () => {
   )
 
   useEffect(() => {
-    if (!address) return
+    if (!address || !selectedAsset) return
     subscribeToActiveAssetData(address, selectedAsset)
     return () => {
       unsubscribeFromActiveAssetData()
     }
   }, [address, subscribeToActiveAssetData, selectedAsset])
 
+  useEffect(() => {
+    setSelectedAsset(
+      isSpot
+        ? defaultAsset && spotKeyToName.size > 0
+          ? spotKeyToName.entries().find(([, value]) => value === defaultAsset)?.[0]
+          : isTestnet
+            ? '@1035'
+            : '@107'
+        : defaultAsset
+          ? defaultAsset
+          : 'BTC'
+    )
+  }, [defaultAsset, spotKeyToName, isSpot])
+
   if (isMobile) {
     return (
       <div className="flex relative flex-col gap-1 p-1 mb-12 h-fit w-full">
         {isSpot ? (
-          <SpotSelector
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-            isRTL={isRTL}
-          />
+          <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <PerpsSelector
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-            isRTL={isRTL}
-          />
+          <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         )}
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+        <FavoriteStrip isRTL={isRTL} />
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary p-1 gap-1"
@@ -113,7 +123,7 @@ const Trading = () => {
           )}
         </div>
         <div className="flex items-start justify-center w-full h-96">
-          <UserData setSelectedAsset={setSelectedAsset} />
+          <UserData />
         </div>
         <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
           <ToggleGroup
@@ -163,20 +173,12 @@ const Trading = () => {
     return (
       <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-dvh w-full">
         <div className="h-fit shrink-0">
-          <FavoriteStrip setSelectedAsset={setSelectedAsset} isRTL={isRTL} />
+          <FavoriteStrip isRTL={isRTL} />
         </div>
         {isSpot ? (
-          <SpotSelector
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-            isRTL={isRTL}
-          />
+          <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <PerpsSelector
-            selectedAsset={selectedAsset}
-            setSelectedAsset={setSelectedAsset}
-            isRTL={isRTL}
-          />
+          <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         )}
         <div className="flex items-start justify-center w-full h-96">
           <div className="flex w-full h-full flex-col gap-1">
@@ -185,7 +187,7 @@ const Trading = () => {
         </div>
         <div className="flex items-start justify-center w-full h-full flex-1 gap-1">
           <div className="h-full flex-1 flex-col pb-12 basis-sm gap-2 ">
-            <UserData setSelectedAsset={setSelectedAsset} />
+            <UserData />
           </div>
         </div>
         <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
@@ -254,7 +256,6 @@ const Trading = () => {
         >
           {orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? (
             <FavoriteStrip
-              setSelectedAsset={setSelectedAsset}
               isRTL={isRTL}
               width={
                 parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
@@ -264,17 +265,9 @@ const Trading = () => {
             <Skeleton className="w-full h-10 bg-secondary" />
           )}
           {isSpot ? (
-            <SpotSelector
-              selectedAsset={selectedAsset}
-              setSelectedAsset={setSelectedAsset}
-              isRTL={isRTL}
-            />
+            <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
           ) : (
-            <PerpsSelector
-              selectedAsset={selectedAsset}
-              setSelectedAsset={setSelectedAsset}
-              isRTL={isRTL}
-            />
+            <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
           )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
@@ -290,7 +283,7 @@ const Trading = () => {
       </div>
       <div className="h-full 2xl:h-5/12 flex-1 w-full mb-1 flex items-start gap-1">
         <div className={clsx('w-full h-full', isRTL ? '-order-1' : 'order-1')}>
-          <UserData setSelectedAsset={setSelectedAsset} />
+          <UserData />
         </div>
         <div
           className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')}
