@@ -30,14 +30,14 @@ import { Input } from '@/components/ui/input'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
+import { useRouter } from 'next/navigation'
 
 interface ISelectorProps {
   selectedAsset: string
-  setSelectedAsset: (asset: string) => void
   isRTL: boolean
 }
 
-const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) => {
+const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
   const { spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
@@ -54,7 +54,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
   const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { isMobile } = useScreenSize()
-
+  const router = useRouter()
   const tabs = useMemo(
     () => [
       { label: t('All'), icon: null },
@@ -299,7 +299,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
               searchTerm={searchTerm}
               selectedAsset={selectedAsset}
               setSelectedAsset={(asset) => {
-                setSelectedAsset(asset)
+                router.push(`/spot/${asset}`)
                 setIsOpen(false)
               }}
             />

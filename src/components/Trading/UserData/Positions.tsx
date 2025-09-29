@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   createColumnHelper,
   flexRender,
@@ -49,13 +50,13 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
 interface IPositionsProps {
-  setSelectedAsset: (asset: string) => void
   isRTL: boolean
 }
 
-const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
+const Positions = ({ isRTL }: IPositionsProps) => {
   const { t } = useTranslate()
   const { isConnected } = useAccount()
+  const router = useRouter()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -78,7 +79,6 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   const { isTablet, isMobile } = useScreenSize()
-
   useEffect(() => {
     setMounted(true)
   }, [])
@@ -112,7 +112,9 @@ const Positions = ({ setSelectedAsset, isRTL }: IPositionsProps) => {
                 variant="link"
                 size="defaultLink"
                 className="text-white hover:text-accent-foreground transition-all hover:no-underline"
-                onClick={() => setSelectedAsset(coin)}
+                onClick={() => {
+                  router.push(`/${coin}`)
+                }}
               >
                 {coin || ''}
               </Button>

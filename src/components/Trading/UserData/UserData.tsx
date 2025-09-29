@@ -17,11 +17,7 @@ import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconSquare } from '@tabler/icons-react'
 
-interface IUserDataProps {
-  setSelectedAsset?: (asset: string) => void
-}
-
-const UserData = ({ setSelectedAsset }: IUserDataProps) => {
+const UserData = () => {
   const { t } = useTranslate()
   const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
     useShallow((state) => ({
@@ -59,20 +55,14 @@ const UserData = ({ setSelectedAsset }: IUserDataProps) => {
       {
         header: isRTL ? `(${balanceCount}) ${t('Balances')}` : `(${balanceCount}) ${t('Balances')}`,
         count: balanceCount,
-        element: (
-          <Balances
-            setSelectedAsset={setSelectedAsset || (() => {})}
-            isRTL={isRTL}
-            isHideSmallBalances={isHideSmallBalances}
-          />
-        )
+        element: <Balances isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
       },
       {
         header: isRTL
           ? `(${positionsCount}) ${t('Positions')}`
           : `(${positionsCount}) ${t('Positions')}`,
         count: positionsCount,
-        element: <Positions isRTL={isRTL} setSelectedAsset={setSelectedAsset || (() => {})} />
+        element: <Positions isRTL={isRTL} />
       },
       {
         header: isRTL

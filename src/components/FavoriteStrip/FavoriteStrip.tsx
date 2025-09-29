@@ -6,6 +6,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import { ToggleGroup } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
 import { Fragment, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   IconChevronLeft,
   IconChevronRight,
@@ -17,17 +18,12 @@ import { Button } from '../ui/button'
 import clsx from 'clsx'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const FavoriteStrip = ({
-  setSelectedAsset,
-  isRTL,
-  width
-}: {
-  setSelectedAsset: (asset: string) => void
-  isRTL: boolean
-  width?: number
-}) => {
+const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => {
   const isSpot = useIsSpot()
+  const router = useRouter()
+  const { spotKeyToName } = useSpotMeta()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslate()
@@ -61,8 +57,6 @@ const FavoriteStrip = ({
     )
   }
 
-  console.log('displayMode', displayMode)
-
   return (
     <div
       style={{ width: width }}
@@ -81,8 +75,7 @@ const FavoriteStrip = ({
           className={clsx('flex items-center gap-2 h-full', isRTL ? 'flex-row-reverse' : '')}
           onValueChange={(asset) => {
             if (!asset.length) return
-            console.log('asset', asset)
-            setSelectedAsset(asset)
+            router.push(`${isSpot ? '/spot/' : '/'}${isSpot ? spotKeyToName.get(asset) : asset}`)
           }}
         >
           {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).map(

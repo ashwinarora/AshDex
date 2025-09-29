@@ -1,8 +1,8 @@
+'use client'
 import Trading from '@/components/Trading/Trading'
-import React from 'react'
 
-const page = () => {
+const SpotPage = () => {
   return <Trading />
 }
 
-export default page
+export default SpotPage
