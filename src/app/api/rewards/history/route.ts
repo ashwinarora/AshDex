@@ -23,7 +23,7 @@ export const GET = async (request: NextRequest) => {
     }
 
     // Get rewards history with pagination
-    const rewardsHistory = await prisma.userRewardsClaims.findMany({
+    const rewardsHistory_promise = prisma.userRewardsClaims.findMany({
       where: { user_id: user.id },
       orderBy: { created_at: 'desc' },
       take: Math.min(limit, 100), // Cap at 100 records
@@ -37,15 +37,21 @@ export const GET = async (request: NextRequest) => {
     })
 
     // Get total count for pagination
-    const totalCount = await prisma.userRewardsClaims.count({
+    const totalCount_promise = prisma.userRewardsClaims.count({
       where: { user_id: user.id }
     })
 
     // Calculate total rewards claimed
-    const totalRewardsClaimed = await prisma.userRewardsClaims.aggregate({
+    const totalRewardsClaimed_promise = prisma.userRewardsClaims.aggregate({
       where: { user_id: user.id },
       _sum: { rewards_claimed: true }
     })
+
+    const [rewardsHistory, totalCount, totalRewardsClaimed] = await Promise.all([
+      rewardsHistory_promise,
+      totalCount_promise,
+      totalRewardsClaimed_promise
+    ])
 
     return NextResponse.json({
       success: true,
