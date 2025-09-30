@@ -2,7 +2,6 @@ import { KMSClient, SignCommand } from '@aws-sdk/client-kms'
 import { hashTypedData, type Hex, type Address, recoverAddress, keccak256 } from 'viem'
 import { secp256k1 } from '@noble/curves/secp256k1'
 import { hexToBytes } from 'viem/utils'
-import { getEthAddress } from './admin'
 
 type TypedData = {
   domain: {
@@ -181,7 +180,7 @@ async function kmsSignTypedData(params: {
 }
 
 /** Make a "wallet" that Hyperliquid signers can call. */
-export async function makeKmsWallet() {
+export async function makeKmsWallet(address: Address) {
   // Create KMS client with default configuration
   const kms = new KMSClient({
     region: process.env.AWS_REGION || 'us-east-1',
@@ -192,7 +191,6 @@ export async function makeKmsWallet() {
   })
 
   const keyId = process.env.KMS_KEY_ID!
-  const address = await getEthAddress() // from your existing code
 
   return {
     address, // handy if a client needs it

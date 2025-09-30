@@ -3,6 +3,37 @@ import { makeKmsWallet } from '@/services/kmsSign'
 import { isTestnet } from '@/utils/constants'
 import { splitSignature } from '@/utils/utils'
 import { getUsdSendPayload } from '@/utils/hyperliquid/UsdSend'
+import { Address } from 'viem'
+import { computeAddress } from 'ethers'
+import { GetPublicKeyCommand, KMSClient } from '@aws-sdk/client-kms'
+
+const region = process.env.MY_AWS_REGION ?? 'ap-south-1'
+const keyId = process.env.MY_KMS_KEY_ID ?? 'alias/eth-admin'
+const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? ''
+const secretAccessKey = process.env.MY_AWS_SECRET_ACCESS_KEY ?? ''
+
+if (!accessKeyId || !secretAccessKey) {
+  throw new Error('MY_AWS_ACCESS_KEY_ID and MY_AWS_SECRET_ACCESS_KEY must be set')
+}
+
+const kms = new KMSClient({
+  region,
+  credentials: {
+    accessKeyId: accessKeyId,
+    secretAccessKey: secretAccessKey
+  }
+})
+
+async function getEthAddress(): Promise<Address> {
+  const { PublicKey } = await kms.send(new GetPublicKeyCommand({ KeyId: keyId }))
+  if (!PublicKey) throw new Error('KMS returned no public key')
+  const spkiDer = Buffer.from(PublicKey)
+  const rawXY = spkiDer.subarray(-64)
+  const uncompressedKey = Buffer.concat([Buffer.from([0x04]), rawXY])
+  const uncompressedHex = '0x' + uncompressedKey.toString('hex')
+  const address = computeAddress(uncompressedHex)
+  return address as Address
+}
 
 export async function POST() {
   try {
@@ -11,7 +42,8 @@ export async function POST() {
     const chainId = '42161'
 
     // Create KMS wallet
-    const kmsWallet = await makeKmsWallet()
+    const address = await getEthAddress()
+    const kmsWallet = await makeKmsWallet(address)
 
     // Generate the USD send action manually to avoid HTTP transport issues
     console.log('Attempting USD send with:', { destination, amount, address: kmsWallet.address })
