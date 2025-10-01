@@ -7,7 +7,7 @@ const Fees = ({ isSpot, isRTL }: { isSpot: boolean; isRTL: boolean }) => {
   const { data: userFeeData } = useUserFee()
 
   const referralDiscount = userFeeData
-    ? parseFloat(userFeeData .activeReferralDiscount ?? '0') || 0
+    ? parseFloat(userFeeData.activeReferralDiscount ?? '0') || 0
     : 0
 
   const getDiscountedFee = (fee: string | number) => {
