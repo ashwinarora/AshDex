@@ -8,6 +8,7 @@ export interface AuthenticatedRequest extends NextRequest {
 
 // Middleware wrapper to authenticate requests
 // puts wallet_id and payload in the request object
+// works with requests which have body
 export function withAuth(handler: (request: AuthenticatedRequest) => Promise<NextResponse>) {
   return async (request: NextRequest) => {
     try {
