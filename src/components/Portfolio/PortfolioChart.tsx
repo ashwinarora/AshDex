@@ -38,14 +38,14 @@ const PortfolioChart = ({
     type: 'area' | 'calendar'
     account: 'accountValue' | 'perp'
     range:
-      | 'day'
-      | 'week'
-      | 'month'
-      | 'allTime'
-      | 'perpDay'
-      | 'perpWeek'
-      | 'perpMonth'
-      | 'perpAllTime'
+    | 'day'
+    | 'week'
+    | 'month'
+    | 'allTime'
+    | 'perpDay'
+    | 'perpWeek'
+    | 'perpMonth'
+    | 'perpAllTime'
   }>({ account: 'accountValue', range: 'day', type: 'area', pnlType: 'realized' })
 
   const { data: portfolioData } = portfolioQuery
@@ -144,9 +144,9 @@ const PortfolioChart = ({
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
                   {selectedChart.account === 'perp'
                     ? selectedChart.range
-                        .split('perp')
-                        .map((item) => t(item.charAt(0).toUpperCase() + item.slice(1)))
-                        .join(' ')
+                      .split('perp')
+                      .map((item) => t(item.charAt(0).toUpperCase() + item.slice(1)))
+                      .join(' ')
                     : t(selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1))}
                   <IconChevronDown className="size-4" />
                 </Button>
@@ -234,9 +234,11 @@ const PortfolioChart = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
-                  {selectedChart.pnlType.charAt(0).toUpperCase() +
+                  {selectedChart.pnlType === 'total' 
+                  ? t('Total PnL') 
+                  : t((selectedChart.pnlType.charAt(0).toUpperCase() +
                     selectedChart.pnlType.slice(1) +
-                    ' PnL'}
+                    ' PnL'))}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>

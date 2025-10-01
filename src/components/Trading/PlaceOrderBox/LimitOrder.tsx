@@ -145,7 +145,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <div
           className={cn(
             'flex items-center justify-center h-fit gap-2',
-            isRTL && 'flex-row-reverse'
+            isRTL && 'flex-row-reverse flex-wrap'
           )}
         >
           <Toggle
@@ -184,7 +184,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </Popover>
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className={cn("bg-white/5", isRTL && 'w-full')}
             pressed={isPostOnly}
             onPressedChange={setIsPostOnly}
           >
