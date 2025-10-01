@@ -3,6 +3,7 @@ import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
 const claimRewardsHandler = async (request: AuthenticatedRequest) => {
   // TODO
+  
   console.log(request)
   return NextResponse.json({ message: 'Rewards claimed' })
 }

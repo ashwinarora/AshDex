@@ -79,5 +79,3 @@ export const GET = async (request: NextRequest) => {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
-
-// GET /api/rewards/history - Get user's rewards history
