@@ -189,7 +189,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
 
-        <div className={cn("flex items-center justify-center h-fit gap-2", isRTL && 'flex-row-reverse flex-wrap')}>
+        <div
+          className={cn(
+            'flex items-center justify-center h-fit gap-2',
+            isRTL && 'flex-row-reverse flex-wrap'
+          )}
+        >
           <Toggle
             size={'sm'}
             className="bg-white/5"

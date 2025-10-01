@@ -184,7 +184,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </Popover>
           <Toggle
             size={'sm'}
-            className={cn("bg-white/5", isRTL && 'w-full')}
+            className={cn('bg-white/5', isRTL && 'w-full')}
             pressed={isPostOnly}
             onPressedChange={setIsPostOnly}
           >
