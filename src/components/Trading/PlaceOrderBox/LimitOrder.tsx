@@ -20,6 +20,7 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
+import Fees from './components/Fees'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
@@ -214,10 +215,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <p className="text-white/50">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">{t('Fees')}</p>
-            <p className="text-white">0.0% / 0.0%</p>
-          </div>
+          <Fees isSpot={isSpot} isRTL={isRTL} />
         </div>
       </div>
       <div className="flex flex-col gap-2 h-fit w-full p-2">
