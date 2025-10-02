@@ -225,10 +225,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                 placeholder={t('Search for an asset')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={cn(
-                  'p-2 focus:outline-none w-full text-start text-white text-sm',
-                  isRTL && 'text-end'
-                )}
+                className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}
               />
               <ToggleGroup
                 size={'sm'}

@@ -234,9 +234,13 @@ const PortfolioChart = ({
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
-                  {selectedChart.pnlType.charAt(0).toUpperCase() +
-                    selectedChart.pnlType.slice(1) +
-                    ' PnL'}
+                  {selectedChart.pnlType === 'total'
+                    ? t('Total PnL')
+                    : t(
+                        selectedChart.pnlType.charAt(0).toUpperCase() +
+                          selectedChart.pnlType.slice(1) +
+                          ' PnL'
+                      )}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
