@@ -178,7 +178,6 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           user: address
         },
         (data) => {
-          console.log('webdata2', data)
           if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
             set({
               clearingHouseState: data.clearinghouseState,

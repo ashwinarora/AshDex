@@ -29,7 +29,7 @@ export const placeSpotOrder = async ({
   if (!sdkL1ActionClient) return
   const assetIndex = spotMeta.universe.find((asset) => asset.name === selectedAsset)?.index
   if (assetIndex === -1 || assetIndex === undefined) return
-  const toastId = toast.loading('⏳ Loading…')
+  const toastId = toast.loading('Loading...')
   try {
     const res = await sdkL1ActionClient.order({
       grouping: 'na',

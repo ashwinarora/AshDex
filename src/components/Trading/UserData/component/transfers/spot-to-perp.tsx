@@ -91,7 +91,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Transfer in progress…')}
+              title={t('Transfer in progress...')}
               subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
