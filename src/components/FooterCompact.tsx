@@ -1,8 +1,6 @@
 'use client'
 
 import { FC, useState, useEffect } from 'react'
-// import { useAccount } from 'wagmi'
-// import { useWalletModal } from '@/context/WalletModalContext'
 
 import { IconCellSignal5, IconCellSignalOff } from '@tabler/icons-react'
 import dynamic from 'next/dynamic'
@@ -10,7 +8,6 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
-import { Switch } from './ui/switch'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
