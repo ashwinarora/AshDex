@@ -275,7 +275,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <label htmlFor="percent" className="text-xs text-white/50">
               {t('Total Size')}
             </label>
-            <p className="text-xs text-white/50">
+            <p className="text-xs text-white/20">
               {t('Max')}: {Number(maxAllowed).toFixed(2)} USDC
             </p>
           </div>

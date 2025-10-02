@@ -87,7 +87,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
     const change = Number(selectedAssetContext.midPx) - prev
     const percent = (change / prev) * 100
     const sign = change >= 0 ? '+' : ''
-    return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
+    return `${sign}${change.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)} (${sign}${percent.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)}%)`
   }
 
   const marketData = useMemo(() => {
@@ -310,7 +310,7 @@ const SpotSelector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps
         <Separator orientation="vertical" className="hidden md:block !h-full" />
         <div
           className={cn(
-            'hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs',
+            'hidden md:flex flex-nowrap gap-4 px-2 w-full items-center justify-between text-white text-xs',
             isRTL && 'flex-row-reverse'
           )}
         >

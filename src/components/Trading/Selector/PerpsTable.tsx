@@ -82,6 +82,7 @@ const AssetTable = ({
       perpAssetContext: state.perpAssetContext
     }))
   )
+
   const { favorites, toggleFavorite } = useFavorites(false)
   const { isMobile } = useScreenSize()
 

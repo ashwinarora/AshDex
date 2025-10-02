@@ -76,7 +76,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
     const change = Number(selectedAssetContext.midPx) - prev
     const percent = (change / prev) * 100
     const sign = change >= 0 ? '+' : ''
-    return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
+    return `${sign}${change.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)} (${sign}${percent.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)}%)`
   }
 
   // Memoize market data calculation with better dependency tracking
@@ -298,7 +298,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
         <Separator orientation="vertical" className="hidden md:block !h-full" />
         <div
           className={clsx(
-            'hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs',
+            'hidden md:flex flex-nowrap gap-4 px-2 w-full items-center justify-between text-white text-xs',
             isRTL ? 'flex-row-reverse' : ''
           )}
         >
@@ -313,7 +313,7 @@ const Selector = ({ selectedAsset, setSelectedAsset, isRTL }: ISelectorProps) =>
                     >
                       {(Number(selectedAssetContext?.funding || 0) * 100).toFixed(4)}%
                     </span>
-                    <span className="text-white/70">/</span>
+                    <span className="text-white/50">/</span>
                     <span className="text-white">
                       <PerpsCountdown />
                     </span>

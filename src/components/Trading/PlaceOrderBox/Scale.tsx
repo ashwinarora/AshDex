@@ -350,7 +350,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
             {t('Total Size')}
           </label>
-          <p className="text-xs text-white/50">
+          <p className="text-xs text-white/20">
             {t('Max')}: {maxAllowedUsd} USDC
           </p>
         </div>
