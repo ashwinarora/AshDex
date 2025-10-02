@@ -42,6 +42,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
     () => [
       { label: t('All'), icon: null },
       { label: t('New'), icon: <IconRosette className="size-3" /> },
+      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
       { label: t('AI'), icon: <IconBrain className="size-3" /> },
       { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
       { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
@@ -69,6 +70,15 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
     return { context: perpAssetContext[idx] || null }
   }, [selectedAsset, perpsMeta, perpAssetContext])
 
+  const calculate24hChange = () => {
+    if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
+    const prev = Number(selectedAssetContext.prevDayPx)
+    const change = Number(selectedAssetContext.midPx) - prev
+    const percent = (change / prev) * 100
+    const sign = change >= 0 ? '+' : ''
+    return `${sign}${change.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)} (${sign}${percent.toFixed(change > 10000 ? 0 : change > 1000 ? 1 : 2)}%)`
+  }
+
   // Memoize market data calculation with better dependency tracking
   const marketData = useMemo(() => {
     type MarketDataItem = {
@@ -78,15 +88,6 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
       hasCountdown?: boolean
     }
     if (!selectedAssetContext) return []
-
-    const calculate24hChange = () => {
-      if (!selectedAssetContext?.prevDayPx || !selectedAssetContext?.midPx) return null
-      const prev = Number(selectedAssetContext.prevDayPx)
-      const change = Number(selectedAssetContext.midPx) - prev
-      const percent = (change / prev) * 100
-      const sign = change >= 0 ? '+' : ''
-      return `${sign}${change.toFixed(2)} (${sign}${percent.toFixed(2)}%)`
-    }
 
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [
@@ -280,6 +281,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             </ToggleGroup>
             <PerpsTable
               isRTL={isRTL}
+              selectedTab={selectedTab}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
@@ -293,7 +295,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         <Separator orientation="vertical" className="hidden md:block !h-full" />
         <div
           className={clsx(
-            'hidden md:flex gap-4 px-2 w-full items-center justify-between text-white text-xs',
+            'hidden md:flex flex-nowrap gap-4 px-2 w-full items-center justify-between text-white text-xs',
             isRTL ? 'flex-row-reverse' : ''
           )}
         >
@@ -308,7 +310,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                     >
                       {(Number(selectedAssetContext?.funding || 0) * 100).toFixed(4)}%
                     </span>
-                    <span className="text-white/70">/</span>
+                    <span className="text-white/50">/</span>
                     <span className="text-white">
                       <PerpsCountdown />
                     </span>

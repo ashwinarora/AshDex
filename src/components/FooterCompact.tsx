@@ -1,8 +1,6 @@
 'use client'
 
 import { FC, useState, useEffect } from 'react'
-// import { useAccount } from 'wagmi'
-// import { useWalletModal } from '@/context/WalletModalContext'
 
 import { IconCellSignal5, IconCellSignalOff } from '@tabler/icons-react'
 import dynamic from 'next/dynamic'
@@ -10,10 +8,16 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
-import { Switch } from './ui/switch'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from './ui/dropdown-menu'
+import { Button } from './ui/button'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
@@ -157,14 +161,37 @@ const FooterContent: FC = () => {
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
           <div className="flex items-center gap-2">
-            <span>{t('language')}</span>
-            <Switch
-              checked={isRTL}
-              onCheckedChange={() => {
-                useUserStore.setState({ preferredLanguage: isRTL ? 'en-US' : 'ar-SA' })
-                setLanguage(isRTL ? 'en-US' : 'ar-SA')
-              }}
-            />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="flex h-fit !p-0 bg-transparent hover:bg-transparent items-center gap-2"
+                >
+                  <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>
+                  <span className="text-xs">{isRTL ? 'AR' : 'EN'}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => {
+                    useUserStore.setState({ preferredLanguage: 'en-US' })
+                    setLanguage('en-US')
+                  }}
+                >
+                  <span className="text-xs">{'🇺🇸'}</span>
+                  <span className="text-xs">English</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => {
+                    useUserStore.setState({ preferredLanguage: 'ar-SA' })
+                    setLanguage('ar-SA')
+                  }}
+                >
+                  <span className="text-xs">{'🇸🇦'}</span>
+                  <span className="text-xs">الإنجليزية</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <a
             href="/docs"
