@@ -7,7 +7,6 @@ import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { REFERRALSDATA, REFERRALS_DESC } from '@/utils/constants'
 import ReferralsInfo from './ReferralsInfo'
 import ReferralsTablesTab from './ReferralsTablesTab'
-import referralsBGimage from '@/assets/images/referralsGradients.svg'
 import { useScreenSize } from '@/hooks/useScreenSize'
 
 function Referrals() {

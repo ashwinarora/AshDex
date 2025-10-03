@@ -1,14 +1,10 @@
 'use client'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-import { splitSignature } from '@/utils/utils'
-import { useSignMessage } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
-import { Hex, Signature } from 'viem'
+import { Hex } from 'viem'
 
 export interface IInvite {
   id: number

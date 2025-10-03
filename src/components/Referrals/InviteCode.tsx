@@ -14,8 +14,7 @@ export function InviteCode({
   value = '',
   onChange,
   maxLength = 6,
-  className = '',
-  placeholder = 'Enter code'
+  className = ''
 }: InviteCodeProps) {
   const [code, setCode] = useState(value)
 

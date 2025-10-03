@@ -5,7 +5,7 @@ import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
 const createInvitePostHandler = async (request: AuthenticatedRequest) => {
   try {
-    // @ts-ignore we know that payload is there
+    // @ts-expect-error we know that payload is there
     const inviteCode = request.payload.inviteCode
     const wallet_id = request.wallet_id as Address
 
