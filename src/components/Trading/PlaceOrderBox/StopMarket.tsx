@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { IPlaceOrderProps } from '.'
 import OrderButton from './components/OrderButton'
 import LeverageMargin from './components/LeverageMargin'
@@ -12,6 +12,10 @@ import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import useIsSpot from '@/hooks/useIsSpot'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
+import { getPerpsUniverseIndex } from '@/utils/utils'
 
 const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
@@ -27,6 +31,66 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [usdAmount, setUsdAmount] = useState<string>('')
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
+  const [limitPrice, setLimitPrice] = useState('')
+  const [priceInitialized, setPriceInitialized] = useState(false)
+
+  const isSpot = useIsSpot()
+  const { data: spotMeta } = useSpotMeta()
+
+  const { perpsMeta } = useHyperliquidStore(
+    useShallow((state) => ({
+      perpsMeta: state.perpsMeta
+    }))
+  )
+
+  const szDecimals = useMemo(() => {
+    if (isSpot) {
+      const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
+      return tokenData?.szDecimals || 0
+    } else {
+      const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+      if (assetIndex === -1) return 0
+      return perpsMeta?.universe[assetIndex].szDecimals || 0
+    }
+  }, [perpsMeta, selectedAsset, isSpot, spotMeta])
+
+  const getFormattedPrice = () => {
+    const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
+    const allowedDecimals = maxDecimals - szDecimals
+    const rawPrice = allMids[selectedAsset]?.toString()
+    if (!rawPrice) return ''
+
+    const [intPart, decPart] = rawPrice.split('.')
+    const intSigFigs = intPart.replace(/^0+/, '').length
+    if (intSigFigs >= 5) {
+      return intPart
+    }
+    if (!decPart) {
+      return intPart
+    }
+    const totalSigFigs = intSigFigs + decPart.length
+    if (totalSigFigs > 5) {
+      const truncateLength = 5 - intSigFigs
+      if (truncateLength > 0) {
+        return `${intPart}.${decPart.slice(0, truncateLength)}`
+      }
+      return intPart
+    }
+    const maxAllowedDecimals = Math.min(allowedDecimals, decPart.length)
+    return `${intPart}.${decPart.slice(0, maxAllowedDecimals)}`
+  }
+
+  useEffect(() => {
+    if (priceInitialized) setPriceInitialized(false)
+  }, [selectedAsset])
+
+  useEffect(() => {
+    if (allMids[selectedAsset] && !limitPrice && !priceInitialized) {
+      const formattedPrice = getFormattedPrice()
+      setLimitPrice(formattedPrice)
+      setPriceInitialized(true)
+    }
+  }, [allMids, selectedAsset])
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
       <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
@@ -66,7 +130,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           setAssetAmount={setAssetAmount}
           usdAmount={usdAmount}
           setUsdAmount={setUsdAmount}
-          limitPrice={allMids[selectedAsset].toString()}
+          limitPrice={limitPrice || allMids[selectedAsset]?.toString() || ''}
           leverage={leverage}
           isReduceOnly={isReduceOnly}
           isBuy={isBuy}
@@ -101,7 +165,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isReduceOnly={isReduceOnly}
           leverage={leverage}
           assetAmount={assetAmount}
-          limitPrice={allMids[selectedAsset].toString()}
+          limitPrice={limitPrice || allMids[selectedAsset]?.toString() || ''}
           stopOrder={{
             isMarket: false,
             tpsl: 'sl',

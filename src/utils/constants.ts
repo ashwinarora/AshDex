@@ -112,30 +112,30 @@ export const LENDBORROW_EDIT_OPTIONS = [
 
 export const LENDBORROW_LOADING_MESSAGES = {
   Supply: {
-    title: 'Processing your deposit…',
+    title: 'Processing your deposit...',
     subtitle: 'The transaction has been sent to the blockchain. This may take some time.'
   },
   Borrow: {
-    title: 'Loan request sent…',
+    title: 'Loan request sent...',
     subtitle: 'Waiting for network confirmation. Please wait a few seconds.'
   },
   Withdraw: {
-    title: 'Processing your withdrawal…',
+    title: 'Processing your withdrawal...',
     subtitle: 'We have sent the transaction to the blockchain. Please wait for confirmation.'
   },
   Repay: {
-    title: 'Processing your repayment…',
+    title: 'Processing your repayment...',
     subtitle: 'The transaction has been sent. This may take some time.'
   }
 } as const
 
 export const VAULTSDETAILS_LOADING_MESSAGES = {
   Deposit: {
-    title: 'Processing your deposit…',
+    title: 'Processing your deposit...',
     subtitle: 'Your transaction has been sent to the blockchain. Please wait for confirmation.'
   },
   Withdraw: {
-    title: 'Processing your withdrawal…',
+    title: 'Processing your withdrawal...',
     subtitle: 'Your transaction has been sent to the blockchain. Please wait for confirmation.'
   }
 } as const

@@ -98,7 +98,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Deposit in progress…')}
+              title={t('Deposit in progress...')}
               subTitle={t('You will need to sign this transaction in your wallet:')}
               className="py-[1rem] px-[1rem]"
             />
