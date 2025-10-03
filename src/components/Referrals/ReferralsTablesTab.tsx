@@ -5,34 +5,49 @@ import ReferralsTable from './ReferralsTable'
 const ReferralsTablesTab = () => {
   const [activeTab, setActiveTab] = useState<number>(0)
   return (
-    <div className="border-2 w-full border-white/10 rounded-xl">
-      <nav className="border-b border-white/10 flex flex-wrap gap-x-6 px-3 -mb-px overflow-x-auto">
-        {REFERRALS_TABLES_TABS?.map((tab, index) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(index)}
-            className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
-              activeTab === index
-                ? 'border-primary text-[#FFFFFF] rounded-xs'
-                : 'border-transparent text-[#8B8BA0]'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-      <div className="mt-3 mb-1 w-full">
+    <div className="w-full">
+      {/* Header */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white mb-2">Referral Analytics</h2>
+        <p className="text-gray-400 text-sm">Track your referral performance and history</p>
+      </div>
+
+      {/* Tabs Navigation */}
+      <div className="mb-6">
+        <nav className="flex space-x-1 bg-white/5 p-1 rounded-2xl">
+          {REFERRALS_TABLES_TABS?.map((tab, index) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(index)}
+              className={`flex-1 py-3 px-6 font-semibold text-sm rounded-xl transition-all duration-300 ${
+                activeTab === index
+                  ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+              }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Tab Content */}
+      <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
         {activeTab === 0 && <ReferralsTable />}
         {/* {activeTab === 1 &&
           (referralsDetails?.rewardHistory?.length > 0 ? (
             <LegacyRewardHistory rewardHistory={referralsDetails.rewardHistory} />
           ) : (
-            <div className="flex justify-center items-center mt-30 max-xl:my-30 min-2xl:mt-30">
-              <WalletNotConnected
-                type="Referrals"
-                title="No Reward History"
-                description="You don’t have any rewards yet."
-              />
+            <div className="flex justify-center items-center py-20">
+              <div className="text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-800 flex items-center justify-center">
+                  <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">No Reward History</h3>
+                <p className="text-gray-400 text-sm">You don't have any rewards yet.</p>
+              </div>
             </div>
           ))} */}
       </div>

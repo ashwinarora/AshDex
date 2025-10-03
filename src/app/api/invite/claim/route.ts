@@ -4,8 +4,8 @@ import { Address } from 'viem'
 import InviteService from '@/services/Invite.manager'
 
 const PatchHandler = async (request: AuthenticatedRequest) => {
-  const payload = JSON.parse(request.payload as string)
-  const inviteCode = payload.inviteCode
+  // @ts-ignore we know that payload is there
+  const inviteCode = request.payload.inviteCode
   const wallet_id = request.wallet_id as Address
 
   try {

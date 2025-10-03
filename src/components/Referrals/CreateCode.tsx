@@ -1,139 +1,103 @@
 import React, { useState } from 'react'
-import { REFERRALS_CREATECODE_DESC } from '@/utils/constants'
-import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useAccount } from 'wagmi'
-import { splitSignature } from '@/utils/utils'
-import { toast } from 'sonner'
-import { agentTypes, getActionHash, phantomDomain } from '@/utils/hyperliquid/PlaceOrder'
-import { Hex } from 'viem'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { hyperliquidAxios } from '@/config/axios'
-import { isTestnet } from '@/utils/constants'
-import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
+import { useInviteCode, useCreateInviteCode } from '@/hooks/useInviteCode'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
+import { toast } from 'sonner'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { InviteCode } from './InviteCode'
+
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
-  const { data: referral } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-  const { chainId } = useAccount()
-  const { agentWallet } = useHyperliquidStore(
-    useShallow((state) => ({
-      agentWallet: state.agentWallet
-    }))
-  )
   const { t } = useTranslate()
-  if (referral?.referrerState.stage === 'needToTrade') {
-    const eligibleAmount = referral.referrerState.data.required
-    return (
-      <div>
-        <span className="font-medium mb-8 opacity-90 max-sm:text-sm text-base text-[#8B8BA0]">
-          {REFERRALS_CREATECODE_DESC}
-        </span>
-        <div className={`flex mt-3 flex-row w-full justify-between items-center`}>
-          <p className="text-[#8B8BA0] font-medium text-base">
-            Create a referral code after trading
-          </p>
-          <p className="text-white text-base font-bold">
-            {eligibleAmount
-              ? `$${Number(eligibleAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-              : '$0.00'}
-          </p>
-        </div>
-      </div>
-    )
-  } else if (referral?.referrerState.stage === 'needToCreateCode') {
-    return (
-      <div>
-        <div className={`flex mt-3 flex-row w-full justify-between items-center`}>
-          <p className="text-[#8B8BA0] font-medium text-base">
-            This referral code is permanent and unique to you. Choose wisely.
-          </p>
-        </div>
-        <input
-          type="text"
-          value={createdCode}
-          className=" text-white w-full border-2 border-[rgba(255,255,255,0.06)] py-2.5 pl-3 focus:outline-none placeholder:text-[#8B8BA0] font-medium"
-          onChange={(e) => setCreatedCode(e.target.value.toUpperCase())}
-          placeholder="Create a referral code"
-        />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
-          <button
-            onClick={openAgentModal}
-            className={`py-[10px] mt-12 px[24px] tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
-          >
-            Establish Connection
-          </button>
-        ) : (
-          <button
-            onClick={async () => {
-              const toastId = toast.loading(t('Registering Referral...'))
-              try {
-                if (!chainId) return
-                if (!createdCode.length) return
-                if (!agentWallet) return
-                const action = {
-                  code: createdCode,
-                  type: 'registerReferrer'
-                }
-                const nonce = Date.now()
-                const hash = getActionHash(action, null, nonce) as Hex
-                const sign = await agentWallet.signTypedData({
-                  domain: phantomDomain,
-                  types: agentTypes,
-                  primaryType: 'Agent',
-                  message: {
-                    source: isTestnet ? 'b' : 'a',
-                    connectionId: hash
-                  }
-                })
-                const splitSig = splitSignature(sign)
-                const res = await hyperliquidAxios.post('/exchange', {
-                  action,
-                  nonce,
-                  signature: splitSig,
-                  isFrontend: true
-                })
-                if (res.data.status === 'err') {
-                  toast.error(res.data.response, {
-                    id: toastId
-                  })
-                } else {
-                  toast.success(t('Referral code created successfully'), {
-                    id: toastId
-                  })
-                  setCreatedCode('')
-                }
-              } catch (error) {
-                console.log(error)
-                toast.error(`${t('Referral code creation failed.')} ${error as string}`, {
-                  id: toastId
-                })
-              }
-            }}
-            className={`py-[10px]  mt-16 min-2xl:mt-16 px[24px] tracking-[0em] disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
-          >
-            {t('Create')}
-          </button>
-        )}
-      </div>
-    )
-  } else if (referral?.referrerState.stage === 'ready') {
-    const code = referral.referrerState.data.code
+
+  const { data: existingInviteCode } = useInviteCode()
+  const { mutateAsync: createInviteCodeMutation, isPending: isCreatingInviteCode } =
+    useCreateInviteCode()
+  const { agentWallet } = useHyperliquidStore()
+
+  async function createInviteCode() {
+    if (createdCode.length !== 6) {
+      toast.error('Code must be exactly 6 characters')
+      return
+    }
+    try {
+      // here we need to sign with agent Address
+      console.log(agentWallet?.address)
+      const signature = await agentWallet?.signMessage({
+        message: JSON.stringify({ inviteCode: createdCode })
+      })
+
+      if (!signature) {
+        toast.error('Failed to sign message')
+        return
+      }
+
+      console.log('signature', signature)
+      await createInviteCodeMutation({ inviteCode: createdCode, signature })
+    } catch (error) {
+      toast.error('Failed to create invite code')
+      console.error('Error creating invite code:', error)
+    }
+  }
+
+  // Handle input change with validation
+  const handleCodeChange = (value: string) => {
+    // Only allow alphanumeric characters and convert to uppercase
+    const filteredValue = value.replace(/[^A-Z0-9]/gi, '').toUpperCase()
+    setCreatedCode(filteredValue)
+  }
+
+  // Show existing invite code if it exists
+  if (existingInviteCode) {
     return (
       <div className="flex flex-col items-center">
-        <p className="text-[#8B8BA0] font-medium text-base mb-4">{t('Your referral code is:')}</p>
-        <p className="text-white text-2xl font-bold mb-6">{code}</p>
-
+        <p className="text-white/80 font-medium text-base mb-4">{t('Your referral code is:')}</p>
+        <p className="text-white text-2xl font-bold mb-6">{existingInviteCode}</p>
         <button
-          className="py-[10px] px-[24px] tracking-[0em] font-bold rounded-xl bg-primary text-white text-base cursor-pointer"
-          onClick={() => navigator.clipboard.writeText(code)}
+          className="py-[10px] px-[24px] tracking-[0em] font-bold rounded-xl bg-primary text-white text-base cursor-pointer hover:bg-primary/90 transition-colors"
+          onClick={() => navigator.clipboard.writeText(existingInviteCode)}
         >
           {t('Copy Code')}
         </button>
       </div>
     )
   }
+
+  return (
+    <div className="p-2">
+      <div className={`flex flex-col gap-4 w-full justify-between items-center`}>
+        <div className="text-white/80 font-medium text-base">
+          This referral code is permanent and unique to you. Choose wisely.
+        </div>
+        <div className="">
+          <label className="text-sm font-medium text-white/70 mb-2 block">
+            Create Referral Code (6 characters)
+          </label>
+          <InviteCode value={createdCode} onChange={handleCodeChange} />
+        </div>
+        <div className="w-full">
+          {!isAgentApproved || currentFeeApproval === 0 ? (
+            <button
+              onClick={openAgentModal}
+              className={` tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors`}
+            >
+              Establish Connection
+            </button>
+          ) : (
+            <button
+              onClick={createInviteCode}
+              disabled={isCreatingInviteCode || createdCode.length !== 6}
+              className={` tracking-[0em] disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {isCreatingInviteCode ? t('Creating...') : t('Create')}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default CreateCode

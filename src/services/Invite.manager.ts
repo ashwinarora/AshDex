@@ -1,5 +1,6 @@
 import { Invite, PrismaClient } from '@prisma/client'
 import { Address } from 'viem'
+import UserManager from './User.manager'
 
 interface User {
   id: number
@@ -62,10 +63,11 @@ class InviteService {
   public async createInvite(wallet_id: Address, inviteCode: string): Promise<Invite> {
     const error = await this.validateInviteCode(inviteCode)
     if (error) {
+      console.error('Error creating invite code:', error)
       throw new Error(error.message)
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }
@@ -126,7 +128,7 @@ class InviteService {
       throw new Error('Invalid invite code')
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }
@@ -137,6 +139,10 @@ class InviteService {
 
     if (invite.user_id === user.id) {
       throw new Error('Cannot use your own invite code')
+    }
+
+    if (!user.is_nexon_referred) {
+      throw new Error('User is not nexon referred')
     }
 
     await this.prisma.user.update({
@@ -152,7 +158,7 @@ class InviteService {
       throw new Error('Invite not found')
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }
