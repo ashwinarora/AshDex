@@ -5,7 +5,7 @@ import successicon from '@/assets/images/success_icon.svg'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { InviteCode } from '@/components/Referrals/InviteCode'
-import { useClaimInviteCode } from '@/hooks/useInviteCode'
+import { useClaimInviteCode } from '@/hooks/invite'
 import { useUser } from '@/hooks/useUser'
 import { toast } from 'sonner'
 

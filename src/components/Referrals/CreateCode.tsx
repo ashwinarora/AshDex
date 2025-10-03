@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useTranslate } from '@tolgee/react'
-import { useInviteCode, useCreateInviteCode } from '@/hooks/useInviteCode'
+import { useInviteCode, useCreateInviteCode } from '@/hooks/invite'
 import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { InviteCode } from './InviteCode'
