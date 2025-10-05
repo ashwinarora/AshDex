@@ -1,14 +1,6 @@
-import { Invite, PrismaClient } from '@prisma/client'
+import { Invite, PrismaClient, User } from '@prisma/client'
 import { Address } from 'viem'
 import UserManager from './User.manager'
-
-interface User {
-  id: number
-  username: string
-  wallet_id: Address
-  avatar_url: string | null
-  created_at: Date
-}
 
 class InviteService {
   private static instance: InviteService
