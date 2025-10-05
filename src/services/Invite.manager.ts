@@ -2,6 +2,10 @@ import { Invite, PrismaClient, User } from '@prisma/client'
 import { Address } from 'viem'
 import UserManager from './User.manager'
 
+export interface IInviteWithUsedBy extends Invite {
+  used_by: User[]
+}
+
 class InviteService {
   private static instance: InviteService
   private prisma: PrismaClient
@@ -101,6 +105,26 @@ class InviteService {
         user: {
           wallet_id: wallet_id
         }
+      }
+    })
+    if (!invites || invites.length === 0) {
+      return null
+    }
+    return invites
+  }
+
+  /*
+  Retuns all invite codes for a user with the used_by field
+  */
+  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[] | null> {
+    const invites = await this.prisma.invite.findMany({
+      where: {
+        user: {
+          wallet_id: wallet_id
+        }
+      },
+      include: {
+        used_by: true
       }
     })
     if (!invites || invites.length === 0) {

@@ -8,6 +8,7 @@ import { REFERRALSDATA, REFERRALS_DESC } from '@/utils/constants'
 import ReferralsInfo from './ReferralsInfo'
 import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import SuccessfullReferrals from './SuccessfullReferrals'
 
 function Referrals() {
   const { isConnected } = useAccount()
@@ -122,7 +123,7 @@ function Referrals() {
 
   return (
     <div className="min-h-screen bg-secondary my-1">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-4">
         {/* Header Section */}
         <div className="mb-8">
           <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
@@ -206,6 +207,7 @@ function Referrals() {
             </div>
           )}
         </div>
+        <SuccessfullReferrals />
       </div>
     </div>
   )
