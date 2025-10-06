@@ -2,7 +2,6 @@
 import { useState } from 'react'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
-import TWAP from './TWAP'
 import Scale from './Scale'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
@@ -17,55 +16,66 @@ import {
 import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { useTranslate } from '@tolgee/react'
 
 /** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'TWAP' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
+type OrderTab = 'LIMIT' | 'MARKET' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
 
 export interface IPlaceOrderProps {
   selectedAsset: string
+  isRTL: boolean
 }
 
-const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
+const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
   const isSpot = useIsSpot()
+  const { t } = useTranslate()
 
   const renderTabContent = () => {
     switch (activeTab) {
       case 'LIMIT':
-        return <LimitOrder selectedAsset={selectedAsset} />
+        return <LimitOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'MARKET':
-        return <MarketOrder selectedAsset={selectedAsset} />
-      case 'TWAP':
-        return <TWAP />
+        return <MarketOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'SCALE':
         return isSpot ? (
-          <ScaleSpot selectedAsset={selectedAsset} />
+          <ScaleSpot selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <Scale selectedAsset={selectedAsset} />
+          <Scale selectedAsset={selectedAsset} isRTL={isRTL} />
         )
       case 'STOP_LIMIT':
-        return <StopLimit selectedAsset={selectedAsset} />
+        return <StopLimit selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'STOP_MARKET':
-        return <StopMarket selectedAsset={selectedAsset} />
+        return <StopMarket selectedAsset={selectedAsset} isRTL={isRTL} />
       default:
         return null
     }
   }
 
   const availableOptions = isSpot
-    ? [{ value: 'SCALE', label: 'Scale' }]
+    ? [{ value: 'SCALE', label: t('Scale') }]
     : [
-        { value: 'SCALE', label: 'Scale' },
-        { value: 'STOP_LIMIT', label: 'Stop Limit' },
-        { value: 'STOP_MARKET', label: 'Stop Market' }
+        { value: 'SCALE', label: t('Scale') },
+        { value: 'STOP_LIMIT', label: t('Stop Limit') },
+        { value: 'STOP_MARKET', label: t('Stop Market') }
       ]
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full xl:h-[688px] overflow-y-auto no-scrollbar items-center justify-start">
-      <div className="w-full h-fit px-2 pt-2 flex items-center justify-start">
+    <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full overflow-y-auto no-scrollbar items-center justify-start">
+      <div
+        className={cn(
+          'w-full h-fit px-2 pt-2 flex items-center justify-start',
+          isRTL && 'flex-row-reverse'
+        )}
+      >
         <ToggleGroup
           type="single"
-          className="w-2/3 bg-white/5 rounded-l-md rounded-r-none"
+          className={cn(
+            'w-2/3',
+            isRTL
+              ? 'rounded-l-none rounded-r-md flex-row-reverse'
+              : 'rounded-l-md rounded-r-none flex-row'
+          )}
           value={activeTab}
           onValueChange={(value) => {
             if (value === '') {
@@ -74,36 +84,36 @@ const PlaceOrder = ({ selectedAsset }: IPlaceOrderProps) => {
             setActiveTab(value as OrderTab)
           }}
         >
-          <ToggleGroupItem className="w-full rounded-l-md" value="LIMIT">
-            Limit
+          <ToggleGroupItem
+            className={cn(
+              'w-full data-[state=on]:bg-transparent',
+              isRTL ? 'rounded-r-md' : 'rounded-l-md'
+            )}
+            value="LIMIT"
+          >
+            {t('Limit')}
           </ToggleGroupItem>
-          <ToggleGroupItem className="w-full" value="MARKET">
-            Market
+          <ToggleGroupItem className={cn('w-full data-[state=on]:bg-transparent')} value="MARKET">
+            {t('Market')}
           </ToggleGroupItem>
         </ToggleGroup>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <div
               className={cn(
-                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 rounded-r-md flex items-center gap-2 justify-center text-sm',
+                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                 availableOptions.find((option) => option.value === activeTab)
-                  ? 'bg-accent text-accent-foreground'
-                  : 'bg-white/5 text-white/50'
+                  ? 'text-accent-foreground'
+                  : 'text-white/50',
+                isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
-              {availableOptions.find((option) => option.value === activeTab)?.label || 'Advanced'}
+              {availableOptions.find((option) => option.value === activeTab)?.label ||
+                t('Advanced')}
               <IconChevronDown className="size-3" />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {/* <DropdownMenuItem asChild>
-              <button
-                onClick={() => setActiveTab('TWAP')}
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
-              >
-                TWAP
-              </button>
-            </DropdownMenuItem> */}
+          <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
             {availableOptions.map((option) => (
               <DropdownMenuItem
                 className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"

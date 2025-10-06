@@ -32,6 +32,7 @@ import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 
 interface Order {
   price: number
@@ -71,7 +72,7 @@ function calculateScaleOrders(
 
 const isMatch = (a: string, b: string): boolean => a.split('-')[0] === b.split('-')[0]
 
-const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
+const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { spotState, spotAssetContext, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState,
@@ -79,6 +80,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
+  const { t } = useTranslate()
   const { data: spotMeta } = useSpotMeta()
   const [totalSize, setTotalSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -128,7 +130,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
     //   }
     // })
     // console.log(res)
-    const toastId = toast.loading(`Placing ${totalOrders} orders...`)
+    const toastId = toast.loading(`${t('Placing')} ${totalOrders} ${t('orders')}...`)
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
@@ -151,7 +153,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.error(status.error, {
+        toast.error(`${t('Failed to place orders.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -159,19 +161,19 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
         toast.success(
-          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          `${filled.totalSz} ${assetName} ${action} ${t('at an average price of')} ${filled.avgPx}`,
           {
             id: toastId
           }
         )
       } else if ('resting' in status) {
-        toast.success('Order Placed Successfully', {
+        toast.success(t('Order Placed Successfully'), {
           id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.error('Failed to place orders.', {
+      toast.error(`${t('Failed to place orders.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -195,13 +197,20 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
   }
 
   return (
-    <div className="flex flex-col justify-start pt-4 w-full h-full">
-      <div className="flex flex-col gap-3 w-full h-full justify-start flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
+    <div className="flex flex-col w-full h-full justify-between flex-1">
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+          isCross={false}
+          setIsCross={() => {}}
+        />
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <label htmlFor="startPrice" className="text-xs text-white/50">
-            Start Price
+            {t('Start Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -211,7 +220,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <DropdownMenu>
               <DropdownMenuTrigger disabled asChild>
@@ -219,7 +228,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   variant="outline"
                   size={'sm'}
                   disabled
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  className="text-xs w-16 flex items-center justify-start"
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">{'USDC'}</p>
@@ -234,9 +243,9 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenu>
           </div>
         </div>
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <label htmlFor="endPrice" className="text-xs text-white/50">
-            End Price
+            {t('End Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -244,28 +253,30 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               placeholder="0"
               value={endPrice}
               onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <Button
               variant="outline"
               size={'sm'}
-              className="text-xs min-w-18 w-fit flex items-center justify-center"
+              className="text-xs w-16 bg-transparent hover:bg-transparent flex items-center justify-center"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={() => {}}
             >
               <IconRefresh className="size-3" />
-              Last
+              {t('Last')}
             </Button>
             {/* */}
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex flex-col gap-3 px-2">
+        <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
             <label htmlFor="percent" className="text-xs text-white/50">
-              Total Size
+              {t('Total Size')}
             </label>
-            <p className="text-xs text-white/50">Max: {Number(maxAllowed).toFixed(2)} USDC</p>
+            <p className="text-xs text-white/50">
+              {t('Max')}: {Number(maxAllowed).toFixed(2)} USDC
+            </p>
           </div>
           <div className="flex w-full gap-3 items-center">
             <Input
@@ -275,14 +286,14 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               onChange={(e) =>
                 setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
               }
-              className={cn('w-full text-right text-white placeholder:text-white')}
+              className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <DropdownMenu>
               <DropdownMenuTrigger disabled asChild>
                 <Button
                   variant="outline"
                   size={'sm'}
-                  className="text-xs min-w-18 w-fit flex items-center justify-start"
+                  className="text-xs w-16 flex items-center justify-start"
                   // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
                 >
                   <p className="text-xs flex-1 w-full">USDC</p>
@@ -296,7 +307,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
-          <div className="flex flex-1 mt-1 flex-col gap-3 w-full items-center justify-center">
+          <div className="flex flex-1 flex-col gap-3 mt-1 w-full items-center justify-center">
             <Slider
               min={1}
               max={100}
@@ -306,7 +317,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             />
             <ToggleGroup
               size={'sm'}
-              className="flex mt-1 items-center bg-white/5 justify-between w-full"
+              className="flex mt-1 items-center  justify-between w-full"
               type="single"
               value={usdPercent.toString()}
               onValueChange={(value) => value !== '' && handleUsdPercentChange(parseInt(value, 10))}
@@ -316,7 +327,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                   key={`leverage-tick-${value}-${index}`}
                   value={value.toString()}
                   className={cn(
-                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+                    'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
                     usdPercent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
                   )}
                 >
@@ -327,7 +338,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3 px-2">
+        <div className="flex items-center justify-center h-fit gap-3">
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -335,7 +346,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -348,14 +359,14 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Order Count
+                {t('Order Count')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <label htmlFor="orderCount" className="text-xs text-white/50">
-                  Order Count
+                  {t('Order Count')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
@@ -389,14 +400,14 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Skew
+                {t('Skew')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
                 <label htmlFor="sizeSkew" className="text-xs text-white/50">
-                  Size Skew
+                  {t('Size Skew')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
                   <Input
@@ -421,7 +432,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              Enable Trading
+              {t('Enable Trading')}
             </Button>
           ) : (
             <Button
@@ -430,7 +441,7 @@ const ScaleSpot = ({ selectedAsset }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalSize! > Number(maxAllowed)}
             >
-              Scale Buy ({totalOrders} Orders)
+              {t('Scale Buy')} ({totalOrders} {t('Orders')})
             </Button>
           )}
         </div>

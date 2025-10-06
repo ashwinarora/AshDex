@@ -31,11 +31,13 @@ import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface AssetTableProps {
   searchTerm: string
   setSelectedAsset: (asset: string) => void
   selectedAsset: string
+  isRTL: boolean
 }
 
 // Define the data structure for each asset
@@ -57,7 +59,8 @@ const formatPrice = (price: number | undefined | null) => {
   })
 }
 
-const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableProps) => {
+const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset, isRTL }: AssetTableProps) => {
+  const { t } = useTranslate()
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
@@ -100,12 +103,12 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => <div className="flex items-center gap-1">Market</div>,
+          header: () => <div className="flex items-center gap-1">{t('Market')}</div>,
           cell: (info) => {
             const { symbol } = info.row.original
             const isFavorite = favorites.has(symbol)
             return (
-              <div className="flex items-center gap-2 text-xs">
+              <div className={cn('flex items-center gap-2 text-xs', isRTL && 'flex-row-reverse')}>
                 <button
                   onClick={(e) => {
                     e.stopPropagation()
@@ -142,11 +145,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => <div className="flex items-center gap-1">Volume</div>,
+          header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-right text-xs">
+              <div className="text-end text-xs">
                 <ReactiveText value={Number(volume || 0)} type="currency" />
               </div>
             )
@@ -155,7 +158,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => <div className="flex items-center gap-1">Price / 24h</div>,
+          header: () => <div className="flex items-center gap-1">{t('Price / 24h')}</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -164,8 +167,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
             const className = isPositive ? 'text-green' : 'text-red'
             return (
               <div className="flex flex-col gap-1">
-                <div className="text-right text-white text-xs">${formattedPrice}</div>
-                <div className={`text-right text-xs ${className}`}>
+                <div className="text-end text-white text-xs">${formattedPrice}</div>
+                <div className={`text-end text-xs ${className}`}>
                   <div className="flex justify-end items-center">
                     {isPositive ? (
                       <IconTriangleFilled className="size-2 mr-1" />
@@ -173,15 +176,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                       <IconTriangleInvertedFilled className="size-2 mr-1" />
                     )}
                     {difference !== undefined && prevDayPrice !== 0 && (
-                      <>
-                        {/* <ReactiveText
-                            precision={2}
-                            className="text-xs"
-                            value={difference}
-                            type="currency"
-                            isStatic={true}
-                          /> */}
-
+                      <div className="flex items-center">
                         <ReactiveText
                           precision={2}
                           className="text-xs"
@@ -189,7 +184,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                           type="percentage"
                           isStatic={true}
                         />
-                      </>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -203,12 +198,16 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     return [
       columnHelper.accessor('symbol', {
         id: 'symbol',
-        header: () => <div className="flex items-center gap-1">Market</div>,
+        header: () => (
+          <div className={cn('flex items-center gap-1', isRTL && 'flex-row-reverse')}>
+            {t('Market')}
+          </div>
+        ),
         cell: (info) => {
           const { symbol } = info.row.original
           const isFavorite = favorites.has(symbol)
           return (
-            <div className="flex items-center gap-2 text-xs">
+            <div className={cn('flex items-center gap-2 text-xs', isRTL && 'flex-row-reverse')}>
               <button
                 onClick={(e) => {
                   e.stopPropagation()
@@ -243,17 +242,21 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('price', {
         id: 'price',
-        header: () => <div className="flex items-center gap-1">Price</div>,
+        header: () => <div className="flex items-center gap-1">{t('Price')}</div>,
         cell: (info) => {
           const price = info.getValue()
           const formattedPrice = formatPrice(price)
-          return <div className="text-right text-white text-xs">${formattedPrice}</div>
+          return (
+            <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>
+              ${formattedPrice}
+            </div>
+          )
         },
         enableSorting: true
       }),
       columnHelper.accessor('prevDayPrice', {
         id: 'prevDayPrice',
-        header: () => <div className="flex items-center gap-1">24h Change</div>,
+        header: () => <div className="flex items-center gap-1">{t('24h Change')}</div>,
         cell: (info) => {
           const { price, prevDayPrice } = info.row.original
           const difference = price - prevDayPrice
@@ -261,15 +264,17 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
           const className = isPositive ? 'text-green' : 'text-red'
 
           return (
-            <div className={`text-right text-xs ${className}`}>
-              <div className="flex justify-end items-center">
+            <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
+              <div
+                className={cn('flex items-center gap-1 justify-end', isRTL && 'flex-row-reverse')}
+              >
                 {isPositive ? (
-                  <IconTriangleFilled size={8} className="mr-1" />
+                  <IconTriangleFilled className="size-2 mr-1" />
                 ) : (
-                  <IconTriangleInvertedFilled size={8} className="mr-1" />
+                  <IconTriangleInvertedFilled className="size-2 mr-1" />
                 )}
                 {difference !== undefined && (
-                  <>
+                  <div className="flex items-center">
                     <ReactiveText
                       precision={2}
                       value={difference}
@@ -284,7 +289,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
                       isStatic={true}
                     />
                     )
-                  </>
+                  </div>
                 )}
               </div>
             </div>
@@ -294,11 +299,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('volume', {
         id: 'volume',
-        header: () => <div className="flex items-center gap-1">Volume</div>,
+        header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
         cell: (info) => {
           const volume = info.getValue()
           return (
-            <div className="text-right text-xs">
+            <div className={cn(isRTL ? 'text-start' : 'text-end')}>
               <ReactiveText value={Number(volume || 0)} type="currency" />
             </div>
           )
@@ -307,11 +312,11 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
       }),
       columnHelper.accessor('marketCap', {
         id: 'marketCap',
-        header: () => <div className="flex items-center gap-1">Market Cap</div>,
+        header: () => <div className="flex items-center gap-1">{t('Market Cap')}</div>,
         cell: (info) => {
           const marketCap = info.getValue()
           return (
-            <div className="text-right  text-xs">
+            <div className={cn(isRTL ? 'text-start' : 'text-end')}>
               <ReactiveText
                 className="text-white/50"
                 value={Number(marketCap || 0)}
@@ -323,7 +328,7 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
         enableSorting: true
       })
     ]
-  }, [columnHelper, toggleFavorite, favorites, isMobile])
+  }, [columnHelper, toggleFavorite, favorites, isMobile, isRTL])
 
   const table = useReactTable({
     data: tableData,
@@ -354,13 +359,19 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
     <Table ref={parentRef}>
       <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
         {table.getHeaderGroups().map((headerGroup) => (
-          <TableRow key={headerGroup.id}>
+          <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <TableHead
                 key={header.id}
                 className={cn(
                   'cursor-pointer hover:text-accent-foreground w-full',
-                  header.id === 'symbol' ? 'justify-start' : 'justify-end',
+                  header.id === 'symbol'
+                    ? isRTL
+                      ? 'justify-end'
+                      : 'justify-start'
+                    : isRTL
+                      ? 'justify-start'
+                      : 'justify-end',
                   !isMobile
                     ? header.id === 'symbol' || header.id === 'prevDayPrice'
                       ? 'w-3/12'
@@ -401,7 +412,8 @@ const AssetTable = ({ searchTerm, setSelectedAsset, selectedAsset }: AssetTableP
               onClick={() => handleRowClick(row.original.symbol)}
               className={cn(
                 'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-                selectedAsset === row.original.symbol && 'bg-secondary'
+                selectedAsset === row.original.symbol && 'bg-secondary',
+                isRTL && 'flex-row-reverse'
               )}
             >
               {row.getVisibleCells().map((cell) => (

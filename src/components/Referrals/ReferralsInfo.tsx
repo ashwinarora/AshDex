@@ -3,9 +3,9 @@ import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
-import EnterCode from '@/components/Referrals/EnterCode'
+import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
 import CreateCode from '@/components/Referrals/CreateCode'
-import Claim from '@/components/Referrals/Claim'
+import Rewards from '@/components/Referrals/Rewards'
 import referralsellipseImg from '@/assets/images/referralsellipseImg.svg'
 import trophyicon from '@/assets/images/trophy_icon.svg'
 
@@ -28,79 +28,103 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Enter Code':
-        return <EnterCode />
+        return <ClaimInviteCode />
       case 'Create Code':
         return <CreateCode />
-      case 'Claim':
-        return <Claim isCreateCode={isCreateCode} totalClaim={totalClaim} />
+      case 'Rewards':
+        return <Rewards isCreateCode={isCreateCode} totalClaim={totalClaim} />
       default:
         return null
     }
   }
 
   return (
-    <div className="rounded-2xl border-2 border-[rgba(255,255,255,0.06)] backdrop-blur-[40px] bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]">
-      <div className="py-5 px-4 min-2xl:px-8">
-        <p className="text-[rgba(255, 255, 255, 1)] mb-1 text-2xl font-medium tracking-normal">
-          Referrals
+    <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+      {/* Header Section */}
+      <div className="p-6">
+        <h3 className="text-2xl font-bold text-white mb-2">Referral Dashboard</h3>
+        <p className="text-gray-400 text-sm leading-relaxed">
+          Track your referral performance and manage your codes
         </p>
-        <span className="text-[#8B8BA0] text-sm font-medium tracking-normal">
-          Refer users to earn rewards, and affiliates can earn even greater rewards.
-        </span>
       </div>
-      <div className="border-t font-medium tracking-normal border-b border-white/10 py-4 px-4 min-2xl:px-8">
-        <div className="flex justify-between gap-x-2">
-          <span className="text-base opacity-50 text-white/50">Trades Referred</span>
-          <span className="text-white text-lg">{referralsDetails?.builderRewards || '0'}</span>
-        </div>
-        <div className="flex justify-between gap-x-2">
-          <span className="text-base opacity-50 text-[#E8E0F1]">Rewards Earned</span>
-          <span className="text-white text-lg">${referralsDetails?.claimedRewards || '0'}</span>
-        </div>
-      </div>
-      {isCreateCode && (
-        <div className="flex items-center justify-between px-4 min-2xl:px-8 py-4 bg-[rgba(255,169,10,0.08)]">
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 flex items-center justify-center rounded-lg">
-              <Image
-                style={{ width: 20, height: 'auto' }}
-                src={trophyicon}
-                alt="Trophy Icon"
-                className="w-9 h-9"
-              />
-            </div>
-            <Image
-              style={{ width: 15, height: 'auto' }}
-              src={referralsellipseImg}
-              alt="User Avatar"
-              className="w-9 h-9 rounded-full"
-            />
-            <div className="">
-              <p className="text-white mb-1 text-base font-medium">HappyPotato</p>
-              <p className="text-[#8B8BA0] font-medium text-sm">12d45...8we12</p>
-            </div>
+
+      {/* Stats Section */}
+      <div className="px-2 flex gap-2">
+        <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
+          <div>
+            <p className="text-gray-400 text-sm font-medium">Trades Referred</p>
+            <p className="text-2xl font-bold text-white">
+              {referralsDetails?.builderRewards || '0'}
+            </p>
           </div>
-          <div className="text-right">
-            <p className="text-white mb-1 text-base font-medium">Total Volume</p>
-            <p className="text-[#8B8BA0] font-medium text-sm">10 000$</p>
+        </div>
+
+        <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
+          <div>
+            <p className="text-gray-400 text-sm font-medium">Rewards Earned</p>
+            <p className="text-2xl font-bold text-white">
+              ${referralsDetails?.claimedRewards || '0'}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Top Referrer Section */}
+      {isCreateCode && (
+        <div className="lg:p-8 border-b border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2xw">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center">
+                  <Image
+                    src={trophyicon}
+                    alt="Trophy Icon"
+                    width={24}
+                    height={24}
+                    className="w-6 h-6"
+                  />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                  <Image
+                    src={referralsellipseImg}
+                    alt="User Avatar"
+                    width={16}
+                    height={16}
+                    className="w-4 h-4 rounded-full"
+                  />
+                </div>
+              </div>
+              <div>
+                <p className="text-white font-semibold text-lg">HappyPotato</p>
+                <p className="text-gray-400 text-sm">12d45...8we12</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-gray-400 text-sm font-medium">Total Volume</p>
+              <p className="text-white font-bold text-lg">$10,000</p>
+            </div>
           </div>
         </div>
       )}
-      <div className="py-4 px-4 min-2xl:px-8">
-        <div className="flex mb-5 items-center justify-between space-x-2  ">
+
+      {/* Tabs Section */}
+      <div className="mt-10 border-t border-white/10">
+        <div className="flex gap-2 mb-6">
           {REFERRALSINFO_TAB?.map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 min-2xl:px-8 py-1.5 cursor-pointer rounded-full text-sm font-medium
-                ${activeTab === tab ? 'bg-[rgba(255,255,255,0.06)] font-semibold backdrop-blur-[40px] text-white' : 'text-[#8B8BA0] hover:text-white'}
-              `}
+              className={`w-full p-2 text-sm font-semibold  ${
+                activeTab === tab
+                  ? 'border-b-2 border-primary text-white shadow-lg'
+                  : 'text-gray-400 hover:text-white hover:bg-white/5'
+              }`}
             >
               {tab}
             </button>
           ))}
         </div>
-        <div className="">{renderTabContent()}</div>
+        <div className="h-[200px]">{renderTabContent()}</div>
       </div>
     </div>
   )

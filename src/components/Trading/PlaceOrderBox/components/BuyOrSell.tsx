@@ -1,41 +1,73 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import React from 'react'
+import { useTranslate } from '@tolgee/react'
+import MarginMode from './MarginMode'
+import useIsSpot from '@/hooks/useIsSpot'
 
 interface BuyOrSellProps {
   isBuy: boolean
   setIsBuy: (isBuy: boolean) => void
+  isRTL: boolean
+  isCross: boolean
+  setIsCross: React.Dispatch<React.SetStateAction<boolean>>
+  selectedAsset?: string
 }
 
-const BuyOrSell: React.FC<BuyOrSellProps> = ({ isBuy, setIsBuy }) => {
+const BuyOrSell: React.FC<BuyOrSellProps> = ({
+  isBuy,
+  setIsBuy,
+  isRTL,
+  isCross,
+  setIsCross,
+  selectedAsset
+}) => {
+  const { t } = useTranslate()
+  const isSpot = useIsSpot()
   return (
     <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
         size={'sm'}
-        className="w-full bg-white/5 rounded-md"
+        className={cn(
+          ' bg-white/5 rounded-md',
+          isRTL ? '!flex-row-reverse' : '!flex-row',
+          isSpot ? 'w-3/4' : 'w-full'
+        )}
         type="single"
         value={isBuy ? 'buy' : 'sell'}
         onValueChange={(value) => value !== '' && setIsBuy(value === 'buy')}
       >
         <ToggleGroupItem
           className={cn(
-            'w-full rounded-l-md transition-colors font-semibold hover:!text-green',
-            isBuy && '!bg-green hover:!text-accent !text-accent'
+            'w-full transition-colors font-semibold hover:!text-green',
+            isBuy && '!bg-green hover:!text-accent !text-accent',
+            isRTL ? 'rounded-r-md' : 'rounded-l-md'
           )}
           value="buy"
         >
-          Buy
+          {t('Buy')}
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
-            'w-full rounded-r-md transition-colors font-semibold hover:!text-red',
-            !isBuy && '!bg-red hover:!text-accent !text-accent'
+            'w-full transition-colors font-semibold hover:!text-red',
+            !isBuy && '!bg-red hover:!text-accent !text-accent',
+            isRTL ? 'rounded-l-md' : 'rounded-r-md'
           )}
           value="sell"
         >
-          Sell
+          {t('Sell')}
         </ToggleGroupItem>
       </ToggleGroup>
+      {isSpot && (
+        <div className="w-1/4">
+          <MarginMode
+            isCross={isCross}
+            setIsCross={setIsCross}
+            isRTL={isRTL}
+            selectedAsset={selectedAsset}
+          />
+        </div>
+      )}
     </div>
   )
 }

@@ -20,14 +20,20 @@ function Table({ className, ...props }: React.ComponentProps<'table'>) {
 }
 
 function TableHeader({ className, ...props }: React.ComponentProps<'thead'>) {
-  return <thead data-slot="table-header" className={cn('[&_tr]:border-b', className)} {...props} />
+  return (
+    <thead
+      data-slot="table-header"
+      className={cn('[&_tr]:border-b border-accent', className)}
+      {...props}
+    />
+  )
 }
 
 function TableBody({ className, ...props }: React.ComponentProps<'tbody'>) {
   return (
     <tbody
       data-slot="table-body"
-      className={cn('[&_tr:last-child]:border-0', className)}
+      className={cn('[&_tr:last-child]:border-0 border-accent', className)}
       {...props}
     />
   )
@@ -37,7 +43,10 @@ function TableFooter({ className, ...props }: React.ComponentProps<'tfoot'>) {
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn('bg-muted/50 border-t font-medium [&>tr]:last:border-b-0', className)}
+      className={cn(
+        'bg-muted/50 border-t border-accent font-medium [&>tr]:last:border-b-0',
+        className
+      )}
       {...props}
     />
   )
@@ -48,7 +57,7 @@ function TableRow({ className, ...props }: React.ComponentProps<'tr'>) {
     <tr
       data-slot="table-row"
       className={cn(
-        'hover:bg-muted/50 flex items-center gap-2 w-full data-[state=selected]:bg-muted border-b transition-colors',
+        'hover:bg-muted/50 flex items-center gap-2 w-full data-[state=selected]:bg-muted border-b border-accent transition-colors',
         className
       )}
       {...props}
@@ -61,7 +70,7 @@ function TableHead({ className, ...props }: React.ComponentProps<'th'>) {
     <th
       data-slot="table-head"
       className={cn(
-        'flex items-center gap-2 w-full transition-colors duration-150 text-white/50 text-xs h-10 p-2 text-left align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+        'flex items-center gap-2 w-full transition-colors duration-150 text-white/50 text-xs h-10 p-2 text-start align-middle font-medium whitespace-nowrap [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
         className
       )}
       {...props}

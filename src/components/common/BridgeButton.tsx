@@ -6,10 +6,12 @@ import { TronWalletProvider } from '../Bridge/TronProvider'
 import { Button } from '../ui/button'
 import { IconBuildingBridge } from '@tabler/icons-react'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
+import { useTranslate } from '@tolgee/react'
 // Create a singleton instance of AppKit
 
 const BridgeButton = () => {
   const [, setIsModalOpen] = useState(false)
+  const { t } = useTranslate()
 
   return (
     <Dialog>
@@ -21,7 +23,7 @@ const BridgeButton = () => {
           size={'sm'}
         >
           <IconBuildingBridge className="size-4" />
-          Bridge
+          {t('Bridge')}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-[90vw] max-w-2xl h-fit flex flex-col items-center justify-start gap-2">

@@ -33,10 +33,12 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { useTranslate } from '@tolgee/react'
 
 type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
 
-const OpenOrders = () => {
+const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
+  const { t } = useTranslate()
   const { isConnected } = useAccount()
   const { sdkL1ActionClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -66,7 +68,7 @@ const OpenOrders = () => {
           openAgentModal()
           return
         }
-        const toastId = toast.loading('Cancelling order...')
+        const toastId = toast.loading(t('Cancelling order...'))
         try {
           if (!sdkL1ActionClient) return
           const assetIndex = isSpot
@@ -83,13 +85,16 @@ const OpenOrders = () => {
               }
             ]
           })
-          toast.success('Order cancelled', {
+          toast.success(t('Order cancelled'), {
             id: toastId
           })
         } catch (error: unknown) {
-          toast.error(error instanceof Error ? error.message : String(error), {
-            id: toastId
-          })
+          toast.error(
+            `${t('Failed to cancel order.')} ${error instanceof Error ? error.message : String(error)}`,
+            {
+              id: toastId
+            }
+          )
         }
       }
       cancelOrder()
@@ -112,7 +117,10 @@ const OpenOrders = () => {
           <Button
             onClick={() => openAgentModal()}
             variant="link"
-            className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+            className={cn(
+              'p-0 h-fit text-xs w-full flex items-center gap-1',
+              isRTL ? 'justify-start' : 'justify-end'
+            )}
           >
             Enable Trading
           </Button>
@@ -121,7 +129,10 @@ const OpenOrders = () => {
         <Button
           onClick={() => handleCancelOrder(row)}
           variant="link"
-          className="p-0 h-fit text-xs w-full flex items-center justify-end gap-1"
+          className={cn(
+            'p-0 h-fit text-xs w-full flex items-center gap-1',
+            isRTL ? 'justify-start' : 'justify-end'
+          )}
         >
           Cancel
         </Button>
@@ -136,7 +147,7 @@ const OpenOrders = () => {
         openAgentModal()
         return
       }
-      const toastId = toast.loading('Cancelling all orders...')
+      const toastId = toast.loading(t('Cancelling all orders...'))
       try {
         if (!sdkL1ActionClient) return
         const allOrders = openOrders.filter((order) => {
@@ -147,6 +158,7 @@ const OpenOrders = () => {
             return !spotKeyToName.get(order.coin)
           }
         })
+
         await sdkL1ActionClient.cancel({
           cancels: allOrders
             .map((order) => {
@@ -154,7 +166,10 @@ const OpenOrders = () => {
                 ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
                   SPOT_DELTA
                 : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
-              if (!assetIndex) return
+
+              if (assetIndex === undefined || assetIndex < 0) {
+                return
+              }
               return {
                 a: assetIndex,
                 o: order.oid
@@ -162,13 +177,16 @@ const OpenOrders = () => {
             })
             .filter((order) => !!order)
         })
-        toast.success('All orders cancelled', {
+        toast.success(t('All orders cancelled'), {
           id: toastId
         })
       } catch (error: unknown) {
-        toast.error(error instanceof Error ? error.message : String(error), {
-          id: toastId
-        })
+        toast.error(
+          `${t('Failed to cancel all orders.')} ${error instanceof Error ? error.message : String(error)}`,
+          {
+            id: toastId
+          }
+        )
       }
     }
     cancelAll()
@@ -186,8 +204,8 @@ const OpenOrders = () => {
 
   const renderCancelAllButton = useCallback(() => {
     return (
-      <div className="flex items-center justify-end gap-2">
-        <span className="text-white/50 text-xs">Action</span>
+      <div className={cn('flex items-center justify-end gap-2', isRTL && 'flex-row-reverse')}>
+        <span className="text-white/50 text-xs">{t('Action')}</span>
         <Button
           onClick={() => {
             if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -206,60 +224,60 @@ const OpenOrders = () => {
     () => [
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
-        header: () => 'Time',
+        header: () => t('Time'),
         cell: (info) => <>{new Date(info.getValue()).toLocaleString('en-US')}</>,
         enableSorting: true,
-        meta: { label: 'Time' }
+        meta: { label: t('Time') }
       }),
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => 'Coin',
+        header: () => t('Coin'),
         cell: (info) => <>{info.getValue()}</>,
         enableSorting: false,
-        meta: { label: 'Coin' }
+        meta: { label: t('Coin') }
       }),
       columnHelper.accessor('orderType', {
         id: 'orderType',
-        header: () => 'Type',
+        header: () => t('Type'),
         cell: (info) => info.getValue(),
-        meta: { label: 'Type' }
+        meta: { label: t('Type') }
       }),
       columnHelper.accessor('side', {
         id: 'side',
-        header: () => 'Direction',
+        header: () => t('Direction'),
         cell: (info) => (
           <span className={`capitalize ${info.getValue() === 'B' ? 'text-green' : 'text-red'}`}>
             {info.getValue() === 'B' ? 'Buy' : 'Sell'}
           </span>
         ),
         enableSorting: false,
-        meta: { label: 'Direction' }
+        meta: { label: t('Direction') }
       }),
       columnHelper.accessor('limitPx', {
         id: 'px',
-        header: () => 'Price',
+        header: () => t('Price'),
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
-        meta: { label: 'Limit Price' }
+        meta: { label: t('Limit Price') }
       }),
       columnHelper.accessor('sz', {
         id: 'sz',
-        header: () => 'Size',
+        header: () => t('Size'),
         cell: (info) => (
           <>
             <ReactiveText value={info.getValue()} type="number" precision={4} />
           </>
         ),
-        meta: { label: 'Original Size' }
+        meta: { label: t('Original Size') }
       }),
       columnHelper.accessor('origSz', {
         id: 'origSz',
-        header: () => 'Original Size',
+        header: () => t('Original Size'),
         cell: (info) => <ReactiveText value={info.getValue()} type="number" precision={4} />,
-        meta: { label: 'Original Size' }
+        meta: { label: t('Original Size') }
       }),
       columnHelper.accessor('origSz', {
         id: 'orderValue',
-        header: () => 'Order Value',
+        header: () => t('Order Value'),
         cell: (info) => (
           <ReactiveText
             value={Number(info.getValue()) * Number(info.row.original.limitPx)}
@@ -267,21 +285,21 @@ const OpenOrders = () => {
             precision={2}
           />
         ),
-        meta: { label: 'Order Value' }
+        meta: { label: t('Order Value') }
       }),
       columnHelper.accessor('reduceOnly', {
         id: 'reduceOnly',
-        header: () => 'Reduce Only',
-        cell: (info) => (info.getValue() ? 'Yes' : 'No'),
+        header: () => t('Reduce Only'),
+        cell: (info) => (info.getValue() ? t('Yes') : t('No')),
         enableSorting: false,
-        meta: { label: 'Reduce Only' }
+        meta: { label: t('Reduce Only') }
       }),
       columnHelper.accessor('triggerCondition', {
         id: 'triggerCondition',
-        header: () => 'Trigger',
+        header: () => t('Trigger'),
         cell: (info) => info.getValue(),
         enableSorting: false,
-        meta: { label: 'Trigger Condition' }
+        meta: { label: t('Trigger Condition') }
       }),
 
       columnHelper.display({
@@ -291,10 +309,10 @@ const OpenOrders = () => {
         },
         cell: ({ row }) => renderCancelButton(row),
         enableSorting: false,
-        meta: { label: 'Actions' }
+        meta: { label: t('Actions') }
       })
     ],
-    [renderCancelButton, renderCancelAllButton]
+    [renderCancelButton, renderCancelAllButton, t]
   )
 
   const data = useMemo(() => {
@@ -356,7 +374,7 @@ const OpenOrders = () => {
                       <span className="text-white/50">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
-                    {(item === 'Coin' || item === 'Trigger') && (
+                    {(item === t('Coin') || item === t('Trigger')) && (
                       <Separator className="w-full bg-white/10" />
                     )}
                   </div>
@@ -374,7 +392,7 @@ const OpenOrders = () => {
       <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
+            <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
@@ -385,7 +403,13 @@ const OpenOrders = () => {
                   }}
                   className={cn(
                     'cursor-pointer hover:text-accent-foreground',
-                    header.id === 'timestamp' ? 'justify-start !w-36' : 'justify-end flex-2',
+                    header.id === 'timestamp'
+                      ? isRTL
+                        ? 'justify-end !w-36'
+                        : 'justify-start !w-36'
+                      : isRTL
+                        ? 'justify-start flex-2'
+                        : 'justify-end flex-2',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
                       : 'text-white/50'
@@ -412,15 +436,19 @@ const OpenOrders = () => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-12" key={row.id}>
+            <TableRow className={cn('h-10', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
                   className={cn(
-                    'font-medium text-white text-xs first:text-left text-right',
+                    'font-medium text-white text-xs',
                     cell.column.id === 'timestamp'
-                      ? 'justify-start text-start !w-36'
-                      : 'justify-end text-end flex-2'
+                      ? isRTL
+                        ? 'text-end !w-36'
+                        : 'text-start !w-36'
+                      : isRTL
+                        ? 'text-start flex-2'
+                        : 'text-end flex-2'
                   )}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}

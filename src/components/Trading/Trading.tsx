@@ -1,7 +1,7 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { isTestnet } from '@/utils/constants'
-import Chart from './Chart'
+import Chart from './Chart/Chart'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from './UserData/UserData'
@@ -16,14 +16,31 @@ import FooterCompact from '../FooterCompact'
 import { Drawer, DrawerContent } from '../ui/drawer'
 import { IconTransform, IconUserBitcoin } from '@tabler/icons-react'
 import { Separator } from '../ui/separator'
+import clsx from 'clsx'
+import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
+import { Skeleton } from '../ui/skeleton'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useShallow } from 'zustand/react/shallow'
+import { useAccount } from 'wagmi'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-const Trading = () => {
+interface TradingProps {
+  defaultAsset?: string
+}
+
+const Trading = ({ defaultAsset }: TradingProps = {}) => {
+  const { t } = useTranslate()
   const isSpot = useIsSpot()
-  const [selectedAsset, setSelectedAsset] = useState<string>(
-    isSpot ? (isTestnet ? '@1035' : '@107') : 'BTC'
-  ) // @1035 and @107 is HYPE
+  const { address } = useAccount()
+  const { spotKeyToName } = useSpotMeta()
+  const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isTablet, isMobile } = useScreenSize()
+
+  const parentContainerRef = useRef<HTMLDivElement>(null)
+  const orderBookRef = useRef<HTMLDivElement>(null)
 
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -35,15 +52,44 @@ const Trading = () => {
     secondToggle: ''
   })
 
+  const { subscribeToActiveAssetData, unsubscribeFromActiveAssetData } = useHyperliquidStore(
+    useShallow((state) => ({
+      subscribeToActiveAssetData: state.subscribeToActiveAssetData,
+      unsubscribeFromActiveAssetData: state.unsubscribeFromActiveAssetData
+    }))
+  )
+
+  useEffect(() => {
+    if (!address || !selectedAsset) return
+    subscribeToActiveAssetData(address, selectedAsset)
+    return () => {
+      unsubscribeFromActiveAssetData()
+    }
+  }, [address, subscribeToActiveAssetData, selectedAsset])
+
+  useEffect(() => {
+    setSelectedAsset(
+      isSpot
+        ? defaultAsset && spotKeyToName.size > 0
+          ? spotKeyToName.entries().find(([, value]) => value === defaultAsset)?.[0]
+          : isTestnet
+            ? '@1035'
+            : '@107'
+        : defaultAsset
+          ? defaultAsset
+          : 'BTC'
+    )
+  }, [defaultAsset, spotKeyToName, isSpot])
+
   if (isMobile) {
     return (
       <div className="flex relative flex-col gap-1 p-1 mb-12 h-fit w-full">
         {isSpot ? (
-          <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         )}
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} />
+        <FavoriteStrip isRTL={isRTL} />
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary p-1 gap-1"
@@ -59,10 +105,10 @@ const Trading = () => {
           }}
         >
           <ToggleGroupItem className="rounded-l-md bg-white/5 h-full" value="chart">
-            <p>Chart</p>
+            <p>{t('Chart')}</p>
           </ToggleGroupItem>
           <ToggleGroupItem className="rounded-r-md h-full bg-white/5" value="orderbook">
-            <p>Orderbook</p>
+            <p>{t('Orderbook')}</p>
           </ToggleGroupItem>
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
@@ -72,10 +118,12 @@ const Trading = () => {
           >
             <Chart selectedAsset={selectedAsset} selectedInterval="30" />
           </div>
-          {mobileState.firstToggle === 'orderbook' && <OrderBook selectedAsset={selectedAsset} />}
+          {mobileState.firstToggle === 'orderbook' && (
+            <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
+          )}
         </div>
         <div className="flex items-start justify-center w-full h-96">
-          <UserData setSelectedAsset={setSelectedAsset} />
+          <UserData />
         </div>
         <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
           <ToggleGroup
@@ -93,11 +141,11 @@ const Trading = () => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>Trade</p>
+              <p>{t('Trade')}</p>
             </ToggleGroupItem>
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="overview">
               <IconUserBitcoin className="size-4" />
-              <p>Overview</p>
+              <p>{t('Overview')}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer
@@ -110,8 +158,10 @@ const Trading = () => {
             }}
           >
             <DrawerContent className="w-full h-full bg-secondary">
-              {mobileState.secondToggle === 'trade' && <PlaceOrder selectedAsset={selectedAsset} />}
-              {mobileState.secondToggle === 'overview' && <OverviewBox />}
+              {mobileState.secondToggle === 'trade' && (
+                <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
+              )}
+              {mobileState.secondToggle === 'overview' && <OverviewBox isRTL={isRTL} />}
             </DrawerContent>
           </Drawer>
         </div>
@@ -121,26 +171,24 @@ const Trading = () => {
 
   if (isTablet) {
     return (
-      <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-fit w-full">
-        <FavoriteStrip setSelectedAsset={setSelectedAsset} />
+      <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-dvh w-full">
+        <div className="h-fit shrink-0">
+          <FavoriteStrip isRTL={isRTL} />
+        </div>
         {isSpot ? (
-          <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         ) : (
-          <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+          <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         )}
         <div className="flex items-start justify-center w-full h-96">
           <div className="flex w-full h-full flex-col gap-1">
             <Chart selectedAsset={selectedAsset} selectedInterval="30" />
           </div>
         </div>
-
-        <div className="flex items-start justify-center w-full h-[484px] gap-1">
-          <div className="h-full flex-1 flex-col basis-sm gap-2 ">
-            <UserData setSelectedAsset={setSelectedAsset} />
+        <div className="flex items-start justify-center w-full h-full flex-1 gap-1">
+          <div className="h-full flex-1 flex-col pb-12 basis-sm gap-2 ">
+            <UserData />
           </div>
-          {/* <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 ">
-            <OverviewBox />
-          </div> */}
         </div>
         <div className="fixed z-40 bottom-0 left-0 w-full h-12 border-t border-white/10 bg-secondary">
           <ToggleGroup
@@ -158,7 +206,7 @@ const Trading = () => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>Trade</p>
+              <p>{t('Trade')}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer
@@ -174,13 +222,13 @@ const Trading = () => {
               {mobileState.secondToggle === 'trade' && (
                 <div className="flex items-start justify-center w-full h-full">
                   <div className="h-full flex-1 flex-col basis-sm">
-                    <OrderBook selectedAsset={selectedAsset} />
+                    <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
                     <Separator className="my-1" orientation="horizontal" />
-                    <OverviewBox />
+                    <OverviewBox isRTL={isRTL} />
                   </div>
                   <Separator orientation="vertical" className="mx-1" />
                   <div className="h-full max-w-sm flex-1 flex-col basis-sm gap-2 ">
-                    <PlaceOrder selectedAsset={selectedAsset} />
+                    <PlaceOrder isRTL={isRTL} selectedAsset={selectedAsset} />
                   </div>
                 </div>
               )}
@@ -192,30 +240,58 @@ const Trading = () => {
   }
 
   return (
-    <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-fit w-full">
-      <div className="flex-1 grid grid-cols-18 gap-1 max-h-3/4 h-3/4 min-h-3/4 overflow-hidden">
-        <div className="col-span-10 h-full flex-1 basis-xl flex flex-col gap-1">
-          <FavoriteStrip setSelectedAsset={setSelectedAsset} />
-          {isSpot ? (
-            <SpotSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+    <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
+      {(!orderBookRef.current?.clientWidth || !parentContainerRef.current?.clientWidth) && (
+        <Skeleton className="w-full h-11 bg-secondary" />
+      )}
+      <div
+        className="h-[688px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
+        ref={parentContainerRef}
+      >
+        <div
+          className={clsx(
+            'w-full h-full flex-2 flex flex-col gap-1',
+            isRTL ? '-order-1' : 'order-1'
+          )}
+        >
+          {orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? (
+            <FavoriteStrip
+              isRTL={isRTL}
+              width={
+                parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
+              }
+            />
           ) : (
-            <PerpsSelector selectedAsset={selectedAsset} setSelectedAsset={setSelectedAsset} />
+            <Skeleton className="w-full h-10 bg-secondary" />
+          )}
+          {isSpot ? (
+            <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
+          ) : (
+            <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
           )}
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
-        <div className="col-span-4 h-full flex-col basis-sm gap-2">
-          <OrderBook selectedAsset={selectedAsset} />
+        <div
+          className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')}
+          ref={orderBookRef}
+        >
+          <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
-        <div className="col-span-4 h-full flex-col basis-sm gap-2">
-          <PlaceOrder selectedAsset={selectedAsset} />
+        <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}>
+          <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
       </div>
-      <div className="grid grid-cols-18 gap-1 h-fit">
-        <div className="col-span-14 h-full w-full">
-          <UserData setSelectedAsset={setSelectedAsset} />
+      <div className="h-full 2xl:h-5/12 flex-1 w-full mb-1 flex items-start gap-1">
+        <div className={clsx('w-full h-full', isRTL ? '-order-1' : 'order-1')}>
+          <UserData />
         </div>
-        <div className="col-span-4 h-full w-full">
-          <OverviewBox />
+        <div
+          className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')}
+          style={{
+            width: orderBookRef.current?.clientWidth ? orderBookRef.current.clientWidth : 320
+          }}
+        >
+          <OverviewBox isRTL={isRTL} />
         </div>
       </div>
       <FooterCompact />

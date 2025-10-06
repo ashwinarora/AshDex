@@ -1,27 +1,28 @@
 import React from 'react'
 import { REFERRALS_CLAIM_DESC } from '@/utils/constants'
 import { toast } from 'sonner'
-
+import { useTranslate } from '@tolgee/react'
 interface ClaimProps {
   isCreateCode?: boolean
   totalClaim: number
 }
-function Claim({ isCreateCode, totalClaim }: ClaimProps) {
+function Rewards({ isCreateCode, totalClaim }: ClaimProps) {
+  const { t } = useTranslate()
   const handleSubmit = () => {
     setTimeout(() => {
-      toast.success('Claim Successful!', {
+      toast.success(t('Claim Successful!'), {
         description: `You’ve successfully claimed $10. The funds have been added to your balance.`
       })
     }, 1000)
   }
 
   return (
-    <div>
+    <div className="p-2">
       {' '}
       {REFERRALS_CLAIM_DESC?.map((desc, index) => (
         <span
           key={index}
-          className="font-medium mb-8 opacity-90 max-sm:text-sm text-base text-[#8B8BA0]"
+          className="font-medium opacity-90 max-sm:text-sm text-base text-[#8B8BA0]"
         >
           {desc}
         </span>
@@ -43,4 +44,4 @@ function Claim({ isCreateCode, totalClaim }: ClaimProps) {
   )
 }
 
-export default Claim
+export default Rewards

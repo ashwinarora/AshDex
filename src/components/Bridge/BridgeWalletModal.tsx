@@ -8,11 +8,12 @@ import Image from 'next/image'
 import { useBridge } from '@/context/BridgeContext'
 import { useSolanaWallet } from './SolanaButton'
 import type { Wallet } from '@solana/wallet-adapter-react'
+import { useTranslate } from '@tolgee/react'
 
 function BridgeWalletModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { sourceChain } = useBridge()
   const { wallets: solanaWallets, select: setSelectedSolanaWallet } = useSolanaWallet()
-
+  const { t } = useTranslate()
   const [supportedWallets, setSupportedWallets] = useState<Wallet[]>([])
 
   useEffect(() => {
@@ -39,7 +40,7 @@ function BridgeWalletModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 onClick={(e) => {
                   e.stopPropagation()
                   setSelectedSolanaWallet(wallet.adapter.name)
-                  toast.info('Connecting to ' + wallet.adapter.name)
+                  toast.info(t('Connecting to ') + t(wallet.adapter.name) + t('wallet'))
                   onClose()
                 }}
               >

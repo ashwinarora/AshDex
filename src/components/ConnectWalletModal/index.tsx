@@ -14,6 +14,9 @@ import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
 import { Button } from '../ui/button'
 import { IconLoader, IconWallet } from '@tabler/icons-react'
+import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 interface WalletConnectProvider {
   id: string
@@ -22,14 +25,15 @@ interface WalletConnectProvider {
 }
 
 const ConnectWalletModal: React.FC = () => {
+  const { t } = useTranslate()
   const { toggleConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
-  const [dialogTitle, setDialogTitle] = useState<string>('Connect Wallet')
+  const [dialogTitle, setDialogTitle] = useState<string>(t('Connect Wallet'))
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
   const createOrUpdateUser = useCreateOrUpdateUser()
 
@@ -79,7 +83,7 @@ const ConnectWalletModal: React.FC = () => {
     <>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogTitle>{t(dialogTitle)}</DialogTitle>
         </DialogHeader>
         {shouldShowRules ? (
           <WalletRules onClose={handleClose} />
@@ -87,7 +91,7 @@ const ConnectWalletModal: React.FC = () => {
           isConnected && isTermsLoading ? (
             <div className="w-full h-80 flex flex-col gap-4 items-center justify-center">
               <IconLoader className="size-10 animate-spin" />
-              <p className="text-white">Loading terms...</p>
+              <p className="text-white">{t('Loading terms...')}</p>
             </div>
           ) : (
             <WalletDisplay
@@ -106,7 +110,10 @@ const ConnectWalletModal: React.FC = () => {
           <div className="flex flex-col gap-2">
             {WALLETS.map((wallet) => (
               <Button
-                className="w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/5 hover:bg-accent"
+                className={cn(
+                  'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/5 hover:bg-accent',
+                  isRTL && 'flex-row-reverse'
+                )}
                 variant={'secondary'}
                 key={wallet.id}
                 onClick={() => connectWallet(wallet)}
@@ -126,7 +133,7 @@ const ConnectWalletModal: React.FC = () => {
                     />
                   )
                 ) : null}
-                <span className="font-medium text-sm">{wallet.name}</span>
+                <span className="font-medium text-sm">{t(wallet.name)}</span>
               </Button>
             ))}
           </div>

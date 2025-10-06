@@ -14,6 +14,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { placePerpOrder } from './placePerpOrder'
 import { placeSpotOrder } from './placeSpotOrder'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 
 export type StopOrder = {
   isMarket: boolean
@@ -48,6 +49,7 @@ const OrderButton = ({
   stopOrder,
   isMarket
 }: OrderButtonProps) => {
+  const { t } = useTranslate()
   const { isConnected: isWalletConnected } = useAccount()
   const { agentWallet, sdkL1ActionClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
     useHyperliquidStore(
@@ -101,7 +103,7 @@ const OrderButton = ({
         onClick={() => toggleConnectWalletModal()}
         className="w-full font-semibold cursor-pointer"
       >
-        <IconWallet className="w-4 h-4" /> Connect Wallet
+        <IconWallet className="w-4 h-4" /> {t('Connect Wallet')}
       </Button>
     )
   }
@@ -112,7 +114,7 @@ const OrderButton = ({
         className="w-full font-semibold cursor-pointer"
       >
         {' '}
-        Enable Trading{' '}
+        {t('Enable Trading')}
       </Button>
     )
   }
@@ -169,7 +171,7 @@ const OrderButton = ({
       disabled={isInvalid}
       variant={isInvalid ? 'destructive' : 'default'}
     >
-      {isSpot ? (isBuy ? 'Buy' : 'Sell') : isBuy ? 'Buy/Long' : 'Sell/Short'}
+      {isSpot ? (isBuy ? t('Buy') : t('Sell')) : isBuy ? t('Buy/Long') : t('Sell/Short')}
     </Button>
   )
 }

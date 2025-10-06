@@ -5,6 +5,7 @@ import { WalletProvider } from '@tronweb3/tronwallet-adapter-react-hooks'
 import { toast } from 'sonner'
 import { RawTronTransaction, TokenWithChainDetails } from '@allbridge/bridge-core-sdk'
 import { useBridge } from '@/context/BridgeContext'
+import { useTranslate } from '@tolgee/react'
 
 type Props = {
   readonly children: React.ReactNode
@@ -35,6 +36,7 @@ export const useTronTransfer = () => {
   } = useBridge()
   const { isConnected, address: sourceAddress } = useTronConnect()
   const { signTronTransaction } = useTronWallet()
+  const { t } = useTranslate()
 
   const checkTronAllowance = async (
     token: TokenWithChainDetails,
@@ -42,11 +44,11 @@ export const useTronTransfer = () => {
     owner: string
   ) => {
     if (!sdk) {
-      toast.error('Bridge SDK not initialized')
+      toast.error(t('Bridge SDK not initialized'))
       return
     }
     if (!sourceAddress) {
-      toast.error('Please connect your Tron wallet first')
+      toast.error(t('Please connect your Tron wallet first'))
       return
     }
     const isAllowanceApproved = await sdk.bridge.checkAllowance({
@@ -59,17 +61,17 @@ export const useTronTransfer = () => {
 
   const handleTronTransfer = async () => {
     if (!sdk) {
-      toast.error('Bridge SDK not initialized')
+      toast.error(t('Bridge SDK not initialized'))
       return
     }
     if (!isConnected) {
-      toast.error('Please connect your Tron wallet first')
+      toast.error(t('Please connect your Tron wallet first'))
       return
     }
     if (!sourceToken || !destinationToken || !amount) {
-      toast.error('Please fill in all required fields')
+      toast.error(t('Please fill in all required fields'))
       if (Number(amount) <= 0) {
-        toast.error('Amount must be greater than 0')
+        toast.error(t('Amount must be greater than 0'))
       }
       return
     }
@@ -122,12 +124,12 @@ export const useTronTransfer = () => {
           })
 
           console.log('Bridge transaction hash:', hash)
-          toast.success('Transaction initiated successfully!')
+          toast.success(t('Transaction initiated successfully!'))
         }
       }
     } catch (err) {
       console.error('Transfer failed:', err)
-      toast.error('Transaction failed. Please try again.')
+      toast.error(t('Transaction failed. Please try again.'))
     }
   }
 

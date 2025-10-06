@@ -10,6 +10,7 @@ import step4 from '@/assets/images/onboarding/step4.png'
 import nexonlogo from '@/assets/images/logo.svg'
 import arrowrightlineicon from '@/assets/images/arrowrightline_icon.svg'
 import { toast } from 'sonner'
+import { useTranslate } from '@tolgee/react'
 
 const NextButton = () => (
   <div className="flex items-center justify-center gap-2">
@@ -64,7 +65,7 @@ export default function OnboardingModal() {
   const [step, setStep] = useState(0)
   const [isOnboarded, setIsOnboarded] = useState(false)
   const [isClient, setIsClient] = useState(false)
-
+  const { t } = useTranslate()
   const skip = () => {
     setStep(onboardingSteps.length - 1)
   }
@@ -82,7 +83,7 @@ export default function OnboardingModal() {
                 localStorage.setItem('onboarded', 'true')
               }
               setIsOnboarded(true)
-              toast.success('Welcome to Nexon!')
+              toast.success(t('Welcome to Nexon!'))
             }
           }}
           className={`${step === 3 ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}

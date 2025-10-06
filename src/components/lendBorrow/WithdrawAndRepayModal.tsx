@@ -9,6 +9,7 @@ import ethicon from '../../assets/images/eth_icon.svg'
 import menuClose from '@/assets/images/close_icon.svg'
 import Slider1 from '@/assets/images/slider_value.svg'
 import { toast } from 'sonner'
+import { useTranslate } from '@tolgee/react'
 
 interface WithdrawAndRepayModalProps {
   type: 'Withdraw' | 'Repay' | null
@@ -30,7 +31,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
   const [isChecked, setIsChecked] = useState<boolean>(true)
   const [isLoading, setIsLoading] = useState(false)
   const [usdPercent, setUsdPercent] = useState(0)
-
+  const { t } = useTranslate()
   const handleUsdPercentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newUsdPercent = parseFloat(e.target.value) || 0
     setUsdPercent(newUsdPercent)
@@ -51,7 +52,9 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
       setTimeout(() => {
         setIsLoading(false)
         toast.success(
-          type === 'Withdraw' ? 'Funds successfully withdrawn!' : 'Funds successfully repaid!',
+          type === 'Withdraw'
+            ? t('Funds successfully withdrawn!')
+            : t('Funds successfully repaid!'),
           {
             description:
               type === 'Withdraw'
@@ -169,7 +172,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
                       <div className="relative">
                         <input
                           type="text"
-                          className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-left text-white"
+                          className="w-16 h-10 px-2 rounded-md border border-white/10 bg-white/10 outline-none text-start text-white"
                           value={usdPercent}
                           onChange={handleUsdPercentChange}
                         />

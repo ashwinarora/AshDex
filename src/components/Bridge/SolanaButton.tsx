@@ -9,6 +9,7 @@ import { WalletModalProvider } from '@solana/wallet-adapter-react-ui'
 import { toast } from 'sonner'
 import { useBridge } from '@/context/BridgeContext'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { useTranslate } from '@tolgee/react'
 // require('@solana/wallet-adapter-react-ui/styles.css')
 
 type Props = {
@@ -36,7 +37,7 @@ export const useHandleSolanaTransfer = () => {
     addTransaction
   } = useBridge()
   const { connection } = useConnection()
-
+  const { t } = useTranslate()
   // Update sourceAddress when wallet is connected
   useEffect(() => {
     if (connected && publicKey) {
@@ -47,23 +48,23 @@ export const useHandleSolanaTransfer = () => {
 
   useEffect(() => {
     if (connecting) {
-      toast.info('Connecting to Solana...')
+      toast.info(t('Connecting to Solana...'))
       setIsLoading(true)
     }
   }, [connecting])
 
   return async () => {
     if (!connected || !publicKey) {
-      toast.error('Please connect your Solana wallet')
+      toast.error(t('Please connect your Solana wallet'))
       return
     }
     if (!sourceToken || !destinationToken || !amount) {
-      toast.error('Please fill in all required fields')
+      toast.error(t('Please fill in all required fields'))
       return
     }
 
     if (!sdk) {
-      toast.error('Bridge SDK not initialized')
+      toast.error(t('Bridge SDK not initialized'))
       return
     }
     try {
@@ -72,11 +73,11 @@ export const useHandleSolanaTransfer = () => {
       const balance = await connection.getBalance(publicKey)
       console.log('Balance:', balance)
       if (balance < amountInLamports) {
-        toast.error('Not enough SOL in wallet')
+        toast.error(t('Not enough SOL in wallet'))
         return
       }
 
-      toast.info('Initiating Solana transfer...')
+      toast.info(t('Initiating Solana transfer...'))
       setIsLoading(true)
       const sendParams = {
         amount,
@@ -92,7 +93,7 @@ export const useHandleSolanaTransfer = () => {
       console.log('Raw transaction:', rawTx)
 
       if (!signTransaction) {
-        toast.error('Wallet does not support signing (use Phantom)')
+        toast.error(t('Wallet does not support signing (use Phantom)'))
         return
       }
 
@@ -115,11 +116,11 @@ export const useHandleSolanaTransfer = () => {
         transferTime: null
       })
 
-      toast.success('Transfer submitted!')
+      toast.success(t('Transfer submitted!'))
       setIsLoading(false)
     } catch (err) {
       console.error('Transfer failed:', err)
-      toast.error('Transaction failed. Please try again.')
+      toast.error(t('Transaction failed. Please try again.'))
       setIsLoading(false)
     } finally {
       setIsLoading(false)

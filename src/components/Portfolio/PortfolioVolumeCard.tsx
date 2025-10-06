@@ -21,19 +21,22 @@ import {
 import { UserFees } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
 import { formatWithKMB } from '@/utils/format'
+import { useTranslate } from '@tolgee/react'
 
 type PortfolioVolumeCardProps = {
   userFeeData: UserFees | undefined
   userFeeLoading: boolean
+  isRTL: boolean
 }
 
-const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCardProps) => {
+const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVolumeCardProps) => {
+  const { t } = useTranslate()
   const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo(
     () => [
       columnHelper.accessor('date', {
-        header: 'Date',
+        header: () => t('Date'),
         cell: ({ row }) => {
           return <div className="text-xs">{row.original.date}</div>
         },
@@ -41,7 +44,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
         enableSorting: true
       }),
       columnHelper.accessor('exchange', {
-        header: 'Exchange Volume',
+        header: () => t('Exchange Volume'),
         cell: ({ row }) => (
           <div className="text-xs">{'$ ' + formatWithKMB(parseFloat(row.original.exchange))}</div>
         ),
@@ -49,7 +52,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
         enableSorting: false
       }),
       columnHelper.accessor('userCross', {
-        header: 'Taker Volume',
+        header: () => t('Taker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -64,7 +67,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
         enableSorting: false
       }),
       columnHelper.accessor('userAdd', {
-        header: 'Maker Volume',
+        header: () => t('Maker Volume'),
         cell: ({ row }) => (
           <div
             className={cn(
@@ -79,7 +82,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
         enableSorting: false
       })
     ],
-    [columnHelper]
+    [columnHelper, t]
   )
 
   const table = useReactTable({
@@ -93,8 +96,13 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
   })
 
   return (
-    <div className="flex flex-col justify-between bg-secondary rounded-md flex-1 gap-1 p-4">
-      <h2>30 Day Volume</h2>
+    <div
+      className={cn(
+        'flex flex-col w-full justify-between bg-secondary rounded-md flex-1 gap-1 p-4',
+        isRTL && 'items-end'
+      )}
+    >
+      <h2>{t('30 Day Volume')}</h2>
       {userFeeLoading ? (
         <Skeleton className="w-36 h-12" />
       ) : (
@@ -111,17 +119,18 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
       <Dialog>
         <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
           <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-            View Volume
+            {t('View Volume')}
           </p>
         </DialogTrigger>
-        <DialogContent className="w-fit !max-w-xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
-          <DialogHeader>
-            <DialogTitle>Your Volume History</DialogTitle>
-            <DialogDescription className="text-xs text-white/50">
-              Dates are based on UTC time zone and do not include the current day. Your 14D maker
-              volume share is 0.00%. <br />
-              Perps and spot volume are counted together to determine your fee tier, and spot volume
-              counts double toward your fee tier.
+        <DialogContent className="min-w-11/12 md:min-w-2xl max-h-[80vh] overflow-x-hidden overflow-y-auto scroll-smooth flex flex-col items-center gap-2">
+          <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
+            <DialogTitle>{t('Your Volume History')}</DialogTitle>
+            <DialogDescription
+              className={cn('text-xs text-white/50', isRTL ? 'text-end' : 'text-start')}
+            >
+              {t(
+                '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
+              )}
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center h-full w-full gap-2">
@@ -129,7 +138,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (
-                    <TableRow key={headerGroup.id}>
+                    <TableRow key={headerGroup.id} className={cn(isRTL ? 'flex-row-reverse' : '')}>
                       {headerGroup.headers.map((header) => (
                         <TableHead
                           key={header.id}
@@ -140,7 +149,13 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
                           }}
                           className={cn(
                             'cursor-pointer flex items-center gap-1 w-1/4 flex-1 shrink-0 !text-xs',
-                            header.id === 'date' ? 'justify-start' : 'justify-end',
+                            header.id === 'date'
+                              ? isRTL
+                                ? 'justify-end'
+                                : 'justify-start'
+                              : isRTL
+                                ? 'justify-start'
+                                : 'justify-end',
                             header.column.columnDef.enableSorting
                               ? 'hover:text-accent-foreground'
                               : 'hover:text-white/50',
@@ -171,11 +186,14 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading }: PortfolioVolumeCar
                 </TableHeader>
                 <TableBody>
                   {table.getRowModel().rows.map((row) => (
-                    <TableRow className="h-12" key={row.id}>
+                    <TableRow className={cn('h-12', isRTL ? 'flex-row-reverse' : '')} key={row.id}>
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           key={cell.id}
-                          className="font-medium text-white text-xs first:text-left text-right"
+                          className={cn(
+                            'font-medium text-white text-xs',
+                            isRTL ? 'first:text-end text-start' : 'first:text-start text-end'
+                          )}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>

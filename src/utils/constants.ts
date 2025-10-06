@@ -308,8 +308,7 @@ export const WALLETS = [
     id: 'rabby',
     name: 'Rabby Wallet',
     icon: rabbywallet
-  },
-  { id: 'other', name: 'Other wallets', icon: 'IconWallet' }
+  }
 ] as const
 
 export const INFOTAB_DESC = `
@@ -426,7 +425,7 @@ export const MORE_OPTIONS = [
   { name: 'Settings', path: '/settings' }
 ]
 
-export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Claim'] as const
+export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Rewards'] as const
 
 export const REFERRALSDATA = [
   {

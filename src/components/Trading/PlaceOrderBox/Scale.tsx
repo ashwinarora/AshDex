@@ -8,7 +8,6 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import MarginMode from './components/MarginMode'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
 import { Separator } from '@/components/ui/separator'
@@ -37,6 +36,7 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
+import { useTranslate } from '@tolgee/react'
 interface Order {
   price: number
   size: number
@@ -108,7 +108,7 @@ function calculateScaleOrdersByAssetSize(
   return orders
 }
 
-const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
+const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -119,6 +119,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         sdkL1ActionClient: state.sdkL1ActionClient
       }))
     )
+  const { t } = useTranslate()
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -191,7 +192,18 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         }
       }
     }))
-    const toastId = toast.loading(`Placing ${totalOrders} orders...`)
+
+    if (ordersData.some((item) => Number(item.price) * Number(item.size) < 10)) {
+      console.error(
+        `Minimum order must be at the least $10. One of your order's value is less than $10`
+      )
+      toast.error(`Margin Insufficient`, {
+        description: `One or more individual order's value is less than $10`
+      })
+      return
+    }
+
+    const toastId = toast.loading(`${t('Placing')} ${totalOrders} ${t('orders')}...`)
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
@@ -214,7 +226,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.error(status.error, {
+        toast.error(`${t('Failed to place orders.')} ${status.error}`, {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -222,19 +234,19 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
         toast.success(
-          `${filled.totalSz} ${assetName} ${action} at average price of ${filled.avgPx}`,
+          `${filled.totalSz} ${assetName} ${action} ${t('at an average price of')} ${filled.avgPx}`,
           {
             id: toastId
           }
         )
       } else if ('resting' in status) {
-        toast.success('Order Placed Successfully', {
+        toast.success(t('Order Placed Successfully'), {
           id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.error('Failed to place orders.', {
+      toast.error(`${t('Failed to place orders.')} ${error as string}`, {
         id: toastId
       })
     }
@@ -265,26 +277,36 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
-      <div className="flex flex-col gap-2 px-2 pt-4 h-full w-full flex-1">
-        <BuyOrSell isBuy={isBuy} setIsBuy={setIsBuy} />
-        <Separator orientation="horizontal" />
-        <MarginMode isCross={isCross} setIsCross={setIsCross} />
+      <div className="flex flex-col gap-2 px-2 h-full w-full flex-1">
+        <Separator className="my-1" orientation="horizontal" />
+        <BuyOrSell
+          isCross={isCross}
+          setIsCross={setIsCross}
+          isBuy={isBuy}
+          setIsBuy={setIsBuy}
+          isRTL={isRTL}
+          selectedAsset={selectedAsset}
+        />
         <LeverageMargin
           selectedAsset={selectedAsset}
           leverage={leverage}
           setLeverage={setLeverage}
+          isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="startPrice" className="text-xs text-white/50">
-          Start Price
+        <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+          {t('Start Price')}
         </label>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={startPrice}
             onChange={(e) => setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
+            )}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -292,8 +314,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 variant="outline"
                 size={'sm'}
                 disabled
-                className="text-xs min-w-18 w-fit flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                className="text-xs w-16 flex items-center justify-start"
               >
                 <p className="text-xs flex-1 w-full">{isInputUsd ? 'USDC' : selectedAsset}</p>
                 <IconChevronDown className="size-3" />
@@ -309,51 +330,56 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <label htmlFor="endPrice" className="text-xs text-white/50">
-          End Price
+        <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+          {t('End Price')}
         </label>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={endPrice}
             onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
+            )}
           />
           <Button
             variant="outline"
             size={'sm'}
-            className="text-xs min-w-18 w-fit flex items-center justify-center"
-            // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
-            onClick={() => {}}
+            className="text-xs w-16 bg-transparent hover:bg-transparent"
+            disabled={true}
           >
             <IconRefresh className="size-3" />
-            Last
+            {t('Last')}
           </Button>
-          {/* */}
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-between">
-          <label htmlFor="percent" className="text-xs text-white/50">
-            Total Size
+        <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
+          <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+            {t('Total Size')}
           </label>
-          <p className="text-xs text-white/50">Max: {maxAllowedUsd} USDC</p>
+          <p className="text-xs text-white/50">
+            {t('Max')}: {maxAllowedUsd} USDC
+          </p>
         </div>
-        <div className="flex w-full gap-3 items-center">
+        <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
             type="text"
             placeholder="0"
             value={totalUsd}
             onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
-            className={cn('w-full text-right text-white placeholder:text-white')}
+            className={cn(
+              'w-full text-end text-white placeholder:text-white',
+              isRTL && 'text-start'
+            )}
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
                 size={'sm'}
-                className="text-xs min-w-18 w-fit flex items-center justify-start"
-                // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+                className="text-xs w-16 flex items-center justify-start"
               >
                 <p className="text-xs flex-1 w-full">USDC</p>
                 <IconChevronDown className="size-3" />
@@ -369,22 +395,27 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex mt-2 flex-col gap-2 w-full items-center justify-center">
-          <div className="flex items-center w-full gap-3">
+        <div className={cn('flex mt-2 flex-col gap-2 w-full items-center justify-center')}>
+          <div className={cn('flex items-center w-full gap-3', isRTL && 'flex-row-reverse')}>
             <Slider
               min={1}
               max={100}
+              dir={isRTL ? 'rtl' : 'ltr'}
               value={[percent]}
               onValueChange={(value) => handlePercentChange(value[0])}
               className="flex-1 w-full"
             />
             <div
               className={cn(
-                'flex !w-16 shrink-0 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2'
+                'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+                isRTL && 'flex-row-reverse pr-0 pl-2'
               )}
             >
               <Input
-                className={cn('flex-1 p-0 text-end text-white bg-transparent border-none')}
+                className={cn(
+                  'flex-1 p-0 text-end text-white bg-transparent border-none',
+                  isRTL && 'text-start'
+                )}
                 value={percent}
                 onChange={(e) => handlePercentChange(parseInt(e.target.value, 10))}
               />
@@ -393,7 +424,10 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
           </div>
           <ToggleGroup
             size={'sm'}
-            className="flex mt-1 items-center bg-white/5 justify-between w-full"
+            className={cn(
+              'flex mt-1 items-center  justify-between w-full',
+              isRTL && 'flex-row-reverse'
+            )}
             type="single"
             value={percent.toString()}
             onValueChange={(value) => value !== '' && handlePercentChange(parseInt(value, 10))}
@@ -403,8 +437,11 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 key={`leverage-tick-${value}-${index}`}
                 value={value.toString()}
                 className={cn(
-                  'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                  'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
+                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+                  isRTL
+                    ? 'first:rounded-r-md last:rounded-l-md'
+                    : 'first:rounded-l-md last:rounded-r-md'
                 )}
               >
                 {value}%
@@ -421,7 +458,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">Reduce Only</p>
+            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -434,16 +471,19 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Order Count
+                {t('Order Count')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
-                <label htmlFor="orderCount" className="text-xs text-white/50">
-                  Order Count
+                <label
+                  htmlFor="orderCount"
+                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                >
+                  {t('Order Count')}
                 </label>
-                <div className="flex items-center gap-3 rounded-lg">
+                <div className={cn('flex items-center gap-3 rounded-lg')}>
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
                     <IconMinus className="size-3" />
                   </Button>
@@ -475,14 +515,17 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                Skew
+                {t('Skew')}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-2">
-                <label htmlFor="sizeSkew" className="text-xs text-white/50">
-                  Size Skew
+                <label
+                  htmlFor="sizeSkew"
+                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                >
+                  {t('Size Skew')}
                 </label>
                 <Input
                   type="text"
@@ -505,7 +548,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              Enable Trading
+              {t('Enable Trading')}
             </Button>
           ) : (
             <Button
@@ -519,7 +562,7 @@ const Scale = ({ selectedAsset }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
             >
-              Scale Buy ({totalOrders} Orders)
+              {t('Scale Buy')} ({totalOrders} {t('Orders')})
             </Button>
           )}
         </div>

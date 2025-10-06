@@ -1,5 +1,8 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
 
 interface TPSLProps {
   limitPrice: string
@@ -16,6 +19,8 @@ export type TPSLType = {
 }
 
 const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
+  const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const setIsTpsl = (isTpsl: boolean) => {
     setTpsl({ ...tpsl, isTpsl })
   }
@@ -152,27 +157,41 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
 
   return (
     <div className="w-full flex flex-col gap-4">
-      <div className="flex items-center space-x-2">
-        {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
-        <label htmlFor="tpsl" className="text-xs font-semibold">
-          Set Take Profit and Stop Loss Values
-        </label>
-      </div>
+      {/* <Switch id="tpsl" checked={tpsl.isTpsl} onCheckedChange={setIsTpsl} /> */}
+      <label htmlFor="tpsl" className={cn('text-xs font-semibold', isRTL && 'text-end')}>
+        {t('Set Take Profit and Stop Loss Values')}
+      </label>
+
       <div className="flex flex-col gap-2 w-full">
         <div className="flex flex-col w-full items-start gap-2">
-          <div className="flex items-center w-full justify-between gap-2">
-            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
-              TP Value
+          <div
+            className={cn(
+              'flex items-center w-full justify-between gap-2',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
+            <span
+              className={cn(
+                'flex-1 text-nowrap font-medium text-white/50 text-xs',
+                isRTL ? 'text-end' : 'text-start'
+              )}
+            >
+              {t('TP Value')}
             </span>
-            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
-              TP %
+            <span
+              className={cn(
+                'flex-1 text-nowrap font-medium text-white/50 text-xs',
+                isRTL ? 'text-start' : 'text-end'
+              )}
+            >
+              {t('TP %')}
             </span>
           </div>
-          <div className="flex items-center gap-2 w-full">
+          <div className={cn('flex items-center gap-2 w-full', isRTL && 'flex-row-reverse')}>
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right flex-1"
+              className="text-white text-sm text-end flex-1"
               value={tpsl.takeProfit || ''}
               onChange={handleTakeProfitValueChange}
               placeholder="0.00"
@@ -180,7 +199,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right w-16"
+              className="text-white text-sm text-end w-16"
               value={calculateTakeProfitPercentage(tpsl.takeProfit) || ''}
               onChange={handleTakeProfitPercentageChange}
               placeholder="0.00"
@@ -188,19 +207,34 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           </div>
         </div>
         <div className="flex flex-col w-full items-start gap-2">
-          <div className="flex items-center w-full justify-between gap-2">
-            <span className="flex-1 text-left text-nowrap font-medium text-white/50 text-xs">
-              SL Value
+          <div
+            className={cn(
+              'flex items-center w-full justify-between gap-2',
+              isRTL && 'flex-row-reverse'
+            )}
+          >
+            <span
+              className={cn(
+                'flex-1 text-start text-nowrap font-medium text-white/50 text-xs',
+                isRTL && 'text-end'
+              )}
+            >
+              {t('SL Value')}
             </span>
-            <span className="flex-1 text-right text-nowrap font-medium text-white/50 text-xs">
-              SL %
+            <span
+              className={cn(
+                'flex-1 text-end text-nowrap font-medium text-white/50 text-xs',
+                isRTL && 'text-start'
+              )}
+            >
+              {t('SL %')}
             </span>
           </div>
-          <div className="flex items-center gap-2 w-full">
+          <div className={cn('flex items-center gap-2 w-full', isRTL && 'flex-row-reverse')}>
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right flex-1"
+              className="text-white text-sm text-end flex-1"
               value={tpsl.stopLoss || ''}
               onChange={handleStopLossValueChange}
               placeholder="0.00"
@@ -208,7 +242,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             <Input
               type="text"
               inputMode="decimal"
-              className="text-white text-sm text-right w-16"
+              className="text-white text-sm text-end w-16"
               value={calculateStopLossPercentage(tpsl.stopLoss) || ''}
               onChange={handleStopLossPercentageChange}
               placeholder="0.00"
@@ -222,7 +256,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         onClick={() => setIsTpsl(!tpsl.isTpsl)}
         className="w-full"
       >
-        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+        {tpsl.isTpsl ? t('Clear TP/SL') : t('Set TP/SL')}
       </Button>
     </div>
   )

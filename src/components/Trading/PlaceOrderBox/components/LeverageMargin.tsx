@@ -10,14 +10,17 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Input } from '@/components/ui/input'
 import { IconX } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
+import { useTranslate } from '@tolgee/react'
 
 interface LeverageMarginProps {
   selectedAsset: string
   leverage: number
   setLeverage: React.Dispatch<React.SetStateAction<number>>
+  isRTL: boolean
 }
 
-const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMarginProps) => {
+const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: LeverageMarginProps) => {
+  const { t } = useTranslate()
   const { clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -30,6 +33,23 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
     error: null
   })
   const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
+  const [isEdited, setIsEdited] = useState<boolean>(false)
+
+  const { activeAssetData } = useHyperliquidStore(
+    useShallow((state) => ({
+      activeAssetData: state.activeAssetData
+    }))
+  )
+
+  useEffect(() => {
+    if (!activeAssetData) return
+    if (isEdited) return
+    setLeverage(activeAssetData.leverage.value)
+  }, [activeAssetData])
+
+  useEffect(() => {
+    setIsEdited(false)
+  }, [selectedAsset])
 
   useEffect(() => {
     const { isValid, error } = numberInputValidator({
@@ -50,6 +70,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
 
   const handleLeverageChange = (value: string) => {
     setLeverageInput(value)
+    setIsEdited(true)
   }
 
   // set the leverage to the existing position leverage
@@ -77,14 +98,14 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="flex items-center justify-between">
+      <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
         <p
           className={cn(
             'text-xs font-medium transition-colors duration-150',
             error.isValid ? 'text-white/50' : 'text-red'
           )}
         >
-          Leverage
+          {t('Leverage')}
         </p>
         <div className="flex items-center gap-2">
           {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
@@ -92,14 +113,16 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
           </Button> */}
           <div
             className={cn(
-              'flex w-16 items-center pr-2 justify-center bg-white/5 text-white/50 rounded-md gap-2',
-              !error.isValid && 'bg-red/10 text-red'
+              'flex w-16 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+              !error.isValid && 'text-red',
+              isRTL && 'flex-row-reverse pl-2'
             )}
           >
             <Input
               className={cn(
                 'flex-1 p-0 text-end text-white bg-transparent border-none',
-                !error.isValid && 'text-red'
+                !error.isValid && 'text-red',
+                isRTL && 'text-start'
               )}
               value={leverageInput}
               onChange={(e) => handleLeverageChange(e.target.value)}
@@ -115,12 +138,20 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
         <Slider
           min={1}
           max={maxLeverage}
+          dir={isRTL ? 'rtl' : 'ltr'}
+          className={cn('w-full')}
           value={[leverage]}
-          onValueChange={(value) => setLeverage(value[0])}
+          onValueChange={(value) => {
+            setLeverage(value[0])
+            setIsEdited(true)
+          }}
         />
         <ToggleGroup
           size={'sm'}
-          className="flex mt-1 items-center bg-white/5 justify-between w-full"
+          className={cn(
+            'flex mt-1 items-center h-8 justify-between w-full',
+            isRTL && 'flex-row-reverse'
+          )}
           type="single"
           value={leverage.toString()}
           onValueChange={(value) => value !== '' && setLeverage(parseInt(value, 10))}
@@ -130,8 +161,8 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage }: LeverageMargin
               key={`leverage-tick-${value}-${index}`}
               value={value.toString()}
               className={cn(
-                'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none'
+                // leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
               )}
             >
               {value}x

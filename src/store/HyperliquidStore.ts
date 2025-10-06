@@ -27,6 +27,7 @@ interface HyperliquidState {
   spotAssetContext: hl.SpotAssetCtx[]
   spotState: hl.SpotClearinghouseState
   openOrders: hl.FrontendOrder[]
+  activeAssetData: hl.WsActiveAssetData | null
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -38,15 +39,16 @@ interface HyperliquidState {
     allMids?: hl.Subscription
     webData2?: hl.Subscription
     candles?: hl.Subscription
+    activeAssetData: hl.Subscription[]
   }
 }
 
 interface HyperliquidActions {
   initSdk: (address: Hex, walletClient?: WalletClient) => Promise<void>
   subscribeToAllMids: () => void
-  unsubscribeFromAllMids: () => void
+  unsubscribeFromAllMids: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
-  unsubscribeWebData2: (address: Hex) => void
+  unsubscribeWebData2: () => Promise<void>
   pushNewOpenOrders: (orders: hl.FrontendOrder[]) => void
   pushNewPosition: (position: hl.AssetPosition) => void
   subscribeToCandle: (
@@ -54,7 +56,12 @@ interface HyperliquidActions {
     interval: hl.EventCandleParameters['interval'],
     callback: (data: hl.Candle) => void
   ) => void
-  unsubscribeFromCandle: (asset: string, interval: hl.EventCandleParameters['interval']) => void
+  unsubscribeFromCandle: (
+    asset: string,
+    interval: hl.EventCandleParameters['interval']
+  ) => Promise<void>
+  subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
+  unsubscribeFromActiveAssetData: () => Promise<void>
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
   updateUserActiveAddress: (address: Hex) => void
@@ -81,6 +88,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     spotAssetContext: [],
     spotState: { balances: [] },
     openOrders: [],
+    activeAssetData: null,
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -88,7 +96,9 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       webData2: Date.now(),
       candles: {}
     },
-    subsManager: {}
+    subsManager: {
+      activeAssetData: []
+    }
   },
   (set, get) => ({
     initSdk: async (address: Hex, walletClient?: WalletClient) => {
@@ -149,10 +159,16 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    unsubscribeFromAllMids: () => {
+    unsubscribeFromAllMids: async () => {
       const { subsManager } = get()
       if (!subsManager.allMids) return
-      subsManager.allMids.unsubscribe()
+      await subsManager.allMids.unsubscribe()
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          allMids: undefined
+        }
+      }))
     },
     subscribeWebData2: async (address: Hex) => {
       const { sdkSubscriptionClient, userActiveAddress } = get()
@@ -162,7 +178,6 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           user: address
         },
         (data) => {
-          console.log('webdata2', data)
           if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
             set({
               clearingHouseState: data.clearinghouseState,
@@ -213,20 +228,31 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       })
     },
-    unsubscribeWebData2: () => {
+    unsubscribeWebData2: async () => {
       const { subsManager } = get()
       if (!subsManager.webData2) return
-      subsManager.webData2.unsubscribe()
+      await subsManager.webData2.unsubscribe()
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          webData2: undefined
+        }
+      }))
     },
     subscribeToCandle: async (
       asset: string,
       interval: hl.EventCandleParameters['interval'],
       callback: (data: hl.Candle) => void
     ) => {
-      const { sdkSubscriptionClient } = get()
+      const { sdkSubscriptionClient, subsManager } = get()
       if (!sdkSubscriptionClient) return
 
       const subscriptionKey = `${asset}-${interval}`
+
+      // Unsubscribe from existing subscription if it exists
+      if (subsManager.candles) {
+        await subsManager.candles.unsubscribe()
+      }
 
       const candleSub = await sdkSubscriptionClient.candle(
         {
@@ -254,12 +280,16 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    unsubscribeFromCandle: (asset: string, interval: hl.EventCandleParameters['interval']) => {
+    unsubscribeFromCandle: async (
+      asset: string,
+      interval: hl.EventCandleParameters['interval']
+    ) => {
       const { subsManager } = get()
       if (!subsManager.candles) return
 
       const subscriptionKey = `${asset}-${interval}`
-      subsManager.candles.unsubscribe()
+
+      await subsManager.candles.unsubscribe()
 
       set((state) => {
         const remainingCandles = { ...state.lastUpdates.candles }
@@ -268,9 +298,47 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           lastUpdates: {
             ...state.lastUpdates,
             candles: remainingCandles
+          },
+          subsManager: {
+            ...state.subsManager,
+            candles: undefined
           }
         }
       })
+    },
+    subscribeToActiveAssetData: async (userAddress: Hex, coinName: string) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      if (userAddress === zeroAddress) return
+      const activeAssetDataSub = await sdkSubscriptionClient.activeAssetData(
+        {
+          user: userAddress,
+          coin: coinName
+        },
+        (data) => {
+          console.log('activeAssetData', data)
+          set({ activeAssetData: data })
+        }
+      )
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          activeAssetData: [...state.subsManager.activeAssetData, activeAssetDataSub]
+        }
+      }))
+    },
+    unsubscribeFromActiveAssetData: async () => {
+      const { subsManager } = get()
+      if (!subsManager.activeAssetData) return
+      subsManager.activeAssetData.forEach((sub) => {
+        sub.unsubscribe()
+      })
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          activeAssetData: []
+        }
+      }))
     },
     checkWebSocketStatus: () => {
       const currentTime = Date.now()

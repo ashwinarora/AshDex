@@ -9,8 +9,11 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../
 import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
+import { useTranslate } from '@tolgee/react'
+import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
+  const { t } = useTranslate()
   const { chainId } = useAccount()
   const { agentWallet, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -25,7 +28,10 @@ const EstablishConnectionModal = () => {
     isAgentApproved,
     currentFeeApproval,
     refetchCurrentFeeApproval,
-    isModalOpen
+    isModalOpen,
+    openDepositModal,
+    closeDepositModal,
+    isDepositModalOpen
   } = useAgentApproval()
 
   useEffect(() => {
@@ -44,7 +50,7 @@ const EstablishConnectionModal = () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
             if (!agentWallet) return
-            const toastId = toast.loading('⏳ Approving agent…')
+            const toastId = toast.loading(t('Approving agent...'))
             try {
               await sdkUserSignerClient.approveAgent({
                 agentAddress: agentWallet.address,
@@ -52,24 +58,36 @@ const EstablishConnectionModal = () => {
               })
               await refetchAgentApproval()
               setIsApproving(true)
-              toast.success('Agent approved successfully', {
+              toast.success(t('Agent approved successfully'), {
                 id: toastId
               })
             } catch (error) {
               console.error('Error approving agent:', error)
               if (error instanceof ApiRequestError) {
-                toast.error(error.message, {
-                  id: toastId
-                })
+                if (error.message.includes('Must deposit before performing actions')) {
+                  toast.info(
+                    t(
+                      'Your wallet seems to be new. Please deposit some funds to establish connection.'
+                    ),
+                    {
+                      id: toastId
+                    }
+                  )
+                  openDepositModal()
+                } else {
+                  toast.error(`${t('Agent approval failed.')} ${error.message}`, {
+                    id: toastId
+                  })
+                }
               } else {
-                toast.error('An unexpected error occurred', {
+                toast.error(t('An unexpected error occurred. Please try again.'), {
                   id: toastId
                 })
               }
             }
           }}
         >
-          Establish Connection
+          {t('Establish Connection')}
         </Button>
       )
     }
@@ -80,54 +98,60 @@ const EstablishConnectionModal = () => {
           onClick={async () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
-            const toastId = toast.loading('Approving fee…')
+            const toastId = toast.loading(t('Approving fee...'))
             try {
               await sdkUserSignerClient.approveBuilderFee({
                 builder: BUILDER_ADDRESS,
                 maxFeeRate: BUILDER_FEE
               })
               await refetchCurrentFeeApproval()
-              toast.success('Fee approved successfully', {
+              toast.success(t('Fee approved successfully'), {
                 id: toastId
               })
             } catch (error) {
               console.error('Error approving fee:', error)
               if (error instanceof ApiRequestError) {
-                toast.error(error.message, {
+                toast.error(`${t('Fee approval failed.')} ${error.message}`, {
                   id: toastId
                 })
               } else {
-                toast.error('An unexpected error occurred', {
+                toast.error(t('An unexpected error occurred'), {
                   id: toastId
                 })
               }
             }
           }}
         >
-          Approve Fee
+          {t('Approve Fee')}
         </Button>
       )
     }
     return (
       <Button variant={'outline'} onClick={closeModal}>
-        Close
+        {t('Close')}
       </Button>
     )
   }
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={closeModal}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Establish Connection</DialogTitle>
-        </DialogHeader>
-        <DialogDescription>
-          This signature is gas-free. It opens a decentralized channel for instant and gasless
-          deposits.
-        </DialogDescription>
-        {getButton()}
-      </DialogContent>
-    </Dialog>
+    <>
+      <Dialog open={isModalOpen} onOpenChange={closeModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('Establish Connection')}</DialogTitle>
+          </DialogHeader>
+          <DialogDescription>
+            {t(
+              'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
+            )}
+          </DialogDescription>
+          {getButton()}
+        </DialogContent>
+      </Dialog>
+      {isDepositModalOpen && (
+        <DepositModal isOpen={isDepositModalOpen} onClose={() => closeDepositModal()} />
+      )}
+    </>
   )
 }
 
