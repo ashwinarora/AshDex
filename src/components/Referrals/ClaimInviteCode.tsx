@@ -1,18 +1,20 @@
 'use client'
 import { useState } from 'react'
-import Image from 'next/image'
-import successicon from '@/assets/images/success_icon.svg'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { InviteCode } from '@/components/Referrals/InviteCode'
 import { useAcceptInviteCode } from '@/hooks/invite'
 import { useUser } from '@/hooks/useUser'
 import { toast } from 'sonner'
+import { IconLoader2, IconRosetteDiscountCheck } from '@tabler/icons-react'
+import { useTranslate } from '@tolgee/react'
+import { Button } from '../ui/button'
 
 function ClaimInviteCode() {
   const [code, setCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { agentWallet } = useHyperliquidStore()
+  const { t } = useTranslate()
   const { data: user, isLoading: isUserLoading } = useUser()
 
   const {
@@ -57,60 +59,52 @@ function ClaimInviteCode() {
   // Show loading state while fetching user data
   if (isUserLoading) {
     return (
-      <div className="p-2 flex flex-col gap-y-5 pt-12 pb-3">
-        <div className="flex justify-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-        </div>
-        <p className="font-semibold text-white text-base text-center">Loading...</p>
+      <div className="w-full h-full flex items-center justify-center">
+        <IconLoader2 className="animate-spin text-white/50 text-8xl" />
       </div>
     )
   }
   // Show if invite is already claimed
   if (user && user.invited_by !== null) {
     return (
-      <div className="p-2 flex flex-col gap-y-5 pt-12 pb-3">
-        <div className="flex justify-center">
-          <Image src={successicon} alt="Already Claimed" style={{ width: 48, height: 'auto' }} />
-        </div>
-        <p className="font-semibold text-white text-base text-center">Invite already claimed</p>
+      <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
+        <IconRosetteDiscountCheck className="size-10 text-green" />
+        <h1 className="text-white font-medium">{t('Invite already claimed')}</h1>
       </div>
     )
   }
 
   if (isSuccess) {
     return (
-      <div className="p-2 flex flex-col gap-y-5 pt-12 pb-3">
-        <div className="flex justify-center">
-          <Image src={successicon} alt="Success" style={{ width: 48, height: 'auto' }} />
-        </div>
-        <p className="font-semibold text-white text-base text-center">
-          The code has been successfully applied
-        </p>
+      <div className="w-full h-full flex flex-col gap-2 items-center justify-center">
+        <IconRosetteDiscountCheck className="size-10 text-green" />
+        <h1 className="text-white font-medium">{t('The code has been successfully applied')}</h1>
       </div>
     )
   } else {
     return (
-      <div className="p-2">
-        <span className="opacity-90 font-medium text-[#8B8BA0] max-sm:text-sm text-base">
-          This will allow you to earn bonuses or other rewards offered by the program. Simply copy
-          and paste the code into this field.
-        </span>
-        <InviteCode value={code} onChange={handleCodeChange} className="mt-4 mb-2" />
+      <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
+        <div className="w-full flex !h-24 flex-col gap-2">
+          <h1 className="text-white font-medium text-lg">{t('Enter Referral Code')}</h1>
+          <p className="text-white/50 font-medium text-sm">
+            {t(
+              'This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.'
+            )}
+          </p>
+        </div>
+        <InviteCode value={code} onChange={handleCodeChange} />
         {!isAgentApproved || currentFeeApproval === 0 ? (
-          <button
-            onClick={openAgentModal}
-            className={`py-2 disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer`}
-          >
+          <Button onClick={openAgentModal} className="w-full">
             Establish Connection
-          </button>
+          </Button>
         ) : (
-          <button
+          <Button
+            className="w-full"
             disabled={code.length !== 6 || isAcceptingInviteCode}
             onClick={claimInviteCode}
-            className={`py-2 disabled:text-[#8B8BA0] rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isAcceptingInviteCode ? 'Processing...' : 'Accept Referral'}
-          </button>
+          </Button>
         )}
       </div>
     )
