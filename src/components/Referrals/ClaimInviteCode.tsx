@@ -5,7 +5,7 @@ import successicon from '@/assets/images/success_icon.svg'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { InviteCode } from '@/components/Referrals/InviteCode'
-import { useClaimInviteCode } from '@/hooks/invite'
+import { useAcceptInviteCode } from '@/hooks/invite'
 import { useUser } from '@/hooks/useUser'
 import { toast } from 'sonner'
 
@@ -16,10 +16,10 @@ function ClaimInviteCode() {
   const { data: user, isLoading: isUserLoading } = useUser()
 
   const {
-    mutateAsync: claimInviteCodeMutation,
+    mutateAsync: acceptInviteCodeMutation,
     isSuccess,
-    isPending: isClaimingInviteCode
-  } = useClaimInviteCode()
+    isPending: isAcceptingInviteCode
+  } = useAcceptInviteCode()
 
   const handleCodeChange = (value: string) => {
     setCode(value.toUpperCase())
@@ -47,7 +47,7 @@ function ClaimInviteCode() {
         return
       }
 
-      await claimInviteCodeMutation({ inviteCode: code, signature })
+      await acceptInviteCodeMutation({ inviteCode: code, signature })
     } catch (error) {
       toast.error('Failed to claim invite code')
       console.error('Error claiming invite code:', error)
@@ -105,11 +105,11 @@ function ClaimInviteCode() {
           </button>
         ) : (
           <button
-            disabled={code.length !== 6 || isClaimingInviteCode}
+            disabled={code.length !== 6 || isAcceptingInviteCode}
             onClick={claimInviteCode}
             className={`py-2 disabled:text-[#8B8BA0] rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {isClaimingInviteCode ? 'Claiming...' : 'Claim Code'}
+            {isAcceptingInviteCode ? 'Processing...' : 'Accept Referral'}
           </button>
         )}
       </div>

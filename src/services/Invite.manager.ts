@@ -31,13 +31,6 @@ class InviteService {
   public async validateInviteCode(code: string): Promise<Error | null> {
     code = this.normalizeCode(code)
 
-    const existingInvite = await this.prisma.invite.findUnique({
-      where: { code: code }
-    })
-    if (existingInvite) {
-      return new Error('Invite code already exists')
-    }
-
     if (!code || code.trim().length === 0) {
       return new Error('Invite code cannot be empty')
     }
@@ -49,6 +42,13 @@ class InviteService {
     const alphanumericRegex = /^[A-Za-z0-9]+$/
     if (!alphanumericRegex.test(code.trim())) {
       return new Error('Invite code can only contain letters and numbers')
+    }
+
+    const existingInvite = await this.prisma.invite.findUnique({
+      where: { code: code }
+    })
+    if (existingInvite) {
+      return new Error('Invite code already exists')
     }
     return null
   }
@@ -160,6 +160,8 @@ class InviteService {
     if (!user.is_nexon_referred) {
       throw new Error('User is not nexon referred')
     }
+
+    // TODO: User cannot accept invite if they have already started trading
 
     await this.prisma.user.update({
       where: { id: user.id },

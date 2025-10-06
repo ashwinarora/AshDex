@@ -4,12 +4,12 @@ import { toast } from 'sonner'
 import { Hex } from 'viem'
 
 // Hook to claim an invite code
-export const useClaimInviteCode = () => {
+export const useAcceptInviteCode = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
     mutationFn: async ({ inviteCode, signature }: { inviteCode: string; signature: Hex }) => {
-      const response = await fetch('/api/invite/claim', {
+      const response = await fetch('/api/invite/accept', {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json'
