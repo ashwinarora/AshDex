@@ -23,6 +23,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
+import Fees from './components/Fees'
 
 const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
@@ -189,7 +190,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         )}
         <Separator orientation="horizontal" />
 
-        <div className="flex items-center justify-center h-fit gap-2">
+        <div
+          className={cn(
+            'flex items-center justify-center h-fit gap-2',
+            isRTL && 'flex-row-reverse flex-wrap'
+          )}
+        >
           <Toggle
             size={'sm'}
             className="bg-white/5"
@@ -320,10 +326,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <p className="text-white/50">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
-          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">{t('Fees')}</p>
-            <p className="text-white">0.0% / 0.0%</p>
-          </div>
+          <Fees isSpot={isSpot} isRTL={isRTL} />
         </div>
       </div>
       <div className="flex flex-col gap-2 h-fit w-full p-2">

@@ -96,7 +96,7 @@ const ProcessingDistribution: React.FC<ProcessingDistributionProps> = ({
         >
           <div className="flex items-center justify-between w-full">
             <p className="text-lg text-white font-semibold tracking-[0em]">
-              {'Processing Distribution…'}
+              {'Processing Distribution...'}
             </p>
             <button
               onClick={openVaultsModal}
