@@ -15,11 +15,9 @@ class UserManager {
     return UserManager.instance
   }
 
-  async findUserByWalletId(walletId: string) {
+  async findUserByWalletId(walletId: string): Promise<User | null> {
     return prisma.user.findFirst({
-      where: {
-        wallet_id: walletId
-      }
+      where: { wallet_id: { equals: walletId, mode: 'insensitive' } }
     })
   }
 

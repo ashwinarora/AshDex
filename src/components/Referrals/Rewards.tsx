@@ -6,7 +6,7 @@ interface ClaimProps {
   isCreateCode?: boolean
   totalClaim: number
 }
-function Claim({ isCreateCode, totalClaim }: ClaimProps) {
+function Rewards({ isCreateCode, totalClaim }: ClaimProps) {
   const { t } = useTranslate()
   const handleSubmit = () => {
     setTimeout(() => {
@@ -17,12 +17,12 @@ function Claim({ isCreateCode, totalClaim }: ClaimProps) {
   }
 
   return (
-    <div>
+    <div className="p-2">
       {' '}
       {REFERRALS_CLAIM_DESC?.map((desc, index) => (
         <span
           key={index}
-          className="font-medium mb-8 opacity-90 max-sm:text-sm text-base text-[#8B8BA0]"
+          className="font-medium opacity-90 max-sm:text-sm text-base text-[#8B8BA0]"
         >
           {desc}
         </span>
@@ -44,4 +44,4 @@ function Claim({ isCreateCode, totalClaim }: ClaimProps) {
   )
 }
 
-export default Claim
+export default Rewards

@@ -5,12 +5,12 @@ import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
 const createInvitePostHandler = async (request: AuthenticatedRequest) => {
   try {
-    const payload = JSON.parse(request.payload as string)
-    const inviteCode = payload.inviteCode
+    // @ts-expect-error we know that payload is there
+    const inviteCode = request.payload.inviteCode
     const wallet_id = request.wallet_id as Address
 
     // Validate required fields
-    if (!payload.inviteCode) {
+    if (!inviteCode) {
       return NextResponse.json({ error: 'Missing required invite code' }, { status: 400 })
     }
 

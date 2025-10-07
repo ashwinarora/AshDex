@@ -425,7 +425,7 @@ export const MORE_OPTIONS = [
   { name: 'Settings', path: '/settings' }
 ]
 
-export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Claim'] as const
+export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Rewards'] as const
 
 export const REFERRALSDATA = [
   {
