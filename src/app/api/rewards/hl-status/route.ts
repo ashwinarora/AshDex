@@ -15,6 +15,8 @@ export const GET = async () => {
     rewards: parseFloat(state.cumFeesRewardedToReferrer) / 2
   }))
 
+  console.log('all_rewards', all_rewards)
+
   // update all users with their respective reward values in a transaction
   await prisma.$transaction(
     all_rewards.map((reward) =>

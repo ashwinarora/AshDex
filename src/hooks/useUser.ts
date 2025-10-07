@@ -1,17 +1,7 @@
 'use client'
+import { User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-
-export interface IUser {
-  id: number
-  wallet_id: string
-  username: string
-  avatar_url: number | null
-  created_at: string
-  updated_at: string
-  invited_by: number | null
-  is_nexon_referred: boolean
-}
 
 // Hook to fetch user details by wallet_id
 export const useUser = () => {
@@ -27,7 +17,21 @@ export const useUser = () => {
         throw new Error('Failed to fetch user details')
       }
 
-      const data: IUser = await response.json()
+      const data: User = await response.json()
+
+      // data.rewards_updated_at is more than 24hr old, then fetch the rewards from the api
+      if (
+        !data.rewards_updated_at ||
+        new Date(data.rewards_updated_at).getTime() < Date.now() - 24 * 60 * 60 * 1000
+      ) {
+        const rewardsResponse = await fetch(`/api/rewards/hl-status`)
+        if (!rewardsResponse.ok) {
+          throw new Error('Failed to fetch rewards')
+        }
+        const rewardsData = await rewardsResponse.json()
+        console.log('rewardsData', rewardsData)
+      }
+
       return data
     },
     enabled: isConnected && !!address,
