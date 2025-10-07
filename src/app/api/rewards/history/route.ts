@@ -31,8 +31,7 @@ export const GET = async (request: NextRequest) => {
       select: {
         id: true,
         rewards_claimed: true,
-        created_at: true,
-        updated_at: true
+        created_at: true
       }
     })
 
