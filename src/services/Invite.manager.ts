@@ -1,6 +1,7 @@
 import { Invite, PrismaClient, User } from '@prisma/client'
 import { Address } from 'viem'
 import UserManager from './User.manager'
+import { Decimal } from '@prisma/client/runtime/library'
 
 export interface IInviteWithUsedBy extends Invite {
   used_by: User[]
@@ -161,7 +162,9 @@ class InviteService {
       throw new Error('User is not nexon referred')
     }
 
-    // TODO: User cannot accept invite if they have already started trading
+    if (user.rewards_generated.greaterThan(Decimal(0))) {
+      throw new Error('User has already started trading')
+    }
 
     await this.prisma.user.update({
       where: { id: user.id },

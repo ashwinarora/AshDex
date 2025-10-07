@@ -15,15 +15,17 @@ datasource db {
 }
 
 model User {
-  id                Int                  @id @default(autoincrement())
-  wallet_id         String               @unique @db.VarChar(42)
-  username          String               @unique @db.VarChar(50)
-  avatar_url        Int?
-  created_at        DateTime             @default(now())
-  updated_at        DateTime             @updatedAt
-  terms_signatures  UserTermsSignature[]
-  invited_by        Int?
-  is_nexon_referred Boolean              @default(true)
+  id                 Int                  @id @default(autoincrement())
+  wallet_id          String               @unique @db.VarChar(42)
+  username           String               @unique @db.VarChar(50)
+  avatar_url         Int?
+  created_at         DateTime             @default(now())
+  updated_at         DateTime             @updatedAt
+  terms_signatures   UserTermsSignature[]
+  invited_by         Int?
+  is_nexon_referred  Boolean              @default(true)
+  rewards_generated  Decimal              @default(0.0) @db.Decimal(10, 4)
+  rewards_updated_at DateTime?
 
   // Relations
   invites       Invite[]            @relation("InviteCodes")

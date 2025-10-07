@@ -21,8 +21,7 @@ export const GET = async (request: NextRequest) => {
 
   const rewardsClaimed = totalRewardsClaimed._sum.rewards_claimed || Decimal(0)
 
-  // TODO: Get this value from HL
-  const totalRewardsGenerated = Decimal(100).div(2)
+  const totalRewardsGenerated = user.rewards_generated
 
   const rewardsAvailableToClaim = totalRewardsGenerated.sub(rewardsClaimed)
 

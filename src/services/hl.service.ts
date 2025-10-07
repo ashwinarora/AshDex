@@ -1,6 +1,14 @@
 import { Address } from 'viem'
 import * as hl from '@nktkas/hyperliquid'
 
+export interface IRefferalStates {
+  cumVlm: string
+  cumRewardedFeesSinceReferred: string
+  cumFeesRewardedToReferrer: string
+  timeJoined: number
+  user: string
+}
+
 class HLService {
   private static instance: HLService
   private static mainnetUrl = 'https://api.hyperliquid.xyz'
@@ -37,9 +45,12 @@ class HLService {
     return response
   }
 
-  public async getReferral(user: Address): Promise<hl.Referral> {
-    const response = await this.make_info_request({ type: 'referral', user })
-    return response
+  public async getReferralStates(user: Address): Promise<IRefferalStates[]> {
+    const response: hl.Referral = await this.make_info_request({ type: 'referral', user })
+    if (response.referrerState.stage === 'ready') {
+      return response.referrerState.data.referralStates
+    }
+    return []
   }
 }
 
