@@ -141,7 +141,9 @@ async function kmsSignTypedData(params: {
     // Try v = 27
     const sig27 = new secp256k1.Signature(sig.r, sig.s, 27)
     const pubKey27 = sig27.recoverPublicKey(messageHashBytes)
-    const address27 = '0x' + keccak256(pubKey27.toRawBytes(false).slice(1)).slice(26)
+
+    // TODO: here replace toRawBytes with toBytes, check for the errors
+    const address27 = '0x' + keccak256(pubKey27.toBytes(false).slice(1)).slice(26)
 
     console.log('Manual recovery v=27 result:', address27)
 
@@ -153,7 +155,9 @@ async function kmsSignTypedData(params: {
       v = 28
       const sig28 = new secp256k1.Signature(sig.r, sig.s, 28)
       const pubKey28 = sig28.recoverPublicKey(messageHashBytes)
-      const address28 = '0x' + keccak256(pubKey28.toRawBytes(false).slice(1)).slice(26)
+
+      // TODO: here replace toRawBytes with toBytes, check for the errors
+      const address28 = '0x' + keccak256(pubKey28.toBytes(false).slice(1)).slice(26)
 
       console.log('Manual recovery v=28 result:', address28)
       recoveredAddress = address28

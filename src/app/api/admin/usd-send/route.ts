@@ -7,24 +7,28 @@ import { Address } from 'viem'
 import { computeAddress } from 'ethers'
 import { GetPublicKeyCommand, KMSClient } from '@aws-sdk/client-kms'
 
-const region = process.env.MY_AWS_REGION ?? 'ap-south-1'
-const keyId = process.env.MY_KMS_KEY_ID ?? 'alias/eth-admin'
-const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? ''
-const secretAccessKey = process.env.MY_AWS_SECRET_ACCESS_KEY ?? ''
+function getKMSClient() {
+  const region = process.env.MY_AWS_REGION ?? 'ap-south-1'
+  const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? ''
+  const secretAccessKey = process.env.MY_AWS_SECRET_ACCESS_KEY ?? ''
 
-if (!accessKeyId || !secretAccessKey) {
-  throw new Error('MY_AWS_ACCESS_KEY_ID and MY_AWS_SECRET_ACCESS_KEY must be set')
+  if (!accessKeyId || !secretAccessKey) {
+    throw new Error('MY_AWS_ACCESS_KEY_ID and MY_AWS_SECRET_ACCESS_KEY must be set')
+  }
+
+  return new KMSClient({
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey
+    }
+  })
 }
 
-const kms = new KMSClient({
-  region,
-  credentials: {
-    accessKeyId: accessKeyId,
-    secretAccessKey: secretAccessKey
-  }
-})
-
 async function getEthAddress(): Promise<Address> {
+  const keyId = process.env.MY_KMS_KEY_ID ?? 'alias/eth-admin'
+  const kms = getKMSClient()
+
   const { PublicKey } = await kms.send(new GetPublicKeyCommand({ KeyId: keyId }))
   if (!PublicKey) throw new Error('KMS returned no public key')
   const spkiDer = Buffer.from(PublicKey)
