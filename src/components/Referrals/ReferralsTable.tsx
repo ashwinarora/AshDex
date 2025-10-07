@@ -116,8 +116,8 @@ const ReferralsTable = () => {
 
   return (
     <>
-      {
-        table.getRowModel().rows.length > 0 ? (<Table className="w-full h-full">
+      {table.getRowModel().rows.length > 0 ? (
+        <Table className="w-full h-full">
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
@@ -141,7 +141,8 @@ const ReferralsTable = () => {
                       header.column.columnDef.enableSorting
                         ? 'hover:text-accent-foreground'
                         : 'hover:text-white/50',
-                      header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
+                      header.column.getIsSorted() === 'asc' ||
+                        header.column.getIsSorted() === 'desc'
                         ? 'text-accent-foreground'
                         : 'text-white/50'
                     )}
@@ -193,13 +194,12 @@ const ReferralsTable = () => {
             ))}
           </TableBody>
         </Table>
-        ) : (
-          <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
-            <IconUserX className="text-white size-10" />
-            <span className="text-white/50 text-sm">{t('No Referrals found')}</span>
-          </div>
-        )
-      }
+      ) : (
+        <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
+          <IconUserX className="text-white size-10" />
+          <span className="text-white/50 text-sm">{t('No Referrals found')}</span>
+        </div>
+      )}
     </>
   )
 }
