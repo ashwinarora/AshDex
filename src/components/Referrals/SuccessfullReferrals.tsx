@@ -1,7 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
 import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
-import { IInviteWithUsedBy } from '@/services/Invite.manager'
 import {
   useReactTable,
   getCoreRowModel,
@@ -21,35 +20,48 @@ import {
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 
-const columnHelper = createColumnHelper<IInviteWithUsedBy>()
+type FlattenedReferral = {
+  wallet_id: string
+  user_id: number
+  rewards_generated: number | null
+  created_at: Date
+}
+
+const columnHelper = createColumnHelper<FlattenedReferral>()
 
 export default function SuccessfullReferrals() {
   const [sorting, setSorting] = useState<SortingState>([])
   const { data: successfulInvites, isLoading, error } = useSuccessfulInvites()
 
+  // Flatten the data so each user gets their own row
+  const flattenedData = useMemo(() => {
+    if (!successfulInvites) return []
+
+    return successfulInvites.flatMap((invite) =>
+      invite.used_by.map((user) => ({
+        wallet_id: user.wallet_id,
+        user_id: user.id,
+        rewards_generated: user.rewards_generated ? Number(user.rewards_generated) : null,
+        created_at: invite.created_at
+      }))
+    )
+  }, [successfulInvites])
+
   const columns = useMemo(
     () => [
-      columnHelper.accessor('used_by', {
-        header: 'Used By',
+      columnHelper.accessor('wallet_id', {
+        header: 'Wallet Address',
+        cell: (info) => <div className="text-xs font-mono">{info.getValue()}</div>
+      }),
+      columnHelper.accessor('rewards_generated', {
+        header: 'Rewards Generated',
         cell: (info) => {
-          const usedBy = info.getValue()
-          return (
-            <div className="flex flex-col gap-1">
-              {usedBy.length > 0 ? (
-                usedBy.map((user) => (
-                  <div key={user.id} className="text-xs font-mono">
-                    {user.wallet_id}
-                  </div>
-                ))
-              ) : (
-                <span className="text-gray-400 text-xs">No users yet</span>
-              )}
-            </div>
-          )
+          const value = info.getValue()
+          return <div className="text-sm">{value !== null ? `$${value.toFixed(2)}` : '-'}</div>
         }
       }),
       columnHelper.accessor('created_at', {
-        header: 'Created At',
+        header: 'Joined At',
         cell: (info) => new Date(info.getValue()).toLocaleDateString()
       })
     ],
@@ -57,7 +69,7 @@ export default function SuccessfullReferrals() {
   )
 
   const table = useReactTable({
-    data: successfulInvites || [],
+    data: flattenedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -89,7 +101,7 @@ export default function SuccessfullReferrals() {
       {!isLoading && !error && successfulInvites && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-400">Total Referrals: {successfulInvites.length}</div>
+            <div className="text-sm text-gray-400">Total Referrals: {flattenedData.length}</div>
           </div>
 
           <div className="border border-white/10 rounded-lg overflow-hidden">

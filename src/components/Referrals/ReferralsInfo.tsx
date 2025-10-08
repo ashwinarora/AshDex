@@ -1,5 +1,5 @@
 'use client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
 import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
@@ -7,7 +7,7 @@ import CreateCode from '@/components/Referrals/CreateCode'
 import Rewards from '@/components/Referrals/Rewards'
 import referralsellipseImg from '@/assets/images/referralsellipseImg.svg'
 import trophyicon from '@/assets/images/trophy_icon.svg'
-import { useUser } from '@/hooks/useUser'
+import { useSuccessfulInvites } from '@/hooks/invite'
 
 type ReferralsTab = (typeof REFERRALSINFO_TAB)[number]
 
@@ -16,7 +16,25 @@ interface ReferralsInfoProps {
 }
 function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
-  const { data: user } = useUser()
+  const { data: userInvites } = useSuccessfulInvites()
+
+  const [rewardsGenerated, setRewardsGenerated] = useState(0)
+
+  useEffect(() => {
+    if (userInvites) {
+      const totalRewards = userInvites.reduce(
+        (acc, invite) =>
+          acc +
+          invite.used_by.reduce(
+            (userAcc, user) =>
+              userAcc + (user.rewards_generated ? Number(user.rewards_generated) : 0),
+            0
+          ),
+        0
+      )
+      setRewardsGenerated(totalRewards)
+    }
+  }, [userInvites])
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -53,7 +71,7 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
         <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
           <div>
             <p className="text-gray-400 text-sm font-medium">Rewards Earned</p>
-            <p className="text-2xl font-bold text-white">${user?.rewards_generated.toString()}</p>
+            <p className="text-2xl font-bold text-white">${rewardsGenerated.toFixed(2)}</p>
           </div>
         </div>
       </div>
