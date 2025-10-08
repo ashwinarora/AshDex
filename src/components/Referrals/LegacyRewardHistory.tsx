@@ -1,124 +1,199 @@
-import React, { useMemo, useState } from 'react'
-import Image from 'next/image'
-import { LEGACY_REWARD_COLUMNS } from '@/utils/constants'
-import Pagination from '@/components/common/Pagination'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import infoicon from '@/assets/images/info_icon.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
+import { useMemo, useState } from 'react'
+import { useGetClaimRewardHistory } from '@/hooks/invite/useGetClaimRewardHistory'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
+import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import {
+  IconAlertCircle,
+  IconChevronDown,
+  IconChevronUp,
+  IconLoader2,
+  IconSelector,
+  IconUserX
+} from '@tabler/icons-react'
 
-type ColumnType = {
-  key: string
-  label: string
-}
-
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
-interface RewardHistoryItem {
+type RewardHistoryData = {
   id: number
-  date: string
-  yourVolume: string
-  yourReferralVolume: string
-  totalRewardsTool: string
-}
-interface LegacyRewardHistoryProps {
-  rewardHistory?: RewardHistoryItem[]
+  rewards_claimed: number
+  created_at: Date
 }
 
-function LegacyRewardHistory({ rewardHistory }: LegacyRewardHistoryProps) {
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-  const totalPages = Math.ceil((rewardHistory?.length ?? 0) / pageSize)
+const columnHelper = createColumnHelper<RewardHistoryData>()
 
-  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-    return (
-      <div className="flex flex-col gap-2 text-white text-sm">
-        {columns?.map((col) => (
-          <div key={col?.key} className="flex justify-between">
-            <span className="text-[#8B8BA0]">{col?.label}</span>
-            <span className={col?.key === 'contract' ? 'truncate' : ''}>
-              {item[col?.key] ?? '-'}
-            </span>
-          </div>
-        ))}
-      </div>
-    )
-  }
-  const paginatedOrders = useMemo(() => {
-    return rewardHistory?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [rewardHistory, currentPage, pageSize])
+function LegacyRewardHistory() {
+  const { t } = useTranslate()
+  const { data: rewardHistoryData, isLoading, error } = useGetClaimRewardHistory()
+  const [sorting, setSorting] = useState<SortingState>([])
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('created_at', {
+        header: t('Date'),
+        enableSorting: true,
+        cell: (info) => (
+          <span className="text-xs">
+            {new Date(info.getValue()).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: 'short',
+              day: 'numeric',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </span>
+        )
+      }),
+      columnHelper.accessor('rewards_claimed', {
+        header: t('Rewards Claimed'),
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">${info.getValue().toFixed(2)}</span>
+      })
+    ],
+    [t]
+  )
+
+  const table = useReactTable({
+    data: rewardHistoryData?.rewardsHistory || [],
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting
+    }
+  })
 
   return (
-    <div className="overflow-x-auto w-full px-3">
-      <table className="w-full  hidden lg:table text-white">
-        <thead>
-          <tr>
-            {LEGACY_REWARD_COLUMNS?.map((col) => (
-              <th
-                key={col?.key}
-                className="pt-3 pb-2 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-start"
-              >
-                <div className="flex justify-start items-center gap-1">
-                  {col?.label ? (
-                    <>
-                      <Image
-                        src={sortingIcon}
-                        alt="Sort"
-                        style={{ width: 12, height: 'auto' }}
-                        className="w-3 h-3 cursor-pointer"
-                      />
-                      <span>{col?.label}</span>
-                      <Image
-                        src={infoicon}
-                        alt="Info"
-                        style={{ width: 16, height: 'auto' }}
-                        className="w-4 h-4 cursor-pointer"
-                      />
-                    </>
-                  ) : null}
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {paginatedOrders?.map((order) => {
-            return (
-              <tr key={order?.id} className=" border-b border-white/10">
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                  {order?.date}
-                </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                  {order?.yourVolume}
-                </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                  {order?.yourReferralVolume}
-                </td>
-                <td className="py-2.5 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                  {order?.totalRewardsTool}
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
-      <ResponsiveDataCard
-        columns={[...LEGACY_REWARD_COLUMNS]}
-        data={paginatedOrders || []}
-        renderRow={(item) => <RenderRowData item={item} columns={[...LEGACY_REWARD_COLUMNS]} />}
-      />
-      {(rewardHistory?.length ?? 0) > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
+    <>
+      {isLoading && (
+        <div className="w-full h-full items-center justify-center flex flex-col gap-2">
+          <IconLoader2 className="text-white size-10 animate-spin" />
+        </div>
       )}
-    </div>
+
+      {error && (
+        <div className="w-full h-full items-center justify-center flex flex-col gap-2">
+          <IconAlertCircle className="text-red size-10" />
+          <div className="text-red">
+            {t('Error loading reward history')}: {t(error.message)}
+          </div>
+        </div>
+      )}
+
+      {!isLoading && !error && rewardHistoryData && (
+        <>
+          {table.getRowModel().rows?.length ? (
+            <div className="w-full h-full flex flex-col gap-4">
+              {/* Summary section */}
+              {rewardHistoryData.summary && (
+                <div className="flex gap-4 flex-wrap">
+                  <div className="bg-white/5 rounded-md p-4 flex-1 min-w-[200px]">
+                    <div className="text-white/50 text-xs mb-1">{t('Total Rewards Claimed')}</div>
+                    <div className="text-white text-xl font-semibold">
+                      ${rewardHistoryData.summary.totalRewardsClaimed.toFixed(2)}
+                    </div>
+                  </div>
+                  <div className="bg-white/5 rounded-md p-4 flex-1 min-w-[200px]">
+                    <div className="text-white/50 text-xs mb-1">{t('Total Claims')}</div>
+                    <div className="text-white text-xl font-semibold">
+                      {rewardHistoryData.summary.totalClaims}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Table */}
+              <Table className="w-full h-full">
+                <TableHeader>
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          onClick={header.column.getToggleSortingHandler()}
+                          className={cn(
+                            'cursor-pointer w-full',
+                            isRTL
+                              ? header.id === 'send' || header.id === 'transfer'
+                                ? 'justify-start'
+                                : 'justify-end'
+                              : header.id === 'send' || header.id === 'transfer'
+                                ? 'justify-end'
+                                : 'justify-start',
+                            header.column.columnDef.enableSorting
+                              ? 'hover:text-accent-foreground'
+                              : 'hover:text-white/50',
+                            header.column.getIsSorted() === 'asc' ||
+                              header.column.getIsSorted() === 'desc'
+                              ? 'text-accent-foreground'
+                              : 'text-white/50'
+                          )}
+                        >
+                          {header.isPlaceholder ? null : (
+                            <>
+                              {flexRender(header.column.columnDef.header, header.getContext())}
+                              {header.column.columnDef.enableSorting ? (
+                                header.column.getIsSorted() === 'asc' ? (
+                                  <IconChevronUp className="text-inherit size-4" />
+                                ) : header.column.getIsSorted() === 'desc' ? (
+                                  <IconChevronDown className="text-inherit size-4" />
+                                ) : (
+                                  <IconSelector className="text-inherit size-4" />
+                                )
+                              ) : null}
+                            </>
+                          )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+
+                <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow className="h-10" key={row.id}>
+                      {row.getVisibleCells().map((cell) => {
+                        return (
+                          <TableCell
+                            key={cell.id}
+                            className={cn(
+                              'font-medium text-white text-xs',
+                              isRTL
+                                ? cell.column.id === 'send' || cell.column.id === 'transfer'
+                                  ? 'text-start'
+                                  : 'text-end'
+                                : cell.column.id === 'send' || cell.column.id === 'transfer'
+                                  ? 'text-end'
+                                  : 'text-start'
+                            )}
+                          >
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        )
+                      })}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
+              <IconUserX className="text-white size-10" />
+              <span className="text-white/50 text-sm">{t('No reward history found')}</span>
+            </div>
+          )}
+        </>
+      )}
+    </>
   )
 }
 

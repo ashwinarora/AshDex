@@ -6,7 +6,6 @@ import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { REFERRALSDATA } from '@/utils/constants'
 import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import ReferralsSuccess from './ReferralsSuccess'
 import ReferralsHeader from './ReferralsHeader'
 import ReferralsActionPanel from './ReferralsActionPanel'
 import ReferralStatsCard from './ReferralStatsCard'
@@ -153,7 +152,6 @@ function Referrals() {
           <ReferralsTablesTab />
           <ReferralsActionPanel />
         </div>
-        <ReferralsSuccess />
       </div>
       <FooterCompact />
       {/* <div className=" bg-secondary my-1">
