@@ -12,7 +12,7 @@
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
     "@allbridge/bridge-core-sdk": "3.22.1-alpha.1",
-    "@aws-sdk/client-kms": "^3.882.0",
+    "@aws-sdk/client-kms": "^3.901.0",
     "@creit.tech/stellar-wallets-kit": "^1.7.3",
     "@dicebear/collection": "^9.2.2",
     "@dicebear/core": "^9.2.2",
