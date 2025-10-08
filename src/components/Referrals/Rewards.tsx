@@ -1,7 +1,6 @@
 import React from 'react'
 import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
-import { Skeleton } from '../ui/skeleton'
 import { Button } from '../ui/button'
 interface ClaimProps {
   totalClaim: number
@@ -10,6 +9,7 @@ interface ClaimProps {
 function Rewards({ totalClaim }: ClaimProps) {
   const { t } = useTranslate()
   const handleSubmit = () => {
+    // TODO: Implement claim rewards
     setTimeout(() => {
       toast.success(t('Claim Successful!'), {
         description: `You’ve successfully claimed ${totalClaim}. The funds have been added to your balance.`
@@ -29,13 +29,7 @@ function Rewards({ totalClaim }: ClaimProps) {
       </div>
       <div className="flex flex-col text-sm gap-2 items-start justify-between w-full">
         <h2>{t('Unclaimed Rewards')}</h2>
-        <h1 className="text-4xl font-semibold text-white">
-          {totalClaim !== undefined ? (
-            `$${totalClaim.toFixed(2)}`
-          ) : (
-            <Skeleton className="w-36 h-9" />
-          )}
-        </h1>
+        <h1 className="text-4xl font-semibold text-white">{totalClaim.toString()}</h1>
       </div>
       <Button disabled={totalClaim === 0} onClick={handleSubmit} className="w-full">
         {totalClaim === 0 ? t('No Rewards to Claim') : t('Claim')}

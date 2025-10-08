@@ -1,5 +1,4 @@
 import { cn } from '@/lib/utils'
-import { Skeleton } from '../ui/skeleton'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
 import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
@@ -40,27 +39,23 @@ const ReferralStatsCard = () => {
         >
           <h2>{t('Rewards Earned')}</h2>
         </div>
-        <h1 className="text-4xl font-semibold text-white">
-          {referral_rewards ? `$${referral_rewards}` : <Skeleton className="w-36 h-9" />}
+        <h1 className="flex justify-start items-center h-full text-4xl font-semibold text-white">
+          {referral_rewards.toString()}
         </h1>
       </div>
       <div
         className={cn(
-          'flex flex-col justify-between bg-secondary rounded-md flex-1 gap-4 p-4',
+          'flex flex-col bg-secondary rounded-md flex-1 gap-4 p-4',
           isRTL && 'items-end'
         )}
       >
         <div
           className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}
         >
-          <h2>{t('Your Volume')}</h2>
+          <h2>{t('Cumulative Referral Volume')}</h2>
         </div>
-        <h1 className="text-4xl font-semibold text-white">
-          {referral_volume_traded ? (
-            `$${referral_volume_traded}`
-          ) : (
-            <Skeleton className="w-36 h-9" />
-          )}
+        <h1 className="flex justify-start items-center h-full text-4xl font-semibold text-white">
+          {referral_volume_traded.toString()}
         </h1>
       </div>
     </div>

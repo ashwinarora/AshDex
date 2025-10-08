@@ -1,7 +1,6 @@
 'use client'
 import React, { useMemo, useState } from 'react'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
-import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
 import CreateCode from '@/components/Referrals/CreateCode'
 import Rewards from '@/components/Referrals/Rewards'
@@ -10,21 +9,36 @@ import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
+import { useSuccessfulInvites, useGetClaimRewardHistory } from '@/hooks/invite'
 
 type ReferralsTab = (typeof REFERRALSINFO_TAB)[number]
 
 function ReferralsActionPanel() {
   const { t } = useTranslate()
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
-  const { data: referralsDetails } = useReferralsInfo()
+  const { data: userInvites } = useSuccessfulInvites()
+  const { data: claimRewardHistory } = useGetClaimRewardHistory()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
-  const totalClaim = useMemo(() => {
-    return (
-      parseFloat(referralsDetails?.builderRewards || '0') +
-      parseFloat(referralsDetails?.claimedRewards || '0')
+  const total_rewards = useMemo(() => {
+    return userInvites?.reduce(
+      (acc, invite) =>
+        acc +
+        invite.used_by.reduce(
+          (userAcc, user) =>
+            userAcc + (user.rewards_generated ? Number(user.rewards_generated) : 0),
+          0
+        ),
+      0
     )
-  }, [referralsDetails])
+  }, [userInvites])
+
+  const total_claim = useMemo(() => {
+    if (!total_rewards) return 0
+    if (!claimRewardHistory || !claimRewardHistory.summary.totalRewardsClaimed) return total_rewards
+
+    return total_rewards - claimRewardHistory.summary.totalRewardsClaimed
+  }, [total_rewards, claimRewardHistory])
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -33,7 +47,7 @@ function ReferralsActionPanel() {
       case 'Create Code':
         return <CreateCode />
       case 'Rewards':
-        return <Rewards totalClaim={totalClaim} />
+        return <Rewards totalClaim={total_claim} />
       default:
         return null
     }
