@@ -1,7 +1,6 @@
 'use client'
 import { useState, useMemo } from 'react'
 import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
-import { IInviteWithUsedBy } from '@/services/Invite.manager'
 import {
   useReactTable,
   getCoreRowModel,
@@ -30,44 +29,73 @@ import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 
-const columnHelper = createColumnHelper<IInviteWithUsedBy>()
+// Flattened type where each user gets their own row
+type FlattenedInviteUser = {
+  userId: string
+  userWalletId: string
+  userCreatedAt: Date
+  rewardsGenerated: number
+  clmVol: number
+}
+
+const columnHelper = createColumnHelper<FlattenedInviteUser>()
 
 export default function ReferralsSuccess() {
   const { t } = useTranslate()
   const [sorting, setSorting] = useState<SortingState>([])
   const { data: successfulInvites, isLoading, error } = useSuccessfulInvites()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+
+  // Flatten the data: each user gets their own row
+  const flattenedData = useMemo(() => {
+    if (!successfulInvites) return []
+
+    const flattened: FlattenedInviteUser[] = []
+    successfulInvites.forEach((invite) => {
+      if (invite.used_by && invite.used_by.length > 0) {
+        invite.used_by.forEach((user) => {
+          flattened.push({
+            userId: user.id.toString(),
+            userWalletId: user.wallet_id,
+            userCreatedAt: user.created_at,
+            rewardsGenerated: Number(user.rewards_generated) || 0,
+            clmVol: Number(user.volume_traded) || 0
+          })
+        })
+      }
+    })
+    return flattened
+  }, [successfulInvites])
+
   const columns = useMemo(
     () => [
-      columnHelper.accessor('used_by', {
-        header: 'Used By',
-        cell: (info) => {
-          const usedBy = info.getValue()
-          return (
-            <div className="flex flex-col gap-1">
-              {usedBy.length > 0 ? (
-                usedBy.map((user) => (
-                  <div key={user.id} className="text-xs font-mono">
-                    {user.wallet_id}
-                  </div>
-                ))
-              ) : (
-                <span className="text-gray-400 text-xs">No users yet</span>
-              )}
-            </div>
-          )
-        }
+      columnHelper.accessor('userWalletId', {
+        header: 'User Wallet',
+        cell: (info) => <span className="text-xs font-mono">{info.getValue()}</span>
       }),
-      columnHelper.accessor('created_at', {
-        header: 'Created At',
-        cell: (info) => new Date(info.getValue()).toLocaleDateString()
+      columnHelper.accessor('userCreatedAt', {
+        header: 'User Joined',
+        enableSorting: true,
+        cell: (info) => (
+          <span className="text-xs">{new Date(info.getValue()).toLocaleDateString()}</span>
+        )
+      }),
+      columnHelper.accessor('rewardsGenerated', {
+        header: 'Rewards Generated',
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">{info.getValue().toFixed(2)}</span>
+      }),
+      columnHelper.accessor('clmVol', {
+        header: 'Volume Traded',
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">{info.getValue().toFixed(2)}</span>
       })
     ],
     []
   )
 
   const table = useReactTable({
-    data: successfulInvites || [],
+    data: flattenedData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -111,6 +139,7 @@ export default function ReferralsSuccess() {
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
                         className={cn(
                           'cursor-pointer w-full',
                           isRTL

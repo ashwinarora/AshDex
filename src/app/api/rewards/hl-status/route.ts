@@ -10,10 +10,13 @@ export const GET = async () => {
   }
   const referralStates = await hlService.getReferralStates(NEXON_USER as Address)
 
-  const all_rewards: { address: Address; rewards: number }[] = referralStates.map((state) => ({
-    address: state.user as Address,
-    rewards: parseFloat(state.cumFeesRewardedToReferrer) / 2
-  }))
+  const all_rewards: { address: Address; rewards: number; clmVol: number }[] = referralStates.map(
+    (state) => ({
+      address: state.user as Address,
+      rewards: parseFloat(state.cumFeesRewardedToReferrer) / 2,
+      clmVol: parseFloat(state.cumVlm)
+    })
+  )
 
   // update all users with their respective reward values in a transaction
   await prisma.$transaction(
@@ -27,6 +30,7 @@ export const GET = async () => {
         },
         data: {
           rewards_generated: reward.rewards,
+          volume_traded: reward.clmVol,
           rewards_updated_at: new Date()
         }
       })

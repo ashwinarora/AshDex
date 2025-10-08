@@ -25,6 +25,7 @@ model User {
   invited_by         Int?
   is_nexon_referred  Boolean              @default(true)
   rewards_generated  Decimal              @default(0.0) @db.Decimal(10, 4)
+  volume_traded      Decimal              @default(0.0) @db.Decimal(10, 4)
   rewards_updated_at DateTime?
 
   // Relations
