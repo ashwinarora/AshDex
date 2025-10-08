@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useMemo, useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
 import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
@@ -18,22 +18,17 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
   const { data: userInvites } = useSuccessfulInvites()
 
-  const [rewardsGenerated, setRewardsGenerated] = useState(0)
-
-  useEffect(() => {
-    if (userInvites) {
-      const totalRewards = userInvites.reduce(
-        (acc, invite) =>
-          acc +
-          invite.used_by.reduce(
-            (userAcc, user) =>
-              userAcc + (user.rewards_generated ? Number(user.rewards_generated) : 0),
-            0
-          ),
-        0
-      )
-      setRewardsGenerated(totalRewards)
-    }
+  const rewardsGenerated = useMemo(() => {
+    return userInvites?.reduce(
+      (acc, invite) =>
+        acc +
+        invite.used_by.reduce(
+          (userAcc, user) =>
+            userAcc + (user.rewards_generated ? Number(user.rewards_generated) : 0),
+          0
+        ),
+      0
+    )
   }, [userInvites])
 
   const renderTabContent = () => {
@@ -71,7 +66,7 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
         <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
           <div>
             <p className="text-gray-400 text-sm font-medium">Rewards Earned</p>
-            <p className="text-2xl font-bold text-white">${rewardsGenerated.toFixed(2)}</p>
+            <p className="text-2xl font-bold text-white">${rewardsGenerated?.toFixed(2) || '0'}</p>
           </div>
         </div>
       </div>
