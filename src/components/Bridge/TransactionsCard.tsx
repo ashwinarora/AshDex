@@ -50,7 +50,7 @@ function TransactionsCard({
       >
         {' '}
         <div>
-          {/* {isLoading && <p>⏳ Waiting for confirmation...</p>}
+          {/* {isLoading && <p>Waiting for confirmation...</p>}
   {isSuccess && <p>✅ Transaction Confirmed!</p>}
   {isError && <p>❌ Transaction Failed or Reverted</p>} */}
         </div>

@@ -109,7 +109,7 @@ export const placePerpOrder = async ({
       })
     }
   }
-  const toastId = toast.loading('⏳ Loading…')
+  const toastId = toast.loading('Loading...')
   try {
     if (!sdkL1ActionClient) return
     const res = await sdkL1ActionClient.updateLeverage({

@@ -50,6 +50,20 @@ const PortfolioFeeCard = ({
     feeTier?.[0] ?? { stakedHype: 0, discount: 0 }
   )
 
+  // Apply active referral discount to displayed fees (e.g., 0.04 -> 4% off)
+  const referralDiscount = userFeeData
+    ? parseFloat(userFeeData.activeReferralDiscount ?? '0') || 0
+    : 0
+
+  const getDiscountedFee = (fee: string | number) => {
+    const raw = typeof fee === 'number' ? fee : parseFloat(fee)
+    if (isNaN(raw)) return raw
+    // Only reduce positive fees; leave rebates (negative) unchanged
+    return raw > 0 ? raw * (1 - referralDiscount) : raw
+  }
+
+  console.log(userFeeData)
+
   return (
     <div
       className={cn(
@@ -79,9 +93,9 @@ const PortfolioFeeCard = ({
       <h1 className="text-3xl font-semibold text-white">
         {userFeeData ? (
           selectedView.fees === 'perps' ? (
-            `${(parseFloat(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userAddRate) * 100).toFixed(3)}%`
+            `${(getDiscountedFee(userFeeData.userCrossRate) * 100).toFixed(3)}% / ${(getDiscountedFee(userFeeData.userAddRate) * 100).toFixed(3)}%`
           ) : (
-            `${(parseFloat(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(parseFloat(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
+            `${(getDiscountedFee(userFeeData.userSpotCrossRate) * 100).toFixed(3)}% / ${(getDiscountedFee(userFeeData.userSpotAddRate) * 100).toFixed(3)}%`
           )
         ) : (
           <Skeleton className="w-36 h-9" />
