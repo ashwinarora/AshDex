@@ -21,7 +21,12 @@ export const GET = async () => {
   await prisma.$transaction(
     all_rewards.map((reward) =>
       prisma.user.updateMany({
-        where: { wallet_id: reward.address },
+        where: {
+          wallet_id: {
+            equals: reward.address,
+            mode: 'insensitive'
+          }
+        },
         data: {
           rewards_generated: reward.rewards,
           rewards_updated_at: new Date()

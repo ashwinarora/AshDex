@@ -1,13 +1,13 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
-import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
 import CreateCode from '@/components/Referrals/CreateCode'
 import Rewards from '@/components/Referrals/Rewards'
 import referralsellipseImg from '@/assets/images/referralsellipseImg.svg'
 import trophyicon from '@/assets/images/trophy_icon.svg'
+import { useUser } from '@/hooks/useUser'
 
 type ReferralsTab = (typeof REFERRALSINFO_TAB)[number]
 
@@ -16,14 +16,7 @@ interface ReferralsInfoProps {
 }
 function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
-  const { data: referralsDetails } = useReferralsInfo()
-
-  const totalClaim = useMemo(() => {
-    return (
-      parseFloat(referralsDetails?.builderRewards || '0') +
-      parseFloat(referralsDetails?.claimedRewards || '0')
-    )
-  }, [referralsDetails])
+  const { data: user } = useUser()
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -32,7 +25,7 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
       case 'Create Code':
         return <CreateCode />
       case 'Rewards':
-        return <Rewards isCreateCode={isCreateCode} totalClaim={totalClaim} />
+        return <Rewards isCreateCode={isCreateCode} totalClaim={0} />
       default:
         return null
     }
@@ -53,18 +46,14 @@ function ReferralsInfo({ isCreateCode }: ReferralsInfoProps) {
         <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
           <div>
             <p className="text-gray-400 text-sm font-medium">Trades Referred</p>
-            <p className="text-2xl font-bold text-white">
-              {referralsDetails?.builderRewards || '0'}
-            </p>
+            <p className="text-2xl font-bold text-white">{'0'}</p>
           </div>
         </div>
 
         <div className="w-full flex justify-between items-center p-4 rounded-2xl bg-white/5 border border-white/10">
           <div>
             <p className="text-gray-400 text-sm font-medium">Rewards Earned</p>
-            <p className="text-2xl font-bold text-white">
-              ${referralsDetails?.claimedRewards || '0'}
-            </p>
+            <p className="text-2xl font-bold text-white">${user?.rewards_generated.toString()}</p>
           </div>
         </div>
       </div>
