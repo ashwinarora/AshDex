@@ -13,6 +13,7 @@ import lockoutlineicon from '@/assets/images/lockoutline_icon.svg'
 import invitefriends from '@/assets/images/invitefriends_icon.svg'
 import theycommit from '@/assets/images/theycommit_icon.svg'
 import earnrewards from '@/assets/images/earnrewards_icon.svg'
+import { IconAffiliate, IconCoins, IconMailSpark } from '@tabler/icons-react'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -431,18 +432,21 @@ export const REFERRALSDATA = [
   {
     src: invitefriends,
     alt: 'InviteFriends',
+    icon: IconMailSpark,
     label: 'Invite your friends',
     opacityClass: 'opacity-60'
   },
   {
     src: theycommit,
     alt: 'TheyCommit',
+    icon: IconAffiliate,
     label: 'They Commit',
     opacityClass: ''
   },
   {
     src: earnrewards,
     alt: 'Earnrewards',
+    icon: IconCoins,
     label: 'Earn Rewards',
     opacityClass: 'opacity-60'
   }
