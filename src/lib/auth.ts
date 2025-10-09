@@ -11,6 +11,7 @@ export async function getAuthMasterAccount(
   })
 
   const userRole = await HLService.getUserRole(user)
+
   if (!userRole) {
     throw new Error('Agent Wallet not found on HL')
   } else if (userRole.role !== 'agent') {

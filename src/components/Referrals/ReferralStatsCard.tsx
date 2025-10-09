@@ -1,30 +1,12 @@
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
-import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
-import { useMemo } from 'react'
+import { useGetRewardsStats } from '@/hooks/invite/useGetRewardsStats'
 
 const ReferralStatsCard = () => {
-  const { data: userInvites } = useSuccessfulInvites()
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
-
-  const { referral_rewards, referral_volume_traded } = useMemo(() => {
-    if (!userInvites) {
-      return { referral_rewards: 0, referral_volume_traded: 0 }
-    }
-
-    return userInvites.reduce(
-      (acc, invite) => {
-        invite.used_by.forEach((user) => {
-          acc.referral_rewards += user.rewards_generated ? Number(user.rewards_generated) : 0
-          acc.referral_volume_traded += user.volume_traded ? Number(user.volume_traded) : 0
-        })
-        return acc
-      },
-      { referral_rewards: 0, referral_volume_traded: 0 }
-    )
-  }, [userInvites])
+  const { data: rewardsStats } = useGetRewardsStats()
 
   return (
     <div className="basis-xs flex flex-col gap-1 rounded-md h-full w-fit shrink-0">
@@ -40,7 +22,7 @@ const ReferralStatsCard = () => {
           <h2>{t('Rewards Earned')}</h2>
         </div>
         <h1 className="flex justify-start items-center h-full text-4xl font-semibold text-white">
-          {referral_rewards.toString()}
+          {rewardsStats?.totalReferralRewardsGenerated.toString()}
         </h1>
       </div>
       <div
@@ -55,7 +37,7 @@ const ReferralStatsCard = () => {
           <h2>{t('Cumulative Referral Volume')}</h2>
         </div>
         <h1 className="flex justify-start items-center h-full text-4xl font-semibold text-white">
-          {referral_volume_traded.toString()}
+          {rewardsStats?.totalVolumeTradedByReferral.toString()}
         </h1>
       </div>
     </div>

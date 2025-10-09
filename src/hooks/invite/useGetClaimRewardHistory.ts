@@ -1,17 +1,12 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
-
-export interface IRewardHistoryItem {
-  id: number
-  rewards_claimed: number
-  created_at: Date
-}
+import { RewardsHistoryItem } from '@/services/Rewards.manager'
 
 export interface IRewardHistoryResponse {
   success: boolean
   data: {
-    rewardsHistory: IRewardHistoryItem[]
+    rewardsHistory: RewardsHistoryItem[]
     pagination: {
       total: number
       limit: number

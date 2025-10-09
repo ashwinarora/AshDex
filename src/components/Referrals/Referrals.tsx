@@ -1,5 +1,5 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useAccount } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
@@ -8,9 +8,9 @@ import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import ReferralsHeader from './ReferralsHeader'
 import ReferralsActionPanel from './ReferralsActionPanel'
-import ReferralStatsCard from './ReferralStatsCard'
 import FooterCompact from '../FooterCompact'
-import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
+import { useGetRewardsStats } from '@/hooks/invite/useGetRewardsStats'
+import ReferralStats from './ReferralStats'
 
 function Referrals() {
   const { isConnected } = useAccount()
@@ -18,7 +18,6 @@ function Referrals() {
   const { toggleConnectWalletModal } = useWalletModal()
   const [isCreateCode, setIsCreateCode] = useState(false)
   const isRendered = useComponentRendered()
-  const { data: userInvites } = useSuccessfulInvites()
   const handleButtonClick = () => {
     if (isConnected) {
       setIsCreateCode((p) => !p)
@@ -27,21 +26,7 @@ function Referrals() {
       setIsCreateCode(false)
     }
   }
-
-  const rewards_generated = useMemo(() => {
-    return userInvites?.reduce(
-      (acc, invite) =>
-        acc +
-        invite.used_by.reduce(
-          (userAcc, user) =>
-            userAcc + (user.rewards_generated ? Number(user.rewards_generated) : 0),
-          0
-        ),
-      0
-    )
-  }, [userInvites])
-
-  console.log('rewards_generated', rewards_generated)
+  const { data: rewardsStats } = useGetRewardsStats()
 
   if (!isRendered) return null
 
@@ -69,7 +54,7 @@ function Referrals() {
                 <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
                   <p className="text-gray-400 text-xs mb-1">Rewards Earned</p>
                   <p className="text-xl font-bold text-white">
-                    {rewards_generated?.toFixed(2) || '0'}
+                    {rewardsStats?.totalReferralRewardsGenerated.toString() || '0'}
                   </p>
                 </div>
               </div>
@@ -147,8 +132,11 @@ function Referrals() {
         <div className="w-full h-fit shrink-0">
           <ReferralsHeader />
         </div>
+        <div className="w-full h-fit shrink-0">
+          <ReferralStats />
+        </div>
         <div className="w-full h-fit shrink-0 flex items-center gap-1">
-          <ReferralStatsCard />
+          {/* <ReferralStatsCard /> */}
           <ReferralsTablesTab />
           <ReferralsActionPanel />
         </div>

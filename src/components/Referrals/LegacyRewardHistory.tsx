@@ -20,14 +20,9 @@ import {
   IconSelector,
   IconUserX
 } from '@tabler/icons-react'
+import { RewardsHistoryItem } from '@/services/Rewards.manager'
 
-type RewardHistoryData = {
-  id: number
-  rewards_claimed: number
-  created_at: Date
-}
-
-const columnHelper = createColumnHelper<RewardHistoryData>()
+const columnHelper = createColumnHelper<RewardsHistoryItem>()
 
 function LegacyRewardHistory() {
   const { t } = useTranslate()
@@ -37,6 +32,11 @@ function LegacyRewardHistory() {
 
   const columns = useMemo(
     () => [
+      columnHelper.accessor('rewards_claimed', {
+        header: t('Rewards Claimed'),
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">${info.getValue().toFixed(2)}</span>
+      }),
       columnHelper.accessor('created_at', {
         header: t('Date'),
         enableSorting: true,
@@ -51,11 +51,6 @@ function LegacyRewardHistory() {
             })}
           </span>
         )
-      }),
-      columnHelper.accessor('rewards_claimed', {
-        header: t('Rewards Claimed'),
-        enableSorting: true,
-        cell: (info) => <span className="text-xs font-medium">${info.getValue().toFixed(2)}</span>
       })
     ],
     [t]
@@ -93,24 +88,6 @@ function LegacyRewardHistory() {
         <>
           {table.getRowModel().rows?.length ? (
             <div className="w-full h-full flex flex-col gap-4">
-              {/* Summary section */}
-              {rewardHistoryData.summary && (
-                <div className="flex gap-4 flex-wrap">
-                  <div className="bg-white/5 rounded-md p-4 flex-1 min-w-[200px]">
-                    <div className="text-white/50 text-xs mb-1">{t('Total Rewards Claimed')}</div>
-                    <div className="text-white text-xl font-semibold">
-                      ${rewardHistoryData.summary.totalRewardsClaimed.toFixed(2)}
-                    </div>
-                  </div>
-                  <div className="bg-white/5 rounded-md p-4 flex-1 min-w-[200px]">
-                    <div className="text-white/50 text-xs mb-1">{t('Total Claims')}</div>
-                    <div className="text-white text-xl font-semibold">
-                      {rewardHistoryData.summary.totalClaims}
-                    </div>
-                  </div>
-                </div>
-              )}
-
               {/* Table */}
               <Table className="w-full h-full">
                 <TableHeader>
