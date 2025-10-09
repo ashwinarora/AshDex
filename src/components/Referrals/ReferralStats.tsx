@@ -29,7 +29,7 @@ const ReferralStats = () => {
   const stats = [
     {
       label: t('Invite Code'),
-      value: rewardsStats?.inviteCodes[0].inviteCode || ''
+      value: rewardsStats?.inviteCodes?.[0]?.inviteCode || '------'
     },
     {
       label: t('Total Referral Rewards'),

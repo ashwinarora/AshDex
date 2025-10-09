@@ -13,7 +13,6 @@ import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
 import {
-  IconAlertCircle,
   IconChevronDown,
   IconChevronUp,
   IconLoader2,
@@ -34,7 +33,7 @@ const columnHelper = createColumnHelper<FlattenedInviteUser>()
 
 const ReferralsTable = () => {
   const { t } = useTranslate()
-  const { data: successfulInvites, isLoading, error } = useSuccessfulInvites()
+  const { data: successfulInvites, isLoading } = useSuccessfulInvites()
   const [sorting, setSorting] = useState<SortingState>([])
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
@@ -110,16 +109,14 @@ const ReferralsTable = () => {
         </div>
       )}
 
-      {error && (
-        <div className="w-full h-full items-center justify-center flex flex-col gap-2">
-          <IconAlertCircle className="text-red size-10" />
-          <div className="text-red">
-            {t('Error loading referrals')}: {t(error.message)}
-          </div>
+      {!isLoading && (!successfulInvites || successfulInvites.length === 0) && (
+        <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
+          <IconUserX className="text-white size-10" />
+          <span className="text-white/50 text-sm">{t('No successful invites yet')}</span>
         </div>
       )}
 
-      {!isLoading && !error && successfulInvites && (
+      {!isLoading && successfulInvites && successfulInvites.length > 0 && (
         <>
           {table.getRowModel().rows?.length ? (
             <Table className="w-full h-full">

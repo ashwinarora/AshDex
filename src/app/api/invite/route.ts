@@ -58,9 +58,6 @@ export const GET = async (request: NextRequest) => {
     }
 
     const invites = await InviteService.getInviteByUserWithUsedBy(wallet_id)
-    if (!invites) {
-      return NextResponse.json({ error: 'Invite not found' }, { status: 404 })
-    }
 
     return NextResponse.json({ success: true, invite: invites })
   } catch (error) {

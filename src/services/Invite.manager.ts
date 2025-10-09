@@ -117,7 +117,7 @@ class InviteService {
   /*
   Retuns all invite codes for a user with the used_by field
   */
-  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[] | null> {
+  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[]> {
     const invites = await this.prisma.invite.findMany({
       where: {
         user: {
@@ -129,7 +129,7 @@ class InviteService {
       }
     })
     if (!invites || invites.length === 0) {
-      return null
+      return []
     }
     return invites
   }
