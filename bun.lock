@@ -9,6 +9,7 @@
         "@creit.tech/stellar-wallets-kit": "^1.7.3",
         "@dicebear/collection": "^9.2.2",
         "@dicebear/core": "^9.2.2",
+        "@first-iraqi-bank/sdk": "^0.2.0-pre.2",
         "@headlessui/react": "^2.2.2",
         "@msgpack/msgpack": "^3.1.1",
         "@mysten/sui": "^1.29.1",
@@ -499,6 +500,8 @@
     "@ethersproject/web": ["@ethersproject/web@5.8.0", "", { "dependencies": { "@ethersproject/base64": "^5.8.0", "@ethersproject/bytes": "^5.8.0", "@ethersproject/logger": "^5.8.0", "@ethersproject/properties": "^5.8.0", "@ethersproject/strings": "^5.8.0" } }, "sha512-j7+Ksi/9KfGviws6Qtf9Q7KCqRhpwrYKQPs+JBA/rKVFF/yaWLHJEH3zfVP2plVu+eys0d2DlFmhoQJayFewcw=="],
 
     "@everstake/wallet-sdk-solana": ["@everstake/wallet-sdk-solana@2.0.5", "", { "dependencies": { "@solana-program/compute-budget": "^0.6.1", "@solana-program/stake": "^0.1.0", "@solana-program/system": "^0.6.2", "@solana/web3.js": "2.0.0" } }, "sha512-U5v5+wqkDyqENvKjAVMBNDSXhU7uNVxg1+p6HoWtdtsXBlsIKGpEywrKv3WkQItHmzTgqeix8csMMEB508cCww=="],
+
+    "@first-iraqi-bank/sdk": ["@first-iraqi-bank/sdk@0.2.0-pre.2", "", {}, "sha512-+T0e07LqDDv2TA3oOAC8vEIfXgkcSG/tfoklJuzz/ppeDlOGn4/wI0tENrDdNsWNBUTId6zq4NoDc6m4b6k4mw=="],
 
     "@fivebinaries/coin-selection": ["@fivebinaries/coin-selection@3.0.0", "", { "dependencies": { "@emurgo/cardano-serialization-lib-browser": "^13.2.0", "@emurgo/cardano-serialization-lib-nodejs": "13.2.0" } }, "sha512-h25Pn1ZA7oqQBQDodGAgIsQt66T2wDge9onBKNqE66WNWL0KJiKJbpij8YOLo5AAlEIg5IS7EB1QjBgDOIg6DQ=="],
 
