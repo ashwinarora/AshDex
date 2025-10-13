@@ -28,8 +28,6 @@ export const useUser = () => {
         if (!rewardsResponse.ok) {
           throw new Error('Failed to fetch rewards')
         }
-        const rewardsData = await rewardsResponse.json()
-        console.log('rewardsData', rewardsData)
       }
 
       return data

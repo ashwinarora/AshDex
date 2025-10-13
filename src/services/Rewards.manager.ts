@@ -80,7 +80,7 @@ class RewardsManager {
     return RewardsManager.instance
   }
 
-  public async getRefferalRewards(wallet_id: Address): Promise<ReferralRewards[]> {
+  public async getReferralRewards(wallet_id: Address): Promise<ReferralRewards[]> {
     try {
       const invites = await UserManager.getUserInvites(wallet_id)
       if (!invites) {
@@ -182,7 +182,7 @@ class RewardsManager {
 
   public async validateClaimAmount(wallet_id: Address, claimAmount: string): Promise<boolean> {
     try {
-      const referralRewards = await this.getRefferalRewards(wallet_id)
+      const referralRewards = await this.getReferralRewards(wallet_id)
       const totalReferralRewards = referralRewards.reduce(
         (sum, invite) => sum + invite.rewardsGenerated,
         0
@@ -299,7 +299,7 @@ class RewardsManager {
         where: { user: { wallet_id: { equals: wallet_id, mode: 'insensitive' } } }
       })
 
-      const referralRewards = await this.getRefferalRewards(wallet_id)
+      const referralRewards = await this.getReferralRewards(wallet_id)
 
       // Sum up rewards and volume from all invite codes
       const totalReferralRewardsGenerated = referralRewards.reduce(

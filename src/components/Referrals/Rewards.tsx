@@ -12,7 +12,6 @@ function Rewards({ totalClaim }: ClaimProps) {
   const { t } = useTranslate()
   const { mutateAsync: claimRewards } = useClaimRewards()
   const { agentWallet } = useHyperliquidStore()
-  console.log('🚀 ~ handleSubmit ~ agentWallet:', agentWallet)
 
   const handleSubmit = async () => {
     try {
