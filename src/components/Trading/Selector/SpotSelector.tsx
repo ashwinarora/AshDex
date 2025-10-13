@@ -298,7 +298,8 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               selectedAsset={selectedAsset}
               selectedTab={selectedTab}
               setSelectedAsset={(asset) => {
-                router.push(`/spot/${asset}`)
+                const keyToToken = spotKeyToName.get(asset).split('/')[0]
+                router.push(`/spot/${keyToToken}`)
                 setIsOpen(false)
               }}
             />

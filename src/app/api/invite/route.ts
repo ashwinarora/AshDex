@@ -46,9 +46,9 @@ const fetchInvitesPostHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-// api to get all successful invites for a user
 export const POST = withAuth(fetchInvitesPostHandler)
 
+// api to get all successful invites for a user
 export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url)
@@ -57,7 +57,7 @@ export const GET = async (request: NextRequest) => {
       return NextResponse.json({ error: 'Missing wallet_id' }, { status: 400 })
     }
 
-    const invites = await InviteService.getInviteByUser(wallet_id)
+    const invites = await InviteService.getInviteByUserWithUsedBy(wallet_id)
     if (!invites) {
       return NextResponse.json({ error: 'Invite not found' }, { status: 404 })
     }

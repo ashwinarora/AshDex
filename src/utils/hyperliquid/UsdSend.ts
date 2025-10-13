@@ -1,4 +1,3 @@
-'use client'
 import { SignTypedDataVariables } from 'wagmi/query'
 
 export interface IUsdSendData {
