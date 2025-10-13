@@ -1,19 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthMasterAccount } from '@/lib/auth'
+import type { Signature } from 'viem'
 
-export interface AuthenticatedRequest extends NextRequest {
+export interface AuthenticatedRequest<TPayload> extends NextRequest {
   wallet_id: string
-  payload: string
+  payload: TPayload
 }
 
 // Middleware wrapper to authenticate requests
 // puts wallet_id and payload in the request object
 // works with requests which have body
-export function withAuth(handler: (request: AuthenticatedRequest) => Promise<NextResponse>) {
+export function withAuth<TPayload>(handler: (request: AuthenticatedRequest<TPayload>) => Promise<NextResponse>) {
   return async (request: NextRequest) => {
     try {
       const body = await request.json()
-      const { signature, payload } = body
+      const { signature, payload } = body as { signature?: Signature; payload?: TPayload }
 
       if (!signature) {
         return NextResponse.json({ error: 'Missing signature' }, { status: 400 })
@@ -25,7 +26,7 @@ export function withAuth(handler: (request: AuthenticatedRequest) => Promise<Nex
       console.log('🚀 ~ withAuth ~ masterAccount:', masterAccount)
 
       // Create authenticated request with wallet_id
-      const authenticatedRequest = request as AuthenticatedRequest
+      const authenticatedRequest = request as AuthenticatedRequest<TPayload>
       authenticatedRequest.wallet_id = masterAccount
       authenticatedRequest.payload = payload
 

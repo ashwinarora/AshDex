@@ -3,11 +3,14 @@ import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 import { Address } from 'viem'
 import RewardsManager from '@/services/Rewards.manager'
 
-const claimRewardsHandler = async (request: AuthenticatedRequest) => {
+type ClaimRewardsPayload = {
+  claimAmount: string
+}
+
+const claimRewardsHandler = async (request: AuthenticatedRequest<ClaimRewardsPayload>) => {
   try {
     const wallet_id = request.wallet_id as Address
-    // @ts-expect-error payload is not typed
-    const claimAmount = request.payload.claimAmount as string
+    const claimAmount = request.payload.claimAmount
 
     if (!claimAmount) {
       return NextResponse.json({ error: 'Missing claimAmount in payload' }, { status: 400 })
@@ -15,7 +18,7 @@ const claimRewardsHandler = async (request: AuthenticatedRequest) => {
 
     const result = await RewardsManager.claimRewards({
       wallet_id,
-      claimAmount: claimAmount
+      claimAmount
     })
 
     return NextResponse.json(result)
@@ -30,4 +33,4 @@ const claimRewardsHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-export const POST = withAuth(claimRewardsHandler)
+export const POST = withAuth<ClaimRewardsPayload>(claimRewardsHandler)

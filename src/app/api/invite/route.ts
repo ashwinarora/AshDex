@@ -3,10 +3,13 @@ import InviteService from '@/services/Invite.manager'
 import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
-const fetchInvitesPostHandler = async (request: AuthenticatedRequest) => {
+type FetchInvitesPayload = {
+  inviteCode: string
+}
+
+const fetchInvitesPostHandler = async (request: AuthenticatedRequest<FetchInvitesPayload>) => {
   try {
-    const payload = JSON.parse(request.payload as string)
-    const inviteCode = payload.inviteCode
+    const inviteCode = request.payload.inviteCode
     const wallet_id = request.wallet_id as Address
 
     if (!wallet_id) {
@@ -46,7 +49,7 @@ const fetchInvitesPostHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-export const POST = withAuth(fetchInvitesPostHandler)
+export const POST = withAuth<FetchInvitesPayload>(fetchInvitesPostHandler)
 
 // api to get all successful invites for a user
 export const GET = async (request: NextRequest) => {
