@@ -5,7 +5,11 @@ import RewardsManager from '@/services/Rewards.manager'
 import { HttpStatusCode } from 'axios'
 import { minutesToMilliseconds } from 'date-fns'
 
-const claimRewardsHandler = async (request: AuthenticatedRequest) => {
+type ClaimRewardsPayload = {
+  claimAmount: string
+}
+
+const claimRewardsHandler = async (request: AuthenticatedRequest<ClaimRewardsPayload>) => {
   try {
     const wallet_id = request.wallet_id as Address
     // @ts-expect-error payload is not typed
@@ -39,4 +43,4 @@ const claimRewardsHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-export const POST = withAuth(claimRewardsHandler)
+export const POST = withAuth<ClaimRewardsPayload>(claimRewardsHandler)

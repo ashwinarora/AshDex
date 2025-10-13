@@ -4,9 +4,10 @@ import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 import { HttpStatusCode } from 'axios'
 
-const createInvitePostHandler = async (request: AuthenticatedRequest) => {
+type InviteCodePayload = { inviteCode: string }
+
+const createInvitePostHandler = async (request: AuthenticatedRequest<InviteCodePayload>) => {
   try {
-    // @ts-expect-error we know that payload is there
     const inviteCode = request.payload.inviteCode
     const wallet_id = request.wallet_id as Address
 
@@ -49,4 +50,4 @@ const createInvitePostHandler = async (request: AuthenticatedRequest) => {
 }
 
 // api to create invite code for a user
-export const POST = withAuth(createInvitePostHandler)
+export const POST = withAuth<InviteCodePayload>(createInvitePostHandler)
