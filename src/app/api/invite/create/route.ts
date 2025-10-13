@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import InviteService from '@/services/Invite.manager'
 import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
+import { HttpStatusCode } from 'axios'
 
 type InviteCodePayload = { inviteCode: string }
 
@@ -13,6 +14,14 @@ const createInvitePostHandler = async (request: AuthenticatedRequest<InviteCodeP
     // Validate required fields
     if (!inviteCode) {
       return NextResponse.json({ error: 'Missing required invite code' }, { status: 400 })
+    }
+
+    const currInviteCodes = await InviteService.getInviteByUser(wallet_id)
+    if (currInviteCodes && currInviteCodes.length > 0) {
+      return NextResponse.json(
+        { error: 'User already has an invite code', data: currInviteCodes },
+        { status: HttpStatusCode.NotAcceptable }
+      )
     }
 
     // Create the invite

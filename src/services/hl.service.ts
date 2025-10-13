@@ -1,7 +1,8 @@
 import { Address } from 'viem'
 import * as hl from '@nktkas/hyperliquid'
+import { HYPERLIQUID_API_MAINNET, HYPERLIQUID_API_TESTNET } from '@/utils/constants'
 
-export interface IRefferalStates {
+export interface IReferralStates {
   cumVlm: string
   cumRewardedFeesSinceReferred: string
   cumFeesRewardedToReferrer: string
@@ -11,14 +12,12 @@ export interface IRefferalStates {
 
 class HLService {
   private static instance: HLService
-  private static mainnetUrl = 'https://api.hyperliquid.xyz'
-  private static testnetUrl = 'https://api.hyperliquid-testnet.xyz'
   private url: string
   private NEXON_USER: Address
 
   constructor() {
     const isTestnet = process.env.HYPERLIQUID_NETWORK !== 'mainnet'
-    this.url = isTestnet ? HLService.testnetUrl : HLService.mainnetUrl
+    this.url = isTestnet ? HYPERLIQUID_API_TESTNET : HYPERLIQUID_API_MAINNET
 
     const NEXON_USER = process.env.NEXON_USER_ADDRESS
     if (!NEXON_USER) {
@@ -57,7 +56,7 @@ class HLService {
     return response
   }
 
-  public async getReferralStates(): Promise<IRefferalStates[]> {
+  public async getReferralStates(): Promise<IReferralStates[]> {
     const body = JSON.stringify({ type: 'referral', user: this.NEXON_USER })
     const response: hl.Referral = await this.make_request(body, 'info')
     if (response.referrerState.stage === 'ready') {
@@ -71,7 +70,7 @@ class HLService {
     nonce: number
     signature: unknown
     isFrontend: boolean
-  }) {
+  }): Promise<hl.SuccessResponse> {
     const body = JSON.stringify(requestBody)
     const response = await this.make_request(body, 'exchange')
     return response

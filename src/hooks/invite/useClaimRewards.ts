@@ -14,7 +14,7 @@ export interface ClaimRewardsResponse {
 }
 
 export interface ClaimRewardsParams {
-  claimAmount: string
+  timestamp: number
   signature: Hex
 }
 
@@ -24,7 +24,7 @@ export const useClaimRewards = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ claimAmount, signature }: ClaimRewardsParams) => {
+    mutationFn: async ({ timestamp, signature }: ClaimRewardsParams) => {
       if (!address) {
         throw new Error('Wallet not connected')
       }
@@ -36,7 +36,7 @@ export const useClaimRewards = () => {
         },
         body: JSON.stringify({
           signature,
-          payload: { claimAmount }
+          payload: { timestamp }
         })
       })
 

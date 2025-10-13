@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 import { Address } from 'viem'
 import RewardsManager from '@/services/Rewards.manager'
+import { HttpStatusCode } from 'axios'
+import { minutesToMilliseconds } from 'date-fns'
 
 type ClaimRewardsPayload = {
   claimAmount: string
@@ -10,16 +12,24 @@ type ClaimRewardsPayload = {
 const claimRewardsHandler = async (request: AuthenticatedRequest<ClaimRewardsPayload>) => {
   try {
     const wallet_id = request.wallet_id as Address
-    const claimAmount = request.payload.claimAmount
+    // @ts-expect-error payload is not typed
+    const timestamp = request.payload.timestamp as number
 
-    if (!claimAmount) {
-      return NextResponse.json({ error: 'Missing claimAmount in payload' }, { status: 400 })
+    if (!timestamp) {
+      return NextResponse.json(
+        { error: 'Missing timestamp in payload' },
+        { status: HttpStatusCode.BadRequest }
+      )
     }
 
-    const result = await RewardsManager.claimRewards({
-      wallet_id,
-      claimAmount
-    })
+    if (timestamp < Date.now() - minutesToMilliseconds(5)) {
+      return NextResponse.json(
+        { error: 'Timestamp is too old' },
+        { status: HttpStatusCode.BadRequest }
+      )
+    }
+
+    const result = await RewardsManager.claimRewards(wallet_id)
 
     return NextResponse.json(result)
   } catch (error) {

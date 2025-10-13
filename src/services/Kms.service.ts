@@ -35,10 +35,10 @@ class KmsManager {
   }
 
   private getKMSClient(): { kms: KMSClient; keyId: string } {
-    const region = process.env.AWS_REGION ?? 'ap-south-1'
-    const accessKeyId = process.env.AWS_ACCESS_KEY_ID ?? ''
-    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY ?? ''
-    const keyId = process.env.KMS_KEY_ID ?? 'alias/eth-admin'
+    const region = process.env.MY_AWS_REGION ?? 'ap-south-1'
+    const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? ''
+    const secretAccessKey = process.env.MY_AWS_SECRET_ACCESS_KEY ?? ''
+    const keyId = process.env.MY_KMS_KEY_ID ?? 'alias/eth-admin'
 
     if (!accessKeyId || !secretAccessKey) {
       throw new Error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set')
