@@ -1,31 +1,28 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Hex } from 'viem'
+import { useAuth } from './useAuth'
+import { apiServerAxios } from '@/config/axios'
+
+type TAcceptInvitePayload = { inviteCode: string; action: 'acceptInvite' }
 
 // Hook to claim an invite code
 export const useAcceptInviteCode = () => {
   const queryClient = useQueryClient()
+  const authMutation = useAuth<TAcceptInvitePayload>()
 
   return useMutation({
-    mutationFn: async ({ inviteCode, signature }: { inviteCode: string; signature: Hex }) => {
-      const response = await fetch('/api/invite/accept', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          signature,
-          payload: { inviteCode }
-        })
-      })
+    mutationFn: async (inviteCode: string) => {
+      const payload: TAcceptInvitePayload = { inviteCode, action: 'acceptInvite' }
+      const body = await authMutation({ payload })
+      const response = await apiServerAxios.patch('/api/invite/accept', body)
 
-      if (!response.ok) {
-        const errorData = await response.json()
+      if (!response.data) {
+        const errorData = await response.data
         throw new Error(errorData.error || 'Failed to claim invite code')
       }
 
-      return response.json()
+      return response.data
     },
     onSuccess: () => {
       // Invalidate and refetch referrals info

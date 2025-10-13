@@ -72,7 +72,7 @@ model UserTermsSignature {
 model Invite {
   id         Int      @id @default(autoincrement())
   user_id    Int
-  code       String   @unique @db.VarChar(6)
+  code       String   @unique @db.VarChar(8)
   created_at DateTime @default(now()) @db.Timestamp(6)
   updated_at DateTime @updatedAt @db.Timestamp(6)
 

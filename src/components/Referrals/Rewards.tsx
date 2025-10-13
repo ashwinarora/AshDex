@@ -3,7 +3,6 @@ import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
 import { Button } from '../ui/button'
 import { useClaimRewards } from '@/hooks/invite'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
 interface ClaimProps {
   totalClaim: number
 }
@@ -11,25 +10,10 @@ interface ClaimProps {
 function Rewards({ totalClaim }: ClaimProps) {
   const { t } = useTranslate()
   const { mutateAsync: claimRewards } = useClaimRewards()
-  const { agentWallet } = useHyperliquidStore()
 
   const handleSubmit = async () => {
     try {
-      // TODO: Implement claim rewards
-
-      const timestamp = Date.now()
-      const signature = await agentWallet?.signMessage({
-        message: JSON.stringify({
-          timestamp
-        })
-      })
-
-      if (!signature) {
-        toast.error(t('Failed to sign message'))
-        return
-      }
-
-      await claimRewards({ timestamp, signature })
+      await claimRewards()
       toast.success(t('Claim Successful!'), {
         description: `You’ve successfully claimed ${totalClaim}. The funds have been added to your balance.`
       })

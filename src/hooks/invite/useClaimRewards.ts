@@ -3,7 +3,10 @@ import { useAccount } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Hex } from 'viem'
+import { useAuth } from './useAuth'
+import { apiServerAxios } from '@/config/axios'
+
+type TClaimRewardsPayload = { action: 'claimRewards' }
 
 export interface ClaimRewardsResponse {
   success: boolean
@@ -13,39 +16,23 @@ export interface ClaimRewardsResponse {
   address: string
 }
 
-export interface ClaimRewardsParams {
-  timestamp: number
-  signature: Hex
-}
-
 // Hook to claim rewards
 export const useClaimRewards = () => {
   const { address } = useAccount()
   const queryClient = useQueryClient()
+  const authMutation = useAuth<TClaimRewardsPayload>()
 
   return useMutation({
-    mutationFn: async ({ timestamp, signature }: ClaimRewardsParams) => {
-      if (!address) {
-        throw new Error('Wallet not connected')
-      }
-
-      const response = await fetch('/api/rewards/claim', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          signature,
-          payload: { timestamp }
-        })
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
+    mutationFn: async () => {
+      const payload: TClaimRewardsPayload = { action: 'claimRewards' }
+      const body = await authMutation({ payload })
+      const response = await apiServerAxios.post('/api/rewards/claim', body)
+      if (!response.data) {
+        const errorData = await response.data
         throw new Error(errorData.error || 'Failed to claim rewards')
       }
 
-      const data: ClaimRewardsResponse = await response.json()
+      const data: ClaimRewardsResponse = await response.data
       return data
     },
     onSuccess: (data) => {

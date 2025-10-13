@@ -3,7 +3,6 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useTranslate } from '@tolgee/react'
 import { useInviteCode, useCreateInviteCode } from '@/hooks/invite'
 import { toast } from 'sonner'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { InviteCode } from './InviteCode'
 import { Button } from '../ui/button'
 
@@ -15,27 +14,14 @@ function CreateCode() {
   const { data: existingInviteCode } = useInviteCode()
   const { mutateAsync: createInviteCodeMutation, isPending: isCreatingInviteCode } =
     useCreateInviteCode()
-  const { agentWallet } = useHyperliquidStore()
 
   async function createInviteCode() {
-    if (createdCode.length !== 6) {
-      toast.error('Code must be exactly 6 characters')
+    if (createdCode.length < 4 || createdCode.length > 8) {
+      toast.error('Code length must be between 4 and 8 characters')
       return
     }
     try {
-      // here we need to sign with agent Address
-      console.log(agentWallet?.address)
-      const signature = await agentWallet?.signMessage({
-        message: JSON.stringify({ inviteCode: createdCode })
-      })
-
-      if (!signature) {
-        toast.error('Failed to sign message')
-        return
-      }
-
-      console.log('signature', signature)
-      await createInviteCodeMutation({ inviteCode: createdCode, signature })
+      await createInviteCodeMutation(createdCode)
     } catch (error) {
       toast.error('Failed to create invite code')
       console.error('Error creating invite code:', error)
@@ -81,7 +67,7 @@ function CreateCode() {
       ) : (
         <Button
           className="w-full"
-          disabled={isCreatingInviteCode || createdCode.length !== 6}
+          disabled={isCreatingInviteCode || (createdCode.length > 4 && createdCode.length < 8)}
           onClick={createInviteCode}
         >
           {isCreatingInviteCode ? t('Creating...') : t('Create')}

@@ -32,12 +32,8 @@ class InviteService {
   public async validateInviteCode(code: string): Promise<Error | null> {
     code = this.normalizeCode(code)
 
-    if (!code || code.trim().length === 0) {
-      return new Error('Invite code cannot be empty')
-    }
-
-    if (code.trim().length > 6) {
-      return new Error('Invite code cannot be longer than 6 characters')
+    if (!code || code.trim().length < 4 || code.trim().length > 8) {
+      return new Error('Invite code must be between 4 and 8 characters')
     }
 
     const alphanumericRegex = /^[A-Za-z0-9]+$/

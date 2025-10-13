@@ -5,12 +5,13 @@ import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
 type FetchInvitesPayload = {
   inviteCode: string
+  action: 'fetchInvites'
 }
 
 const fetchInvitesPostHandler = async (request: AuthenticatedRequest<FetchInvitesPayload>) => {
   try {
     const inviteCode = request.payload.inviteCode
-    const wallet_id = request.wallet_id as Address
+    const wallet_id = request.wallet_id
 
     if (!wallet_id) {
       return NextResponse.json({ error: 'Missing wallet_id parameter' }, { status: 400 })

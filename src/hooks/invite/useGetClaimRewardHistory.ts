@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { RewardsHistoryItem } from '@/services/Rewards.manager'
+import { apiServerAxios } from '@/config/axios'
 
 export interface IRewardHistoryResponse {
   success: boolean
@@ -42,12 +43,13 @@ export const useGetClaimRewardHistory = (params?: UseClaimRewardHistoryParams) =
         offset: offset.toString()
       })
 
-      const response = await fetch(`/api/rewards/history?${searchParams.toString()}`)
-      if (!response.ok) {
+      // Use apiServerAxios instead of fetch
+      const response = await apiServerAxios.get(`/api/rewards/history?${searchParams.toString()}`)
+      if (!response.data) {
         throw new Error('Failed to fetch claim reward history')
       }
 
-      const data: IRewardHistoryResponse = await response.json()
+      const data: IRewardHistoryResponse = response.data
       return data.data
     },
     enabled: isConnected && !!address,
