@@ -30,7 +30,7 @@ const UserData = () => {
   const isSpot = useIsSpot()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { spotKeyToName } = useSpotMeta()
-  const {isMobile} = useScreenSize()
+  const { isMobile } = useScreenSize()
   const [isHideSmallBalances, setIsHideSmallBalances] = useState(false)
 
   const positionsCount = useMemo(() => {
