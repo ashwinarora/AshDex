@@ -70,7 +70,7 @@ class HLService {
     nonce: number
     signature: unknown
     isFrontend: boolean
-  }) {
+  }): Promise<hl.SuccessResponse> {
     const body = JSON.stringify(requestBody)
     const response = await this.make_request(body, 'exchange')
     return response

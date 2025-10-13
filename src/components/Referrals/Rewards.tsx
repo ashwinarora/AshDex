@@ -16,9 +16,11 @@ function Rewards({ totalClaim }: ClaimProps) {
   const handleSubmit = async () => {
     try {
       // TODO: Implement claim rewards
+
+      const timestamp = Date.now()
       const signature = await agentWallet?.signMessage({
         message: JSON.stringify({
-          claimAmount: totalClaim.toString()
+          timestamp
         })
       })
 
@@ -27,7 +29,7 @@ function Rewards({ totalClaim }: ClaimProps) {
         return
       }
 
-      await claimRewards({ claimAmount: totalClaim.toString(), signature })
+      await claimRewards({ timestamp, signature })
       toast.success(t('Claim Successful!'), {
         description: `You’ve successfully claimed ${totalClaim}. The funds have been added to your balance.`
       })

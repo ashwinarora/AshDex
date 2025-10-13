@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAuthMasterAccount } from '@/lib/auth'
+import UserManager from '@/services/User.manager'
+import { HttpStatusCode } from 'axios'
 
 export interface AuthenticatedRequest extends NextRequest {
   wallet_id: string
@@ -23,6 +25,11 @@ export function withAuth(handler: (request: AuthenticatedRequest) => Promise<Nex
 
       const masterAccount = await getAuthMasterAccount(JSON.stringify(payload), signature)
       console.log('🚀 ~ withAuth ~ masterAccount:', masterAccount)
+
+      const user = await UserManager.findUserByWalletId(masterAccount)
+      if (!user) {
+        return NextResponse.json({ error: 'User not found' }, { status: HttpStatusCode.NotFound })
+      }
 
       // Create authenticated request with wallet_id
       const authenticatedRequest = request as AuthenticatedRequest

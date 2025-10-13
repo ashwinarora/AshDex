@@ -8,6 +8,7 @@ import UserManager from './User.manager'
 import KmsManager from './Kms.service'
 import HLService from './hl.service'
 import { Decimal } from '@prisma/client/runtime/library'
+import * as hl from '@nktkas/hyperliquid'
 
 export interface ReferralRewards {
   inviteCode: string
@@ -56,14 +57,9 @@ export interface RewardsHistoryResult {
   }
 }
 
-export interface ClaimRewardsParams {
-  wallet_id: Address
-  claimAmount: string
-}
-
 export interface ClaimRewardsResult {
   success: boolean
-  result: unknown
+  result: hl.SuccessResponse
   rewards_claimed: string
   address: string
 }
@@ -180,7 +176,7 @@ class RewardsManager {
     }
   }
 
-  public async validateClaimAmount(wallet_id: Address, claimAmount: string): Promise<boolean> {
+  public async getMaxClaimAmount(wallet_id: Address): Promise<number> {
     try {
       const referralRewards = await this.getReferralRewards(wallet_id)
       const totalReferralRewards = referralRewards.reduce(
@@ -191,7 +187,7 @@ class RewardsManager {
       const rewardsHistory = await this.getRewardsHistory({ wallet_id })
       const totalRewardsClaimed = rewardsHistory.summary.totalRewardsClaimed
 
-      const valid = totalReferralRewards - totalRewardsClaimed >= Number(claimAmount)
+      const valid = totalReferralRewards - totalRewardsClaimed
 
       return valid
     } catch (error) {
@@ -238,19 +234,14 @@ class RewardsManager {
     }
   }
 
-  public async claimRewards(params: ClaimRewardsParams): Promise<ClaimRewardsResult> {
+  public async claimRewards(wallet_id: Address): Promise<ClaimRewardsResult> {
     try {
-      const { wallet_id, claimAmount } = params
-
       const user = await UserManager.findUserByWalletId(wallet_id)
       if (!user) {
         throw new Error('User not found')
       }
 
-      const isValid = await this.validateClaimAmount(wallet_id, claimAmount)
-      if (!isValid) {
-        throw new Error('Invalid claim amount')
-      }
+      const claimAmount = (await this.getMaxClaimAmount(wallet_id)).toString()
 
       const { action, nonce, signature, kmsWalletAddress } = await this.prepareSignedTransaction(
         wallet_id,
@@ -264,10 +255,12 @@ class RewardsManager {
         isFrontend: true
       }
       const result = await HLService.executeHyperliquidTransfer(requestBody)
-
-      console.log('🚀 ~ claimRewards ~ result:', result)
       // Step 4: Record the claim in database
       await this.recordRewardClaim(user.id, claimAmount)
+
+      if (result.status !== 'ok') {
+        throw new Error('Failed to claim rewards: ' + JSON.stringify(result))
+      }
 
       return {
         success: true,
