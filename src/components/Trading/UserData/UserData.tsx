@@ -16,6 +16,7 @@ import { useTranslate } from '@tolgee/react'
 import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconSquare } from '@tabler/icons-react'
+import { useScreenSize } from '@/hooks/useScreenSize'
 
 const UserData = () => {
   const { t } = useTranslate()
@@ -29,6 +30,7 @@ const UserData = () => {
   const isSpot = useIsSpot()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { spotKeyToName } = useSpotMeta()
+  const {isMobile} = useScreenSize()
   const [isHideSmallBalances, setIsHideSmallBalances] = useState(false)
 
   const positionsCount = useMemo(() => {
@@ -130,7 +132,7 @@ const UserData = () => {
             ))}
           </ToggleGroup>
         </div>
-        {(isRTL ? activeTab === tabs.length - 1 : activeTab === 0) && (
+        {(isRTL ? activeTab === tabs.length - 1 : activeTab === 0 && !isMobile) && (
           <Toggle
             className={cn(
               'flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/50 gap-2',
