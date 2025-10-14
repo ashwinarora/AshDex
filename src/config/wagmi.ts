@@ -55,6 +55,35 @@ const coinbaseWalletConnector = coinbaseWallet({
   appName: 'Nexon'
 })
 
+// Utility to detect Safari browser
+const isSafari = (): boolean => {
+  if (typeof window === 'undefined') return false
+  const ua = navigator.userAgent.toLowerCase()
+  return ua.includes('safari') && !ua.includes('chrome') && !ua.includes('android')
+}
+
+// Get connectors based on browser
+const getConnectors = () => {
+  const connectors = [coinbaseWalletConnector, rabbyWalletConnector, phantomWalletConnector]
+
+  const browserIsSafari = isSafari()
+  console.log('isSafari', browserIsSafari)
+  // Only add WalletConnect if not Safari
+  if (!browserIsSafari) {
+    console.log('This is not Safari')
+    return [
+      ...connectors,
+      walletConnect({
+        projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
+      }),
+      metaMask(),
+      safe()
+    ]
+  }
+
+  return [...connectors, metaMask(), safe()]
+}
+
 export const config = createConfig({
   chains: [
     arbitrumSepolia,
@@ -69,16 +98,7 @@ export const config = createConfig({
     hyperliquidMainnet,
     hyperliquidTestnet
   ],
-  connectors: [
-    coinbaseWalletConnector,
-    rabbyWalletConnector,
-    phantomWalletConnector,
-    walletConnect({
-      projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
-    }),
-    metaMask(),
-    safe()
-  ],
+  connectors: getConnectors(),
   transports: {
     [arbitrum.id]: http(),
     [arbitrumSepolia.id]: http(),
