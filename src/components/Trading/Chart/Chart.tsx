@@ -481,7 +481,6 @@ const TradingViewChart = ({
     return shapeId
   }
 
-
   const showLiquidationLine = async (price: string, qty: string) => {
     if (!widgetRef.current) return
     const chart = widgetRef.current?.activeChart()
