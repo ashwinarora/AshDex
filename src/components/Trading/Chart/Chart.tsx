@@ -128,6 +128,7 @@ const TradingViewChart = ({
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
   const orderToShape = useRef<Map<number, string>>(new Map())
   const positionToShape = useRef<Map<string, string>>(new Map())
+  const liquidationToShape = useRef<Map<string, string>>(new Map())
 
   // Update asset ref and initialize cache when asset changes
   useEffect(() => {
@@ -480,6 +481,45 @@ const TradingViewChart = ({
     return shapeId
   }
 
+
+  const showLiquidationLine = async (price: string, qty: string) => {
+    if (!widgetRef.current) return
+    const chart = widgetRef.current?.activeChart()
+    if (!chart) return
+
+    const color = '#ff0000' // red
+    const bg = 'rgba(255,0,0,0.1)'
+    const numericDisplayPrice = Number(price)
+    const priceText = Number.isFinite(numericDisplayPrice)
+      ? numericDisplayPrice.toFixed(2)
+      : String(price)
+
+    const shapeId = await chart.createShape(
+      { price: Number(price) },
+      {
+        shape: 'horizontal_line',
+        text: `Liquidation · ${qty} @ ${priceText}`,
+        overrides: {
+          showLabel: true,
+          labelBackgroundColor: bg,
+          textColor: color,
+          fontColor: color,
+          fontSize: 13,
+          borderColor: color,
+          borderWidth: 1,
+          linecolor: color,
+          linewidth: 1,
+          linestyle: 2
+        },
+        disableSelection: true,
+        disableSave: true,
+        lock: true
+      }
+    )
+
+    return shapeId
+  }
+
   // Update chart when asset or interval changes
   useEffect(() => {
     if (widgetRef.current) {
@@ -488,6 +528,7 @@ const TradingViewChart = ({
         widgetRef.current.activeChart().removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
+        liquidationToShape.current.clear()
       } catch (e) {
         console.error('Chart update error:', e)
       }
@@ -515,6 +556,7 @@ const TradingViewChart = ({
         widgetRef.current.activeChart().removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
+        liquidationToShape.current.clear()
       } catch (e) {
         console.error('Error clearing shapes:', e)
       }
@@ -584,6 +626,45 @@ const TradingViewChart = ({
           widgetRef.current.activeChart().removeEntity(shapeId)
           positionToShape.current.delete(positionId)
         }
+      }
+    }
+
+    // Draw or update liquidation lines for current positions
+    clearingHouseState?.assetPositions.forEach(async (p) => {
+      if (p.position.coin !== selectedAsset) return
+      const liqPx = String(p.position.liquidationPx)
+      const existingId = liquidationToShape.current.get(p.position.coin)
+
+      const numericLiqPx = Number(liqPx)
+      const isValid = Number.isFinite(numericLiqPx) && numericLiqPx > 0
+
+      if (!isValid) {
+        if (existingId) {
+          widgetRef.current?.activeChart().removeEntity(existingId)
+          liquidationToShape.current.delete(p.position.coin)
+        }
+        return
+      }
+
+      // If already exists, remove to refresh at new price
+      if (existingId) {
+        widgetRef.current?.activeChart().removeEntity(existingId)
+        liquidationToShape.current.delete(p.position.coin)
+      }
+
+      const liqShapeId = await showLiquidationLine(liqPx, p.position.szi)
+      if (!liqShapeId) return
+      liquidationToShape.current.set(p.position.coin, liqShapeId)
+    })
+
+    // Cleanup liquidation lines for coins no longer in positions
+    const currentCoins = new Set(
+      clearingHouseState?.assetPositions.map((p) => p.position.coin) || []
+    )
+    for (const [coin, shapeId] of liquidationToShape.current.entries()) {
+      if (!currentCoins.has(coin)) {
+        widgetRef.current.activeChart().removeEntity(shapeId)
+        liquidationToShape.current.delete(coin)
       }
     }
   }, [clearingHouseState])
