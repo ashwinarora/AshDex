@@ -1,6 +1,6 @@
 import { GetPublicKeyCommand, KMSClient, SignCommand } from '@aws-sdk/client-kms'
 import { hashTypedData, type Hex, type Address, recoverAddress, keccak256 } from 'viem'
-import { secp256k1 } from '@noble/curves/secp256k1'
+import { secp256k1 } from '@noble/curves/secp256k1.js'
 import { hexToBytes } from 'viem/utils'
 import { computeAddress } from 'ethers/transaction'
 
