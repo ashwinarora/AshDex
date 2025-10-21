@@ -11,16 +11,16 @@ const ReferralStats = () => {
 
   if (isLoading) {
     return (
-      <div className="w-full h-32 flex items-center justify-center">
-        <IconLoader2 className="text-white size-8 animate-spin" />
+      <div className="w-full h-32 flex items-center justify-center flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
+        <IconLoader2 className="text-white size-10 animate-spin" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="w-full h-32 flex items-center justify-center gap-2">
-        <IconAlertCircle className="text-red size-6" />
+      <div className="w-full h-32 items-center justify-center flex flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
+        <IconAlertCircle className="text-red size-10" />
         <span className="text-red text-sm">{t('Error loading stats')}</span>
       </div>
     )
