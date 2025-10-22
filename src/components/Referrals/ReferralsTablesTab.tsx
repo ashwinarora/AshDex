@@ -14,7 +14,7 @@ const ReferralsTablesTab = () => {
   return (
     <div
       className={cn(
-        'w-full h-full flex-1 flex flex-col p-2 gap-2 justify-start bg-secondary rounded-md shrink-0',
+        'w-full h-96 flex-1 flex flex-col p-2 gap-2 justify-start bg-secondary rounded-md shrink-0',
         isRTL && 'items-end'
       )}
     >
@@ -52,9 +52,9 @@ const ReferralsTablesTab = () => {
           ))}
         </ToggleGroup>
       </div>
-      <div className="w-full h-full flex-1">
+      <div className="w-full h-full flex-1 overflow-y-auto no-scrollbar overflow-x-hidden">
         {activeTab === 'Referrals' && <ReferralsTable />}
-        {activeTab === 'Legacy reward history' && <LegacyRewardHistory />}
+        {activeTab === 'Reward history' && <LegacyRewardHistory />}
       </div>
     </div>
   )

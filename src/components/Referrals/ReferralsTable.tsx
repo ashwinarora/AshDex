@@ -49,8 +49,8 @@ const ReferralsTable = () => {
             userId: user.id.toString(),
             userWalletId: user.wallet_id,
             userCreatedAt: user.created_at,
-            rewardsGenerated: Number(user.rewards_generated) || 0,
-            clmVol: Number(user.volume_traded) || 0
+            rewardsGenerated: Number(user.rewards_generated ?? 0),
+            clmVol: Number(user.volume_traded ?? 0)
           })
         })
       }
@@ -130,12 +130,16 @@ const ReferralsTable = () => {
                         className={cn(
                           'cursor-pointer w-full',
                           isRTL
-                            ? header.id === 'send' || header.id === 'transfer'
+                            ? header.id === 'clmVol'
                               ? 'justify-start'
-                              : 'justify-end'
-                            : header.id === 'send' || header.id === 'transfer'
+                              : header.id === 'userWalletId'
+                                ? 'justify-end'
+                                : 'justify-center'
+                            : header.id === 'clmVol'
                               ? 'justify-end'
-                              : 'justify-start',
+                              : header.id === 'userWalletId'
+                                ? 'justify-start'
+                                : 'justify-center',
                           header.column.columnDef.enableSorting
                             ? 'hover:text-accent-foreground'
                             : 'hover:text-white/50',
@@ -176,12 +180,16 @@ const ReferralsTable = () => {
                             'font-medium text-white text-xs',
                             // isRTL ? 'first:text-start text-end' : 'text-start last:text-end'
                             isRTL
-                              ? cell.column.id === 'send' || cell.column.id === 'transfer'
+                              ? cell.column.id === 'clmVol'
                                 ? 'text-start'
-                                : 'text-end'
-                              : cell.column.id === 'send' || cell.column.id === 'transfer'
+                                : cell.column.id === 'userWalletId'
+                                  ? 'text-end'
+                                  : 'text-center'
+                              : cell.column.id === 'clmVol'
                                 ? 'text-end'
-                                : 'text-start'
+                                : cell.column.id === 'userWalletId'
+                                  ? 'text-start'
+                                  : 'text-center'
                           )}
                         >
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}

@@ -1,5 +1,5 @@
 'use client'
-import { Input } from '../ui/input'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp'
 
 interface InviteCodeProps {
   value?: string
@@ -10,18 +10,22 @@ interface InviteCodeProps {
 }
 
 export function InviteCode({ value = '', onChange, className = '' }: InviteCodeProps) {
-  const inputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value
-    if (newValue.length > 8) {
-      return
-    }
-    const upperCaseValue = newValue.toUpperCase()
-    onChange?.(upperCaseValue)
+  const inputHandler = (newValue: string) => {
+    onChange?.(newValue.toUpperCase())
   }
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <Input value={value} onChange={inputHandler} className="tracking-[0.5em] text-center" />
+      <InputOTP maxLength={6} value={value} onChange={inputHandler}>
+        <InputOTPGroup>
+          <InputOTPSlot className="size-12 text-xl font-bold" index={0} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={1} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={2} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={3} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={4} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={5} />
+        </InputOTPGroup>
+      </InputOTP>
     </div>
   )
 }

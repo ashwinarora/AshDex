@@ -456,7 +456,7 @@ export const REFERRALS_DESC = [
   `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
 ] as const
 
-export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
+export const REFERRALS_TABLES_TABS = ['Referrals', 'Reward history'] as const
 
 export const REFERRALS_CREATECODE_DESC = [
   `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`

@@ -32,11 +32,6 @@ function LegacyRewardHistory() {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor('rewards_claimed', {
-        header: t('Rewards Claimed'),
-        enableSorting: true,
-        cell: (info) => <span className="text-xs font-medium">${info.getValue().toFixed(2)}</span>
-      }),
       columnHelper.accessor('created_at', {
         header: t('Date'),
         enableSorting: true,
@@ -51,6 +46,11 @@ function LegacyRewardHistory() {
             })}
           </span>
         )
+      }),
+      columnHelper.accessor('rewards_claimed', {
+        header: t('Rewards Claimed'),
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">${info.getValue().toFixed(2)}</span>
       })
     ],
     [t]
@@ -99,11 +99,11 @@ function LegacyRewardHistory() {
                           onClick={header.column.getToggleSortingHandler()}
                           className={cn(
                             'cursor-pointer w-full',
-                            isRTL
-                              ? header.id === 'send' || header.id === 'transfer'
+                            !isRTL
+                              ? header.id === 'created_at'
                                 ? 'justify-start'
                                 : 'justify-end'
-                              : header.id === 'send' || header.id === 'transfer'
+                              : header.id === 'created_at'
                                 ? 'justify-end'
                                 : 'justify-start',
                             header.column.columnDef.enableSorting
@@ -144,11 +144,11 @@ function LegacyRewardHistory() {
                             key={cell.id}
                             className={cn(
                               'font-medium text-white text-xs',
-                              isRTL
-                                ? cell.column.id === 'send' || cell.column.id === 'transfer'
+                              !isRTL
+                                ? cell.column.id === 'created_at'
                                   ? 'text-start'
                                   : 'text-end'
-                                : cell.column.id === 'send' || cell.column.id === 'transfer'
+                                : cell.column.id === 'created_at'
                                   ? 'text-end'
                                   : 'text-start'
                             )}

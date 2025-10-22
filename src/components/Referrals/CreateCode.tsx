@@ -38,22 +38,35 @@ function CreateCode() {
   // Show existing invite code if it exists
   if (existingInviteCode) {
     return (
-      <div className="flex flex-col items-center">
-        <p className="text-white/80 font-medium text-base mb-4">{t('Your referral code is:')}</p>
-        <p className="text-white text-2xl font-bold mb-6">{existingInviteCode}</p>
-        <button
-          className="py-[10px] px-[24px] tracking-[0em] font-bold rounded-xl bg-primary text-white text-base cursor-pointer hover:bg-primary/90 transition-colors"
-          onClick={() => navigator.clipboard.writeText(existingInviteCode)}
+      <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
+        <div className="w-full flex !h-24 flex-col gap-2">
+          <h1 className="text-white font-medium text-lg">{t('Your referral code')}</h1>
+          <p className="text-white/50 font-medium text-sm">
+            {t(
+              'This will allow you to earn bonuses or other rewards offered by the program. Simply share it with your friends and earn rewards.'
+            )}
+          </p>
+        </div>
+        <h1 className="text-white text-5xl font-bold mb-6">{existingInviteCode}</h1>
+        <Button
+          className="w-full"
+          onClick={() => {
+            navigator.clipboard.writeText(existingInviteCode)
+            toast.success(t('Code copied to clipboard'))
+          }}
         >
           {t('Copy Code')}
-        </button>
+        </Button>
       </div>
+      // <div className="flex flex-col items-center">
+      //   <p className="text-white/80 font-medium text-base mb-4">{t('Your referral code is:')}</p>
+      //   <p className="text-white text-2xl font-bold mb-6">{existingInviteCode}</p>
     )
   }
 
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
-      <div className="w-full flex flex-col !h-24 gap-2">
+      <div className="w-full flex !h-24 flex-col gap-2">
         <h1 className="text-white font-medium text-lg">{t('Create a Referral Code')}</h1>
         <p className="text-white/50 font-medium text-sm">
           {t('This referral code is permanent and unique to you. Choose wisely.')}
@@ -74,37 +87,6 @@ function CreateCode() {
         </Button>
       )}
     </div>
-    // <div className="p-2">
-    //   <div className={`flex flex-col gap-4 w-full justify-between items-center`}>
-    //     <div className="text-white/80 font-medium text-base">
-    //       This referral code is permanent and unique to you. Choose wisely.
-    //     </div>
-    //     <div className="">
-    //       <label className="text-sm font-medium text-white/70 mb-2 block">
-    //         Create Referral Code (6 characters)
-    //       </label>
-    //       <InviteCode value={createdCode} onChange={handleCodeChange} />
-    //     </div>
-    //     <div className="w-full">
-    //       {!isAgentApproved || currentFeeApproval === 0 ? (
-    //         <button
-    //           onClick={openAgentModal}
-    //           className={` tracking-[0em] disabled:opacity-50 disabled:bg-white/10 disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors`}
-    //         >
-    //           Establish Connection
-    //         </button>
-    //       ) : (
-    //         <button
-    //           onClick={createInviteCode}
-    //           disabled={isCreatingInviteCode || createdCode.length !== 6}
-    //           className={` tracking-[0em] disabled:text-[#8B8BA0] font-bold rounded-xl w-full text-base bg-primary text-white cursor-pointer hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed`}
-    //         >
-    //           {isCreatingInviteCode ? t('Creating...') : t('Create')}
-    //         </button>
-    //       )}
-    //     </div>
-    //   </div>
-    // </div>
   )
 }
 
