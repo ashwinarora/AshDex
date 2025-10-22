@@ -322,7 +322,12 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             </div>
           ))}
         </div>
-        <div className="flex flex-1 h-full md:hidden items-center justify-end gap-2">
+        <div
+          className={cn(
+            'flex flex-1 h-full md:hidden items-center justify-end gap-2',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <Popover>
             <PopoverTrigger asChild>
               <Button

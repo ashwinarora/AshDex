@@ -11,6 +11,8 @@ import OnboardingModal from '@/components/common/Onboarding'
 import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
+import FIBNativeBridgeInitializer from './FIBNativeBridgeInitializer'
+import FIBBridgeEvents from './FIBBridgeEvents'
 import dynamic from 'next/dynamic'
 import { getLanguage } from '@/tolgee/language'
 import { getTolgee } from '@/tolgee/server'
@@ -58,6 +60,8 @@ export default async function RootLayout({
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <TolgeeNextProvider language={locale} staticData={staticData}>
           <Provider>
+            <FIBNativeBridgeInitializer />
+            <FIBBridgeEvents />
             <HyperLiquidInitializer />
             <WalletModalProvider>
               <BridgeProvider>
