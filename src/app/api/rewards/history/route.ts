@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { Address } from 'viem'
+import RewardsManager from '@/services/Rewards.manager'
+import { RewardsHistoryResult } from '@/services/Rewards.manager'
 
 export const GET = async (request: NextRequest) => {
   try {
@@ -12,61 +14,15 @@ export const GET = async (request: NextRequest) => {
       return NextResponse.json({ error: 'Missing wallet_id parameter' }, { status: 400 })
     }
 
-    // Find user by wallet_id
-    const user = await prisma.user.findUnique({
-      where: { wallet_id },
-      select: { id: true }
+    const data: RewardsHistoryResult = await RewardsManager.getRewardsHistory({
+      wallet_id: wallet_id as Address,
+      limit,
+      offset
     })
-
-    if (!user) {
-      return NextResponse.json({ error: 'User not found' }, { status: 404 })
-    }
-
-    // Get rewards history with pagination
-    const rewardsHistory_promise = prisma.userRewardsClaims.findMany({
-      where: { user_id: user.id },
-      orderBy: { created_at: 'desc' },
-      take: Math.min(limit, 100), // Cap at 100 records
-      skip: offset,
-      select: {
-        id: true,
-        rewards_claimed: true,
-        created_at: true
-      }
-    })
-
-    // Get total count for pagination
-    const totalCount_promise = prisma.userRewardsClaims.count({
-      where: { user_id: user.id }
-    })
-
-    // Calculate total rewards claimed
-    const totalRewardsClaimed_promise = prisma.userRewardsClaims.aggregate({
-      where: { user_id: user.id },
-      _sum: { rewards_claimed: true }
-    })
-
-    const [rewardsHistory, totalCount, totalRewardsClaimed] = await Promise.all([
-      rewardsHistory_promise,
-      totalCount_promise,
-      totalRewardsClaimed_promise
-    ])
 
     return NextResponse.json({
       success: true,
-      data: {
-        rewardsHistory,
-        pagination: {
-          total: totalCount,
-          limit,
-          offset,
-          hasMore: offset + limit < totalCount
-        },
-        summary: {
-          totalRewardsClaimed: totalRewardsClaimed._sum.rewards_claimed || 0,
-          totalClaims: totalCount
-        }
-      }
+      data
     })
   } catch (error) {
     console.error('Error fetching rewards history:', error)

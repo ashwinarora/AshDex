@@ -1,6 +1,8 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
+import { apiServerAxios } from '@/config/axios'
+
 export interface IInvite {
   id: number
   user_id: number
@@ -22,12 +24,12 @@ export const useInviteCode = () => {
     queryFn: async () => {
       if (!address) return null
 
-      const response = await fetch(`/api/invite?wallet_id=${address}`)
-      if (!response.ok) {
+      const response = await apiServerAxios.get(`/api/invite?wallet_id=${address}`)
+      if (!response.data) {
         throw new Error('Failed to fetch invite code')
       }
 
-      const data: IInviteResponse = await response.json()
+      const data: IInviteResponse = response.data
       console.log('data for existing invite code', data)
       return data.invite[0].code
     },

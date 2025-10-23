@@ -1,6 +1,7 @@
 import { Invite, PrismaClient, User } from '@prisma/client'
 import { Address } from 'viem'
 import UserManager from './User.manager'
+import { Decimal } from '@prisma/client/runtime/library'
 
 export interface IInviteWithUsedBy extends Invite {
   used_by: User[]
@@ -31,12 +32,8 @@ class InviteService {
   public async validateInviteCode(code: string): Promise<Error | null> {
     code = this.normalizeCode(code)
 
-    if (!code || code.trim().length === 0) {
-      return new Error('Invite code cannot be empty')
-    }
-
-    if (code.trim().length > 6) {
-      return new Error('Invite code cannot be longer than 6 characters')
+    if (!code || code.trim().length < 4 || code.trim().length > 8) {
+      return new Error('Invite code must be between 4 and 8 characters')
     }
 
     const alphanumericRegex = /^[A-Za-z0-9]+$/
@@ -116,7 +113,7 @@ class InviteService {
   /*
   Retuns all invite codes for a user with the used_by field
   */
-  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[] | null> {
+  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[]> {
     const invites = await this.prisma.invite.findMany({
       where: {
         user: {
@@ -128,7 +125,7 @@ class InviteService {
       }
     })
     if (!invites || invites.length === 0) {
-      return null
+      return []
     }
     return invites
   }
@@ -161,7 +158,9 @@ class InviteService {
       throw new Error('User is not nexon referred')
     }
 
-    // TODO: User cannot accept invite if they have already started trading
+    if (user.rewards_generated.greaterThan(Decimal(0))) {
+      throw new Error('User has already started trading')
+    }
 
     await this.prisma.user.update({
       where: { id: user.id },

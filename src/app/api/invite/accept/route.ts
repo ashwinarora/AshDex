@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
-import { Address } from 'viem'
 import InviteService from '@/services/Invite.manager'
 
-const PatchHandler = async (request: AuthenticatedRequest) => {
-  // @ts-expect-error we know that payload is there
+type InviteAcceptPayload = { inviteCode: string; action: 'acceptInvite' }
+
+const PatchHandler = async (request: AuthenticatedRequest<InviteAcceptPayload>) => {
   const inviteCode = request.payload.inviteCode
-  const wallet_id = request.wallet_id as Address
+  const wallet_id = request.wallet_id
 
   try {
     await InviteService.claimInviteCode(wallet_id, inviteCode)
@@ -19,4 +19,4 @@ const PatchHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-export const PATCH = withAuth(PatchHandler)
+export const PATCH = withAuth<InviteAcceptPayload>(PatchHandler)

@@ -1,6 +1,5 @@
 'use client'
-import { useState } from 'react'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from '../ui/input-otp'
 
 interface InviteCodeProps {
   value?: string
@@ -10,31 +9,21 @@ interface InviteCodeProps {
   placeholder?: string
 }
 
-export function InviteCode({
-  value = '',
-  onChange,
-  maxLength = 6,
-  className = ''
-}: InviteCodeProps) {
-  const [code, setCode] = useState(value)
-
-  const handleCodeChange = (newValue: string) => {
-    const upperCaseValue = newValue.toUpperCase()
-    setCode(upperCaseValue)
-    onChange?.(upperCaseValue)
+export function InviteCode({ value = '', onChange, className = '' }: InviteCodeProps) {
+  const inputHandler = (newValue: string) => {
+    onChange?.(newValue.toUpperCase())
   }
 
   return (
     <div className={`flex justify-center ${className}`}>
-      <InputOTP maxLength={maxLength} value={code} onChange={handleCodeChange}>
-        <InputOTPGroup className="gap-2">
-          {Array.from({ length: maxLength }, (_, index) => (
-            <InputOTPSlot
-              key={index}
-              index={index}
-              className="h-12 w-12 rounded-md border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.06)] text-white"
-            />
-          ))}
+      <InputOTP maxLength={6} value={value} onChange={inputHandler}>
+        <InputOTPGroup>
+          <InputOTPSlot className="size-12 text-xl font-bold" index={0} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={1} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={2} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={3} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={4} />
+          <InputOTPSlot className="size-12 text-xl font-bold" index={5} />
         </InputOTPGroup>
       </InputOTP>
     </div>

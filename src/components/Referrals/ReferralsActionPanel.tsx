@@ -1,7 +1,6 @@
 'use client'
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { REFERRALSINFO_TAB } from '@/utils/constants'
-import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
 import CreateCode from '@/components/Referrals/CreateCode'
 import Rewards from '@/components/Referrals/Rewards'
@@ -10,21 +9,17 @@ import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import { Separator } from '../ui/separator'
+import { useGetRewardsStats, useInviteCode } from '@/hooks/invite'
 
 type ReferralsTab = (typeof REFERRALSINFO_TAB)[number]
 
 function ReferralsActionPanel() {
   const { t } = useTranslate()
   const [activeTab, setActiveTab] = useState<ReferralsTab>('Enter Code')
-  const { data: referralsDetails } = useReferralsInfo()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const { data: existingInviteCode } = useInviteCode()
 
-  const totalClaim = useMemo(() => {
-    return (
-      parseFloat(referralsDetails?.builderRewards || '0') +
-      parseFloat(referralsDetails?.claimedRewards || '0')
-    )
-  }, [referralsDetails])
+  const { data: rewardsStats } = useGetRewardsStats()
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -33,7 +28,7 @@ function ReferralsActionPanel() {
       case 'Create Code':
         return <CreateCode />
       case 'Rewards':
-        return <Rewards totalClaim={totalClaim} />
+        return <Rewards totalClaim={rewardsStats?.availableReferralRewards || 0} />
       default:
         return null
     }
@@ -71,12 +66,14 @@ function ReferralsActionPanel() {
         >
           {t('Enter Code')}
         </ToggleGroupItem>
-        <ToggleGroupItem
-          className={cn('w-full data-[state=on]:bg-transparent')}
-          value="Create Code"
-        >
-          {t('Create Code')}
-        </ToggleGroupItem>
+        {existingInviteCode && (
+          <ToggleGroupItem
+            className={cn('w-full data-[state=on]:bg-transparent')}
+            value="Create Code"
+          >
+            {t('Create Code')}
+          </ToggleGroupItem>
+        )}
         <ToggleGroupItem className={cn('w-full data-[state=on]:bg-transparent')} value="Rewards">
           {t('Rewards')}
         </ToggleGroupItem>

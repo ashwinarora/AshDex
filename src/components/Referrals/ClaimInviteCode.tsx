@@ -28,7 +28,7 @@ function ClaimInviteCode() {
   }
 
   async function claimInviteCode() {
-    if (code.length !== 6) {
+    if (code.length < 4 || code.length > 8) {
       toast.error('Code must be exactly 6 characters')
       return
     }
@@ -39,17 +39,7 @@ function ClaimInviteCode() {
     }
 
     try {
-      // Sign the payload with agent wallet
-      const signature = await agentWallet?.signMessage({
-        message: JSON.stringify({ inviteCode: code })
-      })
-
-      if (!signature) {
-        toast.error('Failed to sign message')
-        return
-      }
-
-      await acceptInviteCodeMutation({ inviteCode: code, signature })
+      await acceptInviteCodeMutation(code)
     } catch (error) {
       toast.error('Failed to claim invite code')
       console.error('Error claiming invite code:', error)

@@ -1,34 +1,33 @@
 import { NextResponse } from 'next/server'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
-import { prisma } from '@/lib/prisma'
-import { Address } from 'viem'
+import RewardsManager from '@/services/Rewards.manager'
+import { HttpStatusCode } from 'axios'
 
-const claimRewardsHandler = async (request: AuthenticatedRequest) => {
-  const wallet_id = request.wallet_id as Address
-  const payload = JSON.parse(request.payload as string)
-  const claimAmount = payload.claimAmount
-
-  const user = await prisma.user.findUnique({ where: { wallet_id } })
-  if (!user) {
-    return NextResponse.json({ error: 'User not found' }, { status: 404 })
-  }
-
-  // 1. check if claimAmount is correct TODO
-
-  // 2. let user claim the amount using kms TODO
-  // const { txnHash } = await claimRewardsUsingKMS(wallet_id, claimAmount)
-  const txnHash = '0x1234567890' // Dummy
-
-  // 3. save the txnHash and the claim amount in the db
-  const saved_response = await prisma.userRewardsClaims.create({
-    data: {
-      user_id: user.id,
-      rewards_claimed: claimAmount,
-      txn_hash: txnHash
-    }
-  })
-
-  return NextResponse.json({ message: 'Rewards claimed', data: saved_response })
+type ClaimRewardsPayload = {
+  action: 'claimRewards'
 }
 
-export const POST = withAuth(claimRewardsHandler)
+const claimRewardsHandler = async (request: AuthenticatedRequest<ClaimRewardsPayload>) => {
+  try {
+    const wallet_id = request.wallet_id
+    const result = await RewardsManager.claimRewards(wallet_id)
+
+    return NextResponse.json(result)
+  } catch (error) {
+    console.error('Error in claim rewards route:', error)
+
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: HttpStatusCode.InternalServerError }
+      )
+    }
+
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: HttpStatusCode.InternalServerError }
+    )
+  }
+}
+
+export const POST = withAuth<ClaimRewardsPayload>(claimRewardsHandler)

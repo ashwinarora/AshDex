@@ -2,6 +2,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { useAccount } from 'wagmi'
 import { IInviteWithUsedBy } from '@/services/Invite.manager'
+import { apiServerAxios } from '@/config/axios'
 
 export interface ISuccessfulInviteResponse {
   success: boolean
@@ -17,12 +18,12 @@ export const useSuccessfulInvites = () => {
     queryFn: async () => {
       if (!address) return null
 
-      const response = await fetch(`/api/invite?wallet_id=${address}`)
-      if (!response.ok) {
+      const response = await apiServerAxios.get(`/api/invite?wallet_id=${address}`)
+      if (!response.data) {
         throw new Error('Failed to fetch successful invites')
       }
 
-      const data: ISuccessfulInviteResponse = await response.json()
+      const data: ISuccessfulInviteResponse = response.data
       console.log('data for successful invites', data)
       return data.invite
     },

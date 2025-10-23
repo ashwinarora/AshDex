@@ -1,47 +1,27 @@
 import { useAccount } from 'wagmi'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { useShallow } from 'zustand/react/shallow'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { Hex } from 'viem'
+import { useAuth } from './useAuth'
+import { apiServerAxios } from '@/config/axios'
+
+type TCreateInvitePayload = { inviteCode: string; action: 'createInvite' }
 
 // Hook to create new invite code
 export const useCreateInviteCode = () => {
-  const { address, chainId } = useAccount()
-
-  const { agentWallet } = useHyperliquidStore(
-    useShallow((state) => ({
-      agentWallet: state.agentWallet
-    }))
-  )
+  const { address } = useAccount()
   const queryClient = useQueryClient()
+  const authMutation = useAuth<TCreateInvitePayload>()
 
   return useMutation({
-    mutationFn: async ({ inviteCode, signature }: { inviteCode: string; signature: Hex }) => {
-      if (!address || !chainId || !agentWallet) {
-        throw new Error('Missing required parameters')
-      }
-
-      console.log('🚀 ~ useCreateInviteCode ~ signature:', signature)
-
-      // Create invite in our database
-      const response = await fetch('/api/invite/create', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          signature,
-          payload: { inviteCode }
-        })
-      })
-
-      if (!response.ok) {
+    mutationFn: async (inviteCode: string) => {
+      const payload: TCreateInvitePayload = { inviteCode, action: 'createInvite' }
+      const body = await authMutation({ payload })
+      const response = await apiServerAxios.post('/api/invite/create', body)
+      if (!response.data) {
         throw new Error('Failed to create invite code')
       }
-
-      return response.json()
+      return response.data
     },
     onSuccess: () => {
       // Invalidate and refetch invite code
