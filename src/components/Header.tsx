@@ -5,7 +5,6 @@ import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import Link from 'next/link'
 import { truncateAddress } from '@/utils/utils'
-import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import Avatar from './common/Avatar'
 import { toast } from 'sonner'
@@ -208,16 +207,15 @@ const Header: FC = () => {
                   className="h-full flex items-center justify-center w-24"
                   key={name}
                 >
-                  <Link href={path} className=" w-full h-full cursor-pointer">
-                    <NavigationMenuLink
-                      className={cn(
-                        'text-secondary-foreground hover:bg-popover focus:bg-none text-sm h-full w-full flex items-center justify-center rounded-none',
-                        activeMenu === name && 'text-accent-foreground font-semibold'
-                      )}
-                    >
-                      {name}
-                    </NavigationMenuLink>
-                  </Link>
+                  <NavigationMenuLink
+                    href={path}
+                    className={cn(
+                      'cursor-pointer text-secondary-foreground hover:bg-popover focus:bg-none text-sm h-full w-full flex items-center justify-center rounded-none',
+                      activeMenu === name && 'text-accent-foreground font-semibold'
+                    )}
+                  >
+                    {name}
+                  </NavigationMenuLink>
                 </NavigationMenuItem>
               )
             )}
