@@ -85,8 +85,7 @@ function ClaimInviteCode() {
         <Input
           value={code}
           onChange={(e) => handleCodeChange(e.target.value)}
-          className="w-fit w-min-10 text-center text-accent-foreground"
-          style={{ letterSpacing: '0.5em' }}
+          className="w-fit w-min-10 text-center text-accent-foreground tracking-[0.5em]"
         />
         {!isAgentApproved || currentFeeApproval === 0 ? (
           <Button onClick={openAgentModal} className="w-full">
