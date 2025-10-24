@@ -10,8 +10,7 @@ export default function SpotAssetTradingPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const a = asset as string
-    if (!isWhitelistedSpotRouteAsset(a)) {
+    if (!isWhitelistedSpotRouteAsset(asset as string)) {
       router.replace(`/spot/${DEFAULT_SPOT_ASSET}`)
     }
   }, [asset, router])
