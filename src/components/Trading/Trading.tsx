@@ -23,7 +23,6 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useAccount } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { DEFAULT_SPOT_ASSET, isWhitelistedSpotRouteAsset } from '@/utils/whitelist'
 import { isTestnet } from '@/utils/constants'
 
 interface TradingProps {
