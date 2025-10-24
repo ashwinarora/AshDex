@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { isTestnet } from '@/utils/constants'
 import Chart from './Chart/Chart'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
@@ -24,6 +23,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useAccount } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { DEFAULT_SPOT_ASSET, isWhitelistedSpotRouteAsset } from '@/utils/whitelist'
 
 interface TradingProps {
   defaultAsset?: string
@@ -68,17 +68,17 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
   }, [address, subscribeToActiveAssetData, selectedAsset])
 
   useEffect(() => {
-    setSelectedAsset(
-      isSpot
-        ? defaultAsset && spotKeyToName.size > 0
-          ? spotKeyToName.entries().find(([, value]) => value === defaultAsset)?.[0]
-          : isTestnet
-            ? '@1035'
-            : '@107'
-        : defaultAsset
-          ? defaultAsset
-          : 'BTC'
-    )
+    if (isSpot) {
+      // Validate route asset; if not allowed, fall back to DEFAULT_SPOT_ASSET
+      const routeAsset = (defaultAsset as string) || DEFAULT_SPOT_ASSET
+      const safeRoute = isWhitelistedSpotRouteAsset(routeAsset) ? routeAsset : DEFAULT_SPOT_ASSET
+      if (spotKeyToName.size > 0) {
+        const key = Array.from(spotKeyToName.entries()).find(([, value]) => value === safeRoute)?.[0]
+        setSelectedAsset(key || Array.from(spotKeyToName.keys())[0] || '')
+      }
+    } else {
+      setSelectedAsset(defaultAsset ? defaultAsset : 'BTC')
+    }
   }, [defaultAsset, spotKeyToName, isSpot])
 
   if (isMobile) {

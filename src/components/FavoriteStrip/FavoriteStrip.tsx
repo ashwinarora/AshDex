@@ -19,11 +19,12 @@ import clsx from 'clsx'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { isWhitelistedSpotPair } from '@/utils/whitelist'
 
 const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => {
   const isSpot = useIsSpot()
   const router = useRouter()
-  const { spotKeyToName } = useSpotMeta()
+  const { spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
   const { t } = useTranslate()
@@ -78,7 +79,15 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
             router.push(`${isSpot ? '/spot/' : '/'}${isSpot ? spotKeyToName.get(asset) : asset}`)
           }}
         >
-          {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).map(
+          {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites))
+            .filter((favorite) => {
+              if (!isSpot) return true
+              const base = spotKeyToBaseName.get(favorite)
+              const name = spotKeyToName.get(favorite)
+              if (!base || !name) return false
+              return isWhitelistedSpotPair(name, base)
+            })
+            .map(
             (favorite, index) => (
               <Fragment key={favorite}>
                 <FavoriteItem assetKey={favorite} />
