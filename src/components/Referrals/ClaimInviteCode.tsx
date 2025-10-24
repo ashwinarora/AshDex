@@ -2,13 +2,13 @@
 import { useState } from 'react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { InviteCode } from '@/components/Referrals/InviteCode'
 import { useAcceptInviteCode } from '@/hooks/invite'
 import { useUser } from '@/hooks/useUser'
 import { toast } from 'sonner'
 import { IconLoader2, IconRosetteDiscountCheck } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 
 function ClaimInviteCode() {
   const [code, setCode] = useState('')
@@ -82,7 +82,12 @@ function ClaimInviteCode() {
             )}
           </p>
         </div>
-        <InviteCode value={code} onChange={handleCodeChange} />
+        <Input
+          value={code}
+          onChange={(e) => handleCodeChange(e.target.value)}
+          className="w-fit w-min-10 text-center text-accent-foreground"
+          style={{ letterSpacing: '0.5em' }}
+        />
         {!isAgentApproved || currentFeeApproval === 0 ? (
           <Button onClick={openAgentModal} className="w-full">
             Establish Connection

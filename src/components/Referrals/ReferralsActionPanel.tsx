@@ -66,7 +66,7 @@ function ReferralsActionPanel() {
         >
           {t('Enter Code')}
         </ToggleGroupItem>
-        {existingInviteCode && (
+        {!existingInviteCode && (
           <ToggleGroupItem
             className={cn('w-full data-[state=on]:bg-transparent')}
             value="Create Code"

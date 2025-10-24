@@ -1,8 +1,9 @@
 'use client'
-import { useState, FC, useEffect, useRef } from 'react'
+import { useState, FC, useEffect, useRef, memo } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
+import Link from 'next/link'
 import { truncateAddress } from '@/utils/utils'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -150,8 +151,8 @@ const Header: FC = () => {
         isRTL && 'flex-row-reverse'
       )}
     >
-      <div
-        onClick={() => router.push('/')}
+      <Link
+        href="/"
         className={clsx(
           'flex items-center gap-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer',
           isRTL ? 'pl-4' : 'pr-4'
@@ -164,7 +165,7 @@ const Header: FC = () => {
           className="w-6 h-6"
         />
         Nexon
-      </div>
+      </Link>
       <div className="h-full flex-1 w-full md:w-fit flex px-2 items-center md:!justify-start justify-end">
         {isMobile ? (
           <DropdownMenu>
@@ -213,15 +214,16 @@ const Header: FC = () => {
                   className="h-full flex items-center justify-center w-24"
                   key={name}
                 >
-                  <NavigationMenuLink
-                    href={path}
-                    className={cn(
-                      'text-white hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
-                      activeMenu === name && 'text-primary hover:text-primary font-semibold'
-                    )}
-                  >
-                    {name}
-                  </NavigationMenuLink>
+                  <Link href={path} className=" w-full h-full cursor-pointer">
+                    <NavigationMenuLink
+                      className={cn(
+                        'text-secondary-foreground hover:bg-popover focus:bg-none text-sm h-full w-full flex items-center justify-center rounded-none',
+                        activeMenu === name && 'text-accent-foreground font-semibold'
+                      )}
+                    >
+                      {name}
+                    </NavigationMenuLink>
+                  </Link>
                 </NavigationMenuItem>
               )
             )}
@@ -294,4 +296,4 @@ const Header: FC = () => {
   )
 }
 
-export default Header
+export default memo(Header)

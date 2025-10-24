@@ -1,17 +1,16 @@
 import React, { useState } from 'react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useTranslate } from '@tolgee/react'
-import { useInviteCode, useCreateInviteCode } from '@/hooks/invite'
 import { toast } from 'sonner'
-import { InviteCode } from './InviteCode'
 import { Button } from '../ui/button'
+import { useCreateInviteCode } from '@/hooks/invite'
+import { Input } from '../ui/input'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { t } = useTranslate()
 
-  const { data: existingInviteCode } = useInviteCode()
   const { mutateAsync: createInviteCodeMutation, isPending: isCreatingInviteCode } =
     useCreateInviteCode()
 
@@ -35,35 +34,6 @@ function CreateCode() {
     setCreatedCode(filteredValue)
   }
 
-  // Show existing invite code if it exists
-  if (existingInviteCode) {
-    return (
-      <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
-        <div className="w-full flex !h-24 flex-col gap-2">
-          <h1 className="text-white font-medium text-lg">{t('Your referral code')}</h1>
-          <p className="text-white/50 font-medium text-sm">
-            {t(
-              'This will allow you to earn bonuses or other rewards offered by the program. Simply share it with your friends and earn rewards.'
-            )}
-          </p>
-        </div>
-        <h1 className="text-white text-5xl font-bold mb-6">{existingInviteCode}</h1>
-        <Button
-          className="w-full"
-          onClick={() => {
-            navigator.clipboard.writeText(existingInviteCode)
-            toast.success(t('Code copied to clipboard'))
-          }}
-        >
-          {t('Copy Code')}
-        </Button>
-      </div>
-      // <div className="flex flex-col items-center">
-      //   <p className="text-white/80 font-medium text-base mb-4">{t('Your referral code is:')}</p>
-      //   <p className="text-white text-2xl font-bold mb-6">{existingInviteCode}</p>
-    )
-  }
-
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
       <div className="w-full flex !h-24 flex-col gap-2">
@@ -72,7 +42,12 @@ function CreateCode() {
           {t('This referral code is permanent and unique to you. Choose wisely.')}
         </p>
       </div>
-      <InviteCode value={createdCode} onChange={handleCodeChange} />
+      <Input
+        value={createdCode}
+        onChange={(e) => handleCodeChange(e.target.value)}
+        className="w-fit w-min-10 text-center text-accent-foreground"
+        style={{ letterSpacing: '0.5em' }}
+      />
       {!isAgentApproved || currentFeeApproval === 0 ? (
         <Button onClick={openAgentModal} className="w-full">
           Establish Connection
