@@ -1,6 +1,6 @@
 'use client'
-import { useState, FC, useEffect, useRef, memo } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useState, FC, useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -44,13 +44,11 @@ type MenuItem = {
 }
 
 const Header: FC = () => {
-  const router = useRouter()
   const pathname = usePathname()
   const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
-  const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
@@ -142,8 +140,6 @@ const Header: FC = () => {
     }
   }, [isDropdownOpen])
 
-  if (!isRendered) return null
-
   return (
     <div
       className={clsx(
@@ -180,12 +176,10 @@ const Header: FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-48 w-fit" align="end">
               {desktopMenu?.map(({ name, path }) => (
-                <DropdownMenuItem
-                  key={name}
-                  onClick={() => router.push(path)}
-                  className="flex items-center justify-between"
-                >
-                  {name}
+                <DropdownMenuItem key={name} asChild>
+                  <Link href={path} className="flex items-center justify-between">
+                    {name}
+                  </Link>
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -233,7 +227,7 @@ const Header: FC = () => {
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
-        {isConnected && isRendered ? (
+        {isConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -261,9 +255,11 @@ const Header: FC = () => {
                   {t('Switch Wallet')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => router.push('/settings')}>
-                  <IconSettings className="size-4 text-inherit" />
-                  {t('Settings')}
+                <DropdownMenuItem asChild>
+                  <Link href="/settings" className="flex items-center gap-2">
+                    <IconSettings className="size-4 text-inherit" />
+                    {t('Settings')}
+                  </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
@@ -296,4 +292,4 @@ const Header: FC = () => {
   )
 }
 
-export default memo(Header)
+export default Header
