@@ -73,7 +73,9 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
       const routeAsset = (defaultAsset as string) || DEFAULT_SPOT_ASSET
       const safeRoute = isWhitelistedSpotRouteAsset(routeAsset) ? routeAsset : DEFAULT_SPOT_ASSET
       if (spotKeyToName.size > 0) {
-        const key = Array.from(spotKeyToName.entries()).find(([, value]) => value === safeRoute)?.[0]
+        const key = Array.from(spotKeyToName.entries()).find(
+          ([, value]) => value === safeRoute
+        )?.[0]
         setSelectedAsset(key || Array.from(spotKeyToName.keys())[0] || '')
       }
     } else {

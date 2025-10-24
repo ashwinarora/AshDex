@@ -1,4 +1,4 @@
-import { isTestnet } from "./constants"
+import { isTestnet } from './constants'
 
 export const MAINNET_SPOT_WHITELIST = [
   'HYPE/USDC',

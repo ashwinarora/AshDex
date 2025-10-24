@@ -87,8 +87,7 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
               if (!base || !name) return false
               return isWhitelistedSpotPair(name, base)
             })
-            .map(
-            (favorite, index) => (
+            .map((favorite, index) => (
               <Fragment key={favorite}>
                 <FavoriteItem assetKey={favorite} />
                 {index !==
@@ -96,8 +95,7 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
                   <Separator orientation="vertical" className="!h-full last:hidden" />
                 )}
               </Fragment>
-            )
-          )}
+            ))}
         </ToggleGroup>
       </div>
       <div
