@@ -38,14 +38,14 @@ html {
   --popover: #150a1e;
   /* #1b0c28 */
   --popover-foreground: #787878;
-  --primary: oklch(0.208 0.042 265.755);
+  --primary: white;
   --primary-foreground: oklch(0.984 0.003 247.858);
   --secondary: oklch(0.968 0.007 247.896);
-  --secondary-foreground: oklch(0.208 0.042 265.755);
+  --secondary-foreground: #ffffff50;
   --muted: #ffffff0a;
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: #1b0c28;
-  --accent-foreground: #5e46f9;
+  --accent: #311749;
+  --accent-foreground: #ffffff;
   --destructive: #e2464a;
   --border: #27163c;
   --input: oklch(0.929 0.013 255.508);
