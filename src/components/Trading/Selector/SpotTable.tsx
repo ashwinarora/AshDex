@@ -32,6 +32,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
+import { isWhitelistedSpotPair } from '@/utils/whitelist'
 
 interface AssetTableProps {
   searchTerm: string
@@ -84,31 +85,40 @@ const AssetTable = ({
   const tableData: AssetData[] = useMemo(() => {
     if (!spotMeta) return []
 
-    return spotAssetContext
-      .filter((asset) =>
-        spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-      .filter((asset) => {
-        if (selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌') {
-          return favorites.has(asset.coin)
-        } else {
-          return true
-        }
-      })
-      .map((assetCtx) => {
-        const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
-        const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
-        const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
-        const marketCap = Number(assetCtx.circulatingSupply) * Number(assetCtx.markPx)
+    return (
+      spotAssetContext
+        // whitelist filter: keep only allowed base/quote pairs
+        .filter((asset) => {
+          const base = spotKeyToName.get(asset.coin)
+          const quote = spotKeyToBaseName.get(asset.coin)
+          if (!base || !quote) return false
+          return isWhitelistedSpotPair(base, quote)
+        })
+        .filter((asset) =>
+          spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .filter((asset) => {
+          if (selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌') {
+            return favorites.has(asset.coin)
+          } else {
+            return true
+          }
+        })
+        .map((assetCtx) => {
+          const price = assetCtx.markPx ? Number(assetCtx.markPx) : 0
+          const prevDayPrice = assetCtx.prevDayPx ? Number(assetCtx.prevDayPx) : 0
+          const volume = assetCtx.dayNtlVlm ? Number(assetCtx.dayNtlVlm) : 0
+          const marketCap = Number(assetCtx.circulatingSupply) * Number(assetCtx.markPx)
 
-        return {
-          symbol: assetCtx.coin,
-          price,
-          prevDayPrice,
-          volume,
-          marketCap
-        }
-      })
+          return {
+            symbol: assetCtx.coin,
+            price,
+            prevDayPrice,
+            volume,
+            marketCap
+          }
+        })
+    )
   }, [spotMeta, spotAssetContext, favorites, searchTerm, selectedTab])
 
   // Define columns
