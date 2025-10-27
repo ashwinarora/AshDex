@@ -1,12 +1,10 @@
-import { Invite, PrismaClient } from '@prisma/client'
+import { Invite, PrismaClient, User } from '@prisma/client'
 import { Address } from 'viem'
+import UserManager from './User.manager'
+import { Decimal } from '@prisma/client/runtime/library'
 
-interface User {
-  id: number
-  username: string
-  wallet_id: Address
-  avatar_url: string | null
-  created_at: Date
+export interface IInviteWithUsedBy extends Invite {
+  used_by: User[]
 }
 
 class InviteService {
@@ -34,24 +32,20 @@ class InviteService {
   public async validateInviteCode(code: string): Promise<Error | null> {
     code = this.normalizeCode(code)
 
-    const existingInvite = await this.prisma.invite.findUnique({
-      where: { code: code }
-    })
-    if (existingInvite) {
-      return new Error('Invite code already exists')
-    }
-
-    if (!code || code.trim().length === 0) {
-      return new Error('Invite code cannot be empty')
-    }
-
-    if (code.trim().length > 6) {
-      return new Error('Invite code cannot be longer than 6 characters')
+    if (!code || code.trim().length < 4 || code.trim().length > 8) {
+      return new Error('Invite code must be between 4 and 8 characters')
     }
 
     const alphanumericRegex = /^[A-Za-z0-9]+$/
     if (!alphanumericRegex.test(code.trim())) {
       return new Error('Invite code can only contain letters and numbers')
+    }
+
+    const existingInvite = await this.prisma.invite.findUnique({
+      where: { code: code }
+    })
+    if (existingInvite) {
+      return new Error('Invite code already exists')
     }
     return null
   }
@@ -62,10 +56,11 @@ class InviteService {
   public async createInvite(wallet_id: Address, inviteCode: string): Promise<Invite> {
     const error = await this.validateInviteCode(inviteCode)
     if (error) {
+      console.error('Error creating invite code:', error)
       throw new Error(error.message)
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }
@@ -116,6 +111,26 @@ class InviteService {
   }
 
   /*
+  Retuns all invite codes for a user with the used_by field
+  */
+  public async getInviteByUserWithUsedBy(wallet_id: Address): Promise<IInviteWithUsedBy[]> {
+    const invites = await this.prisma.invite.findMany({
+      where: {
+        user: {
+          wallet_id: wallet_id
+        }
+      },
+      include: {
+        used_by: true
+      }
+    })
+    if (!invites || invites.length === 0) {
+      return []
+    }
+    return invites
+  }
+
+  /*
   Uses an invite code for a user
   */
   public async claimInviteCode(wallet_id: Address, inviteCode: string) {
@@ -126,7 +141,7 @@ class InviteService {
       throw new Error('Invalid invite code')
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }
@@ -137,6 +152,14 @@ class InviteService {
 
     if (invite.user_id === user.id) {
       throw new Error('Cannot use your own invite code')
+    }
+
+    if (!user.is_nexon_referred) {
+      throw new Error('User is not nexon referred')
+    }
+
+    if (user.rewards_generated.greaterThan(Decimal(0))) {
+      throw new Error('User has already started trading')
     }
 
     await this.prisma.user.update({
@@ -152,7 +175,7 @@ class InviteService {
       throw new Error('Invite not found')
     }
 
-    const user = await this.prisma.user.findUnique({ where: { wallet_id } })
+    const user = await UserManager.findUserByWalletId(wallet_id)
     if (!user) {
       throw new Error('User not found')
     }

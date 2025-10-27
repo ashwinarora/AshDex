@@ -1,151 +1,214 @@
 import { useMemo, useState } from 'react'
-import Image from 'next/image'
-import { useAccount } from 'wagmi'
-import Pagination from '@/components/common/Pagination'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
-import { REFERRALS_COLUMNS } from '@/utils/constants'
-import bitcoinicon from '@/assets/images/bitcoin_logo.svg'
-import sortingIcon from '@/assets/images/sorting_icon.svg'
-import { useReferralsInfo } from '@/hooks/useReferralsInfo'
+import { useSuccessfulInvites } from '@/hooks/invite/useSuccessfulInvites'
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable
+} from '@tanstack/react-table'
+import { useTranslate } from '@tolgee/react'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table'
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconLoader2,
+  IconSelector,
+  IconUserX
+} from '@tabler/icons-react'
 
-type ColumnType = {
-  key: string
-  label: string
+// Flattened type where each user gets their own row
+type FlattenedInviteUser = {
+  userId: string
+  userWalletId: string
+  userCreatedAt: Date
+  rewardsGenerated: number
+  clmVol: number
 }
 
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
+const columnHelper = createColumnHelper<FlattenedInviteUser>()
 
 const ReferralsTable = () => {
-  const { isConnected } = useAccount()
-  const [currentPage, setCurrentPage] = useState(1)
-  const [pageSize, setPageSize] = useState(10)
-  const { data: referrals } = useReferralsInfo()
+  const { t } = useTranslate()
+  const { data: successfulInvites, isLoading } = useSuccessfulInvites()
+  const [sorting, setSorting] = useState<SortingState>([])
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
-  const ReferralsData = useMemo(() => {
-    if (referrals?.referrerState.stage !== 'ready') return []
-    return referrals?.referrerState.data.referralStates
-  }, [referrals])
+  // Flatten the data: each user gets their own row
+  const flattenedData = useMemo(() => {
+    if (!successfulInvites) return []
 
-  const totalPages = Math.ceil(ReferralsData?.length / pageSize)
+    const flattened: FlattenedInviteUser[] = []
+    successfulInvites.forEach((invite) => {
+      if (invite.used_by && invite.used_by.length > 0) {
+        invite.used_by.forEach((user) => {
+          flattened.push({
+            userId: user.id.toString(),
+            userWalletId: user.wallet_id,
+            userCreatedAt: user.created_at,
+            rewardsGenerated: Number(user.rewards_generated ?? 0),
+            clmVol: Number(user.volume_traded ?? 0)
+          })
+        })
+      }
+    })
+    return flattened
+  }, [successfulInvites])
 
-  const paginatedBalance = useMemo(() => {
-    if (referrals?.referrerState.stage !== 'ready') return []
-    return ReferralsData?.slice((currentPage - 1) * pageSize, currentPage * pageSize)
-  }, [ReferralsData, currentPage, pageSize])
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor('userWalletId', {
+        header: t('User Wallet'),
+        cell: (info) => {
+          const address = info.getValue()
+          const trimmed = `${address.slice(0, 4)}....${address.slice(-4)}`
+          return <span className="text-xs font-mono">{trimmed}</span>
+        },
+        enableSorting: false
+      }),
+      columnHelper.accessor('userCreatedAt', {
+        header: t('User Joined'),
+        enableSorting: true,
+        cell: (info) => (
+          <span className="text-xs">{new Date(info.getValue()).toLocaleDateString()}</span>
+        )
+      }),
+      columnHelper.accessor('rewardsGenerated', {
+        header: t('Rewards Generated'),
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">{info.getValue().toFixed(2)}</span>
+      }),
+      columnHelper.accessor('clmVol', {
+        header: t('Volume Traded'),
+        enableSorting: true,
+        cell: (info) => <span className="text-xs font-medium">{info.getValue().toFixed(2)}</span>
+      })
+    ],
+    [t]
+  )
 
-  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-    return (
-      <div className="flex flex-col gap-2 text-white text-sm">
-        <div className="flex justify-between">
-          <div className="flex items-center gap-2">
-            <Image src={bitcoinicon} alt="BTC" style={{ width: 30, height: 'auto' }} />
-            <div className="flex flex-col">
-              <span className="font-medium">{item?.coin}</span>
-              <span className="text-sm text-[#FFFFFF]">{item?.address}</span>
-            </div>
-          </div>
-        </div>
-        {columns
-          ?.filter((col) => col?.key !== 'address')
-          ?.map((col) => (
-            <div key={col?.key} className="flex justify-between">
-              <span className="text-[#8B8BA0]">{col?.label}</span>
-              <span>{item[col?.key] ?? '-'}</span>
-            </div>
-          ))}
-      </div>
-    )
-  }
-
-  if (!isConnected) {
-    return (
-      <div className="flex justify-center items-center mt-30 max-xl:my-30 min-2xl:mt-30">
-        <WalletNotConnected type="Referrals" />
-      </div>
-    )
-  }
+  const table = useReactTable({
+    data: flattenedData,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    onSortingChange: setSorting,
+    state: {
+      sorting
+    }
+  })
 
   return (
-    <div className="overflow-x-auto w-full px-3 lg:px-4">
-      <table className="w-full hidden lg:table text-white">
-        <thead>
-          <tr>
-            {REFERRALS_COLUMNS?.map((col) => (
-              <th
-                key={col?.key}
-                className="pt-3 pb-2.5 max-xl:px-7 pr-7 text-sm font-normal text-[#8B8BA0] text-start"
-              >
-                <div className="flex justify-start items-center gap-1">
-                  <Image
-                    src={sortingIcon}
-                    alt="Sort"
-                    style={{ width: 12, height: 'auto' }}
-                    className="w-3 h-3 cursor-pointer"
-                  />
-                  <span>{col?.label}</span>
-                </div>
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <>
-            {paginatedBalance?.map((item, index) => {
-              return (
-                <tr key={index} className="cursor-pointer border-b border-white/10">
-                  <td className="py-2 pr-7 max-xl:px-7 opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    <div className="flex items-center gap-x-1">
-                      <Image
-                        src={bitcoinicon}
-                        alt="Bitcoin"
-                        style={{ width: 27, height: 'auto' }}
-                        className="mx-1 cursor-pointer"
-                      />
-                      <div className="flex justify-between flex-col">{item?.user} </div>
-                    </div>
-                  </td>
-                  <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {new Date(item?.timeJoined || '0').toLocaleDateString('en-US', {
-                      year: 'numeric',
-                      month: '2-digit',
-                      day: '2-digit'
-                    })}
-                  </td>
-                  <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {item?.cumRewardedFeesSinceReferred}
-                  </td>
-                  <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {item?.cumFeesRewardedToReferrer}
-                  </td>
-                  <td className="py-2 pr-7 max-xl:px-7  opacity-80 text-[#FFFFFF] font-medium text-sm">
-                    {item?.cumVlm}
-                  </td>
-                </tr>
-              )
-            })}
-          </>
-        </tbody>
-      </table>
-      <ResponsiveDataCard
-        columns={[...REFERRALS_COLUMNS]}
-        data={paginatedBalance}
-        renderRow={(item) => <RenderRowData item={item} columns={[...REFERRALS_COLUMNS]} />}
-      />
-      {ReferralsData?.length > 0 && (
-        <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          pageSize={pageSize}
-          onPageSizeChange={setPageSize}
-        />
+    <>
+      {isLoading && (
+        <div className="w-full h-full items-center justify-center flex flex-col gap-2">
+          <IconLoader2 className="text-white size-10 animate-spin" />
+        </div>
       )}
-    </div>
+
+      {!isLoading && (!successfulInvites || successfulInvites.length === 0) && (
+        <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
+          <IconUserX className="text-white size-10" />
+          <span className="text-white/50 text-sm">{t('No successful invites yet')}</span>
+        </div>
+      )}
+
+      {!isLoading && successfulInvites && successfulInvites.length > 0 && (
+        <>
+          {table.getRowModel().rows?.length ? (
+            <Table className="w-full h-full">
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        onClick={header.column.getToggleSortingHandler()}
+                        className={cn(
+                          'cursor-pointer w-full',
+                          isRTL
+                            ? header.id === 'clmVol'
+                              ? 'justify-start'
+                              : header.id === 'userWalletId'
+                                ? 'justify-end'
+                                : 'justify-center'
+                            : header.id === 'clmVol'
+                              ? 'justify-end'
+                              : header.id === 'userWalletId'
+                                ? 'justify-start'
+                                : 'justify-center',
+                          header.column.columnDef.enableSorting
+                            ? 'hover:text-accent-foreground'
+                            : 'hover:text-white/50',
+                          header.column.getIsSorted() === 'asc' ||
+                            header.column.getIsSorted() === 'desc'
+                            ? 'text-accent-foreground'
+                            : 'text-white/50'
+                        )}
+                      >
+                        {header.isPlaceholder ? null : (
+                          <>
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {header.column.columnDef.enableSorting ? (
+                              header.column.getIsSorted() === 'asc' ? (
+                                <IconChevronUp className="text-inherit size-4" />
+                              ) : header.column.getIsSorted() === 'desc' ? (
+                                <IconChevronDown className="text-inherit size-4" />
+                              ) : (
+                                <IconSelector className="text-inherit size-4" />
+                              )
+                            ) : null}
+                          </>
+                        )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+
+              <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
+                {table.getRowModel().rows.map((row) => (
+                  <TableRow className="h-10" key={row.id}>
+                    {row.getVisibleCells().map((cell) => {
+                      return (
+                        <TableCell
+                          key={cell.id}
+                          className={cn(
+                            'font-medium text-white text-xs',
+                            // isRTL ? 'first:text-start text-end' : 'text-start last:text-end'
+                            isRTL
+                              ? cell.column.id === 'clmVol'
+                                ? 'text-start'
+                                : cell.column.id === 'userWalletId'
+                                  ? 'text-end'
+                                  : 'text-center'
+                              : cell.column.id === 'clmVol'
+                                ? 'text-end'
+                                : cell.column.id === 'userWalletId'
+                                  ? 'text-start'
+                                  : 'text-center'
+                          )}
+                        >
+                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        </TableCell>
+                      )
+                    })}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
+              <IconUserX className="text-white size-10" />
+              <span className="text-white/50 text-sm">{t('No Referrals found')}</span>
+            </div>
+          )}
+        </>
+      )}
+    </>
   )
 }
 

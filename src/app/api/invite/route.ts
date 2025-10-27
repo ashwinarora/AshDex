@@ -3,11 +3,15 @@ import InviteService from '@/services/Invite.manager'
 import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 
-const fetchInvitesPostHandler = async (request: AuthenticatedRequest) => {
+type FetchInvitesPayload = {
+  inviteCode: string
+  action: 'fetchInvites'
+}
+
+const fetchInvitesPostHandler = async (request: AuthenticatedRequest<FetchInvitesPayload>) => {
   try {
-    const payload = JSON.parse(request.payload as string)
-    const inviteCode = payload.inviteCode
-    const wallet_id = request.wallet_id as Address
+    const inviteCode = request.payload.inviteCode
+    const wallet_id = request.wallet_id
 
     if (!wallet_id) {
       return NextResponse.json({ error: 'Missing wallet_id parameter' }, { status: 400 })
@@ -46,9 +50,9 @@ const fetchInvitesPostHandler = async (request: AuthenticatedRequest) => {
   }
 }
 
-// api to get all successful invites for a user
-export const POST = withAuth(fetchInvitesPostHandler)
+export const POST = withAuth<FetchInvitesPayload>(fetchInvitesPostHandler)
 
+// api to get all successful invites for a user
 export const GET = async (request: NextRequest) => {
   try {
     const { searchParams } = new URL(request.url)
@@ -57,10 +61,7 @@ export const GET = async (request: NextRequest) => {
       return NextResponse.json({ error: 'Missing wallet_id' }, { status: 400 })
     }
 
-    const invites = await InviteService.getInviteByUser(wallet_id)
-    if (!invites) {
-      return NextResponse.json({ error: 'Invite not found' }, { status: 404 })
-    }
+    const invites = await InviteService.getInviteByUserWithUsedBy(wallet_id)
 
     return NextResponse.json({ success: true, invite: invites })
   } catch (error) {

@@ -1,40 +1,60 @@
 import React, { useState } from 'react'
 import { REFERRALS_TABLES_TABS } from '@/utils/constants'
 import ReferralsTable from './ReferralsTable'
+import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
+import { useTranslate } from '@tolgee/react'
+import LegacyRewardHistory from './LegacyRewardHistory'
 
 const ReferralsTablesTab = () => {
-  const [activeTab, setActiveTab] = useState<number>(0)
+  const [activeTab, setActiveTab] = useState<(typeof REFERRALS_TABLES_TABS)[number]>('Referrals')
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const { t } = useTranslate()
   return (
-    <div className="border-2 w-full border-white/10 rounded-xl">
-      <nav className="border-b border-white/10 flex flex-wrap gap-x-6 px-3 -mb-px overflow-x-auto">
-        {REFERRALS_TABLES_TABS?.map((tab, index) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(index)}
-            className={`py-3 px-1 font-medium text-center text-base border-b-3 cursor-pointer whitespace-nowrap ${
-              activeTab === index
-                ? 'border-primary text-[#FFFFFF] rounded-xs'
-                : 'border-transparent text-[#8B8BA0]'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </nav>
-      <div className="mt-3 mb-1 w-full">
-        {activeTab === 0 && <ReferralsTable />}
-        {/* {activeTab === 1 &&
-          (referralsDetails?.rewardHistory?.length > 0 ? (
-            <LegacyRewardHistory rewardHistory={referralsDetails.rewardHistory} />
-          ) : (
-            <div className="flex justify-center items-center mt-30 max-xl:my-30 min-2xl:mt-30">
-              <WalletNotConnected
-                type="Referrals"
-                title="No Reward History"
-                description="You don’t have any rewards yet."
-              />
-            </div>
-          ))} */}
+    <div
+      className={cn(
+        'w-full h-96 flex-1 flex flex-col p-2 gap-2 justify-start bg-secondary rounded-md shrink-0',
+        isRTL && 'items-end'
+      )}
+    >
+      <div
+        className={cn(
+          'md:max-w-xl xl:max-w-3xl w-full h-8 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
+          isRTL && 'flex-row-reverse'
+        )}
+      >
+        <ToggleGroup
+          size="sm"
+          type="single"
+          className={cn('bg-secondary rounded-md w-full sm:w-fit', isRTL ? 'flex-row-reverse' : '')}
+          value={activeTab}
+          onValueChange={(value) => {
+            if (value === '') {
+              return
+            }
+            setActiveTab(value as (typeof REFERRALS_TABLES_TABS)[number])
+          }}
+        >
+          {REFERRALS_TABLES_TABS.map((tab) => (
+            <ToggleGroupItem
+              key={tab}
+              className={cn(
+                'w-40 bg-white/5',
+                isRTL
+                  ? 'first:rounded-r-md last:rounded-l-md'
+                  : 'first:rounded-l-md last:rounded-r-md'
+              )}
+              value={tab}
+            >
+              {t(tab)}
+            </ToggleGroupItem>
+          ))}
+        </ToggleGroup>
+      </div>
+      <div className="w-full h-full flex-1 overflow-y-auto no-scrollbar overflow-x-hidden">
+        {activeTab === 'Referrals' && <ReferralsTable />}
+        {activeTab === 'Reward history' && <LegacyRewardHistory />}
       </div>
     </div>
   )

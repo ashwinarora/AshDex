@@ -1,7 +1,11 @@
 import { prisma } from '@/lib/prisma'
 import { getReferral } from '@/lib/referral'
-import { User } from '@prisma/client'
+import { User, Prisma } from '@prisma/client'
 import { Address } from 'viem'
+
+type InviteWithUsers = Prisma.InviteGetPayload<{
+  include: { used_by: true }
+}>
 
 class UserManager {
   private static instance: UserManager
@@ -15,11 +19,16 @@ class UserManager {
     return UserManager.instance
   }
 
-  async findUserByWalletId(walletId: string) {
+  async findUserByWalletId(walletId: string): Promise<User | null> {
     return prisma.user.findFirst({
-      where: {
-        wallet_id: walletId
-      }
+      where: { wallet_id: { equals: walletId, mode: 'insensitive' } }
+    })
+  }
+
+  async getUserInvites(walletId: string): Promise<InviteWithUsers[]> {
+    return prisma.invite.findMany({
+      where: { user: { wallet_id: { equals: walletId, mode: 'insensitive' } } },
+      include: { used_by: true }
     })
   }
 

@@ -1,151 +1,215 @@
 'use client'
 import React from 'react'
-// import Image from 'next/image'
-// import { useAccount } from 'wagmi'
-// import { useWalletModal } from '@/context/WalletModalContext'
 import { useComponentRendered } from '@/hooks/useComponentRendered'
-// import { REFERRALSDATA, REFERRALS_DESC } from '@/utils/constants'
-// import ReferralsInfo from './ReferralsInfo'
-// import ReferralsTablesTab from './ReferralsTablesTab'
-// import referralsBGimage from '@/assets/images/referralsGradients.svg'
-// import { Button } from '../ui/button'
+import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import ReferralsHeader from './ReferralsHeader'
+import ReferralsActionPanel from './ReferralsActionPanel'
+import FooterCompact from '../FooterCompact'
+import ReferralStats from './ReferralStats'
 
 function Referrals() {
-  // const { isConnected } = useAccount()
   const { isMobile } = useScreenSize()
-  // const { toggleConnectWalletModal } = useWalletModal()
-  // const [, setIsCreateCode] = useState(false)
   const isRendered = useComponentRendered()
-  // const handleButtonClick = () => {
-  //   if (isConnected) {
-  //     setIsCreateCode((p) => !p)
-  //   } else {
-  //     toggleConnectWalletModal()
-  //     setIsCreateCode(false)
-  //   }
-  // }
 
   if (!isRendered) return null
 
   if (isMobile)
     return (
-      <div className="w-full text-white/50 h-full max-h-screen flex flex-col gap-1 p-1">
-        <div className="flex flex-col gap-4 bg-secondary rounded-md items-start justify-between w-full h-fit p-4">
-          <h1 className="text-2xl text-white text-start">Referrals</h1>
-        </div>
-      </div>
+      // <div className="min-h-screen bg-secondary my-1">
+      //   <div className="px-4 py-6">
+      //     {/* Mobile Header */}
+      //     <div className="mb-6">
+      //       <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+      //         Referrals
+      //       </h1>
+      //       <p className="text-gray-300 text-sm">Earn rewards by inviting friends to join Nexon</p>
+      //     </div>
+
+      //     {/* Mobile Content */}
+      //     {isConnected ? (
+      //       <div className="flex flex-col gap-6">
+      //         {/* Mobile Stats Cards */}
+      //         <div className="flex gap-4">
+      //           <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+      //             <p className="text-gray-400 text-xs mb-1">Trades Referred</p>
+      //             <p className="text-xl font-bold text-white">0</p>
+      //           </div>
+      //           <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+      //             <p className="text-gray-400 text-xs mb-1">Rewards Earned</p>
+      //             <p className="text-xl font-bold text-white">
+      //               {rewardsStats?.totalReferralRewardsGenerated.toString() || '0'}
+      //             </p>
+      //           </div>
+      //         </div>
+
+      //         {/* Mobile Steps */}
+      //         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+      //           <h3 className="text-lg font-semibold text-white mb-4">How it works</h3>
+      //           <div className="flex flex-col gap-4">
+      //             {REFERRALSDATA?.map((item, index) => (
+      //               <div key={index} className="flex items-center gap-3">
+      //                 <div className="w-8 h-8 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center text-white text-sm font-bold">
+      //                   {index + 1}
+      //                 </div>
+      //                 <div className="flex-1">
+      //                   <span className={`text-white text-sm ${item?.opacityClass || ''}`}>
+      //                     {item?.label}
+      //                   </span>
+      //                 </div>
+      //               </div>
+      //             ))}
+      //           </div>
+      //         </div>
+
+      //         {/* Mobile CTA */}
+      //         <button
+      //           onClick={handleButtonClick}
+      //           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 shadow-lg"
+      //         >
+      //           {isCreateCode ? 'View Referral Table' : 'Create Referral Code'}
+      //         </button>
+
+      //         {/* Mobile Referrals Info */}
+      //         {isCreateCode && (
+      //           <div className="mt-6">
+      //             <ReferralsActionPanel />
+      //           </div>
+      //         )}
+      //       </div>
+      //     ) : (
+      //       <div className="text-center py-12">
+      //         <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+      //           <svg
+      //             className="w-10 h-10 text-white"
+      //             fill="none"
+      //             stroke="currentColor"
+      //             viewBox="0 0 24 24"
+      //           >
+      //             <path
+      //               strokeLinecap="round"
+      //               strokeLinejoin="round"
+      //               strokeWidth={2}
+      //               d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+      //             />
+      //           </svg>
+      //         </div>
+      //         <h3 className="text-xl font-semibold text-white mb-2">Connect Your Wallet</h3>
+      //         <p className="text-gray-400 text-sm mb-6">
+      //           Connect your wallet to start earning referral rewards
+      //         </p>
+      //         <button
+      //           onClick={handleButtonClick}
+      //           className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 shadow-lg"
+      //         >
+      //           Connect Wallet
+      //         </button>
+      //       </div>
+      //     )}
+      //   </div>
+      // </div>
+      <div></div>
     )
 
   return (
-    <div className="w-full text-white/50 h-full max-h-screen flex flex-col gap-1 p-1">
-      <div className="flex gap-4 bg-secondary rounded-md items-center justify-between w-full h-fit p-4">
-        <h1 className="text-2xl text-white text-start">Referrals</h1>
-        <div className="flex flex-wrap gap-2">
-          {/* <Button
-            className="flex-1 w-full"
-            variant={'outline'}
-            // onClick={() => setIsModalOpen({ ...isModalOpen, transfer: true })}
-          >
-            <p>Copy Referral Code</p>
-          </Button>
-          <Button className="flex-1 w-full" variant={'default'} onClick={handleButtonClick}>
-            Create Referral Code
-          </Button> */}
+    <>
+      <div className="w-full text-white/50 mb-8 h-screen flex flex-col gap-1 p-1">
+        <div className="w-full h-fit shrink-0">
+          <ReferralsHeader />
+        </div>
+        <div className="w-full h-fit shrink-0 flex items-center gap-1">
+          <ReferralStats />
+          {/* <ReferralStatsCard /> */}
+          <ReferralsTablesTab />
+          <ReferralsActionPanel />
         </div>
       </div>
-      {/* <ReferralsTablesTab /> */}
-    </div>
-    // <div className="max-sm:px-1 px-6 py-4 overflow-x-hidden">
-    //   <div className="w-full my-2 gap-5 max-2xl:px-1 px-10 grid grid-cols-1 min-xl:grid-cols-12">
-    //     <div
-    //       className={`${isConnected ? 'min-xl:col-span-8' : 'min-xl:col-span-12'} w-full h-full ${
-    //         !isCreateCode ? 'backdrop-blur-[48.3px] max-lg:p-2 p-5 rounded-2xl' : ''
-    //       }`}
-    //       style={
-    //         !isCreateCode
-    //           ? {
-    //               background:
-    //                 'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
-    //             }
-    //           : {}
-    //       }
-    //     >
-    //       <div className="flex max-lg:flex-col flex-row max-lg:gap-y-6 gap-x-4 h-full">
-    //         {isConnected && isCreateCode ? (
-    //           <ReferralsTablesTab />
-    //         ) : (
-    //           <>
-    //             <div
-    //               className="flex flex-col justify-center gap-4  rounded-2xl w-full min-lg:w-1/2 h-full"
-    //               style={{
-    //                 backgroundImage: `url(${referralsBGimage.src})`,
-    //                 backgroundSize: 'cover',
-    //                 backgroundPosition: 'center'
-    //               }}
-    //             >
-    //               <div
-    //                 className={`flex max-sm:text-base max-lg:text-lg text-xl tracking-normal flex-col text-[rgba(255, 255, 255, 1)] font-medium max-lg:gap-3 gap-6 max-sm:p-3 max-lg:p-4 p-8 h-full`}
-    //                 style={{
-    //                   background:
-    //                     'linear-gradient(180deg, rgba(36,21,50,0.50) 0%, rgba(36, 21, 50, 0) 92.58%)'
-    //                 }}
-    //               >
-    //                 {REFERRALSDATA?.map((item, index) => (
-    //                   <div
-    //                     key={index}
-    //                     className={`flex items-center gap-3 ${isConnected ? 'py-10 max-sm:py-2 max-lg:py-3' : 'max-sm:py-2 max-lg:py-3 py-8'} max-lg:px-4 px-6 rounded-xl border-2 border-[rgba(255,255,255,0.06)]`}
-    //                   >
-    //                     <Image
-    //                       src={item.src}
-    //                       alt={item.alt}
-    //                       width={15}
-    //                       height={15}
-    //                       className="w-5 h-5 max-sm:w-4 max-sm:h-4 max-lg:w-4.5 max-lg:h-4.5 cursor-pointer"
-    //                     />
-    //                     <span className={item?.opacityClass}>{item?.label}</span>
-    //                   </div>
-    //                 ))}
-    //               </div>
-    //             </div>
-    //             <div
-    //               style={{
-    //                 background:
-    //                   'linear-gradient(179.1deg, rgba(255, 255, 255, 0.05) -10.66%, rgba(153, 153, 153, 0.05) 67.22%)'
-    //               }}
-    //               className="flex flex-col justify-between max-lg:px-4 max-lg:py-5 px-6 py-9 rounded-2xl w-full min-lg:w-1/2 h-full"
-    //             >
-    //               <div>
-    //                 <p className="text-white max-lg:text-lg text-2xl font-medium mb-2 tracking-normal">
-    //                   Earn Rewards and Unlock Discounts with Our Referral Program
-    //                 </p>
-    //                 {REFERRALS_DESC?.map((desc, index) => (
-    //                   <p
-    //                     key={index}
-    //                     className="text-[#8B8BA0] max-lg:text-sm text-base font-medium mb-2"
-    //                   >
-    //                     {desc}
-    //                   </p>
-    //                 ))}
-    //               </div>
-    //               <button
-    //                 onClick={handleButtonClick}
-    //                 className="mt-6 cursor-pointer bg-primary text-white font-semibold py-2.5 rounded-xl"
-    //               >
-    //                 {isConnected ? 'Create a code and invite referrals' : 'Connect wallet'}
-    //               </button>
-    //             </div>
-    //           </>
-    //         )}
-    //       </div>
-    //     </div>
-    //     {isConnected && (
-    //       <div className="min-xl:col-span-4 w-full h-full">
-    //         <ReferralsInfo isCreateCode={isCreateCode} />
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
+      <FooterCompact />
+      {/* <div className=" bg-secondary my-1">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-4">
+          <div className="mb-8">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              Referral Program
+            </h1>
+            <p className="text-lg text-gray-300 max-w-2xl">
+              Earn rewards by inviting friends to join Nexon. Share your referral code and start
+              earning today.
+            </p>
+          </div>
+
+          <div className="flex flex-col xl:flex-row gap-8">
+            
+            <div className={`${isConnected ? 'xl:flex-[8]' : 'xl:flex-[12]'} w-full`}>
+              {isConnected && isCreateCode ? (
+                <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                  <ReferralsTablesTab />
+                </div>
+              ) : (
+                <div className="flex flex-col lg:flex-row gap-8">
+                
+                  <div className="bg-white/5 rounded-3xl border border-white/10 flex-1 p-8 lg:p-10 flex flex-col gap-6">
+                    {REFERRALSDATA?.map((item, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center gap-4 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+                      >
+                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
+                          <Image
+                            src={item.src}
+                            alt={item.alt}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <span
+                            className={`text-lg font-semibold text-white ${item?.opacityClass || ''}`}
+                          >
+                            {item?.label}
+                          </span>
+                        </div>
+                        <div className="text-2xl font-bold text-purple-400">{index + 1}</div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 lg:p-10 flex flex-col justify-between flex-1">
+                    <div className="flex flex-col gap-6">
+                      <div>
+                        <h2 className="text-3xl font-bold text-white mb-4">
+                          Earn Rewards and Unlock Discounts
+                        </h2>
+                        {REFERRALS_DESC?.map((desc, index) => (
+                          <p key={index} className="text-gray-300 text-lg leading-relaxed mb-4">
+                            {desc}
+                          </p>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-8">
+                      <button
+                        onClick={handleButtonClick}
+                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                      >
+                        {isConnected ? 'Create Referral Code' : 'Connect Wallet to Start'}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {isConnected && (
+              <div className="xl:flex-[4]">
+                <ReferralsActionPanel isCreateCode={isCreateCode} />
+              </div>
+            )}
+          </div>
+          <SuccessfullReferrals />
+        </div>
+      </div> */}
+    </>
   )
 }
 

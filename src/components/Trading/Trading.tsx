@@ -1,6 +1,5 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { isTestnet } from '@/utils/constants'
 import Chart from './Chart/Chart'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
@@ -24,6 +23,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useAccount } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { isTestnet } from '@/utils/constants'
 
 interface TradingProps {
   defaultAsset?: string

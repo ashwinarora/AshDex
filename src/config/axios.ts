@@ -20,3 +20,10 @@ export const coinmarketAxios = axios.create({
     Accept: 'application/json'
   }
 })
+
+export const apiServerAxios = axios.create({
+  baseURL: '/',
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})

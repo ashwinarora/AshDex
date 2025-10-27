@@ -13,6 +13,7 @@ import lockoutlineicon from '@/assets/images/lockoutline_icon.svg'
 import invitefriends from '@/assets/images/invitefriends_icon.svg'
 import theycommit from '@/assets/images/theycommit_icon.svg'
 import earnrewards from '@/assets/images/earnrewards_icon.svg'
+import { IconAffiliate, IconCoins, IconMailSpark } from '@tabler/icons-react'
 
 export const WEBSOCKET_MAINNET_URL = 'wss://api.hyperliquid.xyz/ws'
 
@@ -425,24 +426,27 @@ export const MORE_OPTIONS = [
   { name: 'Settings', path: '/settings' }
 ]
 
-export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Claim'] as const
+export const REFERRALSINFO_TAB = ['Enter Code', 'Create Code', 'Rewards'] as const
 
 export const REFERRALSDATA = [
   {
     src: invitefriends,
     alt: 'InviteFriends',
+    icon: IconMailSpark,
     label: 'Invite your friends',
     opacityClass: 'opacity-60'
   },
   {
     src: theycommit,
     alt: 'TheyCommit',
+    icon: IconAffiliate,
     label: 'They Commit',
     opacityClass: ''
   },
   {
     src: earnrewards,
     alt: 'Earnrewards',
+    icon: IconCoins,
     label: 'Earn Rewards',
     opacityClass: 'opacity-60'
   }
@@ -452,7 +456,7 @@ export const REFERRALS_DESC = [
   `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
 ] as const
 
-export const REFERRALS_TABLES_TABS = ['Referrals', 'Legacy reward history'] as const
+export const REFERRALS_TABLES_TABS = ['Referrals', 'Reward history'] as const
 
 export const REFERRALS_CREATECODE_DESC = [
   `Create your own referral code that you can share with other users. Every time someone uses your code, you will earn additional rewards! Share it with friends and colleagues.`

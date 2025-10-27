@@ -40,7 +40,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
         <ToggleGroupItem
           className={cn(
             'w-full transition-colors font-semibold hover:!text-green',
-            isBuy && '!bg-green hover:!text-accent !text-accent',
+            isBuy && '!bg-green hover:!text-accent-foreground !text-accent-foreground',
             isRTL ? 'rounded-r-md' : 'rounded-l-md'
           )}
           value="buy"
@@ -50,7 +50,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
         <ToggleGroupItem
           className={cn(
             'w-full transition-colors font-semibold hover:!text-red',
-            !isBuy && '!bg-red hover:!text-accent !text-accent',
+            !isBuy && '!bg-red hover:!text-accent-foreground !text-accent-foreground',
             isRTL ? 'rounded-l-md' : 'rounded-r-md'
           )}
           value="sell"
