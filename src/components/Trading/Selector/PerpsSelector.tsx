@@ -226,7 +226,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
+              className="!h-fit !p-2 w-36 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">{selectedAsset}-USD</h1>
               <IconChevronDown className="size-4 text-white" />
@@ -342,8 +342,8 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             <PopoverContent align="end" className={clsx('w-fit h-fit flex flex-col gap-4')}>
               {marketData?.map((item, index) => (
                 <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
-                  <div className="text-white/70 text-xs text-nowrap">{item.label}</div>
-                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                  <div className="text-white/70 text-[8px] text-nowrap">{item.label}</div>
+                  <div className={`text-[8px] text-nowrap ${item.color || 'text-white'}`}>
                     {item.value}
                   </div>
                 </div>

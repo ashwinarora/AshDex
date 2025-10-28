@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
-import { DM_Mono } from 'next/font/google'
+import { Inter } from 'next/font/google'
 import Header from '@/components/Header'
 import { Provider } from './provider'
 import { WalletModalProvider } from '@/context/WalletModalContext'
@@ -18,21 +17,26 @@ import { getLanguage } from '@/tolgee/language'
 import { getTolgee } from '@/tolgee/server'
 import { TolgeeNextProvider } from '@/tolgee/client'
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin']
+// const geistSans = Geist({
+//   variable: '--font-geist-sans',
+//   subsets: ['latin']
+// })
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
 })
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin']
-})
+// const geistMono = Geist_Mono({
+//   variable: '--font-geist-mono',
+//   subsets: ['latin']
+// })
 
-const dmMono = DM_Mono({
-  variable: '--font-dm-mono',
-  weight: ['400'],
-  subsets: ['latin']
-})
+// const dmMono = DM_Mono({
+//   variable: '--font-dm-mono',
+//   weight: ['400'],
+//   subsets: ['latin']
+// })
 
 export const metadata: Metadata = {
   title: 'Nexon',
@@ -55,7 +59,7 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning lang={locale}>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${dmMono.variable}  bg-primary no-scrollbar`}
+        className={`${inter.variable}  bg-primary no-scrollbar`}
       >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <TolgeeNextProvider language={locale} staticData={staticData}>

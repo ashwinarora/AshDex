@@ -12,10 +12,6 @@ module.exports = {
           pagination: 'var(--tw-color-aggrid-pagination)',
           paginationtext: 'var(--tw-color-aggrid-paginationtext)'
         }
-      },
-      fontFamily: {
-        'dm-mono': ['var(--font-dm-mono)'],
-        proxima: ['Proxima Nova', 'sans-serif']
       }
     }
   },

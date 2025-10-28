@@ -29,9 +29,8 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
       <ToggleGroup
         size={'sm'}
         className={cn(
-          ' bg-white/10 rounded-md',
+          ' bg-white/10 rounded-md w-full',
           isRTL ? '!flex-row-reverse' : '!flex-row',
-          isSpot ? 'w-3/4' : 'w-full'
         )}
         type="single"
         value={isBuy ? 'buy' : 'sell'}
@@ -58,8 +57,8 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           {t('Sell')}
         </ToggleGroupItem>
       </ToggleGroup>
-      {isSpot && (
-        <div className="w-1/4">
+      {!isSpot && (
+        <div className="!w-24 flex">
           <MarginMode
             isCross={isCross}
             setIsCross={setIsCross}
