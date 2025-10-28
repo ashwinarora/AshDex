@@ -76,11 +76,13 @@ export const placePerpOrder = async ({
     })
   }
   if (tpsl?.isTpsl) {
+    // Use an 8% worst-case buffer for TP/SL market orders, matching Hyperliquid behavior
+    const tpslLimitPxMultiplier = isBuy ? 0.92 : 1.08
     if (Number(tpsl.stopLoss) > 0) {
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(Number(tpsl.stopLoss), szDecimals).toString(),
+        price: formatPrice(Number(tpsl.stopLoss) * tpslLimitPxMultiplier, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
@@ -96,7 +98,7 @@ export const placePerpOrder = async ({
       orders.push({
         assetIndex: assetIndex,
         isBuy: !isBuy,
-        price: formatPrice(Number(tpsl.takeProfit), szDecimals).toString(),
+        price: formatPrice(Number(tpsl.takeProfit) * tpslLimitPxMultiplier, szDecimals).toString(),
         size: formattedSize,
         reduceOnly: true,
         orderType: {
