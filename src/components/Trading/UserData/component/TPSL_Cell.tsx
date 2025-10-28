@@ -216,9 +216,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     if (!sdkL1ActionClient) return
     const orders: OrderData[] = []
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, tpslAsset.coin)
-    const isBuy = !(Number(tpslAsset.szi) > 0)
+    const isBuyPosition = (Number(tpslAsset.szi) > 0)
     if (tpTriggerPrice) {
-      const multiplier = isBuy ? 1.1 : 0.9
+      const multiplier = isBuyPosition ? 0.92 : 1.08
       const price = tpLimitPrice ? tpLimitPrice : (Number(tpTriggerPrice) * multiplier).toString()
       const isMarket = tpLimitPrice ? false : true
       const formattedTriggerPrice = getFormattedPrice({
@@ -233,7 +233,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       })
       orders.push({
         assetIndex,
-        isBuy,
+        isBuy: !isBuyPosition,
         price: formattedPrice,
         size: Number(amount).toString(),
         reduceOnly: true,
@@ -247,7 +247,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       })
     }
     if (slTriggerPrice) {
-      const multiplier = isBuy ? 0.9 : 1.1
+      const multiplier = isBuyPosition ? 0.92 : 1.08
       const price = slLimitPrice ? slLimitPrice : (Number(slTriggerPrice) * multiplier).toString()
       const isMarket = slLimitPrice ? false : true
       const formattedSlTriggerPrice = getFormattedPrice({
@@ -262,7 +262,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       })
       orders.push({
         assetIndex,
-        isBuy,
+        isBuy: !isBuyPosition,
         price: formattedPrice,
         size: Number(amount).toString(),
         reduceOnly: true,
