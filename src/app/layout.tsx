@@ -24,7 +24,7 @@ import { TolgeeNextProvider } from '@/tolgee/client'
 
 const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-inter'
 })
 
 // const geistMono = Geist_Mono({
@@ -58,9 +58,7 @@ export default async function RootLayout({
   const staticData = await tolgee.loadRequired()
   return (
     <html suppressHydrationWarning lang={locale}>
-      <body
-        className={`${inter.variable}  bg-primary no-scrollbar`}
-      >
+      <body className={`${inter.variable}  bg-primary no-scrollbar`}>
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <TolgeeNextProvider language={locale} staticData={staticData}>
           <Provider>

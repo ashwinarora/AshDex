@@ -28,10 +28,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
     <div className="flex w-full items-center justify-between gap-2">
       <ToggleGroup
         size={'sm'}
-        className={cn(
-          ' bg-white/10 rounded-md w-full',
-          isRTL ? '!flex-row-reverse' : '!flex-row',
-        )}
+        className={cn(' bg-white/10 rounded-md w-full', isRTL ? '!flex-row-reverse' : '!flex-row')}
         type="single"
         value={isBuy ? 'buy' : 'sell'}
         onValueChange={(value) => value !== '' && setIsBuy(value === 'buy')}
