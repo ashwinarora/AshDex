@@ -216,7 +216,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     if (!sdkL1ActionClient) return
     const orders: OrderData[] = []
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, tpslAsset.coin)
-    const isBuyPosition = (Number(tpslAsset.szi) > 0)
+    const isBuyPosition = Number(tpslAsset.szi) > 0
     if (tpTriggerPrice) {
       const multiplier = isBuyPosition ? 0.92 : 1.08
       const price = tpLimitPrice ? tpLimitPrice : (Number(tpTriggerPrice) * multiplier).toString()
