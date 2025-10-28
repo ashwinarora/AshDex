@@ -36,7 +36,7 @@ html {
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: #1E1A2D;
+  --popover: #1e1a2d;
   /* #1b0c28 */
   --popover-foreground: #787878;
   --primary: white;
@@ -162,7 +162,7 @@ body {
   background: #0f0f1a;
   -ms-overflow-style: none;
   scrollbar-width: none;
-  
+
   height: 100%;
   width: 100%;
   margin: 0;

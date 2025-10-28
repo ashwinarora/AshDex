@@ -7,19 +7,18 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import ReactiveText from '../../common/ReactiveText'
 import SpotTable from './SpotTable'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Separator } from '@/components/ui/separator'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-  IconAdjustmentsDollar,
+  // IconAdjustmentsDollar,
   IconExternalLink,
-  IconBrain,
+  // IconBrain,
   IconChevronDown,
-  IconDeviceGamepad2,
-  IconMeteor,
-  IconRosette,
-  IconShieldCheck,
-  IconShieldQuestion,
+  // IconDeviceGamepad2,
+  // IconMeteor,
+  // IconRosette,
+  // IconShieldCheck,
+  // IconShieldQuestion,
   IconStar,
   IconStarFilled,
   IconInfoCircle
@@ -27,7 +26,7 @@ import {
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useScreenSize } from '@/hooks/useScreenSize'
+// import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
 import { useRouter } from 'next/navigation'
@@ -46,27 +45,27 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedTab, setSelectedTab] = useState('All')
-  const [isStrict, setIsStrict] = useState(true)
+  // const [selectedTab, setSelectedTab] = useState('All')
+  // const [isStrict, setIsStrict] = useState(true)
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const [tokenContract, setTokenContract] = useState<string>()
   const { toggleFavorite, favorites } = useFavorites(true)
   const { data: spotMeta, spotKeyToName, spotKeyToBaseName } = useSpotMeta()
-  const { isMobile } = useScreenSize()
+  // const { isMobile } = useScreenSize()
   const router = useRouter()
-  const tabs = useMemo(
-    () => [
-      { label: t('All'), icon: null },
-      { label: t('New'), icon: <IconRosette className="size-3" /> },
-      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
-      { label: t('AI'), icon: <IconBrain className="size-3" /> },
-      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
-    ],
-    [t]
-  )
+  // const tabs = useMemo(
+  //   () => [
+  //     { label: t('All'), icon: null },
+  //     { label: t('New'), icon: <IconRosette className="size-3" /> },
+  //     { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
+  //     { label: t('AI'), icon: <IconBrain className="size-3" /> },
+  //     { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+  //     { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+  //     { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  //   ],
+  //   [t]
+  // )
 
   const selectedAssetContext = useMemo(() => {
     if (spotMeta && spotAssetContext) {
@@ -296,7 +295,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               isRTL={isRTL}
               searchTerm={searchTerm}
               selectedAsset={selectedAsset}
-              selectedTab={selectedTab}
+              selectedTab={'all'}
               setSelectedAsset={(asset) => {
                 const keyToToken = spotKeyToName.get(asset).split('/')[0]
                 router.push(`/spot/${keyToToken}`)

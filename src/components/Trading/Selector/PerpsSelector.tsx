@@ -4,13 +4,13 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
 import {
-  IconAdjustmentsDollar,
-  IconBrain,
+  // IconAdjustmentsDollar,
+  // IconBrain,
   IconChevronDown,
-  IconDeviceGamepad2,
+  // IconDeviceGamepad2,
   IconInfoCircle,
-  IconMeteor,
-  IconRosette,
+  // IconMeteor,
+  // IconRosette,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
@@ -18,12 +18,12 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+// import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-import { useScreenSize } from '@/hooks/useScreenSize'
+// import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
@@ -38,18 +38,18 @@ interface ISelectorProps {
 const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
 
-  const TABS = useMemo(
-    () => [
-      { label: t('All'), icon: null },
-      { label: t('New'), icon: <IconRosette className="size-3" /> },
-      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
-      { label: t('AI'), icon: <IconBrain className="size-3" /> },
-      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
-    ],
-    [t]
-  )
+  // const TABS = useMemo(
+  //   () => [
+  //     { label: t('All'), icon: null },
+  //     { label: t('New'), icon: <IconRosette className="size-3" /> },
+  //     { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
+  //     { label: t('AI'), icon: <IconBrain className="size-3" /> },
+  //     { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+  //     { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+  //     { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  //   ],
+  //   [t]
+  // )
 
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
@@ -59,11 +59,11 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedTab, setSelectedTab] = useState('All')
+  // const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
-  const { isMobile } = useScreenSize()
+  // const { isMobile } = useScreenSize()
   const router = useRouter()
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -281,7 +281,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             </ToggleGroup> */}
             <PerpsTable
               isRTL={isRTL}
-              selectedTab={selectedTab}
+              selectedTab={'all'}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
