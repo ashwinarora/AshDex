@@ -17,6 +17,7 @@
 html {
   overflow: scroll;
   overflow-x: hidden;
+  font-size: 1rem;
 }
 
 :root {
@@ -31,20 +32,20 @@ html {
   --tw-color-aggrid-paginationtext: #ffffff;
   --toastify-toast-background: #0f0816;
   --radius: 0.625rem;
-  --background: #ffffff0a;
+  --background: #0f0f1a;
   --foreground: oklch(0.129 0.042 264.695);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: #150a1e;
+  --popover: #1E1A2D;
   /* #1b0c28 */
   --popover-foreground: #787878;
   --primary: white;
   --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: oklch(0.968 0.007 247.896);
+  --secondary: #050115;
   --secondary-foreground: #ffffff50;
   --muted: #ffffff0a;
   --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: #311749;
+  --accent: #5f46f980;
   --accent-foreground: #ffffff;
   --destructive: #e2464a;
   --border: #27163c;
@@ -69,7 +70,7 @@ html {
   --breakpoint-xs: 480px;
   --breakpoint-base: 970px;
   --color-primary: #5f46f9;
-  --color-secondary: #140b1e; /* recommend 22162d*/
+  --color-secondary: #050115; /* recommend 22162d*/
   --color-brand: #10b981; /* Brand accent color */
   --color-green: #2fa766; /* Brand green */
   --color-red: #e2464a; /* Brand Red */
@@ -158,9 +159,10 @@ input[type='number'] {
 }
 body {
   font-family: 'Proxima Nova', Arial, Helvetica, sans-serif;
-  background: #1b0c28;
+  background: #0f0f1a;
   -ms-overflow-style: none;
   scrollbar-width: none;
+  
   height: 100%;
   width: 100%;
   margin: 0;
@@ -257,7 +259,7 @@ input {
 }
 
 .nexon-button {
-  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/5 rounded-md text-center items-center justify-center;
+  @apply flex px-4 py-2 transition-colors duration-200 cursor-pointer bg-white/10 rounded-md text-center items-center justify-center;
   @apply overflow-clip;
   @apply max-h-min;
   backdrop-filter: blur(16px);
@@ -280,7 +282,7 @@ button:active {
 }
 
 .tab-btn {
-  @apply w-full transition-colors duration-200 cursor-pointer text-white/50;
+  @apply w-full transition-colors duration-200 cursor-pointer text-white/70;
 }
 
 .tab-btn:hover {

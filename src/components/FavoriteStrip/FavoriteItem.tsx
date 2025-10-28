@@ -71,7 +71,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
       >
         {data.name}
       </p>
-      <p className={cn('text-xs text-white/50', data.isPositive ? 'text-green' : 'text-red')}>
+      <p className={cn('text-xs text-white/70', data.isPositive ? 'text-green' : 'text-red')}>
         {displayMode === 'usd' ? `$${formatWithCommas(data.price ?? 0)}` : data.changePercent}
       </p>
     </ToggleGroupItem>

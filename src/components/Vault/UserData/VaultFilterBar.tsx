@@ -30,7 +30,7 @@ const VaultFilterBar: FC<VaultFilterBarProps> = ({
             className={`${shouldShowVaultTabs ? 'px-4 max-lg:px-2.5' : 'px-2.5'} py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
               selectedTab === item
                 ? 'bg-[#FFFFFF1A] text-white font-semibold'
-                : 'text-white/50 hover:text-white'
+                : 'text-white/70 hover:text-white'
             }`}
           >
             {item}

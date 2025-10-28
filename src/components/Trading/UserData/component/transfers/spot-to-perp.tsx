@@ -101,13 +101,13 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             <div
               className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
             >
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
+              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
                 {toPerp ? t('Spot') : t('Perp')}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
+              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
                 {toPerp ? t('Perp') : t('Spot')}
               </div>
             </div>
@@ -115,7 +115,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
               <div className="flex flex-col gap-2">
                 <div
                   className={cn(
-                    'flex items-center justify-between text-xs text-white/50',
+                    'flex items-center justify-between text-xs text-white/70',
                     isRTL && 'flex-row-reverse'
                   )}
                 >

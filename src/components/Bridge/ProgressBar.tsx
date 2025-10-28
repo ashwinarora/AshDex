@@ -63,7 +63,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       {/* Source Chain Step */}
       <div className="flex flex-col items-center">
         <div
-          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/5`}
+          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/10`}
         >
           <Image
             src={getLogoPath(sourceChain)}
@@ -80,7 +80,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         </div>
         <span
           className={`text-xs mt-1 transition-colors duration-300 relative items-center gap-1 ${
-            status === 'pending' ? 'text-white' : 'text-white/50'
+            status === 'pending' ? 'text-white' : 'text-white/70'
           }`}
         >
           Source{' '}
@@ -94,7 +94,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         </span>
       </div>
       <div className="relative flex-1 mx-2 mb-4 h-1">
-        <div className="top-0 left-0 absolute bg-white/5 rounded-full w-full h-full" />
+        <div className="top-0 left-0 absolute bg-white/10 rounded-full w-full h-full" />
         <div
           className={`absolute top-0 left-0 h-full bg-primary rounded-full transition-all duration-500`}
           style={{ width: `${progress}%` }}
@@ -103,7 +103,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
       {/* Destination Chain Step */}
       <div className="flex flex-col items-center">
         <div
-          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/5`}
+          className={`relative w-8 h-8 rounded-full flex items-center justify-center transition-colors duration-300  bg-white/10`}
         >
           <Image
             src={getLogoPath(destinationChain)}
@@ -120,7 +120,7 @@ const ProgressBar: React.FC<ProgressBarProps> = ({
         </div>
         <span
           className={`text-xs mt-1 transition-colors duration-300 relative items-center gap-1 ${
-            status === 'source_complete' ? 'text-white' : 'text-white/50'
+            status === 'source_complete' ? 'text-white' : 'text-white/70'
           }`}
         >
           Destination{' '}

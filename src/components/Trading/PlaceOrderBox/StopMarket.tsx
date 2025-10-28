@@ -110,7 +110,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+        <label htmlFor="stopPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('Stop Price')}
         </label>
         <Input
@@ -145,7 +145,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <Toggle
             size={'sm'}
-            className={cn('bg-white/5 w-full', isRTL && 'flex-row-reverse')}
+            className={cn('bg-white/10 w-full', isRTL && 'flex-row-reverse')}
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >

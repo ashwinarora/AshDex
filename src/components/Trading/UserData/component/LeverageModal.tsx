@@ -89,7 +89,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         <div className="flex flex-col gap-2">
           <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
             <p
-              className={cn('text-xs font-medium transition-colors duration-150', 'text-white/50')}
+              className={cn('text-xs font-medium transition-colors duration-150', 'text-white/70')}
             >
               {t('Leverage')}
             </p>
@@ -126,7 +126,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             <ToggleGroup
               size={'sm'}
               className={cn(
-                'flex mt-1 items-center bg-white/5 justify-between w-full',
+                'flex mt-1 items-center bg-white/10 justify-between w-full',
                 isRTL && 'flex-row-reverse'
               )}
               type="single"
@@ -139,7 +139,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
                   value={value.toString()}
                   className={cn(
                     'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                    leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+                    leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/70',
                     isRTL
                       ? 'first:rounded-r-md last:rounded-l-md'
                       : 'first:rounded-l-md last:rounded-r-md'
@@ -169,7 +169,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             {t('Confirm')}
           </Button>
         )}
-        <DialogFooter className="text-xs text-white/50">
+        <DialogFooter className="text-xs text-white/70">
           <span className="text-center w-full">
             {t('Note that setting a higher leverage increases the risk of liquidation.')}
           </span>

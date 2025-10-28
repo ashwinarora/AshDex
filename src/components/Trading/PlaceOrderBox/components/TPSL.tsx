@@ -172,7 +172,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           >
             <span
               className={cn(
-                'flex-1 text-nowrap font-medium text-white/50 text-xs',
+                'flex-1 text-nowrap font-medium text-white/70 text-xs',
                 isRTL ? 'text-end' : 'text-start'
               )}
             >
@@ -180,7 +180,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             </span>
             <span
               className={cn(
-                'flex-1 text-nowrap font-medium text-white/50 text-xs',
+                'flex-1 text-nowrap font-medium text-white/70 text-xs',
                 isRTL ? 'text-start' : 'text-end'
               )}
             >
@@ -215,7 +215,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
           >
             <span
               className={cn(
-                'flex-1 text-start text-nowrap font-medium text-white/50 text-xs',
+                'flex-1 text-start text-nowrap font-medium text-white/70 text-xs',
                 isRTL && 'text-end'
               )}
             >
@@ -223,7 +223,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
             </span>
             <span
               className={cn(
-                'flex-1 text-end text-nowrap font-medium text-white/50 text-xs',
+                'flex-1 text-end text-nowrap font-medium text-white/70 text-xs',
                 isRTL && 'text-start'
               )}
             >

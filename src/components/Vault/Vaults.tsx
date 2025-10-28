@@ -145,7 +145,7 @@ const Vaults = () => {
                     className={`md:px-4 px-3 py-1.5 cursor-pointer rounded-full transition-all duration-150 ${
                       selectedTab === item
                         ? 'bg-[#FFFFFF1A] text-white font-semibold'
-                        : 'text-white/50 hover:text-white'
+                        : 'text-white/70 hover:text-white'
                     }`}
                   >
                     {item}

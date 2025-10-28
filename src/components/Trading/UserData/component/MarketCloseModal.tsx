@@ -207,7 +207,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className={cn('text-xs text-start text-white/50', isRTL && 'text-end')}>
+            <h1 className={cn('text-xs text-start text-white/70', isRTL && 'text-end')}>
               {t('Size')}
             </h1>
             <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
@@ -255,23 +255,23 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                 className="flex-1"
               />
               <div className="flex p-2 rounded-md w-16 items-center justify-center gap-2">
-                <span className="text-xs text-white/50">{percent.toFixed(2)}%</span>
+                <span className="text-xs text-white/70">{percent.toFixed(2)}%</span>
               </div>
             </div>
           </div>
         </div>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-          <span className="text-xs text-white/50">{t('Estimated closed PnL (without fees):')}</span>
+          <span className="text-xs text-white/70">{t('Estimated closed PnL (without fees):')}</span>
           <span
             className={cn(
-              'text-xs text-white/50',
+              'text-xs text-white/70',
               estPnl
                 ? estPnl > 0
                   ? 'text-green'
                   : estPnl < 0
                     ? 'text-red'
                     : 'text-white'
-                : 'text-white/50'
+                : 'text-white/70'
             )}
           >
             {estPnl ? (estPnl > 0 ? '+' : '') : ''}$

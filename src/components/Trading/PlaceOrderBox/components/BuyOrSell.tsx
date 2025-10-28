@@ -29,7 +29,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
       <ToggleGroup
         size={'sm'}
         className={cn(
-          ' bg-white/5 rounded-md',
+          ' bg-white/10 rounded-md',
           isRTL ? '!flex-row-reverse' : '!flex-row',
           isSpot ? 'w-3/4' : 'w-full'
         )}

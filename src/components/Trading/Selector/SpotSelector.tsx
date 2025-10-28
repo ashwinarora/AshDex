@@ -153,7 +153,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             >
               {tokenContract.slice(0, 6)}...{tokenContract.slice(-4)}
             </a>{' '}
-            <IconExternalLink className="w-4 h-4 text-white/50 group-hover:text-primary" />
+            <IconExternalLink className="w-4 h-4 text-white/70 group-hover:text-primary" />
           </div>
         ) : (
           <Skeleton size="md" />
@@ -198,7 +198,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           {favorites.has(selectedAsset) ? (
             <IconStarFilled className="size-4 text-primary" />
           ) : (
-            <IconStar className="size-4 text-white/50" />
+            <IconStar className="size-4 text-white/70" />
           )}
         </Button>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
@@ -215,7 +215,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           </PopoverTrigger>
           <PopoverContent
             align={isRTL ? 'end' : 'start'}
-            className="w-[100vw] md:w-3xl h-96 z-30 p-2 flex bg-accent flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-80 z-30 p-2 flex bg-popover flex-col gap-2"
           >
             <div
               className={cn('flex items-center w-full h-fit gap-2', isRTL && 'flex-row-reverse')}
@@ -228,10 +228,10 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}
               />
-              <ToggleGroup
+              {/* <ToggleGroup
                 size={'sm'}
                 type="single"
-                className={cn('bg-white/5', isRTL ? 'flex-row-reverse' : '')}
+                className={cn('bg-white/10', isRTL ? 'flex-row-reverse' : '')}
                 value={isStrict ? 'Strict' : 'All'}
                 onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
               >
@@ -239,7 +239,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                   value="Strict"
                   className={cn(
                     'px-4 py-1 cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
-                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/50',
+                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/70',
                     isRTL ? 'rounded-r-md' : 'rounded-l-md'
                   )}
                 >
@@ -250,18 +250,18 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                   value="All"
                   className={cn(
                     'px-4 py-1 cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
-                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/50',
+                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/70',
                     isRTL ? 'rounded-l-md' : 'rounded-r-md'
                   )}
                 >
                   <IconShieldQuestion className="size-4" />
                   {t('All')}
                 </ToggleGroupItem>
-              </ToggleGroup>
+              </ToggleGroup> */}
             </div>
-            <ToggleGroup
+            {/* <ToggleGroup
               className={cn(
-                'flex items-center bg-white/5 justify-between w-full',
+                'flex items-center bg-white/10 justify-between w-full',
                 isRTL ? 'flex-row-reverse' : ''
               )}
               type="single"
@@ -279,7 +279,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                     'cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
                     selectedTab === tab.label
                       ? '!bg-primary !text-white'
-                      : 'bg-transparent text-white/50',
+                      : 'bg-transparent text-white/70',
                     isRTL
                       ? 'first:rounded-r-md last:rounded-l-md'
                       : 'first:rounded-l-md last:rounded-r-md'
@@ -291,7 +291,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                   {tab.label}
                 </ToggleGroupItem>
               ))}
-            </ToggleGroup>
+            </ToggleGroup> */}
             <SpotTable
               isRTL={isRTL}
               searchTerm={searchTerm}
@@ -314,7 +314,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         >
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
-              <div className="text-white/50 text-xs">{item.label}</div>
+              <div className="text-white/70 text-xs">{item.label}</div>
               <div className={`text-xs ${item.color || 'text-white'}`}>{item.value}</div>
             </div>
           ))}
@@ -337,7 +337,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             >
               {marketData?.map((item, index) => (
                 <div key={index} className="flex flex-col gap-1 items-end flex-wrap justify-center">
-                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
+                  <div className="text-white/70 text-xs text-nowrap">{item.label}</div>
                   <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
                     {item.value}
                   </div>

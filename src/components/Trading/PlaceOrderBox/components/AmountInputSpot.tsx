@@ -141,7 +141,7 @@ const AmountInputSpot = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Amount')}</p>
+        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{t('Amount')}</p>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {t('Available to Trade')} = {maxAllowed.toFixed(2)}{' '}
           {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
@@ -200,7 +200,7 @@ const AmountInputSpot = ({
           />
           <div
             className={cn(
-              'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+              'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/70 rounded-md gap-2',
               isRTL && 'flex-row-reverse pr-0 pl-2'
             )}
           >
@@ -229,7 +229,7 @@ const AmountInputSpot = ({
             value={'25'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              usdPercent === 25 ? 'bg-primary text-white' : 'bg-transparent text-white/70'
               // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
@@ -239,7 +239,7 @@ const AmountInputSpot = ({
             value={'50'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              usdPercent === 50 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              usdPercent === 50 ? 'bg-primary text-white' : 'bg-transparent text-white/70'
             )}
           >
             50%
@@ -248,7 +248,7 @@ const AmountInputSpot = ({
             value={'75'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              usdPercent === 75 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              usdPercent === 75 ? 'bg-primary text-white' : 'bg-transparent text-white/70'
             )}
           >
             75%
@@ -257,7 +257,7 @@ const AmountInputSpot = ({
             value={'100'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+              usdPercent === 100 ? 'bg-primary text-white' : 'bg-transparent text-white/70'
               // isRTL ? 'rounded-l-md' : 'rounded-r-md'
             )}
           >

@@ -278,7 +278,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                 {header.map((item, index) => (
                   <div className="flex flex-col gap-3" key={index}>
                     <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/50">{item}</span>
+                      <span className="text-white/70">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
                     {(item === t('Coin') || item === t('Trigger')) && (
@@ -319,10 +319,10 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                         : 'justify-end flex-2',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
-                      : 'hover:text-white/50',
+                      : 'hover:text-white/70',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
-                      : 'text-white/50'
+                      : 'text-white/70'
                   )}
                 >
                   {header.isPlaceholder ? null : (

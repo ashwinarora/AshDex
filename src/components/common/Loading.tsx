@@ -14,7 +14,7 @@ const Loading: React.FC<LoadingProps> = ({ title, subTitle, className }) => {
       <IconLoader className="size-10 animate-spin" />
       <div className="flex flex-col gap-2">
         <p className="text-white font-medium text-base text-center">{title ?? ''}</p>
-        <p className=" text-white/50 font-medium text-sm text-center">{subTitle ?? ''}</p>
+        <p className=" text-white/70 font-medium text-sm text-center">{subTitle ?? ''}</p>
       </div>
     </div>
   )
