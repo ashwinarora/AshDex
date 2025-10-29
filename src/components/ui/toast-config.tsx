@@ -108,11 +108,11 @@ export const Toast = () => {
     },
     toastOptions: {
       classNames: {
-        toast: '!rounded-md !w-80 !bg-accent',
+        toast: '!rounded-md !w-80 !bg-popover',
         closeButton: '!bg-accent !border-none !text-white !size-4',
         success: '!text-green !border-green/50',
         error: '!text-red !border-red/50',
-        info: '!text-accent-foreground !border-accent-foreground/50',
+        info: '!text-blue-400 !border-blue-400/50',
         warning: '!text-yellow-600 !border-yellow-600/50',
         loading: '!text-accent-foreground !border-accent-foreground/50'
       }

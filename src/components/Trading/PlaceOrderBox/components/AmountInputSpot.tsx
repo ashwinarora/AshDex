@@ -46,22 +46,28 @@ const AmountInputSpot = ({
       spotState: state.spotState
     }))
   )
+
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
+  const selectedAssetName = useMemo(() => {
+    return spotKeyToName.get(selectedAsset)
+  }, [selectedAsset, spotKeyToName])
+
   const szDecimals = useMemo(() => {
-    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAssetName))
     return tokenData?.szDecimals || 0
-  }, [selectedAsset, spotMeta])
+  }, [selectedAssetName, spotMeta])
 
   const maxAllowed = useMemo(() => {
-    if (!spotState) return 0
+    if (spotState.balances.length === 0) return 0
     const max = isBuy
-      ? (spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
+      ? (spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+      : (spotState.balances.find((b) => isMatch(b.coin, selectedAssetName))?.total ?? 0)
+
     return Number(max)
-  }, [spotState, selectedAsset, isBuy])
+  }, [spotState, selectedAssetName, isBuy])
 
   const updateFromAssetAmount = (input: string) => {
     // Allow empty input or just a decimal point
@@ -143,8 +149,7 @@ const AmountInputSpot = ({
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
         <p className="font-medium text-white/70 text-xs whitespace-nowrap">{t('Amount')}</p>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
-          {t('Available to Trade')} = {maxAllowed.toFixed(2)}{' '}
-          {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
+          {t('Available to Trade')} = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : selectedAssetName}
         </label>
       </div>
       <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
@@ -167,9 +172,7 @@ const AmountInputSpot = ({
               className="text-xs w-16 flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
-              <p className="text-xs flex-1 w-full">
-                {isInputUsd ? 'USD' : spotKeyToName.get(selectedAsset)}
-              </p>
+              <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAssetName}</p>
               <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -178,7 +181,7 @@ const AmountInputSpot = ({
               <p className="text-xs w-10 text-center">USD</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-              <p className="text-xs w-10 text-center">{spotKeyToName.get(selectedAsset)}</p>
+              <p className="text-xs w-10 text-center">{selectedAssetName}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

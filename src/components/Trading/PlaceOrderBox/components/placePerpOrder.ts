@@ -247,8 +247,8 @@ export const placePerpOrder = async ({
     console.log('pushing open orders', openOrders)
     pushNewOpenOrders(openOrders)
   } catch (error) {
-    console.error('Error placing perp order:', error)
-    toast.error(error as string, {
+    console.error('Error placing perp order:', error as string)
+    toast.error(JSON.stringify(error), {
       id: toastId
     })
   }
