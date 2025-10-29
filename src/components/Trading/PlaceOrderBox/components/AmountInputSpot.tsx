@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
@@ -144,6 +144,10 @@ const AmountInputSpot = ({
     }
   }
 
+  useEffect(() => {
+    updateFromPercent(usdPercent)
+  }, [isBuy])
+
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
@@ -170,7 +174,7 @@ const AmountInputSpot = ({
               variant="outline"
               size={'sm'}
               className="text-xs w-16 flex items-center justify-start"
-              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+            // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAssetName}</p>
               <IconChevronDown className="size-3" />
