@@ -81,10 +81,10 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }))
   )
   const { t } = useTranslate()
-  const { data: spotMeta } = useSpotMeta()
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [totalSize, setTotalSize] = useState<number>()
-  const [startPrice, setStartPrice] = useState<number>()
-  const [endPrice, setEndPrice] = useState<number>()
+  const [startPrice, setStartPrice] = useState<string>()
+  const [endPrice, setEndPrice] = useState<string>()
   const [totalOrders, setTotalOrders] = useState<number>(10)
   const [sizeSkew, setSizeSkew] = useState<number>()
   const [isBuy, setIsBuy] = useState<boolean>(true)
@@ -93,22 +93,43 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()
+
+  const selectedAssetName = useMemo(() => {
+    return spotKeyToName.get(selectedAsset)
+  }, [selectedAsset, spotKeyToName])
+
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     return isBuy
       ? (spotState?.balances?.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
-  }, [spotState, selectedAsset, isBuy])
+      : (spotState?.balances?.find((b) => isMatch(b.coin, selectedAssetName))?.total ?? 0)
+  }, [spotState, selectedAssetName, isBuy])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!spotMeta) return
     if (!currentFeeApproval) return
-    const orders = calculateScaleOrders(totalSize!, startPrice!, endPrice!, totalOrders!, sizeSkew!)
+    if (
+      !startPrice ||
+      !endPrice ||
+      !totalSize ||
+      totalSize <= 0 ||
+      totalOrders <= 0 ||
+      !sizeSkew ||
+      sizeSkew <= 0
+    )
+      return
+    const orders = calculateScaleOrders(
+      totalSize,
+      parseFloat(startPrice),
+      parseFloat(endPrice),
+      totalOrders,
+      sizeSkew
+    )
     console.log(orders)
     const assetIndex =
       spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
-    const tokenData = spotMeta.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta.tokens.find((token) => token.name === selectedAssetName)
     const ordersData: OrderData[] = orders.map((order) => ({
       assetIndex: assetIndex,
       isBuy: isBuy,
@@ -121,15 +142,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         }
       }
     }))
-    // const res = await placeOrder(agentWallet, chain?.testnet || false, hyperliquidAxios, {
-    //   orders: ordersData,
-    //   grouping: 'na',
-    //   builder: {
-    //     address: BUILDER_ADDRESS,
-    //     fee: currentFeeApproval
-    //   }
-    // })
-    // console.log(res)
     const toastId = toast.loading(`${t('Placing')} ${totalOrders} ${t('orders')}...`)
     try {
       if (!sdkL1ActionClient) return
@@ -189,6 +201,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       setTotalSize(newAmount * Number(maxAllowed))
     }
   }
+
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -217,9 +230,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="text"
               placeholder="0"
               value={startPrice}
-              onChange={(e) =>
-                setStartPrice(e.target.value ? parseFloat(e.target.value) : undefined)
-              }
+              onChange={(e) => setStartPrice(e.target.value)}
               className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <DropdownMenu>
@@ -252,7 +263,16 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="text"
               placeholder="0"
               value={endPrice}
-              onChange={(e) => setEndPrice(e.target.value ? parseFloat(e.target.value) : undefined)}
+              onChange={(e) => {
+                if (e.target.value === '' || e.target.value === '.') {
+                  setEndPrice(e.target.value)
+                }
+                // Only allow numeric input with at most one decimal point
+                if (!/^[0-9]*\.?[0-9]*$/.test(e.target.value)) {
+                  return
+                }
+                setEndPrice(e.target.value)
+              }}
               className={cn('w-full text-end text-white placeholder:text-white')}
             />
             <Button
@@ -338,7 +358,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-3">
+        <div className="flex items-center justify-center h-fit gap-1">
           <Toggle
             size={'sm'}
             className="bg-white/10"

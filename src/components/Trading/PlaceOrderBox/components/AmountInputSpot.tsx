@@ -71,7 +71,7 @@ const AmountInputSpot = ({
 
   const updateFromAssetAmount = (input: string) => {
     // Allow empty input or just a decimal point
-    if (!input || input === '.') {
+    if (input === '' || input === '.') {
       setAssetAmount(input)
       setUsdAmount('')
       setUsdPercent(0)
@@ -83,24 +83,28 @@ const AmountInputSpot = ({
       return
     }
 
-    // Check if input has more decimal places than allowed
-    const parts = input.split('.')
-    if (parts.length > 1 && parts[1].length > szDecimals) {
-      return
-    }
-
-    setAssetAmount(input)
     const numValue = parseFloat(input)
+
+    console.log('🚀 ~ updateFromAssetAmount ~ numValue:', numValue)
+
     if (!isNaN(numValue)) {
       const newTotal = numValue * parseFloat(limitPrice)
-      setUsdAmount(newTotal.toString())
+
+      console.log('🚀 ~ updateFromAssetAmount ~ newTotal:', newTotal)
+
+      const formattedAmount = newTotal.toFixed(szDecimals).replace(/\.?0+$/, '')
+
+      console.log('🚀 ~ updateFromAssetAmount ~ formattedAmount:', formattedAmount)
+
+      setAssetAmount(input)
+      setUsdAmount(formattedAmount.toString())
       setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
     }
   }
 
   const updateFromUsdAmount = (input: string) => {
     // Allow empty input or just a decimal point
-    if (!input || input === '.') {
+    if (input === '' || input === '.') {
       setUsdAmount(input)
       setAssetAmount('')
       setUsdPercent(0)
@@ -160,9 +164,7 @@ const AmountInputSpot = ({
         <Input
           type="text"
           placeholder="0"
-          value={
-            isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
-          }
+          value={isInputUsd ? usdAmount : assetAmount}
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }

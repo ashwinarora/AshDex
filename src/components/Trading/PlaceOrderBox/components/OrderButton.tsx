@@ -171,7 +171,7 @@ const OrderButton = ({
       disabled={isInvalid}
       variant={isInvalid ? 'destructive' : 'default'}
     >
-      {isSpot ? (isBuy ? t('Buy') : t('Sell')) : isBuy ? t('Buy/Long') : t('Sell/Short')}
+      {isSpot ? (isBuy ? t('Buy') : t('Sell')) : isBuy ? t('Long') : t('Short')}
     </Button>
   )
 }
