@@ -38,7 +38,7 @@ function CreateCode() {
     <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
       <div className="w-full flex !h-24 flex-col gap-2">
         <h1 className="text-white font-medium text-lg">{t('Create a Referral Code')}</h1>
-        <p className="text-white/50 font-medium text-sm">
+        <p className="text-white/70 font-medium text-sm">
           {t('This referral code is permanent and unique to you. Choose wisely.')}
         </p>
       </div>

@@ -114,7 +114,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="stopPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+        <label htmlFor="stopPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('Stop Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -138,7 +138,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             {t('Last')}
           </Button>
         </div>
-        <label htmlFor="limitPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+        <label htmlFor="limitPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('Limit Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -178,7 +178,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <Toggle
             size={'sm'}
-            className={cn('bg-white/5 w-full', isRTL && 'flex-row-reverse')}
+            className={cn('bg-white/10 w-full', isRTL && 'flex-row-reverse')}
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >

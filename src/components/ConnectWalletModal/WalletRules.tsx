@@ -79,7 +79,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   return (
     <div className="w-full h-80 flex flex-col gap-4 items-center justify-center">
       <ScrollArea className="w-full h-full flex-1">
-        <div className="max-h-60 text-sm text-white/50 pr-2">{terms?.content}</div>
+        <div className="max-h-60 text-sm text-white/70 pr-2">{terms?.content}</div>
         <ScrollBar orientation="vertical" />
       </ScrollArea>
       <div className="w-full flex flex-col shrink-0 items-center justify-center gap-2">

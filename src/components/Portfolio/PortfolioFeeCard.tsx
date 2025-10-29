@@ -152,7 +152,7 @@ const PortfolioFeeCard = ({
               </DropdownMenu>
             </div>
             <Separator className="w-full mb-2" />
-            <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
+            <h1 className={cn('text-white/70 w-full', isRTL ? 'text-end' : 'text-start')}>
               {t('Fee Tier')}
             </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl  md:w-full h-full">
@@ -239,7 +239,7 @@ const PortfolioFeeCard = ({
               <ScrollBar orientation="horizontal" />
             </ScrollArea>
             <Separator className="w-full mb-2" />
-            <h1 className={cn('text-white/50 w-full', isRTL ? 'text-end' : 'text-start')}>
+            <h1 className={cn('text-white/70 w-full', isRTL ? 'text-end' : 'text-start')}>
               {t('Maker Rebate Fee')}
             </h1>
             <ScrollArea className="w-xs xs:w-md sm:w-xl md:w-full h-full">
@@ -284,7 +284,7 @@ const PortfolioFeeCard = ({
           </div>
           <DialogFooter
             className={cn(
-              'text-xs flex w-full !flex-col text-white/50',
+              'text-xs flex w-full !flex-col text-white/70',
               isRTL ? 'text-end' : 'text-center'
             )}
           >

@@ -344,7 +344,7 @@ const AssetTable = ({
           return (
             <div className={cn(isRTL ? 'text-start' : 'text-end')}>
               <ReactiveText
-                className="text-white/50"
+                className="text-white/70"
                 value={Number(marketCap || 0)}
                 type="currency"
               />
@@ -383,7 +383,7 @@ const AssetTable = ({
 
   return (
     <Table ref={parentRef}>
-      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-accent">
+      <TableHeader className="sticky -top-1 md:top-0 z-10 bg-popover">
         {table.getHeaderGroups().map((headerGroup) => (
           <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
@@ -437,8 +437,8 @@ const AssetTable = ({
               key={row.id}
               onClick={() => handleRowClick(row.original.symbol)}
               className={cn(
-                'hover:bg-white/5 w-full transition-colors duration-150 cursor-pointer',
-                selectedAsset === row.original.symbol && 'bg-secondary',
+                'hover:bg-white/10 w-full transition-colors duration-150 cursor-pointer',
+                selectedAsset === row.original.symbol && 'bg-accent',
                 isRTL && 'flex-row-reverse'
               )}
             >

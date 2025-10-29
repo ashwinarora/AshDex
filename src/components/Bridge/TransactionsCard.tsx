@@ -46,7 +46,7 @@ function TransactionsCard({
         href={getExplorerUrl(transaction.hash, transaction.messenger)}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col bg-white/5 hover:bg-white/10 p-3 rounded-lg transition-colors cursor-pointer"
+        className="flex flex-col bg-white/10 hover:bg-white/10 p-3 rounded-lg transition-colors cursor-pointer"
       >
         {' '}
         <div>
@@ -67,14 +67,14 @@ function TransactionsCard({
               <span className="text-white text-sm">
                 {transaction.amount} {transaction.sourceToken} → {transaction.destinationToken}
               </span>
-              <span className="text-white/50 text-xs">
+              <span className="text-white/70 text-xs">
                 {transaction.sourceChain} → {transaction.destinationChain}
               </span>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-white/50 text-xs">{formatTime(transaction.timestamp)}</span>
-            <IconExternalLink className="w-4 h-4 text-white/50" />
+            <span className="text-white/70 text-xs">{formatTime(transaction.timestamp)}</span>
+            <IconExternalLink className="w-4 h-4 text-white/70" />
           </div>
         </div>
         <ProgressBar

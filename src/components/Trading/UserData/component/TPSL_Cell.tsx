@@ -328,7 +328,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               isRTL && 'flex-row-reverse'
             )}
           >
-            <span className="text-xs text-white/50">{t('Coin')}</span>
+            <span className="text-xs text-white/70">{t('Coin')}</span>
             <span className="text-xs text-white">{asset}</span>
           </div>
           <div
@@ -337,7 +337,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               isRTL && 'flex-row-reverse'
             )}
           >
-            <span className="text-xs text-white/50">{t('Position')}</span>
+            <span className="text-xs text-white/70">{t('Position')}</span>
             <span className="text-xs text-white">
               {position} {asset}
             </span>
@@ -348,7 +348,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               isRTL && 'flex-row-reverse'
             )}
           >
-            <span className="text-xs text-white/50">{t('Entry Price')}</span>
+            <span className="text-xs text-white/70">{t('Entry Price')}</span>
             <span className="text-xs text-white">{entryPrice.toLocaleString()}</span>
           </div>
           <div
@@ -357,7 +357,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               isRTL && 'flex-row-reverse'
             )}
           >
-            <span className="text-xs text-white/50">{t('Mark Price')}</span>
+            <span className="text-xs text-white/70">{t('Mark Price')}</span>
             <span className="text-xs text-white">{markPrice.toLocaleString()}</span>
           </div>
         </div>
@@ -410,7 +410,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               </DropdownMenu>
             </div>
           </div>
-          <div className={cn('text-xs text-white/50 mb-2', isRTL && 'text-end')}>
+          <div className={cn('text-xs text-white/70 mb-2', isRTL && 'text-end')}>
             {t('Expected profit:')}{' '}
             {tpTriggerPrice
               ? tpMode === '%'
@@ -454,7 +454,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
                       'min-w-28 !p-2 !h-fit flex items-center justify-between gap-1 w-fit'
                     )}
                   >
-                    <span className="text-xs text-white/50">
+                    <span className="text-xs text-white/70">
                       {slMode === '%' ? t('SL %') : t('SL $')}
                     </span>
                     <IconChevronDown className="size-3" />
@@ -467,7 +467,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               </DropdownMenu>
             </div>
           </div>
-          <div className={cn('text-xs text-white/50 mb-2', isRTL && 'text-end')}>
+          <div className={cn('text-xs text-white/70 mb-2', isRTL && 'text-end')}>
             {t('Expected loss:')}{' '}
             {slTriggerPrice
               ? slMode === '%'
@@ -479,7 +479,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-2">
           <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-            <span className="text-xs text-white/50">{t('Configure Amount')}</span>
+            <span className="text-xs text-white/70">{t('Configure Amount')}</span>
             <Switch
               checked={configureAmount}
               onCheckedChange={() => setConfigureAmount(!configureAmount)}
@@ -512,7 +512,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         </div>
         <div className="flex flex-col gap-2">
           <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-            <span className="text-xs text-white/50">{t('Limit Price')}</span>
+            <span className="text-xs text-white/70">{t('Limit Price')}</span>
             <Switch checked={limitPrice} onCheckedChange={() => setLimitPrice(!limitPrice)} />
           </div>
           <div className={cn('flex items-center gap-2 w-full', isRTL && 'flex-row-reverse')}>
@@ -536,7 +536,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
         </div>
         <Separator orientation="horizontal" />
         <Button onClick={handleClick}>{t('Confirm')}</Button>
-        <DialogFooter className="text-xs text-white/50 text-center">
+        <DialogFooter className="text-xs text-white/70 text-center">
           {t(
             'Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and stop-loss automatically cancel after closing the position. A market order is triggered when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.'
           )}

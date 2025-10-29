@@ -124,7 +124,7 @@ const UserData = () => {
             {tabs.map((tab, index) => (
               <ToggleGroupItem
                 key={tab.header}
-                className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 data-[state=on]:bg-transparent"
+                className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 data-[state=on]:bg-transparent data-[state=on]:text-primary"
                 value={index.toString()}
               >
                 {tab.header}
@@ -135,7 +135,7 @@ const UserData = () => {
         {(isRTL ? activeTab === tabs.length - 1 : activeTab === 0 && !isMobile) && (
           <Toggle
             className={cn(
-              'flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/50 gap-2',
+              'flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/70 gap-2',
               isRTL && 'flex-row-reverse'
             )}
             pressed={isHideSmallBalances}

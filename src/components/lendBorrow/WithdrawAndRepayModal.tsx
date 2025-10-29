@@ -82,7 +82,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
           <p className="text-lg text-white font-semibold tracking-[0em]">{type}</p>
           <button
             onClick={handleCloseModal}
-            className="p-2 bg-[#322944] rounded-3xl text-white/50 hover:text-white cursor-pointer"
+            className="p-2 bg-[#322944] rounded-3xl text-white/70 hover:text-white cursor-pointer"
           >
             <Image
               width={20}
@@ -186,7 +186,7 @@ const WithdrawAndRepayModal: React.FC<WithdrawAndRepayModalProps> = ({
               </div>
               <div className="flex border-y p-4 border-white/10  items-center mb-3">
                 <Switch label="" setIsChecked={setIsChecked} isChecked={isChecked} />
-                <span className="text-sm text-white/50 font-medium">Wrap ETH (to supply WETH)</span>
+                <span className="text-sm text-white/70 font-medium">Wrap ETH (to supply WETH)</span>
               </div>
 
               <div className="px-4 py-2">

@@ -104,7 +104,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Spot')}</p>
+          <p className="text-white/70 text-xs">{t('Spot')}</p>
           <ReactiveText
             precision={2}
             type="currency"
@@ -119,7 +119,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Perps')}</p>
+          <p className="text-white/70 text-xs">{t('Perps')}</p>
           <ReactiveText
             precision={2}
             type="currency"
@@ -143,7 +143,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Balance')}</p>
+          <p className="text-white/70 text-xs">{t('Balance')}</p>
           <ReactiveText
             precision={2}
             type="currency"
@@ -157,7 +157,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Unrealized PnL')}</p>
+          <p className="text-white/70 text-xs">{t('Unrealized PnL')}</p>
           <ReactiveText
             precision={2}
             type="currency"
@@ -172,7 +172,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Cross Margin Ratio')}</p>
+          <p className="text-white/70 text-xs">{t('Cross Margin Ratio')}</p>
           <ReactiveText
             precision={2}
             type="percentage"
@@ -186,7 +186,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Maintenance Margin')}</p>
+          <p className="text-white/70 text-xs">{t('Maintenance Margin')}</p>
           <ReactiveText
             precision={2}
             type="currency"
@@ -200,7 +200,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <p className="text-white/50 text-xs">{t('Cross Account Leverage')}</p>
+          <p className="text-white/70 text-xs">{t('Cross Account Leverage')}</p>
           <ReactiveText
             precision={2}
             type="leverage"

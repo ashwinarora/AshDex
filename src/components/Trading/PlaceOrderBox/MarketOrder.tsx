@@ -198,7 +198,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className="bg-white/10"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -211,8 +211,8 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-2 text-xs',
-                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                  'bg-white/10 flex-2 text-xs',
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -235,8 +235,8 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
-                  slippage > 0 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                  'bg-white/10 flex-1 text-xs',
+                  slippage > 0 ? 'bg-accent text-accent-foreground' : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -246,7 +246,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
-                <p className="text-xs text-white/50">
+                <p className="text-xs text-white/70">
                   {t(
                     'Max slippage only affects market orders placed from the order form. Closing positions will use max slippage of 8% and market TP/SL orders will use max slippage of 10%.'
                   )}
@@ -271,12 +271,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     className="w-20 shrink-0"
                     onChange={(e) => setSlippage(Number(e.target.value))}
                   />
-                  <span className="text-white/50">%</span>
+                  <span className="text-white/70">%</span>
                 </div>
                 <ToggleGroup
                   size={'sm'}
                   className={cn(
-                    'flex mt-1 items-center bg-white/5 justify-between w-full',
+                    'flex mt-1 items-center bg-white/10 justify-between w-full',
                     isRTL && 'flex-row-reverse'
                   )}
                   type="single"
@@ -291,7 +291,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                         'cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
                         slippage === value
                           ? 'bg-primary text-white'
-                          : 'bg-transparent text-white/50',
+                          : 'bg-transparent text-white/70',
                         isRTL
                           ? 'first:rounded-r-md last:rounded-l-md'
                           : 'first:rounded-l-md last:rounded-r-md'
@@ -310,12 +310,12 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           {!isSpot && (
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">{t('Liquidation Price')}</p>
+                <p className="text-white/70">{t('Liquidation Price')}</p>
                 <p className="text-white">{liquidationPrice}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">{t('Margin Required')}</p>
+                <p className="text-white/70">{t('Margin Required')}</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
                 </p>
@@ -323,7 +323,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">{t('Order Value')}</p>
+            <p className="text-white/70">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
           <Fees isSpot={isSpot} isRTL={isRTL} />

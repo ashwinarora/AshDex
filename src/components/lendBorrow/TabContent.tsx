@@ -98,7 +98,7 @@ const TabContent: React.FC<ITabContentProps> = ({ activeTab, setActiveTab, setIs
 
       <div className="flex border-y p-4 border-white/10  items-center mb-3">
         <Switch label="" setIsChecked={setIsChecked} isChecked={isChecked} />
-        <span className="text-sm text-white/50 font-medium">
+        <span className="text-sm text-white/70 font-medium">
           {activeTab === 'Borrow' ? 'Unwrap' : 'Wrap'} ETH (to {activeTab?.toLowerCase()} WETH)
         </span>
       </div>

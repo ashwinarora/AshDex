@@ -40,7 +40,7 @@ const ReferralsTablesTab = () => {
             <ToggleGroupItem
               key={tab}
               className={cn(
-                'w-40 bg-white/5',
+                'w-40 bg-white/10',
                 isRTL
                   ? 'first:rounded-r-md last:rounded-l-md'
                   : 'first:rounded-l-md last:rounded-r-md'

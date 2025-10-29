@@ -72,7 +72,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
     >
       {isLoading ? (
         <>
-          <IconLoader className="animate-spin text-white/50 text-8xl" />
+          <IconLoader className="animate-spin text-white/70 text-8xl" />
         </>
       ) : (
         <>
@@ -88,7 +88,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
                   className="flex last:border-0 border-b pb-[11px] border-white/10 justify-between"
                 >
                   <span className="text-[#8B8BA0] text-sm font-normal">{label}:</span>{' '}
-                  <span className="text-white/50 flex text-sm font-medium">
+                  <span className="text-white/70 flex text-sm font-medium">
                     {value}{' '}
                     {change && (
                       <span className="ml-2 flex xl:hidden 2xl:flex text-green">{change}</span>
@@ -108,7 +108,7 @@ const InfoTab: React.FC<IInfoTabProps> = ({ selectedAsset }) => {
                     href={link?.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="px-4 max-lg:px-3 max-lg:mb-1.5 max-lg:mr-1 py-2 text-white/50 text-sm font-medium bg-white/6 rounded-full flex items-center max-lg:gap-x-1.5 gap-2 xl:gap-1  2xl:gap-x-2 2xl:gap-y-2 hover:bg-[#322944]"
+                    className="px-4 max-lg:px-3 max-lg:mb-1.5 max-lg:mr-1 py-2 text-white/70 text-sm font-medium bg-white/6 rounded-full flex items-center max-lg:gap-x-1.5 gap-2 xl:gap-1  2xl:gap-x-2 2xl:gap-y-2 hover:bg-[#322944]"
                   >
                     {link?.name}{' '}
                     <Image

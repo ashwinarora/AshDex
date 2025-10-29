@@ -294,7 +294,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isRTL={isRTL}
         />
         <Separator orientation="horizontal" />
-        <label htmlFor="startPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+        <label htmlFor="startPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('Start Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -330,7 +330,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <label htmlFor="endPrice" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+        <label htmlFor="endPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('End Price')}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -356,7 +356,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         </div>
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
-          <label htmlFor="percent" className={cn('text-xs text-white/50', isRTL && 'text-end')}>
+          <label htmlFor="percent" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
             {t('Total Size')}
           </label>
           <p className="text-xs text-white/20">
@@ -407,7 +407,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             />
             <div
               className={cn(
-                'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+                'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/70 rounded-md gap-2',
                 isRTL && 'flex-row-reverse pr-0 pl-2'
               )}
             >
@@ -438,7 +438,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 value={value.toString()}
                 className={cn(
                   'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50',
+                  percent === value ? 'bg-primary text-white' : 'bg-transparent text-white/70',
                   isRTL
                     ? 'first:rounded-r-md last:rounded-l-md'
                     : 'first:rounded-l-md last:rounded-r-md'
@@ -453,7 +453,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <div className="flex items-center justify-center h-fit gap-2">
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className="bg-white/10"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -466,8 +466,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
-                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                  'bg-white/10 flex-1 text-xs',
+                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -479,7 +479,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="orderCount"
-                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                  className={cn('text-xs text-white/70', isRTL && 'text-end')}
                 >
                   {t('Order Count')}
                 </label>
@@ -508,10 +508,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
+                  'bg-white/10 flex-1 text-xs',
                   sizeSkew && sizeSkew > 0
                     ? 'bg-accent text-accent-foreground'
-                    : 'bg-white/5 text-white/50'
+                    : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -523,7 +523,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="sizeSkew"
-                  className={cn('text-xs text-white/50', isRTL && 'text-end')}
+                  className={cn('text-xs text-white/70', isRTL && 'text-end')}
                 >
                   {t('Size Skew')}
                 </label>
