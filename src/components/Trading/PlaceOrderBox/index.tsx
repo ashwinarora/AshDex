@@ -101,10 +101,10 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           <DropdownMenuTrigger asChild>
             <div
               className={cn(
-                'text-white/50 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
+                'text-white/70 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                 availableOptions.find((option) => option.value === activeTab)
                   ? 'text-accent-foreground'
-                  : 'text-white/50',
+                  : 'text-white/70',
                 isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
@@ -116,7 +116,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
             {availableOptions.map((option) => (
               <DropdownMenuItem
-                className="text-white/50 w-28 flex items-center justify-end hover:text-popover-foreground"
+                className="text-white/70 w-28 flex items-center justify-end hover:text-popover-foreground"
                 key={option.value}
                 onClick={() => setActiveTab(option.value as OrderTab)}
               >

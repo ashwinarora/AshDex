@@ -5,7 +5,7 @@ import UserData from '@/components/Trading/UserData/UserData'
 
 const PortfolioPage = () => {
   return (
-    <div className="w-full text-white/50 mb-8 h-screen flex flex-col gap-1 p-1">
+    <div className="w-full text-white/70 mb-8 h-screen flex flex-col gap-1 p-1">
       <div className="w-full h-fit shrink-0">
         <PortfolioHeader />
       </div>

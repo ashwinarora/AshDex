@@ -205,12 +205,12 @@ const PortfolioStats = () => {
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-            <Separator className="bg-white/5" />
+            <Separator className="bg-white/10" />
             <div className="flex flex-col justify-between h-full gap-1 p-2">
               {overviewTable
                 ? Object.entries(overviewTable).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between w-full">
-                      <p className="text-sm text-white/50">{key}</p>
+                      <p className="text-sm text-white/70">{key}</p>
                       <p className="text-sm text-white">{value}</p>
                     </div>
                   ))
@@ -312,7 +312,7 @@ const PortfolioStats = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <Separator className="bg-white/5" />
+        <Separator className="bg-white/10" />
         <div className="flex flex-col justify-between h-full gap-1 p-2">
           {overviewTable
             ? Object.entries(overviewTable).map(([key, value]) => {
@@ -324,7 +324,7 @@ const PortfolioStats = () => {
                       isRTL ? 'flex-row-reverse' : ''
                     )}
                   >
-                    <p className="text-sm text-white/50">{t(key)}</p>
+                    <p className="text-sm text-white/70">{t(key)}</p>
                     <p
                       className={cn(
                         'text-sm',

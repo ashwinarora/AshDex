@@ -48,7 +48,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({
           )}
         </div>
       )}
-      <span className="text-white/50 checkbox-text">{label}</span>
+      <span className="text-white/70 checkbox-text">{label}</span>
     </label>
   )
 }

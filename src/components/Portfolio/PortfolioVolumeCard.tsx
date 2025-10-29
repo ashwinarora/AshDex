@@ -57,7 +57,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           <div
             className={cn(
               'text-xs',
-              parseFloat(row.original.userCross) > 0 ? 'text-white' : 'text-white/50'
+              parseFloat(row.original.userCross) > 0 ? 'text-white' : 'text-white/70'
             )}
           >
             {'$ ' + formatWithKMB(parseFloat(row.original.userCross))}
@@ -72,7 +72,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           <div
             className={cn(
               'text-xs',
-              parseFloat(row.original.userAdd) > 0 ? 'text-white' : 'text-white/50'
+              parseFloat(row.original.userAdd) > 0 ? 'text-white' : 'text-white/70'
             )}
           >
             {'$ ' + formatWithKMB(parseFloat(row.original.userAdd))}
@@ -126,7 +126,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
             <DialogTitle>{t('Your Volume History')}</DialogTitle>
             <DialogDescription
-              className={cn('text-xs text-white/50', isRTL ? 'text-end' : 'text-start')}
+              className={cn('text-xs text-white/70', isRTL ? 'text-end' : 'text-start')}
             >
               {t(
                 '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
@@ -158,11 +158,11 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
                                 : 'justify-end',
                             header.column.columnDef.enableSorting
                               ? 'hover:text-accent-foreground'
-                              : 'hover:text-white/50',
+                              : 'hover:text-white/70',
                             header.column.getIsSorted() === 'asc' ||
                               header.column.getIsSorted() === 'desc'
                               ? 'text-accent-foreground'
-                              : 'text-white/50'
+                              : 'text-white/70'
                           )}
                         >
                           {header.isPlaceholder ? null : (

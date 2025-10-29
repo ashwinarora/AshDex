@@ -124,7 +124,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           {t('This will close all your positions and cancel their associated TP/SL orders.')}
         </DialogDescription>
         <ToggleGroup
-          className="w-full bg-white/5 rounded-md"
+          className="w-full bg-white/10 rounded-md"
           type="single"
           value={selected}
           onValueChange={(value) => {

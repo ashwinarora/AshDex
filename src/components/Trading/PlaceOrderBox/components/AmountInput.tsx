@@ -153,7 +153,7 @@ const AmountInput = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/50 text-xs whitespace-nowrap">{t('Position Size')}</p>
+        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{t('Position Size')}</p>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {t('Max')} ={' '}
           {isInputUsd
@@ -210,7 +210,7 @@ const AmountInput = ({
           />
           <div
             className={cn(
-              'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/50 rounded-md gap-2',
+              'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/70 rounded-md gap-2',
               isRTL && 'flex-row-reverse pr-0 pl-2'
             )}
           >
@@ -241,7 +241,7 @@ const AmountInput = ({
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 25
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50'
+                : 'bg-transparent text-white/70'
               // isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
           >
@@ -253,7 +253,7 @@ const AmountInput = ({
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent  transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 50
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50'
+                : 'bg-transparent text-white/70'
             )}
           >
             50%
@@ -264,7 +264,7 @@ const AmountInput = ({
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 75
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50'
+                : 'bg-transparent text-white/70'
             )}
           >
             75%
@@ -275,7 +275,7 @@ const AmountInput = ({
               'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
               Math.round(usdPercent) === 100
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/50',
+                : 'bg-transparent text-white/70',
               isRTL ? 'rounded-l-md' : 'rounded-r-md'
             )}
           >

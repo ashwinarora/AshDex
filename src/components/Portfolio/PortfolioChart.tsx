@@ -118,14 +118,14 @@ const PortfolioChart = ({
           }}
         >
           <ToggleGroupItem
-            className={cn('w-32 bg-white/5', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
+            className={cn('w-32 bg-white/10', isRTL ? 'rounded-r-md' : 'rounded-l-md')}
             value="area"
           >
             <IconTimeline className="size-4" />
             {t('Performance')}
           </ToggleGroupItem>
           <ToggleGroupItem
-            className={cn('w-32 bg-white/5', isRTL ? 'rounded-l-md' : 'rounded-r-md')}
+            className={cn('w-32 bg-white/10', isRTL ? 'rounded-l-md' : 'rounded-r-md')}
             value="calendar"
           >
             <IconCalendarWeek className="size-4" />
@@ -141,7 +141,7 @@ const PortfolioChart = ({
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
+                <Button variant="outline" size="sm" className="bg-white/10 rounded-md">
                   {selectedChart.account === 'perp'
                     ? selectedChart.range
                         .split('perp')
@@ -196,7 +196,7 @@ const PortfolioChart = ({
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
+                <Button variant="outline" size="sm" className="bg-white/10 rounded-md">
                   {selectedChart.account === 'accountValue' ? t('Total Equity') : t('Perps Equity')}
                   <IconChevronDown className="size-4" />
                 </Button>
@@ -233,7 +233,7 @@ const PortfolioChart = ({
           <div className="flex items-center gap-2 w-full sm:w-fit justify-between md:justify-start">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-white/5 rounded-md">
+                <Button variant="outline" size="sm" className="bg-white/10 rounded-md">
                   {selectedChart.pnlType === 'total'
                     ? t('Total PnL')
                     : t(
@@ -324,7 +324,7 @@ const PortfolioChart = ({
               <ChartTooltip
                 content={(props) => {
                   return (
-                    <div className="bg-accent-foreground w-fit h-fit rounded-md p-2 flex flex-col gap-1">
+                    <div className="bg-popover w-fit h-fit rounded-md p-2 flex flex-col gap-1">
                       <p className="text-sm font-bold text-white">
                         ${props.payload?.[0]?.value && formatWithKMB(props.payload?.[0]?.value)}
                       </p>

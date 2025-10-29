@@ -959,7 +959,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
       <div className="w-full h-fit pt-2 flex flex-col items-start justify-start gap-2">
         <div
           className={cn(
-            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            'flex text-xs text-white/70 justify-between gap-2 w-full items-center',
             isRTL && 'flex-row-reverse'
           )}
         >
@@ -987,7 +987,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 </span>
                 {supportedMessengers.has(selectedMessenger) &&
                   messengerTransferTimes.get(selectedMessenger) && (
-                    <span className="text-white/50 text-xs">
+                    <span className="text-white/70 text-xs">
                       ≈ {formatTransferTime(messengerTransferTimes.get(selectedMessenger) || null)}
                     </span>
                   )}
@@ -1027,7 +1027,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                   </div>
                   {supportedMessengers.has(option.messenger) &&
                     messengerTransferTimes.get(option.messenger) && (
-                      <span className="text-white/50 text-xs">
+                      <span className="text-white/70 text-xs">
                         ≈ {formatTransferTime(messengerTransferTimes.get(option.messenger) || null)}
                       </span>
                     )}
@@ -1038,7 +1038,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
         </div>
         <div
           className={cn(
-            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            'flex text-xs text-white/70 justify-between gap-2 w-full items-center',
             isRTL && 'flex-row-reverse'
           )}
         >
@@ -1047,7 +1047,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
         </div>
         <div
           className={cn(
-            'flex text-xs text-white/50 justify-between gap-2 w-full items-center',
+            'flex text-xs text-white/70 justify-between gap-2 w-full items-center',
             isRTL && 'flex-row-reverse'
           )}
         >
@@ -1122,7 +1122,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 return isConnected ? (
                   <Badge
                     onClick={() => disconnect()}
-                    className="bg-background hover:bg-red/10 cursor-pointer hover:text-red flex items-center gap-2 !p-1 rounded-md text-white/50 !text-xs"
+                    className="bg-background hover:bg-red/10 cursor-pointer hover:text-red flex items-center gap-2 !p-1 rounded-md text-white/70 !text-xs"
                   >
                     <Avatar avatar={'1'} className="w-4 h-4" />
                     {address?.slice(0, 6)}...
@@ -1132,7 +1132,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 ) : (
                   <Badge
                     onClick={() => toggleConnectWalletModal()}
-                    className="bg-background hover:bg-accent cursor-pointer hover:text-accent-foreground flex items-center gap-2 !p-1 rounded-md text-white/50 !text-xs"
+                    className="bg-background hover:bg-accent cursor-pointer hover:text-accent-foreground flex items-center gap-2 !p-1 rounded-md text-white/70 !text-xs"
                   >
                     <IconWallet className="size-3" />
                     {t('Connect Wallet')}

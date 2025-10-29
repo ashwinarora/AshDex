@@ -102,7 +102,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
         <p
           className={cn(
             'text-xs font-medium transition-colors duration-150',
-            error.isValid ? 'text-white/50' : 'text-red'
+            error.isValid ? 'text-white/70' : 'text-red'
           )}
         >
           {t('Leverage')}
@@ -113,7 +113,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
           </Button> */}
           <div
             className={cn(
-              'flex w-16 items-center pr-2 justify-center  text-white/50 rounded-md gap-2',
+              'flex w-16 items-center pr-2 justify-center  text-white/70 rounded-md gap-2',
               !error.isValid && 'text-red',
               isRTL && 'flex-row-reverse pl-2'
             )}
@@ -162,7 +162,7 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
               value={value.toString()}
               className={cn(
                 'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none'
-                // leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                // leverage === value ? 'bg-primary text-white' : 'bg-transparent text-white/70'
               )}
             >
               {value}x

@@ -228,7 +228,7 @@ const SettingsPage = () => {
                 <p className="text-sm text-[#8B8BA0] mb-2">Session Management</p>
                 <div className="nexon-rounded-xl nexon-card p-4 flex justify-between items-center mb-2">
                   <p className="text-lg font-bold flex items-center gap-2">
-                    <IconDeviceImacFilled className="w-12 h-12 bg-white/5 rounded-lg p-2 text-white/80" />
+                    <IconDeviceImacFilled className="w-12 h-12 bg-white/10 rounded-lg p-2 text-white/80" />
                     PC | 2025-04-03 09:07
                   </p>
                   <button
@@ -352,14 +352,14 @@ const EditNicknameModal = ({
         <div className="w-96 rounded-xl  p-4 shadow-xl text-white gap-4 flex flex-col">
           <button
             onClick={onClose}
-            className="w-8 h-8 float-right ml-auto text-white/50hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
+            className="w-8 h-8 float-right ml-auto text-white/70hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
           >
             <IconX className="w-4 h-4" />
           </button>
 
           <div className="flex items-center gap-3">
             <Avatar avatar={String(avatar)} />
-            <div className="bg-white/5 border-2 border-white/5 backdrop-blur-2xl rounded-lg p-2 flex items-center gap-2 w-full">
+            <div className="bg-white/10 border-2 border-white/5 backdrop-blur-2xl rounded-lg p-2 flex items-center gap-2 w-full">
               <input
                 type="text"
                 placeholder="nickname"
@@ -367,17 +367,17 @@ const EditNicknameModal = ({
                 onChange={(e) => setNickname(e.target.value)}
                 className="text-white text-sm placeholder-gray-400 w-full outline-none border-none"
               />
-              <button className="text-white/50hover:text-white">
+              <button className="text-white/70hover:text-white">
                 <IconEdit className="h-4 w-4" />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto  bg-white/5 p-2 rounded-lg">
+          <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto  bg-white/10 p-2 rounded-lg">
             {Array.from({ length: 45 }).map((_, index) => (
               <div
                 key={index}
-                className={`bg-white/5 p-2 rounded-lg hover:bg-white/10 cursor-pointer border ${avatar === index ? 'border-primary' : ' border-transparent'}`}
+                className={`bg-white/10 p-2 rounded-lg hover:bg-white/10 cursor-pointer border ${avatar === index ? 'border-primary' : ' border-transparent'}`}
                 onClick={() => setAvatar(index)}
               >
                 <div className="w-14 h-14  bg-gradient-to-br from-pink-500 via-red-400 to-yellow-300  relative rounded-full  ">

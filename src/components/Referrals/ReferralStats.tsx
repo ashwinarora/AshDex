@@ -58,7 +58,7 @@ const ReferralStats = () => {
             isRTL && 'items-end'
           )}
         >
-          <div className="text-white/50 text-xs font-medium flex items-center gap-2">
+          <div className="text-white/70 text-xs font-medium flex items-center gap-2">
             {stat.label}
             {stat.label === t('Invite Code') && (
               <IconCopy
@@ -66,7 +66,7 @@ const ReferralStats = () => {
                   navigator.clipboard.writeText(stat.value)
                   toast.success(t('Copied to clipboard'))
                 }}
-                className="text-white/50 cursor-pointer hover:text-white transition-all size-3"
+                className="text-white/70 cursor-pointer hover:text-white transition-all size-3"
               />
             )}
           </div>

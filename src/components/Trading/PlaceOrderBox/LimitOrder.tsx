@@ -103,7 +103,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               isRTL && 'flex-row-reverse'
             )}
           >
-            <p className="font-medium text-white/50 text-xs whitespace-nowrap">
+            <p className="font-medium text-white/70 text-xs whitespace-nowrap">
               {t('Limit price (USD)')}
             </p>
           </div>
@@ -151,7 +151,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className="bg-white/10"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -165,7 +165,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 variant={'outline'}
                 className={cn(
                   'flex-2 text-xs',
-                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                  tpsl.isTpsl ? 'bg-accent text-accent-foreground' : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -185,7 +185,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </Popover>
           <Toggle
             size={'sm'}
-            className={cn('bg-white/5', isRTL && 'w-full')}
+            className={cn('bg-white/10', isRTL && 'w-full')}
             pressed={isPostOnly}
             onPressedChange={setIsPostOnly}
           >
@@ -199,12 +199,12 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           {!isSpot && (
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">{t('Liquidation Price')}</p>
+                <p className="text-white/70">{t('Liquidation Price')}</p>
                 <p className="text-white">{liquidationPrice()}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/50">{t('Margin Required')}</p>
+                <p className="text-white/70">{t('Margin Required')}</p>
                 <p className="text-white">
                   ${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}
                 </p>
@@ -212,7 +212,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/50">{t('Order Value')}</p>
+            <p className="text-white/70">{t('Order Value')}</p>
             <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
           </div>
           <Fees isSpot={isSpot} isRTL={isRTL} />

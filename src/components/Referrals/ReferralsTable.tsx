@@ -112,7 +112,7 @@ const ReferralsTable = () => {
       {!isLoading && (!successfulInvites || successfulInvites.length === 0) && (
         <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
           <IconUserX className="text-white size-10" />
-          <span className="text-white/50 text-sm">{t('No successful invites yet')}</span>
+          <span className="text-white/70 text-sm">{t('No successful invites yet')}</span>
         </div>
       )}
 
@@ -142,11 +142,11 @@ const ReferralsTable = () => {
                                 : 'justify-center',
                           header.column.columnDef.enableSorting
                             ? 'hover:text-accent-foreground'
-                            : 'hover:text-white/50',
+                            : 'hover:text-white/70',
                           header.column.getIsSorted() === 'asc' ||
                             header.column.getIsSorted() === 'desc'
                             ? 'text-accent-foreground'
-                            : 'text-white/50'
+                            : 'text-white/70'
                         )}
                       >
                         {header.isPlaceholder ? null : (
@@ -203,7 +203,7 @@ const ReferralsTable = () => {
           ) : (
             <div className="flex flex-col gap-2 justify-center items-center h-full w-full">
               <IconUserX className="text-white size-10" />
-              <span className="text-white/50 text-sm">{t('No Referrals found')}</span>
+              <span className="text-white/70 text-sm">{t('No Referrals found')}</span>
             </div>
           )}
         </>

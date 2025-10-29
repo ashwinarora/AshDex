@@ -41,7 +41,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModePro
   return (
     <div
       className={cn(
-        'flex w-full items-center justify-between rounded-md',
+        'flex w-full flex-1 items-center justify-between rounded-md',
         isRTL && 'flex-row-reverse'
       )}
     >

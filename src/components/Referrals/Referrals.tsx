@@ -31,11 +31,11 @@ function Referrals() {
       //       <div className="flex flex-col gap-6">
       //         {/* Mobile Stats Cards */}
       //         <div className="flex gap-4">
-      //           <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+      //           <div className="flex-1 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
       //             <p className="text-gray-400 text-xs mb-1">Trades Referred</p>
       //             <p className="text-xl font-bold text-white">0</p>
       //           </div>
-      //           <div className="flex-1 bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+      //           <div className="flex-1 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
       //             <p className="text-gray-400 text-xs mb-1">Rewards Earned</p>
       //             <p className="text-xl font-bold text-white">
       //               {rewardsStats?.totalReferralRewardsGenerated.toString() || '0'}
@@ -44,7 +44,7 @@ function Referrals() {
       //         </div>
 
       //         {/* Mobile Steps */}
-      //         <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
+      //         <div className="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 p-6">
       //           <h3 className="text-lg font-semibold text-white mb-4">How it works</h3>
       //           <div className="flex flex-col gap-4">
       //             {REFERRALSDATA?.map((item, index) => (
@@ -113,7 +113,7 @@ function Referrals() {
 
   return (
     <>
-      <div className="w-full text-white/50 mb-8 h-screen flex flex-col gap-1 p-1">
+      <div className="w-full text-white/70 mb-8 h-screen flex flex-col gap-1 p-1">
         <div className="w-full h-fit shrink-0">
           <ReferralsHeader />
         </div>
@@ -141,17 +141,17 @@ function Referrals() {
             
             <div className={`${isConnected ? 'xl:flex-[8]' : 'xl:flex-[12]'} w-full`}>
               {isConnected && isCreateCode ? (
-                <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
+                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
                   <ReferralsTablesTab />
                 </div>
               ) : (
                 <div className="flex flex-col lg:flex-row gap-8">
                 
-                  <div className="bg-white/5 rounded-3xl border border-white/10 flex-1 p-8 lg:p-10 flex flex-col gap-6">
+                  <div className="bg-white/10 rounded-3xl border border-white/10 flex-1 p-8 lg:p-10 flex flex-col gap-6">
                     {REFERRALSDATA?.map((item, index) => (
                       <div
                         key={index}
-                        className="flex items-center gap-4 p-6 rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
+                        className="flex items-center gap-4 p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
                       >
                         <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
                           <Image
@@ -173,7 +173,7 @@ function Referrals() {
                       </div>
                     ))}
                   </div>
-                  <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 lg:p-10 flex flex-col justify-between flex-1">
+                  <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/10 p-8 lg:p-10 flex flex-col justify-between flex-1">
                     <div className="flex flex-col gap-6">
                       <div>
                         <h2 className="text-3xl font-bold text-white mb-4">

@@ -205,7 +205,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const renderCancelAllButton = useCallback(() => {
     return (
       <div className={cn('flex items-center justify-end gap-2', isRTL && 'flex-row-reverse')}>
-        <span className="text-white/50 text-xs">{t('Action')}</span>
+        <span className="text-white/70 text-xs">{t('Action')}</span>
         <Button
           onClick={() => {
             if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -371,7 +371,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                 {header.map((item, index) => (
                   <div className="flex flex-col gap-3" key={index}>
                     <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/50">{item}</span>
+                      <span className="text-white/70">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
                     {(item === t('Coin') || item === t('Trigger')) && (
@@ -412,7 +412,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
                         : 'justify-end flex-2',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
-                      : 'text-white/50'
+                      : 'text-white/70'
                   )}
                 >
                   {header.isPlaceholder ? null : (

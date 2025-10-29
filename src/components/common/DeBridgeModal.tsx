@@ -89,13 +89,13 @@ const DeBridgeModal: React.FC<DeBridgeModalProps> = ({ isOpen, onClose }) => {
         isLoading ? 'block' : 'hidden'
       }`}
     >
-      <div className="h-12 bg-white/5 rounded-t-lg mb-4" />
+      <div className="h-12 bg-white/10 rounded-t-lg mb-4" />
       <div className="space-y-4 p-4">
-        <div className="h-10 bg-white/5 rounded-lg w-3/4" />
-        <div className="h-10 bg-white/5 rounded-lg w-1/2" />
-        <div className="h-32 bg-white/5 rounded-lg" />
-        <div className="h-10 bg-white/5 rounded-lg w-2/3" />
-        <div className="h-10 bg-white/5 rounded-lg w-1/3" />
+        <div className="h-10 bg-white/10 rounded-lg w-3/4" />
+        <div className="h-10 bg-white/10 rounded-lg w-1/2" />
+        <div className="h-32 bg-white/10 rounded-lg" />
+        <div className="h-10 bg-white/10 rounded-lg w-2/3" />
+        <div className="h-10 bg-white/10 rounded-lg w-1/3" />
       </div>
     </div>
   )

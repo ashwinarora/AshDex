@@ -280,7 +280,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   className={cn(
                     selectedPrecision.label === level.label
                       ? 'bg-accent text-accent-foreground'
-                      : 'bg-transparent text-white/50'
+                      : 'bg-transparent text-white/70'
                   )}
                   key={index}
                   onClick={() => handlePrecision(level.value, level.label)}
@@ -397,7 +397,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/50">
+    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/70">
       <div
         className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
       >
@@ -405,7 +405,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
         <ToggleGroup
           size={'sm'}
           type="single"
-          className="bg-white/5"
+          className="bg-white/10"
           value={selectedLayoutType.toString()}
           onValueChange={(value) => value !== '' && setSelectedLayouttype(Number(value))}
         >
@@ -417,7 +417,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 'px-4 py-1 first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
                 selectedLayoutType === item
                   ? 'bg-primary text-white'
-                  : 'bg-transparent text-white/50'
+                  : 'bg-transparent text-white/70'
               )}
             >
               <Image
@@ -457,7 +457,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 className={cn(
                   selectedPrecision.label === level.label
                     ? 'bg-accent text-accent-foreground'
-                    : 'bg-transparent text-white/50'
+                    : 'bg-transparent text-white/70'
                 )}
                 key={index}
                 onClick={() => handlePrecision(level.value, level.label)}
@@ -514,7 +514,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
           {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
-      <Separator orientation="horizontal" className="bg-white/5 -mb-1" />
+      <Separator orientation="horizontal" className="bg-white/10 -mb-1" />
       {isLoading || !selectedAsset ? (
         <div className="flex p-2 h-full w-full flex-1 flex-col gap-1 items-center justify-between">
           {Array(visibleRows.sells)

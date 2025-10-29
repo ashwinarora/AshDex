@@ -26,7 +26,7 @@ const Accordion: React.FC<AccordionProps> = ({
           <h3 className="text-white text-sm">{title}</h3>
         </div>
         <IconChevronDown
-          className={`w-4 h-4 text-white/50 transition-transform duration-200 ${
+          className={`w-4 h-4 text-white/70 transition-transform duration-200 ${
             isOpen ? 'rotate-180' : ''
           }`}
         />

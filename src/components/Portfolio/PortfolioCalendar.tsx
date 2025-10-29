@@ -158,12 +158,12 @@ export function PortfolioCalendar({
           className={cn(
             'flex flex-col rounded-md relative items-center p-1 justify-center h-full w-full',
             dayData.value === '0.00'
-              ? 'bg-white/5'
+              ? 'bg-white/10'
               : parseFloat(dayData.value) > 0
                 ? 'bg-green/10'
                 : parseFloat(dayData.value) < 0
                   ? 'bg-red/10'
-                  : 'bg-white/5'
+                  : 'bg-white/10'
           )}
         >
           <div className="flex flex-col w-full px-1 gap-1 text-xs items-start h-fit justify-start">
