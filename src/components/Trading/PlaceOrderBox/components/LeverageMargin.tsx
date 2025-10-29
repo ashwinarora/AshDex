@@ -36,8 +36,6 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
   const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
   const [isEdited, setIsEdited] = useState<boolean>(false)
 
-  console.log("isEdited", isEdited)
-
   useEffect(() => {
     if (!activeAssetData) return
     if (isEdited) return
