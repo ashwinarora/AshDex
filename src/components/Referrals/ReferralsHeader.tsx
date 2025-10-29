@@ -41,7 +41,7 @@ const ReferralsHeader = () => {
                     </div>
                   </StepperTrigger>
                   {REFERRALSDATA.length > index + 1 && (
-                    <StepperSeparator className="mx-2 w-10 bg-white/50" />
+                    <StepperSeparator className="mx-2 w-10 bg-white/100" />
                   )}
                 </StepperItem>
               ))}
@@ -73,7 +73,7 @@ const ReferralsHeader = () => {
                 </div>
               </StepperTrigger>
               {REFERRALSDATA.length > index + 1 && (
-                <StepperSeparator className="mx-2 w-10 bg-white/50" />
+                <StepperSeparator className="mx-2 w-10 bg-white/100" />
               )}
             </StepperItem>
           ))}

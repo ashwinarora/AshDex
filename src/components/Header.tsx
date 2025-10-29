@@ -1,10 +1,10 @@
 'use client'
 import { useState, FC, useEffect, useRef } from 'react'
-import { usePathname } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
-import Link from 'next/link'
 import { truncateAddress } from '@/utils/utils'
+import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
 import Avatar from './common/Avatar'
 import { toast } from 'sonner'
@@ -43,11 +43,13 @@ type MenuItem = {
 }
 
 const Header: FC = () => {
+  const router = useRouter()
   const pathname = usePathname()
   const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
+  const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
@@ -139,6 +141,8 @@ const Header: FC = () => {
     }
   }, [isDropdownOpen])
 
+  if (!isRendered) return null
+
   return (
     <div
       className={clsx(
@@ -146,10 +150,10 @@ const Header: FC = () => {
         isRTL && 'flex-row-reverse'
       )}
     >
-      <Link
-        href="/"
+      <div
+        onClick={() => router.push('/')}
         className={clsx(
-          'flex items-center gap-2 rounded-md font-semibold text-[#E8E0F1] text-2xl cursor-pointer',
+          'flex items-center gap-2 rounded-md text-white text-2xl font-semibold cursor-pointer',
           isRTL ? 'pl-4' : 'pr-4'
         )}
       >
@@ -160,7 +164,7 @@ const Header: FC = () => {
           className="w-6 h-6"
         />
         Nexon
-      </Link>
+      </div>
       <div className="h-full flex-1 w-full md:w-fit flex px-2 items-center md:!justify-start justify-end">
         {isMobile ? (
           <DropdownMenu>
@@ -175,10 +179,12 @@ const Header: FC = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-48 w-fit" align="end">
               {desktopMenu?.map(({ name, path }) => (
-                <DropdownMenuItem key={name} asChild>
-                  <Link href={path} className="flex items-center justify-between">
-                    {name}
-                  </Link>
+                <DropdownMenuItem
+                  key={name}
+                  onClick={() => router.push(path)}
+                  className="flex items-center justify-between"
+                >
+                  {name}
                 </DropdownMenuItem>
               ))}
             </DropdownMenuContent>
@@ -194,7 +200,7 @@ const Header: FC = () => {
               isComingSoon ? (
                 <HoverCard key={name}>
                   <HoverCardTrigger>
-                    <div className="h-full flex flex-col items-center justify-center w-24 text-white/50 text-sm">
+                    <div className="h-full flex flex-col items-center justify-center w-24 text-white/70 text-sm">
                       {name}
                     </div>
                   </HoverCardTrigger>
@@ -210,8 +216,8 @@ const Header: FC = () => {
                   <NavigationMenuLink
                     href={path}
                     className={cn(
-                      'cursor-pointer text-secondary-foreground hover:bg-popover focus:bg-none text-sm h-full w-full flex items-center justify-center rounded-none',
-                      activeMenu === name && 'text-accent-foreground font-semibold'
+                      'text-white hover:text-white text-sm h-full w-full flex items-center justify-center rounded-none',
+                      activeMenu === name && 'text-primary hover:text-primary font-semibold'
                     )}
                   >
                     {name}
@@ -225,7 +231,7 @@ const Header: FC = () => {
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
-        {isConnected ? (
+        {isConnected && isRendered ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -253,11 +259,9 @@ const Header: FC = () => {
                   {t('Switch Wallet')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem asChild>
-                  <Link href="/settings" className="flex items-center gap-2">
-                    <IconSettings className="size-4 text-inherit" />
-                    {t('Settings')}
-                  </Link>
+                <DropdownMenuItem onClick={() => router.push('/settings')}>
+                  <IconSettings className="size-4 text-inherit" />
+                  {t('Settings')}
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>

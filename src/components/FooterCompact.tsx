@@ -40,7 +40,7 @@ const FooterContent: FC = () => {
 
   // Helper function to get color based on time string
   const getFreshnessColor = (timeStr: string): string => {
-    if (timeStr === 'No candle data') return 'bg-white/50'
+    if (timeStr === 'No candle data') return 'bg-white/100'
 
     if (timeStr.includes('ms')) return 'bg-green'
     if (timeStr.includes('s')) {
@@ -104,7 +104,7 @@ const FooterContent: FC = () => {
   ]
 
   return (
-    <footer className="bottom-0 left-0 z-40 fixed items-center bg-secondary p-2 text-white/50 text-xs border-white/5 border-t w-screen align-middle">
+    <footer className="bottom-0 left-0 z-40 fixed items-center bg-secondary p-2 text-white/70 text-xs border-white/5 border-t w-screen align-middle">
       <div className="flex w-full justify-between">
         <HoverCard>
           <HoverCardTrigger asChild>
@@ -132,7 +132,7 @@ const FooterContent: FC = () => {
             </div>
           </HoverCardTrigger>
           <HoverCardContent
-            className="bg-secondary text-white/50 text-xs p-2 w-fit h-fit"
+            className="bg-secondary text-white/70 text-xs p-2 w-fit h-fit"
             side="top"
             align="start"
           >
@@ -197,7 +197,7 @@ const FooterContent: FC = () => {
             href="/docs"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white text-white/50 transition-colors"
+            className="hover:text-white text-white/70 transition-colors"
           >
             {t('Docs')}
           </a>
@@ -205,7 +205,7 @@ const FooterContent: FC = () => {
             href="/support"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white text-white/50 transition-colors"
+            className="hover:text-white text-white/70 transition-colors"
           >
             {t('Support')}
           </a>
@@ -213,7 +213,7 @@ const FooterContent: FC = () => {
             href="/terms"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white text-white/50 transition-colors"
+            className="hover:text-white text-white/70 transition-colors"
           >
             {t('Terms')}
           </a>
@@ -221,7 +221,7 @@ const FooterContent: FC = () => {
             href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-white text-white/50 transition-colors"
+            className="hover:text-white text-white/70 transition-colors"
           >
             {t('Privacy Policy')}
           </a>

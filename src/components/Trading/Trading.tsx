@@ -104,10 +104,10 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
             })
           }}
         >
-          <ToggleGroupItem className="rounded-l-md bg-white/5 h-full" value="chart">
+          <ToggleGroupItem className="rounded-l-md bg-white/10 h-full" value="chart">
             <p>{t('Chart')}</p>
           </ToggleGroupItem>
-          <ToggleGroupItem className="rounded-r-md h-full bg-white/5" value="orderbook">
+          <ToggleGroupItem className="rounded-r-md h-full bg-white/10" value="orderbook">
             <p>{t('Orderbook')}</p>
           </ToggleGroupItem>
         </ToggleGroup>
@@ -241,9 +241,6 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
 
   return (
     <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
-      {(!orderBookRef.current?.clientWidth || !parentContainerRef.current?.clientWidth) && (
-        <Skeleton className="w-full h-11 bg-secondary" />
-      )}
       <div
         className="h-[688px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
         ref={parentContainerRef}

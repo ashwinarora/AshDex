@@ -209,7 +209,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-3">
-          <label htmlFor="startPrice" className="text-xs text-white/50">
+          <label htmlFor="startPrice" className="text-xs text-white/70">
             {t('Start Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
@@ -244,7 +244,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </div>
         </div>
         <div className="flex flex-col gap-3">
-          <label htmlFor="endPrice" className="text-xs text-white/50">
+          <label htmlFor="endPrice" className="text-xs text-white/70">
             {t('End Price')}
           </label>
           <div className="flex w-full gap-3 items-center">
@@ -271,7 +271,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <Separator orientation="horizontal" />
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <label htmlFor="percent" className="text-xs text-white/50">
+            <label htmlFor="percent" className="text-xs text-white/70">
               {t('Total Size')}
             </label>
             <p className="text-xs text-white/20">
@@ -328,7 +328,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                   value={value.toString()}
                   className={cn(
                     'first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-                    usdPercent === value ? 'bg-primary text-white' : 'bg-transparent text-white/50'
+                    usdPercent === value ? 'bg-primary text-white' : 'bg-transparent text-white/70'
                   )}
                 >
                   {value}%
@@ -341,7 +341,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <div className="flex items-center justify-center h-fit gap-3">
           <Toggle
             size={'sm'}
-            className="bg-white/5"
+            className="bg-white/10"
             pressed={isReduceOnly}
             onPressedChange={setIsReduceOnly}
           >
@@ -354,8 +354,8 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
-                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/5 text-white/50'
+                  'bg-white/10 flex-1 text-xs',
+                  totalOrders > 1 ? 'bg-accent text-accent-foreground' : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -365,7 +365,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
-                <label htmlFor="orderCount" className="text-xs text-white/50">
+                <label htmlFor="orderCount" className="text-xs text-white/70">
                   {t('Order Count')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">
@@ -393,10 +393,10 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <Button
                 variant={'outline'}
                 className={cn(
-                  'bg-white/5 flex-1 text-xs',
+                  'bg-white/10 flex-1 text-xs',
                   sizeSkew && sizeSkew > 0
                     ? 'bg-accent text-accent-foreground'
-                    : 'bg-white/5 text-white/50'
+                    : 'bg-white/10 text-white/70'
                 )}
                 size={'sm'}
               >
@@ -406,7 +406,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </PopoverTrigger>
             <PopoverContent align="end">
               <div className="flex flex-col gap-3">
-                <label htmlFor="sizeSkew" className="text-xs text-white/50">
+                <label htmlFor="sizeSkew" className="text-xs text-white/70">
                   {t('Size Skew')}
                 </label>
                 <div className="flex items-center gap-3 rounded-lg">

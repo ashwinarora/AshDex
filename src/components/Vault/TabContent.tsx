@@ -45,7 +45,7 @@ const TabContent: React.FC<ITabContentProps> = ({
     <>
       <div className="">
         <div className="flex border-b px-4 pb-4 pt-2  border-white/10 items-center mb-3">
-          <span className="text-sm text-white/50 font-medium whitespace-pre-line">
+          <span className="text-sm text-white/70 font-medium whitespace-pre-line">
             {activeTab === 'Deposit'
               ? 'Deposit funds to Nexon Liquidity Vault (NLV).'
               : 'You have not yet deposited funds into Vault.\nAdd funds to Vault to complete the withdrawal.'}

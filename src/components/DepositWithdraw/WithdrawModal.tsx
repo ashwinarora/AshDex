@@ -110,7 +110,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               <div className="flex flex-col gap-2">
                 <div
                   className={cn(
-                    'flex items-center justify-between text-xs text-white/50',
+                    'flex items-center justify-between text-xs text-white/70',
                     isRTL && 'flex-row-reverse'
                   )}
                 >

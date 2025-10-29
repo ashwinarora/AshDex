@@ -38,14 +38,14 @@ function Profile() {
   return (
     <div className="flex flex-col gap-1">
       <p className="text-sm">
-        <span className="text-white/50">Status: </span>
+        <span className="text-white/70">Status: </span>
         <span className={isConnected ? 'text-green-500' : 'text-red-500'}>
           {isConnected ? 'Connected' : 'Disconnected'}
         </span>
       </p>
       {address && (
         <p className="text-sm">
-          <span className="text-white/50">Address: </span>
+          <span className="text-white/70">Address: </span>
           <span className="text-white">{address}</span>
         </p>
       )}

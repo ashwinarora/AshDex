@@ -154,12 +154,12 @@ const SendModal: React.FC<SendModalProps> = ({
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 w-full items-end">
             <div className={cn('flex-1 flex flex-col gap-2')}>
-              <h1 className="text-xs text-white/50">{t('Destination Address')}</h1>
+              <h1 className="text-xs text-white/70">{t('Destination Address')}</h1>
               <Input
                 value={destination}
                 onChange={(e) => setDestination(e.target.value)}
                 className={cn(
-                  'h-10 text-start placeholder:text-white/50 text-white',
+                  'h-10 text-start placeholder:text-white/70 text-white',
                   isRTL && 'text-end'
                 )}
                 placeholder={t('Address (0x...)')}
@@ -185,7 +185,7 @@ const SendModal: React.FC<SendModalProps> = ({
           <div
             className={cn('flex items-center justify-between -mb-2', isRTL && 'flex-row-reverse')}
           >
-            <h1 className="text-xs text-white/50">{t('Amount')}</h1>
+            <h1 className="text-xs text-white/70">{t('Amount')}</h1>
             <Button
               variant="link"
               className={cn(
@@ -203,7 +203,7 @@ const SendModal: React.FC<SendModalProps> = ({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 className={cn(
-                  'h-10 text-start placeholder:text-white/50 text-white',
+                  'h-10 text-start placeholder:text-white/70 text-white',
                   isRTL && 'text-end'
                 )}
                 placeholder={t('Amount')}
@@ -227,7 +227,7 @@ const SendModal: React.FC<SendModalProps> = ({
                     onClick={() => setSelectedToken(token.coin)}
                   >
                     <h1 className="text-sm text-white">{token.coin}</h1>
-                    <p className="text-xs text-white/50">
+                    <p className="text-xs text-white/70">
                       {Number(token.total) - Number(token.hold)} {token.coin}
                     </p>
                   </DropdownMenuItem>

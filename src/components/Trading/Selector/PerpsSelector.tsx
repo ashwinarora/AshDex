@@ -4,13 +4,13 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
 import Skeleton from '../../common/Skeleton'
 import {
-  IconAdjustmentsDollar,
-  IconBrain,
+  // IconAdjustmentsDollar,
+  // IconBrain,
   IconChevronDown,
-  IconDeviceGamepad2,
+  // IconDeviceGamepad2,
   IconInfoCircle,
-  IconMeteor,
-  IconRosette,
+  // IconMeteor,
+  // IconRosette,
   IconStar,
   IconStarFilled
 } from '@tabler/icons-react'
@@ -18,12 +18,12 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../../common/ReactiveText'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+// import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
-import { useScreenSize } from '@/hooks/useScreenSize'
+// import { useScreenSize } from '@/hooks/useScreenSize'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
@@ -38,18 +38,18 @@ interface ISelectorProps {
 const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const { t } = useTranslate()
 
-  const TABS = useMemo(
-    () => [
-      { label: t('All'), icon: null },
-      { label: t('New'), icon: <IconRosette className="size-3" /> },
-      { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
-      { label: t('AI'), icon: <IconBrain className="size-3" /> },
-      { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-      { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-      { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
-    ],
-    [t]
-  )
+  // const TABS = useMemo(
+  //   () => [
+  //     { label: t('All'), icon: null },
+  //     { label: t('New'), icon: <IconRosette className="size-3" /> },
+  //     { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
+  //     { label: t('AI'), icon: <IconBrain className="size-3" /> },
+  //     { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
+  //     { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
+  //     { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  //   ],
+  //   [t]
+  // )
 
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
@@ -59,11 +59,11 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   )
   const [isOpen, setIsOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [selectedTab, setSelectedTab] = useState('All')
+  // const [selectedTab, setSelectedTab] = useState('All')
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
-  const { isMobile } = useScreenSize()
+  // const { isMobile } = useScreenSize()
   const router = useRouter()
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -219,14 +219,14 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           {favorites.has(selectedAsset) ? (
             <IconStarFilled className="size-4 text-primary" />
           ) : (
-            <IconStar className="size-4 text-white/50" />
+            <IconStar className="size-4 text-white/70" />
           )}
         </Button>
         <Popover open={isOpen} onOpenChange={setIsOpen}>
           <PopoverTrigger asChild>
             <Button
               variant="outline"
-              className="!h-fit !p-2 w-40 flex items-center justify-between gap-2"
+              className="!h-fit !p-2 w-36 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">{selectedAsset}-USD</h1>
               <IconChevronDown className="size-4 text-white" />
@@ -234,7 +234,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           </PopoverTrigger>
           <PopoverContent
             align={isRTL ? 'end' : 'start'}
-            className="w-[100vw] md:w-3xl h-96 bg-accent z-30 p-2 flex flex-col gap-2"
+            className="w-[100vw] md:w-3xl h-96 bg-popover z-30 p-2 flex flex-col gap-2"
           >
             <div className="flex items-center w-full h-fit gap-2">
               <Input
@@ -246,9 +246,9 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                 className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}
               />
             </div>
-            <ToggleGroup
+            {/* <ToggleGroup
               className={cn(
-                'flex items-center bg-white/5 justify-between w-full',
+                'flex items-center bg-white/10 justify-between w-full',
                 isRTL && 'flex-row-reverse'
               )}
               type="single"
@@ -269,7 +269,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                       : 'first:rounded-l-md last:rounded-r-md',
                     selectedTab === tab.label
                       ? '!bg-primary !text-white'
-                      : 'bg-transparent text-white/50'
+                      : 'bg-transparent text-white/70'
                   )}
                   key={tab.label}
                   value={tab.label}
@@ -278,10 +278,10 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                   {tab.label}
                 </ToggleGroupItem>
               ))}
-            </ToggleGroup>
+            </ToggleGroup> */}
             <PerpsTable
               isRTL={isRTL}
-              selectedTab={selectedTab}
+              selectedTab={'all'}
               searchTerm={searchTerm}
               setIsOpen={setIsOpen}
               selectedAsset={selectedAsset}
@@ -301,7 +301,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         >
           {marketData?.map((item, index) => (
             <div key={index} className="flex flex-col flex-wrap justify-center">
-              <div className="text-white/50 text-xs">{item.label}</div>
+              <div className="text-white/70 text-xs">{item.label}</div>
               <div className={`text-xs ${item.color || 'text-white'}`}>
                 {item.hasCountdown ? (
                   <div className="flex items-center gap-1">
@@ -310,7 +310,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                     >
                       {(Number(selectedAssetContext?.funding || 0) * 100).toFixed(4)}%
                     </span>
-                    <span className="text-white/50">/</span>
+                    <span className="text-white/70">/</span>
                     <span className="text-white">
                       <PerpsCountdown />
                     </span>
@@ -342,8 +342,8 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             <PopoverContent align="end" className={clsx('w-fit h-fit flex flex-col gap-4')}>
               {marketData?.map((item, index) => (
                 <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
-                  <div className="text-white/50 text-xs text-nowrap">{item.label}</div>
-                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                  <div className="text-white/70 text-[8px] text-nowrap">{item.label}</div>
+                  <div className={`text-[8px] text-nowrap ${item.color || 'text-white'}`}>
                     {item.value}
                   </div>
                 </div>

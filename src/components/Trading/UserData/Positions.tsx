@@ -213,7 +213,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                 currency={''}
                 suffix={'USD'}
               />
-              <div className="flex items-center gap-1 text-white/50 text-xs capitalize">
+              <div className="flex items-center gap-1 text-white/70 text-xs capitalize">
                 {info.row.original.leverage.type === 'isolated' ? (
                   <Button
                     variant="link"
@@ -228,7 +228,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                     <IconPencil className="size-3" />
                   </Button>
                 ) : (
-                  <span className="text-white/50 text-xs capitalize">
+                  <span className="text-white/70 text-xs capitalize">
                     {info.row.original.leverage.type}
                   </span>
                 )}
@@ -253,7 +253,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
         id: 'tp_sl',
         header: () => (
           <div className="flex items-center justify-end gap-2">
-            <span className="text-white/50 text-xs">{t('Action')}</span>
+            <span className="text-white/70 text-xs">{t('Action')}</span>
             <Button
               onClick={() => {
                 if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -357,7 +357,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                 {header.map((item, index) => (
                   <div className="flex flex-col gap-3" key={index}>
                     <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/50">{item}</span>
+                      <span className="text-white/70">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
                     {(item === t('Position') || item === t('Margin')) && (
@@ -442,10 +442,10 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                         : 'justify-center',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
-                      : 'hover:text-white/50',
+                      : 'hover:text-white/70',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
-                      : 'text-white/50'
+                      : 'text-white/70'
                   )}
                 >
                   {header.isPlaceholder ? null : (

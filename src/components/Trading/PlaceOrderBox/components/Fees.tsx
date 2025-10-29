@@ -24,7 +24,7 @@ const Fees = ({ isSpot, isRTL }: { isSpot: boolean; isRTL: boolean }) => {
 
   return (
     <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-      <p className="text-white/50">{t('Fees')}</p>
+      <p className="text-white/70">{t('Fees')}</p>
       <p className="text-white">{feeText}</p>
     </div>
   )

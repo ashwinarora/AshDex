@@ -161,7 +161,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
               <span className="text-white font-semibold">
                 {formatWithCommas(Number(info.getValue().total))}{' '}
               </span>
-              <span className="text-white/50 text-xs">
+              <span className="text-white/70 text-xs">
                 {info.getValue().coin === 'USDC(Spot)' || info.getValue().coin === 'USDC(Perps)'
                   ? 'USDC'
                   : info.getValue().coin}
@@ -185,7 +185,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
               <span className="text-white font-semibold">
                 {formatWithCommas(Number(info.getValue().hold))}{' '}
               </span>
-              <span className={cn('text-white/50 text-xs')}>
+              <span className={cn('text-white/70 text-xs')}>
                 {info.getValue().coin === 'USDC(Spot)' || info.getValue().coin === 'USDC(Perps)'
                   ? 'USDC'
                   : info.getValue().coin}
@@ -225,7 +225,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
               className={cn(
                 'text-white text-start text-xs',
                 value === '--'
-                  ? 'text-white/50'
+                  ? 'text-white/70'
                   : Number(info.getValue().pnl) > 0
                     ? 'text-green'
                     : 'text-red'
@@ -247,7 +247,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         ),
         cell: (info) => {
           if (info.row.original.coin !== 'USDC(Perps)' && info.row.original.coin !== 'USDC(Spot)')
-            return <span className="text-white/50">--</span>
+            return <span className="text-white/70">--</span>
 
           return (
             <Button
@@ -335,7 +335,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
                 {header.map((item, index) => (
                   <div className="flex flex-col gap-3" key={index}>
                     <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/50">{item}</span>
+                      <span className="text-white/70">{item}</span>
                       <span className="text-white w-fit">{cell[index]}</span>
                     </div>
                     {item === t('Coin') && <Separator className="w-full bg-white/10" />}
@@ -381,10 +381,10 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
                         : 'justify-start',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
-                      : 'hover:text-white/50',
+                      : 'hover:text-white/70',
                     header.column.getIsSorted() === 'asc' || header.column.getIsSorted() === 'desc'
                       ? 'text-accent-foreground'
-                      : 'text-white/50'
+                      : 'text-white/70'
                   )}
                 >
                   {header.isPlaceholder ? null : (
