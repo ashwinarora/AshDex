@@ -174,7 +174,7 @@ const AmountInputSpot = ({
               variant="outline"
               size={'sm'}
               className="text-xs w-16 flex items-center justify-start"
-            // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
+              // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
               <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAssetName}</p>
               <IconChevronDown className="size-3" />
