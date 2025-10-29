@@ -44,11 +44,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const getBalance = () => {
     if (toPerp) {
-      return (
-        spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total.toString() ?? '0'
-      )
+      const balance = spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total
+      if (!balance) return '0.00'
+      const truncated = Math.floor(Number(balance) * 100) / 100
+      return truncated.toFixed(2)
     } else {
-      return clearingHouseState?.withdrawable.toString() ?? '0'
+      if (!clearingHouseState?.withdrawable) return '0.00'
+      const truncated = Math.floor(Number(clearingHouseState.withdrawable) * 100) / 100
+      return truncated.toFixed(2)
     }
   }
 
