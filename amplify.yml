@@ -16,6 +16,8 @@ frontend:
         - echo "FIB_SSO_CLIENT_ID=${FIB_SSO_CLIENT_ID}" >> .env
         - echo "FIB_SSO_CLIENT_SECRET=${FIB_SSO_CLIENT_SECRET}" >> .env
         - echo "FIB_ENV=${FIB_ENV}" >> .env
+        - bunx prisma generate
+        - bunx prisma migrate deploy
     build:
       commands:
         - export PATH="$HOME/.bun/bin:$PATH"
