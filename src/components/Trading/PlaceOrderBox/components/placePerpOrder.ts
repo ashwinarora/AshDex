@@ -140,6 +140,7 @@ export const placePerpOrder = async ({
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: FrontendOrder[] = []
     if ('error' in status) {
+      console.log('Error placing perp order:', status.error)
       toast.error(status.error, {
         id: toastId
       })
@@ -247,8 +248,8 @@ export const placePerpOrder = async ({
     console.log('pushing open orders', openOrders)
     pushNewOpenOrders(openOrders)
   } catch (error) {
-    console.error('Error placing perp order:', error)
-    toast.error(error as string, {
+    console.log(error)
+    toast.error(JSON.stringify(error) as string, {
       id: toastId
     })
   }
