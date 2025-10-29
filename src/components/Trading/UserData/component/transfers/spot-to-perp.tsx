@@ -5,7 +5,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { DialogDescription } from '@/components/ui/dialog'
 import { DialogTitle } from '@/components/ui/dialog'
 import { DialogHeader } from '@/components/ui/dialog'
 import { DialogContent } from '@/components/ui/dialog'
@@ -86,7 +85,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
-          <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription>
+          {/* <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription> */}
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
