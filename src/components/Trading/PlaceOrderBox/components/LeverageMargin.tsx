@@ -21,10 +21,11 @@ interface LeverageMarginProps {
 
 const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: LeverageMarginProps) => {
   const { t } = useTranslate()
-  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+  const { clearingHouseState, perpsMeta, activeAssetData } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      perpsMeta: state.perpsMeta
+      perpsMeta: state.perpsMeta,
+      activeAssetData: state.activeAssetData
     }))
   )
 
@@ -34,12 +35,6 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
   })
   const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
   const [isEdited, setIsEdited] = useState<boolean>(false)
-
-  const { activeAssetData } = useHyperliquidStore(
-    useShallow((state) => ({
-      activeAssetData: state.activeAssetData
-    }))
-  )
 
   useEffect(() => {
     if (!activeAssetData) return
@@ -154,7 +149,12 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
           )}
           type="single"
           value={leverage.toString()}
-          onValueChange={(value) => value !== '' && setLeverage(parseInt(value, 10))}
+          // onValueChange={(value) => {value !== '' && setLeverage(parseInt(value, 10))}}
+          onValueChange={(value) => {
+            if (value === '') return
+            setLeverage(parseInt(value, 10))
+            setIsEdited(true)
+          }}
         >
           {getLeverageTicks(maxLeverage, 3).map((value, index) => (
             <ToggleGroupItem
