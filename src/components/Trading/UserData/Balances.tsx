@@ -44,6 +44,7 @@ type BalanceData = {
   hold: string | number
   entryNtl: string | number
   usdcValue: string | number
+  avgBuyPrice: string | number
   pnl: string | number
   pnlPercentage: string | number
 }
@@ -84,6 +85,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
       total: clearingHouseState?.marginSummary?.accountValue || '-',
       hold: clearingHouseState?.withdrawable || '-',
       usdcValue: Number(clearingHouseState?.marginSummary?.accountValue),
+      avgBuyPrice: '--',
       pnl: '--',
       pnlPercentage: '--',
       entryNtl: '--'
@@ -102,6 +104,12 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
             ...state,
             coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
             entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
+            avgBuyPrice:
+              state.coin === 'USDC'
+                ? '--'
+                : Number(state.total) > 0
+                  ? Number(state.entryNtl) / Number(state.total)
+                  : '--',
             pnl: state.coin === 'USDC' ? '--' : pnl,
             pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
             usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
@@ -207,6 +215,23 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         },
         enableSorting: true,
         meta: { label: t('USDC Value') }
+      }),
+      columnHelper.accessor('avgBuyPrice', {
+        id: 'avgBuyPrice',
+        header: () => (
+          <span className="flex justify-start items-center gap-1">{t('Avg Buy Price')}</span>
+        ),
+        cell: (info) => {
+          const raw = info.getValue()
+          const value = isNaN(Number(raw)) ? '--' : formatWithCommas(Number(raw))
+          return (
+            <span className="text-white text-start text-xs">
+              {value === '--' ? '--' : `$ ${value}`}
+            </span>
+          )
+        },
+        enableSorting: true,
+        meta: { label: t('Avg Buy Price') }
       }),
       columnHelper.accessor((row) => ({ pnl: row.pnl, pnlPercentage: row.pnlPercentage }), {
         id: 'pnl',
