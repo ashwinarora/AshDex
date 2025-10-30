@@ -8,7 +8,6 @@ import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getPaginationRowModel,
   SortingState,
   flexRender
 } from '@tanstack/react-table'
@@ -32,6 +31,7 @@ import { cn } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 type ColumnType = {
   key: string
@@ -72,10 +72,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   })
 
   const [sorting, setSorting] = useState<SortingState>([])
-  const [{ pageIndex, pageSize }, setPagination] = useState({
-    pageIndex: 0,
-    pageSize: 10
-  })
+  const { spotKeyToName } = useSpotMeta()
 
   useEffect(() => {
     console.log('orderHistory', orderHistory)
@@ -122,25 +119,36 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
         header: () => t('Coin'),
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          const name = info.getValue()
+          if (name.includes('@')) {
+            return spotKeyToName.get(name)
+          }
+          return name
+        },
         enableSorting: true,
         meta: { label: t('Coin') }
       }),
       columnHelper.accessor((row) => row.order.side, {
         id: 'side',
         header: () => t('Direction'),
-        cell: (info) => (
-          <p className={`${info.getValue()?.toLowerCase() === 'buy' ? 'text-green' : 'text-red'}`}>
-            {info.getValue()}
-          </p>
-        ),
+        cell: (info) => {
+          const side = info.getValue()
+          return (
+            <p
+              className={`${side.toLowerCase() === 'buy' || side.toUpperCase() === 'B' ? 'text-green' : 'text-red'}`}
+            >
+              {side.toUpperCase() === 'B' ? 'Buy' : side.toUpperCase() === 'A' ? 'Sell' : side}
+            </p>
+          )
+        },
         enableSorting: true,
         meta: { label: t('Direction') }
       }),
       columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
         header: () => t('Price'),
-        cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
         enableSorting: true,
         meta: { label: t('Price') }
       }),
@@ -242,12 +250,10 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const table = useReactTable({
     data: orderHistory,
     columns,
-    state: { sorting, pagination: { pageIndex, pageSize } },
+    state: { sorting },
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel()
+    getSortedRowModel: getSortedRowModel()
   })
 
   if (!isConnected) {
@@ -297,7 +303,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   return (
     <div className="w-full h-full flex flex-col gap-2">
       <Table>
-        <TableHeader className="sticky top-0 bg-secondary">
+        <TableHeader className={cn('sticky top-0 bg-secondary', isRTL && 'flex-row-reverse')}>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow className={cn(isRTL && 'flex-row-reverse')} key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
@@ -310,13 +316,13 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                   }}
                   className={cn(
                     'cursor-pointer w-full',
-                    header.id === 'timestamp' || header.id === 'status'
+                    header.id === 'timestamp'
                       ? isRTL
-                        ? 'justify-end !w-36'
-                        : 'justify-start !w-36'
+                        ? 'justify-end'
+                        : 'justify-start'
                       : isRTL
-                        ? 'justify-start flex-2'
-                        : 'justify-end flex-2',
+                        ? 'justify-start'
+                        : 'justify-end',
                     header.column.columnDef.enableSorting
                       ? 'hover:text-accent-foreground'
                       : 'hover:text-white/70',

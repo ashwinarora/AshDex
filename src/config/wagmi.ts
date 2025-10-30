@@ -10,7 +10,7 @@ import {
   optimism,
   polygon
 } from 'wagmi/chains'
-import { coinbaseWallet, injected, metaMask, safe } from 'wagmi/connectors'
+import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 import { type Chain } from 'viem'
 
 export const hyperliquidMainnet = {
@@ -73,9 +73,9 @@ export const config = createConfig({
     coinbaseWalletConnector,
     rabbyWalletConnector,
     phantomWalletConnector,
-    // walletConnect({
-    //   projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
-    // }),
+    walletConnect({
+      projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
+    }),
     metaMask(),
     safe()
   ],

@@ -450,7 +450,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </ToggleGroup>
         </div>
         <Separator orientation="horizontal" />
-        <div className="flex items-center justify-center h-fit gap-2">
+        <div className="flex items-center justify-center h-fit gap-1">
           <Toggle
             size={'sm'}
             className="bg-white/10"
