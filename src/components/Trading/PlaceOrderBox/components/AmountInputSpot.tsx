@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
@@ -46,26 +46,38 @@ const AmountInputSpot = ({
       spotState: state.spotState
     }))
   )
+
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
 
+  const selectedAssetName = useMemo(() => {
+    return spotKeyToName.get(selectedAsset)
+  }, [selectedAsset, spotKeyToName])
+
   const szDecimals = useMemo(() => {
-    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAsset))
+    const tokenData = spotMeta?.tokens.find((token) => token.name.includes(selectedAssetName))
     return tokenData?.szDecimals || 0
-  }, [selectedAsset, spotMeta])
+  }, [selectedAssetName, spotMeta])
 
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
-    const max = isBuy
-      ? (spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
-      : (spotState?.balances.find((b) => isMatch(b.coin, selectedAsset))?.total ?? 0)
-    return Number(max)
-  }, [spotState, selectedAsset, isBuy])
+    if (isBuy) {
+      return (
+        Number(spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0) -
+        Number(spotState?.balances.find((b) => b.coin === 'USDC')?.hold ?? 0)
+      )
+    } else {
+      return (
+        Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.total ?? 0) -
+        Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.hold ?? 0)
+      )
+    }
+  }, [spotState, selectedAssetName, isBuy])
 
   const updateFromAssetAmount = (input: string) => {
     // Allow empty input or just a decimal point
-    if (!input || input === '.') {
+    if (input === '' || input === '.') {
       setAssetAmount(input)
       setUsdAmount('')
       setUsdPercent(0)
@@ -77,24 +89,28 @@ const AmountInputSpot = ({
       return
     }
 
-    // Check if input has more decimal places than allowed
-    const parts = input.split('.')
-    if (parts.length > 1 && parts[1].length > szDecimals) {
-      return
-    }
-
-    setAssetAmount(input)
     const numValue = parseFloat(input)
+
+    console.log('🚀 ~ updateFromAssetAmount ~ numValue:', numValue)
+
     if (!isNaN(numValue)) {
       const newTotal = numValue * parseFloat(limitPrice)
-      setUsdAmount(newTotal.toString())
+
+      console.log('🚀 ~ updateFromAssetAmount ~ newTotal:', newTotal)
+
+      const formattedAmount = newTotal.toFixed(szDecimals).replace(/\.?0+$/, '')
+
+      console.log('🚀 ~ updateFromAssetAmount ~ formattedAmount:', formattedAmount)
+
+      setAssetAmount(input)
+      setUsdAmount(formattedAmount.toString())
       setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
     }
   }
 
   const updateFromUsdAmount = (input: string) => {
     // Allow empty input or just a decimal point
-    if (!input || input === '.') {
+    if (input === '' || input === '.') {
       setUsdAmount(input)
       setAssetAmount('')
       setUsdPercent(0)
@@ -138,22 +154,23 @@ const AmountInputSpot = ({
     }
   }
 
+  useEffect(() => {
+    updateFromPercent(usdPercent)
+  }, [isBuy])
+
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
         <p className="font-medium text-white/70 text-xs whitespace-nowrap">{t('Amount')}</p>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
-          {t('Available to Trade')} = {maxAllowed.toFixed(2)}{' '}
-          {isBuy ? 'USDC' : spotKeyToName.get(selectedAsset)}
+          {t('Available to Trade')} = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : selectedAssetName}
         </label>
       </div>
       <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <Input
           type="text"
           placeholder="0"
-          value={
-            isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
-          }
+          value={isInputUsd ? usdAmount : assetAmount}
           onChange={(e) =>
             isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
           }
@@ -167,9 +184,7 @@ const AmountInputSpot = ({
               className="text-xs w-16 flex items-center justify-start"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
             >
-              <p className="text-xs flex-1 w-full">
-                {isInputUsd ? 'USD' : spotKeyToName.get(selectedAsset)}
-              </p>
+              <p className="text-xs flex-1 w-full">{isInputUsd ? 'USD' : selectedAssetName}</p>
               <IconChevronDown className="size-3" />
             </Button>
           </DropdownMenuTrigger>
@@ -178,7 +193,7 @@ const AmountInputSpot = ({
               <p className="text-xs w-10 text-center">USD</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setIsInputUsd(false)}>
-              <p className="text-xs w-10 text-center">{spotKeyToName.get(selectedAsset)}</p>
+              <p className="text-xs w-10 text-center">{selectedAssetName}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

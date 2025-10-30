@@ -5,7 +5,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { DialogDescription } from '@/components/ui/dialog'
 import { DialogTitle } from '@/components/ui/dialog'
 import { DialogHeader } from '@/components/ui/dialog'
 import { DialogContent } from '@/components/ui/dialog'
@@ -44,11 +43,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const getBalance = () => {
     if (toPerp) {
-      return (
-        spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total.toString() ?? '0'
-      )
+      const balance = spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total
+      if (!balance) return '0.00'
+      const truncated = Math.floor(Number(balance) * 100) / 100
+      return truncated.toFixed(2)
     } else {
-      return clearingHouseState?.withdrawable.toString() ?? '0'
+      if (!clearingHouseState?.withdrawable) return '0.00'
+      const truncated = Math.floor(Number(clearingHouseState.withdrawable) * 100) / 100
+      return truncated.toFixed(2)
     }
   }
 
@@ -86,7 +88,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
-          <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription>
+          {/* <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription> */}
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">

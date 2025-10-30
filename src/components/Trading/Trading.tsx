@@ -41,7 +41,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
 
   const parentContainerRef = useRef<HTMLDivElement>(null)
   const orderBookRef = useRef<HTMLDivElement>(null)
-
+  const placeOrderRef = useRef<HTMLDivElement>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   const [mobileState, setMobileState] = useState<{
@@ -242,7 +242,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
   return (
     <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
       <div
-        className="h-[688px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
+        className="h-[640px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
         ref={parentContainerRef}
       >
         <div
@@ -251,11 +251,16 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
             isRTL ? '-order-1' : 'order-1'
           )}
         >
-          {orderBookRef.current?.clientWidth && parentContainerRef.current?.clientWidth ? (
+          {orderBookRef.current?.clientWidth &&
+          parentContainerRef.current?.clientWidth &&
+          placeOrderRef.current?.clientWidth ? (
             <FavoriteStrip
               isRTL={isRTL}
               width={
-                parentContainerRef.current.clientWidth - orderBookRef.current.clientWidth * 2 - 8
+                parentContainerRef.current.clientWidth -
+                orderBookRef.current.clientWidth -
+                placeOrderRef.current.clientWidth -
+                8
               }
             />
           ) : (
@@ -269,12 +274,15 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           <Chart selectedAsset={selectedAsset} selectedInterval="30" />
         </div>
         <div
-          className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')}
+          className={clsx('w-72 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')}
           ref={orderBookRef}
         >
           <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
-        <div className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}>
+        <div
+          className={clsx('w-82 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}
+          ref={placeOrderRef}
+        >
           <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
       </div>
@@ -285,7 +293,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
         <div
           className={clsx('shrink-0 h-full', isRTL ? '-order-2' : 'order-2')}
           style={{
-            width: orderBookRef.current?.clientWidth ? orderBookRef.current.clientWidth : 320
+            width: placeOrderRef.current?.clientWidth ? placeOrderRef.current.clientWidth : 320
           }}
         >
           <OverviewBox isRTL={isRTL} />

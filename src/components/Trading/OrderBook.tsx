@@ -48,8 +48,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
   const visibleRows = {
-    sells: 9,
-    buys: 9
+    sells: 8,
+    buys: 8
   }
   const [selectedLayoutType, setSelectedLayouttype] = useState<number>(1)
   const [selectedPrecision, setSelectedPrecision] = useState<{
@@ -184,13 +184,13 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const barData = useMemo(() => {
     if (selectedLayoutType === 1) {
       return {
-        sells: processOrders(rawSells.slice(0, 9)),
-        buys: processOrders(rawBuys.slice(0, 9))
+        sells: processOrders(rawSells.slice(0, visibleRows.sells)),
+        buys: processOrders(rawBuys.slice(0, visibleRows.buys))
       }
     } else if (selectedLayoutType === 2) {
-      return { sells: [], buys: processOrders(rawBuys.slice(0, 18)) }
+      return { sells: [], buys: processOrders(rawBuys.slice(0, visibleRows.buys * 2)) }
     } else if (selectedLayoutType === 3) {
-      return { sells: processOrders(rawSells.slice(0, 18)), buys: [] }
+      return { sells: processOrders(rawSells.slice(0, visibleRows.sells * 2)), buys: [] }
     }
     return { sells: [], buys: [] }
   }, [rawBuys, rawSells, selectedLayoutType])

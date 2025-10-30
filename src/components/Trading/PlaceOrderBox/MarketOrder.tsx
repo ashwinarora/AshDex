@@ -192,7 +192,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
         <div
           className={cn(
-            'flex items-center justify-center h-fit gap-2',
+            'flex items-center justify-center h-fit gap-1',
             isRTL && 'flex-row-reverse flex-wrap'
           )}
         >

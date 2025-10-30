@@ -41,7 +41,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           )}
           value="buy"
         >
-          {t('Buy')}
+          {isSpot ? t('Buy') : t('Long')}
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
@@ -51,7 +51,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           )}
           value="sell"
         >
-          {t('Sell')}
+          {isSpot ? t('Sell') : t('Short')}
         </ToggleGroupItem>
       </ToggleGroup>
       {!isSpot && (

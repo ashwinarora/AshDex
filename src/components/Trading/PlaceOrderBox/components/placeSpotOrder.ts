@@ -98,8 +98,8 @@ export const placeSpotOrder = async ({
       }
     }
   } catch (error) {
-    console.error('Error placing spot order:', error)
-    toast.error(error as string, {
+    console.error('Error placing Spot order:', error as string)
+    toast.error(JSON.stringify(error), {
       id: toastId
     })
   }

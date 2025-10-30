@@ -172,7 +172,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <Separator orientation="horizontal" />
         <div
           className={cn(
-            'flex items-start w-full justify-start h-full gap-2',
+            'flex items-start w-full justify-start h-full gap-1',
             isRTL && 'flex-row-reverse'
           )}
         >
