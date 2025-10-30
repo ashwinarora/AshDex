@@ -1,5 +1,4 @@
 'use client'
-import { useState } from 'react'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
 import Scale from './Scale'
@@ -17,9 +16,9 @@ import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useTranslate } from '@tolgee/react'
+import { useTradeUIStore, type OrderTab } from '@/store/TradeUIStore'
 
-/** Define the possible tab options */
-type OrderTab = 'LIMIT' | 'MARKET' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
+/** OrderTab type now lives in store */
 
 export interface IPlaceOrderProps {
   selectedAsset: string
@@ -27,12 +26,12 @@ export interface IPlaceOrderProps {
 }
 
 const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const [activeTab, setActiveTab] = useState<OrderTab>('MARKET')
+  const { activeOrderTab, setActiveOrderTab } = useTradeUIStore()
   const isSpot = useIsSpot()
   const { t } = useTranslate()
 
   const renderTabContent = () => {
-    switch (activeTab) {
+    switch (activeOrderTab) {
       case 'LIMIT':
         return <LimitOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'MARKET':
@@ -76,12 +75,12 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               ? 'rounded-l-none rounded-r-md flex-row-reverse'
               : 'rounded-l-md rounded-r-none flex-row'
           )}
-          value={activeTab}
+          value={activeOrderTab}
           onValueChange={(value) => {
             if (value === '') {
               return
             }
-            setActiveTab(value as OrderTab)
+            setActiveOrderTab(value as OrderTab)
           }}
         >
           <ToggleGroupItem
@@ -102,13 +101,13 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <div
               className={cn(
                 'text-white/70 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
-                availableOptions.find((option) => option.value === activeTab)
+                availableOptions.find((option) => option.value === activeOrderTab)
                   ? 'text-accent-foreground'
                   : 'text-white/70',
                 isRTL ? 'rounded-l-md' : 'rounded-r-md'
               )}
             >
-              {availableOptions.find((option) => option.value === activeTab)?.label ||
+              {availableOptions.find((option) => option.value === activeOrderTab)?.label ||
                 t('Advanced')}
               <IconChevronDown className="size-3" />
             </div>
@@ -118,7 +117,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <DropdownMenuItem
                 className="text-white/70 w-28 flex items-center justify-end hover:text-popover-foreground"
                 key={option.value}
-                onClick={() => setActiveTab(option.value as OrderTab)}
+                onClick={() => setActiveOrderTab(option.value as OrderTab)}
               >
                 {option.label}
               </DropdownMenuItem>

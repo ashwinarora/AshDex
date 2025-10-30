@@ -27,6 +27,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
 import { useTranslate } from '@tolgee/react'
+import { useTradeUIStore } from '@/store/TradeUIStore'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -63,6 +64,13 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
   const subRef = useRef<Subscription | null>(null)
+  const { setActiveOrderTab, setRequestedLimitPrice } = useTradeUIStore()
+
+  const handleOrderRowClick = (price: string) => {
+    if (!price) return
+    setRequestedLimitPrice(price)
+    setActiveOrderTab('LIMIT')
+  }
 
   useEffect(() => {
     if (!sdkSubscriptionClient || !selectedAsset) return
@@ -326,7 +334,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
         <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
           <div className="flex flex-col gap-1 w-full flex-1 h-full">
             {barData?.buys.map((buy, index) => (
-              <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
+              <div
+                className="relative h-full w-full py-1 px-2 flex items-center cursor-pointer"
+                key={index}
+                onClick={() => handleOrderRowClick(String(buy.px))}
+              >
                 <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                   {/* <p className="font-medium text-xs">{buy.sz}</p> */}
                   {showPriceInUSD ? (
@@ -362,7 +374,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             {barData?.sells
               .sort((a, b) => Number(a.px) - Number(b.px))
               .map((sell, index) => (
-                <div className="relative  h-full w-full py-1 px-2 flex items-center" key={index}>
+                <div
+                  className="relative  h-full w-full py-1 px-2 flex items-center cursor-pointer"
+                  key={index}
+                  onClick={() => handleOrderRowClick(String(sell.px))}
+                >
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                     <p className="font-medium text-xs text-start flex-1 text-red">{sell.px}</p>
                     {/* <p className="font-medium text-xs">{sell.sz}</p> */}
@@ -541,8 +557,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
               <div
-                className={clsx('relative h-full w-full py-1 px-2 flex items-center')}
+                className={clsx(
+                  'relative h-full w-full py-1 px-2 flex items-center cursor-pointer'
+                )}
                 key={index}
+                onClick={() => handleOrderRowClick(String(sell.px))}
               >
                 <div
                   className={clsx(
@@ -618,7 +637,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             </p>
           </div>
           {barData?.buys.map((buy, index) => (
-            <div className={clsx('relative h-full w-full py-1 px-2 flex items-center')} key={index}>
+            <div
+              className={clsx('relative h-full w-full py-1 px-2 flex items-center cursor-pointer')}
+              key={index}
+              onClick={() => handleOrderRowClick(String(buy.px))}
+            >
               <div
                 className={clsx(
                   'flex items-center z-10 w-full justify-between text-sm text-white',

@@ -21,9 +21,11 @@ import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabl
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
 import Fees from './components/Fees'
+import { useTradeUIStore } from '@/store/TradeUIStore'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
+  const { requestedLimitPrice, clearRequestedLimitPrice } = useTradeUIStore()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
@@ -70,6 +72,18 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       crossAccountValue
     })
   }
+
+  useEffect(() => {
+    if (!requestedLimitPrice) return
+    setLimitPrice(requestedLimitPrice)
+    if (assetAmount) {
+      const nextUsd = Number(assetAmount) * Number(requestedLimitPrice)
+      if (!Number.isNaN(nextUsd)) {
+        setUsdAmount(String(nextUsd))
+      }
+    }
+    clearRequestedLimitPrice()
+  }, [requestedLimitPrice])
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
