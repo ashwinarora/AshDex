@@ -242,7 +242,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
   return (
     <div className="hidden xl:flex flex-col gap-1 p-1 mb-8 h-[130vh] w-full">
       <div
-        className="h-[688px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
+        className="h-[640px] 2xl:h-7/12 shrink-0 w-full flex items-start gap-1"
         ref={parentContainerRef}
       >
         <div
