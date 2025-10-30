@@ -63,9 +63,15 @@ const AmountInputSpot = ({
   const maxAllowed = useMemo(() => {
     if (!spotState) return 0
     if (isBuy) {
-      return Number(spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0) - Number(spotState?.balances.find((b) => b.coin === 'USDC')?.hold ?? 0);
+      return (
+        Number(spotState?.balances.find((b) => b.coin === 'USDC')?.total ?? 0) -
+        Number(spotState?.balances.find((b) => b.coin === 'USDC')?.hold ?? 0)
+      )
     } else {
-      return Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.total ?? 0) - Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.hold ?? 0);
+      return (
+        Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.total ?? 0) -
+        Number(spotState?.balances.find((b) => isMatch(b.coin, selectedAssetName))?.hold ?? 0)
+      )
     }
   }, [spotState, selectedAssetName, isBuy])
 
