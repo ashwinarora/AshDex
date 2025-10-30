@@ -76,7 +76,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     enabled: !!address && !!sdkInfoClient,
     initialData: []
   })
-  
+
   console.log(tradeHistory)
 
   const columns = useMemo(
@@ -131,24 +131,21 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         meta: { label: t('Size') }
       }),
 
-      columnHelper.accessor(
-        (row) => Number(row.px) * Math.abs(Number(row.sz)),
-        {
-          id: 'tradeValue',
-          header: () => t('Trade Value'),
-          cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
-          enableSorting: true,
-          sortingFn: (rowA, rowB) =>
-            Number(rowA.original.px) * Math.abs(Number(rowA.original.sz)) -
-            Number(rowB.original.px) * Math.abs(Number(rowB.original.sz)),
-          meta: { label: t('Trade Value') }
-        }
-      ),
+      columnHelper.accessor((row) => Number(row.px) * Math.abs(Number(row.sz)), {
+        id: 'tradeValue',
+        header: () => t('Trade Value'),
+        cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
+        enableSorting: true,
+        sortingFn: (rowA, rowB) =>
+          Number(rowA.original.px) * Math.abs(Number(rowA.original.sz)) -
+          Number(rowB.original.px) * Math.abs(Number(rowB.original.sz)),
+        meta: { label: t('Trade Value') }
+      }),
 
       columnHelper.accessor('fee', {
         id: 'fee',
         header: () => t('Fee'),
-        cell: (info) => "$" + Number(info.getValue()).toFixed(2),
+        cell: (info) => '$' + Number(info.getValue()).toFixed(2),
         enableSorting: true,
         sortingFn: (rowA, rowB) => Number(rowA.original.fee) - Number(rowB.original.fee),
         meta: { label: t('Fee') }
