@@ -59,7 +59,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
     <ToggleGroupItem
       value={assetKey}
       key={assetKey}
-      className="flex w-28 shrink-0 items-center justify-center gap-2 bg-transparent border-none h-full rounded-sm"
+      className="flex w-28 shrink-0 items-center cursor-pointer hover:bg-accent transition-colors justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
       {data.isPositive ? (
         <IconTrendingUp className="size-3 text-green" />

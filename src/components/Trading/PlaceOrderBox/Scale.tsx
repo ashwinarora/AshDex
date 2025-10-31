@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
   IconCheckbox,
-  IconRefresh,
+  // IconRefresh,
   IconSquare,
   IconInfoCircle,
   IconChevronDown,
@@ -308,7 +308,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               isRTL && 'text-start'
             )}
           />
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="outline"
@@ -328,7 +328,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 <p className="text-xs w-10 text-center">{selectedAsset}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
         </div>
         <label htmlFor="endPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
           {t('End Price')}
@@ -344,7 +344,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               isRTL && 'text-start'
             )}
           />
-          <Button
+          {/* <Button
             variant="outline"
             size={'sm'}
             className="text-xs w-16 bg-transparent hover:bg-transparent"
@@ -352,7 +352,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           >
             <IconRefresh className="size-3" />
             {t('Last')}
-          </Button>
+          </Button> */}
         </div>
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
