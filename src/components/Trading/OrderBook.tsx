@@ -64,11 +64,12 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
   const subRef = useRef<Subscription | null>(null)
-  const { setActiveOrderTab, setRequestedLimitPrice } = useTradeUIStore()
+  const { setActiveOrderTab, setRequestedLimitPrice, setRequestedAssetAmount } = useTradeUIStore()
 
-  const handleOrderRowClick = (price: string) => {
+  const handleOrderRowClick = (price: string, size: string) => {
     if (!price) return
     setRequestedLimitPrice(price)
+    if (size) setRequestedAssetAmount(size)
     setActiveOrderTab('LIMIT')
   }
 
@@ -337,7 +338,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               <div
                 className="relative h-full w-full py-1 px-2 flex items-center cursor-pointer"
                 key={index}
-                onClick={() => handleOrderRowClick(String(buy.px))}
+                onClick={() => handleOrderRowClick(String(buy.px), String(buy.sz))}
               >
                 <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                   {/* <p className="font-medium text-xs">{buy.sz}</p> */}
@@ -377,7 +378,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 <div
                   className="relative  h-full w-full py-1 px-2 flex items-center cursor-pointer"
                   key={index}
-                  onClick={() => handleOrderRowClick(String(sell.px))}
+                  onClick={() => handleOrderRowClick(String(sell.px), String(sell.sz))}
                 >
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                     <p className="font-medium text-xs text-start flex-1 text-red">{sell.px}</p>
@@ -561,7 +562,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   'relative h-full w-full py-1 px-2 flex items-center cursor-pointer'
                 )}
                 key={index}
-                onClick={() => handleOrderRowClick(String(sell.px))}
+                onClick={() => handleOrderRowClick(String(sell.px), String(sell.sz))}
               >
                 <div
                   className={clsx(
@@ -577,7 +578,16 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   >
                     {sell.px}
                   </p>
-                  <p className="font-medium text-xs">{sell.sz}</p>
+                  {showPriceInUSD ? (
+                    <ReactiveText
+                      precision={3}
+                      type="number"
+                      className="font-medium text-xs"
+                      value={Number(sell.px) * Number(sell.sz)}
+                    />
+                  ) : (
+                    <p className="font-medium text-xs">{sell.sz}</p>
+                  )}
                   {showPriceInUSD ? (
                     <ReactiveText
                       precision={3}
@@ -640,7 +650,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             <div
               className={clsx('relative h-full w-full py-1 px-2 flex items-center cursor-pointer')}
               key={index}
-              onClick={() => handleOrderRowClick(String(buy.px))}
+              onClick={() => handleOrderRowClick(String(buy.px), String(buy.sz))}
             >
               <div
                 className={clsx(
@@ -656,7 +666,16 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 >
                   {buy.px}
                 </p>
-                <p className="font-medium text-xs">{buy.sz}</p>
+                {showPriceInUSD ? (
+                  <ReactiveText
+                    precision={0}
+                    type="number"
+                    className="font-medium text-xs"
+                    value={Number(buy.px) * Number(buy.sz)}
+                  />
+                ) : (
+                  <p className="font-medium text-xs">{buy.sz}</p>
+                )}
                 {showPriceInUSD ? (
                   <ReactiveText
                     precision={0}

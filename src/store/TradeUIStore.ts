@@ -9,6 +9,10 @@ interface TradeUIState {
   requestedLimitPrice: string | null
   setRequestedLimitPrice: (price: string) => void
   clearRequestedLimitPrice: () => void
+
+  requestedAssetAmount: string | null
+  setRequestedAssetAmount: (amount: string) => void
+  clearRequestedAssetAmount: () => void
 }
 
 export const useTradeUIStore = create<TradeUIState>((set) => ({
@@ -17,7 +21,11 @@ export const useTradeUIStore = create<TradeUIState>((set) => ({
 
   requestedLimitPrice: null,
   setRequestedLimitPrice: (price: string) => set({ requestedLimitPrice: price }),
-  clearRequestedLimitPrice: () => set({ requestedLimitPrice: null })
+  clearRequestedLimitPrice: () => set({ requestedLimitPrice: null }),
+
+  requestedAssetAmount: null,
+  setRequestedAssetAmount: (amount: string) => set({ requestedAssetAmount: amount }),
+  clearRequestedAssetAmount: () => set({ requestedAssetAmount: null })
 }))
 
 export default useTradeUIStore
