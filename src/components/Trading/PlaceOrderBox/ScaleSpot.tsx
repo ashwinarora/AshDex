@@ -3,7 +3,6 @@ import { useMemo, useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
-
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -11,15 +10,7 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import {
-  IconCheckbox,
-  IconRefresh,
-  IconSquare,
-  IconInfoCircle,
-  IconChevronDown,
-  IconMinus,
-  IconPlus
-} from '@tabler/icons-react'
+import { IconRefresh, IconChevronDown, IconMinus, IconPlus } from '@tabler/icons-react'
 import { DropdownMenuContent, DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { cn } from '@/lib/utils'
 import { Input } from '@/components/ui/input'
@@ -28,11 +19,11 @@ import { ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Slider } from '@/components/ui/slider'
 import { ToggleGroup } from '@/components/ui/toggle-group'
 import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Toggle } from '@/components/ui/toggle'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
+import { toFixedDown } from '@/utils/utils'
 
 interface Order {
   price: number
@@ -86,9 +77,8 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [startPrice, setStartPrice] = useState<string>()
   const [endPrice, setEndPrice] = useState<string>()
   const [totalOrders, setTotalOrders] = useState<number>(10)
-  const [sizeSkew, setSizeSkew] = useState<number>()
+  const [sizeSkew, setSizeSkew] = useState<number>(1)
   const [isBuy, setIsBuy] = useState<boolean>(true)
-  const [isReduceOnly, setIsReduceOnly] = useState<boolean>(false)
   const [usdPercent, setUsdPercent] = useState(0)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
@@ -134,7 +124,8 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       assetIndex: assetIndex,
       isBuy: isBuy,
       price: order.price.toFixed(0),
-      size: Number(order.size.toFixed(tokenData?.szDecimals)).toString(),
+      // size: Number(order.size.toFixedDown(tokenData?.szDecimals)).toString(),
+      size: toFixedDown(order.size, tokenData?.szDecimals ?? 0),
       reduceOnly: false,
       orderType: {
         limit: {
@@ -359,16 +350,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         </div>
         <Separator orientation="horizontal" />
         <div className="flex items-center justify-center h-fit gap-1">
-          <Toggle
-            size={'sm'}
-            className="bg-white/10"
-            pressed={isReduceOnly}
-            onPressedChange={setIsReduceOnly}
-          >
-            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
-            <IconInfoCircle className="size-3" />
-          </Toggle>
           <Popover>
             <PopoverTrigger asChild>
               <Button

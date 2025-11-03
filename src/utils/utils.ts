@@ -140,6 +140,12 @@ export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOpti
   return fracKeep > 0 ? `${intPart}.${decPart.slice(0, fracKeep)}` : intPart
 }
 
+export function toFixedDown(num: number, decimals = 0) {
+  const factor = 10 ** decimals;
+  const floored = Math.floor(num * factor) / factor; // round toward -Infinity
+  return floored.toFixed(decimals); // string with trailing zeros
+}
+
 export function getLeverageTicks(maxLeverage: number, t: number): number[] {
   const low = 1
   const high = maxLeverage
