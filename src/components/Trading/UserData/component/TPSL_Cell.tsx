@@ -214,6 +214,15 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     if (!agentWallet) return
     if (!perpsMeta) return
     if (!sdkL1ActionClient) return
+    // Prevent placing SL below liquidation price
+    if (slTriggerPrice) {
+      const slPx = Number(slTriggerPrice)
+      const liqPx = Number(tpslAsset.liquidationPx)
+      if (!Number.isNaN(slPx) && !Number.isNaN(liqPx) && slPx < liqPx) {
+        toast.error('Stop-loss cannot be below liquidation price.')
+        return
+      }
+    }
     const orders: OrderData[] = []
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, tpslAsset.coin)
     const isBuyPosition = Number(tpslAsset.szi) > 0
