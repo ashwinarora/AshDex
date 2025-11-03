@@ -21,9 +21,17 @@ import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabl
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
 import Fees from './components/Fees'
+import { useTradeUIStore } from '@/store/TradeUIStore'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
+  const {
+    requestedLimitPrice,
+    requestedAssetAmount,
+    clearRequestedLimitPrice,
+    clearRequestedAssetAmount
+  } = useTradeUIStore()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
@@ -38,12 +46,14 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { clearingHouseState, perpsMeta } = useHyperliquidStore(
+  const { clearingHouseState, perpsMeta, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      perpsMeta: state.perpsMeta
+      perpsMeta: state.perpsMeta,
+      spotState: state.spotState
     }))
   )
+  const { spotKeyToName, data: spotMeta } = useSpotMeta()
 
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 
@@ -70,6 +80,102 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       crossAccountValue
     })
   }
+
+  useEffect(() => {
+    if (!requestedLimitPrice && !requestedAssetAmount) return
+
+    const price = Number(requestedLimitPrice ?? limitPrice)
+    if (!price || Number.isNaN(price)) {
+      if (requestedLimitPrice) setLimitPrice(requestedLimitPrice)
+      clearRequestedLimitPrice()
+      return
+    }
+
+    // Determine max tradable size in asset units
+    let maxAssetTradable = Infinity
+
+    if (!isSpot) {
+      if (clearingHouseState) {
+        const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+        const szDecimals = assetIndex !== -1 ? perpsMeta?.universe[assetIndex]?.szDecimals || 0 : 0
+
+        let maxAllowedUsd = 0
+        if (!isReduceOnly) {
+          maxAllowedUsd = Number(clearingHouseState.withdrawable || 0) * leverage
+        } else {
+          const existingPosition = clearingHouseState.assetPositions.find((pos) => {
+            return pos.position.coin === selectedAsset
+          })
+          if (existingPosition) {
+            const szi = Number(existingPosition.position.szi)
+            if (!((szi > 0 && !isBuy) || (szi < 0 && isBuy))) {
+              const priceQuotient = price / Number(existingPosition.position.entryPx || 1)
+              maxAllowedUsd = Number(existingPosition.position.positionValue || 0) * priceQuotient
+            }
+          }
+        }
+        maxAssetTradable = maxAllowedUsd / price
+        if (Number.isNaN(maxAssetTradable)) maxAssetTradable = 0
+        if (szDecimals && Number.isFinite(maxAssetTradable)) {
+          maxAssetTradable = Number(maxAssetTradable.toFixed(szDecimals))
+        }
+      } else {
+        maxAssetTradable = 0
+      }
+    } else {
+      // Spot
+      const assetName = spotKeyToName.get(selectedAsset) || ''
+      const base = assetName.split('/')[0]
+      if (spotState && base) {
+        if (isBuy) {
+          const usdcBal = Number(spotState.balances.find((b) => b.coin === 'USDC')?.total ?? 0)
+          const usdcHold = Number(spotState.balances.find((b) => b.coin === 'USDC')?.hold ?? 0)
+          const maxUsd = Math.max(usdcBal - usdcHold, 0)
+          maxAssetTradable = maxUsd / price
+        } else {
+          const baseBal = Number(
+            spotState.balances.find((b) => b.coin.split('/')[0] === base)?.total ?? 0
+          )
+          const baseHold = Number(
+            spotState.balances.find((b) => b.coin.split('/')[0] === base)?.hold ?? 0
+          )
+          maxAssetTradable = Math.max(baseBal - baseHold, 0)
+        }
+
+        const szDecimals = spotMeta?.tokens.find((t) => t.name.includes(base))?.szDecimals || 0
+        if (szDecimals && Number.isFinite(maxAssetTradable)) {
+          maxAssetTradable = Number(maxAssetTradable.toFixed(szDecimals))
+        }
+      } else {
+        maxAssetTradable = 0
+      }
+    }
+
+    // Desired size from orderbook
+    const desiredSz = Number(requestedAssetAmount || 0)
+    const finalSz = Math.min(desiredSz, maxAssetTradable)
+
+    // Apply values
+    setLimitPrice(String(price))
+    if (finalSz > 0) {
+      setAssetAmount(String(finalSz))
+      const nextUsd = finalSz * price
+      if (!Number.isNaN(nextUsd)) setUsdAmount(String(nextUsd))
+    }
+
+    clearRequestedLimitPrice()
+    clearRequestedAssetAmount()
+  }, [
+    requestedLimitPrice,
+    requestedAssetAmount,
+    isSpot,
+    isReduceOnly,
+    leverage,
+    clearingHouseState,
+    perpsMeta,
+    spotState,
+    selectedAsset
+  ])
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
