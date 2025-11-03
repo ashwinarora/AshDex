@@ -26,7 +26,12 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
-  const { requestedLimitPrice, requestedAssetAmount, clearRequestedLimitPrice, clearRequestedAssetAmount } = useTradeUIStore()
+  const {
+    requestedLimitPrice,
+    requestedAssetAmount,
+    clearRequestedLimitPrice,
+    clearRequestedAssetAmount
+  } = useTradeUIStore()
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
@@ -129,15 +134,15 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           maxAssetTradable = maxUsd / price
         } else {
           const baseBal = Number(
-            spotState.balances.find((b) => (b.coin.split('/')[0] === base))?.total ?? 0
+            spotState.balances.find((b) => b.coin.split('/')[0] === base)?.total ?? 0
           )
           const baseHold = Number(
-            spotState.balances.find((b) => (b.coin.split('/')[0] === base))?.hold ?? 0
+            spotState.balances.find((b) => b.coin.split('/')[0] === base)?.hold ?? 0
           )
           maxAssetTradable = Math.max(baseBal - baseHold, 0)
         }
 
-        const szDecimals = spotMeta?.tokens.find((t) => (t.name.includes(base)))?.szDecimals || 0
+        const szDecimals = spotMeta?.tokens.find((t) => t.name.includes(base))?.szDecimals || 0
         if (szDecimals && Number.isFinite(maxAssetTradable)) {
           maxAssetTradable = Number(maxAssetTradable.toFixed(szDecimals))
         }
@@ -160,7 +165,17 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
     clearRequestedLimitPrice()
     clearRequestedAssetAmount()
-  }, [requestedLimitPrice, requestedAssetAmount, isSpot, isReduceOnly, leverage, clearingHouseState, perpsMeta, spotState, selectedAsset])
+  }, [
+    requestedLimitPrice,
+    requestedAssetAmount,
+    isSpot,
+    isReduceOnly,
+    leverage,
+    clearingHouseState,
+    perpsMeta,
+    spotState,
+    selectedAsset
+  ])
 
   return (
     <div className="flex flex-col w-full h-full justify-between flex-1">
