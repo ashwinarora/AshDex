@@ -141,9 +141,9 @@ export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOpti
 }
 
 export function toFixedDown(num: number, decimals = 0) {
-  const factor = 10 ** decimals;
-  const floored = Math.floor(num * factor) / factor; // round toward -Infinity
-  return floored.toFixed(decimals); // string with trailing zeros
+  const factor = 10 ** decimals
+  const floored = Math.floor(num * factor) / factor // round toward -Infinity
+  return floored.toFixed(decimals) // string with trailing zeros
 }
 
 export function getLeverageTicks(maxLeverage: number, t: number): number[] {
