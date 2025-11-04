@@ -255,16 +255,22 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             isRTL && 'flex-row-reverse flex-wrap'
           )}
         >
-          <Toggle
-            size={'sm'}
-            className="bg-white/10"
-            pressed={isReduceOnly}
-            onPressedChange={setIsReduceOnly}
-          >
-            {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
-            <IconInfoCircle className="size-3" />
-          </Toggle>
+          {!isSpot && (
+            <Toggle
+              size={'sm'}
+              className="bg-white/10"
+              pressed={isReduceOnly}
+              onPressedChange={setIsReduceOnly}
+            >
+              {isReduceOnly ? (
+                <IconCheckbox className="size-3" />
+              ) : (
+                <IconSquare className="size-3" />
+              )}
+              <p className="text-xs font-semibold">{t('Reduce Only')}</p>
+              <IconInfoCircle className="size-3" />
+            </Toggle>
+          )}
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -334,7 +340,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           leverage={leverage}
           isCross={isCross}
           isPostOnly={isPostOnly}
-          isReduceOnly={isReduceOnly}
+          isReduceOnly={isSpot ? false : isReduceOnly}
           tpsl={tpsl}
         />
       </div>
