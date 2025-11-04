@@ -4,7 +4,14 @@ import {
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
-import { type WalletClient, zeroAddress, type Hex, type PrivateKeyAccount, createWalletClient, custom } from 'viem'
+import {
+  type WalletClient,
+  zeroAddress,
+  type Hex,
+  type PrivateKeyAccount,
+  createWalletClient,
+  custom
+} from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
@@ -123,11 +130,11 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       set((state) => ({
         agentWallet: agentWallet,
         sdkUserSignerClient:
-          walletClient && (walletClient).account
+          walletClient && walletClient.account
             ? new hl.ExchangeClient({
                 transport: state.sdkTransport,
                 wallet: createWalletClient({
-                  account: (walletClient).account,
+                  account: walletClient.account,
                   transport: custom(window.ethereum)
                 })
               })

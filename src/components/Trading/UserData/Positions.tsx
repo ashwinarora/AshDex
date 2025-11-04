@@ -70,18 +70,15 @@ const Positions = ({ isRTL }: IPositionsProps) => {
   const [isMarketCloseModalOpen, setIsMarketCloseModalOpen] = useState(false)
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
   const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
-  const [tpslAsset, setTpslAsset] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position']
-  >()
+  const [tpslAsset, setTpslAsset] =
+    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
   const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
-  const [leverageAsset, setLeverageAsset] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position']
-  >()
+  const [leverageAsset, setLeverageAsset] =
+    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
-  const [isolatedMarginAsset, setIsolatedMarginAsset] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position']
-  >()
+  const [isolatedMarginAsset, setIsolatedMarginAsset] =
+    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   const { isTablet, isMobile } = useScreenSize()

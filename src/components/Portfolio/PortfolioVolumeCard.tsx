@@ -31,7 +31,10 @@ type PortfolioVolumeCardProps = {
 
 const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVolumeCardProps) => {
   const { t } = useTranslate()
-  const columnHelper = useMemo(() => createColumnHelper<hl.UserFeesResponse['dailyUserVlm'][number]>(), [])
+  const columnHelper = useMemo(
+    () => createColumnHelper<hl.UserFeesResponse['dailyUserVlm'][number]>(),
+    []
+  )
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo(
     () => [

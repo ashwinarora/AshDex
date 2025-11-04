@@ -275,7 +275,9 @@ const TradingViewChart = ({
 
           if (!sdkInfoClient || !currentAsset) return
 
-          const interval = convertToHyperliquidInterval(resolution) as hl.WsCandleParameters['interval']
+          const interval = convertToHyperliquidInterval(
+            resolution
+          ) as hl.WsCandleParameters['interval']
           let lastBar: BarData | undefined
 
           const candleHandler = (payload: hl.WsCandleEvent[] | hl.WsCandleEvent) => {

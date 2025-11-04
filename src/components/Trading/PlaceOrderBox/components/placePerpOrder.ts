@@ -38,9 +38,7 @@ export const placePerpOrder = async ({
   tpsl?: TPSLType
   stopOrder?: StopOrder
   pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
-  pushNewPosition: (
-    postion: WebData2Event['clearinghouseState']['assetPositions'][number]
-  ) => void
+  pushNewPosition: (postion: WebData2Event['clearinghouseState']['assetPositions'][number]) => void
 }) => {
   const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
   const szDecimals = perpsMeta?.universe[assetIndex].szDecimals || 0
