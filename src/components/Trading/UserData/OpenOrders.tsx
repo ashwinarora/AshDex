@@ -18,7 +18,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
-import { FrontendOrder } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'
 import {
@@ -35,7 +35,7 @@ import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 
-type FrontendOrderWithAssetKey = FrontendOrder & { assetKey: string }
+type FrontendOrderWithAssetKey = WebData2Event['openOrders'][number] & { assetKey: string }
 
 const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const { t } = useTranslate()

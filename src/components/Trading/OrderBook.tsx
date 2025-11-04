@@ -21,7 +21,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
-import { EventL2BookParameters, Book, BookLevel, type Subscription } from '@nktkas/hyperliquid'
+import * as hl from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
@@ -42,7 +42,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       allMids: state.allMids
     }))
   )
-  const [l2Book, setL2Book] = useState<Book>()
+  const [l2Book, setL2Book] = useState<hl.L2BookResponse>()
   const { isMobile, isTablet } = useScreenSize()
   const { t } = useTranslate()
   const [isLoading, setIsLoading] = useState(true)
@@ -63,7 +63,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
-  const subRef = useRef<Subscription | null>(null)
+  const subRef = useRef<hl.Subscription | null>(null)
   const { setActiveOrderTab, setRequestedLimitPrice, setRequestedAssetAmount } = useTradeUIStore()
 
   const handleOrderRowClick = (price: string, size: string) => {
@@ -81,7 +81,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
 
     const nSigFigs = selectedPrecision.value === null ? null : Number(selectedPrecision.value)
     let mantissa = null
-    const handler = (data: Book) => {
+    const handler = (data: hl.L2BookResponse) => {
       if (mountedRef) {
         setL2Book(data)
         setIsLoading(false)
@@ -106,9 +106,9 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
           {
             coin: selectedAsset,
             nSigFigs: nSigFigs
-              ? (Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'])
+              ? (Math.min(nSigFigs, 5) as hl.WsL2BookParameters['nSigFigs'])
               : null,
-            mantissa: mantissa as EventL2BookParameters['mantissa']
+            mantissa: mantissa as hl.WsL2BookParameters['mantissa']
           },
           handler
         )
@@ -165,8 +165,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
-  const processOrders = (orders: BookLevel[]) => {
-    if (!orders || orders.length === 0) {
+  const processOrders = (orders: hl.WsL2BookEvent['levels']) => {
+    if (!orders) {
       return []
     }
 

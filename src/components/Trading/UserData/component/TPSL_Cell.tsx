@@ -3,7 +3,8 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
-import { ApiRequestError, AssetPosition } from '@nktkas/hyperliquid'
+import { ApiRequestError } from '@nktkas/hyperliquid/api/exchange'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import {
   Dialog,
   DialogContent,
@@ -32,13 +33,13 @@ import useUserStore from '@/store/userStore'
 
 interface TPSLCellProps {
   asset: string
-  tpslAsset: AssetPosition['position']
+  tpslAsset: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
   isOpen: boolean
   onClose: () => void
 }
 
 function calculatePnL(
-  position: AssetPosition['position'],
+  position: WebData2Event['clearinghouseState']['assetPositions'][number]['position'],
   triggerPrice: number
 ): { profitPercentage: number; profitAmount: number } {
   const {
@@ -58,7 +59,7 @@ function calculatePnL(
 }
 
 function calculateTriggerFromPercentage(
-  position: AssetPosition['position'],
+  position: WebData2Event['clearinghouseState']['assetPositions'][number]['position'],
   profitPercentage: number
 ): { triggerPrice: number; profitAmount: number } {
   const {
@@ -75,7 +76,7 @@ function calculateTriggerFromPercentage(
 }
 
 function calculateTriggerFromAmount(
-  position: AssetPosition['position'],
+  position: WebData2Event['clearinghouseState']['assetPositions'][number]['position'],
   profitAmount: number
 ): { triggerPrice: number; profitPercentage: number } {
   const entryPx = position.entryPx

@@ -3,7 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
-import { AssetPosition } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useTranslate } from '@tolgee/react'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -48,7 +48,9 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
+  const [position, setPosition] = useState<
+    WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
+  >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()

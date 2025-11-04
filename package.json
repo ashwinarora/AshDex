@@ -21,7 +21,7 @@
     "@msgpack/msgpack": "^3.1.1",
     "@mysten/sui": "^1.29.1",
     "@next/third-parties": "^15.3.1",
-    "@nktkas/hyperliquid": "^0.22.1",
+    "@nktkas/hyperliquid": "^0.25.8",
     "@noble/curves": "^2.0.0",
     "@noble/hashes": "^2.0.0",
     "@prisma/client": "^6.14.0",

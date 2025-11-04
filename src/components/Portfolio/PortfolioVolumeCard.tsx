@@ -18,20 +18,20 @@ import {
   createColumnHelper,
   SortingState
 } from '@tanstack/react-table'
-import { UserFees } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
 import { formatWithKMB } from '@/utils/format'
 import { useTranslate } from '@tolgee/react'
+import * as hl from '@nktkas/hyperliquid'
 
 type PortfolioVolumeCardProps = {
-  userFeeData: UserFees | undefined
+  userFeeData: hl.UserFeesResponse | undefined
   userFeeLoading: boolean
   isRTL: boolean
 }
 
 const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVolumeCardProps) => {
   const { t } = useTranslate()
-  const columnHelper = useMemo(() => createColumnHelper<UserFees['dailyUserVlm'][number]>(), [])
+  const columnHelper = useMemo(() => createColumnHelper<hl.UserFeesResponse['dailyUserVlm'][number]>(), [])
   const [sorting, setSorting] = useState<SortingState>([])
   const columns = useMemo(
     () => [
@@ -86,7 +86,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
   )
 
   const table = useReactTable({
-    data: userFeeData ? userFeeData?.dailyUserVlm : [],
+    data: userFeeData ? userFeeData.dailyUserVlm : [],
     columns,
     state: { sorting },
     onSortingChange: setSorting,
@@ -134,7 +134,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center h-full w-full gap-2">
-            {userFeeData?.dailyUserVlm && userFeeData?.dailyUserVlm?.length > 0 && (
+            {userFeeData?.dailyUserVlm && userFeeData.dailyUserVlm?.length > 0 && (
               <Table>
                 <TableHeader>
                   {table.getHeaderGroups().map((headerGroup) => (

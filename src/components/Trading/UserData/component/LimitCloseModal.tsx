@@ -4,7 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import { IconChevronDown, IconRefresh } from '@tabler/icons-react'
-import { AssetPosition } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useTranslate } from '@tolgee/react'
 import {
   Dialog,
@@ -49,7 +49,9 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [price, setPrice] = useState<string>('')
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const [position, setPosition] = useState<AssetPosition['position'] | null>(null)
+  const [position, setPosition] = useState<
+    WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
+  >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()

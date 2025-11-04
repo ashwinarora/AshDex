@@ -18,7 +18,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/common/ReactiveText'
-import { FrontendOrder, OrderStatus } from '@nktkas/hyperliquid'
+import type { HistoricalOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Table,
   TableBody,
@@ -59,7 +59,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     setMounted(true)
   }, [])
 
-  const { data: orderHistory = [] } = useQuery<OrderStatus<FrontendOrder>[]>({
+  const { data: orderHistory = [] } = useQuery<HistoricalOrdersResponse>({
     queryKey: ['orderHistory', address],
     queryFn: async () => {
       if (!sdkInfoClient || !address) return []
@@ -79,7 +79,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   }, [orderHistory])
 
   const columnHelper = createColumnHelper<
-    OrderStatus<FrontendOrder> & { meta?: { label: string } }
+    HistoricalOrdersResponse[number] & { meta?: { label: string } }
   >()
 
   const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {

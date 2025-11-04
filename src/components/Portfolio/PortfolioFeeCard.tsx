@@ -7,7 +7,6 @@ import {
 import { Button } from '../ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Skeleton } from '../ui/skeleton'
-import { UserFees } from '@nktkas/hyperliquid'
 import { Dispatch, SetStateAction, useState } from 'react'
 import {
   Dialog,
@@ -24,6 +23,7 @@ import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { formatWithKMB } from '@/utils/format'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import * as hl from '@nktkas/hyperliquid'
 
 const PortfolioFeeCard = ({
   userFeeData,
@@ -31,7 +31,7 @@ const PortfolioFeeCard = ({
   setSelectedView,
   isRTL
 }: {
-  userFeeData: UserFees | undefined
+  userFeeData: hl.UserFeesResponse | undefined
   selectedView: { [key: string]: 'perps' | 'all' | 'day' | 'month' | 'week' | 'alltime' }
   setSelectedView: Dispatch<
     SetStateAction<{

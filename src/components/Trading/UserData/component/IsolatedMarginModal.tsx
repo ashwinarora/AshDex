@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { AssetPosition } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import {
   Dialog,
@@ -26,7 +26,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
-  asset: AssetPosition['position']
+  asset: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
