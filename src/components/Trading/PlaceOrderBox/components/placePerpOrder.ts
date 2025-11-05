@@ -140,12 +140,7 @@ export const placePerpOrder = async ({
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: WebData2Event['openOrders'] = []
-    if ('error' in status) {
-      console.log('Error placing perp order:', status.error)
-      toast.error(status.error, {
-        id: toastId
-      })
-    } else if ('filled' in status) {
+    if ('filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'
       const assetName = selectedAsset.split('-')[0]

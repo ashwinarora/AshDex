@@ -165,7 +165,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
-  const processOrders = (orders: hl.WsL2BookEvent['levels']) => {
+  const processOrders = (orders: hl.WsL2BookEvent['levels'][number]) => {
     if (!orders) {
       return []
     }

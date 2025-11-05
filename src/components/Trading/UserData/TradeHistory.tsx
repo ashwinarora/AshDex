@@ -26,11 +26,12 @@ import {
 import { cn } from '@/lib/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { Fill } from '@nktkas/hyperliquid'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import * as hl from '@nktkas/hyperliquid'
+
 
 type ColumnType = {
   key: string
@@ -43,7 +44,7 @@ type RenderRowProps = {
   columns: ColumnType[]
 }
 
-const columnHelper = createColumnHelper<Fill>()
+const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
@@ -62,7 +63,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     setMounted(true)
   }, [])
 
-  const { data: tradeHistory } = useQuery<Fill[]>({
+  const { data: tradeHistory } = useQuery({
     queryKey: ['tradeHistory', address],
     queryFn: async () => {
       if (!address) return []

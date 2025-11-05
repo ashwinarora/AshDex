@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "prettier --write . && next lint",
-    "prepare": "husky"
+    "prepare": "husky",
+    "tsc": "tsc --noEmit"
   },
   "dependencies": {
     "@ag-grid-community/client-side-row-model": "^32.3.3",
