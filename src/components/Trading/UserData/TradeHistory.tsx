@@ -32,7 +32,6 @@ import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import * as hl from '@nktkas/hyperliquid'
 
-
 type ColumnType = {
   key: string
   label: string
