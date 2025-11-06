@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import Tabs from '@/components/common/Tabs'
+import { Tabs, TabsTrigger, TabsList } from '@/components/ui/tabs'
 import {
   IconCheck,
   IconClipboardCheckFilled,
@@ -9,20 +9,26 @@ import {
   IconEdit,
   IconX
 } from '@tabler/icons-react'
-import Modal from '@/components/common/Modal'
-import CustomSelector from '@/components/common/CustomSelector'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { truncateAddress } from '@/utils/utils'
-import { useComponentRendered } from '@/hooks/useComponentRendered'
-import Avatar from '@/components/common/Avatar'
-import Skeleton from '@/components/common/Skeleton'
+// import { useComponentRendered } from '@/hooks/useComponentRendered'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
 import { useAccount } from 'wagmi'
 import { useRouter } from 'next/navigation'
-import Switch from '@/components/common/Switch'
-import RadioGroup, { RadioGroupItem } from '@/components/common/RadioGroup'
+import { Switch } from '@/components/ui/switch'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { useLanguageSettings, useUserPreferences } from '@/store/userStore'
 // import { useTolgee } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
 
 // Update interface for user info (keeping for username/avatar parts that will use TanStack Query)
 interface UserInfo {
@@ -38,7 +44,7 @@ interface UserInfo {
 const SettingsPage = () => {
   const router = useRouter()
   const { address, isConnected } = useAccount()
-  const isRendered = useComponentRendered()
+  // const isRendered = useComponentRendered()
 
   // const tolgee = useTolgee(['language'])
   // const language = tolgee.getLanguage()
@@ -125,7 +131,7 @@ const SettingsPage = () => {
     }
   }, [isConnected, router])
 
-  if (!isRendered) return null
+  // if (!isRendered) return null
 
   return (
     isConnected && (
@@ -133,16 +139,24 @@ const SettingsPage = () => {
         <div className="max-w-7xl mx-auto nexon-card p-4 max-sm:p-2">
           <div className="flex flex-col sm:flex-row justify-between sm:justify-start items-center sm:items-start max-md:items-start mb-4 sm:mb-4 gap-4">
             <Tabs
-              tabs={['Account', 'Notifications']}
-              onTabSelect={(tab) => {
-                setSelectedTab(tab)
+              value={selectedTab}
+              onValueChange={(value) => {
+                setSelectedTab(value)
               }}
-            />
+            >
+              <TabsList>
+                <TabsTrigger value="Account">Account</TabsTrigger>
+                <TabsTrigger value="Notifications">Notifications</TabsTrigger>
+              </TabsList>
+            </Tabs>
           </div>
           {selectedTab === 'Account' && (
             <div className="py-4">
               <div className="flex items-center mb-6 gap-2">
-                <Avatar avatar={String(userInfo.avatar)} />
+                <Avatar>
+                  <AvatarImage src={String(userInfo.avatar)} />
+                  <AvatarFallback>{String(userInfo.avatar)}</AvatarFallback>
+                </Avatar>
                 <div>
                   <div className="text-lg sm:text-xl font-semibold flex items-center gap-2">
                     {userInfo?.nickname ?? <Skeleton className="w-20 h-4" />}
@@ -202,27 +216,34 @@ const SettingsPage = () => {
               </div>
               <div className="w-full sm:w-max">
                 <p className="text-sm font-medium text-[#8B8BA0] mb-2">Language</p>
-                <CustomSelector
-                  options={[
-                    {
-                      value: 'en-US',
-                      label: 'English',
-                      flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/US.svg'
-                    },
-                    {
-                      value: 'ar-SA',
-                      label: 'العربية',
-                      flag: 'http://purecatamphetamine.github.io/country-flag-icons/3x2/SA.svg'
-                    }
-                  ]}
-                  selectedValue={preferredLanguage}
-                  onChange={(value) => {
-                    setPreferredLanguage(value as 'en-US' | 'ar-SA')
-                    setLanguage(value as 'en-US' | 'ar-SA')
-                  }}
-                  className="nexon-card nexon-rounded-lg cursor-pointer"
-                  isPadding={true}
-                />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="nexon-card nexon-rounded-lg cursor-pointer"
+                    >
+                      {preferredLanguage}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setPreferredLanguage('en-US')
+                        setLanguage('en-US')
+                      }}
+                    >
+                      English
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => {
+                        setPreferredLanguage('ar-SA')
+                        setLanguage('ar-SA')
+                      }}
+                    >
+                      العربية
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
               <div className="hidden">
                 <p className="text-sm text-[#8B8BA0] mb-2">Session Management</p>
@@ -254,12 +275,13 @@ const SettingsPage = () => {
                     {Object.values(notificationSettings).map((notification) => (
                       <Switch
                         key={notification.id}
-                        label={notification.label}
-                        isChecked={notification.value}
-                        setIsChecked={(value) => {
+                        checked={notification.value}
+                        onCheckedChange={(value) => {
                           updateNotificationSetting(notification.id, value)
                         }}
-                      />
+                      >
+                        {notification.label}
+                      </Switch>
                     ))}
                   </div>
                 </div>
@@ -272,36 +294,15 @@ const SettingsPage = () => {
                   <RadioGroup
                     className="grid grid-cols-4 max-sm:grid-cols-2 max-sm:gap-2 gap-4"
                     name="Popup"
-                    label="Popup Position"
                     value={userPreferences.popup_position.toString()}
-                    onChange={(value) => {
+                    onValueChange={(value) => {
                       setPopupPosition(parseInt(value))
                     }}
                   >
-                    <RadioGroupItem
-                      isBackground={true}
-                      className="order-1 max-sm:order-3"
-                      value="0"
-                      label="Top Left"
-                    />
-                    <RadioGroupItem
-                      className="order-2 max-sm:order-4"
-                      value="1"
-                      label="Top Right"
-                      isBackground={true}
-                    />
-                    <RadioGroupItem
-                      className="order-3 max-sm:order-1"
-                      value="2"
-                      label="Bottom Right"
-                      isBackground={true}
-                    />
-                    <RadioGroupItem
-                      className="order-4 max-sm:order-2"
-                      value="3"
-                      label="Bottom Left"
-                      isBackground={true}
-                    />
+                    <RadioGroupItem className="order-1 max-sm:order-3" value="0" />
+                    <RadioGroupItem className="order-2 max-sm:order-4" value="1" />
+                    <RadioGroupItem className="order-3 max-sm:order-1" value="2" />
+                    <RadioGroupItem className="order-4 max-sm:order-2" value="3" />
                   </RadioGroup>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -309,10 +310,9 @@ const SettingsPage = () => {
                     Sound Settings
                   </label>
                   <Switch
-                    label="Enable Sound on Important Events"
-                    isChecked={userPreferences.sound_enabled}
-                    setIsChecked={(value) => {
-                      setSoundEnabled(value)
+                    checked={userPreferences.sound_enabled}
+                    onCheckedChange={(value) => {
+                      setSoundEnabled(value as boolean)
                     }}
                   />
                 </div>
@@ -344,75 +344,83 @@ const EditNicknameModal = ({
   }, [userInfo])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-secondary relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 rounded-2xl border-2 border-white/5 backdrop-blur-2xl  flex items-center justify-center  "
-      >
-        <div className="w-96 rounded-xl  p-4 shadow-xl text-white gap-4 flex flex-col">
-          <button
-            onClick={onClose}
-            className="w-8 h-8 float-right ml-auto text-white/70hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
-          >
-            <IconX className="w-4 h-4" />
-          </button>
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="bg-secondary relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 rounded-2xl border-2 border-white/5 backdrop-blur-2xl  flex items-center justify-center  "
+        >
+          <div className="w-96 rounded-xl  p-4 shadow-xl text-white gap-4 flex flex-col">
+            <button
+              onClick={onClose}
+              className="w-8 h-8 float-right ml-auto text-white/70hover:text-white bg-white/10 backdrop-blur-2xl rounded-full p-2 text-sm cursor-pointer"
+            >
+              <IconX className="w-4 h-4" />
+            </button>
 
-          <div className="flex items-center gap-3">
-            <Avatar avatar={String(avatar)} />
-            <div className="bg-white/10 border-2 border-white/5 backdrop-blur-2xl rounded-lg p-2 flex items-center gap-2 w-full">
-              <input
-                type="text"
-                placeholder="nickname"
-                value={nickname}
-                onChange={(e) => setNickname(e.target.value)}
-                className="text-white text-sm placeholder-gray-400 w-full outline-none border-none"
-              />
-              <button className="text-white/70hover:text-white">
-                <IconEdit className="h-4 w-4" />
+            <div className="flex items-center gap-3">
+              <Avatar>
+                <AvatarImage src={String(avatar)} />
+                <AvatarFallback>{String(avatar)}</AvatarFallback>
+              </Avatar>
+              <div className="bg-white/10 border-2 border-white/5 backdrop-blur-2xl rounded-lg p-2 flex items-center gap-2 w-full">
+                <input
+                  type="text"
+                  placeholder="nickname"
+                  value={nickname}
+                  onChange={(e) => setNickname(e.target.value)}
+                  className="text-white text-sm placeholder-gray-400 w-full outline-none border-none"
+                />
+                <button className="text-white/70hover:text-white">
+                  <IconEdit className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto  bg-white/10 p-2 rounded-lg">
+              {Array.from({ length: 45 }).map((_, index) => (
+                <div
+                  key={index}
+                  className={`bg-white/10 p-2 rounded-lg hover:bg-white/10 cursor-pointer border ${avatar === index ? 'border-primary' : ' border-transparent'}`}
+                  onClick={() => setAvatar(index)}
+                >
+                  <div className="w-14 h-14  bg-gradient-to-br from-pink-500 via-red-400 to-yellow-300  relative rounded-full  ">
+                    <Avatar>
+                      <AvatarImage src={String(index)} />
+                      <AvatarFallback>{String(index)}</AvatarFallback>
+                    </Avatar>
+                    {avatar === index && (
+                      <IconCheck className="w-4 h-4 bg-primary rounded-full p-1 absolute bottom-0   " />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="flex items-center justify-center gap-2">
+              <button
+                className="nexon-button nexon-ghost flex items-center justify-center text-[#8B8BA0] hover:text-white w-full "
+                onClick={onClose}
+              >
+                Cancel
+              </button>
+              <button
+                className={`nexon-button flex items-center justify-center nexon-primary w-full`}
+                disabled={
+                  nickname === userInfo.nickname && String(avatar) === String(userInfo.avatar)
+                }
+                onClick={() => {
+                  // TODO: This will be handled by TanStack Query
+                  toast.success('Settings updated successfully')
+                  onClose()
+                }}
+              >
+                Save
               </button>
             </div>
           </div>
-
-          <div className="grid grid-cols-4 gap-2 max-h-72 overflow-y-auto  bg-white/10 p-2 rounded-lg">
-            {Array.from({ length: 45 }).map((_, index) => (
-              <div
-                key={index}
-                className={`bg-white/10 p-2 rounded-lg hover:bg-white/10 cursor-pointer border ${avatar === index ? 'border-primary' : ' border-transparent'}`}
-                onClick={() => setAvatar(index)}
-              >
-                <div className="w-14 h-14  bg-gradient-to-br from-pink-500 via-red-400 to-yellow-300  relative rounded-full  ">
-                  <Avatar avatar={index.toString()} />
-                  {avatar === index && (
-                    <IconCheck className="w-4 h-4 bg-primary rounded-full p-1 absolute bottom-0   " />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center justify-center gap-2">
-            <button
-              className="nexon-button nexon-ghost flex items-center justify-center text-[#8B8BA0] hover:text-white w-full "
-              onClick={onClose}
-            >
-              Cancel
-            </button>
-            <button
-              className={`nexon-button flex items-center justify-center nexon-primary w-full`}
-              disabled={
-                nickname === userInfo.nickname && String(avatar) === String(userInfo.avatar)
-              }
-              onClick={() => {
-                // TODO: This will be handled by TanStack Query
-                toast.success('Settings updated successfully')
-                onClose()
-              }}
-            >
-              Save
-            </button>
-          </div>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }
 

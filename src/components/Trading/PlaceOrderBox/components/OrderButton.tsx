@@ -124,6 +124,7 @@ const OrderButton = ({
     if (isInvalid) return
     const adjustedBuilderFee = getAdjustedBuilderFee(isMarket)
     if (isSpot) {
+      if (!spotMeta) return
       await placeSpotOrder({
         sdkL1ActionClient,
         spotMeta,

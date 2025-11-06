@@ -1,6 +1,7 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, TOOLTIP_CONTENTS } from './constants'
-import { PerpsUniverse, SpotAssetCtx, SpotMeta } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -56,7 +57,10 @@ export function splitSignature(signature: Hex) {
   return { r, s, v }
 }
 
-export const getPerpsUniverseIndex = (universe: PerpsUniverse[], asset: string): number => {
+export const getPerpsUniverseIndex = (
+  universe: WebData2Event['meta']['universe'],
+  asset: string
+): number => {
   return universe.findIndex((item) => item.name === asset)
 }
 
@@ -66,8 +70,8 @@ export const getSpotAssetContext = ({
   spotAssetContext
 }: {
   asset: string
-  spotMeta: SpotMeta
-  spotAssetContext: SpotAssetCtx[]
+  spotMeta: SpotMetaResponse
+  spotAssetContext: WebData2Event['spotAssetCtxs']
 }) => {
   const meta = spotMeta.universe.find((item) => item.name === asset)
   const context = spotAssetContext.find((item) => item.coin === asset)
@@ -138,6 +142,12 @@ export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOpti
 
   const fracKeep = Math.min(allowedDecimals, decPart.length)
   return fracKeep > 0 ? `${intPart}.${decPart.slice(0, fracKeep)}` : intPart
+}
+
+export function toFixedDown(num: number, decimals = 0) {
+  const factor = 10 ** decimals
+  const floored = Math.floor(num * factor) / factor // round toward -Infinity
+  return floored.toFixed(decimals) // string with trailing zeros
 }
 
 export function getLeverageTicks(maxLeverage: number, t: number): number[] {

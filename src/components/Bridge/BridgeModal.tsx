@@ -49,7 +49,7 @@ import { useHandleSolanaTransfer } from './SolanaButton'
 
 import { ISupportedWallet } from '@creit.tech/stellar-wallets-kit'
 import { useWallet as useSuiWallet, ConnectModal as SuiConnectModal } from '@suiet/wallet-kit'
-import Avatar from '../common/Avatar'
+// import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar'
 import StellarProvider from './StellarProvider'
 import { Dialog, DialogContent, DialogHeader, DialogTrigger } from '../ui/dialog'
 import { Separator } from '../ui/separator'
@@ -1058,7 +1058,11 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 if (isTronConnected) {
                   return (
                     <Badge>
-                      <Avatar avatar={'1'} className="w-4 h-4" /> {tronAddress?.slice(0, 6)}...
+                      {/* <Avatar>
+                        <AvatarImage src={'1'} />
+                        <AvatarFallback>1</AvatarFallback>
+                      </Avatar>  */}
+                      {tronAddress?.slice(0, 6)}...
                       {tronAddress?.slice(-4)}
                       <button
                         onClick={disconnectTron}
@@ -1074,7 +1078,10 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 if (isSolanaConnected) {
                   return (
                     <Badge>
-                      <Avatar avatar={'1'} className="w-4 h-4" />
+                      {/* <Avatar>
+                        <AvatarImage src={'1'} />
+                        <AvatarFallback>1</AvatarFallback>
+                      </Avatar> */}
                       {solanaAddress && formatSolanaAddress(solanaAddress.toString())}
                       <button
                         onClick={() => disconnectSolana()}
@@ -1090,7 +1097,11 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                 if (isSuiConnected) {
                   return (
                     <Badge>
-                      <Avatar avatar={'1'} className="w-4 h-4" /> {suiAddress?.address.slice(0, 6)}
+                      {/* <Avatar>
+                        <AvatarImage src={'1'} />
+                        <AvatarFallback>1</AvatarFallback>
+                      </Avatar>  */}
+                      {suiAddress?.address.slice(0, 6)}
                       ...{suiAddress?.address.slice(-4)}
                       <button
                         onClick={() => disconnectSui()}
@@ -1107,7 +1118,10 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                   <Badge>
                     {stellarAddress ? (
                       <>
-                        <Avatar avatar={'1'} className="w-4 h-4" />
+                        {/* <Avatar>
+                          <AvatarImage src={'1'} />
+                          <AvatarFallback>1</AvatarFallback>
+                        </Avatar> */}
                         {stellarAddress?.slice(0, 6)}...{stellarAddress?.slice(-4)}
                         <button className="text-gray-400 hover:text-red-300 cursor-pointer">
                           <IconX className="w-4 h-4" />
@@ -1124,7 +1138,10 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
                     onClick={() => disconnect()}
                     className="bg-background hover:bg-red/10 cursor-pointer hover:text-red flex items-center gap-2 !p-1 rounded-md text-white/70 !text-xs"
                   >
-                    <Avatar avatar={'1'} className="w-4 h-4" />
+                    {/* <Avatar>
+                      <AvatarImage src={'1'} />
+                      <AvatarFallback>1</AvatarFallback>
+                    </Avatar> */}
                     {address?.slice(0, 6)}...
                     {address?.slice(-4)}
                     <IconX className="size-3" />

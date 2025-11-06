@@ -2,10 +2,10 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getSpotAssetContext } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
-import Skeleton from '../../common/Skeleton'
+import { Skeleton } from '../../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import ReactiveText from '../../common/ReactiveText'
+import ReactiveText from '../../reactive-text'
 import SpotTable from './SpotTable'
 import { Separator } from '@/components/ui/separator'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -105,12 +105,12 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             type="currency"
           />
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       },
       {
         label: t('24h Change'),
-        value: changeString ?? <Skeleton size="md" />,
+        value: changeString ?? <Skeleton />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
@@ -123,7 +123,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             type="currency"
           />
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       },
       {
@@ -138,7 +138,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             type="currency"
           />
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       },
       {
@@ -155,7 +155,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             <IconExternalLink className="w-4 h-4 text-white/70 group-hover:text-primary" />
           </div>
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       }
     ]

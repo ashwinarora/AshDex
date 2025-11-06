@@ -7,9 +7,9 @@ import { IconTilde, IconTrendingDown3, IconTrendingUp3 } from '@tabler/icons-rea
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useQuery } from '@tanstack/react-query'
-import { Fill } from '@nktkas/hyperliquid'
 import { useAccount } from 'wagmi'
 import { formatWithKMB } from '@/utils/format'
+import * as hl from '@nktkas/hyperliquid'
 
 const fillDays = (
   filteredCalendarData: { time: string; value: string }[],
@@ -55,12 +55,12 @@ export function PortfolioCalendar({
     }))
   )
 
-  const { data: tradeHistory } = useQuery<Fill[]>({
+  const { data: tradeHistory } = useQuery<hl.UserFillsResponse>({
     queryKey: ['tradeHistory', address],
     queryFn: async () => {
       if (!address) return []
       if (!sdkInfoClient) return []
-      const response = await sdkInfoClient?.userFills({
+      const response = await sdkInfoClient.userFills({
         user: address
       })
       return response

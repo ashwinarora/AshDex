@@ -56,8 +56,8 @@ const getIntervalMinutes = (res: IntervalType): number => {
 
 const convertToHyperliquidInterval = (
   resolution: IntervalType
-): hl.EventCandleParameters['interval'] => {
-  const intervalMap: Record<IntervalType, hl.EventCandleParameters['interval']> = {
+): hl.WsCandleParameters['interval'] => {
+  const intervalMap: Record<IntervalType, hl.WsCandleParameters['interval']> = {
     '1': '1m',
     '3': '3m',
     '5': '5m',
@@ -207,13 +207,13 @@ const TradingViewChart = ({
 
           const rawCandles = await sdkInfoClient.candleSnapshot({
             coin: currentAsset,
-            interval: interval as hl.EventCandleParameters['interval'],
+            interval: interval as hl.WsCandleParameters['interval'],
             startTime: from * 1000, // Keep in seconds for Hyperliquid API
             endTime: to * 1000 // Keep in seconds for Hyperliquid API
           })
 
           // Process candles properly - TradingView expects timestamps in SECONDS
-          const bars = rawCandles.map((bar: hl.Candle) => ({
+          const bars = rawCandles.map((bar: hl.WsCandleEvent) => ({
             time: Number(Math.floor(Number(bar.t))),
             open: parseFloat(bar.o.toString()),
             high: parseFloat(bar.h.toString()),
@@ -277,10 +277,10 @@ const TradingViewChart = ({
 
           const interval = convertToHyperliquidInterval(
             resolution
-          ) as hl.EventCandleParameters['interval']
+          ) as hl.WsCandleParameters['interval']
           let lastBar: BarData | undefined
 
-          const candleHandler = (payload: hl.Candle[] | hl.Candle) => {
+          const candleHandler = (payload: hl.WsCandleEvent[] | hl.WsCandleEvent) => {
             const candles = Array.isArray(payload) ? payload : [payload]
 
             candles.forEach((c) => {

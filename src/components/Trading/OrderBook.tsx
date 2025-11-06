@@ -9,7 +9,7 @@ import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { generatePrecisionLabels } from '@/utils/utils'
 import { cn } from '@/lib/utils'
-import ReactiveText from '../common/ReactiveText'
+import ReactiveText from '../reactive-text'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import {
   DropdownMenu,
@@ -21,12 +21,13 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { Skeleton } from '../ui/skeleton'
 import { IconChevronDown, IconChevronUp } from '@tabler/icons-react'
-import { EventL2BookParameters, Book, BookLevel, type Subscription } from '@nktkas/hyperliquid'
+import * as hl from '@nktkas/hyperliquid'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
 import { useTranslate } from '@tolgee/react'
+import { useTradeUIStore } from '@/store/TradeUIStore'
 
 interface IOrderBookProps {
   selectedAsset: string
@@ -41,7 +42,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       allMids: state.allMids
     }))
   )
-  const [l2Book, setL2Book] = useState<Book>()
+  const [l2Book, setL2Book] = useState<hl.L2BookResponse>()
   const { isMobile, isTablet } = useScreenSize()
   const { t } = useTranslate()
   const [isLoading, setIsLoading] = useState(true)
@@ -62,7 +63,15 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
-  const subRef = useRef<Subscription | null>(null)
+  const subRef = useRef<hl.Subscription | null>(null)
+  const { setActiveOrderTab, setRequestedLimitPrice, setRequestedAssetAmount } = useTradeUIStore()
+
+  const handleOrderRowClick = (price: string, size: string) => {
+    if (!price) return
+    setRequestedLimitPrice(price)
+    if (size) setRequestedAssetAmount(size)
+    setActiveOrderTab('LIMIT')
+  }
 
   useEffect(() => {
     if (!sdkSubscriptionClient || !selectedAsset) return
@@ -72,7 +81,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
 
     const nSigFigs = selectedPrecision.value === null ? null : Number(selectedPrecision.value)
     let mantissa = null
-    const handler = (data: Book) => {
+    const handler = (data: hl.L2BookResponse) => {
       if (mountedRef) {
         setL2Book(data)
         setIsLoading(false)
@@ -97,9 +106,9 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
           {
             coin: selectedAsset,
             nSigFigs: nSigFigs
-              ? (Math.min(nSigFigs, 5) as EventL2BookParameters['nSigFigs'])
+              ? (Math.min(nSigFigs, 5) as hl.WsL2BookParameters['nSigFigs'])
               : null,
-            mantissa: mantissa as EventL2BookParameters['mantissa']
+            mantissa: mantissa as hl.WsL2BookParameters['mantissa']
           },
           handler
         )
@@ -156,8 +165,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
-  const processOrders = (orders: BookLevel[]) => {
-    if (!orders || orders.length === 0) {
+  const processOrders = (orders: hl.WsL2BookEvent['levels'][number]) => {
+    if (!orders) {
       return []
     }
 
@@ -326,7 +335,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
         <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
           <div className="flex flex-col gap-1 w-full flex-1 h-full">
             {barData?.buys.map((buy, index) => (
-              <div className="relative h-full w-full py-1 px-2 flex items-center" key={index}>
+              <div
+                className="relative h-full w-full py-1 px-2 flex items-center cursor-pointer"
+                key={index}
+                onClick={() => handleOrderRowClick(String(buy.px), String(buy.sz))}
+              >
                 <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                   {/* <p className="font-medium text-xs">{buy.sz}</p> */}
                   {showPriceInUSD ? (
@@ -362,7 +375,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             {barData?.sells
               .sort((a, b) => Number(a.px) - Number(b.px))
               .map((sell, index) => (
-                <div className="relative  h-full w-full py-1 px-2 flex items-center" key={index}>
+                <div
+                  className="relative  h-full w-full py-1 px-2 flex items-center cursor-pointer"
+                  key={index}
+                  onClick={() => handleOrderRowClick(String(sell.px), String(sell.sz))}
+                >
                   <div className="flex items-center z-10 w-full justify-between text-sm text-white">
                     <p className="font-medium text-xs text-start flex-1 text-red">{sell.px}</p>
                     {/* <p className="font-medium text-xs">{sell.sz}</p> */}
@@ -541,8 +558,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
               <div
-                className={clsx('relative h-full w-full py-1 px-2 flex items-center')}
+                className={clsx(
+                  'relative h-full w-full py-1 px-2 flex items-center cursor-pointer'
+                )}
                 key={index}
+                onClick={() => handleOrderRowClick(String(sell.px), String(sell.sz))}
               >
                 <div
                   className={clsx(
@@ -558,7 +578,16 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                   >
                     {sell.px}
                   </p>
-                  <p className="font-medium text-xs">{sell.sz}</p>
+                  {showPriceInUSD ? (
+                    <ReactiveText
+                      precision={3}
+                      type="number"
+                      className="font-medium text-xs"
+                      value={Number(sell.px) * Number(sell.sz)}
+                    />
+                  ) : (
+                    <p className="font-medium text-xs">{sell.sz}</p>
+                  )}
                   {showPriceInUSD ? (
                     <ReactiveText
                       precision={3}
@@ -618,7 +647,11 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             </p>
           </div>
           {barData?.buys.map((buy, index) => (
-            <div className={clsx('relative h-full w-full py-1 px-2 flex items-center')} key={index}>
+            <div
+              className={clsx('relative h-full w-full py-1 px-2 flex items-center cursor-pointer')}
+              key={index}
+              onClick={() => handleOrderRowClick(String(buy.px), String(buy.sz))}
+            >
               <div
                 className={clsx(
                   'flex items-center z-10 w-full justify-between text-sm text-white',
@@ -633,7 +666,16 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 >
                   {buy.px}
                 </p>
-                <p className="font-medium text-xs">{buy.sz}</p>
+                {showPriceInUSD ? (
+                  <ReactiveText
+                    precision={0}
+                    type="number"
+                    className="font-medium text-xs"
+                    value={Number(buy.px) * Number(buy.sz)}
+                  />
+                ) : (
+                  <p className="font-medium text-xs">{buy.sz}</p>
+                )}
                 {showPriceInUSD ? (
                   <ReactiveText
                     precision={0}

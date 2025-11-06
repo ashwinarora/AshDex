@@ -1,4 +1,6 @@
-import { ExchangeClient, FrontendOrder, SpotMeta } from '@nktkas/hyperliquid'
+import { ExchangeClient } from '@nktkas/hyperliquid'
+import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 
@@ -15,7 +17,7 @@ export const placeSpotOrder = async ({
   pushNewOpenOrders
 }: {
   sdkL1ActionClient: ExchangeClient | null
-  spotMeta?: SpotMeta
+  spotMeta: SpotMetaResponse
   selectedAsset: string
   isBuy: boolean
   limitPrice: string
@@ -23,9 +25,9 @@ export const placeSpotOrder = async ({
   isPostOnly: boolean
   adjustedBuilderFee: number
   spotKeyToName: Map<string, string>
-  pushNewOpenOrders: (order: FrontendOrder[]) => void
+  pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
 }) => {
-  if (!spotMeta?.tokens.length) return
+  if (!(spotMeta as SpotMetaResponse | undefined)?.tokens?.length) return
   if (!sdkL1ActionClient) return
   const assetIndex = spotMeta.universe.find((asset) => asset.name === selectedAsset)?.index
   if (assetIndex === -1 || assetIndex === undefined) return
@@ -54,11 +56,7 @@ export const placeSpotOrder = async ({
     })
     console.log(res)
     const status = res.response.data.statuses[0]
-    if ('error' in status) {
-      toast.error(status.error, {
-        id: toastId
-      })
-    } else if ('filled' in status) {
+    if ('filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'bought' : 'sold'
       const assetName = selectedAsset.split('-')[0]
