@@ -12,7 +12,7 @@ import {
 } from '@tabler/icons-react'
 import { useMemo, useState } from 'react'
 import { useFavorites } from '@/store/FavoritesStore'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import {
   useReactTable,
   getCoreRowModel,

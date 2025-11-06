@@ -6,7 +6,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { hyperliquidAxios } from '@/config/axios'
-import { Referral } from '@nktkas/hyperliquid'
+import * as hl from '@nktkas/hyperliquid'
 
 export const useNexonReferral = () => {
   const { clearingHouseState, sdkL1ActionClient } = useHyperliquidStore(
@@ -19,7 +19,7 @@ export const useNexonReferral = () => {
   const { isAgentApproved } = useAgentApproval()
   const [isReferralSet, setIsReferralSet] = useState(false)
 
-  const { data: referralData } = useQuery<Referral>({
+  const { data: referralData } = useQuery<hl.ReferralResponse>({
     queryKey: ['referralsDetails', address],
     queryFn: async () => {
       const response = await hyperliquidAxios.post('/info', {

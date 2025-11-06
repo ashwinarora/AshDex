@@ -1,7 +1,7 @@
 import FooterCompact from '@/components/FooterCompact'
 import PortfolioHeader from '@/components/Portfolio/PortfolioHeader'
 import PortfolioStats from '@/components/Portfolio/PortfolioStats'
-import UserData from '@/components/Trading/UserData/UserData'
+import UserData from '@/components/UserData/UserData'
 
 const PortfolioPage = () => {
   return (

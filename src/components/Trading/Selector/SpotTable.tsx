@@ -18,7 +18,7 @@ import {
   IconTriangleInvertedFilled
 } from '@tabler/icons-react'
 import { useFavorites } from '@/store/FavoritesStore'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import {
   Table,
   TableBody,

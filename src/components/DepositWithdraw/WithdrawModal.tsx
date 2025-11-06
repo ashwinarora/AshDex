@@ -3,7 +3,6 @@ import { useAccount, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { isTestnet } from '@/utils/constants'
-import Loading from '../common/Loading'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
@@ -15,6 +14,7 @@ import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
+import Loading from '../loading-screen'
 
 interface WithdrawModalProps {
   isOpen: boolean

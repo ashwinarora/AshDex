@@ -1,7 +1,6 @@
 import { ChartConfig, ChartContainer, ChartTooltip } from '@/components/ui/chart'
 
 import { Area, AreaChart, XAxis } from 'recharts'
-import { PortfolioPeriods } from '@nktkas/hyperliquid'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -18,6 +17,7 @@ import { Skeleton } from '../ui/skeleton'
 import { formatWithKMB } from '@/utils/format'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
+import * as hl from '@nktkas/hyperliquid'
 
 const chartConfig = {
   accountValue: {
@@ -29,7 +29,7 @@ const PortfolioChart = ({
   portfolioQuery,
   isRTL
 }: {
-  portfolioQuery: UseQueryResult<PortfolioPeriods | undefined, Error>
+  portfolioQuery: UseQueryResult<hl.PortfolioResponse | undefined, Error>
   isRTL: boolean
 }) => {
   const { t } = useTranslate()

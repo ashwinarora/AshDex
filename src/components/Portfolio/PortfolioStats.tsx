@@ -11,7 +11,6 @@ import {
 import { Button } from '../ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import PortfolioChart from './PortfolioChart'
-import { Hex } from '@nktkas/hyperliquid'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
@@ -23,6 +22,7 @@ import { formatWithKMB } from '@/utils/format'
 import { useUserFee } from '@/hooks/useUserFee'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
+import { Hex } from 'viem'
 
 const PortfolioStats = () => {
   const { t } = useTranslate()

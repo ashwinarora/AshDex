@@ -4,7 +4,14 @@ import {
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
-import { type WalletClient, zeroAddress, type Hex, type PrivateKeyAccount } from 'viem'
+import {
+  type WalletClient,
+  zeroAddress,
+  type Hex,
+  type PrivateKeyAccount,
+  createWalletClient,
+  custom
+} from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
@@ -20,14 +27,14 @@ interface HyperliquidState {
   sdkInfoClient: hl.InfoClient | null
   sdkSubscriptionClient: hl.SubscriptionClient | null
   agentWallet: PrivateKeyAccount | null
-  allMids: hl.AllMids
-  clearingHouseState: hl.PerpsClearinghouseState | null
-  perpsMeta: hl.PerpsMeta | null
-  perpAssetContext: hl.PerpsAssetCtx[]
-  spotAssetContext: hl.SpotAssetCtx[]
-  spotState: hl.SpotClearinghouseState
-  openOrders: hl.FrontendOrder[]
-  activeAssetData: hl.WsActiveAssetData | null
+  allMids: hl.AllMidsResponse
+  clearingHouseState: hl.WsWebData2Event['clearinghouseState'] | null
+  perpsMeta: hl.WsWebData2Event['meta'] | null
+  perpAssetContext: hl.WsWebData2Event['assetCtxs']
+  spotAssetContext: hl.WsWebData2Event['spotAssetCtxs']
+  spotState: NonNullable<hl.WsWebData2Event['spotState']>
+  openOrders: hl.WsWebData2Event['openOrders']
+  activeAssetData: hl.WsActiveAssetDataEvent | null
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -49,16 +56,18 @@ interface HyperliquidActions {
   unsubscribeFromAllMids: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
   unsubscribeWebData2: () => Promise<void>
-  pushNewOpenOrders: (orders: hl.FrontendOrder[]) => void
-  pushNewPosition: (position: hl.AssetPosition) => void
+  pushNewOpenOrders: (orders: hl.WsWebData2Event['openOrders']) => void
+  pushNewPosition: (
+    position: hl.WsWebData2Event['clearinghouseState']['assetPositions'][number]
+  ) => void
   subscribeToCandle: (
     asset: string,
-    interval: hl.EventCandleParameters['interval'],
-    callback: (data: hl.Candle) => void
+    interval: hl.WsCandleParameters['interval'],
+    callback: (data: hl.WsCandleEvent) => void
   ) => void
   unsubscribeFromCandle: (
     asset: string,
-    interval: hl.EventCandleParameters['interval']
+    interval: hl.WsCandleParameters['interval']
   ) => Promise<void>
   subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
   unsubscribeFromActiveAssetData: () => Promise<void>
@@ -120,17 +129,19 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       set((state) => ({
         agentWallet: agentWallet,
-        sdkUserSignerClient: walletClient
-          ? new hl.ExchangeClient({
-              transport: state.sdkTransport,
-              wallet: walletClient,
-              isTestnet: isTestnet
-            })
-          : null,
+        sdkUserSignerClient:
+          walletClient && walletClient.account
+            ? new hl.ExchangeClient({
+                transport: state.sdkTransport,
+                wallet: createWalletClient({
+                  account: walletClient.account,
+                  transport: custom(window.ethereum)
+                })
+              })
+            : null,
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
-          wallet: agentWallet,
-          isTestnet: isTestnet
+          wallet: agentWallet
         }),
         sdkInfoClient: new hl.InfoClient({
           transport: state.sdkTransport
@@ -210,12 +221,12 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    pushNewOpenOrders: (orders: hl.FrontendOrder[]) => {
+    pushNewOpenOrders: (orders) => {
       set((state) => ({
         openOrders: [...state.openOrders, ...orders]
       }))
     },
-    pushNewPosition: (position: hl.AssetPosition) => {
+    pushNewPosition: (position) => {
       console.log('pushing position', position)
       set((state) => {
         if (!state.clearingHouseState) {
@@ -240,11 +251,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    subscribeToCandle: async (
-      asset: string,
-      interval: hl.EventCandleParameters['interval'],
-      callback: (data: hl.Candle) => void
-    ) => {
+    subscribeToCandle: async (asset: string, interval, callback) => {
       const { sdkSubscriptionClient, subsManager } = get()
       if (!sdkSubscriptionClient) return
 
@@ -281,10 +288,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    unsubscribeFromCandle: async (
-      asset: string,
-      interval: hl.EventCandleParameters['interval']
-    ) => {
+    unsubscribeFromCandle: async (asset: string, interval) => {
       const { subsManager } = get()
       if (!subsManager.candles) return
 
