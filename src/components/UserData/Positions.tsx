@@ -8,7 +8,7 @@ import {
   getSortedRowModel,
   SortingState
 } from '@tanstack/react-table'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import { useAccount } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -28,7 +28,7 @@ import {
 } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import {
   Table,

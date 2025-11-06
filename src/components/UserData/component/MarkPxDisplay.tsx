@@ -1,4 +1,4 @@
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useMemo } from 'react'

@@ -9,7 +9,7 @@ import Filter3 from '../../assets/images/tabler-icon-layout-filled-mirrored.svg'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { generatePrecisionLabels } from '@/utils/utils'
 import { cn } from '@/lib/utils'
-import ReactiveText from '../common/ReactiveText'
+import ReactiveText from '../reactive-text'
 import { ToggleGroup, ToggleGroupItem } from '../ui/toggle-group'
 import {
   DropdownMenu,

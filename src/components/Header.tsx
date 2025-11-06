@@ -4,11 +4,10 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useAccount, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { truncateAddress } from '@/utils/utils'
-import { useComponentRendered } from '@/hooks/useComponentRendered'
 import { useWalletModal } from '@/context/WalletModalContext'
-import Avatar from './common/Avatar'
+// import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
-import BridgeButton from './common/BridgeButton'
+import BridgeButton from './Bridge/BridgeButton'
 import nexonlogo from '@/assets/images/logo.svg'
 import { useNexonReferral } from '@/hooks/useNexonReferral'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
@@ -49,7 +48,6 @@ const Header: FC = () => {
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
-  const isRendered = useComponentRendered()
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
@@ -141,7 +139,6 @@ const Header: FC = () => {
     }
   }, [isDropdownOpen])
 
-  if (!isRendered) return null
 
   return (
     <div
@@ -231,7 +228,7 @@ const Header: FC = () => {
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
-        {isConnected && isRendered ? (
+        {isConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -240,7 +237,6 @@ const Header: FC = () => {
                   size={'sm'}
                   className="flex text-white text-xs items-center gap-2"
                 >
-                  <Avatar className="size-4" avatar={''} />
                   {/* <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span> */}
                   <span className="max-xl:hidden flex font-medium  truncate">
                     {truncateAddress(address!)}

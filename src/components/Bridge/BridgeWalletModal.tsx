@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 
 import { useState } from 'react'
 import { toast } from 'sonner'
-import Modal from '../common/Modal'
+import { Dialog, DialogContent } from '../ui/dialog'
 import { IconX } from '@tabler/icons-react'
 import Image from 'next/image'
 import { useBridge } from '@/context/BridgeContext'
@@ -23,37 +23,44 @@ function BridgeWalletModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
   }, [sourceChain, solanaWallets])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
-      <div className="flex flex-col gap-4 bg-white/10 p-4 border-2 border-white/5 rounded-2xl">
-        <div className="flex justify-between items-center gap-2">
-          <h4 className="text-white">Select a Solana Wallet</h4>
-          <IconX
-            className="bg-white/10 p-1.5 rounded-full text-white cursor-pointer"
-            onClick={onClose}
-          />
-        </div>
-        {supportedWallets.length > 0 ? (
-          supportedWallets.map((wallet) => (
-            <div key={wallet.adapter.name}>
-              <div
-                className="flex items-center gap-2 bg-white/10 hover:bg-white/10 p-2 rounded-lg transition-all duration-300 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  setSelectedSolanaWallet(wallet.adapter.name)
-                  toast.info(t('Connecting to ') + t(wallet.adapter.name) + t('wallet'))
-                  onClose()
-                }}
-              >
-                <Image src={wallet.adapter.icon} alt={wallet.adapter.name} width={20} height={20} />
-                {wallet.adapter.name}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent>
+        <div className="flex flex-col gap-4 bg-white/10 p-4 border-2 border-white/5 rounded-2xl">
+          <div className="flex justify-between items-center gap-2">
+            <h4 className="text-white">Select a Solana Wallet</h4>
+            <IconX
+              className="bg-white/10 p-1.5 rounded-full text-white cursor-pointer"
+              onClick={onClose}
+            />
+          </div>
+          {supportedWallets.length > 0 ? (
+            supportedWallets.map((wallet) => (
+              <div key={wallet.adapter.name}>
+                <div
+                  className="flex items-center gap-2 bg-white/10 hover:bg-white/10 p-2 rounded-lg transition-all duration-300 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setSelectedSolanaWallet(wallet.adapter.name)
+                    toast.info(t('Connecting to ') + t(wallet.adapter.name) + t('wallet'))
+                    onClose()
+                  }}
+                >
+                  <Image
+                    src={wallet.adapter.icon}
+                    alt={wallet.adapter.name}
+                    width={20}
+                    height={20}
+                  />
+                  {wallet.adapter.name}
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <div className="py-4 text-white/70 text-center">No wallets available</div>
-        )}
-      </div>
-    </Modal>
+            ))
+          ) : (
+            <div className="py-4 text-white/70 text-center">No wallets available</div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }
 

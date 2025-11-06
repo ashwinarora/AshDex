@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useFavorites } from '@/store/FavoritesStore'
-import Skeleton from '../../common/Skeleton'
+import { Skeleton } from '../../ui/skeleton'
 import {
   // IconAdjustmentsDollar,
   // IconBrain,
@@ -15,7 +15,7 @@ import {
   IconStarFilled
 } from '@tabler/icons-react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import ReactiveText from '../../common/ReactiveText'
+import ReactiveText from '../../reactive-text'
 import PerpsTable from './PerpsTable'
 import { Separator } from '@/components/ui/separator'
 // import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -101,7 +101,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             type="currency"
           />
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       },
       {
@@ -115,12 +115,12 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               type="currency"
             />
           ) : (
-            <Skeleton size="md" />
+            <Skeleton />
           )
       },
       {
         label: t('24h Change'),
-        value: changeString ?? <Skeleton size="md" />,
+        value: changeString ?? <Skeleton />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
@@ -133,7 +133,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             type="currency"
           />
         ) : (
-          <Skeleton size="md" />
+          <Skeleton />
         )
       },
       {
@@ -151,7 +151,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               type="currency"
             />
           ) : (
-            <Skeleton size="md" />
+            <Skeleton />
           )
       }
     ]

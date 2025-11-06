@@ -194,7 +194,7 @@ const SendModal: React.FC<SendModalProps> = ({
               )}
               onClick={() => setAmount(maxAmount.toString())}
             >
-              {`${t('Use Max')} (${Number(maxAmount).toFixed(4)} ${isPerp ? 'USDC' : selectedToken.split('(')[0]})}`}
+              {`${t('Use Max')} (${Number(maxAmount).toFixed(4)} ${isPerp ? 'USDC' : selectedToken.split('(')[0]})`}
             </Button>
           </div>
           <div className="flex gap-2 w-full items-end">

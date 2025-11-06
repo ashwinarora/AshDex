@@ -10,14 +10,14 @@ import {
   useReactTable,
   SortingState
 } from '@tanstack/react-table'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'

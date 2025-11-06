@@ -1,6 +1,6 @@
 'use client'
 import { useAccount } from 'wagmi'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import { useState, useMemo, useEffect } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
