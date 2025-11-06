@@ -11,13 +11,13 @@ import {
   SortingState,
   flexRender
 } from '@tanstack/react-table'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+// import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import type { HistoricalOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Table,
@@ -33,16 +33,16 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 
-type ColumnType = {
-  key: string
-  label: string
-}
+// type ColumnType = {
+//   key: string
+//   label: string
+// }
 
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
+// type RenderRowProps = {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   item: any
+//   columns: ColumnType[]
+// }
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
@@ -82,30 +82,30 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     HistoricalOrdersResponse[number] & { meta?: { label: string } }
   >()
 
-  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-    return (
-      <div className="flex flex-col gap-2 text-white text-sm">
-        {columns?.map((col) => (
-          <div key={col?.key} className="flex justify-between">
-            <span className="text-[#8B8BA0]">{col?.label}</span>
-            <span className={col?.key === 'contract' ? 'truncate' : ''}>
-              <span
-                className={`flex ${
-                  col?.key === 'status'
-                    ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
-                          ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
-                          ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
-                    : `${col?.key === 'side' ? 'text-green' : ''}`
-                } item-center gap-x-2`}
-              >
-                {item[col?.key] ?? '-'}
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
-    )
-  }
+  // const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+  //   return (
+  //     <div className="flex flex-col gap-2 text-white text-sm">
+  //       {columns?.map((col) => (
+  //         <div key={col?.key} className="flex justify-between">
+  //           <span className="text-[#8B8BA0]">{col?.label}</span>
+  //           <span className={col?.key === 'contract' ? 'truncate' : ''}>
+  //             <span
+  //               className={`flex ${
+  //                 col?.key === 'status'
+  //                   ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
+  //                         ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
+  //                         ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
+  //                   : `${col?.key === 'side' ? 'text-green' : ''}`
+  //               } item-center gap-x-2`}
+  //             >
+  //               {item[col?.key] ?? '-'}
+  //             </span>
+  //           </span>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   )
+  // }
 
   const columns = useMemo(
     () => [
@@ -374,7 +374,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
+      {/* <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col?.id as string,
           label: col?.meta && 'label' in col?.meta ? String(col?.meta?.label) : ''
@@ -395,7 +395,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             }))}
           />
         )}
-      />
+      /> */}
     </div>
   )
 }

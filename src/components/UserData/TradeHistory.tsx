@@ -10,11 +10,11 @@ import {
   flexRender,
   SortingState
 } from '@tanstack/react-table'
-import WalletNotConnected from '@/components/common/WalletNotConnected'
+import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
-import ResponsiveDataCard from '@/components/common/ResponsiveDataCard'
+// import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
 import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
-import ReactiveText from '@/components/common/ReactiveText'
+import ReactiveText from '@/components/reactive-text'
 import {
   Table,
   TableBody,
@@ -32,16 +32,16 @@ import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import * as hl from '@nktkas/hyperliquid'
 
-type ColumnType = {
-  key: string
-  label: string
-}
+// type ColumnType = {
+//   key: string
+//   label: string
+// }
 
-type RenderRowProps = {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  item: any
-  columns: ColumnType[]
-}
+// type RenderRowProps = {
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   item: any
+//   columns: ColumnType[]
+// }
 
 const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 
@@ -180,36 +180,36 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-    const formatValue = (key: string, value: unknown) => {
-      if (key === 'crossed') {
-        return value === true ? 'Yes' : 'No'
-      }
-      return value ?? '-'
-    }
-    return (
-      <div className="flex flex-col gap-2 text-white text-sm">
-        {columns?.map((col) => (
-          <div key={col?.key} className="flex justify-between">
-            <span className="text-[#8B8BA0]">{col?.label}</span>
-            <span className={col?.key === 'contract' ? 'truncate' : ''}>
-              <span
-                className={`flex items-center gap-x-2 ${
-                  col?.key === 'crossed'
-                    ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
-                    : col?.key === 'side'
-                      ? 'text-red'
-                      : ''
-                }`}
-              >
-                {String(formatValue(col?.key, item[col?.key]))}
-              </span>
-            </span>
-          </div>
-        ))}
-      </div>
-    )
-  }
+  // const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
+  //   const formatValue = (key: string, value: unknown) => {
+  //     if (key === 'crossed') {
+  //       return value === true ? 'Yes' : 'No'
+  //     }
+  //     return value ?? '-'
+  //   }
+  //   return (
+  //     <div className="flex flex-col gap-2 text-white text-sm">
+  //       {columns?.map((col) => (
+  //         <div key={col?.key} className="flex justify-between">
+  //           <span className="text-[#8B8BA0]">{col?.label}</span>
+  //           <span className={col?.key === 'contract' ? 'truncate' : ''}>
+  //             <span
+  //               className={`flex items-center gap-x-2 ${
+  //                 col?.key === 'crossed'
+  //                   ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
+  //                   : col?.key === 'side'
+  //                     ? 'text-red'
+  //                     : ''
+  //               }`}
+  //             >
+  //               {String(formatValue(col?.key, item[col?.key]))}
+  //             </span>
+  //           </span>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   )
+  // }
 
   if (!isConnected) {
     return <WalletNotConnected />
@@ -323,7 +323,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           ))}
         </TableBody>
       </Table>
-      <ResponsiveDataCard
+      {/* <ResponsiveDataCard
         columns={columns.map((col) => ({
           key: col?.id as string,
           label: col?.meta && 'label' in col?.meta ? String(col?.meta?.label) : ''
@@ -344,7 +344,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             }))}
           />
         )}
-      />
+      /> */}
     </div>
   )
 }

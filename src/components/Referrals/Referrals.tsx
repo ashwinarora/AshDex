@@ -1,6 +1,6 @@
 'use client'
 import React from 'react'
-import { useComponentRendered } from '@/hooks/useComponentRendered'
+// import { useComponentRendered } from '@/hooks/useComponentRendered'
 import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import ReferralsHeader from './ReferralsHeader'
@@ -10,9 +10,9 @@ import ReferralStats from './ReferralStats'
 
 function Referrals() {
   const { isMobile } = useScreenSize()
-  const isRendered = useComponentRendered()
+  // const isRendered = useComponentRendered()
 
-  if (!isRendered) return null
+  // if (!isRendered) return null
 
   if (isMobile)
     return (
