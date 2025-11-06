@@ -101,7 +101,7 @@
 //             </div>
 //             {stakingData.map((item, index) => (
 //               <div
-//                 className="rounded-2xl border-2 border-white/10 
+//                 className="rounded-2xl border-2 border-white/10
 //                 px-[20px] py-[16px] gap-4 flex justify-between
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px]"
@@ -121,8 +121,8 @@
 //             ))}
 //             <div className="flex space-x-3 w-full">
 //               <div
-//                 className="rounded-2xl border-2 border-white/10 
-//                 px-5 py-5 gap-4 
+//                 className="rounded-2xl border-2 border-white/10
+//                 px-5 py-5 gap-4
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px] min-w-[75%]"
 //               >
@@ -135,8 +135,8 @@
 //                 </div>
 //               </div>
 //               <div
-//                 className="rounded-2xl border-2 border-white/10 
-//                 px-5 py-5 gap-4 
+//                 className="rounded-2xl border-2 border-white/10
+//                 px-5 py-5 gap-4
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px] min-w-[22.7%]"
 //               >
@@ -207,7 +207,7 @@
 
 //             <div
 //               className="rounded-2xl border-2 border-white/10 text-base font-medium
-//                 px-5 py-5 gap-4 
+//                 px-5 py-5 gap-4
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px]"
 //             >
@@ -217,7 +217,7 @@
 //             {isWalletConnected && (
 //               <>
 //                 <div
-//                   className="rounded-2xl border-2 border-white/10 
+//                   className="rounded-2xl border-2 border-white/10
 //                 px-[20px] py-[16px] gap-4
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px]"
@@ -255,7 +255,7 @@
 //             )}
 //           </div>
 //           <div
-//             className="rounded-2xl border-2 border-white/10 text-base font-medium w-full lg:w-[35%] max-w-[400px] 
+//             className="rounded-2xl border-2 border-white/10 text-base font-medium w-full lg:w-[35%] max-w-[400px]
 //                 px-5 py-5 gap-4 space-y-4
 //                 bg-[linear-gradient(179.1deg,rgba(255,255,255,0.05)_-10.66%,rgba(153,153,153,0.05)_67.22%)]
 //                 backdrop-blur-[48.3px] h-fit"

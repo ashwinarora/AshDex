@@ -140,7 +140,7 @@
 //             <button
 //               key={tab}
 //               onClick={() => setActiveTab(index)}
-//               className={`py-2 px-1 text-base border-b-3 cursor-pointer whitespace-nowrap 
+//               className={`py-2 px-1 text-base border-b-3 cursor-pointer whitespace-nowrap
 //           ${activeTab === index ? 'border-[#5F46F9] text-white font-bold rounded-xs' : 'border-transparent font-medium text-[#8B8BA0]'}
 //         `}
 //             >

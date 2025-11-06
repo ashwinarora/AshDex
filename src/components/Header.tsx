@@ -139,7 +139,6 @@ const Header: FC = () => {
     }
   }, [isDropdownOpen])
 
-
   return (
     <div
       className={clsx(
