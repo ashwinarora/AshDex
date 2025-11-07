@@ -196,7 +196,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }))
 
     // Leverage safety: ensure chosen leverage ≤ max allowed for total notional of batch
-    const totalNotional = ordersData.reduce((sum, od) => sum + Number(od.price) * Number(od.size), 0)
+    const totalNotional = ordersData.reduce(
+      (sum, od) => sum + Number(od.price) * Number(od.size),
+      0
+    )
     const maxAllowedLeverage = getMaxAllowedLeverageForNotional({
       perpsMeta,
       assetUniverse,

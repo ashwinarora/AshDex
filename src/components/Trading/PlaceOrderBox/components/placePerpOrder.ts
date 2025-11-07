@@ -53,9 +53,7 @@ export function getMaxAllowedLeverageForNotional({
     }
     if (!Number.isFinite(tierMaxLeverage) || tierMaxLeverage <= 0) return null
     const maxAllowedLeverage = Math.floor(tierMaxLeverage)
-    return Number.isFinite(maxAllowedLeverage) && maxAllowedLeverage > 0
-      ? maxAllowedLeverage
-      : null
+    return Number.isFinite(maxAllowedLeverage) && maxAllowedLeverage > 0 ? maxAllowedLeverage : null
   } catch {
     return null
   }
