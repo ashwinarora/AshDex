@@ -37,6 +37,7 @@ import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
+import { getMaxAllowedLeverageForNotional } from './components/placePerpOrder'
 interface Order {
   price: number
   size: number
@@ -179,7 +180,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     )
     console.log({ usdOrders, assetOrders })
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, selectedAsset)
-    const szDecimals = perpsMeta.universe[assetIndex].szDecimals
+    const assetUniverse = perpsMeta.universe[assetIndex]
+    const szDecimals = assetUniverse.szDecimals
     const ordersData: OrderData[] = orders.map((order) => ({
       assetIndex: assetIndex,
       isBuy: isBuy,
@@ -192,6 +194,23 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         }
       }
     }))
+
+    // Leverage safety: ensure chosen leverage ≤ max allowed for total notional of batch
+    const totalNotional = ordersData.reduce(
+      (sum, od) => sum + Number(od.price) * Number(od.size),
+      0
+    )
+    const maxAllowedLeverage = getMaxAllowedLeverageForNotional({
+      perpsMeta,
+      assetUniverse,
+      notional: totalNotional
+    })
+    if (maxAllowedLeverage && leverage > maxAllowedLeverage) {
+      toast.error(
+        `${t('Selected leverage')} (${leverage}x) ${t('exceeds max allowed')} (${maxAllowedLeverage}x) ${t('for total notional')} $${totalNotional.toLocaleString()}`
+      )
+      return
+    }
 
     if (ordersData.some((item) => Number(item.price) * Number(item.size) < 10)) {
       console.error(
