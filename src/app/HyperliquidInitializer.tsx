@@ -7,6 +7,7 @@ import { zeroAddress } from 'viem'
 
 const HyperLiquidInitializer = () => {
   const { address } = useAccount()
+  const { data: walletClient } = useWalletClient()
   // const address = '0xa4ADD8273d7f47318675bDfBcce3E9648CdB4509'
   const {
     initSdk,
@@ -18,10 +19,11 @@ const HyperLiquidInitializer = () => {
     checkWebSocketStatus,
     updateUserActiveAddress
   } = useInitHyperliquid()
-  const { data: walletClient } = useWalletClient()
 
   useEffect(() => {
-    initSdk(address ?? zeroAddress)
+    if (!walletClient) return
+
+    initSdk(address ?? zeroAddress, walletClient)
   }, [address, initSdk, walletClient])
 
   useEffect(() => {

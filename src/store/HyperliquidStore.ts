@@ -4,14 +4,7 @@ import {
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
-import {
-  zeroAddress,
-  type Hex,
-  type PrivateKeyAccount,
-  createWalletClient,
-  custom,
-  Address
-} from 'viem'
+import { zeroAddress, type Hex, type PrivateKeyAccount, Address, type WalletClient } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
@@ -51,7 +44,7 @@ interface HyperliquidState {
 }
 
 interface HyperliquidActions {
-  initSdk: (address: Address) => Promise<void>
+  initSdk: (address: Address, walletClient: WalletClient) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
@@ -110,7 +103,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     }
   },
   (set, get) => ({
-    initSdk: async (address: Address) => {
+    initSdk: async (address: Address, walletClient: WalletClient) => {
       if (typeof window === 'undefined') return
       if (!address) return
 
@@ -132,10 +125,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         agentWallet: agentWallet,
         sdkUserSignerClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
-          wallet: createWalletClient({
-            account: address,
-            transport: custom(window.ethereum)
-          })
+          wallet: walletClient
         }),
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
