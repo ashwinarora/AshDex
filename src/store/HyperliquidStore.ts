@@ -127,6 +127,13 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       const agentWallet = privateKeyToAccount(privateKey)
 
+      const [account] = (await window.ethereum.request({
+        method: 'eth_requestAccounts'
+      })) as `0x${string}`[]
+
+      console.log('account from sdk style', account)
+      console.log('account in our style', walletClient?.account)
+
       set((state) => ({
         agentWallet: agentWallet,
         sdkUserSignerClient:
