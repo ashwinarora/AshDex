@@ -21,7 +21,7 @@ const HyperLiquidInitializer = () => {
   const { data: walletClient } = useWalletClient()
 
   useEffect(() => {
-    initSdk(address ?? zeroAddress, walletClient)
+    initSdk(address ?? zeroAddress)
   }, [address, initSdk, walletClient])
 
   useEffect(() => {

@@ -5,12 +5,12 @@ import {
   WEBSOCKET_TESTNET_URL
 } from '@/utils/constants'
 import {
-  type WalletClient,
   zeroAddress,
   type Hex,
   type PrivateKeyAccount,
   createWalletClient,
-  custom
+  custom,
+  Address
 } from 'viem'
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts'
 import { create } from 'zustand'
@@ -51,7 +51,7 @@ interface HyperliquidState {
 }
 
 interface HyperliquidActions {
-  initSdk: (address: Hex, walletClient?: WalletClient) => Promise<void>
+  initSdk: (address: Address) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
@@ -110,9 +110,10 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     }
   },
   (set, get) => ({
-    initSdk: async (address: Hex, walletClient?: WalletClient) => {
+    initSdk: async (address: Address) => {
       if (typeof window === 'undefined') return
       if (!address) return
+
       const privateKey = (() => {
         const storageKey = AGENT_PRIVATE_KEY + '_' + address
         const storedPrivateKey = localStorage.getItem(storageKey)
@@ -127,24 +128,15 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       const agentWallet = privateKeyToAccount(privateKey)
 
-      // const [account] = (await window.ethereum.request({
-      //   method: 'eth_requestAccounts'
-      // })) as `0x${string}`[]
-      // console.log('account from sdk style', account)
-      console.log('account in our style', walletClient?.account)
-
       set((state) => ({
         agentWallet: agentWallet,
-        sdkUserSignerClient:
-          walletClient && walletClient.account
-            ? new hl.ExchangeClient({
-                transport: state.sdkTransport,
-                wallet: createWalletClient({
-                  account: walletClient.account.address,
-                  transport: custom(window.ethereum)
-                })
-              })
-            : null,
+        sdkUserSignerClient: new hl.ExchangeClient({
+          transport: state.sdkTransport,
+          wallet: createWalletClient({
+            account: address,
+            transport: custom(window.ethereum)
+          })
+        }),
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
           wallet: agentWallet
