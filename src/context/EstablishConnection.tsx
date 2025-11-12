@@ -50,7 +50,6 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
       const extraAgents = await sdkInfoClient.extraAgents({
         user: address
       })
-      console.log('extraAgents', extraAgents)
       const isAgentApproved = extraAgents.some(
         (agent) => agent.address.toLowerCase() === agentWallet?.address.toLowerCase()
       )

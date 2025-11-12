@@ -77,8 +77,6 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     initialData: []
   })
 
-  console.log(tradeHistory)
-
   const columns = useMemo(
     () => [
       columnHelper.accessor('time', {
