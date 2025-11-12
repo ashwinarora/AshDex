@@ -125,6 +125,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         agentWallet: agentWallet,
         sdkUserSignerClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
+          // @ts-expect-error just checking if this works.
           wallet: walletClient
         }),
         sdkL1ActionClient: new hl.ExchangeClient({
