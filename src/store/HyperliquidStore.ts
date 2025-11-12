@@ -134,7 +134,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
             ? new hl.ExchangeClient({
                 transport: state.sdkTransport,
                 wallet: createWalletClient({
-                  account: walletClient.account,
+                  account: walletClient.account.address,
                   transport: custom(window.ethereum)
                 })
               })
