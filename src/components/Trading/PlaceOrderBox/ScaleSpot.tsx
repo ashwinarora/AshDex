@@ -156,7 +156,8 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
-        toast.error(`${t('Failed to place orders.')} ${status.error}`, {
+        console.error('Order placement error:', status.error)
+        toast.error(t('Something went wrong, check the console or contact support'), {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -176,7 +177,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.error(`${t('Failed to place orders.')} ${error as string}`, {
+      toast.error(t('Something went wrong, check the console or contact support'), {
         id: toastId
       })
     }

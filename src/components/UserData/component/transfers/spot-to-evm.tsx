@@ -23,7 +23,6 @@ import { CORE_TO_EVM_MAPPING, isTestnet } from '@/utils/constants'
 import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
 import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
-import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
@@ -126,15 +125,9 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         console.error('Transfer failed:', error)
         onClose()
         setIsLoading(false)
-        if (error instanceof ApiRequestError) {
-          toast.error(`${t('Transfer failed.')} ${error.message}`, {
-            id: toastId
-          })
-        } else {
-          toast.error(t('Transfer failed.'), {
-            id: toastId
-          })
-        }
+        toast.error(t('Something went wrong, check the console or contact support'), {
+          id: toastId
+        })
       }
     } else {
       if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))

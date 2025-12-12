@@ -10,7 +10,6 @@ import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
-import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
@@ -70,15 +69,9 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
       setIsLoading(false)
       onClose()
       console.error('Error withdrawing:', error)
-      if (error instanceof ApiRequestError) {
-        toast.error(`${t('Withdrawal failed.')} ${error.message}`, {
-          id: toastId
-        })
-      } else {
-        toast.error(t('Withdrawal failed.'), {
-          id: toastId
-        })
-      }
+      toast.error(t('Something went wrong, check the console or contact support'), {
+        id: toastId
+      })
     } finally {
       setIsLoading(false)
     }
