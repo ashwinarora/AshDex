@@ -14,7 +14,6 @@ import Loading from '@/components/loading-screen'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
-import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { cn } from '@/lib/utils'
@@ -70,15 +69,9 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     } catch (error) {
       console.error('Transfer failed:', error)
       onClose()
-      if (error instanceof ApiRequestError) {
-        toast.error(`${t('Transfer failed.')} ${error.message}`, {
-          id: toastId
-        })
-      } else {
-        toast.error(t('Transfer failed.'), {
-          id: toastId
-        })
-      }
+      toast.error(t('Something went wrong, check the console or contact support'), {
+        id: toastId
+      })
       setIsLoading(false)
     }
   }

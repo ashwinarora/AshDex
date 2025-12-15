@@ -75,12 +75,12 @@ const EstablishConnectionModal = () => {
                   )
                   openDepositModal()
                 } else {
-                  toast.error(`${t('Agent approval failed.')} ${error.message}`, {
+                  toast.error(t('Something went wrong, check the console or contact support'), {
                     id: toastId
                   })
                 }
               } else {
-                toast.error(t('An unexpected error occurred. Please try again.'), {
+                toast.error(t('Something went wrong, check the console or contact support'), {
                   id: toastId
                 })
               }
@@ -110,15 +110,9 @@ const EstablishConnectionModal = () => {
               })
             } catch (error) {
               console.error('Error approving fee:', error)
-              if (error instanceof ApiRequestError) {
-                toast.error(`${t('Fee approval failed.')} ${error.message}`, {
-                  id: toastId
-                })
-              } else {
-                toast.error(t('An unexpected error occurred'), {
-                  id: toastId
-                })
-              }
+              toast.error(t('Something went wrong, check the console or contact support'), {
+                id: toastId
+              })
             }
           }}
         >

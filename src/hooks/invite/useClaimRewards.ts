@@ -43,7 +43,7 @@ export const useClaimRewards = () => {
     },
     onError: (error: Error) => {
       console.error('Error claiming rewards:', error)
-      toast.error(`Failed to claim rewards: ${error.message}`)
+      toast.error('Something went wrong, check the console or contact support')
     }
   })
 }

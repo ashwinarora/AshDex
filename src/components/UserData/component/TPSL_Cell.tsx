@@ -3,7 +3,6 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Button } from '@/components/ui/button'
-import { ApiRequestError } from '@nktkas/hyperliquid/api/exchange'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import {
   Dialog,
@@ -311,15 +310,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     } catch (error) {
       console.error(error)
       onClose()
-      if (error instanceof ApiRequestError) {
-        toast.error(error.message, {
-          id: toastId
-        })
-      } else {
-        toast.error('Failed to place TP/SL order.', {
-          id: toastId
-        })
-      }
+      toast.error('Something went wrong, check the console or contact support', {
+        id: toastId
+      })
     }
   }
 

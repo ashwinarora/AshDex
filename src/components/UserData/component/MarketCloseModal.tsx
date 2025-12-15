@@ -172,7 +172,8 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       const status = order.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(`${t('Failed to close position.')} ${status.error}`, {
+        console.error('Close position error:', status.error)
+        toast.error(t('Something went wrong, check the console or contact support'), {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -192,7 +193,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(`${t('Failed to close position.')} ${error as string}`, {
+      toast.error(t('Something went wrong, check the console or contact support'), {
         id: toastId
       })
     }

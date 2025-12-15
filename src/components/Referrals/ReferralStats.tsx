@@ -13,7 +13,7 @@ const ReferralStats = () => {
 
   if (isLoading) {
     return (
-      <div className="w-96 h-96 flex items-center justify-center flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
+      <div className="w-96 h-11/12 flex items-center justify-center flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
         <IconLoader2 className="text-white size-10 animate-spin" />
       </div>
     )
@@ -21,7 +21,7 @@ const ReferralStats = () => {
 
   if (error) {
     return (
-      <div className="w-96 h-96 items-center justify-center flex flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
+      <div className="w-96 h-11/12 items-center justify-center flex flex-col bg-secondary rounded-md gap-2 p-4 flex-1 ">
         <IconAlertCircle className="text-red size-10" />
         <span className="text-red text-sm">{t('Error loading stats')}</span>
       </div>
@@ -49,7 +49,7 @@ const ReferralStats = () => {
   ]
 
   return (
-    <div className="flex flex-col flex-nowrap gap-1 w-96 h-96">
+    <div className="flex flex-col flex-nowrap gap-1 w-96 h-11/12">
       {stats.map((stat, index) => (
         <div
           key={index}
@@ -70,7 +70,7 @@ const ReferralStats = () => {
               />
             )}
           </div>
-          <div className="text-white text-2xl font-semibold">{stat.value}</div>
+          <div className="text-white text-4xl font-semibold">{stat.value}</div>
         </div>
       ))}
     </div>

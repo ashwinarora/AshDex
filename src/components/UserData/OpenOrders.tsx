@@ -89,12 +89,10 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             id: toastId
           })
         } catch (error: unknown) {
-          toast.error(
-            `${t('Failed to cancel order.')} ${error instanceof Error ? error.message : String(error)}`,
-            {
-              id: toastId
-            }
-          )
+          console.error('Error cancelling order:', error)
+          toast.error(t('Something went wrong, check the console or contact support'), {
+            id: toastId
+          })
         }
       }
       cancelOrder()
@@ -181,12 +179,10 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
           id: toastId
         })
       } catch (error: unknown) {
-        toast.error(
-          `${t('Failed to cancel all orders.')} ${error instanceof Error ? error.message : String(error)}`,
-          {
-            id: toastId
-          }
-        )
+        console.error('Error cancelling all orders:', error)
+        toast.error(t('Something went wrong, check the console or contact support'), {
+          id: toastId
+        })
       }
     }
     cancelAll()

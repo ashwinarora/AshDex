@@ -96,7 +96,8 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       const status = orderRes.response.data.statuses[0]
       if ('error' in status) {
         onClose()
-        toast.error(`${t('Failed to close all positions.')} ${status.error}`, {
+        console.error('Close all positions error:', status.error)
+        toast.error(t('Something went wrong, check the console or contact support'), {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -108,7 +109,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error(t('Error closing all positions:'), error)
       onClose()
-      toast.error(`${t('Failed to close all positions.')} ${error as string}`, {
+      toast.error(t('Something went wrong, check the console or contact support'), {
         id: toastId
       })
     }

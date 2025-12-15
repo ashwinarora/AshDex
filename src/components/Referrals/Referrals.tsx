@@ -117,7 +117,7 @@ function Referrals() {
         <div className="w-full h-fit shrink-0">
           <ReferralsHeader />
         </div>
-        <div className="w-full h-fit shrink-0 flex items-center gap-1">
+        <div className="w-full h-full flex-1 flex items-start gap-1">
           <ReferralStats />
           {/* <ReferralStatsCard /> */}
           <ReferralsTablesTab />
