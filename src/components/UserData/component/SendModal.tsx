@@ -22,7 +22,6 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconSend } from '@tabler/icons-react'
 import { isAddress, isHex } from 'viem'
-import { ApiRequestError } from '@nktkas/hyperliquid'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
@@ -95,15 +94,9 @@ const SendModal: React.FC<SendModalProps> = ({
       } catch (error) {
         console.log(error)
         onClose()
-        if (error instanceof ApiRequestError) {
-          toast.error(`${t('Send failed.')} ${error.message}`, {
-            id: toastId
-          })
-        } else {
-          toast.error(t('Send failed.'), {
-            id: toastId
-          })
-        }
+        toast.error(t('Something went wrong, check the console or contact support'), {
+          id: toastId
+        })
       }
     } else {
       if (!spotData) return
@@ -120,15 +113,9 @@ const SendModal: React.FC<SendModalProps> = ({
       } catch (error) {
         console.log(error)
         onClose()
-        if (error instanceof ApiRequestError) {
-          toast.error(`${t('Send failed.')} ${error.message}`, {
-            id: toastId
-          })
-        } else {
-          toast.error(t('Send failed.'), {
-            id: toastId
-          })
-        }
+        toast.error(t('Something went wrong, check the console or contact support'), {
+          id: toastId
+        })
       }
     }
   }

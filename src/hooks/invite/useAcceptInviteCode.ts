@@ -31,7 +31,7 @@ export const useAcceptInviteCode = () => {
     },
     onError: (error: Error) => {
       console.log('error', error)
-      toast.error(`Failed to claim invite code: ${error.message}`)
+      toast.error('Something went wrong, check the console or contact support')
     }
   })
 }

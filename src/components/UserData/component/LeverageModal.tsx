@@ -69,7 +69,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     } catch (error) {
       onClose()
       console.error('Error updating leverage:', error)
-      toast.error(`${t('Failed to update leverage.')} ${error as string}`, {
+      toast.error(t('Something went wrong, check the console or contact support'), {
         id: toastId
       })
     }

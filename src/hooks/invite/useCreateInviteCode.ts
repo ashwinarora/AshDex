@@ -29,7 +29,8 @@ export const useCreateInviteCode = () => {
       toast.success('Invite code created successfully')
     },
     onError: (error: Error) => {
-      toast.error(`Failed to create invite code: ${error.message}`)
+      console.error('Error creating invite code:', error)
+      toast.error('Something went wrong, check the console or contact support')
     }
   })
 }

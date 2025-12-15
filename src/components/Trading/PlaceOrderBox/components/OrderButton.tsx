@@ -133,6 +133,7 @@ const OrderButton = ({
         limitPrice,
         assetAmount,
         isPostOnly,
+        tpsl,
         adjustedBuilderFee,
         spotKeyToName,
         pushNewOpenOrders

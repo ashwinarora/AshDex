@@ -64,7 +64,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
     } catch (error) {
       console.error(error)
       onClose()
-      toast.error(`${t('Failed to update margin.')} ${error as string}`, {
+      toast.error(t('Something went wrong, check the console or contact support'), {
         id: toastId
       })
     }

@@ -313,7 +313,7 @@ export const placePerpOrder = async ({
     pushNewOpenOrders(openOrders)
   } catch (error) {
     console.error('Error placing Perp order:', error as string)
-    toast.error(JSON.stringify(error), {
+    toast.error('Something went wrong, check the console or contact support', {
       id: toastId
     })
   }
