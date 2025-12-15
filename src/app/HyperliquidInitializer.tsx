@@ -21,8 +21,6 @@ const HyperLiquidInitializer = () => {
   } = useInitHyperliquid()
 
   useEffect(() => {
-    if (!walletClient) return
-
     initSdk(address ?? zeroAddress, walletClient)
   }, [address, initSdk, walletClient])
 
