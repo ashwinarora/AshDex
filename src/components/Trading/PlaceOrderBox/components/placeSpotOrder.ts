@@ -48,8 +48,7 @@ export const placeSpotOrder = async ({
     ? formatPrice(Number(formattedLimitPrice), szDecimals, true).toString()
     : formattedLimitPrice
 
-  const hasTpslOrders =
-    !!tpsl?.isTpsl && (Number(tpsl.takeProfit) > 0 || Number(tpsl.stopLoss) > 0)
+  const hasTpslOrders = !!tpsl?.isTpsl && (Number(tpsl.takeProfit) > 0 || Number(tpsl.stopLoss) > 0)
 
   // Build the order batch. If TP/SL is enabled, we place the main order + TP/SL triggers
   // in a single request with `grouping: normalTpsl` (same strategy as perps).
@@ -60,7 +59,9 @@ export const placeSpotOrder = async ({
     p: string
     s: string
     r: boolean
-    t: { limit: { tif: 'Alo' | 'Gtc' } } | { trigger: { isMarket: boolean; triggerPx: string; tpsl: 'tp' | 'sl' } }
+    t:
+      | { limit: { tif: 'Alo' | 'Gtc' } }
+      | { trigger: { isMarket: boolean; triggerPx: string; tpsl: 'tp' | 'sl' } }
   }> = [
     {
       kind: 'main',
@@ -185,9 +186,12 @@ export const placeSpotOrder = async ({
         }
       )
     } else if ('resting' in mainStatus) {
-      toast.success(hasTpslOrders ? 'Order + TP/SL Placed Successfully' : 'Order Placed Successfully', {
-        id: toastId
-      })
+      toast.success(
+        hasTpslOrders ? 'Order + TP/SL Placed Successfully' : 'Order Placed Successfully',
+        {
+          id: toastId
+        }
+      )
     }
   } catch (error) {
     console.error('Error placing Spot order:', error as string)

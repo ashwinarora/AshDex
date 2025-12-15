@@ -37,7 +37,7 @@ function ReferralsActionPanel() {
   return (
     <div
       className={cn(
-        'flex flex-col justify-start bg-secondary rounded-md w-96 shrink-0 h-96',
+        'flex flex-col justify-start bg-secondary rounded-md w-96 shrink-0 h-11/12',
         isRTL && 'items-end'
       )}
     >
