@@ -44,7 +44,7 @@ interface HyperliquidState {
 }
 
 interface HyperliquidActions {
-  initSdk: (address: Address, walletClient: WalletClient) => Promise<void>
+  initSdk: (address: Address, walletClient?: WalletClient) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
@@ -103,7 +103,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     }
   },
   (set, get) => ({
-    initSdk: async (address: Address, walletClient: WalletClient) => {
+    initSdk: async (address: Address, walletClient?: WalletClient) => {
       if (typeof window === 'undefined') return
       if (!address) return
 
