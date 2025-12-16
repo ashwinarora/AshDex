@@ -1,4 +1,4 @@
-import { createConfig, http } from 'wagmi'
+import { http } from 'wagmi'
 import {
   arbitrum,
   arbitrumSepolia,
@@ -12,6 +12,7 @@ import {
 } from 'wagmi/chains'
 import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 import { type Chain } from 'viem'
+import { createConfig } from '@privy-io/wagmi';
 
 export const hyperliquidMainnet = {
   id: 999,

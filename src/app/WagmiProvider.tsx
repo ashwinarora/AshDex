@@ -1,22 +1,24 @@
 'use client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { WagmiProvider } from 'wagmi'
 import { config } from '@/config/wagmi'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import {WagmiProvider} from '@privy-io/wagmi';
 
 const queryClient = new QueryClient()
 
-export const Provider = ({
+const Provider = ({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) => {
   return (
-    <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={queryClient}>
+      <WagmiProvider config={config}>
         {children}
-        <ReactQueryDevtools initialIsOpen={false} />
-      </QueryClientProvider>
-    </WagmiProvider>
+      </WagmiProvider>
+      <ReactQueryDevtools initialIsOpen={false} />
+    </QueryClientProvider>
   )
 }
+
+export default Provider

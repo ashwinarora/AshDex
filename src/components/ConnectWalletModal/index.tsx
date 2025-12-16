@@ -13,10 +13,11 @@ import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
 import { Button } from '../ui/button'
-import { IconLoader, IconWallet } from '@tabler/icons-react'
+import { IconLoader, IconMail, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
+import { usePrivy } from '@privy-io/react-auth'
 
 interface WalletConnectProvider {
   id: string
@@ -36,6 +37,8 @@ const ConnectWalletModal: React.FC = () => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
   const createOrUpdateUser = useCreateOrUpdateUser()
+  const { login } = usePrivy()
+  const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
 
   const handleClose = () => {
     toggleConnectWalletModal()
@@ -59,6 +62,19 @@ const ConnectWalletModal: React.FC = () => {
 
   const disconnectWallet = () => {
     disconnect()
+  }
+
+  const handleEmailLogin = async () => {
+    if (isPrivyLoginPending) return
+    setIsPrivyLoginPending(true)
+    try {
+      // Opens Privy's built-in login dialog (email + OTP handled by Privy)
+      await login()
+    } catch (error) {
+      console.error('Error signing in with email:', error)
+    } finally {
+      setIsPrivyLoginPending(false)
+    }
   }
 
   useEffect(() => {
@@ -108,6 +124,24 @@ const ConnectWalletModal: React.FC = () => {
           )
         ) : (
           <div className="flex flex-col gap-2">
+            <Button
+              className={cn(
+                'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/10 hover:bg-accent',
+                isRTL && 'flex-row-reverse'
+              )}
+              variant={'secondary'}
+              onClick={handleEmailLogin}
+              disabled={isPrivyLoginPending}
+            >
+              <div className="size-10 rounded-md bg-white/10 flex items-center justify-center">
+                {isPrivyLoginPending ? (
+                  <IconLoader className="size-6 animate-spin text-white" />
+                ) : (
+                  <IconMail className="size-6 text-white" />
+                )}
+              </div>
+              <span className="font-medium text-sm">{t('Sign in with Email')}</span>
+            </Button>
             {WALLETS.map((wallet) => (
               <Button
                 className={cn(
