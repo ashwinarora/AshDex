@@ -17,7 +17,7 @@ import { IconLoader, IconMail, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
-import { usePrivy } from '@privy-io/react-auth'
+import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
 
 interface WalletConnectProvider {
   id: string
@@ -35,9 +35,14 @@ const ConnectWalletModal: React.FC = () => {
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
-  const { data: termsData, isLoading: isTermsLoading } = useTermsSignature()
+  const { wallets } = useWallets()
+  const embeddedWalletAddress = wallets?.find(
+    (w: ConnectedWallet) => w?.walletClientType === 'privy'
+  )?.address
+  const walletId = address ?? embeddedWalletAddress
+  const { data: termsData, isLoading: isTermsLoading } = useTermsSignature(walletId)
   const createOrUpdateUser = useCreateOrUpdateUser()
-  const { login } = usePrivy()
+  const { login, authenticated } = usePrivy()
   const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
 
   const handleClose = () => {
@@ -78,12 +83,13 @@ const ConnectWalletModal: React.FC = () => {
   }
 
   useEffect(() => {
-    if (isConnected && address) {
-      createOrUpdateUser.mutate({ wallet_id: address })
+    if ((isConnected || authenticated) && walletId) {
+      createOrUpdateUser.mutate({ wallet_id: walletId })
     }
-  }, [isConnected, address])
+  }, [isConnected, authenticated, walletId])
 
-  const shouldShowRules = isConnected && !isTermsLoading && !termsData?.signed
+  const shouldShowRules =
+    (isConnected || authenticated) && !!walletId && !isTermsLoading && !termsData?.signed
 
   useEffect(() => {
     if (shouldShowRules) {

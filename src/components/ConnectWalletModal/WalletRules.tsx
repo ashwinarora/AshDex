@@ -10,6 +10,8 @@ import { IconAlertCircle, IconLoader } from '@tabler/icons-react'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { Button } from '../ui/button'
 import { useTranslate } from '@tolgee/react'
+import { ConnectedWallet, useWallets } from '@privy-io/react-auth'
+import { createWalletClient, custom } from 'viem'
 
 interface WalletRulesProps {
   onClose: () => void
@@ -18,6 +20,9 @@ interface WalletRulesProps {
 const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
+  const { wallets } = useWallets()
+  const embeddedWallet = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')
+  const walletId = address ?? embeddedWallet?.address
   const {
     data: terms,
     isLoading,
@@ -32,18 +37,40 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
       return response.json()
     }
   })
-  const { refetch: refetchUserTerms } = useTermsSignature()
+  const { refetch: refetchUserTerms } = useTermsSignature(walletId)
   const { t } = useTranslate()
   const handleSignTerms = async () => {
     if (!terms?.content) return
-    const signature = await signMessageAsync({
-      message: terms.content
-    })
+    if (!walletId) {
+      toast.error(t('Wallet not ready yet. Please try again.'))
+      return
+    }
+
+    // Prefer wagmi signing if a wallet is connected; otherwise fall back to Privy embedded wallet provider.
+    let signature: string
+    if (address) {
+      signature = await signMessageAsync({
+        message: terms.content
+      })
+    } else {
+      const provider = await embeddedWallet?.getEthereumProvider?.()
+      if (!provider) {
+        toast.error(t('No wallet available to sign.'))
+        return
+      }
+      const client = createWalletClient({
+        transport: custom(provider)
+      })
+      signature = await client.signMessage({
+        account: walletId as `0x${string}`,
+        message: terms.content
+      })
+    }
     console.log('signature', signature)
     const toastId = toast.loading(t('Verifying Signature...'))
     try {
       const res = await axios.post('/api/user-terms', {
-        wallet_id: address,
+        wallet_id: walletId,
         signature: signature
       })
       console.log('terms res', res)

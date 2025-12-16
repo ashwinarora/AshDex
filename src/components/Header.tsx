@@ -35,6 +35,7 @@ import { useTermsSignature } from '@/hooks/useTermsSignature'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
+import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
 type MenuItem = {
   name: string
   path: string
@@ -57,18 +58,25 @@ const Header: FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
-  const { data: termsData } = useTermsSignature()
+  const { authenticated } = usePrivy()
+  const { wallets } = useWallets()
+  const embeddedWalletAddress = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')?.address
+  const walletId = address ?? embeddedWalletAddress
+  const { data: termsData } = useTermsSignature(walletId)
   useNexonReferral()
 
-  // if user is connected and terms are not signed, disconnect and show error
+  // If user is connected/authenticated and terms are not signed, force the Terms modal to open.
   useEffect(() => {
-    if (!isConnected) return
+    if (!isConnected && !authenticated) return
+    if (!walletId) return
     if (!termsData) return
     if (termsData.signed) return
     if (isModalOpen) return
-    disconnect()
+    // Prefer keeping the session and prompting the user to sign.
+    toggleConnectWalletModal()
     toast.error(t('Please sign the terms to continue'))
-  }, [isConnected, termsData?.signed, isModalOpen])
+    // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
+  }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
 
   const desktopMenu: MenuItem[] = [
     { name: t('Futures'), path: '/', isComingSoon: false },
