@@ -60,7 +60,9 @@ const Header: FC = () => {
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const { authenticated } = usePrivy()
   const { wallets } = useWallets()
-  const embeddedWalletAddress = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')?.address
+  const embeddedWalletAddress = wallets?.find(
+    (w: ConnectedWallet) => w?.walletClientType === 'privy'
+  )?.address
   const walletId = address ?? embeddedWalletAddress
   const { data: termsData } = useTermsSignature(walletId)
   useNexonReferral()
