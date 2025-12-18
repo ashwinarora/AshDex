@@ -18,13 +18,15 @@ type TypedData = {
 
 class KmsManager {
   private static instance: KmsManager
-  private kms: KMSClient
-  private keyId: string
+  private kms?: KMSClient
+  private keyId?: string
 
   private constructor() {
-    const { kms, keyId } = this.getKMSClient()
-    this.kms = kms
-    this.keyId = keyId
+    // Intentionally empty.
+    //
+    // IMPORTANT: Do not touch env vars / instantiate AWS clients at module import time.
+    // Next.js can import server modules during `next build` ("Collecting page data"),
+    // which would otherwise fail the build when AWS creds are not present.
   }
 
   public static getInstance(): KmsManager {
@@ -34,14 +36,23 @@ class KmsManager {
     return KmsManager.instance
   }
 
-  private getKMSClient(): { kms: KMSClient; keyId: string } {
-    const region = process.env.MY_AWS_REGION ?? 'ap-south-1'
-    const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? ''
-    const secretAccessKey = process.env.MY_AWS_SECRET_ACCESS_KEY ?? ''
+  private ensureKMSClient(): { kms: KMSClient; keyId: string } {
+    if (this.kms && this.keyId) return { kms: this.kms, keyId: this.keyId }
+
+    const region =
+      process.env.MY_AWS_REGION ??
+      process.env.AWS_REGION ??
+      process.env.AWS_DEFAULT_REGION ??
+      'ap-south-1'
+    const accessKeyId = process.env.MY_AWS_ACCESS_KEY_ID ?? process.env.AWS_ACCESS_KEY_ID ?? ''
+    const secretAccessKey =
+      process.env.MY_AWS_SECRET_ACCESS_KEY ?? process.env.AWS_SECRET_ACCESS_KEY ?? ''
     const keyId = process.env.MY_KMS_KEY_ID ?? 'alias/eth-admin'
 
     if (!accessKeyId || !secretAccessKey) {
-      throw new Error('AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY must be set')
+      throw new Error(
+        'Missing AWS credentials. Set MY_AWS_ACCESS_KEY_ID/MY_AWS_SECRET_ACCESS_KEY (preferred) or AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY.'
+      )
     }
 
     const kms = new KMSClient({
@@ -52,6 +63,8 @@ class KmsManager {
       }
     })
 
+    this.kms = kms
+    this.keyId = keyId
     return { kms, keyId }
   }
 
@@ -59,7 +72,8 @@ class KmsManager {
    * Get Ethereum address from KMS public key
    */
   public async getEthAddressFromKMS(): Promise<Address> {
-    const { PublicKey } = await this.kms.send(new GetPublicKeyCommand({ KeyId: this.keyId }))
+    const { kms, keyId } = this.ensureKMSClient()
+    const { PublicKey } = await kms.send(new GetPublicKeyCommand({ KeyId: keyId }))
     if (!PublicKey) throw new Error('KMS returned no public key')
 
     const spkiDer = Buffer.from(PublicKey)
@@ -124,6 +138,7 @@ class KmsManager {
     address: Address
     typedData: TypedData
   }): Promise<{ r: Hex; s: Hex; v: number }> {
+    const { kms, keyId } = this.ensureKMSClient()
     const { address, typedData } = params
 
     // 1) EIP-712 digest (keccak256 of typed data)
@@ -136,9 +151,9 @@ class KmsManager {
     }
 
     // 2) Ask KMS to sign the 32-byte digest (DON'T let KMS re-hash)
-    const { Signature } = await this.kms.send(
+    const { Signature } = await kms.send(
       new SignCommand({
-        KeyId: this.keyId,
+        KeyId: keyId,
         Message: digestBytes,
         MessageType: 'DIGEST',
         SigningAlgorithm: 'ECDSA_SHA_256' // for ECC_SECG_P256K1 keys
