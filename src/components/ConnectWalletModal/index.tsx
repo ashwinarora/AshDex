@@ -17,7 +17,7 @@ import { IconLoader, IconMail, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
-import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
+import { ConnectedWallet, useLinkAccount, usePrivy, useWallets } from '@privy-io/react-auth'
 
 interface WalletConnectProvider {
   id: string
@@ -43,6 +43,7 @@ const ConnectWalletModal: React.FC = () => {
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature(walletId)
   const createOrUpdateUser = useCreateOrUpdateUser()
   const { login, authenticated } = usePrivy()
+  const { linkEmail } = useLinkAccount()
   const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
 
   const handleClose = () => {
@@ -73,8 +74,14 @@ const ConnectWalletModal: React.FC = () => {
     if (isPrivyLoginPending) return
     setIsPrivyLoginPending(true)
     try {
-      // Opens Privy's built-in login dialog (email + OTP handled by Privy)
-      await login()
+      if (authenticated) {
+        // Privy doesn't allow calling login() while authenticated; use a link helper instead.
+        // This opens Privy's modal and prompts the user to link an email to the current user.
+        linkEmail()
+      } else {
+        // Opens Privy's built-in login dialog (email + OTP handled by Privy)
+        await login()
+      }
     } catch (error) {
       console.error('Error signing in with email:', error)
     } finally {

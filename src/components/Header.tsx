@@ -36,6 +36,7 @@ import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
+
 type MenuItem = {
   name: string
   path: string
@@ -58,7 +59,7 @@ const Header: FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
-  const { authenticated } = usePrivy()
+  const { authenticated, logout: privyLogout } = usePrivy()
   const { wallets } = useWallets()
   const embeddedWalletAddress = wallets?.find(
     (w: ConnectedWallet) => w?.walletClientType === 'privy'
@@ -125,7 +126,7 @@ const Header: FC = () => {
   const activeMenu = getActiveMenu(pathname, mobileMenu)
 
   const handleCopy = () => {
-    if (address) navigator.clipboard.writeText(address)
+    if (walletId) navigator.clipboard.writeText(walletId)
     toast.success(t('Copied to clipboard'))
   }
 
@@ -237,7 +238,7 @@ const Header: FC = () => {
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
-        {isConnected ? (
+        {isConnected || (authenticated && !!walletId) ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -248,7 +249,7 @@ const Header: FC = () => {
                 >
                   {/* <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span> */}
                   <span className="max-xl:hidden flex font-medium  truncate">
-                    {truncateAddress(address!)}
+                    {truncateAddress(walletId!)}
                   </span>
                   <IconChevronDown className="size-3" />
                 </Button>
@@ -274,7 +275,17 @@ const Header: FC = () => {
                   {t('Withdraw')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => disconnect()} variant="destructive">
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (isConnected) {
+                      disconnect()
+                    }
+                    if (authenticated) {
+                      void privyLogout()
+                    }
+                  }}
+                  variant="destructive"
+                >
                   <IconLogout className="size-4 text-inherit" />
                   {t('Disconnect')}
                 </DropdownMenuItem>
