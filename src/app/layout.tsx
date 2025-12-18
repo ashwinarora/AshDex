@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import Header from '@/components/Header'
-import { Provider } from './provider'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
@@ -16,6 +15,8 @@ import dynamic from 'next/dynamic'
 import { getLanguage } from '@/tolgee/language'
 import { getTolgee } from '@/tolgee/server'
 import { TolgeeNextProvider } from '@/tolgee/client'
+import WagmiProvider from './WagmiProvider'
+import PrivyProvider from './PrivyProvider'
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -61,24 +62,26 @@ export default async function RootLayout({
       <body className={`${inter.variable}  bg-primary no-scrollbar`}>
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <TolgeeNextProvider language={locale} staticData={staticData}>
-          <Provider>
-            <FIBNativeBridgeInitializer />
-            <FIBBridgeEvents />
-            <HyperLiquidInitializer />
-            <WalletModalProvider>
-              <BridgeProvider>
-                <EstablishConnectionProvider>
-                  <div className="overscroll-none">
-                    {/* <SnackBar /> */}
-                    <Header />
-                    <OnboardingModal />
-                    <DynamicUseToastOptions />
-                    {children}
-                  </div>
-                </EstablishConnectionProvider>
-              </BridgeProvider>
-            </WalletModalProvider>
-          </Provider>
+          <PrivyProvider>
+            <WagmiProvider>
+              <FIBNativeBridgeInitializer />
+              <FIBBridgeEvents />
+              <HyperLiquidInitializer />
+              <WalletModalProvider>
+                <BridgeProvider>
+                  <EstablishConnectionProvider>
+                    <div className="overscroll-none">
+                      {/* <SnackBar /> */}
+                      <Header />
+                      <OnboardingModal />
+                      <DynamicUseToastOptions />
+                      {children}
+                    </div>
+                  </EstablishConnectionProvider>
+                </BridgeProvider>
+              </WalletModalProvider>
+            </WagmiProvider>
+          </PrivyProvider>
         </TolgeeNextProvider>
       </body>
     </html>

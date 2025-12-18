@@ -6,17 +6,18 @@ interface TermsSignatureResponse {
   signed: boolean
 }
 
-export const useTermsSignature = () => {
+export const useTermsSignature = (walletId?: string) => {
   const { address } = useAccount()
+  const resolvedWalletId = walletId ?? address
 
   return useQuery<TermsSignatureResponse>({
-    queryKey: ['termsSignature', address],
+    queryKey: ['termsSignature', resolvedWalletId],
     queryFn: async () => {
       const { data } = await axios.get('/api/user-terms', {
-        params: { wallet_id: address }
+        params: { wallet_id: resolvedWalletId }
       })
       return data
     },
-    enabled: !!address
+    enabled: !!resolvedWalletId
   })
 }

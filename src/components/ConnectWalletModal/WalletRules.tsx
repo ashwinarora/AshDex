@@ -10,6 +10,7 @@ import { IconAlertCircle, IconLoader } from '@tabler/icons-react'
 import { ScrollArea, ScrollBar } from '../ui/scroll-area'
 import { Button } from '../ui/button'
 import { useTranslate } from '@tolgee/react'
+import { ConnectedWallet, useWallets } from '@privy-io/react-auth'
 
 interface WalletRulesProps {
   onClose: () => void
@@ -18,6 +19,9 @@ interface WalletRulesProps {
 const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
+  const { wallets } = useWallets()
+  const embeddedWallet = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')
+  const walletId = address ?? embeddedWallet?.address
   const {
     data: terms,
     isLoading,
@@ -32,7 +36,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
       return response.json()
     }
   })
-  const { refetch: refetchUserTerms } = useTermsSignature()
+  const { refetch: refetchUserTerms } = useTermsSignature(walletId)
   const { t } = useTranslate()
   const handleSignTerms = async () => {
     if (!terms?.content) return

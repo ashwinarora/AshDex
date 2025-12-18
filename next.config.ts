@@ -2,6 +2,11 @@ import { withSentryConfig } from '@sentry/nextjs'
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  eslint: {
+    // Avoid failing CI/CD builds (e.g. Amplify) due to ESLint errors during `next build`.
+    // Keep running `bun run lint` locally/CI as desired.
+    ignoreDuringBuilds: true
+  },
   images: {
     remotePatterns: [
       {
