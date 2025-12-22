@@ -19,4 +19,3 @@ export const usePrivyWagmiStore = create<PrivyWagmiState>()(
 )
 
 export default usePrivyWagmiStore
-

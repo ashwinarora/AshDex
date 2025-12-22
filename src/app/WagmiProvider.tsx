@@ -22,18 +22,14 @@ const Provider = ({
   const { isUsingPrivy } = usePrivyWagmiStore()
   return (
     <QueryClientProvider client={queryClient}>
-      {
-        isUsingPrivy ? (
-          <PrivyWagmiProvider config={privyConfig}>
-            <PrivyWagmiSync />
-            {children}
-          </PrivyWagmiProvider>
-        ) : (
-          <WagmiProvider config={wagmiConfig}>
-            {children}
-          </WagmiProvider>
-        )
-      }
+      {isUsingPrivy ? (
+        <PrivyWagmiProvider config={privyConfig}>
+          <PrivyWagmiSync />
+          {children}
+        </PrivyWagmiProvider>
+      ) : (
+        <WagmiProvider config={wagmiConfig}>{children}</WagmiProvider>
+      )}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )

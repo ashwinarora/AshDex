@@ -155,7 +155,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
           wallet: agentWallet
-        }),
+        })
         // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
       }))
     },

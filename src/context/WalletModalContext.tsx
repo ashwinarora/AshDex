@@ -28,7 +28,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (isConnected && config.chains.length && chainId) {
       const chains: number[] = config.chains.map((chain) => chain.id)
       if (!chains.includes(chainId)) {
-        switchChain(wagmiConfig, { chainId: chains[0]})
+        switchChain(wagmiConfig, { chainId: chains[0] })
       }
     }
   }, [isConnected, chainId])
