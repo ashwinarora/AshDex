@@ -12,7 +12,8 @@ import {
 } from 'wagmi/chains'
 import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 import { type Chain } from 'viem'
-import { createConfig } from '@privy-io/wagmi'
+import { createConfig } from 'wagmi'
+// import { createConfig } from '@privy-io/wagmi'
 
 export const hyperliquidMainnet = {
   id: 999,
@@ -56,7 +57,7 @@ const coinbaseWalletConnector = coinbaseWallet({
   appName: 'Nexon'
 })
 
-export const config = createConfig({
+export const config: Parameters<typeof createConfig>[0] = {
   chains: [
     arbitrumSepolia,
     arbitrum,
@@ -93,4 +94,4 @@ export const config = createConfig({
     [hyperliquidMainnet.id]: http(),
     [hyperliquidTestnet.id]: http()
   }
-})
+}

@@ -123,7 +123,7 @@ const Header: FC = () => {
 
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
-  const activeMenu = getActiveMenu(pathname, mobileMenu)
+  const activeMenu = getActiveMenu(pathname ?? '', mobileMenu)
 
   const handleCopy = () => {
     if (walletId) navigator.clipboard.writeText(walletId)
