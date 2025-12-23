@@ -1,4 +1,5 @@
 'use client'
+import { wagmiConfig } from '@/app/WagmiProvider'
 import { Dialog } from '@/components/ui/dialog'
 import { config } from '@/config/wagmi'
 import dynamic from 'next/dynamic'
@@ -27,7 +28,7 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (isConnected && config.chains.length && chainId) {
       const chains: number[] = config.chains.map((chain) => chain.id)
       if (!chains.includes(chainId)) {
-        switchChain(config, { chainId: chains[0] as 42161 | 421614 })
+        switchChain(wagmiConfig, { chainId: chains[0] })
       }
     }
   }, [isConnected, chainId])

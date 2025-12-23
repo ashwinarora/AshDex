@@ -18,9 +18,9 @@ import { USDC_ARBITRUM } from '@/utils/constants'
 import { HYPERLIQUID_DEPOSIT } from '@/utils/constants'
 import { erc20Abi } from 'viem'
 import { switchChain } from 'wagmi/actions'
-import { config } from '@/config/wagmi'
 //Stellar
 import { useWriteContract } from 'wagmi'
+import { wagmiConfig } from '@/app/WagmiProvider'
 interface Chain {
   name: string
   chainSymbol: string
@@ -302,7 +302,7 @@ export const BridgeProvider: React.FC<{ children: ReactNode }> = ({ children }) 
       }
 
       // Switch to Arbitrum network for the deposit
-      const switchResult = await switchChain(config, { chainId: 42161 })
+      const switchResult = await switchChain(wagmiConfig, { chainId: 42161 })
       console.log('Chain switch result:', switchResult)
 
       // Wait a moment to ensure chain switch is complete

@@ -105,7 +105,36 @@ const store = combine<HyperliquidState, HyperliquidActions>(
   (set, get) => ({
     initSdk: async (address: Address, walletClient?: WalletClient) => {
       if (typeof window === 'undefined') return
-      if (!address) return
+      // Note: `HyperLiquidInitializer` intentionally calls this with `zeroAddress`
+      // before the wallet is connected (to boot up public clients/subscriptions).
+      // During wallet connect/disconnect transitions wagmi can briefly produce an
+      // undefined address while `walletClient` updates, causing another
+      // `initSdk(zeroAddress)` call that would otherwise overwrite `agentWallet`.
+
+      // Always ensure non-user-specific clients exist.
+      set((state) => ({
+        sdkInfoClient:
+          state.sdkInfoClient ??
+          new hl.InfoClient({
+            transport: state.sdkTransport
+          }),
+        sdkSubscriptionClient:
+          state.sdkSubscriptionClient ??
+          new hl.SubscriptionClient({
+            transport: state.sdkSocketTransport
+          }),
+        // Only set signer client when we actually have a walletClient.
+        sdkUserSignerClient: walletClient
+          ? new hl.ExchangeClient({
+              transport: state.sdkTransport,
+              // @ts-expect-error wagmi WalletClient is compatible at runtime
+              wallet: walletClient
+            })
+          : state.sdkUserSignerClient
+      }))
+
+      // If we don't have a real user address yet, stop here (do NOT touch agentWallet).
+      if (!address || address === zeroAddress) return
 
       const privateKey = (() => {
         const storageKey = AGENT_PRIVATE_KEY + '_' + address
@@ -123,21 +152,11 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       set((state) => ({
         agentWallet: agentWallet,
-        sdkUserSignerClient: new hl.ExchangeClient({
-          transport: state.sdkTransport,
-          // @ts-expect-error just checking if this works.
-          wallet: walletClient
-        }),
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
           wallet: agentWallet
-        }),
-        sdkInfoClient: new hl.InfoClient({
-          transport: state.sdkTransport
-        }),
-        sdkSubscriptionClient: new hl.SubscriptionClient({
-          transport: state.sdkSocketTransport
         })
+        // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
       }))
     },
     subscribeToAllMids: async () => {
@@ -171,7 +190,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       }))
     },
     subscribeWebData2: async (address: Hex) => {
-      const { sdkSubscriptionClient, userActiveAddress } = get()
+      const { sdkSubscriptionClient } = get()
       if (!sdkSubscriptionClient) return
       const webData2Sub = await sdkSubscriptionClient.webData2(
         {
@@ -179,7 +198,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         },
         (data) => {
           // console.log('webData2', data)
-          if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
+          const activeAddress = get().userActiveAddress
+          if (data.user.toLowerCase() === activeAddress.toLowerCase()) {
             set({
               clearingHouseState: data.clearinghouseState,
               openOrders: data.openOrders,

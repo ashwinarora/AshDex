@@ -18,6 +18,7 @@ import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
 import { ConnectedWallet, useLinkAccount, usePrivy, useWallets } from '@privy-io/react-auth'
+import usePrivyWagmiStore from '@/store/PrivyWagmiStore'
 
 interface WalletConnectProvider {
   id: string
@@ -45,6 +46,7 @@ const ConnectWalletModal: React.FC = () => {
   const { login, authenticated } = usePrivy()
   const { linkEmail } = useLinkAccount()
   const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
+  const { setIsUsingPrivy } = usePrivyWagmiStore()
 
   const handleClose = () => {
     toggleConnectWalletModal()
@@ -53,7 +55,9 @@ const ConnectWalletModal: React.FC = () => {
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
+    setIsUsingPrivy(false)
     setSelectedConnector(wallet)
+    console.log('connecting wallet', wallet)
     try {
       const connector = connectors.find((c) => c.id === wallet.id)
       if (connector) {
@@ -72,6 +76,7 @@ const ConnectWalletModal: React.FC = () => {
 
   const handleEmailLogin = async () => {
     if (isPrivyLoginPending) return
+    setIsUsingPrivy(true)
     setIsPrivyLoginPending(true)
     try {
       if (authenticated) {
