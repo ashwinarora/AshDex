@@ -12,7 +12,6 @@ import { toast } from 'sonner'
 import { useAccount, useWalletClient, useBalance } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
 import { useDisconnect } from 'wagmi'
-import { config } from '@/config/wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { useBridge } from '@/context/BridgeContext'
 import { Messenger, FeePaymentMethod, RawEvmTransaction } from '@allbridge/bridge-core-sdk'
@@ -67,6 +66,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { Badge } from '../ui/badge'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
+import { wagmiConfig } from '@/app/WagmiProvider'
 // Remove the Transaction interface since we're using BridgeTransaction from context
 interface ChainOption {
   name: string
@@ -626,7 +626,7 @@ function BridgeModal({ onClose }: { onClose: () => void }) {
     try {
       // Request network switch using the supported chain ID
       console.log('Switching to network:', supportedChainId)
-      await switchChain(config, { chainId: supportedChainId })
+      await switchChain(wagmiConfig, { chainId: supportedChainId })
       toast.success(`${t('Switched to')} ${chainName} ${t('network')}`)
       return true
     } catch (error) {

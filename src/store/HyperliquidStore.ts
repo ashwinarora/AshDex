@@ -190,7 +190,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       }))
     },
     subscribeWebData2: async (address: Hex) => {
-      const { sdkSubscriptionClient, userActiveAddress } = get()
+      const { sdkSubscriptionClient } = get()
       if (!sdkSubscriptionClient) return
       const webData2Sub = await sdkSubscriptionClient.webData2(
         {
@@ -198,7 +198,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         },
         (data) => {
           // console.log('webData2', data)
-          if (data.user.toLowerCase() === userActiveAddress.toLowerCase()) {
+          const activeAddress = get().userActiveAddress
+          if (data.user.toLowerCase() === activeAddress.toLowerCase()) {
             set({
               clearingHouseState: data.clearinghouseState,
               openOrders: data.openOrders,
