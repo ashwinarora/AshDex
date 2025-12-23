@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation'
 
 const useIsSpot = (): boolean => {
   const pathname = usePathname()
-  const isSpot = useMemo(() => pathname?.startsWith('/spot'), [pathname])
+  const isSpot = useMemo(() => !!pathname?.startsWith('/spot'), [pathname])
   return isSpot
 }
 

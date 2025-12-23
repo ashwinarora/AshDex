@@ -6,14 +6,15 @@ import { DEFAULT_SPOT_ASSET, isWhitelistedSpotRouteAsset } from '@/utils/whiteli
 import { useEffect } from 'react'
 
 export default function SpotAssetTradingPage() {
-  const { asset } = useParams()
+  const params = useParams<{ asset: string }>()
+  const asset = params?.asset
   const router = useRouter()
 
   useEffect(() => {
-    if (!isWhitelistedSpotRouteAsset(asset as string)) {
+    if (!isWhitelistedSpotRouteAsset(asset ?? '')) {
       router.replace(`/spot/${DEFAULT_SPOT_ASSET}`)
     }
   }, [asset, router])
 
-  return <Trading defaultAsset={asset as string} />
+  return <Trading defaultAsset={asset ?? ''} />
 }
