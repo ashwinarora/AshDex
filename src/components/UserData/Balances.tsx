@@ -433,7 +433,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         </TableHeader>
         <TableBody>
           {table.getRowModel().rows.map((row) => (
-            <TableRow className="h-10" key={row.id}>
+            <TableRow className="h-8" key={row.id}>
               {row.getVisibleCells().map((cell) => {
                 return (
                   <TableCell
