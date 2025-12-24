@@ -7,58 +7,6 @@ import { StopOrder } from './OrderButton'
 import { toast } from 'sonner'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
-// Pure helper: normalize a margin table into [lowerBoundUsd, maxLeverage] pairs
-function collectPairsFromMarginTable(
-  tbl: WebData2Event['meta']['marginTables'][number]
-): Array<[number, number]> {
-  const tiers = tbl[1].marginTiers
-  const pairs: Array<[number, number]> = []
-  for (const t of tiers) {
-    const lowerBoundUsd = Number(t.lowerBound)
-    const maxLev = Number(t.maxLeverage)
-    if (!Number.isFinite(lowerBoundUsd) || !Number.isFinite(maxLev) || maxLev <= 0) continue
-    pairs.push([lowerBoundUsd, maxLev])
-  }
-  return pairs
-}
-
-// Pure helper: compute the max allowed leverage for a given asset/notional from margin tables
-export function getMaxAllowedLeverageForNotional({
-  perpsMeta,
-  assetUniverse,
-  notional
-}: {
-  perpsMeta: WebData2Event['meta']
-  assetUniverse: WebData2Event['meta']['universe'][number]
-  notional: number
-}): number | null {
-  try {
-    const marginTableId = assetUniverse.marginTableId
-    const marginTables = perpsMeta.marginTables
-    if (marginTableId === undefined || !marginTables || !marginTables[marginTableId]) return null
-
-    const table = marginTables[marginTableId]
-
-    const pairs = collectPairsFromMarginTable(table)
-    if (pairs.length === 0) return null
-
-    pairs.sort((a, b) => a[0] - b[0])
-    let tierMaxLeverage = pairs[0][1]
-    for (const [lowerBound, maxLev] of pairs) {
-      if (notional >= lowerBound) {
-        tierMaxLeverage = maxLev
-      } else {
-        break
-      }
-    }
-    if (!Number.isFinite(tierMaxLeverage) || tierMaxLeverage <= 0) return null
-    const maxAllowedLeverage = Math.floor(tierMaxLeverage)
-    return Number.isFinite(maxAllowedLeverage) && maxAllowedLeverage > 0 ? maxAllowedLeverage : null
-  } catch {
-    return null
-  }
-}
-
 export const placePerpOrder = async ({
   sdkL1ActionClient,
   selectedAsset,
@@ -167,20 +115,6 @@ export const placePerpOrder = async ({
     }
   }
   const toastId = toast.loading('Loading...')
-  const notional = Number(formattedSize) * Number(limitPrice)
-  // Validate leverage against Hyperliquid margin tables for this asset and notional
-  const maxAllowedLeverage = getMaxAllowedLeverageForNotional({
-    perpsMeta,
-    assetUniverse,
-    notional
-  })
-  if (maxAllowedLeverage && leverage > maxAllowedLeverage) {
-    toast.error(
-      `Selected leverage (${leverage}x) exceeds max allowed (${maxAllowedLeverage}x) for notional $${notional.toLocaleString()}`,
-      { id: toastId }
-    )
-    return
-  }
   try {
     if (!sdkL1ActionClient) return
     const res = await sdkL1ActionClient.updateLeverage({

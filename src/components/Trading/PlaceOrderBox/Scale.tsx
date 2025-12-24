@@ -37,7 +37,7 @@ import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
-import { getMaxAllowedLeverageForNotional } from './components/placePerpOrder'
+import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
 interface Order {
   price: number
   size: number

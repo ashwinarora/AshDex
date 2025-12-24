@@ -22,6 +22,7 @@ const ReferralsHeader = () => {
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile } = useScreenSize()
+  const [openDialog, setOpenDialog] = useState<string | null>(null)
 
   if (isMobile) {
     return (
@@ -56,7 +57,6 @@ const ReferralsHeader = () => {
     )
   }
 
-  const [openDialog, setOpenDialog] = useState<string | null>(null)
 
   return (
     <div
