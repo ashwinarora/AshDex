@@ -477,7 +477,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
         </TableHeader>
         <TableBody className="overflow-y-auto h-full overflow-x-hidden no-scrollbar">
           {table.getRowModel().rows.map((row) => (
-            <TableRow className={cn('h-12', isRTL && 'flex-row-reverse')} key={row.id}>
+            <TableRow className={cn('h-8', isRTL && 'flex-row-reverse')} key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}

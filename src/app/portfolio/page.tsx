@@ -5,15 +5,17 @@ import UserData from '@/components/UserData/UserData'
 
 const PortfolioPage = () => {
   return (
-    <div className="w-full text-white/70 mb-8 h-screen flex flex-col gap-1 p-1">
-      <div className="w-full h-fit shrink-0">
-        <PortfolioHeader />
-      </div>
-      <div className="w-full h-fit shrink-0">
-        <PortfolioStats />
-      </div>
-      <div className="w-full h-[calc(100dvh-412px)]">
-        <UserData />
+    <div className="w-full h-dvh text-white/70 overflow-hidden flex flex-col items-center">
+      <div className="w-4/5 flex-1 flex flex-col gap-1 overflow-hidden py-4">
+        <div className="w-full shrink-0">
+          <PortfolioHeader />
+        </div>
+        <div className="w-full shrink-0">
+          <PortfolioStats />
+        </div>
+        <div className="w-full flex-1 overflow-hidden">
+          <UserData />
+        </div>
       </div>
       <FooterCompact />
     </div>

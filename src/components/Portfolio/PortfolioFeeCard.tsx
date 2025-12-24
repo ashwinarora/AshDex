@@ -75,7 +75,7 @@ const PortfolioFeeCard = ({
         <h2>{t('Fees (Taker/Maker)')}</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant={'outline'} size={'sm'} className="w-fit">
+            <Button variant="link" size="sm" className="w-fit">
               <p>{t(selectedView.fees.charAt(0).toUpperCase() + selectedView.fees.slice(1))}</p>
               <IconChevronDown className="size-4" />
             </Button>
