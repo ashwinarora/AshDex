@@ -27,7 +27,7 @@ class HLService {
     }
     this.NEXON_USER = NEXON_USER as Address
 
-    this.httpTransport = new hl.HttpTransport({ isTestnet })
+    this.httpTransport = new hl.HttpTransport({ isTestnet, fetchOptions: { keepalive: false } })
     this.infoClient = new hl.InfoClient({ transport: this.httpTransport })
   }
 
