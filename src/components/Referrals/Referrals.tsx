@@ -4,7 +4,7 @@ import React from 'react'
 import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import ReferralsHeader from './ReferralsHeader'
-import ReferralsActionPanel from './ReferralsActionPanel'
+import ReferralActions from './ReferralActions'
 import FooterCompact from '../FooterCompact'
 import ReferralStats from './ReferralStats'
 
@@ -112,104 +112,18 @@ function Referrals() {
     )
 
   return (
-    <>
-      <div className="w-full text-white/70 mb-8 h-screen flex flex-col gap-1 p-1">
-        <div className="w-full h-fit shrink-0">
+    <div className="w-full h-dvh text-white/70 overflow-hidden flex items-center justify-center">
+      <div className="w-4/5 h-4/5 flex flex-col overflow-hidden">
+        <div className="w-full shrink-0">
           <ReferralsHeader />
         </div>
-        <div className="w-full h-full flex-1 flex items-start gap-1">
+        <div className="w-full flex-1 flex items-start gap-1 overflow-hidden">
           <ReferralStats />
-          {/* <ReferralStatsCard /> */}
           <ReferralsTablesTab />
-          <ReferralsActionPanel />
         </div>
       </div>
       <FooterCompact />
-      {/* <div className=" bg-secondary my-1">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-4">
-          <div className="mb-8">
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-              Referral Program
-            </h1>
-            <p className="text-lg text-gray-300 max-w-2xl">
-              Earn rewards by inviting friends to join Nexon. Share your referral code and start
-              earning today.
-            </p>
-          </div>
-
-          <div className="flex flex-col xl:flex-row gap-8">
-            
-            <div className={`${isConnected ? 'xl:flex-[8]' : 'xl:flex-[12]'} w-full`}>
-              {isConnected && isCreateCode ? (
-                <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/10 p-6">
-                  <ReferralsTablesTab />
-                </div>
-              ) : (
-                <div className="flex flex-col lg:flex-row gap-8">
-                
-                  <div className="bg-white/10 rounded-3xl border border-white/10 flex-1 p-8 lg:p-10 flex flex-col gap-6">
-                    {REFERRALSDATA?.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center gap-4 p-6 rounded-2xl bg-white/10 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300"
-                      >
-                        <div className="flex-shrink-0 w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center">
-                          <Image
-                            src={item.src}
-                            alt={item.alt}
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                        </div>
-                        <div className="flex-1">
-                          <span
-                            className={`text-lg font-semibold text-white ${item?.opacityClass || ''}`}
-                          >
-                            {item?.label}
-                          </span>
-                        </div>
-                        <div className="text-2xl font-bold text-purple-400">{index + 1}</div>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-xl rounded-3xl border border-white/10 p-8 lg:p-10 flex flex-col justify-between flex-1">
-                    <div className="flex flex-col gap-6">
-                      <div>
-                        <h2 className="text-3xl font-bold text-white mb-4">
-                          Earn Rewards and Unlock Discounts
-                        </h2>
-                        {REFERRALS_DESC?.map((desc, index) => (
-                          <p key={index} className="text-gray-300 text-lg leading-relaxed mb-4">
-                            {desc}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mt-8">
-                      <button
-                        onClick={handleButtonClick}
-                        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
-                      >
-                        {isConnected ? 'Create Referral Code' : 'Connect Wallet to Start'}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {isConnected && (
-              <div className="xl:flex-[4]">
-                <ReferralsActionPanel isCreateCode={isCreateCode} />
-              </div>
-            )}
-          </div>
-          <SuccessfullReferrals />
-        </div>
-      </div> */}
-    </>
+    </div>
   )
 }
 
