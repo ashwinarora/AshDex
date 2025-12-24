@@ -57,7 +57,6 @@ const ReferralsHeader = () => {
     )
   }
 
-
   return (
     <div
       className={cn(
