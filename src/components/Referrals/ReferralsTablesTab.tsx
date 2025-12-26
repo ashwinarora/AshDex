@@ -14,7 +14,7 @@ const ReferralsTablesTab = () => {
   return (
     <div
       className={cn(
-        'w-full h-11/12 flex-1 flex flex-col p-2 gap-2 justify-start bg-secondary rounded-md shrink-0',
+        'w-full h-full flex-1 flex flex-col p-2 gap-2 justify-start bg-secondary rounded-md shrink-0',
         isRTL && 'items-end'
       )}
     >

@@ -38,7 +38,8 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const balanceCount = useMemo(() => {
-    const baseCount = spotState?.balances?.length || 0
+    const baseCount =
+      spotState?.balances?.filter((balance) => Number(balance.total) > 0)?.length || 0
     const perpsAccountValue = Number(clearingHouseState?.marginSummary?.accountValue || 0)
     const hasPerpsUsdc = perpsAccountValue > 0
     return baseCount + (hasPerpsUsdc ? 1 : 0)
@@ -94,7 +95,7 @@ const UserData = () => {
   return (
     <div
       className={cn(
-        'w-full bg-secondary h-full rounded-md overflow-x-hidden flex flex-col gap-2 p-2',
+        'w-full bg-secondary h-full rounded-md overflow-x-hidden flex flex-col gap-1 p-2',
         isRTL ? 'items-end' : ''
       )}
     >
@@ -106,7 +107,7 @@ const UserData = () => {
       >
         <div
           className={cn(
-            'md:max-w-xl xl:max-w-3xl w-full h-8 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
+            'md:max-w-xl xl:max-w-3xl w-full h-7 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
             isRTL && 'flex-row-reverse'
           )}
         >
@@ -153,7 +154,7 @@ const UserData = () => {
         )}
       </div>
       <Separator orientation="horizontal" />
-      <div className="w-full pb-8 h-full overflow-y-auto overflow-x-hidden no-scrollbar">
+      <div className="w-full h-full overflow-y-auto overflow-x-hidden no-scrollbar">
         {tabs[activeTab] && <div className="w-full h-full">{tabs[activeTab].element}</div>}
       </div>
     </div>
