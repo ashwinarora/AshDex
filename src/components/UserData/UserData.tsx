@@ -38,7 +38,8 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const balanceCount = useMemo(() => {
-    const baseCount = spotState?.balances?.length || 0
+    const baseCount =
+      spotState?.balances?.filter((balance) => Number(balance.total) > 0)?.length || 0
     const perpsAccountValue = Number(clearingHouseState?.marginSummary?.accountValue || 0)
     const hasPerpsUsdc = perpsAccountValue > 0
     return baseCount + (hasPerpsUsdc ? 1 : 0)

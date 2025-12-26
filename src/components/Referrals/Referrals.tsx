@@ -4,7 +4,6 @@ import React from 'react'
 import ReferralsTablesTab from './ReferralsTablesTab'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import ReferralsHeader from './ReferralsHeader'
-import ReferralActions from './ReferralActions'
 import FooterCompact from '../FooterCompact'
 import ReferralStats from './ReferralStats'
 

@@ -15,6 +15,9 @@ import { placePerpOrder } from './placePerpOrder'
 import { placeSpotOrder } from './placeSpotOrder'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
+import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
+import { getPerpsUniverseIndex } from '@/utils/utils'
+import { toast } from 'sonner'
 
 export type StopOrder = {
   isMarket: boolean
@@ -51,16 +54,23 @@ const OrderButton = ({
 }: OrderButtonProps) => {
   const { t } = useTranslate()
   const { isConnected: isWalletConnected } = useAccount()
-  const { agentWallet, sdkL1ActionClient, perpsMeta, pushNewOpenOrders, pushNewPosition } =
-    useHyperliquidStore(
-      useShallow((state) => ({
-        agentWallet: state.agentWallet,
-        sdkL1ActionClient: state.sdkL1ActionClient,
-        perpsMeta: state.perpsMeta,
-        pushNewOpenOrders: state.pushNewOpenOrders,
-        pushNewPosition: state.pushNewPosition
-      }))
-    )
+  const {
+    agentWallet,
+    sdkL1ActionClient,
+    perpsMeta,
+    pushNewOpenOrders,
+    pushNewPosition,
+    clearingHouseState
+  } = useHyperliquidStore(
+    useShallow((state) => ({
+      agentWallet: state.agentWallet,
+      sdkL1ActionClient: state.sdkL1ActionClient,
+      perpsMeta: state.perpsMeta,
+      pushNewOpenOrders: state.pushNewOpenOrders,
+      pushNewPosition: state.pushNewPosition,
+      clearingHouseState: state.clearingHouseState
+    }))
+  )
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const { toggleConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
@@ -139,6 +149,43 @@ const OrderButton = ({
         pushNewOpenOrders
       })
     } else {
+      if (!perpsMeta) return
+
+      // Preflight: validate leverage against margin tiers using the *updated* notional
+      // (existing position + this order) to avoid placing an order that would be rejected.
+      const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, selectedAsset)
+      const assetUniverse = perpsMeta.universe[assetIndex]
+
+      if (assetUniverse) {
+        const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
+        const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+        const px = Number(formattedLimitPrice)
+        const sz = Number(formattedAssetAmount)
+
+        if (Number.isFinite(px) && px > 0 && Number.isFinite(sz) && sz > 0 && clearingHouseState) {
+          const existingPosition = clearingHouseState.assetPositions?.find(
+            (p) => p.position.coin === selectedAsset
+          )?.position
+          const existingSzi = Number(existingPosition?.szi ?? 0)
+          const deltaSzi = sz * (isBuy ? 1 : -1)
+          const updatedSzi = existingSzi + deltaSzi
+          const updatedNotionalUsd = Math.abs(updatedSzi) * px
+
+          const maxAllowedLeverage = getMaxAllowedLeverageForNotional({
+            perpsMeta,
+            assetUniverse,
+            notional: updatedNotionalUsd
+          })
+
+          if (maxAllowedLeverage && leverage > maxAllowedLeverage) {
+            toast.error('Leverage exceeds max allowed for your position size', {
+              description: `Selected: ${leverage}x • Max: ${maxAllowedLeverage}x • Updated notional: $${updatedNotionalUsd.toLocaleString()}`
+            })
+            return
+          }
+        }
+      }
+
       await placePerpOrder({
         sdkL1ActionClient,
         selectedAsset,
