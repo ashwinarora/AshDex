@@ -49,6 +49,7 @@ const Header: FC = () => {
   const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
+  const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
@@ -68,6 +69,11 @@ const Header: FC = () => {
   const { data: termsData } = useTermsSignature(walletId)
   useNexonReferral()
 
+  // Prevent hydration mismatches by keeping the first client render identical to SSR.
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // If user is connected/authenticated and terms are not signed, force the Terms modal to open.
   useEffect(() => {
     if (!isConnected && !authenticated) return
@@ -80,6 +86,8 @@ const Header: FC = () => {
     toast.error(t('Please sign the terms to continue'))
     // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
   }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
+
+  const isWalletConnected = mounted && (isConnected || (authenticated && !!walletId))
 
   const desktopMenu: MenuItem[] = [
     { name: t('Futures'), path: '/', isComingSoon: false },
@@ -238,7 +246,7 @@ const Header: FC = () => {
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
         <BridgeButton />
-        {isConnected || (authenticated && !!walletId) ? (
+        {isWalletConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

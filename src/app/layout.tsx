@@ -6,7 +6,6 @@ import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import '@/styles/table.css'
 import OnboardingModal from '@/components/onboarding-modal'
-import { BridgeProvider } from '@/context/BridgeContext'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
 import FIBNativeBridgeInitializer from './FIBNativeBridgeInitializer'
@@ -68,17 +67,15 @@ export default async function RootLayout({
               <FIBBridgeEvents />
               <HyperLiquidInitializer />
               <WalletModalProvider>
-                <BridgeProvider>
-                  <EstablishConnectionProvider>
-                    <div className="overscroll-none">
-                      {/* <SnackBar /> */}
-                      <Header />
-                      <OnboardingModal />
-                      <DynamicUseToastOptions />
-                      {children}
-                    </div>
-                  </EstablishConnectionProvider>
-                </BridgeProvider>
+                <EstablishConnectionProvider>
+                  <div className="overscroll-none">
+                    {/* <SnackBar /> */}
+                    <Header />
+                    <OnboardingModal />
+                    <DynamicUseToastOptions />
+                    {children}
+                  </div>
+                </EstablishConnectionProvider>
               </WalletModalProvider>
             </WagmiProvider>
           </PrivyProvider>

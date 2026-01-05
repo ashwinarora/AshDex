@@ -1,5 +1,12 @@
 import { useState } from 'react'
-import { useAccount, useBalance, useSendTransaction, useSwitchChain, useWriteContract } from 'wagmi'
+import {
+  useAccount,
+  useBalance,
+  useReadContract,
+  useSendTransaction,
+  useSwitchChain,
+  useWriteContract
+} from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
@@ -59,14 +66,18 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
   })
 
-  const { data: balance, isLoading: isLoadingBalance } = useBalance({
-    address: address,
+  const { data: tokenBalance, isLoading: isLoadingBalance } = useReadContract({
+    address: onChainAddress as `0x${string}`,
+    abi: erc20Abi,
+    functionName: 'balanceOf',
+    args: address ? [address] : undefined,
     chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id,
-    token: onChainAddress as `0x${string}`,
     query: {
       enabled: !!onChainAddress && !!address
     }
   })
+
+  const balance = tokenBalance ? { value: tokenBalance, decimals: 18 } : { value: 0n, decimals: 18 }
 
   const { sendTransactionAsync } = useSendTransaction()
 
