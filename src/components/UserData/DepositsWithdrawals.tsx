@@ -44,9 +44,7 @@ type FilteredLedgerUpdate = LedgerUpdate & {
 const columnHelper = createColumnHelper<FilteredLedgerUpdate>()
 
 const getArbiscanUrl = (hash: string) => {
-  return isTestnet
-    ? `https://sepolia.arbiscan.io/tx/${hash}`
-    : `https://arbiscan.io/tx/${hash}`
+  return isTestnet ? `https://sepolia.arbiscan.io/tx/${hash}` : `https://arbiscan.io/tx/${hash}`
 }
 
 const getActionLabel = (type: string) => {
@@ -119,12 +117,18 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   }, [])
 
   const filteredData = useMemo(() => {
-    return ledgerUpdates.filter(
-      (update): update is FilteredLedgerUpdate =>
+    return ledgerUpdates.filter((update): update is FilteredLedgerUpdate => {
+      if (isTestnet) {
+        // Testnet only has transfers between perps and spot (no deposit/withdraw)
+        return update.delta.type === 'accountClassTransfer'
+      }
+      // Mainnet has deposit, withdraw, and transfers
+      return (
         update.delta.type === 'deposit' ||
         update.delta.type === 'withdraw' ||
         update.delta.type === 'accountClassTransfer'
-    )
+      )
+    })
   }, [ledgerUpdates])
 
   const columns = useMemo(
@@ -133,6 +137,10 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         id: 'timestamp',
         header: () => t('Time'),
         cell: (info) => {
+          const timeString = new Date(info.getValue()).toLocaleString('en-US')
+          if (isTestnet) {
+            return <span>{timeString}</span>
+          }
           const hash = info.row.original.hash
           return (
             <a
@@ -141,7 +149,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-accent-foreground transition-colors"
             >
-              {new Date(info.getValue()).toLocaleString('en-US')}
+              {timeString}
               <IconExternalLink className="size-3" />
             </a>
           )
