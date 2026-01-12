@@ -28,6 +28,7 @@ interface HyperliquidState {
   spotState: NonNullable<hl.WsWebData2Event['spotState']>
   openOrders: hl.WsWebData2Event['openOrders']
   activeAssetData: hl.WsActiveAssetDataEvent | null
+  ledgerUpdates: hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates']
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -40,6 +41,7 @@ interface HyperliquidState {
     webData2?: hl.Subscription
     candles?: hl.Subscription
     activeAssetData: hl.Subscription[]
+    ledgerUpdates?: hl.Subscription
   }
 }
 
@@ -67,6 +69,8 @@ interface HyperliquidActions {
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
   updateUserActiveAddress: (address: Hex) => void
+  subscribeLedgerUpdates: (address: Hex) => void
+  unsubscribeLedgerUpdates: () => Promise<void>
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -91,6 +95,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     spotState: { balances: [] },
     openOrders: [],
     activeAssetData: null,
+    ledgerUpdates: [],
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -390,6 +395,48 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     },
     updateUserActiveAddress: (address: Hex) => {
       set({ userActiveAddress: address })
+    },
+    subscribeLedgerUpdates: async (address: Hex) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      if (address === zeroAddress) return
+      const ledgerUpdatesSub = await sdkSubscriptionClient.userNonFundingLedgerUpdates(
+        { user: address },
+        (data) => {
+          const activeAddress = get().userActiveAddress
+          if (data.user.toLowerCase() !== activeAddress.toLowerCase()) {
+            ledgerUpdatesSub.unsubscribe()
+            return
+          }
+          if (data.isSnapshot) {
+            // Initial historical data
+            set({ ledgerUpdates: data.nonFundingLedgerUpdates })
+          } else {
+            // Real-time update - prepend new items
+            set((state) => ({
+              ledgerUpdates: [...data.nonFundingLedgerUpdates, ...state.ledgerUpdates]
+            }))
+          }
+        }
+      )
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          ledgerUpdates: ledgerUpdatesSub
+        }
+      }))
+    },
+    unsubscribeLedgerUpdates: async () => {
+      const { subsManager } = get()
+      if (!subsManager.ledgerUpdates) return
+      await subsManager.ledgerUpdates.unsubscribe()
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          ledgerUpdates: undefined
+        },
+        ledgerUpdates: []
+      }))
     }
   })
 )
@@ -420,7 +467,9 @@ export const useInitHyperliquid = () => {
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
-      updateUserActiveAddress: state.updateUserActiveAddress
+      updateUserActiveAddress: state.updateUserActiveAddress,
+      subscribeLedgerUpdates: state.subscribeLedgerUpdates,
+      unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates
     }))
   )
 }
