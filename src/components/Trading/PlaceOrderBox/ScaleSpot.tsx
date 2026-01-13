@@ -194,6 +194,16 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }
   }
 
+  const handleTotalSizeChange = (value: number | undefined) => {
+    setTotalSize(value)
+    if (value !== undefined && Number(maxAllowed) > 0) {
+      const newPercent = Math.min(100, Math.max(0, (value / Number(maxAllowed)) * 100))
+      setUsdPercent(newPercent)
+    } else {
+      setUsdPercent(0)
+    }
+  }
+
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -296,7 +306,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               placeholder="0"
               value={totalSize}
               onChange={(e) =>
-                setTotalSize(e.target.value ? parseFloat(e.target.value) : undefined)
+                handleTotalSizeChange(e.target.value ? parseFloat(e.target.value) : undefined)
               }
               className={cn('w-full text-end text-white placeholder:text-white')}
             />

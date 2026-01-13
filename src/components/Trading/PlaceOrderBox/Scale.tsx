@@ -288,6 +288,19 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }
   }
 
+  const handleTotalUsdChange = (value: number | undefined) => {
+    setTotalUsd(value)
+    if (value !== undefined && maxAllowedUsd > 0) {
+      const newPercent = Math.min(100, Math.max(0, (value / maxAllowedUsd) * 100))
+      setPercent(newPercent)
+      const newAssetSize = value / (Number(allMids[selectedAsset]) || 1)
+      setTotalAssetSize(newAssetSize)
+    } else {
+      setPercent(0)
+      setTotalAssetSize(undefined)
+    }
+  }
+
   const handleIncrease = () => setTotalOrders((prev) => prev + 1)
   const handleDecrease = () => setTotalOrders((prev) => (prev > 0 ? prev - 1 : 0))
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -388,7 +401,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             type="text"
             placeholder="0"
             value={totalUsd}
-            onChange={(e) => setTotalUsd(e.target.value ? parseFloat(e.target.value) : undefined)}
+            onChange={(e) => handleTotalUsdChange(e.target.value ? parseFloat(e.target.value) : undefined)}
             className={cn(
               'w-full text-end text-white placeholder:text-white',
               isRTL && 'text-start'
