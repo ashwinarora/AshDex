@@ -423,28 +423,28 @@ const TradingViewChart = ({
 
     // Decide colors based on label (TP green, SL red, default green)
     const isSl = label === 'SL'
-    const color = isSl ? '#ff0000' : '#2fa766'
-    const bg = isSl ? 'rgba(255,0,0,0.1)' : 'rgba(47,167,102,0.1)'
+    const color = isSl ? '#F6465D' : '#2fa766'
+    const bg = isSl ? 'rgba(246,70,93,0.85)' : 'rgba(47,167,102,0.85)'
 
     // Draw a horizontal line + label
     const shape = await chart.createShape(
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `${label ?? (isBuy ? 'Buy' : 'Sell')} · ${qty} @ ${price}`,
-        // style it however you like:
+        text: `${label ?? (isBuy ? 'Buy' : 'Sell')}  ${qty} @ ${price}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2,
-          OverrideLineStyle: 2
+          linewidth: 2,
+          linestyle: 1
         },
         disableSelection: true,
         disableSave: true,
@@ -459,25 +459,27 @@ const TradingViewChart = ({
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
-    const color = isLong ? '#2ae800' : '#ff0000' // green or red
-    const bg = isLong ? 'rgba(42,232,0,0.1)' : 'rgba(255,0,0,0.1)'
+    const color = isLong ? '#2fa766' : '#F6465D'
+    const bg = isLong ? 'rgba(47,167,102,0.85)' : 'rgba(246,70,93,0.85)'
 
     const shapeId = await chart.createShape(
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `${isLong ? 'Long' : 'Short'} · ${qty} @ ${price}`,
+        text: `${isLong ? 'Long' : 'Short'}  ${qty} @ ${price}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2
+          linewidth: 2,
+          linestyle: 0
         },
         disableSelection: true,
         disableSave: true,
@@ -493,8 +495,8 @@ const TradingViewChart = ({
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
-    const color = '#ff0000' // red
-    const bg = 'rgba(255,0,0,0.1)'
+    const color = '#ff9800'
+    const bg = 'rgba(255,152,0,0.85)'
     const numericDisplayPrice = Number(price)
     const priceText = Number.isFinite(numericDisplayPrice)
       ? numericDisplayPrice.toFixed(2)
@@ -504,18 +506,20 @@ const TradingViewChart = ({
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `Liquidation · ${qty} @ ${priceText}`,
+        text: `Liq  ${qty} @ ${priceText}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2
+          linewidth: 2,
+          linestyle: 1
         },
         disableSelection: true,
         disableSave: true,

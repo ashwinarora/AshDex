@@ -165,9 +165,7 @@ const AmountInput = ({
         <Input
           type="text"
           placeholder="0"
-          value={
-            isInputUsd ? Number(usdAmount).toFixed(2) : Number(assetAmount).toFixed(szDecimals)
-          }
+          value={isInputUsd ? usdAmount : assetAmount}
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
           className={cn('flex-1 text-white shrink-0', isRTL ? 'text-start' : 'text-end')}
         />
@@ -216,10 +214,10 @@ const AmountInput = ({
           >
             <Input
               className={cn(
-                'flex-1 p-0 text-end text-white bg-transparent border-none',
+                'flex-1 p-0 !text-xs text-end text-white bg-transparent border-none',
                 isRTL && 'text-start'
               )}
-              value={usdPercent.toString()}
+              value={usdPercent.toFixed(2)}
               onChange={(e) => handleUsdPercentChange(parseInt(e.target.value, 10))}
             />
             <IconPercentage className="size-3" />
@@ -239,7 +237,7 @@ const AmountInput = ({
             value={'25'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 25
+              usdPercent === 25
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/70'
               // isRTL ? 'rounded-r-md' : 'rounded-l-md'
@@ -251,7 +249,7 @@ const AmountInput = ({
             value={'50'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent  transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 50
+              usdPercent === 50
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/70'
             )}
@@ -262,7 +260,7 @@ const AmountInput = ({
             value={'75'}
             className={cn(
               'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 75
+              usdPercent === 75
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/70'
             )}
@@ -273,7 +271,7 @@ const AmountInput = ({
             value={'100'}
             className={cn(
               'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-              Math.round(usdPercent) === 100
+              usdPercent === 100
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/70',
               isRTL ? 'rounded-l-md' : 'rounded-r-md'

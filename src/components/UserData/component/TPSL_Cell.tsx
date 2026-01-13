@@ -32,7 +32,7 @@ import useUserStore from '@/store/userStore'
 
 interface TPSLCellProps {
   asset: string
-  tpslAsset: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
+  tpslAsset?: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
   isOpen: boolean
   onClose: () => void
 }
@@ -122,17 +122,18 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const { getAdjustedBuilderFee } = useUserFee()
 
   const assetCtx = useMemo(() => {
+    if (!tpslAsset) return null
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)
     return assetIndex ? perpAssetContext[assetIndex] : null
-  }, [perpAssetContext, tpslAsset.coin, perpsMeta])
+  }, [perpAssetContext, tpslAsset?.coin, perpsMeta])
 
-  const entryPrice = Number(tpslAsset.entryPx)
+  const entryPrice = Number(tpslAsset?.entryPx ?? 0)
   const markPrice = Number(assetCtx?.markPx)
-  const position = Number(tpslAsset.szi)
+  const position = Number(tpslAsset?.szi ?? 0)
 
   const handleTpPriceChange = (value: string) => {
     setTpTriggerPrice(value)
-    if (value) {
+    if (value && tpslAsset) {
       const { profitPercentage, profitAmount } = calculatePnL(tpslAsset, Number(value))
       setTpPercent(profitPercentage.toString())
       setTpValue(profitAmount.toString())
@@ -141,7 +142,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
 
   const handleSlPriceChange = (value: string) => {
     setSlTriggerPrice(value)
-    if (value) {
+    if (value && tpslAsset) {
       const { profitPercentage, profitAmount } = calculatePnL(tpslAsset, Number(value))
       setSlPercent(profitPercentage.toString())
       setSlValue(profitAmount.toString())
@@ -151,7 +152,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const handleTpValueChange = (value: string) => {
     if (tpMode === '%') {
       setTpPercent(value)
-      if (value) {
+      if (value && tpslAsset) {
         const { triggerPrice, profitAmount } = calculateTriggerFromPercentage(
           tpslAsset,
           Number(value) / 100
@@ -161,7 +162,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       }
     } else {
       setTpValue(value)
-      if (value) {
+      if (value && tpslAsset) {
         const numValue = Number(value)
         const { triggerPrice, profitPercentage } = calculateTriggerFromAmount(tpslAsset, numValue)
         setTpPercent(profitPercentage.toString())
@@ -173,7 +174,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const handleSlValueChange = (value: string) => {
     if (slMode === '%') {
       setSlPercent(value)
-      if (value) {
+      if (value && tpslAsset) {
         const { triggerPrice, profitAmount } = calculateTriggerFromPercentage(
           tpslAsset,
           -Number(value) / 100
@@ -183,7 +184,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       }
     } else {
       setSlValue(value)
-      if (value) {
+      if (value && tpslAsset) {
         const numValue = Number(value)
         const { triggerPrice, profitPercentage } = calculateTriggerFromAmount(tpslAsset, -numValue)
         setSlPercent(profitPercentage.toString())
@@ -194,7 +195,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
 
   const handleTpModeChange = (mode: '$' | '%') => {
     setTpMode(mode)
-    if (tpTriggerPrice) {
+    if (tpTriggerPrice && tpslAsset) {
       const { profitPercentage, profitAmount } = calculatePnL(tpslAsset, Number(tpTriggerPrice))
       setTpPercent(profitPercentage.toString())
       setTpValue(profitAmount.toString())
@@ -203,7 +204,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
 
   const handleSlModeChange = (mode: '$' | '%') => {
     setSlMode(mode)
-    if (slTriggerPrice) {
+    if (slTriggerPrice && tpslAsset) {
       const { profitPercentage, profitAmount } = calculatePnL(tpslAsset, Number(slTriggerPrice))
       setSlPercent(profitPercentage.toString())
       setSlValue(profitAmount.toString())
@@ -214,6 +215,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     if (!agentWallet) return
     if (!perpsMeta) return
     if (!sdkL1ActionClient) return
+    if (!tpslAsset) return
     // Prevent placing SL below liquidation price
     if (slTriggerPrice) {
       const slPx = Number(slTriggerPrice)
@@ -321,7 +323,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       <DialogContent className="flex flex-col gap-4 min-w-4/5 md:min-w-2xl">
         <DialogHeader>
           <DialogTitle>
-            {t('TP/SL for')} {tpslAsset.coin}
+            {t('TP/SL for')} {tpslAsset?.coin}
           </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-2">
@@ -509,7 +511,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               inputMode="decimal"
             />
             <span className={cn('text-xs text-white', !configureAmount && 'opacity-50')}>
-              {tpslAsset.coin}
+              {tpslAsset?.coin}
             </span>
           </div>
         </div>

@@ -75,7 +75,8 @@ const AmountInputSpot = ({
     }
   }, [spotState, selectedAssetName, isBuy])
 
-  const updateFromAssetAmount = (input: string) => {
+  const updateFromAssetAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value
     // Allow empty input or just a decimal point
     if (input === '' || input === '.') {
       setAssetAmount(input)
@@ -108,7 +109,8 @@ const AmountInputSpot = ({
     }
   }
 
-  const updateFromUsdAmount = (input: string) => {
+  const updateFromUsdAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const input = e.target.value
     // Allow empty input or just a decimal point
     if (input === '' || input === '.') {
       setUsdAmount(input)
@@ -171,9 +173,7 @@ const AmountInputSpot = ({
           type="text"
           placeholder="0"
           value={isInputUsd ? usdAmount : assetAmount}
-          onChange={(e) =>
-            isInputUsd ? updateFromUsdAmount(e.target.value) : updateFromAssetAmount(e.target.value)
-          }
+          onChange={isInputUsd ? updateFromUsdAmount : updateFromAssetAmount}
           className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
@@ -221,10 +221,10 @@ const AmountInputSpot = ({
           >
             <Input
               className={cn(
-                'flex-1 p-0 text-end text-white bg-transparent border-none',
+                'flex-1 p-0 !text-xs text-end text-white bg-transparent border-none',
                 isRTL && 'text-start'
               )}
-              value={usdPercent.toString()}
+              value={usdPercent.toFixed(2)}
               onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
             />
             <IconPercentage className="size-3" />

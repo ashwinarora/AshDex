@@ -112,7 +112,7 @@ const UserData = () => {
       >
         <div
           className={cn(
-            'md:max-w-xl xl:max-w-3xl w-full h-7 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
+            'md:max-w-xl xl:max-w-3xl w-full h-8 flex shrink-0 items-center overflow-x-auto no-scrollbar justify-start',
             isRTL && 'flex-row-reverse'
           )}
         >
@@ -130,7 +130,7 @@ const UserData = () => {
             {tabs.map((tab, index) => (
               <ToggleGroupItem
                 key={tab.header}
-                className="!text-xs xl:!text-sm w-auto min-w-fit h-full !px-2 whitespace-nowrap data-[state=on]:bg-transparent data-[state=on]:text-primary"
+                className="!text-xs w-auto min-w-fit h-full !px-4 whitespace-nowrap data-[state=on]:bg-transparent data-[state=on]:text-primary"
                 value={index.toString()}
               >
                 {tab.header}

@@ -26,7 +26,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
-  asset: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
+  asset?: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
@@ -44,6 +44,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   const marginAvailable = clearingHouseState?.withdrawable || 0
 
   const handleMarginChange = async () => {
+    if (!asset) return
     const isBuy = Number(asset.szi) > 0
     const toastId = toast.loading(t('Updating margin...'))
     const realAmount = Number(amount) * 10 ** 6
@@ -85,10 +86,10 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center text-xs">
             <span className="text-white/70">
-              {t('Current margin for')} {asset.coin}-USD
+              {t('Current margin for')} {asset?.coin}-USD
             </span>
             <span className="font-medium text-white">
-              {Number(asset.marginUsed).toLocaleString(undefined, {
+              {Number(asset?.marginUsed ?? 0).toLocaleString(undefined, {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}{' '}
