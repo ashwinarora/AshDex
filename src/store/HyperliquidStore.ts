@@ -10,6 +10,12 @@ import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import * as hl from '@nktkas/hyperliquid'
+import {
+  removePendingWithdrawal,
+  addPendingWithdrawal as addPendingWithdrawalToStorage,
+  getPendingWithdrawals,
+  type PendingWithdrawal
+} from '@/utils/pendingWithdrawals'
 
 interface HyperliquidState {
   userActiveAddress: Hex
@@ -29,6 +35,7 @@ interface HyperliquidState {
   openOrders: hl.WsWebData2Event['openOrders']
   activeAssetData: hl.WsActiveAssetDataEvent | null
   ledgerUpdates: hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates']
+  pendingWithdrawals: PendingWithdrawal[]
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -71,6 +78,8 @@ interface HyperliquidActions {
   updateUserActiveAddress: (address: Hex) => void
   subscribeLedgerUpdates: (address: Hex) => void
   unsubscribeLedgerUpdates: () => Promise<void>
+  addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
+  loadPendingWithdrawals: (address: string) => void
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -96,6 +105,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     openOrders: [],
     activeAssetData: null,
     ledgerUpdates: [],
+    pendingWithdrawals: [],
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -411,11 +421,27 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           if (data.isSnapshot) {
             // Initial historical data
             set({ ledgerUpdates: data.nonFundingLedgerUpdates })
+            // Clear any pending withdrawals that are now in the ledger
+            data.nonFundingLedgerUpdates.forEach((update) => {
+              if (update.delta.type === 'withdraw') {
+                removePendingWithdrawal(data.user, update.time)
+              }
+            })
+            // Reload pending withdrawals from localStorage to sync store state
+            set({ pendingWithdrawals: getPendingWithdrawals(data.user) })
           } else {
             // Real-time update - prepend new items
             set((state) => ({
               ledgerUpdates: [...data.nonFundingLedgerUpdates, ...state.ledgerUpdates]
             }))
+            // Clear pending withdrawal now that it's completed
+            data.nonFundingLedgerUpdates.forEach((update) => {
+              if (update.delta.type === 'withdraw') {
+                removePendingWithdrawal(data.user, update.time)
+              }
+            })
+            // Reload pending withdrawals from localStorage to sync store state
+            set({ pendingWithdrawals: getPendingWithdrawals(data.user) })
           }
         }
       )
@@ -437,6 +463,19 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         },
         ledgerUpdates: []
       }))
+    },
+    addPendingWithdrawal: (withdrawal: PendingWithdrawal) => {
+      // Save to localStorage for persistence
+      addPendingWithdrawalToStorage(withdrawal)
+      // Update store for reactivity
+      set((state) => ({
+        pendingWithdrawals: [...state.pendingWithdrawals, withdrawal]
+      }))
+    },
+    loadPendingWithdrawals: (address: string) => {
+      // Load from localStorage into store
+      const pending = getPendingWithdrawals(address)
+      set({ pendingWithdrawals: pending })
     }
   })
 )
@@ -469,7 +508,8 @@ export const useInitHyperliquid = () => {
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
       updateUserActiveAddress: state.updateUserActiveAddress,
       subscribeLedgerUpdates: state.subscribeLedgerUpdates,
-      unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates
+      unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
+      loadPendingWithdrawals: state.loadPendingWithdrawals
     }))
   )
 }

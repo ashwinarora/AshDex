@@ -71,6 +71,8 @@ export const NEXON_REFERRAL_CODE = isTestnet
 
 export const BUILDER_FEE = '0.1%'
 
+export const HYPERLIQUID_WITHDRAW_FEE_USDC = 1 // Hyperliquid charges flat $1 USDC per withdrawal
+
 export const HLP_VAULT_TESTNET = '0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0' // https://app.hyperliquid-testnet.xyz/vaults/0xa15099a30bbf2e68942d6f4c43d70d04faeab0a0
 
 export const MAX_DECIMALS_PERP = 6 // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/tick-and-lot-size

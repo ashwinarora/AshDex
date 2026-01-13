@@ -39,6 +39,7 @@ type FilteredLedgerUpdate = LedgerUpdate & {
     fee?: string
     nonce?: number
   }
+  isPending?: boolean
 }
 
 const columnHelper = createColumnHelper<FilteredLedgerUpdate>()
@@ -105,9 +106,10 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { isConnected } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([{ id: 'timestamp', desc: true }])
   const [mounted, setMounted] = useState(false)
-  const { ledgerUpdates } = useHyperliquidStore(
+  const { ledgerUpdates, pendingWithdrawals } = useHyperliquidStore(
     useShallow((state) => ({
-      ledgerUpdates: state.ledgerUpdates
+      ledgerUpdates: state.ledgerUpdates,
+      pendingWithdrawals: state.pendingWithdrawals
     }))
   )
   const { isTablet, isMobile } = useScreenSize()
@@ -117,7 +119,8 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   }, [])
 
   const filteredData = useMemo(() => {
-    return ledgerUpdates.filter((update): update is FilteredLedgerUpdate => {
+    // Filter completed transactions from WebSocket
+    const completed = ledgerUpdates.filter((update): update is FilteredLedgerUpdate => {
       if (isTestnet) {
         // Testnet only has transfers between perps and spot (no deposit/withdraw)
         return update.delta.type === 'accountClassTransfer'
@@ -129,7 +132,23 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         update.delta.type === 'accountClassTransfer'
       )
     })
-  }, [ledgerUpdates])
+
+    // Convert pending withdrawals to the same format (mainnet only)
+    const pending: FilteredLedgerUpdate[] = pendingWithdrawals.map((pw) => ({
+      time: pw.timestamp,
+      hash: '0x' as `0x${string}`, // No hash yet for pending
+      delta: {
+        type: 'withdraw' as const,
+        usdc: pw.displayAmount,
+        fee: pw.fee,
+        nonce: 0
+      },
+      isPending: true
+    }))
+
+    // Merge pending (at top) with completed
+    return [...pending, ...completed]
+  }, [ledgerUpdates, pendingWithdrawals])
 
   const columns = useMemo(
     () => [
@@ -138,7 +157,9 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         header: () => t('Time'),
         cell: (info) => {
           const timeString = new Date(info.getValue()).toLocaleString('en-US')
-          if (isTestnet) {
+          const isPending = info.row.original.isPending
+          // No link for testnet or pending items
+          if (isTestnet || isPending) {
             return <span>{timeString}</span>
           }
           const hash = info.row.original.hash
@@ -161,7 +182,14 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.display({
         id: 'status',
         header: () => t('Status'),
-        cell: () => <span className="text-green">{t('Completed')}</span>,
+        cell: (info) => {
+          const isPending = info.row.original.isPending
+          return isPending ? (
+            <span className="text-yellow-500">{t('Pending')}</span>
+          ) : (
+            <span className="text-green">{t('Completed')}</span>
+          )
+        },
         enableSorting: false,
         meta: { label: t('Status') }
       }),

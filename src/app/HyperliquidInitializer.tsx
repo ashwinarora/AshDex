@@ -19,7 +19,8 @@ const HyperLiquidInitializer = () => {
     subscribeLedgerUpdates,
     unsubscribeLedgerUpdates,
     checkWebSocketStatus,
-    updateUserActiveAddress
+    updateUserActiveAddress,
+    loadPendingWithdrawals
   } = useInitHyperliquid()
 
   useEffect(() => {
@@ -30,7 +31,8 @@ const HyperLiquidInitializer = () => {
   useEffect(() => {
     if (!address) return
     updateUserActiveAddress(address)
-  }, [address, updateUserActiveAddress])
+    loadPendingWithdrawals(address)
+  }, [address, updateUserActiveAddress, loadPendingWithdrawals])
 
   useEffect(() => {
     if (!sdkSubscriptionClient) return
