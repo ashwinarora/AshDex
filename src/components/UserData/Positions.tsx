@@ -399,7 +399,9 @@ const Positions = ({ isRTL }: IPositionsProps) => {
           asset={leverageAsset}
         />
         <IsolatedMarginModal
-          isOpen={!!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset}
+          isOpen={
+            !!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset
+          }
           onClose={() => setIsIsolatedMarginModalOpen(false)}
           asset={isolatedMarginAsset}
         />
@@ -511,7 +513,9 @@ const Positions = ({ isRTL }: IPositionsProps) => {
         asset={leverageAsset}
       />
       <IsolatedMarginModal
-        isOpen={!!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset}
+        isOpen={
+          !!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset
+        }
         onClose={() => setIsIsolatedMarginModalOpen(false)}
         asset={isolatedMarginAsset}
       />

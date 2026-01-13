@@ -7,7 +7,11 @@ import { cn } from '@/lib/utils'
 import { IconX } from '@tabler/icons-react'
 import useUserStore from '@/store/userStore'
 
-function Dialog({ open, onOpenChange, ...props }: React.ComponentProps<typeof DialogPrimitive.Root>) {
+function Dialog({
+  open,
+  onOpenChange,
+  ...props
+}: React.ComponentProps<typeof DialogPrimitive.Root>) {
   const prevOpenRef = React.useRef(open)
 
   // Cleanup pointer-events when dialog transitions from open to closed
@@ -26,7 +30,9 @@ function Dialog({ open, onOpenChange, ...props }: React.ComponentProps<typeof Di
     }
   }, [open])
 
-  return <DialogPrimitive.Root data-slot="dialog" open={open} onOpenChange={onOpenChange} {...props} />
+  return (
+    <DialogPrimitive.Root data-slot="dialog" open={open} onOpenChange={onOpenChange} {...props} />
+  )
 }
 
 function DialogTrigger({ ...props }: React.ComponentProps<typeof DialogPrimitive.Trigger>) {

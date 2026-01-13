@@ -13,6 +13,7 @@ bun tsc          # Type-check without emitting
 ```
 
 ### Database Commands
+
 ```bash
 bunx prisma generate     # Generate Prisma client
 bunx prisma migrate dev  # Run migrations in development
@@ -24,6 +25,7 @@ bunx prisma studio       # Open database GUI
 Nexon is a trading platform built on Hyperliquid (decentralized derivatives exchange) using Next.js 15 App Router.
 
 ### Tech Stack
+
 - **Framework**: Next.js 15 with Turbopack
 - **State**: Zustand stores + React Query for server state
 - **Database**: PostgreSQL via Prisma
@@ -33,6 +35,7 @@ Nexon is a trading platform built on Hyperliquid (decentralized derivatives exch
 - **i18n**: Tolgee (English + Arabic with RTL support)
 
 ### Key Directories
+
 - `src/app/` - Next.js App Router pages and API routes
 - `src/store/` - Zustand stores (HyperliquidStore, UserStore, FavoritesStore, etc.)
 - `src/components/` - React components organized by feature (Trading/, UserData/, Portfolio/, etc.)
@@ -41,6 +44,7 @@ Nexon is a trading platform built on Hyperliquid (decentralized derivatives exch
 - `src/context/` - React contexts (EstablishConnectionContext, WalletModalContext)
 
 ### State Management Pattern
+
 ```
 Zustand Stores (global client state)
 ├── HyperliquidStore - Trading data, WebSocket subscriptions, agent wallet
@@ -54,12 +58,14 @@ React Context - UI state (wallet modal, agent approval flow)
 ```
 
 ### Data Flow
+
 1. User connects wallet via Wagmi/Privy → triggers HyperliquidInitializer
 2. SDK initializes HTTP + WebSocket clients → subscribes to channels (allMids, webData2, candles, ledgerUpdates)
 3. WebSocket updates push to Zustand store → components subscribe via selectors
 4. Transactions: Sign with wallet → execute via Hyperliquid SDK
 
 ### Important Files
+
 - `src/app/HyperliquidInitializer.tsx` - Sets up Hyperliquid SDK and subscriptions on app mount
 - `src/store/HyperliquidStore.ts` - Central trading state (positions, orders, balances, WebSocket data)
 - `src/config/wagmi.config.ts` - Wallet configuration (chains, connectors)
@@ -67,14 +73,18 @@ React Context - UI state (wallet modal, agent approval flow)
 - `src/services/Rewards.manager.ts` - Referral rewards logic with KMS signing
 
 ### Hyperliquid Network
+
 The app supports both mainnet and testnet, configured via `NEXT_PUBLIC_HYPERLIQUID_NETWORK` env var.
+
 - Mainnet chain ID: 999
 - Testnet chain ID: 998
 
 ### Path Aliases
+
 Use `@/*` to import from `src/*` (configured in tsconfig.json).
 
 ### Database Schema (Prisma)
+
 - `User` - Wallet addresses, usernames, referral tracking
 - `Invite` - Referral codes (8-char unique codes)
 - `UserRewardsClaims` - Reward claim history
