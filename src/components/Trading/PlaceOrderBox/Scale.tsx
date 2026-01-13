@@ -401,7 +401,9 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             type="text"
             placeholder="0"
             value={totalUsd}
-            onChange={(e) => handleTotalUsdChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+            onChange={(e) =>
+              handleTotalUsdChange(e.target.value ? parseFloat(e.target.value) : undefined)
+            }
             className={cn(
               'w-full text-end text-white placeholder:text-white',
               isRTL && 'text-start'
