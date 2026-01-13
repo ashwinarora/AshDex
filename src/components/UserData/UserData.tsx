@@ -6,6 +6,7 @@ import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
+import DepositsWithdrawals from './DepositsWithdrawals'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -81,6 +82,10 @@ const UserData = () => {
       {
         header: t('Orders History'),
         element: <OrderHistory isRTL={isRTL} />
+      },
+      {
+        header: t('Deposits and Withdrawals'),
+        element: <DepositsWithdrawals isRTL={isRTL} />
       }
     ]
     return isRTL ? tabs.reverse() : tabs
@@ -125,7 +130,7 @@ const UserData = () => {
             {tabs.map((tab, index) => (
               <ToggleGroupItem
                 key={tab.header}
-                className="!text-xs xl:!text-sm w-28 md:w-28 xl:w-36 h-full !px-2 data-[state=on]:bg-transparent data-[state=on]:text-primary"
+                className="!text-xs xl:!text-sm w-auto min-w-fit h-full !px-2 whitespace-nowrap data-[state=on]:bg-transparent data-[state=on]:text-primary"
                 value={index.toString()}
               >
                 {tab.header}

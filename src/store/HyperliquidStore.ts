@@ -10,6 +10,12 @@ import { create } from 'zustand'
 import { combine } from 'zustand/middleware'
 import { useShallow } from 'zustand/react/shallow'
 import * as hl from '@nktkas/hyperliquid'
+import {
+  removePendingWithdrawal,
+  addPendingWithdrawal as addPendingWithdrawalToStorage,
+  getPendingWithdrawals,
+  type PendingWithdrawal
+} from '@/utils/pendingWithdrawals'
 
 interface HyperliquidState {
   userActiveAddress: Hex
@@ -28,6 +34,8 @@ interface HyperliquidState {
   spotState: NonNullable<hl.WsWebData2Event['spotState']>
   openOrders: hl.WsWebData2Event['openOrders']
   activeAssetData: hl.WsActiveAssetDataEvent | null
+  ledgerUpdates: hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates']
+  pendingWithdrawals: PendingWithdrawal[]
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -40,6 +48,7 @@ interface HyperliquidState {
     webData2?: hl.Subscription
     candles?: hl.Subscription
     activeAssetData: hl.Subscription[]
+    ledgerUpdates?: hl.Subscription
   }
 }
 
@@ -67,6 +76,10 @@ interface HyperliquidActions {
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
   updateUserActiveAddress: (address: Hex) => void
+  subscribeLedgerUpdates: (address: Hex) => void
+  unsubscribeLedgerUpdates: () => Promise<void>
+  addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
+  loadPendingWithdrawals: (address: string) => void
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -91,6 +104,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     spotState: { balances: [] },
     openOrders: [],
     activeAssetData: null,
+    ledgerUpdates: [],
+    pendingWithdrawals: [],
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -390,6 +405,77 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     },
     updateUserActiveAddress: (address: Hex) => {
       set({ userActiveAddress: address })
+    },
+    subscribeLedgerUpdates: async (address: Hex) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      if (address === zeroAddress) return
+      const ledgerUpdatesSub = await sdkSubscriptionClient.userNonFundingLedgerUpdates(
+        { user: address },
+        (data) => {
+          const activeAddress = get().userActiveAddress
+          if (data.user.toLowerCase() !== activeAddress.toLowerCase()) {
+            ledgerUpdatesSub.unsubscribe()
+            return
+          }
+          if (data.isSnapshot) {
+            // Initial historical data
+            set({ ledgerUpdates: data.nonFundingLedgerUpdates })
+            // Clear any pending withdrawals that are now in the ledger
+            data.nonFundingLedgerUpdates.forEach((update) => {
+              if (update.delta.type === 'withdraw') {
+                removePendingWithdrawal(data.user, update.time)
+              }
+            })
+            // Reload pending withdrawals from localStorage to sync store state
+            set({ pendingWithdrawals: getPendingWithdrawals(data.user) })
+          } else {
+            // Real-time update - prepend new items
+            set((state) => ({
+              ledgerUpdates: [...data.nonFundingLedgerUpdates, ...state.ledgerUpdates]
+            }))
+            // Clear pending withdrawal now that it's completed
+            data.nonFundingLedgerUpdates.forEach((update) => {
+              if (update.delta.type === 'withdraw') {
+                removePendingWithdrawal(data.user, update.time)
+              }
+            })
+            // Reload pending withdrawals from localStorage to sync store state
+            set({ pendingWithdrawals: getPendingWithdrawals(data.user) })
+          }
+        }
+      )
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          ledgerUpdates: ledgerUpdatesSub
+        }
+      }))
+    },
+    unsubscribeLedgerUpdates: async () => {
+      const { subsManager } = get()
+      if (!subsManager.ledgerUpdates) return
+      await subsManager.ledgerUpdates.unsubscribe()
+      set((state) => ({
+        subsManager: {
+          ...state.subsManager,
+          ledgerUpdates: undefined
+        },
+        ledgerUpdates: []
+      }))
+    },
+    addPendingWithdrawal: (withdrawal: PendingWithdrawal) => {
+      // Save to localStorage for persistence
+      addPendingWithdrawalToStorage(withdrawal)
+      // Update store for reactivity
+      set((state) => ({
+        pendingWithdrawals: [...state.pendingWithdrawals, withdrawal]
+      }))
+    },
+    loadPendingWithdrawals: (address: string) => {
+      // Load from localStorage into store
+      const pending = getPendingWithdrawals(address)
+      set({ pendingWithdrawals: pending })
     }
   })
 )
@@ -420,7 +506,10 @@ export const useInitHyperliquid = () => {
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
-      updateUserActiveAddress: state.updateUserActiveAddress
+      updateUserActiveAddress: state.updateUserActiveAddress,
+      subscribeLedgerUpdates: state.subscribeLedgerUpdates,
+      unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
+      loadPendingWithdrawals: state.loadPendingWithdrawals
     }))
   )
 }
