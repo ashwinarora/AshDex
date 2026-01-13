@@ -377,48 +377,36 @@ const Positions = ({ isRTL }: IPositionsProps) => {
             )
           })}
         </div>
-        {agentWallet && isAgentApproved && isTPSLModalOpen && tpslAsset && (
-          <TPSL_Cell
-            isOpen={isTPSLModalOpen}
-            onClose={() => setIsTPSLModalOpen(false)}
-            asset={tpslAsset.coin}
-            tpslAsset={tpslAsset}
-          />
-        )}
-        {agentWallet && isAgentApproved && isLimitCloseModalOpen && closingAsset && (
-          <LimitCloseModal
-            isOpen={isLimitCloseModalOpen}
-            onClose={() => setIsLimitCloseModalOpen(false)}
-            closingAsset={closingAsset}
-          />
-        )}
-        {agentWallet && isAgentApproved && isMarketCloseModalOpen && closingAsset && (
-          <MarketCloseModal
-            isOpen={isMarketCloseModalOpen}
-            onClose={() => setIsMarketCloseModalOpen(false)}
-            closingAsset={closingAsset}
-          />
-        )}
-        {agentWallet && isAgentApproved && isLeverageModalOpen && leverageAsset && (
-          <LeverageModal
-            isOpen={isLeverageModalOpen}
-            onClose={() => setIsLeverageModalOpen(false)}
-            asset={leverageAsset}
-          />
-        )}
-        {agentWallet && isAgentApproved && isIsolatedMarginModalOpen && isolatedMarginAsset && (
-          <IsolatedMarginModal
-            isOpen={isIsolatedMarginModalOpen}
-            onClose={() => setIsIsolatedMarginModalOpen(false)}
-            asset={isolatedMarginAsset}
-          />
-        )}
-        {agentWallet && isAgentApproved && isCloseAllModalOpen && (
-          <CloseAllModal
-            isOpen={isCloseAllModalOpen}
-            onClose={() => setIsCloseAllModalOpen(false)}
-          />
-        )}
+        <TPSL_Cell
+          isOpen={!!agentWallet && isAgentApproved && isTPSLModalOpen && !!tpslAsset}
+          onClose={() => setIsTPSLModalOpen(false)}
+          asset={tpslAsset?.coin ?? ''}
+          tpslAsset={tpslAsset}
+        />
+        <LimitCloseModal
+          isOpen={!!agentWallet && isAgentApproved && isLimitCloseModalOpen && !!closingAsset}
+          onClose={() => setIsLimitCloseModalOpen(false)}
+          closingAsset={closingAsset ?? ''}
+        />
+        <MarketCloseModal
+          isOpen={!!agentWallet && isAgentApproved && isMarketCloseModalOpen && !!closingAsset}
+          onClose={() => setIsMarketCloseModalOpen(false)}
+          closingAsset={closingAsset ?? ''}
+        />
+        <LeverageModal
+          isOpen={!!agentWallet && isAgentApproved && isLeverageModalOpen && !!leverageAsset}
+          onClose={() => setIsLeverageModalOpen(false)}
+          asset={leverageAsset}
+        />
+        <IsolatedMarginModal
+          isOpen={!!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset}
+          onClose={() => setIsIsolatedMarginModalOpen(false)}
+          asset={isolatedMarginAsset}
+        />
+        <CloseAllModal
+          isOpen={!!agentWallet && isAgentApproved && isCloseAllModalOpen}
+          onClose={() => setIsCloseAllModalOpen(false)}
+        />
       </div>
     )
   }
@@ -501,45 +489,36 @@ const Positions = ({ isRTL }: IPositionsProps) => {
           ))}
         </TableBody>
       </Table>
-      {agentWallet && isAgentApproved && isTPSLModalOpen && tpslAsset && (
-        <TPSL_Cell
-          isOpen={isTPSLModalOpen}
-          onClose={() => setIsTPSLModalOpen(false)}
-          asset={tpslAsset.coin}
-          tpslAsset={tpslAsset}
-        />
-      )}
-      {agentWallet && isAgentApproved && isLimitCloseModalOpen && closingAsset && (
-        <LimitCloseModal
-          isOpen={isLimitCloseModalOpen}
-          onClose={() => setIsLimitCloseModalOpen(false)}
-          closingAsset={closingAsset}
-        />
-      )}
-      {agentWallet && isAgentApproved && isMarketCloseModalOpen && closingAsset && (
-        <MarketCloseModal
-          isOpen={isMarketCloseModalOpen}
-          onClose={() => setIsMarketCloseModalOpen(false)}
-          closingAsset={closingAsset}
-        />
-      )}
-      {agentWallet && isAgentApproved && isLeverageModalOpen && leverageAsset && (
-        <LeverageModal
-          isOpen={isLeverageModalOpen}
-          onClose={() => setIsLeverageModalOpen(false)}
-          asset={leverageAsset}
-        />
-      )}
-      {agentWallet && isAgentApproved && isIsolatedMarginModalOpen && isolatedMarginAsset && (
-        <IsolatedMarginModal
-          isOpen={isIsolatedMarginModalOpen}
-          onClose={() => setIsIsolatedMarginModalOpen(false)}
-          asset={isolatedMarginAsset}
-        />
-      )}
-      {agentWallet && isAgentApproved && isCloseAllModalOpen && (
-        <CloseAllModal isOpen={isCloseAllModalOpen} onClose={() => setIsCloseAllModalOpen(false)} />
-      )}
+      <TPSL_Cell
+        isOpen={!!agentWallet && isAgentApproved && isTPSLModalOpen && !!tpslAsset}
+        onClose={() => setIsTPSLModalOpen(false)}
+        asset={tpslAsset?.coin ?? ''}
+        tpslAsset={tpslAsset}
+      />
+      <LimitCloseModal
+        isOpen={!!agentWallet && isAgentApproved && isLimitCloseModalOpen && !!closingAsset}
+        onClose={() => setIsLimitCloseModalOpen(false)}
+        closingAsset={closingAsset ?? ''}
+      />
+      <MarketCloseModal
+        isOpen={!!agentWallet && isAgentApproved && isMarketCloseModalOpen && !!closingAsset}
+        onClose={() => setIsMarketCloseModalOpen(false)}
+        closingAsset={closingAsset ?? ''}
+      />
+      <LeverageModal
+        isOpen={!!agentWallet && isAgentApproved && isLeverageModalOpen && !!leverageAsset}
+        onClose={() => setIsLeverageModalOpen(false)}
+        asset={leverageAsset}
+      />
+      <IsolatedMarginModal
+        isOpen={!!agentWallet && isAgentApproved && isIsolatedMarginModalOpen && !!isolatedMarginAsset}
+        onClose={() => setIsIsolatedMarginModalOpen(false)}
+        asset={isolatedMarginAsset}
+      />
+      <CloseAllModal
+        isOpen={!!agentWallet && isAgentApproved && isCloseAllModalOpen}
+        onClose={() => setIsCloseAllModalOpen(false)}
+      />
     </div>
   )
 }
