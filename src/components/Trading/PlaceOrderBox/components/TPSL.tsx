@@ -37,15 +37,16 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
 
   // Computed error state for button
   const hasError = tpValueError || tpPctError || slValueError || slPctError
-  const errorMessage = tpValueError || tpPctError
-    ? isBuy
-      ? t('TP must be above entry price')
-      : t('TP must be below entry price')
-    : slValueError || slPctError
+  const errorMessage =
+    tpValueError || tpPctError
       ? isBuy
-        ? t('SL must be below entry price')
-        : t('SL must be above entry price')
-      : ''
+        ? t('TP must be above entry price')
+        : t('TP must be below entry price')
+      : slValueError || slPctError
+        ? isBuy
+          ? t('SL must be below entry price')
+          : t('SL must be above entry price')
+        : ''
 
   // Track which field is currently focused to avoid overwriting during typing
   const focusedField = useRef<'tpValue' | 'tpPct' | 'slValue' | 'slPct' | null>(null)
@@ -62,7 +63,12 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
       setSlValueError(false)
       setSlPctError(false)
     }
-    setTpsl({ ...tpsl, isTpsl, takeProfit: isTpsl ? tpsl.takeProfit : 0, stopLoss: isTpsl ? tpsl.stopLoss : 0 })
+    setTpsl({
+      ...tpsl,
+      isTpsl,
+      takeProfit: isTpsl ? tpsl.takeProfit : 0,
+      stopLoss: isTpsl ? tpsl.stopLoss : 0
+    })
   }
 
   // === Calculation helpers ===
@@ -77,7 +83,8 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
     const limitPriceNum = parseFloat(limitPrice)
     if (!limitPriceNum || !percentage || isNaN(percentage)) return 0
     const priceMovementPercentage = percentage / leverage
-    const value = limitPriceNum * (1 + (isBuy ? priceMovementPercentage : -priceMovementPercentage) / 100)
+    const value =
+      limitPriceNum * (1 + (isBuy ? priceMovementPercentage : -priceMovementPercentage) / 100)
     return limitPriceNum > 1 ? Number(value.toFixed(2)) : Number(value.toFixed(3))
   }
 
@@ -93,7 +100,8 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
     if (!limitPriceNum || !percentage || isNaN(percentage)) return 0
     const limitedPercentage = Math.min(percentage, 100)
     const priceMovementPercentage = limitedPercentage / leverage
-    const value = limitPriceNum * (1 + (isBuy ? -priceMovementPercentage : priceMovementPercentage) / 100)
+    const value =
+      limitPriceNum * (1 + (isBuy ? -priceMovementPercentage : priceMovementPercentage) / 100)
     return limitPriceNum > 1 ? Number(value.toFixed(2)) : Number(value.toFixed(3))
   }
 
@@ -382,11 +390,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         className={cn('w-full', hasError && 'border-red text-red cursor-not-allowed')}
         disabled={hasError}
       >
-        {hasError
-          ? errorMessage
-          : tpsl.isTpsl
-            ? t('Clear TP/SL')
-            : t('Set TP/SL')}
+        {hasError ? errorMessage : tpsl.isTpsl ? t('Clear TP/SL') : t('Set TP/SL')}
       </Button>
     </div>
   )
