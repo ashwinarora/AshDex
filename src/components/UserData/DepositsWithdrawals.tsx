@@ -21,23 +21,28 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
+import { truncateAddress } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { isTestnet } from '@/utils/constants'
-import * as hl from '@nktkas/hyperliquid'
-
-type LedgerUpdate = hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates'][number]
-
-type FilteredLedgerUpdate = LedgerUpdate & {
+type FilteredLedgerUpdate = {
+  time: number
+  hash: `0x${string}`
   delta: {
-    type: 'deposit' | 'withdraw' | 'accountClassTransfer'
-    usdc: string
+    type: 'deposit' | 'withdraw' | 'accountClassTransfer' | 'send'
+    usdc?: string
     toPerp?: boolean
     fee?: string
     nonce?: number
+    // send type fields
+    user?: string
+    destination?: string
+    token?: string
+    amount?: string
+    usdcValue?: string
   }
   isPending?: boolean
 }
@@ -48,6 +53,12 @@ const getArbiscanUrl = (hash: string) => {
   return isTestnet ? `https://sepolia.arbiscan.io/tx/${hash}` : `https://arbiscan.io/tx/${hash}`
 }
 
+const getHyperliquidExplorerUrl = (hash: string) => {
+  return isTestnet
+    ? `https://testnet.hyperliquid.xyz/explorer/tx/${hash}`
+    : `https://app.hyperliquid.xyz/explorer/tx/${hash}`
+}
+
 const getActionLabel = (type: string) => {
   switch (type) {
     case 'deposit':
@@ -56,6 +67,8 @@ const getActionLabel = (type: string) => {
       return 'Withdrawal'
     case 'accountClassTransfer':
       return 'Transfer'
+    case 'send':
+      return 'Send'
     default:
       return type
   }
@@ -69,6 +82,8 @@ const getSource = (delta: FilteredLedgerUpdate['delta']) => {
       return 'Perps'
     case 'accountClassTransfer':
       return delta.toPerp ? 'Spot' : 'Perps'
+    case 'send':
+      return delta.user ? truncateAddress(delta.user) : '--'
     default:
       return '--'
   }
@@ -82,13 +97,15 @@ const getDestination = (delta: FilteredLedgerUpdate['delta']) => {
       return 'Arbitrum'
     case 'accountClassTransfer':
       return delta.toPerp ? 'Perps' : 'Spot'
+    case 'send':
+      return delta.destination ? truncateAddress(delta.destination) : '--'
     default:
       return '--'
   }
 }
 
-const getValueChange = (delta: FilteredLedgerUpdate['delta']) => {
-  const amount = Number(delta.usdc)
+const getValueChange = (delta: FilteredLedgerUpdate['delta'], connectedAddress?: string) => {
+  const amount = Number(delta.usdc || delta.usdcValue || '0')
   switch (delta.type) {
     case 'deposit':
       return amount
@@ -96,6 +113,13 @@ const getValueChange = (delta: FilteredLedgerUpdate['delta']) => {
       return -Math.abs(amount)
     case 'accountClassTransfer':
       return delta.toPerp ? amount : -Math.abs(amount)
+    case 'send': {
+      // If connected user is the sender, it's negative (outgoing)
+      // If connected user is the destination, it's positive (incoming)
+      const isSender =
+        connectedAddress && delta.user?.toLowerCase() === connectedAddress.toLowerCase()
+      return isSender ? -Math.abs(amount) : amount
+    }
     default:
       return amount
   }
@@ -103,7 +127,7 @@ const getValueChange = (delta: FilteredLedgerUpdate['delta']) => {
 
 const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
   const [sorting, setSorting] = useState<SortingState>([{ id: 'timestamp', desc: true }])
   const [mounted, setMounted] = useState(false)
   const { ledgerUpdates, pendingWithdrawals } = useHyperliquidStore(
@@ -120,18 +144,22 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
 
   const filteredData = useMemo(() => {
     // Filter completed transactions from WebSocket
-    const completed = ledgerUpdates.filter((update): update is FilteredLedgerUpdate => {
-      if (isTestnet) {
-        // Testnet only has transfers between perps and spot (no deposit/withdraw)
-        return update.delta.type === 'accountClassTransfer'
-      }
-      // Mainnet has deposit, withdraw, and transfers
-      return (
-        update.delta.type === 'deposit' ||
-        update.delta.type === 'withdraw' ||
-        update.delta.type === 'accountClassTransfer'
-      )
-    })
+    const completed = ledgerUpdates
+      .filter((update) => {
+        const deltaType = update.delta.type as string
+        if (isTestnet) {
+          // Testnet only has transfers between perps and spot (no deposit/withdraw)
+          return deltaType === 'accountClassTransfer' || deltaType === 'send'
+        }
+        // Mainnet has deposit, withdraw, transfers, and sends
+        return (
+          deltaType === 'deposit' ||
+          deltaType === 'withdraw' ||
+          deltaType === 'accountClassTransfer' ||
+          deltaType === 'send'
+        )
+      })
+      .map((update) => update as unknown as FilteredLedgerUpdate)
 
     // Convert pending withdrawals to the same format (mainnet only)
     const pending: FilteredLedgerUpdate[] = pendingWithdrawals.map((pw) => ({
@@ -158,14 +186,27 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         cell: (info) => {
           const timeString = new Date(info.getValue()).toLocaleString('en-US')
           const isPending = info.row.original.isPending
-          // No link for testnet or pending items
-          if (isTestnet || isPending) {
+          const deltaType = info.row.original.delta.type
+          const hash = info.row.original.hash
+
+          // No link for pending items
+          if (isPending) {
             return <span>{timeString}</span>
           }
-          const hash = info.row.original.hash
+
+          // Use Hyperliquid explorer for send and accountClassTransfer (L1 transactions)
+          // Use Arbiscan for deposit/withdraw (Arbitrum bridge transactions) - mainnet only
+          const isHyperliquidTx = deltaType === 'send' || deltaType === 'accountClassTransfer'
+          const url = isHyperliquidTx ? getHyperliquidExplorerUrl(hash) : getArbiscanUrl(hash)
+
+          // No Arbiscan link for testnet deposit/withdraw
+          if (isTestnet && !isHyperliquidTx) {
+            return <span>{timeString}</span>
+          }
+
           return (
             <a
-              href={getArbiscanUrl(hash)}
+              href={url}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 hover:text-accent-foreground transition-colors"
@@ -214,7 +255,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         enableSorting: false,
         meta: { label: t('Destination') }
       }),
-      columnHelper.accessor((row) => getValueChange(row.delta), {
+      columnHelper.accessor((row) => getValueChange(row.delta, address), {
         id: 'valueChange',
         header: () => t('Account Value Change'),
         cell: (info) => {
@@ -229,7 +270,8 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         },
         enableSorting: true,
         sortingFn: (rowA, rowB) =>
-          getValueChange(rowA.original.delta) - getValueChange(rowB.original.delta),
+          getValueChange(rowA.original.delta, address) -
+          getValueChange(rowB.original.delta, address),
         meta: { label: t('Account Value Change') }
       }),
       columnHelper.accessor((row) => row.delta.fee, {
@@ -244,7 +286,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         meta: { label: t('Fee') }
       })
     ],
-    [t]
+    [t, address]
   )
 
   const table = useReactTable({
