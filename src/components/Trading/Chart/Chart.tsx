@@ -666,7 +666,12 @@ const TradingViewChart = ({
         }
 
         try {
-          const shapeId = await showOrderLineShape(order.side === 'B', displayPrice, order.sz, label)
+          const shapeId = await showOrderLineShape(
+            order.side === 'B',
+            displayPrice,
+            order.sz,
+            label
+          )
           if (shapeId) {
             orderToShape.current.set(shapeKey, shapeId)
           }
