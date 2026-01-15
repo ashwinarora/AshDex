@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "prettier --write . && next lint",
     "prepare": "husky",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy"
   },
   "dependencies": {
     "@aws-sdk/client-kms": "^3.901.0",
