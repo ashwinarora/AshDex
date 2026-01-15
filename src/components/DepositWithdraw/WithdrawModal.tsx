@@ -94,7 +94,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
           <DialogDescription>
             {t(
-              'USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
+              'USDC will be sent over the Arbitrum network to your address. A $1 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
             )}
           </DialogDescription>
         </DialogHeader>

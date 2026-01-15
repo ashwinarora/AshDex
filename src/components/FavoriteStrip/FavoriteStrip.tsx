@@ -19,7 +19,7 @@ import clsx from 'clsx'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { isWhitelistedSpotPair } from '@/utils/whitelist'
+import { isWhitelistedPerpPair, isWhitelistedSpotPair } from '@/utils/whitelist'
 
 const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => {
   const isSpot = useIsSpot()
@@ -81,7 +81,9 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
         >
           {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites))
             .filter((favorite) => {
-              if (!isSpot) return true
+              if (!isSpot) {
+                return isWhitelistedPerpPair(favorite.split('-')[0], favorite.split('-')[1])
+              }
               const base = spotKeyToBaseName.get(favorite)
               const name = spotKeyToName.get(favorite)
               if (!base || !name) return false
