@@ -8,22 +8,22 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
-import useUserStore from '@/store/userStore'
+// import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
-import { setLanguage } from '@/tolgee/language'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from './ui/dropdown-menu'
-import { Button } from './ui/button'
+// import { setLanguage } from '@/tolgee/language'
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger
+// } from './ui/dropdown-menu'
+// import { Button } from './ui/button'
 
 const FooterContent: FC = () => {
   // const { toggleConnectWalletModal } = useWalletModal()
   // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  // const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { t } = useTranslate()
 
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
@@ -160,7 +160,7 @@ const FooterContent: FC = () => {
         </HoverCard>
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
-          <div className="flex items-center gap-2">
+          {/* <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -192,7 +192,7 @@ const FooterContent: FC = () => {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </div>
+          </div> */}
           <a
             href="/docs"
             target="_blank"

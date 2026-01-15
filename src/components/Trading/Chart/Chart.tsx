@@ -126,7 +126,7 @@ const TradingViewChart = ({
     }))
   )
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
-  const orderToShape = useRef<Map<number, string>>(new Map())
+  const orderToShape = useRef<Map<string, string>>(new Map())
   const positionToShape = useRef<Map<string, string>>(new Map())
   const liquidationToShape = useRef<Map<string, string>>(new Map())
 
@@ -580,6 +580,25 @@ const TradingViewChart = ({
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
 
+    const chart = widgetRef.current.activeChart()
+    if (!chart) return
+
+    // Helper to generate a unique key for an order shape
+    // For trigger orders (TP/SL), use triggerPx as key to avoid duplicates from optimistic updates
+    const getOrderShapeKey = (order: (typeof openOrders)[number]): string => {
+      const isTrigger =
+        order.isTrigger === true ||
+        (order.orderType || '').toString().toLowerCase().includes('take profit') ||
+        (order.orderType || '').toString().toLowerCase().includes('stop')
+
+      if (isTrigger && order.triggerPx) {
+        // For trigger orders, use triggerPx as a stable key (optimistic + real orders have same triggerPx)
+        return `trigger-${order.coin}-${order.triggerPx}-${order.side}`
+      }
+      // For regular orders, use oid
+      return `order-${order.oid}`
+    }
+
     // Prefer showing TP/SL trigger orders if present; otherwise show normal orders (first and last)
     const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
     const triggerOrders = filteredOrders.filter((order) => {
@@ -587,54 +606,83 @@ const TradingViewChart = ({
       return order.isTrigger === true || type.includes('take profit') || type.includes('stop')
     })
 
+    // Deduplicate trigger orders by triggerPx (optimistic + real orders may both exist)
+    const seenTriggerPrices = new Set<string>()
+    const uniqueTriggerOrders = triggerOrders.filter((order) => {
+      const key = `${order.triggerPx}-${order.side}`
+      if (seenTriggerPrices.has(key)) return false
+      seenTriggerPrices.add(key)
+      return true
+    })
+
     const ordersToShow: typeof filteredOrders = []
-    const source = triggerOrders.length > 0 ? triggerOrders : filteredOrders
+    const source = uniqueTriggerOrders.length > 0 ? uniqueTriggerOrders : filteredOrders
     if (source.length === 1) {
       ordersToShow.push(source[0])
     } else if (source.length > 1) {
       ordersToShow.push(source[0], source[source.length - 1])
     }
 
-    // Draw selected orders
-    ordersToShow.forEach(async (order) => {
-      const shapeExists = orderToShape.current.get(order.oid)
-      if (shapeExists) return
+    // Build set of keys that should have shapes
+    const keysToShow = new Set(ordersToShow.map(getOrderShapeKey))
 
-      const hasTrigger =
-        order.isTrigger === true ||
-        (order.orderType || '').toString().toLowerCase().includes('take profit') ||
-        (order.orderType || '').toString().toLowerCase().includes('stop')
-
-      const displayPrice = hasTrigger && order.triggerPx ? order.triggerPx : order.limitPx
-
-      let label: string | undefined
-      if (hasTrigger) {
-        const type = (order.orderType || '').toString().toLowerCase()
-        const condition = (order.triggerCondition || '').toString().toLowerCase()
-        if (type.includes('take profit') || condition.includes('above')) {
-          label = 'TP'
-        } else if (type.includes('stop') || condition.includes('below')) {
-          label = 'SL'
-        } else {
-          label = 'Trigger'
+    // Cleanup FIRST: remove shapes that shouldn't exist anymore
+    // This runs synchronously before any async shape creation
+    for (const [shapeKey, shapeId] of orderToShape.current.entries()) {
+      if (!keysToShow.has(shapeKey)) {
+        try {
+          chart.removeEntity(shapeId)
+        } catch (e) {
+          console.error('Error removing shape:', e)
         }
-      }
-
-      const shapeId = await showOrderLineShape(order.side === 'B', displayPrice, order.sz, label)
-      if (!shapeId) return
-      orderToShape.current.set(order.oid, shapeId)
-    })
-
-    // Cleanup: remove shapes not in the selected show set or no longer in openOrders
-    const openOrderIds = new Set(openOrders.map((order) => order.oid))
-    const idsToShow = new Set(ordersToShow.map((order) => order.oid))
-    for (const [orderId, shapeId] of orderToShape.current.entries()) {
-      if (!openOrderIds.has(orderId) || !idsToShow.has(orderId)) {
-        widgetRef.current.activeChart().removeEntity(shapeId)
-        orderToShape.current.delete(orderId)
+        orderToShape.current.delete(shapeKey)
       }
     }
-  }, [openOrders])
+
+    // Draw shapes for orders that don't have one yet (async, but cleanup already ran)
+    const drawShapes = async () => {
+      for (const order of ordersToShow) {
+        const shapeKey = getOrderShapeKey(order)
+        if (orderToShape.current.has(shapeKey)) continue
+
+        const hasTrigger =
+          order.isTrigger === true ||
+          (order.orderType || '').toString().toLowerCase().includes('take profit') ||
+          (order.orderType || '').toString().toLowerCase().includes('stop')
+
+        const displayPrice = hasTrigger && order.triggerPx ? order.triggerPx : order.limitPx
+
+        let label: string | undefined
+        if (hasTrigger) {
+          const type = (order.orderType || '').toString().toLowerCase()
+          const condition = (order.triggerCondition || '').toString().toLowerCase()
+          if (type.includes('take profit') || condition.includes('above')) {
+            label = 'TP'
+          } else if (type.includes('stop') || condition.includes('below')) {
+            label = 'SL'
+          } else {
+            label = 'Trigger'
+          }
+        }
+
+        try {
+          const shapeId = await showOrderLineShape(
+            order.side === 'B',
+            displayPrice,
+            order.sz,
+            label
+          )
+          if (shapeId) {
+            orderToShape.current.set(shapeKey, shapeId)
+          }
+        } catch (e) {
+          console.error('Error creating shape:', e)
+        }
+      }
+    }
+
+    drawShapes()
+  }, [openOrders, selectedAsset])
 
   useEffect(() => {
     if (!widgetRef.current) return

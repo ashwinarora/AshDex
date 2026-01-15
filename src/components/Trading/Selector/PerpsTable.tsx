@@ -35,6 +35,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useTranslate } from '@tolgee/react'
+import { isWhitelistedPerpPair } from '@/utils/whitelist'
 
 interface AssetTableProps {
   searchTerm: string
@@ -106,6 +107,10 @@ const AssetTable = ({
           openInterest,
           maxLeverage
         }
+      })
+      .filter((asset) => {
+        console.log('🚀 ~ AssetTable ~ asset:', asset)
+        return isWhitelistedPerpPair(asset.symbol.split('-')[0], asset.symbol.split('-')[1])
       })
       .filter((asset) => {
         if (selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌') {
@@ -381,7 +386,7 @@ const AssetTable = ({
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 36, // px height of each row
+    estimateSize: () => 28, // px height of each row
     overscan: 5,
     scrollPaddingStart: 48 // Account for header height
   })
