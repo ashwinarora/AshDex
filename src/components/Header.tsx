@@ -54,7 +54,7 @@ const Header: FC = () => {
   const { address, isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
-  const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
+  const { openConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
@@ -85,7 +85,7 @@ const Header: FC = () => {
     if (termsData.signed) return
     if (isModalOpen) return
     // Prefer keeping the session and prompting the user to sign.
-    toggleConnectWalletModal()
+    disconnect()
     toast.error(t('Please sign the terms to continue'))
     // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
   }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
@@ -313,7 +313,7 @@ const Header: FC = () => {
                   {t('Copy Address')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={toggleConnectWalletModal}>
+                <DropdownMenuItem onClick={openConnectWalletModal}>
                   <IconWallet className="size-4 text-inherit" />
                   {t('Switch Wallet')}
                 </DropdownMenuItem>
@@ -347,7 +347,7 @@ const Header: FC = () => {
           </div>
         ) : (
           <Button
-            onClick={toggleConnectWalletModal}
+            onClick={openConnectWalletModal}
             size={'sm'}
             className="flex items-center gap-2"
           >

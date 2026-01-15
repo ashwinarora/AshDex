@@ -14,14 +14,14 @@ const WalletNotConnected: React.FC<WalletNotConnectedProps> = ({
   title = 'Your Wallet is Disconnected',
   description = 'Connect your wallet to access your balance, deposit funds, and trade.'
 }) => {
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { openConnectWalletModal } = useWalletModal()
   const { t } = useTranslate()
   return (
     <div className="flex flex-col w-full h-full justify-center gap-4 items-center">
       <IconWalletOff className="size-10 text-white" />
       <h1 className="text-2xl font-bold text-white">{t(title)}</h1>
       <p className="text-sm text-white/70 -mt-2">{t(description)}</p>
-      <Button onClick={toggleConnectWalletModal}>{t('Connect Wallet')}</Button>
+      <Button onClick={openConnectWalletModal}>{t('Connect Wallet')}</Button>
     </div>
   )
 }
