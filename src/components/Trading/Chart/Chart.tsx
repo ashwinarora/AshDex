@@ -110,6 +110,7 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
+  const [chartReady, setChartReady] = useState(false)
   const {
     sdkInfoClient,
     subscribeToCandle,
@@ -388,6 +389,7 @@ const TradingViewChart = ({
 
       widgetRef.current.onChartReady(async () => {
         console.log('TradingView chart ready')
+        setChartReady(true)
         // addStyledHorizontalLine(100000, 'Support LevelBoo', {
         //   color: '#2fa766',
         //   textColor: '#2fa766',
@@ -412,6 +414,7 @@ const TradingViewChart = ({
       if (widgetRef.current) {
         widgetRef.current.remove()
         widgetRef.current = null
+        setChartReady(false)
       }
     }
   }, [datafeed])
@@ -532,10 +535,12 @@ const TradingViewChart = ({
 
   // Update chart when asset or interval changes
   useEffect(() => {
-    if (widgetRef.current) {
+    if (widgetRef.current && chartReady) {
       try {
-        widgetRef.current.activeChart().setSymbol(selectedAsset, selectedInterval)
-        widgetRef.current.activeChart().removeAllShapes()
+        const chart = widgetRef.current.activeChart()
+        if (!chart) return
+        chart.setSymbol(selectedAsset, selectedInterval)
+        chart.removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
         liquidationToShape.current.clear()
@@ -543,7 +548,7 @@ const TradingViewChart = ({
         console.error('Chart update error:', e)
       }
     }
-  }, [selectedAsset, selectedInterval])
+  }, [selectedAsset, selectedInterval, chartReady])
 
   // Handle asset changes by updating subscriptions
   useEffect(() => {
@@ -557,13 +562,15 @@ const TradingViewChart = ({
 
   // Clear wallet-specific shapes when wallet disconnects
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) {
       // Wallet disconnected, clear all wallet-specific shapes
       try {
-        widgetRef.current.activeChart().removeAllShapes()
+        const chart = widgetRef.current.activeChart()
+        if (!chart) return
+        chart.removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
         liquidationToShape.current.clear()
@@ -571,10 +578,10 @@ const TradingViewChart = ({
         console.error('Error clearing shapes:', e)
       }
     }
-  }, [sdkInfoClient])
+  }, [sdkInfoClient, chartReady])
 
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     // Only show order lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
@@ -682,14 +689,17 @@ const TradingViewChart = ({
     }
 
     drawShapes()
-  }, [openOrders, selectedAsset])
+  }, [openOrders, selectedAsset, chartReady])
 
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     // Only show position lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
+
+    const chart = widgetRef.current.activeChart()
+    if (!chart) return
 
     clearingHouseState?.assetPositions.forEach(async (p) => {
       if (p.position.coin !== selectedAsset) return
@@ -709,7 +719,7 @@ const TradingViewChart = ({
       )
       for (const [positionId, shapeId] of positionToShape.current.entries()) {
         if (!positionIds.has(positionId)) {
-          widgetRef.current.activeChart().removeEntity(shapeId)
+          chart.removeEntity(shapeId)
           positionToShape.current.delete(positionId)
         }
       }
@@ -726,7 +736,7 @@ const TradingViewChart = ({
 
       if (!isValid) {
         if (existingId) {
-          widgetRef.current?.activeChart().removeEntity(existingId)
+          chart.removeEntity(existingId)
           liquidationToShape.current.delete(p.position.coin)
         }
         return
@@ -734,7 +744,7 @@ const TradingViewChart = ({
 
       // If already exists, remove to refresh at new price
       if (existingId) {
-        widgetRef.current?.activeChart().removeEntity(existingId)
+        chart.removeEntity(existingId)
         liquidationToShape.current.delete(p.position.coin)
       }
 
@@ -749,11 +759,11 @@ const TradingViewChart = ({
     )
     for (const [coin, shapeId] of liquidationToShape.current.entries()) {
       if (!currentCoins.has(coin)) {
-        widgetRef.current.activeChart().removeEntity(shapeId)
+        chart.removeEntity(shapeId)
         liquidationToShape.current.delete(coin)
       }
     }
-  }, [clearingHouseState])
+  }, [clearingHouseState, chartReady, selectedAsset])
 
   return (
     <div className="rounded-md p-2 bg-secondary w-full h-full md:h-[576px] xl:h-full">
