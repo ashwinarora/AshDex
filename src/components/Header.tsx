@@ -346,11 +346,7 @@ const Header: FC = () => {
             </DropdownMenu>
           </div>
         ) : (
-          <Button
-            onClick={openConnectWalletModal}
-            size={'sm'}
-            className="flex items-center gap-2"
-          >
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
             <span className="text-xs">{t('Connect Wallet')}</span>
           </Button>

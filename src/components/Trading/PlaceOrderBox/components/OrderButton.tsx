@@ -109,10 +109,7 @@ const OrderButton = ({
 
   if (!isWalletConnected) {
     return (
-      <Button
-        onClick={openConnectWalletModal}
-        className="w-full font-semibold cursor-pointer"
-      >
+      <Button onClick={openConnectWalletModal} className="w-full font-semibold cursor-pointer">
         <IconWallet className="w-4 h-4" /> {t('Connect Wallet')}
       </Button>
     )

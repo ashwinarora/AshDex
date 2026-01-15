@@ -7,9 +7,12 @@ import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useAccount } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
 
-const ConnectWalletModal = dynamic(() => import('@/components/ConnectWalletModal/ConnectWalletModal'), {
-  ssr: false
-})
+const ConnectWalletModal = dynamic(
+  () => import('@/components/ConnectWalletModal/ConnectWalletModal'),
+  {
+    ssr: false
+  }
+)
 
 interface WalletModalContextProps {
   isModalOpen: boolean
@@ -36,7 +39,9 @@ export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }, [isConnected, chainId])
 
   return (
-    <WalletModalContext.Provider value={{ isModalOpen, openConnectWalletModal, closeConnectWalletModal }}>
+    <WalletModalContext.Provider
+      value={{ isModalOpen, openConnectWalletModal, closeConnectWalletModal }}
+    >
       {isModalOpen && (
         <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
           <ConnectWalletModal />
