@@ -72,7 +72,7 @@ const OrderButton = ({
     }))
   )
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const isSpot = useIsSpot()
   const { getAdjustedBuilderFee } = useUserFee()
@@ -109,10 +109,7 @@ const OrderButton = ({
 
   if (!isWalletConnected) {
     return (
-      <Button
-        onClick={() => toggleConnectWalletModal()}
-        className="w-full font-semibold cursor-pointer"
-      >
+      <Button onClick={openConnectWalletModal} className="w-full font-semibold cursor-pointer">
         <IconWallet className="w-4 h-4" /> {t('Connect Wallet')}
       </Button>
     )

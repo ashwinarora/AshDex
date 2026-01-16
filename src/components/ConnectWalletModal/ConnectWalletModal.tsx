@@ -28,7 +28,7 @@ interface WalletConnectProvider {
 
 const ConnectWalletModal: React.FC = () => {
   const { t } = useTranslate()
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { closeConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
@@ -49,9 +49,10 @@ const ConnectWalletModal: React.FC = () => {
   const { setIsUsingPrivy } = usePrivyWagmiStore()
 
   const handleClose = () => {
-    toggleConnectWalletModal()
+    closeConnectWalletModal()
     setSelectedConnector(null)
     reset()
+    disconnect()
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
@@ -68,10 +69,6 @@ const ConnectWalletModal: React.FC = () => {
     } catch (error) {
       console.error('Error connecting wallet:', error)
     }
-  }
-
-  const disconnectWallet = () => {
-    disconnect()
   }
 
   // const handleEmailLogin = async () => {
@@ -130,7 +127,7 @@ const ConnectWalletModal: React.FC = () => {
           ) : (
             <WalletDisplay
               onBack={() => {
-                disconnectWallet()
+                disconnect()
                 setSelectedConnector(null)
                 reset()
               }}
@@ -142,6 +139,7 @@ const ConnectWalletModal: React.FC = () => {
           )
         ) : (
           <div className="flex flex-col gap-2">
+            {/* Uncomment to enable Privy */}
             {/* <Button
               className={cn(
                 'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/10 hover:bg-accent',
