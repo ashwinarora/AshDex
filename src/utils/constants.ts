@@ -66,7 +66,9 @@ export const BUILDER_ADDRESS = isTestnet
   : '0x6a181ef519f21f933884038952aabef02876dbcc' // Nexon's address
 
 export const NEXON_REFERRAL_CODE = isTestnet
-  ? 'ASHWIN' // Ashwin's referral code
+  ? 'STUPID' // Contributor's multisig referral code
+  // ? 'ASHWIN4' // Ashwin's referral code
+  // ? 'ASHWIN' // Ashwin's referral code
   : 'NEXON' // Nexon's referral code
 
 export const BUILDER_FEE = '0.1%'
