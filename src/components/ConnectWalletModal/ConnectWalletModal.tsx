@@ -52,7 +52,7 @@ const ConnectWalletModal: React.FC = () => {
     closeConnectWalletModal()
     setSelectedConnector(null)
     reset()
-    if(!termsData?.signed){
+    if (!termsData?.signed) {
       disconnect()
     }
   }
