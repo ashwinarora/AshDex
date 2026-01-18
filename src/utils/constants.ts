@@ -67,9 +67,9 @@ export const BUILDER_ADDRESS = isTestnet
 
 export const NEXON_REFERRAL_CODE = isTestnet
   ? 'STUPID' // Contributor's multisig referral code
-  // ? 'ASHWIN4' // Ashwin's referral code
-  // ? 'ASHWIN' // Ashwin's referral code
-  : 'NEXON' // Nexon's referral code
+  : // ? 'ASHWIN4' // Ashwin's referral code
+    // ? 'ASHWIN' // Ashwin's referral code
+    'NEXON' // Nexon's referral code
 
 export const BUILDER_FEE = '0.1%'
 
