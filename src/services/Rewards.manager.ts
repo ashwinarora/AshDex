@@ -5,7 +5,7 @@ import { splitSignature } from '@/utils/utils'
 import { isTestnet } from '@/utils/constants'
 import { arbitrum } from 'viem/chains'
 import UserManager from './User.manager'
-import KmsManager from './Kms.service'
+import PrivyWalletManager from './Privy.service'
 import HLService from './hl.service'
 import { Decimal } from '@prisma/client/runtime/library'
 import * as hl from '@nktkas/hyperliquid'
@@ -197,8 +197,7 @@ class RewardsManager {
   }
 
   private async prepareSignedTransaction(wallet_id: Address, claimAmount: string) {
-    const address = await KmsManager.getEthAddressFromKMS()
-    const kmsWallet = await KmsManager.makeKmsWallet(address)
+    const address = await PrivyWalletManager.getWalletAddress()
     const nonce = Date.now()
     const chainId = arbitrum.id
 
@@ -221,16 +220,16 @@ class RewardsManager {
       amount: claimAmount
     })
 
-    // Sign the transaction
+    // Sign EIP-712 typed data
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const signature = await kmsWallet.signTypedData(typedData as any)
+    const signature = await PrivyWalletManager.signTypedData(typedData as any)
     const splitSig = splitSignature(signature)
 
     return {
       action,
       nonce,
       signature: splitSig,
-      kmsWalletAddress: kmsWallet.address
+      walletAddress: address
     }
   }
 
@@ -243,7 +242,7 @@ class RewardsManager {
 
       const claimAmount = (await this.getMaxClaimAmount(wallet_id)).toString()
 
-      const { action, nonce, signature, kmsWalletAddress } = await this.prepareSignedTransaction(
+      const { action, nonce, signature, walletAddress } = await this.prepareSignedTransaction(
         wallet_id,
         claimAmount
       )
@@ -266,7 +265,7 @@ class RewardsManager {
         success: true,
         result,
         rewards_claimed: claimAmount,
-        address: kmsWalletAddress
+        address: walletAddress
       }
     } catch (error) {
       console.error('Error claiming rewards:', error)

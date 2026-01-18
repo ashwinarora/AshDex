@@ -5,7 +5,7 @@ import { PrivyProvider } from '@privy-io/react-auth'
 export default function Provider({ children }: { children: React.ReactNode }) {
   return (
     <PrivyProvider
-      appId="cmfe4cn3a00x6l10d4l91sehh"
+      appId={process.env.NEXT_PUBLIC_PRIVY_APPID || ''}
       config={{
         loginMethods: ['email'],
         // Create embedded wallets for users who don't have a wallet
