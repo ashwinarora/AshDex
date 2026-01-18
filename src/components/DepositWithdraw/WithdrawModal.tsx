@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { isTestnet } from '@/utils/constants'
+import { isTestnet, HYPERLIQUID_WITHDRAW_FEE_USDC } from '@/utils/constants'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
@@ -24,10 +24,11 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { t } = useTranslate()
   const { address, chainId } = useAccount()
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState, sdkUserSignerClient } = useHyperliquidStore(
+  const { clearingHouseState, sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
-      sdkUserSignerClient: state.sdkUserSignerClient
+      sdkUserSignerClient: state.sdkUserSignerClient,
+      addPendingWithdrawal: state.addPendingWithdrawal
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
@@ -61,6 +62,15 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         destination: address
       })
       console.log('Withdraw response:', res)
+      // Add to pending withdrawals for display in Deposits and Withdrawals tab
+      const withdrawAmount = Number(amount)
+      addPendingWithdrawal({
+        amount: amount,
+        displayAmount: (withdrawAmount - HYPERLIQUID_WITHDRAW_FEE_USDC).toString(),
+        fee: HYPERLIQUID_WITHDRAW_FEE_USDC.toString(),
+        timestamp: Date.now(),
+        address: address
+      })
       onClose()
       toast.success(t('Withdrawal confirmed.'), {
         id: toastId
@@ -84,7 +94,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
           <DialogDescription>
             {t(
-              'USDC will be sent over the Arbitrum network to your address. A 5 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
+              'USDC will be sent over the Arbitrum network to your address. A $1 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
             )}
           </DialogDescription>
         </DialogHeader>

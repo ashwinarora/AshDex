@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "hyperliquid-docs": {
+      "type": "sse",
+      "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/~gitbook/mcp"
+    },
+    "privy": {
+      "command": "uvx",
+      "args": ["privy-mcp-server"],
+      "env": {
+        "PRIVY_APP_ID": "${NEXT_PUBLIC_PRIVY_APPID}",
+        "PRIVY_APP_SECRET": "${PRIVY_APP_SECRET}"
+      }
+    }
+  }
+}

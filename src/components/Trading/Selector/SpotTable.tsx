@@ -369,7 +369,7 @@ const AssetTable = ({
 
   const rowVirtualizer = useVirtualizer({
     count: table.getRowModel().rows.length,
-    estimateSize: () => 36,
+    estimateSize: () => 28,
     getScrollElement: () => parentRef.current,
     overscan: 5
   })

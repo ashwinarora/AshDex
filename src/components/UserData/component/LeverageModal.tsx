@@ -26,7 +26,7 @@ import useUserStore from '@/store/userStore'
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
-  asset: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
+  asset?: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
@@ -40,12 +40,12 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
   )
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const maxLeverage = useMemo(() => {
-    if (!perpsMeta?.universe.length) return 1
+    if (!perpsMeta?.universe.length || !asset) return 1
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
     return perpsMeta.universe[assetIndex]?.maxLeverage || 1
   }, [perpsMeta, asset])
 
-  const [leverage, setLeverage] = useState<number>(asset.leverage.value)
+  const [leverage, setLeverage] = useState<number>(asset?.leverage.value ?? 1)
 
   const marks = useMemo(() => [...getLeverageTicks(maxLeverage, 3)], [maxLeverage])
 
@@ -81,7 +81,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         <DialogHeader>
           <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
           <DialogDescription className={cn(isRTL && 'text-end')}>
-            {t('Control the leverage used for')} {asset.coin}{' '}
+            {t('Control the leverage used for')} {asset?.coin}{' '}
             {t('positions. The maximum leverage is')} {maxLeverage}x.{' '}
             {t('Max position size decreases the higher your leverage.')}
           </DialogDescription>

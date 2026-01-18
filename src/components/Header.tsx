@@ -20,6 +20,7 @@ import {
 import { Button } from './ui/button'
 import { cn } from '@/lib/utils'
 import {
+  IconBug,
   IconChevronDown,
   IconCopy,
   IconLogout,
@@ -35,7 +36,9 @@ import { useTermsSignature } from '@/hooks/useTermsSignature'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
+import { setLanguage } from '@/tolgee/language'
 import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
+import Link from 'next/link'
 
 type MenuItem = {
   name: string
@@ -49,8 +52,9 @@ const Header: FC = () => {
   const { t } = useTranslate()
   const { disconnect } = useDisconnect()
   const { address, isConnected } = useAccount()
+  const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
-  const { toggleConnectWalletModal, isModalOpen } = useWalletModal()
+  const { openConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
@@ -68,6 +72,11 @@ const Header: FC = () => {
   const { data: termsData } = useTermsSignature(walletId)
   useNexonReferral()
 
+  // Prevent hydration mismatches by keeping the first client render identical to SSR.
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   // If user is connected/authenticated and terms are not signed, force the Terms modal to open.
   useEffect(() => {
     if (!isConnected && !authenticated) return
@@ -76,16 +85,18 @@ const Header: FC = () => {
     if (termsData.signed) return
     if (isModalOpen) return
     // Prefer keeping the session and prompting the user to sign.
-    toggleConnectWalletModal()
+    disconnect()
     toast.error(t('Please sign the terms to continue'))
     // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
   }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
+
+  const isWalletConnected = mounted && (isConnected || (authenticated && !!walletId))
 
   const desktopMenu: MenuItem[] = [
     { name: t('Futures'), path: '/', isComingSoon: false },
     { name: t('Spot'), path: '/spot', isComingSoon: false },
     { name: t('Portfolio'), path: '/portfolio', isComingSoon: false },
-    { name: t('Referrals'), path: '/referrals', isComingSoon: false }
+    { name: t('Stocks'), path: '/stocks', isComingSoon: true }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
     // { name: 'Vaults', path: '/vaults', isComingSoon: true }
@@ -207,7 +218,7 @@ const Header: FC = () => {
               isComingSoon ? (
                 <HoverCard key={name}>
                   <HoverCardTrigger>
-                    <div className="h-full flex flex-col items-center justify-center w-24 text-white/70 text-sm">
+                    <div className="h-full flex flex-col items-center justify-center w-24 text-sm text-white">
                       {name}
                     </div>
                   </HoverCardTrigger>
@@ -237,8 +248,50 @@ const Header: FC = () => {
         )}
       </div>
       <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              className="flex items-center gap-2 text-xs text-white"
+              variant={'outline'}
+              size={'sm'}
+            >
+              <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>
+              <span className="text-xs">{isRTL ? 'AR' : 'EN'}</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                useUserStore.setState({ preferredLanguage: 'en-US' })
+                setLanguage('en-US')
+              }}
+            >
+              <span className="text-xs">{'🇺🇸'}</span>
+              <span className="text-xs">English</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                useUserStore.setState({ preferredLanguage: 'ar-SA' })
+                setLanguage('ar-SA')
+              }}
+            >
+              <span className="text-xs">{'🇸🇦'}</span>
+              <span className="text-xs">الإنجليزية</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <BridgeButton />
-        {isConnected || (authenticated && !!walletId) ? (
+        <Link href="https://forms.gle/NxqC2dXcFmZDQoSe8" target="_blank" rel="noopener noreferrer">
+          <Button
+            className="flex items-center gap-2 text-xs text-red"
+            variant={'outline'}
+            size={'sm'}
+          >
+            <IconBug className="size-4" />
+            {t('Report Bug')}
+          </Button>
+        </Link>
+        {isWalletConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -260,7 +313,7 @@ const Header: FC = () => {
                   {t('Copy Address')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={toggleConnectWalletModal}>
+                <DropdownMenuItem onClick={openConnectWalletModal}>
                   <IconWallet className="size-4 text-inherit" />
                   {t('Switch Wallet')}
                 </DropdownMenuItem>
@@ -293,11 +346,7 @@ const Header: FC = () => {
             </DropdownMenu>
           </div>
         ) : (
-          <Button
-            onClick={toggleConnectWalletModal}
-            size={'sm'}
-            className="flex items-center gap-2"
-          >
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
             <span className="text-xs">{t('Connect Wallet')}</span>
           </Button>

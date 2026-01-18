@@ -13,11 +13,11 @@ import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { DialogContent, DialogHeader, DialogTitle } from '../ui/dialog'
 import { useCreateOrUpdateUser } from '@/hooks/useCreateOrUpdateUser'
 import { Button } from '../ui/button'
-import { IconLoader, IconMail, IconWallet } from '@tabler/icons-react'
+import { IconLoader, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
-import { ConnectedWallet, useLinkAccount, usePrivy, useWallets } from '@privy-io/react-auth'
+import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
 import usePrivyWagmiStore from '@/store/PrivyWagmiStore'
 
 interface WalletConnectProvider {
@@ -28,7 +28,7 @@ interface WalletConnectProvider {
 
 const ConnectWalletModal: React.FC = () => {
   const { t } = useTranslate()
-  const { toggleConnectWalletModal } = useWalletModal()
+  const { closeConnectWalletModal } = useWalletModal()
   const { connectAsync, connectors, reset } = useConnect()
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
@@ -43,15 +43,16 @@ const ConnectWalletModal: React.FC = () => {
   const walletId = address ?? embeddedWalletAddress
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature(walletId)
   const createOrUpdateUser = useCreateOrUpdateUser()
-  const { login, authenticated } = usePrivy()
-  const { linkEmail } = useLinkAccount()
-  const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
+  const { authenticated } = usePrivy()
+  // const { linkEmail } = useLinkAccount()
+  // const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
   const { setIsUsingPrivy } = usePrivyWagmiStore()
 
   const handleClose = () => {
-    toggleConnectWalletModal()
+    closeConnectWalletModal()
     setSelectedConnector(null)
     reset()
+    disconnect()
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
@@ -70,29 +71,25 @@ const ConnectWalletModal: React.FC = () => {
     }
   }
 
-  const disconnectWallet = () => {
-    disconnect()
-  }
-
-  const handleEmailLogin = async () => {
-    if (isPrivyLoginPending) return
-    setIsUsingPrivy(true)
-    setIsPrivyLoginPending(true)
-    try {
-      if (authenticated) {
-        // Privy doesn't allow calling login() while authenticated; use a link helper instead.
-        // This opens Privy's modal and prompts the user to link an email to the current user.
-        linkEmail()
-      } else {
-        // Opens Privy's built-in login dialog (email + OTP handled by Privy)
-        await login()
-      }
-    } catch (error) {
-      console.error('Error signing in with email:', error)
-    } finally {
-      setIsPrivyLoginPending(false)
-    }
-  }
+  // const handleEmailLogin = async () => {
+  //   if (isPrivyLoginPending) return
+  //   setIsUsingPrivy(true)
+  //   setIsPrivyLoginPending(true)
+  //   try {
+  //     if (authenticated) {
+  //       // Privy doesn't allow calling login() while authenticated; use a link helper instead.
+  //       // This opens Privy's modal and prompts the user to link an email to the current user.
+  //       linkEmail()
+  //     } else {
+  //       // Opens Privy's built-in login dialog (email + OTP handled by Privy)
+  //       await login()
+  //     }
+  //   } catch (error) {
+  //     console.error('Error signing in with email:', error)
+  //   } finally {
+  //     setIsPrivyLoginPending(false)
+  //   }
+  // }
 
   useEffect(() => {
     if ((isConnected || authenticated) && walletId) {
@@ -130,7 +127,7 @@ const ConnectWalletModal: React.FC = () => {
           ) : (
             <WalletDisplay
               onBack={() => {
-                disconnectWallet()
+                disconnect()
                 setSelectedConnector(null)
                 reset()
               }}
@@ -142,7 +139,8 @@ const ConnectWalletModal: React.FC = () => {
           )
         ) : (
           <div className="flex flex-col gap-2">
-            <Button
+            {/* Uncomment to enable Privy */}
+            {/* <Button
               className={cn(
                 'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/10 hover:bg-accent',
                 isRTL && 'flex-row-reverse'
@@ -159,7 +157,7 @@ const ConnectWalletModal: React.FC = () => {
                 )}
               </div>
               <span className="font-medium text-sm">{t('Sign in with Email')}</span>
-            </Button>
+            </Button> */}
             {WALLETS.map((wallet) => (
               <Button
                 className={cn(

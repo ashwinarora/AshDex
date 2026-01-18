@@ -110,6 +110,7 @@ const TradingViewChart = ({
   const tvSubscribersRef = useRef<Record<string, () => void>>({})
   const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
   const selectedAssetRef = useRef(selectedAsset)
+  const [chartReady, setChartReady] = useState(false)
   const {
     sdkInfoClient,
     subscribeToCandle,
@@ -126,7 +127,7 @@ const TradingViewChart = ({
     }))
   )
   const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
-  const orderToShape = useRef<Map<number, string>>(new Map())
+  const orderToShape = useRef<Map<string, string>>(new Map())
   const positionToShape = useRef<Map<string, string>>(new Map())
   const liquidationToShape = useRef<Map<string, string>>(new Map())
 
@@ -388,6 +389,7 @@ const TradingViewChart = ({
 
       widgetRef.current.onChartReady(async () => {
         console.log('TradingView chart ready')
+        setChartReady(true)
         // addStyledHorizontalLine(100000, 'Support LevelBoo', {
         //   color: '#2fa766',
         //   textColor: '#2fa766',
@@ -412,6 +414,7 @@ const TradingViewChart = ({
       if (widgetRef.current) {
         widgetRef.current.remove()
         widgetRef.current = null
+        setChartReady(false)
       }
     }
   }, [datafeed])
@@ -423,28 +426,28 @@ const TradingViewChart = ({
 
     // Decide colors based on label (TP green, SL red, default green)
     const isSl = label === 'SL'
-    const color = isSl ? '#ff0000' : '#2fa766'
-    const bg = isSl ? 'rgba(255,0,0,0.1)' : 'rgba(47,167,102,0.1)'
+    const color = isSl ? '#F6465D' : '#2fa766'
+    const bg = isSl ? 'rgba(246,70,93,0.85)' : 'rgba(47,167,102,0.85)'
 
     // Draw a horizontal line + label
     const shape = await chart.createShape(
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `${label ?? (isBuy ? 'Buy' : 'Sell')} · ${qty} @ ${price}`,
-        // style it however you like:
+        text: `${label ?? (isBuy ? 'Buy' : 'Sell')}  ${qty} @ ${price}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2,
-          OverrideLineStyle: 2
+          linewidth: 2,
+          linestyle: 1
         },
         disableSelection: true,
         disableSave: true,
@@ -459,25 +462,27 @@ const TradingViewChart = ({
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
-    const color = isLong ? '#2ae800' : '#ff0000' // green or red
-    const bg = isLong ? 'rgba(42,232,0,0.1)' : 'rgba(255,0,0,0.1)'
+    const color = isLong ? '#2fa766' : '#F6465D'
+    const bg = isLong ? 'rgba(47,167,102,0.85)' : 'rgba(246,70,93,0.85)'
 
     const shapeId = await chart.createShape(
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `${isLong ? 'Long' : 'Short'} · ${qty} @ ${price}`,
+        text: `${isLong ? 'Long' : 'Short'}  ${qty} @ ${price}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2
+          linewidth: 2,
+          linestyle: 0
         },
         disableSelection: true,
         disableSave: true,
@@ -493,8 +498,8 @@ const TradingViewChart = ({
     const chart = widgetRef.current?.activeChart()
     if (!chart) return
 
-    const color = '#ff0000' // red
-    const bg = 'rgba(255,0,0,0.1)'
+    const color = '#ff9800'
+    const bg = 'rgba(255,152,0,0.85)'
     const numericDisplayPrice = Number(price)
     const priceText = Number.isFinite(numericDisplayPrice)
       ? numericDisplayPrice.toFixed(2)
@@ -504,18 +509,20 @@ const TradingViewChart = ({
       { price: Number(price) },
       {
         shape: 'horizontal_line',
-        text: `Liquidation · ${qty} @ ${priceText}`,
+        text: `Liq  ${qty} @ ${priceText}`,
         overrides: {
           showLabel: true,
+          horzLabelsAlign: 'right',
           labelBackgroundColor: bg,
-          textColor: color,
-          fontColor: color,
-          fontSize: 13,
+          textColor: '#ffffff',
+          fontColor: '#ffffff',
+          fontSize: 12,
+          bold: true,
           borderColor: color,
           borderWidth: 1,
           linecolor: color,
-          linewidth: 1,
-          linestyle: 2
+          linewidth: 2,
+          linestyle: 1
         },
         disableSelection: true,
         disableSave: true,
@@ -528,10 +535,12 @@ const TradingViewChart = ({
 
   // Update chart when asset or interval changes
   useEffect(() => {
-    if (widgetRef.current) {
+    if (widgetRef.current && chartReady) {
       try {
-        widgetRef.current.activeChart().setSymbol(selectedAsset, selectedInterval)
-        widgetRef.current.activeChart().removeAllShapes()
+        const chart = widgetRef.current.activeChart()
+        if (!chart) return
+        chart.setSymbol(selectedAsset, selectedInterval)
+        chart.removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
         liquidationToShape.current.clear()
@@ -539,7 +548,7 @@ const TradingViewChart = ({
         console.error('Chart update error:', e)
       }
     }
-  }, [selectedAsset, selectedInterval])
+  }, [selectedAsset, selectedInterval, chartReady])
 
   // Handle asset changes by updating subscriptions
   useEffect(() => {
@@ -553,13 +562,15 @@ const TradingViewChart = ({
 
   // Clear wallet-specific shapes when wallet disconnects
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) {
       // Wallet disconnected, clear all wallet-specific shapes
       try {
-        widgetRef.current.activeChart().removeAllShapes()
+        const chart = widgetRef.current.activeChart()
+        if (!chart) return
+        chart.removeAllShapes()
         orderToShape.current.clear()
         positionToShape.current.clear()
         liquidationToShape.current.clear()
@@ -567,14 +578,33 @@ const TradingViewChart = ({
         console.error('Error clearing shapes:', e)
       }
     }
-  }, [sdkInfoClient])
+  }, [sdkInfoClient, chartReady])
 
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     // Only show order lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
+
+    const chart = widgetRef.current.activeChart()
+    if (!chart) return
+
+    // Helper to generate a unique key for an order shape
+    // For trigger orders (TP/SL), use triggerPx as key to avoid duplicates from optimistic updates
+    const getOrderShapeKey = (order: (typeof openOrders)[number]): string => {
+      const isTrigger =
+        order.isTrigger === true ||
+        (order.orderType || '').toString().toLowerCase().includes('take profit') ||
+        (order.orderType || '').toString().toLowerCase().includes('stop')
+
+      if (isTrigger && order.triggerPx) {
+        // For trigger orders, use triggerPx as a stable key (optimistic + real orders have same triggerPx)
+        return `trigger-${order.coin}-${order.triggerPx}-${order.side}`
+      }
+      // For regular orders, use oid
+      return `order-${order.oid}`
+    }
 
     // Prefer showing TP/SL trigger orders if present; otherwise show normal orders (first and last)
     const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
@@ -583,61 +613,93 @@ const TradingViewChart = ({
       return order.isTrigger === true || type.includes('take profit') || type.includes('stop')
     })
 
+    // Deduplicate trigger orders by triggerPx (optimistic + real orders may both exist)
+    const seenTriggerPrices = new Set<string>()
+    const uniqueTriggerOrders = triggerOrders.filter((order) => {
+      const key = `${order.triggerPx}-${order.side}`
+      if (seenTriggerPrices.has(key)) return false
+      seenTriggerPrices.add(key)
+      return true
+    })
+
     const ordersToShow: typeof filteredOrders = []
-    const source = triggerOrders.length > 0 ? triggerOrders : filteredOrders
+    const source = uniqueTriggerOrders.length > 0 ? uniqueTriggerOrders : filteredOrders
     if (source.length === 1) {
       ordersToShow.push(source[0])
     } else if (source.length > 1) {
       ordersToShow.push(source[0], source[source.length - 1])
     }
 
-    // Draw selected orders
-    ordersToShow.forEach(async (order) => {
-      const shapeExists = orderToShape.current.get(order.oid)
-      if (shapeExists) return
+    // Build set of keys that should have shapes
+    const keysToShow = new Set(ordersToShow.map(getOrderShapeKey))
 
-      const hasTrigger =
-        order.isTrigger === true ||
-        (order.orderType || '').toString().toLowerCase().includes('take profit') ||
-        (order.orderType || '').toString().toLowerCase().includes('stop')
-
-      const displayPrice = hasTrigger && order.triggerPx ? order.triggerPx : order.limitPx
-
-      let label: string | undefined
-      if (hasTrigger) {
-        const type = (order.orderType || '').toString().toLowerCase()
-        const condition = (order.triggerCondition || '').toString().toLowerCase()
-        if (type.includes('take profit') || condition.includes('above')) {
-          label = 'TP'
-        } else if (type.includes('stop') || condition.includes('below')) {
-          label = 'SL'
-        } else {
-          label = 'Trigger'
+    // Cleanup FIRST: remove shapes that shouldn't exist anymore
+    // This runs synchronously before any async shape creation
+    for (const [shapeKey, shapeId] of orderToShape.current.entries()) {
+      if (!keysToShow.has(shapeKey)) {
+        try {
+          chart.removeEntity(shapeId)
+        } catch (e) {
+          console.error('Error removing shape:', e)
         }
-      }
-
-      const shapeId = await showOrderLineShape(order.side === 'B', displayPrice, order.sz, label)
-      if (!shapeId) return
-      orderToShape.current.set(order.oid, shapeId)
-    })
-
-    // Cleanup: remove shapes not in the selected show set or no longer in openOrders
-    const openOrderIds = new Set(openOrders.map((order) => order.oid))
-    const idsToShow = new Set(ordersToShow.map((order) => order.oid))
-    for (const [orderId, shapeId] of orderToShape.current.entries()) {
-      if (!openOrderIds.has(orderId) || !idsToShow.has(orderId)) {
-        widgetRef.current.activeChart().removeEntity(shapeId)
-        orderToShape.current.delete(orderId)
+        orderToShape.current.delete(shapeKey)
       }
     }
-  }, [openOrders])
+
+    // Draw shapes for orders that don't have one yet (async, but cleanup already ran)
+    const drawShapes = async () => {
+      for (const order of ordersToShow) {
+        const shapeKey = getOrderShapeKey(order)
+        if (orderToShape.current.has(shapeKey)) continue
+
+        const hasTrigger =
+          order.isTrigger === true ||
+          (order.orderType || '').toString().toLowerCase().includes('take profit') ||
+          (order.orderType || '').toString().toLowerCase().includes('stop')
+
+        const displayPrice = hasTrigger && order.triggerPx ? order.triggerPx : order.limitPx
+
+        let label: string | undefined
+        if (hasTrigger) {
+          const type = (order.orderType || '').toString().toLowerCase()
+          const condition = (order.triggerCondition || '').toString().toLowerCase()
+          if (type.includes('take profit') || condition.includes('above')) {
+            label = 'TP'
+          } else if (type.includes('stop') || condition.includes('below')) {
+            label = 'SL'
+          } else {
+            label = 'Trigger'
+          }
+        }
+
+        try {
+          const shapeId = await showOrderLineShape(
+            order.side === 'B',
+            displayPrice,
+            order.sz,
+            label
+          )
+          if (shapeId) {
+            orderToShape.current.set(shapeKey, shapeId)
+          }
+        } catch (e) {
+          console.error('Error creating shape:', e)
+        }
+      }
+    }
+
+    drawShapes()
+  }, [openOrders, selectedAsset, chartReady])
 
   useEffect(() => {
-    if (!widgetRef.current) return
+    if (!widgetRef.current || !chartReady) return
 
     // Only show position lines if we have a wallet connection
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
+
+    const chart = widgetRef.current.activeChart()
+    if (!chart) return
 
     clearingHouseState?.assetPositions.forEach(async (p) => {
       if (p.position.coin !== selectedAsset) return
@@ -657,7 +719,7 @@ const TradingViewChart = ({
       )
       for (const [positionId, shapeId] of positionToShape.current.entries()) {
         if (!positionIds.has(positionId)) {
-          widgetRef.current.activeChart().removeEntity(shapeId)
+          chart.removeEntity(shapeId)
           positionToShape.current.delete(positionId)
         }
       }
@@ -674,7 +736,7 @@ const TradingViewChart = ({
 
       if (!isValid) {
         if (existingId) {
-          widgetRef.current?.activeChart().removeEntity(existingId)
+          chart.removeEntity(existingId)
           liquidationToShape.current.delete(p.position.coin)
         }
         return
@@ -682,7 +744,7 @@ const TradingViewChart = ({
 
       // If already exists, remove to refresh at new price
       if (existingId) {
-        widgetRef.current?.activeChart().removeEntity(existingId)
+        chart.removeEntity(existingId)
         liquidationToShape.current.delete(p.position.coin)
       }
 
@@ -697,11 +759,11 @@ const TradingViewChart = ({
     )
     for (const [coin, shapeId] of liquidationToShape.current.entries()) {
       if (!currentCoins.has(coin)) {
-        widgetRef.current.activeChart().removeEntity(shapeId)
+        chart.removeEntity(shapeId)
         liquidationToShape.current.delete(coin)
       }
     }
-  }, [clearingHouseState])
+  }, [clearingHouseState, chartReady, selectedAsset])
 
   return (
     <div className="rounded-md p-2 bg-secondary w-full h-full md:h-[576px] xl:h-full">
