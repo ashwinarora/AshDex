@@ -79,6 +79,7 @@ const AmountInput = ({
   useEffect(() => {
     if (!clearingHouseState) return
     if (usdAmount === '') return
+    if (maxAllowedUsd === 0) return
     setUsdPercent((parseFloat(usdAmount) / maxAllowedUsd) * 100)
   }, [clearingHouseState, usdAmount, maxAllowedUsd])
 
@@ -214,10 +215,10 @@ const AmountInput = ({
           >
             <Input
               className={cn(
-                'flex-1 p-0 !text-xs text-end text-white bg-transparent border-none',
+                'flex-1 p-0 !text-[10px] text-end text-white bg-transparent border-none',
                 isRTL && 'text-start'
               )}
-              value={usdPercent.toFixed(2)}
+              value={usdPercent.toFixed(2) ?? '0'}
               onChange={(e) => handleUsdPercentChange(parseInt(e.target.value, 10))}
             />
             <IconPercentage className="size-3" />
@@ -248,7 +249,7 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'50'}
             className={cn(
-              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent  transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               usdPercent === 50
                 ? 'bg-accent text-accent-foreground'
                 : 'bg-transparent text-white/70'
@@ -270,11 +271,10 @@ const AmountInput = ({
           <ToggleGroupItem
             value={'100'}
             className={cn(
-              'rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
+              'cursor-pointer text-xs font-semibold data-[state=on]:bg-transparent transition-colors duration-150 focus:outline-none',
               usdPercent === 100
                 ? 'bg-accent text-accent-foreground'
-                : 'bg-transparent text-white/70',
-              isRTL ? 'rounded-l-md' : 'rounded-r-md'
+                : 'bg-transparent text-white/70'
             )}
           >
             100%

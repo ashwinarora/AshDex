@@ -280,7 +280,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
         </div>
         <div
-          className={clsx('w-82 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}
+          className={clsx('w-80 shrink-0 2xl:w-96 h-full', isRTL ? '-order-3' : 'order-3')}
           ref={placeOrderRef}
         >
           <PlaceOrder selectedAsset={selectedAsset} isRTL={isRTL} />
