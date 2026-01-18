@@ -19,6 +19,7 @@ const createInvitePostHandler = async (request: AuthenticatedRequest<InviteCodeP
     }
 
     const currInviteCodes = await InviteService.getInviteByUser(wallet_id)
+    console.log(currInviteCodes)
     if (currInviteCodes && currInviteCodes.length > 0) {
       return NextResponse.json(
         { error: 'User already has an invite code', data: currInviteCodes },

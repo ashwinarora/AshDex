@@ -96,6 +96,7 @@ const Header: FC = () => {
     { name: t('Futures'), path: '/', isComingSoon: false },
     { name: t('Spot'), path: '/spot', isComingSoon: false },
     { name: t('Portfolio'), path: '/portfolio', isComingSoon: false },
+    { name: t('Referrals'), path: '/referrals', isComingSoon: false },
     { name: t('Stocks'), path: '/stocks', isComingSoon: true }
     // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
     // { name: 'Stake', path: '/stake', isComingSoon: true },
