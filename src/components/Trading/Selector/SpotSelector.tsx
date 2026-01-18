@@ -207,7 +207,8 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
             >
               <h1 className="text-white text-sm font-semibold">
-                {spotKeyToName.get(selectedAsset)}/{spotKeyToBaseName.get(selectedAsset)}
+                {spotKeyToName.get(selectedAsset)?.replace(/^U/, '')}/
+                {spotKeyToBaseName.get(selectedAsset)}
               </h1>
               <IconChevronDown className="size-4 text-white" />
             </Button>

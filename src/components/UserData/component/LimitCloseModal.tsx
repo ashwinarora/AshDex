@@ -3,7 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
-import { IconChevronDown, IconRefresh } from '@tabler/icons-react'
+import { IconChevronDown, IconRefresh, IconWallet } from '@tabler/icons-react'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useTranslate } from '@tolgee/react'
 import {
@@ -28,6 +28,8 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
 interface LimitCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -57,7 +59,8 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const { getAdjustedBuilderFee } = useUserFee()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
@@ -320,7 +323,12 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           </span>
         </div>
         <Separator />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
+        {!address ? (
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
+            <IconWallet className="size-4" />
+            <span className="font-semibold">{t('Connect Wallet')}</span>
+          </Button>
+        ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
             onClick={async () => openAgentModal()}
             className="w-full font-semibold cursor-pointer"

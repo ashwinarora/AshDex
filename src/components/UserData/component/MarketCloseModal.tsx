@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useTranslate } from '@tolgee/react'
 import { Button } from '@/components/ui/button'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
 import {
   Dialog,
@@ -28,6 +28,8 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
 interface MarketCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -48,6 +50,8 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
     WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
   >(null)
@@ -287,7 +291,12 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
           </span>
         </div>
         <Separator />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
+        {!address ? (
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
+            <IconWallet className="size-4" />
+            <span className="font-semibold">{t('Connect Wallet')}</span>
+          </Button>
+        ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
             onClick={async () => openAgentModal()}
             className="w-full font-semibold cursor-pointer"

@@ -59,7 +59,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
     <ToggleGroupItem
       value={assetKey}
       key={assetKey}
-      className="flex w-28 shrink-0 items-center cursor-pointer hover:bg-accent transition-colors justify-center gap-2 bg-transparent border-none h-full rounded-sm"
+      className="flex w-32 shrink-0 items-center cursor-pointer hover:bg-accent transition-colors justify-center gap-2 bg-transparent border-none h-full rounded-sm"
     >
       {data.isPositive ? (
         <IconTrendingUp className="size-3 text-green" />
@@ -69,7 +69,7 @@ const FavoriteItem = ({ assetKey }: FavoriteItemProps) => {
       <p
         className={cn('text-xs font-bold text-white', data.isPositive ? 'text-green' : 'text-red')}
       >
-        {data.name}
+        {data.name?.replace(/^U/, '')}
       </p>
       <p className={cn('text-xs text-white/70', data.isPositive ? 'text-green' : 'text-red')}>
         {displayMode === 'usd' ? `$${formatWithCommas(data.price ?? 0)}` : data.changePercent}

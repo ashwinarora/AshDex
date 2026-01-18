@@ -18,11 +18,13 @@ import { Slider } from '@/components/ui/slider'
 import { Input } from '@/components/ui/input'
 import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
-import { IconMinus, IconPlus } from '@tabler/icons-react'
+import { IconMinus, IconPlus, IconWallet } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
@@ -39,6 +41,8 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     }))
   )
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length || !asset) return 1
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
@@ -152,7 +156,12 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
           </div>
         </div>
         <Separator />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
+        {!address ? (
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
+            <IconWallet className="size-4" />
+            <span className="font-semibold">{t('Connect Wallet')}</span>
+          </Button>
+        ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
             onClick={async () => openAgentModal()}
             className="w-full font-semibold cursor-pointer"

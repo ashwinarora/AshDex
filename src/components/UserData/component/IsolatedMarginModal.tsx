@@ -20,9 +20,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { IconChevronDown } from '@tabler/icons-react'
+import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
@@ -42,7 +44,8 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const marginAvailable = clearingHouseState?.withdrawable || 0
-
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const handleMarginChange = async () => {
     if (!asset) return
     const isBuy = Number(asset.szi) > 0
@@ -143,7 +146,12 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             </DropdownMenu>
           </div>
         </div>
-        {!isAgentApproved || currentFeeApproval === 0 ? (
+        {!address ? (
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
+            <IconWallet className="size-4" />
+            <span className="font-semibold">{t('Connect Wallet')}</span>
+          </Button>
+        ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
             onClick={async () => openAgentModal()}
             className="w-full font-semibold cursor-pointer"

@@ -331,7 +331,14 @@ const AssetTable = ({
               </div>
             )
           },
-          enableSorting: true
+          enableSorting: true,
+          sortingFn: (rowA, rowB) => {
+            const diffA = rowA.original.price - rowA.original.prevDayPrice
+            const diffB = rowB.original.price - rowB.original.prevDayPrice
+            const pctA = rowA.original.prevDayPrice ? (diffA / rowA.original.prevDayPrice) * 100 : 0
+            const pctB = rowB.original.prevDayPrice ? (diffB / rowB.original.prevDayPrice) * 100 : 0
+            return pctA - pctB
+          }
         }),
         columnHelper.accessor('volume', {
           id: 'volume',

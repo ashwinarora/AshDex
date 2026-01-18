@@ -3,7 +3,7 @@ import { useAccount } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
-import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
+import { IconChevronDown, IconTransfer, IconWallet } from '@tabler/icons-react'
 import { DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { DialogTitle } from '@/components/ui/dialog'
 import { DialogHeader } from '@/components/ui/dialog'
@@ -18,6 +18,7 @@ import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
+import { useWalletModal } from '@/context/WalletModalContext'
 
 interface ITransferModal {
   isOpen: boolean
@@ -26,9 +27,10 @@ interface ITransferModal {
 }
 
 const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
-  const { chainId } = useAccount()
+  const { chainId, address } = useAccount()
   const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
+  const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const [toPerp, setToPerp] = useState(defaultToPerp || false)
   const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
@@ -149,7 +151,16 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
               </div>
             </div>
             <Separator />
-            {!isAgentApproved || currentFeeApproval === 0 ? (
+            {!address ? (
+              <Button
+                onClick={openConnectWalletModal}
+                size={'sm'}
+                className="flex items-center gap-2"
+              >
+                <IconWallet className="size-4" />
+                <span className="font-semibold">{t('Connect Wallet')}</span>
+              </Button>
+            ) : !isAgentApproved || currentFeeApproval === 0 ? (
               <Button
                 onClick={async () => openAgentModal()}
                 className="w-full font-semibold cursor-pointer"

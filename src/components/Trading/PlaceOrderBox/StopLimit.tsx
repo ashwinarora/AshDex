@@ -16,7 +16,8 @@ import { useShallow } from 'zustand/react/shallow'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
-import { getPerpsUniverseIndex } from '@/utils/utils'
+import { calculateLiquidationPrice, getPerpsUniverseIndex } from '@/utils/utils'
+import Fees from './components/Fees'
 
 const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
@@ -32,10 +33,12 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
-  const { allMids, perpsMeta } = useHyperliquidStore(
+  const [crossAccountValue, setCrossAccountValue] = useState(0)
+  const { allMids, perpsMeta, clearingHouseState } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids,
-      perpsMeta: state.perpsMeta
+      perpsMeta: state.perpsMeta,
+      clearingHouseState: state.clearingHouseState
     }))
   )
 
@@ -49,6 +52,30 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       return perpsMeta?.universe[assetIndex].szDecimals || 0
     }
   }, [perpsMeta, selectedAsset, isSpot, spotMeta])
+
+  useEffect(() => {
+    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
+  }, [clearingHouseState])
+
+  const liquidationPrice = () => {
+    if (!limitPrice || !assetAmount || Number(limitPrice) === 0 || Number(assetAmount) === 0) {
+      return 0
+    }
+
+    const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
+    const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
+
+    return calculateLiquidationPrice({
+      entryPrice: Number(limitPrice),
+      positionSize: Number(assetAmount),
+      leverage,
+      isBuy,
+      usdAmount: Number(usdAmount),
+      isCross,
+      maxLeverage,
+      crossAccountValue
+    })
+  }
 
   const getFormattedPrice = () => {
     const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
@@ -186,6 +213,29 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <p className="text-xs font-semibold">{t('Reduce Only')}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
+        </div>
+        <Separator orientation="horizontal" />
+        <div className="flex w-full flex-col text-xs">
+          {!isSpot && (
+            <>
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+                <p className="text-white/70">{t('Liquidation Price')}</p>
+                <p className="text-white">{liquidationPrice()}</p>
+              </div>
+
+              <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+                <p className="text-white/70">{t('Margin Required')}</p>
+                <p className="text-white">
+                  ${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}
+                </p>
+              </div>
+            </>
+          )}
+          <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
+            <p className="text-white/70">{t('Order Value')}</p>
+            <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+          </div>
+          <Fees isSpot={isSpot} isRTL={isRTL} />
         </div>
       </div>
       <div className={cn('flex flex-col gap-2 h-fit w-full p-2')}>

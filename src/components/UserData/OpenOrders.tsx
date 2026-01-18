@@ -120,7 +120,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
               isRTL ? 'justify-start' : 'justify-end'
             )}
           >
-            Enable Trading
+            {t('Enable Trading')}
           </Button>
         )
       return (

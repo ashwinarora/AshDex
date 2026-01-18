@@ -25,13 +25,12 @@ import {
   IconCopy,
   IconLogout,
   IconMenu,
-  IconSettings,
+  // IconSettings,
   IconStackPop,
   IconWallet
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
@@ -217,16 +216,15 @@ const Header: FC = () => {
           >
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
-                <HoverCard key={name}>
-                  <HoverCardTrigger>
-                    <div className="h-full flex flex-col items-center justify-center w-24 text-sm text-white">
-                      {name}
-                    </div>
-                  </HoverCardTrigger>
-                  <HoverCardContent className="w-fit h-fit p-2" align="center">
-                    <p className="text-white text-xs">{t('Coming Soon')}</p>
-                  </HoverCardContent>
-                </HoverCard>
+                <div
+                  key={name}
+                  className="h-full flex flex-row gap-2 text-white items-center justify-center w-fit px-6 text-sm"
+                >
+                  {name}
+                  <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
+                    {t('Coming Soon')}
+                  </span>
+                </div>
               ) : (
                 <NavigationMenuItem
                   className="h-full flex items-center justify-center w-24"
@@ -319,10 +317,10 @@ const Header: FC = () => {
                   {t('Switch Wallet')}
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => router.push('/settings')}>
+                {/* <DropdownMenuItem onClick={() => router.push('/settings')}>
                   <IconSettings className="size-4 text-inherit" />
                   {t('Settings')}
-                </DropdownMenuItem>
+                </DropdownMenuItem> */}
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
                   <IconStackPop className="size-4 text-inherit" />
