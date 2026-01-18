@@ -20,6 +20,9 @@ import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
+import { IconWallet } from '@tabler/icons-react'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -42,6 +45,8 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
     )
   const { getAdjustedBuilderFee } = useUserFee()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)
       return
@@ -142,7 +147,12 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
             {t('Limit Close at Mid Price')}
           </ToggleGroupItem>
         </ToggleGroup>
-        {!isAgentApproved || currentFeeApproval === 0 ? (
+        {!address ? (
+          <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
+            <IconWallet className="size-4" />
+            <span className="font-semibold">{t('Connect Wallet')}</span>
+          </Button>
+        ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
             onClick={async () => openAgentModal()}
             className="w-full font-semibold cursor-pointer"

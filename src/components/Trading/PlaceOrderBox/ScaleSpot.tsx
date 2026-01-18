@@ -24,7 +24,9 @@ import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
 import { toFixedDown } from '@/utils/utils'
-
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
+import { IconWallet } from '@tabler/icons-react'
 interface Order {
   price: number
   size: number
@@ -80,7 +82,8 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [sizeSkew, setSizeSkew] = useState<number>(1)
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [usdPercent, setUsdPercent] = useState(0)
-
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()
 
@@ -438,7 +441,16 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       <div className="w-full h-fit flex flex-col gap-3 my-3">
         <Separator orientation="horizontal" />
         <div className="w-full h-fit px-2">
-          {!isAgentApproved || currentFeeApproval === 0 ? (
+          {!address ? (
+            <Button
+              onClick={openConnectWalletModal}
+              size={'sm'}
+              className="flex items-center gap-2"
+            >
+              <IconWallet className="size-4" />
+              <span className="font-semibold">{t('Connect Wallet')}</span>
+            </Button>
+          ) : !isAgentApproved || currentFeeApproval === 0 ? (
             <Button
               className="w-full font-semibold cursor-pointer"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"

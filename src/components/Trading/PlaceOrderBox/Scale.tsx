@@ -38,6 +38,9 @@ import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
+import { useAccount } from 'wagmi'
+import { useWalletModal } from '@/context/WalletModalContext'
+import { IconWallet } from '@tabler/icons-react'
 interface Order {
   price: number
   size: number
@@ -151,6 +154,8 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
 
+  const { address } = useAccount()
+  const { openConnectWalletModal } = useWalletModal()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!perpsMeta) return
@@ -577,7 +582,16 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       <div className="flex flex-col gap-2 h-fit w-full p-2">
         <Separator orientation="horizontal" />
         <div className="w-full h-fit">
-          {!isAgentApproved || currentFeeApproval === 0 ? (
+          {!address ? (
+            <Button
+              onClick={openConnectWalletModal}
+              size={'sm'}
+              className="flex items-center gap-2"
+            >
+              <IconWallet className="size-4" />
+              <span className="font-semibold">{t('Connect Wallet')}</span>
+            </Button>
+          ) : !isAgentApproved || currentFeeApproval === 0 ? (
             <Button
               className="w-full font-semibold cursor-pointer"
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"

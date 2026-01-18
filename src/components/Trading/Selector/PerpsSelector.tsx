@@ -95,7 +95,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         label: t('Mark Price'),
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
-            className="text-xs"
+            className="text-inherit"
             precision={2}
             value={Number(selectedAssetContext.markPx)}
             type="currency"
@@ -109,7 +109,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText
-              className="text-xs"
+              className="text-inherit"
               precision={2}
               value={Number(selectedAssetContext.oraclePx!)}
               type="currency"
@@ -127,7 +127,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         label: t('24h Volume'),
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
-            className="text-xs"
+            className="text-inherit"
             precision={0}
             value={Number(selectedAssetContext?.dayNtlVlm)}
             type="currency"
@@ -143,7 +143,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           selectedAssetContext.openInterest &&
           selectedAssetContext.oraclePx ? (
             <ReactiveText
-              className="text-xs"
+              className="text-inherit"
               precision={0}
               value={
                 Number(selectedAssetContext.openInterest!) * Number(selectedAssetContext.oraclePx!)
@@ -341,9 +341,12 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             </PopoverTrigger>
             <PopoverContent align="end" className={clsx('w-fit h-fit flex flex-col gap-4')}>
               {marketData?.map((item, index) => (
-                <div key={index} className="flex flex-col gap-1 items- flex-wrap justify-center">
-                  <div className="text-white/70 text-[8px] text-nowrap">{item.label}</div>
-                  <div className={`text-[8px] text-nowrap ${item.color || 'text-white'}`}>
+                <div
+                  key={index}
+                  className="flex flex-col gap-1 items-start flex-wrap justify-center"
+                >
+                  <div className="text-white/70 !text-[8px] text-nowrap">{item.label}</div>
+                  <div className={`!text-[8px] text-nowrap ${item.color || 'text-white'}`}>
                     {item.value}
                   </div>
                 </div>

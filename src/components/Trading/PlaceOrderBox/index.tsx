@@ -4,15 +4,15 @@ import MarketOrder from './MarketOrder'
 // import Scale from './Scale'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
-import useIsSpot from '@/hooks/useIsSpot'
+// import useIsSpot from '@/hooks/useIsSpot'
 // import ScaleSpot from './ScaleSpot'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
-import { IconChevronDown } from '@tabler/icons-react'
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuTrigger
+// } from '@/components/ui/dropdown-menu'
+// import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useTranslate } from '@tolgee/react'
@@ -27,7 +27,7 @@ export interface IPlaceOrderProps {
 
 const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { activeOrderTab, setActiveOrderTab } = useTradeUIStore()
-  const isSpot = useIsSpot()
+  // const isSpot = useIsSpot()
   const { t } = useTranslate()
 
   const renderTabContent = () => {
@@ -51,14 +51,14 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }
   }
 
-  const availableOptions = isSpot
-    ? // [{ value: 'SCALE', label: t('Scale') }]
-      []
-    : [
-        // { value: 'SCALE', label: t('Scale') },
-        { value: 'STOP_LIMIT', label: t('Stop Limit') },
-        { value: 'STOP_MARKET', label: t('Stop Market') }
-      ]
+  // const availableOptions = isSpot
+  //   ? // [{ value: 'SCALE', label: t('Scale') }]
+  //     []
+  //   : [
+  //       // { value: 'SCALE', label: t('Scale') },
+  //       { value: 'STOP_LIMIT', label: t('Stop Limit') },
+  //       { value: 'STOP_MARKET', label: t('Stop Market') }
+  //     ]
 
   return (
     <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full overflow-y-auto no-scrollbar items-center justify-start ">
@@ -71,7 +71,8 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <ToggleGroup
           type="single"
           className={cn(
-            isSpot ? 'w-full' : 'w-2/3',
+            // isSpot ? 'w-full' : 'w-2/3',
+            'w-full',
             isRTL
               ? 'rounded-l-none rounded-r-md flex-row-reverse'
               : 'rounded-l-md rounded-r-none flex-row'
@@ -86,26 +87,31 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         >
           <ToggleGroupItem
             className={cn(
-              'w-full data-[state=on]:bg-transparent',
+              'w-full data-[state=on]:bg-transparent text-white data-[state=on]:text-primary',
               isRTL ? 'rounded-r-md' : 'rounded-l-md'
             )}
             value="LIMIT"
           >
             {t('Limit')}
           </ToggleGroupItem>
-          <ToggleGroupItem className={cn('w-full data-[state=on]:bg-transparent')} value="MARKET">
+          <ToggleGroupItem
+            className={cn(
+              'w-full data-[state=on]:bg-transparent text-white data-[state=on]:text-primary'
+            )}
+            value="MARKET"
+          >
             {t('Market')}
           </ToggleGroupItem>
         </ToggleGroup>
-        {!isSpot && (
+        {/* {!isSpot && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div
                 className={cn(
-                  'text-white/70 transition-colors hover:text-accent-foreground w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
+                  'text-white transition-colors w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                   availableOptions.find((option) => option.value === activeOrderTab)
-                    ? 'text-accent-foreground'
-                    : 'text-white/70',
+                    ? 'text-primary'
+                    : 'text-white',
                   isRTL ? 'rounded-l-md' : 'rounded-r-md'
                 )}
               >
@@ -126,7 +132,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-        )}
+        )} */}
       </div>
       <div className="flex-1 w-full">{renderTabContent()}</div>
     </div>

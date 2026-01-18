@@ -7,7 +7,6 @@ import {
   IconRosetteDiscountCheck,
   IconWallet
 } from '@tabler/icons-react'
-import { useAccount } from 'wagmi'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
@@ -17,6 +16,7 @@ interface WalletDisplayProps {
   icon: StaticImageData | string
   onBack: () => void
   hasAgreedToRules: boolean
+  status: string
   onClose: () => void
 }
 
@@ -25,12 +25,13 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
   icon,
   onBack,
   hasAgreedToRules,
+  status,
   onClose
 }) => {
-  const { status } = useAccount()
   const { t } = useTranslate()
-  const isConnecting = status === 'connecting'
-  const isDisconnected = status === 'disconnected'
+  const isConnecting = status === 'pending'
+  const isDisconnected = status === 'error'
+
   return (
     <div className="w-full h-80 flex flex-col items-center justify-center bg-secondary">
       {hasAgreedToRules ? (

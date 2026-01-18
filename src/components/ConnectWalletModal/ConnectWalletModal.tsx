@@ -29,7 +29,7 @@ interface WalletConnectProvider {
 const ConnectWalletModal: React.FC = () => {
   const { t } = useTranslate()
   const { closeConnectWalletModal } = useWalletModal()
-  const { connectAsync, connectors, reset } = useConnect()
+  const { connectAsync, connectors, reset, status } = useConnect()
   const { address, isConnected } = useAccount()
   const { disconnect } = useDisconnect()
   const [dialogTitle, setDialogTitle] = useState<string>(t('Connect Wallet'))
@@ -133,6 +133,7 @@ const ConnectWalletModal: React.FC = () => {
                 setSelectedConnector(null)
                 reset()
               }}
+              status={status}
               onClose={handleClose}
               name={selectedConnector.name}
               icon={selectedConnector.icon}
