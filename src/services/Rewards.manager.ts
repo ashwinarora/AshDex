@@ -254,12 +254,13 @@ class RewardsManager {
         isFrontend: true
       }
       const result = await HLService.executeHyperliquidTransfer(requestBody)
-      // Step 4: Record the claim in database
-      await this.recordRewardClaim(user.id, claimAmount)
 
       if (result.status !== 'ok') {
         throw new Error('Failed to claim rewards: ' + JSON.stringify(result))
       }
+
+      // Step 4: Record the claim in database
+      await this.recordRewardClaim(user.id, claimAmount)
 
       return {
         success: true,
