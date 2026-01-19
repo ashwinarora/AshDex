@@ -70,13 +70,13 @@ function LegacyRewardHistory() {
   return (
     <>
       {isLoading && (
-        <div className="w-full h-72 items-center justify-center flex flex-col gap-2">
+        <div className="w-full h-72 lg:h-full items-center justify-center flex flex-col gap-2">
           <IconLoader2 className="text-white size-10 animate-spin" />
         </div>
       )}
 
       {error && (
-        <div className="flex flex-col gap-2 justify-center items-center h-72 w-full">
+        <div className="flex flex-col gap-2 justify-center items-center h-72 lg:h-full w-full">
           <IconAlertCircle className="text-red size-10" />
           <div className="text-red">
             {t('Error loading reward history')}: {t(error.message)}
