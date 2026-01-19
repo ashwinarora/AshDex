@@ -29,7 +29,7 @@ const PortfolioHeader = () => {
   if (isMobile) {
     return (
       <>
-        <div className="flex flex-col gap-4 rounded-md items-start justify-between w-full h-fit p-4">
+        <div className="flex bg-secondary flex-col gap-4 rounded-md items-start justify-between w-full h-fit p-4">
           <h1 className="text-2xl text-white text-start">{t('Portfolio')}</h1>
           <div className="flex flex-wrap gap-2">
             <Button

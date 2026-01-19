@@ -63,7 +63,6 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const panelRef = useRef<HTMLDivElement>(null)
   const { toggleFavorite, favorites } = useFavorites(false)
-  // const { isMobile } = useScreenSize()
   const router = useRouter()
   const { context: selectedAssetContext } = useMemo(() => {
     const idx = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -345,9 +344,23 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                   key={index}
                   className="flex flex-col gap-1 items-start flex-wrap justify-center"
                 >
-                  <div className="text-white/70 !text-[8px] text-nowrap">{item.label}</div>
-                  <div className={`!text-[8px] text-nowrap ${item.color || 'text-white'}`}>
-                    {item.value}
+                  <div className="text-white/70 text-xs text-nowrap">{item.label}</div>
+                  <div className={`text-xs text-nowrap ${item.color || 'text-white'}`}>
+                    {item.hasCountdown ? (
+                      <div className="flex items-center gap-1">
+                        <span
+                          className={`${Number(selectedAssetContext?.funding || 0) > 0 ? 'text-green' : 'text-red'}`}
+                        >
+                          {(Number(selectedAssetContext?.funding || 0) * 100).toFixed(4)}%
+                        </span>
+                        <span className="text-white/70">/</span>
+                        <span className="text-white">
+                          <PerpsCountdown />
+                        </span>
+                      </div>
+                    ) : (
+                      item.value
+                    )}
                   </div>
                 </div>
               ))}

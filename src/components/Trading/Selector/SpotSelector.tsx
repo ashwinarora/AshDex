@@ -228,70 +228,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}
               />
-              {/* <ToggleGroup
-                size={'sm'}
-                type="single"
-                className={cn('bg-white/10', isRTL ? 'flex-row-reverse' : '')}
-                value={isStrict ? 'Strict' : 'All'}
-                onValueChange={(value) => value !== '' && setIsStrict(value === 'Strict')}
-              >
-                <ToggleGroupItem
-                  value="Strict"
-                  className={cn(
-                    'px-4 py-1 cursor-pointer text-xs hover:text-green font-semibold transition-colors duration-150 focus:outline-none',
-                    isStrict ? '!bg-green/10 !text-green' : 'bg-transparent text-white/70',
-                    isRTL ? 'rounded-r-md' : 'rounded-l-md'
-                  )}
-                >
-                  <IconShieldCheck className="size-4" />
-                  {t('Verified')}
-                </ToggleGroupItem>
-                <ToggleGroupItem
-                  value="All"
-                  className={cn(
-                    'px-4 py-1 cursor-pointer text-xs hover:text-red font-semibold transition-colors duration-150 focus:outline-none',
-                    !isStrict ? '!bg-red/10 !text-red' : 'bg-transparent text-white/70',
-                    isRTL ? 'rounded-l-md' : 'rounded-r-md'
-                  )}
-                >
-                  <IconShieldQuestion className="size-4" />
-                  {t('All')}
-                </ToggleGroupItem>
-              </ToggleGroup> */}
             </div>
-            {/* <ToggleGroup
-              className={cn(
-                'flex items-center bg-white/10 justify-between w-full',
-                isRTL ? 'flex-row-reverse' : ''
-              )}
-              type="single"
-              value={selectedTab}
-              onValueChange={(value) => {
-                if (value === '') {
-                  return
-                }
-                setSelectedTab(value)
-              }}
-            >
-              {tabs.map((tab) => (
-                <ToggleGroupItem
-                  className={cn(
-                    'cursor-pointer flex items-center gap-2 text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                    selectedTab === tab.label
-                      ? '!bg-primary !text-white'
-                      : 'bg-transparent text-white/70',
-                    isRTL
-                      ? 'first:rounded-r-md last:rounded-l-md'
-                      : 'first:rounded-l-md last:rounded-r-md'
-                  )}
-                  key={tab.label}
-                  value={tab.label}
-                >
-                  {!isMobile ? tab.icon : null}
-                  {tab.label}
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup> */}
             <SpotTable
               isRTL={isRTL}
               searchTerm={searchTerm}

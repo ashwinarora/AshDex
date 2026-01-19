@@ -16,7 +16,13 @@ import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { IconX, IconSelector, IconChevronDown, IconChevronUp } from '@tabler/icons-react'
+import {
+  IconX,
+  IconSelector,
+  IconChevronDown,
+  IconChevronUp,
+  IconNotebook
+} from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -34,6 +40,7 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 type FrontendOrderWithAssetKey = WebData2Event['openOrders'][number] & { assetKey: string }
 
@@ -348,34 +355,86 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
     return <div className="w-full h-full bg-secondary"></div>
   }
 
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
+        <IconNotebook className="size-10 text-white" />
+        <span className="text-white">{t('No Open Orders Found')}</span>
+        <p className="text-white/70 text-center text-xs">
+          {t('Start trading to see your open orders here')}
+        </p>
+      </div>
+    )
+  }
+
   if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
     return (
-      <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className="w-full h-full min-h-48 flex flex-col rounded-md pt-2 gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
           {table.getRowModel().rows.map((row) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const coinName = row.original.coin
+            const side = row.original.side
+            const isBuy = side === 'B'
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-xs">{coinName}</span>
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          isBuy ? 'bg-green/20 text-green' : 'bg-red/20 text-red'
+                        )}
+                      >
+                        {isBuy ? 'Buy' : 'Sell'}
+                      </span>
                     </div>
-                    {(item === t('Coin') || item === t('Trigger')) && (
-                      <Separator className="w-full bg-white/10" />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className="text-white/70 text-xs">{row.original.orderType}</span>
+                      <IconChevronDown className="size-4 text-white/70" />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip coin (index 1), side (index 3), and action column (last) */}
+                    {header.slice(0, -1).map((item, index) => {
+                      // Skip coin and side as they're in the header
+                      if (index === 1 || index === 3) return null
+                      return (
+                        <div
+                          className={cn(
+                            'flex items-center justify-between',
+                            isRTL && 'flex-row-reverse'
+                          )}
+                          key={index}
+                        >
+                          <span className="text-white/70 text-xs">{item}</span>
+                          <span className="text-white text-xs">{cell[index]}</span>
+                        </div>
+                      )
+                    })}
+                    {/* Action buttons footer */}
+                    <Separator className="my-2 bg-white/10" />
+                    <div
+                      className={cn(
+                        'flex items-center gap-4 justify-end',
+                        isRTL && 'flex-row-reverse justify-start'
+                      )}
+                    >
+                      {cell[cell.length - 1]} {/* Cancel button */}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>

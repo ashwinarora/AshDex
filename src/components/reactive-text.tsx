@@ -73,8 +73,7 @@ function ReactiveText({
       }).format(getSafeNumber(value))}
       {type === 'percentage' ? '%' : ''}
       {type === 'leverage' ? 'x' : ''}
-      &nbsp;
-      {suffix}
+      {suffix && <>&nbsp;{suffix}</>}
     </p>
   )
 }

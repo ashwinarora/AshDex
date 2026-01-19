@@ -7,7 +7,7 @@ import { useEffect, useRef } from 'react'
 const LiFiWidget = dynamic(() => import('@lifi/widget').then((mod) => mod.LiFiWidget), {
   ssr: false,
   loading: () => (
-    <div className="flex items-center justify-center h-[500px]">
+    <div className="flex items-center justify-center h-[500px] w-sm md:w-md">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
     </div>
   )

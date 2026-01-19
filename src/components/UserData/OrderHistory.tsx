@@ -16,7 +16,7 @@ import dynamic from 'next/dynamic'
 // import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { IconChevronUp, IconChevronDown, IconSelector } from '@tabler/icons-react'
+import { IconChevronUp, IconChevronDown, IconSelector, IconHistory } from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
 import type { HistoricalOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import {
@@ -28,21 +28,10 @@ import {
   TableRow
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
-import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-
-// type ColumnType = {
-//   key: string
-//   label: string
-// }
-
-// type RenderRowProps = {
-//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-//   item: any
-//   columns: ColumnType[]
-// }
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
@@ -74,38 +63,9 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotKeyToName } = useSpotMeta()
 
-  useEffect(() => {
-    console.log('orderHistory', orderHistory)
-  }, [orderHistory])
-
   const columnHelper = createColumnHelper<
     HistoricalOrdersResponse[number] & { meta?: { label: string } }
   >()
-
-  // const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-  //   return (
-  //     <div className="flex flex-col gap-2 text-white text-sm">
-  //       {columns?.map((col) => (
-  //         <div key={col?.key} className="flex justify-between">
-  //           <span className="text-[#8B8BA0]">{col?.label}</span>
-  //           <span className={col?.key === 'contract' ? 'truncate' : ''}>
-  //             <span
-  //               className={`flex ${
-  //                 col?.key === 'status'
-  //                   ? `${item?.status === 'Filled' ? 'bg-[#28283e] text-green' : ''}
-  //                         ${item?.status === 'Rejected' ? 'bg-[#27273b] text-red' : ''}
-  //                         ${item?.status === 'Cancelled' ? 'bg-[#505061] text-[#FFFFFF]' : ''} px-1.5 py-1 w-fit rounded-lg font-medium`
-  //                   : `${col?.key === 'side' ? 'text-green' : ''}`
-  //               } item-center gap-x-2`}
-  //             >
-  //               {item[col?.key] ?? '-'}
-  //             </span>
-  //           </span>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   )
-  // }
 
   const columns = useMemo(
     () => [
@@ -265,34 +225,102 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     return <div className="w-full h-full bg-secondary"></div>
   }
 
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
+        <IconHistory className="size-10 text-white" />
+        <span className="text-white">{t('No Order History Found')}</span>
+        <p className="text-white/70 text-center text-xs">
+          {t('Start trading to see your order history here')}
+        </p>
+      </div>
+    )
+  }
+
   if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
     return (
-      <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className="w-full min-h-48 h-full flex flex-col rounded-md pt-2 gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
           {table.getRowModel().rows.map((row) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const coinName = row.original.order.coin.includes('@')
+              ? spotKeyToName.get(row.original.order.coin)
+              : row.original.order.coin
+            const side = row.original.order.side
+            const isBuy = side.toLowerCase() === 'buy' || side.toUpperCase() === 'B'
+            const status = row.original.status
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-xs">{coinName}</span>
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          isBuy ? 'bg-green/20 text-green' : 'bg-red/20 text-red'
+                        )}
+                      >
+                        {isBuy ? 'Buy' : 'Sell'}
+                      </span>
                     </div>
-                    {(item === t('Coin') || item === t('Trigger')) && (
-                      <Separator className="w-full bg-white/10" />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          status === 'filled'
+                            ? 'bg-green/10 text-green'
+                            : status === 'rejected'
+                              ? 'bg-red/10 text-red'
+                              : status === 'canceled'
+                                ? 'bg-gray-500/10 text-gray-500'
+                                : status === 'open'
+                                  ? 'bg-yellow-500/10 text-yellow-500'
+                                  : 'bg-gray-500/10 text-gray-500'
+                        )}
+                      >
+                        {status === 'filled'
+                          ? 'Filled'
+                          : status === 'rejected'
+                            ? 'Rejected'
+                            : status === 'canceled'
+                              ? 'Canceled'
+                              : status === 'open'
+                                ? 'Open'
+                                : status.slice(0, 10)}
+                      </span>
+                      <IconChevronDown className="size-4 text-white/70" />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip coin (index 1), direction (index 2), and status (index 7) */}
+                    {header.map((item, index) => {
+                      // Skip coin, direction, and status as they're in the header
+                      if (index === 1 || index === 2 || index === 7) return null
+                      return (
+                        <div
+                          className={cn(
+                            'flex items-center justify-between',
+                            isRTL && 'flex-row-reverse'
+                          )}
+                          key={index}
+                        >
+                          <span className="text-white/70 text-xs">{item}</span>
+                          <span className="text-white text-xs">{cell[index]}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>

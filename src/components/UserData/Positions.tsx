@@ -24,7 +24,8 @@ import {
   IconChevronDown,
   IconX,
   IconSelector,
-  IconChevronUp
+  IconChevronUp,
+  IconChartBar
 } from '@tabler/icons-react'
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
@@ -49,6 +50,7 @@ import {
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 interface IPositionsProps {
   isRTL: boolean
 }
@@ -212,8 +214,14 @@ const Positions = ({ isRTL }: IPositionsProps) => {
         header: () => t('Margin'),
         meta: { label: t('Margin') },
         cell: (info) => {
+          const isMobileView = isTablet || isMobile
           return (
-            <div className="flex flex-col gap-1 items-center justify-center font-medium text-xs">
+            <div
+              className={cn(
+                'gap-1 items-center justify-center font-medium text-xs',
+                isMobileView ? 'flex flex-row' : 'flex flex-col'
+              )}
+            >
               <ReactiveText
                 value={info.getValue()}
                 type="currency"
@@ -233,7 +241,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                     }}
                   >
                     {info.row.original.leverage.type}
-                    <IconPencil className="size-3" />
+                    {!isMobileView && <IconPencil className="size-3" />}
                   </Button>
                 ) : (
                   <span className="text-white/70 text-xs capitalize">
@@ -320,7 +328,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
         meta: { label: t('TP/SL') }
       })
     ],
-    [helper, isAgentApproved, currentFeeApproval, openAgentModal, t]
+    [helper, isAgentApproved, currentFeeApproval, openAgentModal, t, isTablet, isMobile]
   )
 
   const tableData = useMemo(() => {
@@ -346,6 +354,18 @@ const Positions = ({ isRTL }: IPositionsProps) => {
     return <WalletNotConnected />
   }
 
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center justify-center py-12 gap-2">
+        <IconChartBar className="size-10 text-white" />
+        <span className="text-white">{t('No Positions Found')}</span>
+        <p className="text-white/70 text-center text-xs">
+          {t('Start trading to see your positions here')}
+        </p>
+      </div>
+    )
+  }
+
   if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
@@ -357,23 +377,119 @@ const Positions = ({ isRTL }: IPositionsProps) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const coinName = row.original.coin
+            const unrealizedPnl = row.original.unrealizedPnl
+            const isLong = Number(row.original.szi) > 0
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-xs">{coinName}</span>
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          isLong ? 'bg-green/20 text-green' : 'bg-red/20 text-red'
+                        )}
+                      >
+                        {isLong ? 'Long' : 'Short'}
+                      </span>
                     </div>
-                    {(item === t('Position') || item === t('Margin')) && (
-                      <Separator className="w-full bg-white/10" />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'text-xs',
+                          !unrealizedPnl || unrealizedPnl === '--'
+                            ? 'text-white/70'
+                            : Number(unrealizedPnl) > 0
+                              ? 'text-green'
+                              : 'text-red'
+                        )}
+                      >
+                        {!unrealizedPnl || unrealizedPnl === '--'
+                          ? ''
+                          : `${Number(unrealizedPnl) >= 0 ? '+' : '-'}$${Math.abs(Number(unrealizedPnl)).toFixed(2)}`}
+                      </span>
+                      <IconChevronDown className="size-4 text-white/70" />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip coin (index 0) and action column (last) */}
+                    {header.slice(1, -1).map((item, index) => (
+                      <div
+                        className={cn(
+                          'flex items-center justify-between',
+                          isRTL && 'flex-row-reverse'
+                        )}
+                        key={index}
+                      >
+                        <span className="text-white/70 text-xs">{item}</span>
+                        <span className="text-white text-xs">{cell[index + 1]}</span>
+                      </div>
+                    ))}
+                    {/* Action buttons footer */}
+                    <Separator className="my-2 bg-white/10" />
+                    <div
+                      className={cn(
+                        'flex items-center gap-4 justify-end flex-wrap',
+                        isRTL && 'flex-row-reverse justify-start'
+                      )}
+                    >
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-xs h-6 !p-0"
+                        onClick={() => {
+                          if (!isAgentApproved || currentFeeApproval === 0) return openAgentModal()
+                          setLeverageAsset(row.original)
+                          setIsLeverageModalOpen(true)
+                        }}
+                      >
+                        {row.original.leverage.value}x
+                      </Button>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-xs h-6 !p-0"
+                        onClick={() => {
+                          if (!agentWallet || !isAgentApproved) return openAgentModal()
+                          setTpslAsset(row.original)
+                          setIsTPSLModalOpen(true)
+                        }}
+                      >
+                        {t('TP/SL')}
+                      </Button>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-xs h-6 !p-0"
+                        onClick={() => {
+                          if (!agentWallet || !isAgentApproved) return openAgentModal()
+                          setClosingAsset(row.original.coin)
+                          setIsLimitCloseModalOpen(true)
+                        }}
+                      >
+                        {t('Close Limit')}
+                      </Button>
+                      <Button
+                        variant="link"
+                        size="sm"
+                        className="text-xs h-6 !p-0"
+                        onClick={() => {
+                          if (!agentWallet || !isAgentApproved) return openAgentModal()
+                          setClosingAsset(row.original.coin)
+                          setIsMarketCloseModalOpen(true)
+                        }}
+                      >
+                        {t('Close Market')}
+                      </Button>
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>

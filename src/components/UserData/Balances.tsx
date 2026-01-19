@@ -31,6 +31,7 @@ import { formatWithCommas } from '@/utils/format'
 import { useTranslate } from '@tolgee/react'
 import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible'
 
 type BalanceProps = {
   isRTL: boolean
@@ -346,34 +347,72 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
     return (
-      <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className="w-full min-h-48 h-full flex flex-col rounded-md pt-2 gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
           {table.getRowModel().rows.map((row) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const coinName = row.original.coin.replace('(', ' (')
+            const pnlValue = row.original.pnl
+            const pnlPercentage = row.original.pnlPercentage
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-2 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <span className="text-white font-semibold text-xs">{coinName}</span>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'text-xs',
+                          pnlValue === '--' || isNaN(Number(pnlValue))
+                            ? 'text-white/70'
+                            : Number(pnlValue) > 0
+                              ? 'text-green'
+                              : 'text-red'
+                        )}
+                      >
+                        {pnlValue === '--' || isNaN(Number(pnlValue))
+                          ? ''
+                          : `${Number(pnlValue) < 0 ? '-' : ''}$${formatWithCommas(Math.abs(Number(pnlValue)))} (${formatWithCommas(pnlPercentage)}%)`}
+                      </span>
+                      <IconChevronDown className="size-4 text-white/70" />
                     </div>
-                    {item === t('Coin') && <Separator className="w-full bg-white/10" />}
                   </div>
-                ))}
-                {isSendModalOpen && (
-                  <SendModal
-                    isOpen={isSendModalOpen}
-                    onClose={() => setIsSendModalOpen(false)}
-                    spotDefaultName={coin}
-                  />
-                )}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip coin (index 0) and action columns (last 2) */}
+                    {header.slice(1, -2).map((item, index) => (
+                      <div
+                        className={cn(
+                          'flex items-center justify-between',
+                          isRTL && 'flex-row-reverse'
+                        )}
+                        key={index}
+                      >
+                        <span className="text-white/70 text-xs">{item}</span>
+                        <span className="text-white text-xs">{cell[index + 1]}</span>
+                      </div>
+                    ))}
+                    {/* Action buttons footer */}
+                    <Separator className="my-2 bg-white/10" />
+                    <div
+                      className={cn(
+                        'flex items-center gap-4 justify-end',
+                        isRTL && 'flex-row-reverse justify-start'
+                      )}
+                    >
+                      {/* Only show Transfer for USDC coins */}
+                      {(row.original.coin === 'USDC(Perps)' ||
+                        row.original.coin === 'USDC(Spot)') &&
+                        cell[cell.length - 2]}
+                      {cell[cell.length - 1]} {/* Send */}
+                    </div>
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>
