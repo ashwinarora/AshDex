@@ -81,7 +81,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col gap-4">
+      <DialogContent className="flex flex-col gap-4" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
           <DialogDescription className={cn(isRTL && 'text-end')}>

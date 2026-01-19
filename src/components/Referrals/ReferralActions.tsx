@@ -19,7 +19,7 @@ function ReferralActions() {
         <DialogTrigger asChild>
           <Button variant="outline">{t('Enter Code')}</Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>{t('Enter Code')}</DialogTitle>
           </DialogHeader>

@@ -80,7 +80,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
           {/* <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription> */}
