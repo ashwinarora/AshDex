@@ -101,7 +101,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
   return (
     <div
       className={cn(
-        'flex flex-col w-full justify-between bg-secondary rounded-md flex-1 gap-1 p-4',
+        'flex flex-col w-full justify-between bg-secondary rounded-md flex-1 gap-4 p-4',
         isRTL && 'items-end'
       )}
     >

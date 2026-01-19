@@ -55,6 +55,7 @@ const UserData = () => {
         return !spotKeyToName.get(order.coin)
       }
     }).length
+
     const tabs = [
       {
         header: isRTL ? `(${balanceCount}) ${t('Balances')}` : `(${balanceCount}) ${t('Balances')}`,

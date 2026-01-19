@@ -26,8 +26,8 @@ function Rewards({ totalClaim }: ClaimProps) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
-      <div className="w-full !h-24 flex flex-col gap-2">
+    <div className="w-full h-full flex flex-col gap-4 items-center justify-between p-2">
+      <div className="w-full min-h-24 h-fit flex flex-col gap-2">
         <h1 className="text-white font-medium text-lg">{t('Claim Rewards')}</h1>
         <p className="text-white/70 font-medium text-sm">
           {t(

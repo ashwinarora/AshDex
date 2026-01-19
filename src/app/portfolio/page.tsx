@@ -17,8 +17,8 @@ const PortfolioPage = () => {
     )
   }
   return (
-    <div className="w-full h-dvh text-white/70 overflow-hidden flex flex-col items-center">
-      <div className="w-4/5 flex-1 flex flex-col gap-1 overflow-hidden py-4">
+    <div className="w-full min-h-dvh text-white/70 pb-8 lg:pb-0 overflow-x-hidden flex flex-col items-center">
+      <div className="w-11/12 md:w-4/5 flex-1 flex flex-col gap-1 overflow-hidden py-4">
         <div className="w-full shrink-0">
           <PortfolioHeader />
         </div>

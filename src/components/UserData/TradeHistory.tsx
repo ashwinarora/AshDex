@@ -13,7 +13,7 @@ import {
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
 // import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
-import { IconChevronDown, IconChevronUp, IconSelector } from '@tabler/icons-react'
+import { IconChevronDown, IconChevronUp, IconHistory, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
 import {
   Table,
@@ -26,11 +26,11 @@ import {
 import { cn } from '@/lib/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import * as hl from '@nktkas/hyperliquid'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 // type ColumnType = {
 //   key: string
@@ -178,36 +178,17 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     getSortedRowModel: getSortedRowModel()
   })
 
-  // const RenderRowData: React.FC<RenderRowProps> = ({ item, columns }) => {
-  //   const formatValue = (key: string, value: unknown) => {
-  //     if (key === 'crossed') {
-  //       return value === true ? 'Yes' : 'No'
-  //     }
-  //     return value ?? '-'
-  //   }
-  //   return (
-  //     <div className="flex flex-col gap-2 text-white text-sm">
-  //       {columns?.map((col) => (
-  //         <div key={col?.key} className="flex justify-between">
-  //           <span className="text-[#8B8BA0]">{col?.label}</span>
-  //           <span className={col?.key === 'contract' ? 'truncate' : ''}>
-  //             <span
-  //               className={`flex items-center gap-x-2 ${
-  //                 col?.key === 'crossed'
-  //                   ? `${item?.crossed ? 'bg-[#28283e] text-green' : 'bg-[#27273b] text-red'} px-1.5 py-1 w-fit rounded-lg font-medium`
-  //                   : col?.key === 'side'
-  //                     ? 'text-red'
-  //                     : ''
-  //               }`}
-  //             >
-  //               {String(formatValue(col?.key, item[col?.key]))}
-  //             </span>
-  //           </span>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   )
-  // }
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
+        <IconHistory className="size-10 text-white" />
+        <span className="text-white">{t('No Trade History Found')}</span>
+        <p className="text-white/70 text-center text-xs">
+          {t('Start trading to see your trade history here')}
+        </p>
+      </div>
+    )
+  }
 
   if (!isConnected) {
     return <WalletNotConnected />
@@ -223,29 +204,75 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
     return (
-      <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className="w-full h-full min-h-48 flex flex-col rounded-md pt-2 gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
           {table.getRowModel().rows.map((row) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const coinName = row.original.coin.includes('@')
+              ? spotKeyToName.get(row.original.coin)
+              : row.original.coin
+            const dir = row.original.dir
+            const isBuy = dir.includes('Open') || dir.includes('Buy')
+            const closedPnl = Number(row.original.closedPnl)
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-xs">{coinName}</span>
+                      <span
+                        className={cn(
+                          'text-xs px-1.5 py-0.5 rounded',
+                          isBuy ? 'bg-green/20 text-green' : 'bg-red/20 text-red'
+                        )}
+                      >
+                        {dir}
+                      </span>
                     </div>
-                    {(item === t('Coin') || item === t('Trigger')) && (
-                      <Separator className="w-full bg-white/10" />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={cn(
+                          'text-xs',
+                          closedPnl === 0
+                            ? 'text-white/70'
+                            : closedPnl > 0
+                              ? 'text-green'
+                              : 'text-red'
+                        )}
+                      >
+                        {closedPnl !== 0
+                          ? `${closedPnl >= 0 ? '+' : ''}${closedPnl.toFixed(2)}`
+                          : ''}
+                      </span>
+                      <IconChevronDown className="size-4 text-white/70" />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip coin (index 1) and direction (index 2) */}
+                    {header.map((item, index) => {
+                      // Skip coin and direction as they're in the header
+                      if (index === 1 || index === 2) return null
+                      return (
+                        <div
+                          className={cn(
+                            'flex items-center justify-between',
+                            isRTL && 'flex-row-reverse'
+                          )}
+                          key={index}
+                        >
+                          <span className="text-white/70 text-xs">{item}</span>
+                          <span className="text-white text-xs">{cell[index]}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>

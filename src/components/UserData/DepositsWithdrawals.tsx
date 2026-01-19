@@ -11,7 +11,13 @@ import {
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
-import { IconChevronDown, IconChevronUp, IconSelector, IconExternalLink } from '@tabler/icons-react'
+import {
+  IconChevronDown,
+  IconChevronUp,
+  IconSelector,
+  IconExternalLink,
+  IconDownloadOff
+} from '@tabler/icons-react'
 import {
   Table,
   TableBody,
@@ -24,10 +30,10 @@ import { cn } from '@/lib/utils'
 import { truncateAddress } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useTranslate } from '@tolgee/react'
 import { isTestnet } from '@/utils/constants'
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 type FilteredLedgerUpdate = {
   time: number
   hash: `0x${string}`
@@ -305,35 +311,74 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   if (!mounted) {
     return <div className="h-full w-full bg-secondary"></div>
   }
+  if (table.getRowModel().rows.length === 0) {
+    return (
+      <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
+        <IconDownloadOff className="size-10 text-white" />
+        <span className="text-white">{t('No Deposits or Withdrawals Found')}</span>
+        <p className="text-white/70 text-center text-xs">{t('Deposits Funds to get started')}</p>
+      </div>
+    )
+  }
 
   if (isTablet || isMobile) {
     const header = table.getHeaderGroups()[0].headers.map((header) => {
       return flexRender(header.column.columnDef.header, header.getContext())
     })
     return (
-      <div className="w-full h-full flex flex-col rounded-md gap-2">
+      <div className="w-full min-h-48 h-full flex flex-col rounded-md pt-2 gap-2">
         <div className="flex xl:hidden flex-col items-center justify-start gap-2">
           {table.getRowModel().rows.map((row) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
+            const actionType = getActionLabel(row.original.delta.type)
+            const valueChange = getValueChange(row.original.delta, address)
+            const isPending = row.original.isPending
+            const isPositive = valueChange >= 0
+
             return (
-              <div
-                key={row.id}
-                className="w-full flex flex-col justify-between rounded-md h-fit gap-3 bg-accent p-4"
-              >
-                {header.map((item, index) => (
-                  <div className="flex flex-col gap-3" key={index}>
-                    <div className="flex items-center text-xs justify-between">
-                      <span className="text-white/70">{item}</span>
-                      <span className="text-white w-fit">{cell[index]}</span>
+              <Collapsible key={row.id} className="w-full">
+                <CollapsibleTrigger className="w-full">
+                  <div className="w-full flex items-center justify-between p-4 bg-background rounded-md">
+                    <div className="flex items-center gap-2">
+                      <span className="text-white font-semibold text-xs">{actionType}</span>
+                      {isPending && (
+                        <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-500">
+                          {t('Pending')}
+                        </span>
+                      )}
                     </div>
-                    {(item === t('Action') || item === t('Destination')) && (
-                      <Separator className="w-full bg-white/10" />
-                    )}
+                    <div className="flex items-center gap-2">
+                      <span className={cn('text-xs', isPositive ? 'text-green' : 'text-red')}>
+                        {isPositive ? '+' : '-'}${Math.abs(valueChange).toFixed(2)}
+                      </span>
+                      <IconChevronDown className="size-4 text-white/70" />
+                    </div>
                   </div>
-                ))}
-              </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <div className="p-4 pt-2 bg-background rounded-b-md flex flex-col gap-2 -mt-2">
+                    {/* Info rows - skip action (index 2) as it's in the header */}
+                    {header.map((item, index) => {
+                      // Skip action as it's in the header
+                      if (index === 2) return null
+                      return (
+                        <div
+                          className={cn(
+                            'flex items-center justify-between',
+                            isRTL && 'flex-row-reverse'
+                          )}
+                          key={index}
+                        >
+                          <span className="text-white/70 text-xs">{item}</span>
+                          <span className="text-white text-xs">{cell[index]}</span>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CollapsibleContent>
+              </Collapsible>
             )
           })}
         </div>

@@ -27,7 +27,8 @@ import {
   IconMenu,
   // IconSettings,
   IconStackPop,
-  IconWallet
+  IconWallet,
+  IconBuildingBridge
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -38,6 +39,7 @@ import { useTranslate } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
 import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
 import Link from 'next/link'
+import BridgeModal from './Bridge/BridgeModal'
 
 type MenuItem = {
   name: string
@@ -53,6 +55,7 @@ const Header: FC = () => {
   const { address, isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
+  const [isBridgeModalOpen, setIsBridgeModalOpen] = useState(false)
   const { openConnectWalletModal, isModalOpen } = useWalletModal()
   const { isMobile } = useScreenSize()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
@@ -196,15 +199,31 @@ const Header: FC = () => {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="min-w-48 w-fit" align="end">
-              {desktopMenu?.map(({ name, path }) => (
-                <DropdownMenuItem
-                  key={name}
-                  onClick={() => router.push(path)}
-                  className="flex items-center justify-between"
-                >
-                  {name}
-                </DropdownMenuItem>
-              ))}
+              {desktopMenu?.map(({ name, path, isComingSoon }) => {
+                if (isComingSoon) {
+                  return (
+                    <DropdownMenuItem
+                      disabled
+                      key={name}
+                      className="flex items-center justify-between"
+                    >
+                      {name}
+                      <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
+                        {t('Coming Soon')}
+                      </span>
+                    </DropdownMenuItem>
+                  )
+                }
+                return (
+                  <DropdownMenuItem
+                    key={name}
+                    onClick={() => router.push(path)}
+                    className="flex items-center justify-between"
+                  >
+                    {name}
+                  </DropdownMenuItem>
+                )
+              })}
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
@@ -254,7 +273,7 @@ const Header: FC = () => {
               variant={'outline'}
               size={'sm'}
             >
-              <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>
+              {!isMobile && <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>}
               <span className="text-xs">{isRTL ? 'AR' : 'EN'}</span>
             </Button>
           </DropdownMenuTrigger>
@@ -279,17 +298,23 @@ const Header: FC = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <BridgeButton />
-        <Link href="https://forms.gle/NxqC2dXcFmZDQoSe8" target="_blank" rel="noopener noreferrer">
-          <Button
-            className="flex items-center gap-2 text-xs text-red"
-            variant={'outline'}
-            size={'sm'}
+        {!isMobile && <BridgeButton />}
+        {!isMobile && (
+          <Link
+            href="https://forms.gle/NxqC2dXcFmZDQoSe8"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            <IconBug className="size-4" />
-            {t('Report Bug')}
-          </Button>
-        </Link>
+            <Button
+              className="flex items-center gap-2 text-xs text-red"
+              variant={'outline'}
+              size={'sm'}
+            >
+              <IconBug className="size-4" />
+              {t('Report Bug')}
+            </Button>
+          </Link>
+        )}
         {isWalletConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -327,6 +352,23 @@ const Header: FC = () => {
                   {t('Withdraw')}
                 </DropdownMenuItem>
 
+                {isMobile && (
+                  <>
+                    <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
+                      <IconBuildingBridge className="size-4 text-inherit" />
+                      {t('Bridge')}
+                    </DropdownMenuItem>
+                    {/*  */}
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onClick={() => router.push('https://forms.gle/NxqC2dXcFmZDQoSe8')}
+                    >
+                      <IconBug className="size-4 text-inherit" />
+                      {t('Bug Report')}
+                    </DropdownMenuItem>
+                  </>
+                )}
+
                 <DropdownMenuItem
                   onClick={() => {
                     if (isConnected) {
@@ -353,6 +395,7 @@ const Header: FC = () => {
       </div>
       {/* {isWithdrawOpen && ( */}
       <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
+      <BridgeModal isOpen={isBridgeModalOpen} onClose={() => setIsBridgeModalOpen(false)} />
       {/* )} */}
     </div>
   )

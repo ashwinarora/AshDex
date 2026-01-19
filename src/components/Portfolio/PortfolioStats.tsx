@@ -120,9 +120,6 @@ const PortfolioStats = () => {
   if (isMobile || isTablet) {
     return (
       <div className="flex flex-col w-full h-fit gap-1">
-        <div className="flex bg-secondary rounded-md h-fit items-center justify-center w-full">
-          <PortfolioChart portfolioQuery={portfolioQuery} isRTL={isRTL} />
-        </div>
         <div className={cn('flex flex-row gap-1 w-full h-fit', isMobile ? 'flex-col' : 'flex-row')}>
           <div className={cn('flex flex-col gap-1 rounded-md', isMobile ? 'w-full' : 'w-1/2')}>
             <PortfolioVolumeCard
@@ -130,6 +127,9 @@ const PortfolioStats = () => {
               userFeeLoading={userFeeLoading}
               isRTL={isRTL}
             />
+            <div className="flex bg-secondary rounded-md h-fit items-center justify-center w-full">
+              <PortfolioChart portfolioQuery={portfolioQuery} isRTL={isRTL} />
+            </div>
             <PortfolioFeeCard
               isRTL={isRTL}
               userFeeData={userFeeData}
@@ -139,7 +139,7 @@ const PortfolioStats = () => {
           </div>
           <div
             className={cn(
-              'flex flex-col gap-1 bg-secondary p-2 rounded-md',
+              'flex flex-col lg:gap-1 gap-2 bg-secondary p-2 rounded-md',
               isMobile ? 'w-full' : 'w-1/2'
             )}
           >
@@ -206,12 +206,12 @@ const PortfolioStats = () => {
               </DropdownMenu>
             </div>
             <Separator className="bg-white/10" />
-            <div className="flex flex-col justify-between h-full gap-1 p-2">
+            <div className="flex flex-col justify-between h-full gap-2 lg:gap-1 p-2">
               {overviewTable
                 ? Object.entries(overviewTable).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between w-full">
-                      <p className="text-sm text-white/70">{key}</p>
-                      <p className="text-sm text-white">{value}</p>
+                      <p className="text-xs lg:text-sm text-white/70">{key}</p>
+                      <p className="text-xs lg:text-sm text-white">{value}</p>
                     </div>
                   ))
                 : Array.from({ length: 8 }).map((_, index) => (

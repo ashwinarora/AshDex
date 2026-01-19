@@ -140,9 +140,9 @@ export const Toast = () => {
         toast: '!bg-accent !border-transparent !text-white !rounded-none !h-9 !w-full',
         success: '!bg-green !text-white',
         error: '!bg-red',
-        info: '!bg-accent-foreground',
+        info: '!bg-primary',
         warning: '!bg-yellow-600',
-        loading: '!bg-accent-foreground'
+        loading: '!bg-primary'
       }
     }
   }

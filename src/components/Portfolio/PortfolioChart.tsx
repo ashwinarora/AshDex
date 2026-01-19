@@ -98,10 +98,10 @@ const PortfolioChart = ({
   }
 
   return (
-    <div className="w-full h-full flex flex-col gap-2 p-2">
+    <div className="w-full h-full flex flex-col gap-4 p-2">
       <div
         className={cn(
-          'w-full h-fit shrink-0 flex gap-2 flex-col sm:flex-row items-center justify-between',
+          'w-full h-fit shrink-0 flex gap-4 flex-col sm:flex-row items-center justify-between',
           isRTL && 'sm:flex-row-reverse'
         )}
       >
