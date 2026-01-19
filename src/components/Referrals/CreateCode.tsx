@@ -58,7 +58,7 @@ function CreateCode() {
       ) : (
         <Button
           className="w-full"
-          disabled={isCreatingInviteCode || (createdCode.length < 4 || createdCode.length > 8)}
+          disabled={isCreatingInviteCode || createdCode.length < 4 || createdCode.length > 8}
           onClick={createInviteCode}
         >
           {isCreatingInviteCode ? t('Creating...') : t('Create')}
