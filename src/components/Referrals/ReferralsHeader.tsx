@@ -16,7 +16,7 @@ const ReferralsHeader = () => {
   const [openDialog, setOpenDialog] = useState<string | null>(null)
   const { data: referrer } = useGetReferrer()
 
-  console.log("🚀 ~ ReferralsHeader ~ referrer:", referrer);
+  console.log('🚀 ~ ReferralsHeader ~ referrer:', referrer)
 
   if (isMobile) {
     return (
