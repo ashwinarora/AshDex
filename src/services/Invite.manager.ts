@@ -137,11 +137,17 @@ class InviteService {
     const normalizedCode = this.normalizeCode(inviteCode)
 
     const invite = await this.getInvite(normalizedCode)
+
+    console.log("🚀 ~ InviteService ~ claimInviteCode ~ invite:", invite);
+
     if (!invite) {
       throw new Error('Invalid invite code')
     }
 
     const user = await UserManager.findUserByWalletId(wallet_id)
+
+    console.log("🚀 ~ InviteService ~ claimInviteCode ~ user:", user);
+
     if (!user) {
       throw new Error('User not found')
     }
@@ -151,6 +157,7 @@ class InviteService {
     }
 
     if (invite.user_id === user.id) {
+      console.log("🚀 ~ InviteService ~ claimInviteCode ~ Cannot use your own invite code");
       throw new Error('Cannot use your own invite code')
     }
 
@@ -166,6 +173,8 @@ class InviteService {
       where: { id: user.id },
       data: { invited_by: invite.id }
     })
+
+    console.log("🚀 ~ InviteService ~ claimInviteCode ~ user updated:", user);
   }
 
   // returns all users who have used a given invite code
