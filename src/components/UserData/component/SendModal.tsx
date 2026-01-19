@@ -133,7 +133,7 @@ const SendModal: React.FC<SendModalProps> = ({
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Send Tokens')}</DialogTitle>
           <DialogDescription>{t('Send tokens to another account on Nexon')}</DialogDescription>

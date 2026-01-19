@@ -181,7 +181,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Transfer between Spot and EVM')}</DialogTitle>
           <DialogDescription>

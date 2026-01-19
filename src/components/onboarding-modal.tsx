@@ -149,7 +149,7 @@ export default function OnboardingModal() {
                     <div
                       key={index}
                       onClick={() => setStep(index)}
-                      className={`w-full h-[4px] flex  ${index <= step ? 'bg-gradient-to-b from-[#5F46F9] via-[#9D46F9] to-[#9D46F9] backdrop-blur-[40px]' : 'bg-primary/10'}`}
+                      className={`w-full h-[4px] flex cursor-pointer ${index <= step ? 'bg-gradient-to-b from-[#5F46F9] via-[#9D46F9] to-[#9D46F9] backdrop-blur-[40px]' : 'bg-primary/10'}`}
                     ></div>
                   )
                 })}

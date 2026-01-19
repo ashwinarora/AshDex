@@ -345,7 +345,7 @@ const EditNicknameModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <div
           onClick={(e) => e.stopPropagation()}
           className="bg-secondary relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 rounded-2xl border-2 border-white/5 backdrop-blur-2xl  flex items-center justify-center  "

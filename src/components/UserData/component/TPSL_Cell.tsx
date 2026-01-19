@@ -320,7 +320,10 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="flex flex-col gap-4 min-w-4/5 md:min-w-2xl">
+      <DialogContent
+        className="flex flex-col gap-4 min-w-4/5 md:min-w-2xl"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle>
             {t('TP/SL for')} {tpslAsset?.coin}

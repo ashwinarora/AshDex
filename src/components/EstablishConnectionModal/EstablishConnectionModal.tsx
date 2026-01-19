@@ -130,7 +130,7 @@ const EstablishConnectionModal = () => {
   return (
     <>
       <Dialog open={isModalOpen} onOpenChange={closeModal}>
-        <DialogContent>
+        <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
             <DialogTitle>{t('Establish Connection')}</DialogTitle>
           </DialogHeader>
