@@ -107,7 +107,10 @@ const PortfolioFeeCard = ({
             {t('View Fee Schedule')}
           </p>
         </DialogTrigger>
-        <DialogContent className="min-w-11/12 md:min-w-2xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+        <DialogContent
+          className="min-w-11/12 md:min-w-2xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
+        >
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
             <DialogTitle>{t('Fee Schedule')}</DialogTitle>
             <DialogDescription className={cn('text-xs', isRTL ? 'text-end' : 'text-start')}>
