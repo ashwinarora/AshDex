@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import InviteService from '@/services/Invite.manager'
 import { Address } from 'viem'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
+import hlService from '@/services/hl.service'
+import RewardsManager from '@/services/Rewards.manager'
 
 type FetchInvitesPayload = {
   inviteCode: string
@@ -60,7 +62,9 @@ export const GET = async (request: NextRequest) => {
     if (!wallet_id) {
       return NextResponse.json({ error: 'Missing wallet_id' }, { status: 400 })
     }
-
+    // Making sure DB is upto date when for every request
+    const referralStates = await hlService.getReferralStates()
+    await RewardsManager.syncRewardsFromHyperliquid(referralStates)
     const invites = await InviteService.getInviteByUserWithUsedBy(wallet_id)
 
     return NextResponse.json({ success: true, invite: invites })
