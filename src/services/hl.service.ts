@@ -14,18 +14,18 @@ export interface IReferralStates {
 class HLService {
   private static instance: HLService
   private url: string
-  private NEXON_USER: Address
+  private REFERRAL_CODE_OWNER: Address
   private httpTransport: hl.HttpTransport
   private infoClient: hl.InfoClient
 
   constructor() {
     this.url = isTestnet ? HYPERLIQUID_API_TESTNET : HYPERLIQUID_API_MAINNET
 
-    const NEXON_USER = process.env.NEXON_USER_ADDRESS
-    if (!NEXON_USER) {
-      throw new Error('NEXON_USER_ADDRESS is not set')
+    const REFERRAL_CODE_OWNER = process.env.REFERRAL_CODE_OWNER
+    if (!REFERRAL_CODE_OWNER) {
+      throw new Error('REFERRAL_CODE_OWNER is not set')
     }
-    this.NEXON_USER = NEXON_USER as Address
+    this.REFERRAL_CODE_OWNER = REFERRAL_CODE_OWNER as Address
 
     this.httpTransport = new hl.HttpTransport({ isTestnet, fetchOptions: { keepalive: false } })
     this.infoClient = new hl.InfoClient({ transport: this.httpTransport })
@@ -44,7 +44,7 @@ class HLService {
   }
 
   public async getReferralStates(): Promise<IReferralStates[]> {
-    const response = await this.infoClient.referral({ user: this.NEXON_USER })
+    const response = await this.infoClient.referral({ user: this.REFERRAL_CODE_OWNER })
     if (response.referrerState.stage === 'ready') {
       return response.referrerState.data.referralStates
     }
