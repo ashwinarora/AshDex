@@ -94,7 +94,7 @@ function ClaimInviteCode() {
         ) : (
           <Button
             className="w-full"
-            disabled={code.length !== 6 || isAcceptingInviteCode}
+            disabled={code.length < 4 || code.length > 8 || isAcceptingInviteCode}
             onClick={claimInviteCode}
           >
             {isAcceptingInviteCode ? 'Processing...' : 'Accept Referral'}
