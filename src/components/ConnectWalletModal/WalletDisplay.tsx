@@ -39,7 +39,7 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
           <div className="flex flex-col gap-2 items-center justify-center h-full">
             <IconRosetteDiscountCheck className="size-10 text-green" />
             <h1 className="text-white font-medium text-lg">{t('Wallet connected!')}</h1>
-            <h2 className="text-white/70 font-medium text-sm">
+            <h2 className="text-white/70 font-medium text-center text-sm">
               {t('You are ready to deposit, trade, and manage your assets.')}
             </h2>
           </div>
