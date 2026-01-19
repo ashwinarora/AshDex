@@ -97,6 +97,29 @@ class UserManager {
 
     return this.findUserByWalletId(walletId)
   }
+
+  async getReferrer(walletId: Address) {
+    const user = await prisma.user.findFirst({
+      where: { wallet_id: { equals: walletId, mode: 'insensitive' } },
+      include: {
+        invite_used: {
+          include: {
+            user: { select: { wallet_id: true, username: true } }
+          }
+        }
+      }
+    })
+
+    if (!user?.invite_used) return null
+
+    return {
+      inviteCode: user.invite_used.code,
+      referrer: {
+        wallet_id: user.invite_used.user.wallet_id,
+        username: user.invite_used.user.username
+      }
+    }
+  }
 }
 
 export default UserManager.getInstance()
