@@ -20,21 +20,23 @@ const ReferralsHeader = () => {
         <div className="flex flex-row gap-4 bg-transparent rounded-md items-center justify-between w-full h-fit py-4">
           <h1 className="text-2xl text-white text-start">{t('Referrals')}</h1>
           <Dialog
-        open={openDialog === 'enter'}
-        onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
-      >
-        <DialogTrigger asChild>
-          <Button size={'sm'} variant="default">{t('Enter Referral Code')}</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
-          </DialogHeader>
-          <div className="min-h-[250px]">
-            <ClaimInviteCode />
-          </div>
-        </DialogContent>
-      </Dialog>
+            open={openDialog === 'enter'}
+            onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
+          >
+            <DialogTrigger asChild>
+              <Button size={'sm'} variant="default">
+                {t('Enter Referral Code')}
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
+              </DialogHeader>
+              <div className="min-h-[250px]">
+                <ClaimInviteCode />
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </>
     )
@@ -53,7 +55,9 @@ const ReferralsHeader = () => {
         onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
       >
         <DialogTrigger asChild>
-          <Button size={'sm'} variant="default">{t('Enter Referral Code')}</Button>
+          <Button size={'sm'} variant="default">
+            {t('Enter Referral Code')}
+          </Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
