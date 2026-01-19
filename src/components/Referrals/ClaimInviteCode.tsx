@@ -10,7 +10,7 @@ import { useTranslate } from '@tolgee/react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
-function ClaimInviteCode( { refetchReferrer }: { refetchReferrer: () => void } ) {
+function ClaimInviteCode({ refetchReferrer }: { refetchReferrer: () => void }) {
   const [code, setCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { agentWallet } = useHyperliquidStore()
@@ -45,7 +45,7 @@ function ClaimInviteCode( { refetchReferrer }: { refetchReferrer: () => void } )
       console.error('Error claiming invite code:', error)
     } finally {
       refetchReferrer()
-    } 
+    }
   }
 
   // Show loading state while fetching user data

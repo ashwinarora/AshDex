@@ -24,9 +24,14 @@ const ReferralsHeader = () => {
       <>
         <div className="flex flex-row gap-4 bg-transparent rounded-md items-center justify-between w-full h-fit py-4">
           <h1 className="text-2xl text-white text-start">{t('Referrals')}</h1>
-          {referrer ?
-            <Badge className='text-green bg-green/20'>Referred by {(referrer.referrer.wallet_id.slice(0, 6) + '...' + referrer.referrer.wallet_id.slice(-4))}</Badge>
-            :
+          {referrer ? (
+            <Badge className="text-green bg-green/20">
+              Referred by{' '}
+              {referrer.referrer.wallet_id.slice(0, 6) +
+                '...' +
+                referrer.referrer.wallet_id.slice(-4)}
+            </Badge>
+          ) : (
             <Dialog
               open={openDialog === 'enter'}
               onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
@@ -44,7 +49,8 @@ const ReferralsHeader = () => {
                   <ClaimInviteCode refetchReferrer={refetchReferrer} />
                 </div>
               </DialogContent>
-            </Dialog>}
+            </Dialog>
+          )}
         </div>
       </>
     )
@@ -58,9 +64,12 @@ const ReferralsHeader = () => {
       )}
     >
       <h1 className="text-3xl shrink-0 font-semibold text-white">{t('Referrals')}</h1>
-      {referrer ?
-        <Badge className='text-green bg-green/20'>Referred by {(referrer.referrer.wallet_id.slice(0, 6) + '...' + referrer.referrer.wallet_id.slice(-4))}</Badge>
-        :
+      {referrer ? (
+        <Badge className="text-green bg-green/20">
+          Referred by{' '}
+          {referrer.referrer.wallet_id.slice(0, 6) + '...' + referrer.referrer.wallet_id.slice(-4)}
+        </Badge>
+      ) : (
         <Dialog
           open={openDialog === 'enter'}
           onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
@@ -78,7 +87,8 @@ const ReferralsHeader = () => {
               <ClaimInviteCode refetchReferrer={refetchReferrer} />
             </div>
           </DialogContent>
-        </Dialog>}
+        </Dialog>
+      )}
     </div>
   )
 }
