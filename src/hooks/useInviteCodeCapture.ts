@@ -123,10 +123,13 @@ export const useInviteCodeCapture = () => {
     // Step 3: Check agent/fee approval status
     // If not fully approved, user is still setting up - store code and exit
     if (!isFullyApproved) {
-      console.log('[InviteCodeCapture] Agent/fee not approved - storing code (new user setting up)', {
-        isAgentApproved,
-        currentFeeApproval
-      })
+      console.log(
+        '[InviteCodeCapture] Agent/fee not approved - storing code (new user setting up)',
+        {
+          isAgentApproved,
+          currentFeeApproval
+        }
+      )
       setInviteCode(inviteCode)
       hasProcessedCode.current = true
       return
