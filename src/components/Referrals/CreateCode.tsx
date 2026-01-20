@@ -23,7 +23,7 @@ function CreateCode() {
     try {
       await createInviteCodeMutation(createdCode)
     } catch (error) {
-      toast.error('Failed to create invite code')
+      toast.error('Failed to create invite code: ' + (error as Error).message)
       console.error('Error creating invite code:', error)
     } finally {
       setCreatedCode('')
