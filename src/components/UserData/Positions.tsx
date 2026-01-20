@@ -9,7 +9,7 @@ import {
   SortingState
 } from '@tanstack/react-table'
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import dynamic from 'next/dynamic'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -57,7 +57,7 @@ interface IPositionsProps {
 
 const Positions = ({ isRTL }: IPositionsProps) => {
   const { t } = useTranslate()
-  const { isConnected } = useAccount()
+  const { isConnected } = useConnection()
   const router = useRouter()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({

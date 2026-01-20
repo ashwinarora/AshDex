@@ -21,7 +21,7 @@ import { useTranslate } from '@tolgee/react'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { isTestnet } from '@/utils/constants'
 
@@ -32,7 +32,7 @@ interface TradingProps {
 const Trading = ({ defaultAsset }: TradingProps = {}) => {
   const { t } = useTranslate()
   const isSpot = useIsSpot()
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { spotKeyToName } = useSpotMeta()
   const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 

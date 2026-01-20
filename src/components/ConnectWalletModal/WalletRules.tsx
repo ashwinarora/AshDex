@@ -1,8 +1,7 @@
 'use client'
 import React from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
-import { useSignMessage } from 'wagmi'
+import { useConnection, useSignMessage } from 'wagmi'
 import axios from 'axios'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { toast } from 'sonner'
@@ -17,8 +16,8 @@ interface WalletRulesProps {
 }
 
 const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
-  const { address } = useAccount()
-  const { signMessageAsync } = useSignMessage()
+  const { address } = useConnection()
+  const signMessage = useSignMessage()
   const { wallets } = useWallets()
   const embeddedWallet = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')
   const walletId = address ?? embeddedWallet?.address
@@ -40,7 +39,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const { t } = useTranslate()
   const handleSignTerms = async () => {
     if (!terms?.content) return
-    const signature = await signMessageAsync({
+    const signature = await signMessage.mutateAsync({
       message: terms.content
     })
     console.log('signature', signature)

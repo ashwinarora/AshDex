@@ -1,11 +1,11 @@
 'use client'
 import { User } from '@prisma/client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 
 // Hook to fetch user details by wallet_id
 export const useUser = () => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
 
   return useQuery({
     queryKey: ['user', address],

@@ -1,10 +1,10 @@
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 
 // A hook that adds timestamp and signature of the payload using agent wallet
 // returns request body to be sent to the server
 export const useAuth = <T>() => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { agentWallet } = useHyperliquidStore()
 
   return async ({ payload }: { payload: T }) => {

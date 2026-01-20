@@ -1,6 +1,6 @@
 'use client'
 import { useMemo, useState, useEffect, useCallback } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import useIsSpot from '@/hooks/useIsSpot'
 import {
   createColumnHelper,
@@ -46,7 +46,7 @@ type FrontendOrderWithAssetKey = WebData2Event['openOrders'][number] & { assetKe
 
 const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const { t } = useTranslate()
-  const { isConnected } = useAccount()
+  const { isConnected } = useConnection()
   const { sdkL1ActionClient, openOrders, perpsMeta, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       sdkL1ActionClient: state.sdkL1ActionClient,

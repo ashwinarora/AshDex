@@ -15,7 +15,7 @@ import { truncateAddress } from '@/utils/utils'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Skeleton } from '@/components/ui/skeleton'
 import { toast } from 'sonner'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useRouter } from 'next/navigation'
 import { Switch } from '@/components/ui/switch'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -43,7 +43,7 @@ interface UserInfo {
 
 const SettingsPage = () => {
   const router = useRouter()
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
   // const isRendered = useComponentRendered()
 
   // const tolgee = useTolgee(['language'])

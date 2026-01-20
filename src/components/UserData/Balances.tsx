@@ -1,5 +1,5 @@
 'use client'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import { useState, useMemo, useEffect } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -52,7 +52,7 @@ type BalanceData = {
 
 const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
   const { t } = useTranslate()
-  const { isConnected } = useAccount()
+  const { isConnected } = useConnection()
   const { spotKeyToName } = useSpotMeta()
 
   const { clearingHouseState, spotState, spotAssetContext } = useHyperliquidStore(

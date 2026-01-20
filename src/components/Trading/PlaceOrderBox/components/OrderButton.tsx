@@ -1,6 +1,6 @@
 'use client'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { TPSLType } from './TPSL'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -53,7 +53,7 @@ const OrderButton = ({
   isMarket
 }: OrderButtonProps) => {
   const { t } = useTranslate()
-  const { isConnected: isWalletConnected } = useAccount()
+  const { isConnected: isWalletConnected } = useConnection()
   const {
     agentWallet,
     sdkL1ActionClient,
