@@ -14,11 +14,11 @@ import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
   const { t } = useTranslate()
-  const { chainId } = useConnection()
-  const { agentWallet, sdkUserSignerClient } = useHyperliquidStore(
+  const { address, chainId } = useConnection()
+  const { sdkUserSignerClient, getFreshAgentWallet } = useHyperliquidStore(
     useShallow((state) => ({
-      agentWallet: state.agentWallet,
-      sdkUserSignerClient: state.sdkUserSignerClient
+      sdkUserSignerClient: state.sdkUserSignerClient,
+      getFreshAgentWallet: state.getFreshAgentWallet
     }))
   )
   const [isApproving, setIsApproving] = useState(false)
@@ -49,11 +49,13 @@ const EstablishConnectionModal = () => {
           onClick={async () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
-            if (!agentWallet) return
+            if (!address) return
             const toastId = toast.loading(t('Approving agent...'))
             try {
+              // Always generate a fresh agent wallet when approving
+              const freshAgentWallet = getFreshAgentWallet(address)
               await sdkUserSignerClient.approveAgent({
-                agentAddress: agentWallet.address,
+                agentAddress: freshAgentWallet.address,
                 agentName: AGENT_NAME
               })
               await refetchAgentApproval()
