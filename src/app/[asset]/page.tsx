@@ -25,9 +25,7 @@ export default function AssetTradingPage() {
             {t('took a wrong turn and ended up in the shadow realm.')}
           </p>
           <p className="text-sm text-white/50 text-center">
-            {t(
-              "Maybe it's hiding, maybe it doesn't exist. Either way, we can't find it."
-            )}
+            {t("Maybe it's hiding, maybe it doesn't exist. Either way, we can't find it.")}
           </p>
         </div>
         <div className="flex gap-3">
