@@ -19,14 +19,14 @@ export default function AssetTradingPage() {
         <IconMoodSadDizzy className="size-24 text-white" />
         <div className="flex flex-col items-center justify-center gap-4">
           <h1 className="text-4xl font-bold text-white">{t('404 - Asset Not Found')}</h1>
-          <p className="text-lg text-white/70 max-w-md">
+          <p className="text-lg text-white/70 max-w-md text-center">
             {t('Looks like')}{' '}
             <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
             {t('took a wrong turn and ended up in the shadow realm.')}
           </p>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-white/50 text-center">
             {t(
-              'Maybe it&apos;s hiding, maybe it doesn&apos;t exist. Either way, we can&apos;t find it.'
+              "Maybe it's hiding, maybe it doesn't exist. Either way, we can't find it."
             )}
           </p>
         </div>

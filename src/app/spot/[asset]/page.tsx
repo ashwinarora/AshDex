@@ -19,12 +19,12 @@ export default function SpotAssetTradingPage() {
         <IconMoodSadDizzy className="size-24 text-white" />
         <div className="flex flex-col items-center justify-center gap-4">
           <h1 className="text-4xl font-bold text-white">{t('404 - Asset Not Found')}</h1>
-          <p className="text-lg text-white/70 max-w-md">
+          <p className="text-lg text-white/70 max-w-md text-center">
             {t('Looks like')}{' '}
             <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
             {t('went on vacation and forgot to tell us where.')}
           </p>
-          <p className="text-sm text-white/50">
+          <p className="text-sm text-white/50 text-center">
             {t("It's not you, it's the asset. We just don't have it... yet.")}
           </p>
         </div>
