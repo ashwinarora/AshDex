@@ -32,7 +32,7 @@ type FilteredLedgerUpdate = {
   time: number
   hash: `0x${string}`
   delta: {
-    type: 'deposit' | 'withdraw' | 'accountClassTransfer' | 'send'
+    type: 'deposit' | 'withdraw' | 'accountClassTransfer' | 'send' | 'internalTransfer'
     usdc?: string
     toPerp?: boolean
     fee?: string
@@ -69,6 +69,8 @@ const getActionLabel = (type: string) => {
       return 'Transfer'
     case 'send':
       return 'Send'
+    case 'internalTransfer':
+      return 'Internal Transfer'
     default:
       return type
   }
@@ -83,6 +85,7 @@ const getSource = (delta: FilteredLedgerUpdate['delta']) => {
     case 'accountClassTransfer':
       return delta.toPerp ? 'Spot' : 'Perps'
     case 'send':
+    case 'internalTransfer':
       return delta.user ? truncateAddress(delta.user) : '--'
     default:
       return '--'
@@ -98,6 +101,7 @@ const getDestination = (delta: FilteredLedgerUpdate['delta']) => {
     case 'accountClassTransfer':
       return delta.toPerp ? 'Perps' : 'Spot'
     case 'send':
+    case 'internalTransfer':
       return delta.destination ? truncateAddress(delta.destination) : '--'
     default:
       return '--'
@@ -113,7 +117,8 @@ const getValueChange = (delta: FilteredLedgerUpdate['delta'], connectedAddress?:
       return -Math.abs(amount)
     case 'accountClassTransfer':
       return delta.toPerp ? amount : -Math.abs(amount)
-    case 'send': {
+    case 'send':
+    case 'internalTransfer': {
       // If connected user is the sender, it's negative (outgoing)
       // If connected user is the destination, it's positive (incoming)
       const isSender =
@@ -149,14 +154,19 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         const deltaType = update.delta.type as string
         if (isTestnet) {
           // Testnet only has transfers between perps and spot (no deposit/withdraw)
-          return deltaType === 'accountClassTransfer' || deltaType === 'send'
+          return (
+            deltaType === 'accountClassTransfer' ||
+            deltaType === 'send' ||
+            deltaType === 'internalTransfer'
+          )
         }
         // Mainnet has deposit, withdraw, transfers, and sends
         return (
           deltaType === 'deposit' ||
           deltaType === 'withdraw' ||
           deltaType === 'accountClassTransfer' ||
-          deltaType === 'send'
+          deltaType === 'send' ||
+          deltaType === 'internalTransfer'
         )
       })
       .map((update) => update as unknown as FilteredLedgerUpdate)
@@ -194,9 +204,12 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             return <span>{timeString}</span>
           }
 
-          // Use Hyperliquid explorer for send and accountClassTransfer (L1 transactions)
+          // Use Hyperliquid explorer for send, accountClassTransfer, and internalTransfer (L1 transactions)
           // Use Arbiscan for deposit/withdraw (Arbitrum bridge transactions) - mainnet only
-          const isHyperliquidTx = deltaType === 'send' || deltaType === 'accountClassTransfer'
+          const isHyperliquidTx =
+            deltaType === 'send' ||
+            deltaType === 'accountClassTransfer' ||
+            deltaType === 'internalTransfer'
           const url = isHyperliquidTx ? getHyperliquidExplorerUrl(hash) : getArbiscanUrl(hash)
 
           // No Arbiscan link for testnet deposit/withdraw
