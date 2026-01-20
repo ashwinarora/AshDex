@@ -10,7 +10,12 @@ import { useTranslate } from '@tolgee/react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
-function ClaimInviteCode({ refetchReferrer }: { refetchReferrer: () => void }) {
+interface ClaimInviteCodeProps {
+  refetchReferrer: () => void
+  onDismissPermanently?: () => void
+}
+
+function ClaimInviteCode({ refetchReferrer, onDismissPermanently }: ClaimInviteCodeProps) {
   const [code, setCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { agentWallet } = useHyperliquidStore()
@@ -88,19 +93,30 @@ function ClaimInviteCode({ refetchReferrer }: { refetchReferrer: () => void }) {
           onChange={(e) => handleCodeChange(e.target.value)}
           className="w-fit w-min-10 text-center text-accent-foreground tracking-[0.5em]"
         />
-        {!isAgentApproved || currentFeeApproval === 0 ? (
-          <Button onClick={openAgentModal} className="w-full">
-            Establish Connection
-          </Button>
-        ) : (
-          <Button
-            className="w-full"
-            disabled={code.length < 4 || code.length > 8 || isAcceptingInviteCode}
-            onClick={claimInviteCode}
-          >
-            {isAcceptingInviteCode ? 'Processing...' : 'Accept Referral'}
-          </Button>
-        )}
+        <div className="flex flex-col gap-2 w-full">
+          {!isAgentApproved || currentFeeApproval === 0 ? (
+            <Button onClick={openAgentModal} className="w-full">
+              {t('Establish Connection')}
+            </Button>
+          ) : (
+            <Button
+              className="w-full"
+              disabled={code.length < 4 || code.length > 8 || isAcceptingInviteCode}
+              onClick={claimInviteCode}
+            >
+              {isAcceptingInviteCode ? t('Processing...') : t('Accept Referral')}
+            </Button>
+          )}
+          {onDismissPermanently && (
+            <Button
+              variant="ghost"
+              className="w-full text-white/50 hover:text-white/70"
+              onClick={onDismissPermanently}
+            >
+              {t("Don't show again")}
+            </Button>
+          )}
+        </div>
       </div>
     )
   }
