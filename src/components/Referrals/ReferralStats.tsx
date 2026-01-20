@@ -104,17 +104,9 @@ const ReferralStats = () => {
         }
       />
 
-      <StatCard
-        label={t('Total Referral Rewards')}
-        value={formatUSD(totalRewards)}
-        isRTL={isRTL}
-      />
+      <StatCard label={t('Total Referral Rewards')} value={formatUSD(totalRewards)} isRTL={isRTL} />
 
-      <StatCard
-        label={t('Rewards Claimed')}
-        value={formatUSD(claimedRewards)}
-        isRTL={isRTL}
-      />
+      <StatCard label={t('Rewards Claimed')} value={formatUSD(claimedRewards)} isRTL={isRTL} />
 
       <StatCard
         label={t('Available to Claim')}
