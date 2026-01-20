@@ -20,7 +20,8 @@ export default function SpotAssetTradingPage() {
         <div className="flex flex-col items-center justify-center gap-4">
           <h1 className="text-4xl font-bold text-white">{t('404 - Asset Not Found')}</h1>
           <p className="text-lg text-white/70 max-w-md">
-            {t('Looks like')} <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
+            {t('Looks like')}{' '}
+            <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
             {t('went on vacation and forgot to tell us where.')}
           </p>
           <p className="text-sm text-white/50">

@@ -20,11 +20,14 @@ export default function AssetTradingPage() {
         <div className="flex flex-col items-center justify-center gap-4">
           <h1 className="text-4xl font-bold text-white">{t('404 - Asset Not Found')}</h1>
           <p className="text-lg text-white/70 max-w-md">
-            {t('Looks like')} <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
+            {t('Looks like')}{' '}
+            <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
             {t('took a wrong turn and ended up in the shadow realm.')}
           </p>
           <p className="text-sm text-white/50">
-            {t('Maybe it&apos;s hiding, maybe it doesn&apos;t exist. Either way, we can&apos;t find it.')}
+            {t(
+              'Maybe it&apos;s hiding, maybe it doesn&apos;t exist. Either way, we can&apos;t find it.'
+            )}
           </p>
         </div>
         <div className="flex gap-3">
