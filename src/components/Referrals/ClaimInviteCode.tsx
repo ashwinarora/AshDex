@@ -10,7 +10,7 @@ import { useTranslate } from '@tolgee/react'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
 
-function ClaimInviteCode() {
+function ClaimInviteCode({ refetchReferrer }: { refetchReferrer: () => void }) {
   const [code, setCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { agentWallet } = useHyperliquidStore()
@@ -41,8 +41,10 @@ function ClaimInviteCode() {
     try {
       await acceptInviteCodeMutation(code)
     } catch (error) {
-      toast.error('Failed to claim invite code')
+      toast.error('Failed to claim invite code: ' + (error as Error).message)
       console.error('Error claiming invite code:', error)
+    } finally {
+      refetchReferrer()
     }
   }
 
@@ -93,7 +95,7 @@ function ClaimInviteCode() {
         ) : (
           <Button
             className="w-full"
-            disabled={code.length !== 6 || isAcceptingInviteCode}
+            disabled={code.length < 4 || code.length > 8 || isAcceptingInviteCode}
             onClick={claimInviteCode}
           >
             {isAcceptingInviteCode ? 'Processing...' : 'Accept Referral'}

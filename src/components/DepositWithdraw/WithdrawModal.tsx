@@ -89,7 +89,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
           <DialogDescription>

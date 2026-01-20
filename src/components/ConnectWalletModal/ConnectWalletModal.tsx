@@ -114,7 +114,7 @@ const ConnectWalletModal: React.FC = () => {
 
   return (
     <>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t(dialogTitle)}</DialogTitle>
         </DialogHeader>

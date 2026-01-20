@@ -39,7 +39,7 @@ const ReferralStats = () => {
 
   const stats = [
     {
-      label: t('Invite Code'),
+      label: t('Your Invite Code'),
       value: rewardsStats?.inviteCodes?.[0]?.inviteCode || '------'
     },
     {
@@ -90,7 +90,7 @@ const ReferralStats = () => {
                     {t('Create Code')}
                   </span>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
                   <DialogHeader>
                     <DialogTitle>{t('Create Code')}</DialogTitle>
                   </DialogHeader>
@@ -110,7 +110,7 @@ const ReferralStats = () => {
                     {t('Claim')}
                   </span>
                 </DialogTrigger>
-                <DialogContent className="sm:max-w-md">
+                <DialogContent className="sm:max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
                   <DialogHeader>
                     <DialogTitle>{t('Rewards')}</DialogTitle>
                   </DialogHeader>

@@ -90,7 +90,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen || isDepositModalOpen} onOpenChange={onClose || closeDepositModal}>
-      <DialogContent>
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{t('Deposit to Nexon')}</DialogTitle>
           <DialogDescription>{t('Deposit USDC from Arbitrum to Nexon')}</DialogDescription>

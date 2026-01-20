@@ -51,7 +51,7 @@ function Slider({
           data-slot="slider-thumb"
           key={index}
           className={cn(
-            'block size-4 origin-center shrink-0 hover:size-5 rounded-full border shadow-sm transition-all disabled:pointer-events-none disabled:opacity-50',
+            'block size-4 origin-center shrink-0 hover:size-5 rounded-full border shadow-sm transition-all cursor-pointer disabled:pointer-events-none disabled:opacity-50',
             value && value[0] > max ? 'bg-red border-red' : 'bg-primary border-primary'
           )}
         />

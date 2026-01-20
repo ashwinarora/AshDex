@@ -7,36 +7,50 @@ import { Button } from '../ui/button'
 import ClaimInviteCode from './ClaimInviteCode'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
+import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
+import { Badge } from '../ui/badge'
 
 const ReferralsHeader = () => {
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile } = useScreenSize()
   const [openDialog, setOpenDialog] = useState<string | null>(null)
+  const { data: referrer, refetch: refetchReferrer } = useGetReferrer()
+
+  console.log('🚀 ~ ReferralsHeader ~ referrer:', referrer)
 
   if (isMobile) {
     return (
       <>
         <div className="flex flex-row gap-4 bg-transparent rounded-md items-center justify-between w-full h-fit py-4">
           <h1 className="text-2xl text-white text-start">{t('Referrals')}</h1>
-          <Dialog
-            open={openDialog === 'enter'}
-            onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
-          >
-            <DialogTrigger asChild>
-              <Button size={'sm'} variant="default">
-                {t('Enter Referral Code')}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
-              </DialogHeader>
-              <div className="min-h-[250px]">
-                <ClaimInviteCode />
-              </div>
-            </DialogContent>
-          </Dialog>
+          {referrer ? (
+            <Badge className="text-green bg-green/20">
+              Referred by{' '}
+              {referrer.referrer.wallet_id.slice(0, 6) +
+                '...' +
+                referrer.referrer.wallet_id.slice(-4)}
+            </Badge>
+          ) : (
+            <Dialog
+              open={openDialog === 'enter'}
+              onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
+            >
+              <DialogTrigger asChild>
+                <Button size={'sm'} variant="default">
+                  {t('Enter Referral Code')}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
+                </DialogHeader>
+                <div className="min-h-[250px]">
+                  <ClaimInviteCode refetchReferrer={refetchReferrer} />
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
       </>
     )
@@ -50,24 +64,31 @@ const ReferralsHeader = () => {
       )}
     >
       <h1 className="text-3xl shrink-0 font-semibold text-white">{t('Referrals')}</h1>
-      <Dialog
-        open={openDialog === 'enter'}
-        onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
-      >
-        <DialogTrigger asChild>
-          <Button size={'sm'} variant="default">
-            {t('Enter Referral Code')}
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
-          </DialogHeader>
-          <div className="min-h-[250px]">
-            <ClaimInviteCode />
-          </div>
-        </DialogContent>
-      </Dialog>
+      {referrer ? (
+        <Badge className="text-green bg-green/20">
+          Referred by{' '}
+          {referrer.referrer.wallet_id.slice(0, 6) + '...' + referrer.referrer.wallet_id.slice(-4)}
+        </Badge>
+      ) : (
+        <Dialog
+          open={openDialog === 'enter'}
+          onOpenChange={(open) => setOpenDialog(open ? 'enter' : null)}
+        >
+          <DialogTrigger asChild>
+            <Button size={'sm'} variant="default">
+              {t('Enter Referral Code')}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{t('Enter Referral Code')}</DialogTitle>
+            </DialogHeader>
+            <div className="min-h-[250px]">
+              <ClaimInviteCode refetchReferrer={refetchReferrer} />
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
     </div>
   )
 }

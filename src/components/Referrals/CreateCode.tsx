@@ -3,12 +3,13 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useTranslate } from '@tolgee/react'
 import { toast } from 'sonner'
 import { Button } from '../ui/button'
-import { useCreateInviteCode } from '@/hooks/invite'
+import { useCreateInviteCode, useGetRewardsStats } from '@/hooks/invite'
 import { Input } from '../ui/input'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
+  const { refetch: refetchRewardsStats } = useGetRewardsStats()
   const { t } = useTranslate()
 
   const { mutateAsync: createInviteCodeMutation, isPending: isCreatingInviteCode } =
@@ -22,8 +23,11 @@ function CreateCode() {
     try {
       await createInviteCodeMutation(createdCode)
     } catch (error) {
-      toast.error('Failed to create invite code')
+      toast.error('Failed to create invite code: ' + (error as Error).message)
       console.error('Error creating invite code:', error)
+    } finally {
+      setCreatedCode('')
+      refetchRewardsStats()
     }
   }
 
@@ -54,7 +58,7 @@ function CreateCode() {
       ) : (
         <Button
           className="w-full"
-          disabled={isCreatingInviteCode || (createdCode.length > 4 && createdCode.length < 8)}
+          disabled={isCreatingInviteCode || createdCode.length < 4 || createdCode.length > 8}
           onClick={createInviteCode}
         >
           {isCreatingInviteCode ? t('Creating...') : t('Create')}
