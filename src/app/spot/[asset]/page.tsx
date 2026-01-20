@@ -30,7 +30,7 @@ export default function SpotAssetTradingPage() {
         </div>
         <div className="flex gap-3">
           <Link href="/spot">
-            <Button variant="default">{t('Trade HYPE Instead')}</Button>
+            <Button variant="default">{t('Check Out Spot')}</Button>
           </Link>
           <Link href="/">
             <Button variant="outline">{t('Check Out Perps')}</Button>

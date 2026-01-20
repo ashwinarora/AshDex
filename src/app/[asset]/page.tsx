@@ -30,7 +30,7 @@ export default function AssetTradingPage() {
         </div>
         <div className="flex gap-3">
           <Link href="/">
-            <Button variant="default">{t('Trade BTC Instead')}</Button>
+            <Button variant="default">{t('Check Out Perps')}</Button>
           </Link>
           <Link href="/spot">
             <Button variant="outline">{t('Check Out Spot')}</Button>
