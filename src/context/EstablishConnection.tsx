@@ -43,7 +43,7 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
   )
 
   const { data: isAgentApproved, refetch: refetchAgentApproval } = useQuery({
-    queryKey: ['extraAgents', address],
+    queryKey: ['extraAgents', address, agentWallet],
     queryFn: async () => {
       if (!address) return false
       if (!sdkInfoClient) return false

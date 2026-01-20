@@ -80,6 +80,7 @@ interface HyperliquidActions {
   unsubscribeLedgerUpdates: () => Promise<void>
   addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
   loadPendingWithdrawals: (address: string) => void
+  getFreshAgentWallet: (address: Address) => PrivateKeyAccount
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -476,6 +477,24 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       // Load from localStorage into store
       const pending = getPendingWithdrawals(address)
       set({ pendingWithdrawals: pending })
+    },
+    getFreshAgentWallet: (address: Address) => {
+      // Generate a new private key
+      const newPrivateKey = generatePrivateKey()
+      // Save to localStorage (overwriting any existing one)
+      const storageKey = AGENT_PRIVATE_KEY + '_' + address
+      localStorage.setItem(storageKey, newPrivateKey)
+      // Create the new agent wallet
+      const newAgentWallet = privateKeyToAccount(newPrivateKey)
+      // Update the store
+      set((state) => ({
+        agentWallet: newAgentWallet,
+        sdkL1ActionClient: new hl.ExchangeClient({
+          transport: state.sdkTransport,
+          wallet: newAgentWallet
+        })
+      }))
+      return newAgentWallet
     }
   })
 )
