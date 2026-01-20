@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { useAccount, useSwitchChain } from 'wagmi'
+import { useConnection, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { isTestnet, HYPERLIQUID_WITHDRAW_FEE_USDC } from '@/utils/constants'
@@ -22,7 +22,7 @@ interface WithdrawModalProps {
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { t } = useTranslate()
-  const { address, chainId } = useAccount()
+  const { address, chainId } = useConnection()
   const [amount, setAmount] = useState<string>('')
   const { clearingHouseState, sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
     useShallow((state) => ({
@@ -32,12 +32,13 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
-  const { switchChainAsync } = useSwitchChain()
+  const switchChain = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
-  const switchChain = async () => {
+  const handleSwitchChain = async () => {
     const toastId = toast.loading(t('Switching to Arbitrum network...'))
-    await switchChainAsync({ chainId: supportedChain })
+    await switchChain
+      .mutateAsync({ chainId: supportedChain })
       .then(() => {
         toast.success(t('Switched to Arbitrum network.'), {
           id: toastId
@@ -154,7 +155,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
               <Button
                 className="w-full"
                 onClick={async () => {
-                  await switchChain()
+                  await handleSwitchChain()
                 }}
               >
                 {t('Switch to Arbitrum')}

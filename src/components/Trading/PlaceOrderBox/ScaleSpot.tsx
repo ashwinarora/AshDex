@@ -24,7 +24,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
 import { toFixedDown } from '@/utils/utils'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { IconWallet } from '@tabler/icons-react'
 interface Order {
@@ -82,7 +82,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [sizeSkew, setSizeSkew] = useState<number>(1)
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [usdPercent, setUsdPercent] = useState(0)
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()

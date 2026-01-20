@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { usePrivy, useWallets, type ConnectedWallet } from '@privy-io/react-auth'
 import { useSetActiveWallet } from '@privy-io/wagmi'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 
 /**
  * Keeps wagmi's active account in sync with Privy after an email login.
@@ -15,7 +15,7 @@ import { useAccount } from 'wagmi'
 export default function PrivyWagmiSync() {
   const { ready, authenticated } = usePrivy()
   const { wallets, ready: walletsReady } = useWallets()
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
   const { setActiveWallet } = useSetActiveWallet()
 
   // Avoid spamming setActiveWallet on every re-render.

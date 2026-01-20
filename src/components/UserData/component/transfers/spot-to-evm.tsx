@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  useAccount,
+  useConnection,
   useBalance,
   useReadContract,
   useSendTransaction,
@@ -40,11 +40,11 @@ interface ITransferModal {
 }
 
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
-  const { chainId, address } = useAccount()
+  const { chainId, address } = useConnection()
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
-  const { switchChainAsync } = useSwitchChain()
+  const switchChainHook = useSwitchChain()
   const { writeContractAsync } = useWriteContract()
 
   const [amount, setAmount] = useState<string>('')
@@ -98,9 +98,10 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     }
   }
 
-  const switchChain = async () => {
+  const handleSwitchChain = async () => {
     const toastId = toast.loading(t('Switching to Hyperliquid network...'))
-    await switchChainAsync({ chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id })
+    await switchChainHook
+      .mutateAsync({ chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id })
       .then(() => {
         toast.success(t('Switched to Hyperliquid network.'), {
           id: toastId
@@ -266,7 +267,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             <Separator />
             {!toEvm ? (
               chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id ? (
-                <Button className="w-full" onClick={switchChain}>
+                <Button className="w-full" onClick={handleSwitchChain}>
                   {t('Switch to Hyperliquid Network')}
                 </Button>
               ) : (

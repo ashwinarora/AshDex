@@ -4,7 +4,7 @@ import { Dialog } from '@/components/ui/dialog'
 import { config } from '@/config/wagmi'
 import dynamic from 'next/dynamic'
 import React, { createContext, useContext, useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { switchChain } from 'wagmi/actions'
 
 const ConnectWalletModal = dynamic(
@@ -24,7 +24,7 @@ const WalletModalContext = createContext<WalletModalContextProps | undefined>(un
 
 export const WalletModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const { chainId, isConnected } = useAccount()
+  const { chainId, isConnected } = useConnection()
 
   const openConnectWalletModal = () => setIsModalOpen(true)
   const closeConnectWalletModal = () => setIsModalOpen(false)

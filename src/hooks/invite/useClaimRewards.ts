@@ -1,5 +1,5 @@
 'use client'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -18,7 +18,7 @@ export interface ClaimRewardsResponse {
 
 // Hook to claim rewards
 export const useClaimRewards = () => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const queryClient = useQueryClient()
   const authMutation = useAuth<TClaimRewardsPayload>()
 

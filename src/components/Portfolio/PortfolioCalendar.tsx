@@ -7,7 +7,7 @@ import { IconTilde, IconTrendingDown3, IconTrendingUp3 } from '@tabler/icons-rea
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { formatWithKMB } from '@/utils/format'
 import * as hl from '@nktkas/hyperliquid'
 
@@ -48,7 +48,7 @@ export function PortfolioCalendar({
   pnlType: 'unrealized' | 'realized' | 'total'
   isRTL: boolean
 }) {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
       sdkInfoClient: state.sdkInfoClient

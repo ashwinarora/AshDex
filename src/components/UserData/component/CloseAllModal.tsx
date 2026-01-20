@@ -21,7 +21,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
 import { IconWallet } from '@tabler/icons-react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 
 interface CloseAllModalProps {
@@ -45,7 +45,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
     )
   const { getAdjustedBuilderFee } = useUserFee()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)

@@ -1,7 +1,7 @@
 'use client'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import {
   useReactTable,
   getCoreRowModel,
@@ -47,7 +47,7 @@ const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
   const { spotKeyToName } = useSpotMeta()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)

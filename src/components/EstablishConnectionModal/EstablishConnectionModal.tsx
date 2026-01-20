@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { AGENT_NAME, BUILDER_ADDRESS, BUILDER_FEE } from '@/utils/constants'
 import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -14,7 +14,7 @@ import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
   const { t } = useTranslate()
-  const { chainId } = useAccount()
+  const { chainId } = useConnection()
   const { agentWallet, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       agentWallet: state.agentWallet,

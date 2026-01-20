@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
@@ -27,7 +27,7 @@ interface ITransferModal {
 }
 
 const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
-  const { chainId, address } = useAccount()
+  const { chainId, address } = useConnection()
   const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
   const { openConnectWalletModal } = useWalletModal()
