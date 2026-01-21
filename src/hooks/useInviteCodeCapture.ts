@@ -53,7 +53,7 @@ export const useInviteCodeCapture = () => {
   const isFullyApproved = isAgentApproved && currentFeeApproval > 0
 
   useEffect(() => {
-    if(!searchParams) return
+    if (!searchParams) return
     const inviteCode = searchParams.get('inviteCode')
 
     // No invite code in URL, nothing to do
@@ -174,7 +174,7 @@ export const useInviteCodeCapture = () => {
   // === REFERRAL PROMPT DIALOG LOGIC ===
   // Show dialog when user has no invite code and completes fee approval
   useEffect(() => {
-    if(!searchParams) return
+    if (!searchParams) return
     const inviteCode = searchParams.get('inviteCode')
 
     console.log('[InviteCodeCapture] Checking referral prompt conditions:', {
