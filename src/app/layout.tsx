@@ -8,8 +8,6 @@ import '@/styles/table.css'
 import OnboardingModal from '@/components/onboarding-modal'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
-import FIBNativeBridgeInitializer from './FIBNativeBridgeInitializer'
-import FIBBridgeEvents from './FIBBridgeEvents'
 import dynamic from 'next/dynamic'
 import { getLanguage } from '@/tolgee/language'
 import { getTolgee } from '@/tolgee/server'
@@ -63,8 +61,6 @@ export default async function RootLayout({
         <TolgeeNextProvider language={locale} staticData={staticData}>
           <PrivyProvider>
             <WagmiProvider>
-              <FIBNativeBridgeInitializer />
-              <FIBBridgeEvents />
               <HyperLiquidInitializer />
               <WalletModalProvider>
                 <EstablishConnectionProvider>

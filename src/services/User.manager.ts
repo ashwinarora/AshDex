@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { getReferral } from '@/lib/referral'
+import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { User, Prisma } from '@prisma/client'
 import { Address } from 'viem'
 
@@ -64,8 +65,8 @@ class UserManager {
     const referral = await getReferral(walletId)
 
     if (
-      referral?.referrer == '0x1710022f671b4032d6c7262107ba231f41f84ce8' &&
-      referral.code == 'ASHWIN'
+      referral?.referrer == process.env.REFERRAL_CODE_OWNER &&
+      referral?.code == NEXON_REFERRAL_CODE
     ) {
       this.updateUser(walletId, { is_nexon_referred: true })
       return true

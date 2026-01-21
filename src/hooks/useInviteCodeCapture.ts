@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useSetInviteCode, useInviteCode } from '@/store/ReferralStore'
 import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
-import { useAccount } from 'wagmi'
+import { useReferralsInfo } from '@/hooks/useReferralsInfo'
+import { useConnection } from 'wagmi'
 import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useUserFee } from '@/hooks/useUserFee'
 
 /**
  * Hook to capture invite code from URL params and store it in localStorage.
@@ -17,22 +17,29 @@ import { useUserFee } from '@/hooks/useUserFee'
  * Flow:
  * 1. If wallet NOT connected: store code, mark for re-validation when connected
  * 2. If wallet connected:
- *    a. Check referrer - if exists, toast "already referred"
+ *    a. Check referrer - if exists AND not referred by NEXT_PUBLIC_REFERRAL_CODE, toast "already referred"
+ *       (Users referred by platform default code can still enter a new invite code)
  *    b. Check agent/fee approval - if not approved, store code (new user setting up)
  *    c. Check volume - if > 0, toast "only new users"; if 0, store code
  *
  * Also handles showing referral prompt dialog:
- * - Shows when: no URL code, no stored code, no referrer, fee approved, not dismissed
+ * - Shows when: no URL code, no stored code, no referrer (or referred by platform code), fee approved, not dismissed
  * - Returns showReferralPrompt state for parent to render dialog
  */
 export const useInviteCodeCapture = () => {
   const searchParams = useSearchParams()
   const setInviteCode = useSetInviteCode()
   const { inviteCode: storedInviteCode, referralPromptDismissed } = useInviteCode()
-  const { isConnected } = useAccount()
+  const { isConnected } = useConnection()
   const { data: referrer, isFetched: isReferrerFetched } = useGetReferrer()
+  const { data: referralsInfo, isFetched: isReferralsInfoFetched } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval } = useAgentApproval()
-  const { data: userFeeData, isFetched: isUserFeeFetched } = useUserFee()
+
+  // Get the platform default referral code from environment
+  const platformReferralCode = process.env.NEXT_PUBLIC_REFERRAL_CODE
+
+  // Get cumulative volume from referrals info (more accurate than daily volume)
+  const totalVolume = Number(referralsInfo?.cumVlm || 0)
 
   // State for showing referral prompt dialog
   const [showReferralPrompt, setShowReferralPrompt] = useState(false)
@@ -42,17 +49,11 @@ export const useInviteCodeCapture = () => {
   const storedWhileDisconnected = useRef(false)
   const previouslyConnected = useRef(false)
 
-  // Calculate total user volume
-  const totalVolume =
-    userFeeData?.dailyUserVlm?.reduce(
-      (acc, curr) => Number(curr.userAdd) + Number(curr.userCross) + acc,
-      0
-    ) || 0
-
   // Check if agent and fee are both approved
   const isFullyApproved = isAgentApproved && currentFeeApproval > 0
 
   useEffect(() => {
+    if (!searchParams) return
     const inviteCode = searchParams.get('inviteCode')
 
     // No invite code in URL, nothing to do
@@ -69,10 +70,12 @@ export const useInviteCodeCapture = () => {
       previouslyConnected: previouslyConnected.current,
       isReferrerFetched,
       referrer,
+      referralsInfo,
+      platformReferralCode,
       isFullyApproved,
       isAgentApproved,
       currentFeeApproval,
-      isUserFeeFetched,
+      isReferralsInfoFetched,
       totalVolume
     })
 
@@ -112,8 +115,9 @@ export const useInviteCodeCapture = () => {
       return
     }
 
-    // Step 2: Check if user already has a referrer
-    if (referrer !== null) {
+    // Step 2: Check if user already has a referrer (allow if referred by platform default code)
+    const isReferredByPlatformCode = referrer?.inviteCode === platformReferralCode
+    if (referrer !== null && !isReferredByPlatformCode) {
       console.log('[InviteCodeCapture] User already has a referrer:', referrer)
       toast.info('You already have a referrer linked to your wallet')
       hasProcessedCode.current = true
@@ -136,9 +140,9 @@ export const useInviteCodeCapture = () => {
     }
 
     // Step 4: Agent and fee are approved - check volume
-    // Wait for user fee data to be fetched
-    if (!isUserFeeFetched) {
-      console.log('[InviteCodeCapture] Waiting for user fee data...')
+    // Wait for referrals info to be fetched (contains cumulative volume)
+    if (!isReferralsInfoFetched) {
+      console.log('[InviteCodeCapture] Waiting for referrals info...')
       return
     }
 
@@ -161,13 +165,16 @@ export const useInviteCodeCapture = () => {
     referrer,
     isReferrerFetched,
     isFullyApproved,
-    isUserFeeFetched,
-    totalVolume
+    isReferralsInfoFetched,
+    totalVolume,
+    platformReferralCode,
+    referralsInfo
   ])
 
   // === REFERRAL PROMPT DIALOG LOGIC ===
   // Show dialog when user has no invite code and completes fee approval
   useEffect(() => {
+    if (!searchParams) return
     const inviteCode = searchParams.get('inviteCode')
 
     console.log('[InviteCodeCapture] Checking referral prompt conditions:', {
@@ -176,6 +183,7 @@ export const useInviteCodeCapture = () => {
       isConnected,
       isReferrerFetched,
       referrer,
+      platformReferralCode,
       isFullyApproved,
       referralPromptDismissed
     })
@@ -207,8 +215,9 @@ export const useInviteCodeCapture = () => {
       return
     }
 
-    // Don't show if user already has a referrer
-    if (referrer !== null) {
+    // Don't show if user already has a referrer (unless referred by platform default code)
+    const isReferredByPlatformCode = referrer?.inviteCode === platformReferralCode
+    if (referrer !== null && !isReferredByPlatformCode) {
       console.log('[InviteCodeCapture] User has referrer - not showing prompt')
       setShowReferralPrompt(false)
       return
@@ -238,7 +247,8 @@ export const useInviteCodeCapture = () => {
     isReferrerFetched,
     referrer,
     isFullyApproved,
-    referralPromptDismissed
+    referralPromptDismissed,
+    platformReferralCode
   ])
 
   return {
