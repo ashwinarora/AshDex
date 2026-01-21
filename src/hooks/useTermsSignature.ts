@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import axios from 'axios'
 
 interface TermsSignatureResponse {
@@ -7,7 +7,7 @@ interface TermsSignatureResponse {
 }
 
 export const useTermsSignature = (walletId?: string) => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const resolvedWalletId = walletId ?? address
 
   return useQuery<TermsSignatureResponse>({

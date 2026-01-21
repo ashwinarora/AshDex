@@ -4,10 +4,10 @@ import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWall
 import PortfolioHeader from '@/components/Portfolio/PortfolioHeader'
 import PortfolioStats from '@/components/Portfolio/PortfolioStats'
 import UserData from '@/components/UserData/UserData'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 
 const PortfolioPage = () => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   if (!address) {
     return (
       <div className="w-full h-dvh text-white/70 overflow-hidden flex flex-col items-center">

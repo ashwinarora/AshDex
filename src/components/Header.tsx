@@ -1,7 +1,7 @@
 'use client'
 import { useState, FC, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { useAccount, useDisconnect } from 'wagmi'
+import { useConnection, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { truncateAddress } from '@/utils/utils'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -51,8 +51,8 @@ const Header: FC = () => {
   const router = useRouter()
   const pathname = usePathname()
   const { t } = useTranslate()
-  const { disconnect } = useDisconnect()
-  const { address, isConnected } = useAccount()
+  const disconnect = useDisconnect()
+  const { address, isConnected } = useConnection()
   const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isBridgeModalOpen, setIsBridgeModalOpen] = useState(false)
@@ -87,7 +87,7 @@ const Header: FC = () => {
     if (termsData.signed) return
     if (isModalOpen) return
     // Prefer keeping the session and prompting the user to sign.
-    disconnect()
+    disconnect.mutate()
     toast.error(t('Please sign the terms to continue'))
     // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
   }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
@@ -372,7 +372,7 @@ const Header: FC = () => {
                 <DropdownMenuItem
                   onClick={() => {
                     if (isConnected) {
-                      disconnect()
+                      disconnect.mutate()
                     }
                     if (authenticated) {
                       void privyLogout()

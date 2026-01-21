@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import {
   createColumnHelper,
   useReactTable,
@@ -35,7 +35,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { t } = useTranslate()
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
       sdkInfoClient: state.sdkInfoClient

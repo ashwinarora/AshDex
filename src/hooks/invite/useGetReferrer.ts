@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useAuth } from './useAuth'
 import { apiServerAxios } from '@/config/axios'
 
@@ -20,7 +20,7 @@ interface GetReferrerResponse {
 }
 
 export const useGetReferrer = () => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
   const authMutation = useAuth<GetReferrerPayload>()
 
   return useQuery({

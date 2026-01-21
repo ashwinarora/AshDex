@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Image, { StaticImageData } from 'next/image'
-import { useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useConnection, useConnect, useDisconnect, useConnectors } from 'wagmi'
 import { TrustWallet } from '@trustwallet/web3-react-trust-wallet'
 import { initializeConnector } from '@web3-react/core'
 import { WALLETS } from '@/utils/constants'
@@ -29,9 +29,10 @@ interface WalletConnectProvider {
 const ConnectWalletModal: React.FC = () => {
   const { t } = useTranslate()
   const { closeConnectWalletModal } = useWalletModal()
-  const { connectAsync, connectors, reset, status } = useConnect()
-  const { address, isConnected } = useAccount()
-  const { disconnect } = useDisconnect()
+  const connect = useConnect()
+  const connectors = useConnectors()
+  const { address, isConnected } = useConnection()
+  const disconnect = useDisconnect()
   const [dialogTitle, setDialogTitle] = useState<string>(t('Connect Wallet'))
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
@@ -51,9 +52,9 @@ const ConnectWalletModal: React.FC = () => {
   const handleClose = () => {
     closeConnectWalletModal()
     setSelectedConnector(null)
-    reset()
+    connect.reset()
     if (!termsData?.signed) {
-      disconnect()
+      disconnect.mutate()
     }
   }
 
@@ -64,7 +65,7 @@ const ConnectWalletModal: React.FC = () => {
     try {
       const connector = connectors.find((c) => c.id === wallet.id)
       if (connector) {
-        await connectAsync({ connector })
+        await connect.mutateAsync({ connector })
       } else if (wallet.id === 'trustWallet') {
         await trustWallet.activate()
       }
@@ -129,11 +130,11 @@ const ConnectWalletModal: React.FC = () => {
           ) : (
             <WalletDisplay
               onBack={() => {
-                disconnect()
+                disconnect.mutate()
                 setSelectedConnector(null)
-                reset()
+                connect.reset()
               }}
-              status={status}
+              status={connect.status}
               onClose={handleClose}
               name={selectedConnector.name}
               icon={selectedConnector.icon}

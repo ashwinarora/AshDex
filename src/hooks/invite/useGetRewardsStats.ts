@@ -1,11 +1,11 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { ReferralStats } from '@/services/Rewards.manager'
 
 // Hook to get rewards statistics for a user
 export const useGetRewardsStats = () => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
 
   return useQuery({
     queryKey: ['rewardsStats', address],

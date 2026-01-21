@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -15,7 +15,7 @@ export const useNexonReferral = () => {
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
   const { isAgentApproved } = useAgentApproval()
   const [isReferralSet, setIsReferralSet] = useState(false)
 

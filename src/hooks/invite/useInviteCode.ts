@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { apiServerAxios } from '@/config/axios'
 
 export interface IInvite {
@@ -17,7 +17,7 @@ export interface IInviteResponse {
 
 // Hook to get existing invite code
 export const useInviteCode = () => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
 
   return useQuery({
     queryKey: ['inviteCode', address],

@@ -38,7 +38,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useTranslate } from '@tolgee/react'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { IconWallet } from '@tabler/icons-react'
 interface Order {
@@ -154,7 +154,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
 
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

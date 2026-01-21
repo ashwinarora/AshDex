@@ -7,12 +7,12 @@ import ReferralsHeader from './ReferralsHeader'
 import FooterCompact from '../FooterCompact'
 import ReferralStats from './ReferralStats'
 import WalletNotConnected from '../ConnectWalletModal/DisconnectedWalletState'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 
 function Referrals() {
   const { isMobile } = useScreenSize()
   // const isRendered = useComponentRendered()
-  const { address } = useAccount()
+  const { address } = useConnection()
   // if (!isRendered) return null
 
   if (!address) {

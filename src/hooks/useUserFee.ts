@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { Hex } from 'viem'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import useIsSpot from './useIsSpot'
@@ -79,7 +79,7 @@ function divRound(numerator: bigint, denominator: bigint): bigint {
 }
 
 export const useUserFee = () => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
   const isSpot = useIsSpot()
 
