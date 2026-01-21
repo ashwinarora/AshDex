@@ -1,8 +1,60 @@
 'use client'
+
+import { Suspense } from 'react'
 import Trading from '@/components/Trading/Trading'
+import { useInviteCodeCapture } from '@/hooks/useInviteCodeCapture'
+import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
+import { useInviteCode } from '@/store/ReferralStore'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from '@/components/ui/dialog'
+import ClaimInviteCode from '@/components/Referrals/ClaimInviteCode'
+import { useTranslate } from '@tolgee/react'
+
+function SpotContent() {
+  const { t } = useTranslate()
+  const { showReferralPrompt, setShowReferralPrompt } = useInviteCodeCapture()
+  const { refetch: refetchReferrer } = useGetReferrer()
+  const { dismissReferralPrompt } = useInviteCode()
+
+  const handleDismissPermanently = () => {
+    dismissReferralPrompt()
+    setShowReferralPrompt(false)
+  }
+
+  return (
+    <>
+      <Trading />
+      <Dialog open={showReferralPrompt} onOpenChange={setShowReferralPrompt}>
+        <DialogContent className="sm:max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle>{t('Enter A Referral Code')}</DialogTitle>
+            <DialogDescription>
+              {t('Enter a referral code to earn bonuses and rewards.')}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="min-h-[200px]">
+            <ClaimInviteCode
+              refetchReferrer={refetchReferrer}
+              onDismissPermanently={handleDismissPermanently}
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  )
+}
 
 const SpotPage = () => {
-  return <Trading />
+  return (
+    <Suspense>
+      <SpotContent />
+    </Suspense>
+  )
 }
 
 export default SpotPage

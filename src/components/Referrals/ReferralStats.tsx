@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { useTranslate } from '@tolgee/react'
 import useUserStore from '@/store/userStore'
 import { useGetRewardsStats } from '@/hooks/invite'
-import { IconLoader2, IconAlertCircle, IconCopy } from '@tabler/icons-react'
+import { IconLoader2, IconAlertCircle, IconCopy, IconLink } from '@tabler/icons-react'
 import { toast } from 'sonner'
 import { formatWithKMB } from '@/utils/format'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
@@ -47,6 +47,10 @@ const ReferralStats = () => {
   const claimedRewards = rewardsStats?.totalReferralRewardsClaimed ?? 0
   const availableRewards = rewardsStats?.availableReferralRewards ?? 0
 
+  // Generate the full invite link
+  const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+  const inviteLink = inviteCode ? `${baseUrl}?inviteCode=${inviteCode}` : ''
+
   if (isLoading) {
     return (
       <div className="flex flex-col flex-nowrap gap-1 w-full lg:w-96 lg:h-full h-72 bg-secondary rounded-md items-center justify-center">
@@ -68,20 +72,16 @@ const ReferralStats = () => {
 
   return (
     <div className="flex flex-col flex-nowrap gap-1 w-full lg:w-96 h-full">
-      <StatCard
-        label={t('Your Invite Code')}
-        value={inviteCode || '------'}
-        isRTL={isRTL}
-        action={
-          inviteCode ? (
-            <IconCopy
-              onClick={() => {
-                navigator.clipboard.writeText(inviteCode)
-                toast.success(t('Copied to clipboard'))
-              }}
-              className="text-white/70 cursor-pointer hover:text-white transition-all size-3"
-            />
-          ) : (
+      {/* Your Invite Code Card */}
+      <div
+        className={cn(
+          'flex flex-col bg-secondary rounded-md justify-between h-1/4 gap-2 p-4 flex-1 w-full',
+          isRTL && 'items-end'
+        )}
+      >
+        <div className="text-white/70 text-xs font-medium flex items-center justify-between w-full">
+          <span>{t('Your Invite Code')}</span>
+          {!inviteCode && (
             <Dialog
               open={openDialog === 'create'}
               onOpenChange={(open) => setOpenDialog(open ? 'create' : null)}
@@ -100,9 +100,47 @@ const ReferralStats = () => {
                 </div>
               </DialogContent>
             </Dialog>
-          )
-        }
-      />
+          )}
+        </div>
+
+        {inviteCode ? (
+          <div className="flex flex-col gap-3 w-full">
+            {/* Invite Code Row */}
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-white text-3xl font-semibold tracking-wider">{inviteCode}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(inviteCode)
+                  toast.success(t('Code copied to clipboard'))
+                }}
+                className="flex items-center gap-1.5 text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs px-2 py-1.5 rounded"
+                title={t('Copy Code')}
+              >
+                <IconCopy className="size-4" />
+                <span className="hidden sm:inline">{t('Code')}</span>
+              </button>
+            </div>
+
+            {/* Invite Link Row */}
+            <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-md px-3 py-2">
+              <span className="text-white/50 text-xs truncate flex-1 font-mono">{inviteLink}</span>
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(inviteLink)
+                  toast.success(t('Link copied to clipboard'))
+                }}
+                className="flex items-center gap-1.5 text-white/60 hover:text-white hover:bg-white/10 transition-all text-xs px-2 py-1.5 rounded shrink-0"
+                title={t('Copy Link')}
+              >
+                <IconLink className="size-4" />
+                <span className="hidden sm:inline">{t('Link')}</span>
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="text-white text-4xl font-semibold">------</div>
+        )}
+      </div>
 
       <StatCard label={t('Total Referral Rewards')} value={formatUSD(totalRewards)} isRTL={isRTL} />
 
