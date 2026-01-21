@@ -55,7 +55,6 @@ class HLService {
     action: unknown
     nonce: number
     signature: unknown
-    isFrontend: boolean
   }): Promise<hl.SuccessResponse> {
     const myHeaders = new Headers()
     myHeaders.append('Content-Type', 'application/json')
@@ -65,6 +64,7 @@ class HLService {
       headers: myHeaders,
       body: JSON.stringify(requestBody)
     })
+    console.log('🚀 ~ HLService ~ executeHyperliquidTransfer ~ response:', response)
 
     if (!response.ok) {
       throw new Error(`Hyperliquid API error: ${response.status} - ${response.statusText}`)

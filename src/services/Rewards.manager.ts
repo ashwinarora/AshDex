@@ -246,14 +246,18 @@ class RewardsManager {
         wallet_id,
         claimAmount
       )
+      console.log('🚀 ~ RewardsManager ~ claimRewards ~ walletAddress:', walletAddress)
+      console.log('🚀 ~ RewardsManager ~ claimRewards ~ signature:', signature)
+      console.log('🚀 ~ RewardsManager ~ claimRewards ~ nonce:', nonce)
+      console.log('🚀 ~ RewardsManager ~ claimRewards ~ action:', action)
 
       const requestBody = {
         action,
         nonce,
-        signature,
-        isFrontend: true
+        signature
       }
       const result = await HLService.executeHyperliquidTransfer(requestBody)
+      console.log('🚀 ~ RewardsManager ~ claimRewards ~ result:', result)
 
       if (result.status !== 'ok') {
         throw new Error('Failed to claim rewards: ' + JSON.stringify(result))
