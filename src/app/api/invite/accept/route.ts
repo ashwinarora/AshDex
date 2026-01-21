@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { AuthenticatedRequest, withAuth } from '@/app/api/middleware'
 import InviteService from '@/services/Invite.manager'
+import UserManager from '@/services/User.manager'
 
 type InviteAcceptPayload = { inviteCode: string; action: 'acceptInvite' }
 
@@ -14,6 +15,16 @@ const PatchHandler = async (request: AuthenticatedRequest<InviteAcceptPayload>) 
   console.log('🚀 ~ PatchHandler ~ wallet_id:', wallet_id)
 
   try {
+    // This is to check if the user is nexon referred or not.
+    const referralStatus = await UserManager.getReferralStatus(wallet_id, true)
+
+    if (!referralStatus) {
+      return NextResponse.json(
+        { message: 'User is not nexon referred', error: 'User is not nexon referred' },
+        { status: 400 }
+      )
+    }
+
     await InviteService.claimInviteCode(wallet_id, inviteCode).then((response) => {
       console.log('🚀 ~ PatchHandler ~ response:', response)
     })
