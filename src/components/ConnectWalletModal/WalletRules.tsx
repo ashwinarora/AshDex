@@ -27,7 +27,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [acceptedPrivacy] = useState(false)
+  const [acceptedPrivacy] = useState(true)
 
   const canProceed = acceptedTerms && acceptedPrivacy
 
