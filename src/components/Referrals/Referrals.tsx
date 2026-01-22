@@ -33,7 +33,7 @@ function Referrals() {
           <div className="w-full shrink-0">
             <ReferralsHeader />
           </div>
-          <div className={cn("w-full flex-1 flex flex-col items-start gap-1 overflow-hidden")}>
+          <div className={cn('w-full flex-1 flex flex-col items-start gap-1 overflow-hidden')}>
             <ReferralStats />
             <ReferralsTablesTab />
           </div>
@@ -48,7 +48,12 @@ function Referrals() {
         <div className="w-full shrink-0">
           <ReferralsHeader />
         </div>
-        <div className={cn("w-full flex-1 flex items-start gap-1 overflow-hidden", isRTL && 'flex-row-reverse')}>
+        <div
+          className={cn(
+            'w-full flex-1 flex items-start gap-1 overflow-hidden',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <ReferralStats />
           <ReferralsTablesTab />
         </div>

@@ -68,7 +68,7 @@ function LegacyRewardHistory() {
   })
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} className='w-full h-full min-w-xl'>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className="w-full h-full min-w-xl">
       {isLoading && (
         <div className="w-full h-72 lg:h-full items-center justify-center flex flex-col gap-2">
           <IconLoader2 className="text-white size-10 animate-spin" />

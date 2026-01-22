@@ -61,7 +61,12 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
     <div className="w-full flex flex-col gap-6 items-center justify-center">
       <div className="w-full flex flex-col gap-4">
         {/* Terms & Conditions Checkbox */}
-        <label className={cn("flex w-full items-center gap-3 cursor-pointer group", isRTL && 'flex-row-reverse')}>
+        <label
+          className={cn(
+            'flex w-full items-center gap-3 cursor-pointer group',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <button
             type="button"
             role="checkbox"
@@ -91,7 +96,9 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
         </label>
 
         {/* Privacy Policy Checkbox */}
-        <label className={cn("flex items-start gap-3 cursor-pointer group", isRTL && 'flex-row-reverse')}>
+        <label
+          className={cn('flex items-start gap-3 cursor-pointer group', isRTL && 'flex-row-reverse')}
+        >
           <button
             type="button"
             role="checkbox"

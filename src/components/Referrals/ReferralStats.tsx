@@ -29,11 +29,16 @@ const StatCard = ({
       isRTL && 'items-end'
     )}
   >
-    <div className={cn("text-white/70 text-xs font-medium flex items-center justify-between w-full", isRTL && 'flex-row-reverse')}>
+    <div
+      className={cn(
+        'text-white/70 text-xs font-medium flex items-center justify-between w-full',
+        isRTL && 'flex-row-reverse'
+      )}
+    >
       <span>{label}</span>
       {action}
     </div>
-    <div className={cn("text-white text-4xl font-semibold", isRTL && 'text-right')}>{value}</div>
+    <div className={cn('text-white text-4xl font-semibold', isRTL && 'text-right')}>{value}</div>
   </div>
 )
 
@@ -80,7 +85,12 @@ const ReferralStats = () => {
           isRTL && 'items-end'
         )}
       >
-        <div className={cn("text-white/70 text-xs font-medium flex items-center justify-between w-full", isRTL && 'flex-row-reverse')}>
+        <div
+          className={cn(
+            'text-white/70 text-xs font-medium flex items-center justify-between w-full',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <span>{t('Your Invite Code')}</span>
           {!inviteCode && (
             <Dialog
@@ -107,7 +117,9 @@ const ReferralStats = () => {
         {inviteCode ? (
           <div className="flex flex-col gap-3 w-full">
             {/* Invite Code Row */}
-            <div className={cn("flex items-center justify-between gap-2", isRTL && 'flex-row-reverse')}>
+            <div
+              className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}
+            >
               <span className="text-white text-3xl font-semibold tracking-wider">{inviteCode}</span>
               <Button
                 size={'sm'}
@@ -125,8 +137,20 @@ const ReferralStats = () => {
             </div>
 
             {/* Invite Link Row */}
-            <div className={cn("flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-md px-3 py-2", isRTL && 'flex-row-reverse')}>
-              <span className={cn("text-white/50 text-xs truncate flex-1 font-mono", isRTL && 'text-right')}>{inviteLink}</span>
+            <div
+              className={cn(
+                'flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-md px-3 py-2',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
+              <span
+                className={cn(
+                  'text-white/50 text-xs truncate flex-1 font-mono',
+                  isRTL && 'text-right'
+                )}
+              >
+                {inviteLink}
+              </span>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(inviteLink)
