@@ -69,19 +69,19 @@ const PortfolioStats = () => {
     const maxValue =
       maxDrawdownArray?.length && maxDrawdownArray?.length > 0
         ? parseFloat(
-          maxDrawdownArray?.reduce((acc, curr) => {
-            return Number(acc[1]) > Number(curr[1]) ? acc : curr
-          })[1] || '0   '
-        )
+            maxDrawdownArray?.reduce((acc, curr) => {
+              return Number(acc[1]) > Number(curr[1]) ? acc : curr
+            })[1] || '0   '
+          )
         : 0
 
     const minValue =
       maxDrawdownArray?.length && maxDrawdownArray?.length > 0
         ? parseFloat(
-          maxDrawdownArray?.reduce((acc, curr) => {
-            return Number(acc[1]) < Number(curr[1]) ? acc : curr
-          })[1] || '0   '
-        )
+            maxDrawdownArray?.reduce((acc, curr) => {
+              return Number(acc[1]) < Number(curr[1]) ? acc : curr
+            })[1] || '0   '
+          )
         : 0
 
     const maxDrawdown = minValue - maxValue
@@ -112,7 +112,7 @@ const PortfolioStats = () => {
       [t('Total Equity')]: `$${formatWithKMB(totalEquity)}`,
       [t('Perps Account Equity')]: `$${formatWithKMB(perpEquity)}`,
       [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`,
-      [t('Vault Equity')] : '$0.00',
+      [t('Vault Equity')]: '$0.00',
       [t('Staking Account')]: '0 HYPE'
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
@@ -143,13 +143,16 @@ const PortfolioStats = () => {
               isMobile ? 'w-full' : 'w-1/2'
             )}
           >
-            <div className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}>
+            <div
+              className={cn(
+                'flex items-center justify-between w-full',
+                isRTL && 'flex-row-reverse'
+              )}
+            >
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>
-                      {selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}
-                    </p>
+                    <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}</p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -211,14 +214,14 @@ const PortfolioStats = () => {
             <div className="flex flex-col justify-between h-full gap-2 lg:gap-1 p-2">
               {overviewTable
                 ? Object.entries(overviewTable).map(([key, value]) => (
-                  <div key={key} className="flex items-center justify-between w-full">
-                    <p className="text-xs lg:text-sm text-white/70">{key}</p>
-                    <p className="text-xs lg:text-sm text-white">{value}</p>
-                  </div>
-                ))
+                    <div key={key} className="flex items-center justify-between w-full">
+                      <p className="text-xs lg:text-sm text-white/70">{key}</p>
+                      <p className="text-xs lg:text-sm text-white">{value}</p>
+                    </div>
+                  ))
                 : Array.from({ length: 8 }).map((_, index) => (
-                  <Skeleton key={index} className="w-full h-5" />
-                ))}
+                    <Skeleton key={index} className="w-full h-5" />
+                  ))}
             </div>
           </div>
         </div>
@@ -253,9 +256,7 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>
-                  {selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}
-                </p>
+                <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}</p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -317,35 +318,35 @@ const PortfolioStats = () => {
         <div className="flex flex-col justify-between h-full gap-1 p-2">
           {overviewTable
             ? Object.entries(overviewTable).map(([key, value]) => {
-              return (
-                <div
-                  key={key}
-                  className={cn(
-                    'flex items-center justify-between w-full',
-                    isRTL ? 'flex-row-reverse' : ''
-                  )}
-                >
-                  <p className="text-sm text-white/70">{t(key)}</p>
-                  <p
+                return (
+                  <div
+                    key={key}
                     className={cn(
-                      'text-sm',
-                      key === 'PNL'
-                        ? parseFloat(value.slice(1)) > 0
-                          ? `text-green-500`
-                          : parseFloat(value.slice(1)) < 0
-                            ? `text-red-500`
-                            : 'text-white'
-                        : 'text-white'
+                      'flex items-center justify-between w-full',
+                      isRTL ? 'flex-row-reverse' : ''
                     )}
                   >
-                    {value}
-                  </p>
-                </div>
-              )
-            })
+                    <p className="text-sm text-white/70">{t(key)}</p>
+                    <p
+                      className={cn(
+                        'text-sm',
+                        key === 'PNL'
+                          ? parseFloat(value.slice(1)) > 0
+                            ? `text-green-500`
+                            : parseFloat(value.slice(1)) < 0
+                              ? `text-red-500`
+                              : 'text-white'
+                          : 'text-white'
+                      )}
+                    >
+                      {value}
+                    </p>
+                  </div>
+                )
+              })
             : Array.from({ length: 8 }).map((_, index) => (
-              <Skeleton key={index} className="w-full h-5" />
-            ))}
+                <Skeleton key={index} className="w-full h-5" />
+              ))}
         </div>
       </div>
     </div>

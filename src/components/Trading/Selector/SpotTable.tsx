@@ -191,13 +191,22 @@ const AssetTable = ({
             const className = isPositive ? 'text-green' : 'text-red'
             return (
               <div className={cn('flex flex-col gap-1', isRTL && 'items-start')}>
-                <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>${formattedPrice}</div>
+                <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>
+                  ${formattedPrice}
+                </div>
                 <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
-                  <div className={cn('flex items-center', isRTL ? 'flex-row-reverse justify-start' : 'justify-end')}>
+                  <div
+                    className={cn(
+                      'flex items-center',
+                      isRTL ? 'flex-row-reverse justify-start' : 'justify-end'
+                    )}
+                  >
                     {isPositive ? (
                       <IconTriangleFilled className={cn('size-2', isRTL ? 'ml-1' : 'mr-1')} />
                     ) : (
-                      <IconTriangleInvertedFilled className={cn('size-2', isRTL ? 'ml-1' : 'mr-1')} />
+                      <IconTriangleInvertedFilled
+                        className={cn('size-2', isRTL ? 'ml-1' : 'mr-1')}
+                      />
                     )}
                     {difference !== undefined && prevDayPrice !== 0 && (
                       <ReactiveText
