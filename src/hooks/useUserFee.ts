@@ -5,10 +5,10 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import useIsSpot from './useIsSpot'
 
 const targetFee = {
-  perpsMaker: '0.0005',
-  perpsTaker: '0.0005',
-  spotMaker: '0.0005',
-  spotTaker: '0.0005'
+  perpsTaker: '0.00045',
+  perpsMaker: '0.00015',
+  spotTaker: '0.00070',
+  spotMaker: '0.00040'
 } as const
 
 /**
