@@ -4,7 +4,7 @@ import { useConnection, useSignMessage } from 'wagmi'
 import axios from 'axios'
 import { useTermsSignature } from '@/hooks/useTermsSignature'
 import { toast } from 'sonner'
-import { IconCheck } from '@tabler/icons-react'
+// import { IconCheck } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 import { useTranslate } from '@tolgee/react'
 import { ConnectedWallet, useWallets } from '@privy-io/react-auth'
@@ -26,7 +26,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
-  const [acceptedTerms, setAcceptedTerms] = useState(false)
+  const [acceptedTerms] = useState(true)
   const [acceptedPrivacy] = useState(true)
 
   const canProceed = acceptedTerms && acceptedPrivacy
@@ -78,7 +78,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
             isRTL && 'flex-row-reverse'
           )}
         >
-          <button
+          {/* <button
             type="button"
             role="checkbox"
             aria-checked={acceptedTerms}
@@ -91,7 +91,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
             )}
           >
             {acceptedTerms && <IconCheck className="size-3.5 text-white" />}
-          </button>
+          </button> */}
           <span className="text-sm text-white/70">
             {t('I have read and I agree to the')}{' '}
             <a
