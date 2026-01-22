@@ -173,7 +173,7 @@ const AssetTable = ({
           cell: (info) => {
             const volume = info.getValue()
             return (
-              <div className="text-end text-xs">
+              <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end')}>
                 <ReactiveText value={Number(volume || 0)} type="currency" />
               </div>
             )
@@ -190,25 +190,23 @@ const AssetTable = ({
             const isPositive = difference >= 0
             const className = isPositive ? 'text-green' : 'text-red'
             return (
-              <div className="flex flex-col gap-1">
-                <div className="text-end text-white text-xs">${formattedPrice}</div>
-                <div className={`text-end text-xs ${className}`}>
-                  <div className="flex justify-end items-center">
+              <div className={cn('flex flex-col gap-1', isRTL && 'items-start')}>
+                <div className={cn('text-white text-xs', isRTL ? 'text-start' : 'text-end')}>${formattedPrice}</div>
+                <div className={cn('text-xs', isRTL ? 'text-start' : 'text-end', className)}>
+                  <div className={cn('flex items-center', isRTL ? 'flex-row-reverse justify-start' : 'justify-end')}>
                     {isPositive ? (
-                      <IconTriangleFilled className="size-2 mr-1" />
+                      <IconTriangleFilled className={cn('size-2', isRTL ? 'ml-1' : 'mr-1')} />
                     ) : (
-                      <IconTriangleInvertedFilled className="size-2 mr-1" />
+                      <IconTriangleInvertedFilled className={cn('size-2', isRTL ? 'ml-1' : 'mr-1')} />
                     )}
                     {difference !== undefined && prevDayPrice !== 0 && (
-                      <div className="flex items-center">
-                        <ReactiveText
-                          precision={2}
-                          className="text-xs"
-                          value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
-                          type="percentage"
-                          isStatic={true}
-                        />
-                      </div>
+                      <ReactiveText
+                        precision={2}
+                        className="text-xs"
+                        value={prevDayPrice !== 0 ? (difference / prevDayPrice) * 100 : 0}
+                        type="percentage"
+                        isStatic={true}
+                      />
                     )}
                   </div>
                 </div>

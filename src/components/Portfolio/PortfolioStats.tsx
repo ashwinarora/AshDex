@@ -69,19 +69,19 @@ const PortfolioStats = () => {
     const maxValue =
       maxDrawdownArray?.length && maxDrawdownArray?.length > 0
         ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) > Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
+          maxDrawdownArray?.reduce((acc, curr) => {
+            return Number(acc[1]) > Number(curr[1]) ? acc : curr
+          })[1] || '0   '
+        )
         : 0
 
     const minValue =
       maxDrawdownArray?.length && maxDrawdownArray?.length > 0
         ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) < Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
+          maxDrawdownArray?.reduce((acc, curr) => {
+            return Number(acc[1]) < Number(curr[1]) ? acc : curr
+          })[1] || '0   '
+        )
         : 0
 
     const maxDrawdown = minValue - maxValue
@@ -102,18 +102,18 @@ const PortfolioStats = () => {
     const spotEquity = (parseFloat(totalEquity) - parseFloat(perpEquity)).toFixed(2)
 
     return {
-      PNL:
+      [t('PNL')]:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.pnl.at(-1)?.[1] || '0'))}` ||
         '0.00',
-      Volume:
+      [t('Volume')]:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm || '0'))}` ||
         '$0.00',
-      'Max Drawdown': `${maxDrawdownPercentage.toFixed(2)}%`,
-      'Total Equity': `$${formatWithKMB(totalEquity)}`,
-      'Perps Account Equity': `$${formatWithKMB(perpEquity)}`,
-      'Spot Account Equity': `$${formatWithKMB(spotEquity)}`,
-      'Vault Equity': '$0.00',
-      'Staking Account': '0 HYPE'
+      [t('Max Drawdown')]: `${maxDrawdownPercentage.toFixed(2)}%`,
+      [t('Total Equity')]: `$${formatWithKMB(totalEquity)}`,
+      [t('Perps Account Equity')]: `$${formatWithKMB(perpEquity)}`,
+      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`,
+      [t('Vault Equity')] : '$0.00',
+      [t('Staking Account')]: '0 HYPE'
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
 
@@ -143,18 +143,17 @@ const PortfolioStats = () => {
               isMobile ? 'w-full' : 'w-1/2'
             )}
           >
-            <div className="flex items-center justify-between w-full">
+            <div className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
                     <p>
-                      {selectedView.overview.charAt(0).toUpperCase() +
-                        selectedView.overview.slice(1)}
+                      {selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}
                     </p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
+                <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
                   >
@@ -171,15 +170,18 @@ const PortfolioStats = () => {
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
                     <p>
-                      {selectedView.overviewTimeFrame === 'alltime'
-                        ? t('All Time')
-                        : selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
-                          selectedView.overviewTimeFrame.slice(1)}
+                      {selectedView.overviewTimeFrame === 'day'
+                        ? t('Day')
+                        : selectedView.overviewTimeFrame === 'week'
+                          ? t('Week')
+                          : selectedView.overviewTimeFrame === 'month'
+                            ? t('Month')
+                            : t('All Time')}
                     </p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
                   >
@@ -209,14 +211,14 @@ const PortfolioStats = () => {
             <div className="flex flex-col justify-between h-full gap-2 lg:gap-1 p-2">
               {overviewTable
                 ? Object.entries(overviewTable).map(([key, value]) => (
-                    <div key={key} className="flex items-center justify-between w-full">
-                      <p className="text-xs lg:text-sm text-white/70">{key}</p>
-                      <p className="text-xs lg:text-sm text-white">{value}</p>
-                    </div>
-                  ))
+                  <div key={key} className="flex items-center justify-between w-full">
+                    <p className="text-xs lg:text-sm text-white/70">{key}</p>
+                    <p className="text-xs lg:text-sm text-white">{value}</p>
+                  </div>
+                ))
                 : Array.from({ length: 8 }).map((_, index) => (
-                    <Skeleton key={index} className="w-full h-5" />
-                  ))}
+                  <Skeleton key={index} className="w-full h-5" />
+                ))}
             </div>
           </div>
         </div>
@@ -252,9 +254,7 @@ const PortfolioStats = () => {
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
-                  {t(
-                    selectedView.overview.charAt(0).toUpperCase() + selectedView.overview.slice(1)
-                  )}
+                  {selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
@@ -278,12 +278,13 @@ const PortfolioStats = () => {
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
-                  {selectedView.overviewTimeFrame === 'alltime'
-                    ? t('All Time')
-                    : t(
-                        selectedView.overviewTimeFrame.charAt(0).toUpperCase() +
-                          selectedView.overviewTimeFrame.slice(1)
-                      )}
+                  {selectedView.overviewTimeFrame === 'day'
+                    ? t('Day')
+                    : selectedView.overviewTimeFrame === 'week'
+                      ? t('Week')
+                      : selectedView.overviewTimeFrame === 'month'
+                        ? t('Month')
+                        : t('All Time')}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
@@ -292,7 +293,7 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')} </p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
@@ -307,7 +308,7 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')} </p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -316,35 +317,35 @@ const PortfolioStats = () => {
         <div className="flex flex-col justify-between h-full gap-1 p-2">
           {overviewTable
             ? Object.entries(overviewTable).map(([key, value]) => {
-                return (
-                  <div
-                    key={key}
+              return (
+                <div
+                  key={key}
+                  className={cn(
+                    'flex items-center justify-between w-full',
+                    isRTL ? 'flex-row-reverse' : ''
+                  )}
+                >
+                  <p className="text-sm text-white/70">{t(key)}</p>
+                  <p
                     className={cn(
-                      'flex items-center justify-between w-full',
-                      isRTL ? 'flex-row-reverse' : ''
+                      'text-sm',
+                      key === 'PNL'
+                        ? parseFloat(value.slice(1)) > 0
+                          ? `text-green-500`
+                          : parseFloat(value.slice(1)) < 0
+                            ? `text-red-500`
+                            : 'text-white'
+                        : 'text-white'
                     )}
                   >
-                    <p className="text-sm text-white/70">{t(key)}</p>
-                    <p
-                      className={cn(
-                        'text-sm',
-                        key === 'PNL'
-                          ? parseFloat(value.slice(1)) > 0
-                            ? `text-green-500`
-                            : parseFloat(value.slice(1)) < 0
-                              ? `text-red-500`
-                              : 'text-white'
-                          : 'text-white'
-                      )}
-                    >
-                      {value}
-                    </p>
-                  </div>
-                )
-              })
+                    {value}
+                  </p>
+                </div>
+              )
+            })
             : Array.from({ length: 8 }).map((_, index) => (
-                <Skeleton key={index} className="w-full h-5" />
-              ))}
+              <Skeleton key={index} className="w-full h-5" />
+            ))}
         </div>
       </div>
     </div>

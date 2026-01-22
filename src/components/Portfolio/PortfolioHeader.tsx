@@ -29,11 +29,18 @@ const PortfolioHeader = () => {
   if (isMobile) {
     return (
       <>
-        <div className="flex bg-secondary flex-col gap-4 rounded-md items-start justify-between w-full h-fit p-4">
-          <h1 className="text-2xl text-white text-start">{t('Portfolio')}</h1>
-          <div className="flex flex-wrap gap-2">
+        <div
+          className={cn(
+            'flex bg-secondary flex-col gap-4 rounded-md justify-between w-full h-fit p-4',
+            isRTL ? 'items-end' : 'items-start'
+          )}
+        >
+          <h1 className={cn('text-2xl text-white', isRTL ? 'text-end' : 'text-start')}>
+            {t('Portfolio')}
+          </h1>
+          <div className={cn('flex flex-wrap gap-2 w-full', isRTL && 'flex-row-reverse')}>
             <Button
-              className="flex-1 w-full"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
             >
@@ -41,7 +48,7 @@ const PortfolioHeader = () => {
             </Button>
 
             <Button
-              className="flex-1 w-full"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
             >
@@ -50,7 +57,7 @@ const PortfolioHeader = () => {
               <p>{t('Spot')}</p>
             </Button>
             <Button
-              className="flex-1 w-full"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
             >
@@ -59,13 +66,14 @@ const PortfolioHeader = () => {
               <p>{t('Spot')}</p>
             </Button>
             <Button
+              className={cn(isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
             >
               {t('Withdraw')}
             </Button>
             <Button
-              className="flex-1 w-full"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
             >
               <IconCash className="size-4" />

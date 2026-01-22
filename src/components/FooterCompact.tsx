@@ -141,19 +141,19 @@ const FooterContent: FC = () => {
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.allMids)}`}
                 ></span>
-                <span>Order Book: {timeSinceUpdate.allMids}</span>
+                <span>{t('Order Book')}: {timeSinceUpdate.allMids}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.candles)}`}
                 ></span>
-                <span>Chart Data: {timeSinceUpdate.candles}</span>
+                <span>{t('Chart Data')}: {timeSinceUpdate.candles}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
                 ></span>
-                <span>User Data: {timeSinceUpdate.webData2}</span>
+                <span>{t('User Data')}: {timeSinceUpdate.webData2}</span>
               </div>
             </div>
           </HoverCardContent>

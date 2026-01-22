@@ -160,7 +160,8 @@ const UserData = () => {
           <Toggle
             className={cn(
               'flex items-center data-[state=on]:bg-transparent h-fit w-fit p-2 text-white/70 gap-2',
-              isRTL && 'flex-row-reverse'
+              isRTL && 'flex-row-reverse',
+              isMobile && 'hidden'
             )}
             pressed={isHideSmallBalances}
             onPressedChange={(value) => setIsHideSmallBalances(value)}

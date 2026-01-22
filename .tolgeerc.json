@@ -1,7 +1,10 @@
 {
-  "$schema": "https://docs.tolgee.io/cli-schema.json",
-  "projectId": 21539,
-  "apiUrl": "https://app.tolgee.io",
-  "patterns": ["./src/**/*.ts?(x)", "./app/**/*.ts?(x)"],
-  "format": "JSON_TOLGEE"
+    "$schema": "https://docs.tolgee.io/cli-schema.json",
+    "projectId": 21539,
+    "apiUrl": "https://app.tolgee.io",
+    "patterns": [
+        "./src/**/*.ts?(x)",
+        "./app/**/*.ts?(x)"
+    ],
+    "format": "JSON_TOLGEE"
 }
