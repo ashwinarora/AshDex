@@ -1,6 +1,6 @@
 'use client'
 import { useWalletModal } from '@/context/WalletModalContext'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { TPSLType } from './TPSL'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -37,6 +37,7 @@ type OrderButtonProps = {
   tpsl?: TPSLType
   stopOrder?: StopOrder
   isMarket?: boolean
+  isError: boolean
 }
 
 const OrderButton = ({
@@ -50,10 +51,11 @@ const OrderButton = ({
   isReduceOnly,
   tpsl,
   stopOrder,
-  isMarket
+  isMarket,
+  isError
 }: OrderButtonProps) => {
   const { t } = useTranslate()
-  const { isConnected: isWalletConnected } = useAccount()
+  const { isConnected: isWalletConnected } = useConnection()
   const {
     agentWallet,
     sdkL1ActionClient,
@@ -208,14 +210,14 @@ const OrderButton = ({
       onClick={handlePlaceOrder}
       className={cn(
         'w-full font-semibold text-white cursor-pointer',
-        isInvalid
+        isInvalid || isError
           ? 'bg-white/10 hover:cursor-not-allowed '
           : isBuy
             ? 'bg-green hover:bg-green/80 '
             : 'bg-red hover:bg-red/80 '
       )}
-      disabled={isInvalid}
-      variant={isInvalid ? 'destructive' : 'default'}
+      disabled={isInvalid || isError}
+      variant={isInvalid || isError ? 'destructive' : 'default'}
     >
       {isSpot ? (isBuy ? t('Buy') : t('Sell')) : isBuy ? t('Long') : t('Short')}
     </Button>

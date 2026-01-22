@@ -271,8 +271,41 @@ const FACTORS: [SigFig, number][] = [
 ]
 
 /** Utility that converts a number to the shortest *decimal* string
- *  (no trailing zeros, no exponent). */
-const toCleanString = (n: number): string => n.toPrecision(10).replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
+ *  (no trailing zeros). For numbers < 0.001, uses clean scientific notation. */
+const toCleanString = (n: number): string => {
+  if (n === 0) return '0'
+
+  const absN = Math.abs(n)
+
+  // Force scientific notation for very small numbers (< 0.001)
+  if (absN < 0.001) {
+    // Get exponent: for 1e-6, exponent is -6
+    const exponent = Math.floor(Math.log10(absN))
+    // Get mantissa and round to avoid floating point artifacts
+    // e.g., 1.0000000000000002 -> 1
+    const mantissa = n / Math.pow(10, exponent)
+    const roundedMantissa = Math.round(mantissa * 1e10) / 1e10
+
+    // Format: if mantissa is whole number (1, 2, 5), show as "1e-6"
+    // otherwise show decimal like "2.5e-7"
+    if (roundedMantissa === Math.floor(roundedMantissa)) {
+      return `${Math.floor(roundedMantissa)}e${exponent}`
+    }
+    return `${roundedMantissa}e${exponent}`
+  }
+
+  // Round to avoid floating point precision issues (e.g., 0.30000000000000004 -> 0.3)
+  const rounded = Math.round(n * 1e10) / 1e10
+  const str = rounded.toPrecision(10)
+
+  // Check if it's in scientific notation (for large numbers)
+  if (str.includes('e')) {
+    return str.replace(/\.?0+e/, 'e')
+  }
+
+  // For regular numbers, remove trailing zeros
+  return str.replace(/(?:\.0+|(\.\d+?)0+)$/, '$1')
+}
 
 /** ------------------------------------------------------------------ *
  * The only exported function

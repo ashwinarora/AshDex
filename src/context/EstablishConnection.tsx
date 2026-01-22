@@ -1,7 +1,7 @@
 'use client'
 import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query'
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import dynamic from 'next/dynamic'
@@ -34,7 +34,7 @@ const ConnectionContext = createContext<ConnectionContextType | undefined>(undef
 export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
-  const { address, isConnected } = useAccount()
+  const { address, isConnected } = useConnection()
   const { agentWallet, sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
       agentWallet: state.agentWallet,
@@ -43,7 +43,7 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
   )
 
   const { data: isAgentApproved, refetch: refetchAgentApproval } = useQuery({
-    queryKey: ['extraAgents', address],
+    queryKey: ['extraAgents', address, agentWallet],
     queryFn: async () => {
       if (!address) return false
       if (!sdkInfoClient) return false

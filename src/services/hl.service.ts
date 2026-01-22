@@ -55,7 +55,6 @@ class HLService {
     action: unknown
     nonce: number
     signature: unknown
-    isFrontend: boolean
   }): Promise<hl.SuccessResponse> {
     const myHeaders = new Headers()
     myHeaders.append('Content-Type', 'application/json')

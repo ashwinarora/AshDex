@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { IInviteWithUsedBy } from '@/services/Invite.manager'
 import { apiServerAxios } from '@/config/axios'
 
@@ -11,7 +11,7 @@ export interface ISuccessfulInviteResponse {
 
 // Hook to get all successful invites for a user
 export const useSuccessfulInvites = () => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
 
   return useQuery({
     queryKey: ['successfulInvites', address],

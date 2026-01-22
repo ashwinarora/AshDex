@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useAccount, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
+import { useConnection, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
 import { HYPERLIQUID_DEPOSIT, isTestnet, USDC_ARBITRUM } from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
@@ -24,8 +24,8 @@ interface DepositModalProps {
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslate()
-  const { address, chainId } = useAccount()
-  const { switchChainAsync } = useSwitchChain()
+  const { address, chainId } = useConnection()
+  const switchChain = useSwitchChain()
   const { closeDepositModal, isDepositModalOpen } = useAgentApproval()
   const [isLoading, setIsLoading] = useState(false)
   const [amount, setAmount] = useState<bigint>(0n)
@@ -43,9 +43,10 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const supportedChain = isTestnet ? 421614 : 42161
 
-  const switchChain = async () => {
+  const handleSwitchChain = async () => {
     const toastId = toast.loading(t('Switching to Arbitrum network...'))
-    await switchChainAsync({ chainId: supportedChain })
+    await switchChain
+      .mutateAsync({ chainId: supportedChain })
       .then(() => {
         toast.success(t('Switched to Arbitrum network.'), {
           id: toastId
@@ -60,7 +61,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
 
   const onDepositClick = async () => {
     if (chainId !== 42161) {
-      await switchChainAsync({ chainId: 42161 })
+      await switchChain.mutateAsync({ chainId: 42161 })
     }
     if (!usdc) return
     const toastId = toast.loading(t('Deposit in progress...'))
@@ -145,7 +146,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
             </div>
             <Separator />
             {chainId !== supportedChain ? (
-              <Button className="w-full" onClick={switchChain}>
+              <Button className="w-full" onClick={handleSwitchChain}>
                 {t('Switch to Arbitrum')}
               </Button>
             ) : (

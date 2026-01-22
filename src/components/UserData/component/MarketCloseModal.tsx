@@ -28,7 +28,7 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface MarketCloseModalProps {
   isOpen: boolean
@@ -50,7 +50,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
     WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null

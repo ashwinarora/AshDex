@@ -1,5 +1,5 @@
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Address, Hex } from 'viem'
+import * as hl from '@nktkas/hyperliquid'
 
 export interface IGetReferralResponse {
   referrer: Hex
@@ -7,8 +7,12 @@ export interface IGetReferralResponse {
 }
 
 export async function getReferral(user: Address): Promise<IGetReferralResponse | null> {
-  const { sdkInfoClient } = useHyperliquidStore.getState()
+  const transport = new hl.HttpTransport({
+    isTestnet: process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK != 'mainnet',
+    fetchOptions: { keepalive: false }
+  })
 
+  const sdkInfoClient = new hl.InfoClient({ transport })
   const referral = await sdkInfoClient?.referral({ user })
 
   if (!referral) {

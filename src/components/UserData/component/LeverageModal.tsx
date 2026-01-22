@@ -23,7 +23,7 @@ import { Separator } from '@/components/ui/separator'
 import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import useUserStore from '@/store/userStore'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface LeverageModalProps {
   isOpen: boolean
@@ -41,7 +41,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     }))
   )
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const { address } = useAccount()
+  const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length || !asset) return 1

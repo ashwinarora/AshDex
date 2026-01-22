@@ -1,4 +1,4 @@
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useQueryClient } from '@tanstack/react-query'
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
@@ -9,7 +9,7 @@ type TCreateInvitePayload = { inviteCode: string; action: 'createInvite' }
 
 // Hook to create new invite code
 export const useCreateInviteCode = () => {
-  const { address } = useAccount()
+  const { address } = useConnection()
   const queryClient = useQueryClient()
   const authMutation = useAuth<TCreateInvitePayload>()
 

@@ -1,6 +1,6 @@
 'use client'
 import { useQuery } from '@tanstack/react-query'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { RewardsHistoryItem } from '@/services/Rewards.manager'
 import { apiServerAxios } from '@/config/axios'
 
@@ -28,7 +28,7 @@ export interface UseClaimRewardHistoryParams {
 
 // Hook to get claim reward history for a user
 export const useGetClaimRewardHistory = (params?: UseClaimRewardHistoryParams) => {
-  const { isConnected, address } = useAccount()
+  const { isConnected, address } = useConnection()
   const limit = params?.limit || 50
   const offset = params?.offset || 0
 

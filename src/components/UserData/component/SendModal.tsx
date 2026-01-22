@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { useAccount } from 'wagmi'
+import { useConnection } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import {
   Dialog,
@@ -44,7 +44,7 @@ const SendModal: React.FC<SendModalProps> = ({
   const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
-  const { chainId } = useAccount()
+  const { chainId } = useConnection()
   const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
