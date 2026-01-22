@@ -322,14 +322,14 @@ const PortfolioStats = () => {
                   <div
                     key={key}
                     className={cn(
-                      'flex items-center justify-between w-full',
-                      isRTL ? 'flex-row-reverse' : ''
+                      'flex flex-row items-center justify-between w-full',
+                      isRTL && 'flex-row-reverse'
                     )}
                   >
-                    <p className="text-sm text-white/70">{t(key)}</p>
+                    <p className="text-sm text-white/70 w-fit">{t(key)}</p>
                     <p
                       className={cn(
-                        'text-sm',
+                        'text-sm w-fit',
                         key === 'PNL'
                           ? parseFloat(value.slice(1)) > 0
                             ? `text-green-500`

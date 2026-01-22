@@ -10,6 +10,7 @@ import { useTranslate } from '@tolgee/react'
 import { ConnectedWallet, useWallets } from '@privy-io/react-auth'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
+import { useQuery } from '@tanstack/react-query'
 
 interface WalletRulesProps {
   onClose: () => void
@@ -26,16 +27,26 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [acceptedPrivacy, setAcceptedPrivacy] = useState(false)
+  const [acceptedPrivacy] = useState(false)
 
   const canProceed = acceptedTerms && acceptedPrivacy
 
-  const handleSignTerms = async () => {
-    if (!canProceed) return
+  const { data: terms, isLoading: isTermsLoading } = useQuery({
+    queryKey: ['latestTerms'],
+    queryFn: async () => {
+      const response = await fetch('/api/latest-terms')
+      if (!response.ok) {
+        throw new Error('Failed to fetch terms')
+      }
+      return response.json()
+    }
+  })
 
-    const message = `I accept the Terms & Conditions and Privacy Policy of Nexon.\n\nTimestamp: ${new Date().toISOString()}`
+  const handleSignTerms = async () => {
+    if (!canProceed || isTermsLoading || !terms) return
+
     const signature = await signMessage.mutateAsync({
-      message
+      message: terms?.content ?? ''
     })
     console.log('signature', signature)
     const toastId = toast.loading(t('Verifying Signature...'))
@@ -84,7 +95,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
           <span className="text-sm text-white/70">
             {t('I have read and I agree to the')}{' '}
             <a
-              href="https://nexon.xyz/docs/terms"
+              href="https://nexon-docs.gitbook.io/en/additional-resources/terms-of-use"
               target="_blank"
               rel="noopener noreferrer"
               className="text-accent underline hover:text-accent/80 transition-colors"
@@ -96,7 +107,7 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
         </label>
 
         {/* Privacy Policy Checkbox */}
-        <label
+        {/* <label
           className={cn('flex items-start gap-3 cursor-pointer group', isRTL && 'flex-row-reverse')}
         >
           <button
@@ -125,12 +136,12 @@ const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
               {t('Privacy Policy')}
             </a>
           </span>
-        </label>
+        </label> */}
       </div>
 
       <div className="w-full flex flex-col shrink-0 items-center justify-center gap-2">
         <Button className="w-full" onClick={handleSignTerms} disabled={!canProceed}>
-          {t('I agree to the Rules')}
+          {t('Agree')}
         </Button>
         <Button className="w-full" variant={'link'} onClick={onClose}>
           {t('Cancel')}
