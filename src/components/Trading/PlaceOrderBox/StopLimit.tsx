@@ -30,7 +30,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [isCross, setIsCross] = useState<boolean>(true)
   const [leverage, setLeverage] = useState<number>(1)
   const [priceInitialized, setPriceInitialized] = useState(false)
-
+  const [isError, setIsError] = useState<boolean>(false)
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const [crossAccountValue, setCrossAccountValue] = useState(0)
@@ -195,6 +195,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isReduceOnly={isReduceOnly}
           isBuy={isBuy}
           isRTL={isRTL}
+          setIsError={setIsError}
         />
         <Separator orientation="horizontal" />
         <div
@@ -254,6 +255,7 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             tpsl: 'sl',
             triggerPx: stopPrice
           }}
+          isError={isError}
         />
       </div>
     </div>

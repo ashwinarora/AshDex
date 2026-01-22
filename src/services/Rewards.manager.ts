@@ -250,8 +250,7 @@ class RewardsManager {
       const requestBody = {
         action,
         nonce,
-        signature,
-        isFrontend: true
+        signature
       }
       const result = await HLService.executeHyperliquidTransfer(requestBody)
 

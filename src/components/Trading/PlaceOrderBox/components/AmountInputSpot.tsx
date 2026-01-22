@@ -26,6 +26,7 @@ interface AmountInputSpotProps {
   limitPrice: string
   isBuy: boolean
   isRTL: boolean
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const isMatch = (a: string, b: string): boolean => a.split('/')[0] === b.split('/')[0]
@@ -38,7 +39,8 @@ const AmountInputSpot = ({
   setUsdAmount,
   limitPrice,
   isBuy,
-  isRTL
+  isRTL,
+  setIsError
 }: AmountInputSpotProps) => {
   const { t } = useTranslate()
   const { spotState } = useHyperliquidStore(
@@ -50,6 +52,20 @@ const AmountInputSpot = ({
   const { data: spotMeta, spotKeyToName } = useSpotMeta()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
+  const [percentInputStr, setPercentInputStr] = useState('')
+  const [isPercentFocused, setIsPercentFocused] = useState(false)
+
+  // Debounce percent input - update after 1 second of no typing
+  useEffect(() => {
+    if (!isPercentFocused) return
+    const timer = setTimeout(() => {
+      const parsed = parseFloat(percentInputStr)
+      if (!Number.isNaN(parsed)) {
+        updateFromPercent(parsed)
+      }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [percentInputStr, isPercentFocused])
 
   const selectedAssetName = useMemo(() => {
     return spotKeyToName.get(selectedAsset)
@@ -82,30 +98,26 @@ const AmountInputSpot = ({
       setAssetAmount(input)
       setUsdAmount('')
       setUsdPercent(0)
+      setIsError(false) // Empty is not an error, just incomplete
       return
     }
 
     // Only allow numeric input with at most one decimal point
     if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      // Don't update state for invalid input, just reject it
       return
     }
 
     const numValue = parseFloat(input)
 
-    console.log('🚀 ~ updateFromAssetAmount ~ numValue:', numValue)
-
     if (!isNaN(numValue)) {
       const newTotal = numValue * parseFloat(limitPrice)
-
-      console.log('🚀 ~ updateFromAssetAmount ~ newTotal:', newTotal)
-
       const formattedAmount = newTotal.toFixed(szDecimals).replace(/\.?0+$/, '')
-
-      console.log('🚀 ~ updateFromAssetAmount ~ formattedAmount:', formattedAmount)
-
       setAssetAmount(input)
       setUsdAmount(formattedAmount.toString())
-      setUsdPercent(((isBuy ? newTotal : numValue) / maxAllowed) * 100)
+      const newPercent = ((isBuy ? newTotal : numValue) / maxAllowed) * 100
+      setUsdPercent(newPercent)
+      setIsError(newPercent > 100) // Error if exceeds 100%
     }
   }
 
@@ -116,11 +128,13 @@ const AmountInputSpot = ({
       setUsdAmount(input)
       setAssetAmount('')
       setUsdPercent(0)
+      setIsError(false) // Empty is not an error, just incomplete
       return
     }
 
     // Only allow numeric input with at most one decimal point
     if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      // Don't update state for invalid input, just reject it
       return
     }
 
@@ -129,15 +143,19 @@ const AmountInputSpot = ({
       const newAmount = parseFloat(input) / parseFloat(limitPrice)
       const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
       setAssetAmount(formattedAmount)
-      setUsdPercent(((isBuy ? parseFloat(input) : newAmount) / maxAllowed) * 100)
+      const newPercent = ((isBuy ? parseFloat(input) : newAmount) / maxAllowed) * 100
+      setUsdPercent(newPercent)
+      setIsError(newPercent > 100) // Error if exceeds 100%
     } else {
       setAssetAmount('')
       setUsdPercent(0)
+      setIsError(false)
     }
   }
 
   const updateFromPercent = (percent: number) => {
     setUsdPercent(percent)
+    setIsError(percent > 100) // Error if exceeds 100%
     if (isBuy) {
       const newTotal = (percent / 100) * maxAllowed
       setUsdAmount(newTotal.toString())
@@ -160,6 +178,12 @@ const AmountInputSpot = ({
     updateFromPercent(usdPercent)
   }, [isBuy])
 
+  // Update error state when maxAllowed changes
+  useEffect(() => {
+    if (maxAllowed === 0) return
+    setIsError(usdPercent > 100)
+  }, [maxAllowed, usdPercent, setIsError])
+
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
@@ -172,7 +196,10 @@ const AmountInputSpot = ({
         <Input
           type="text"
           placeholder="0"
-          value={isInputUsd ? usdAmount : assetAmount}
+          value={(() => {
+            const val = isInputUsd ? usdAmount : assetAmount
+            return val === 'NaN' || Number.isNaN(Number(val)) ? '' : val
+          })()}
           onChange={isInputUsd ? updateFromUsdAmount : updateFromAssetAmount}
           className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />
@@ -215,19 +242,38 @@ const AmountInputSpot = ({
           />
           <div
             className={cn(
-              'flex !w-16 shrink-0 items-center pr-2 justify-center  text-white/70 rounded-md gap-2',
-              isRTL && 'flex-row-reverse pr-0 pl-2'
+              'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/70 rounded-md gap-2',
+              isRTL && 'flex-row-reverse pr-0 pl-2',
+              usdPercent > 100 && 'border border-red-500 rounded-md'
             )}
           >
             <Input
               className={cn(
                 'flex-1 p-0 !text-xs text-end text-white bg-transparent border-none',
-                isRTL && 'text-start'
+                isRTL && 'text-start',
+                usdPercent > 100 && 'text-red-500'
               )}
-              value={usdPercent.toFixed(2)}
-              onChange={(e) => setUsdPercent(parseInt(e.target.value, 10))}
+              value={
+                isPercentFocused
+                  ? percentInputStr
+                  : Number.isNaN(usdPercent)
+                    ? ''
+                    : usdPercent.toFixed(2)
+              }
+              onChange={(e) => setPercentInputStr(e.target.value)}
+              onFocus={() => {
+                setIsPercentFocused(true)
+                setPercentInputStr(Number.isNaN(usdPercent) ? '' : usdPercent.toFixed(2))
+              }}
+              onBlur={() => {
+                setIsPercentFocused(false)
+                const parsed = parseFloat(percentInputStr)
+                if (!Number.isNaN(parsed)) {
+                  updateFromPercent(parsed)
+                }
+              }}
             />
-            <IconPercentage className="size-3" />
+            <IconPercentage className={cn('size-3', usdPercent > 100 && 'text-red-500')} />
           </div>
         </div>
         <ToggleGroup

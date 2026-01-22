@@ -31,6 +31,7 @@ interface AmountInputProps {
   isReduceOnly: boolean
   isBuy: boolean
   isRTL: boolean
+  setIsError: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const AmountInput = ({
@@ -43,11 +44,26 @@ const AmountInput = ({
   leverage,
   isReduceOnly,
   isBuy,
-  isRTL
+  isRTL,
+  setIsError
 }: AmountInputProps) => {
   const { t } = useTranslate()
   const [usdPercent, setUsdPercent] = useState(0)
   const [isInputUsd, setIsInputUsd] = useState(false)
+  const [percentInputStr, setPercentInputStr] = useState('')
+  const [isPercentFocused, setIsPercentFocused] = useState(false)
+
+  // Debounce percent input - update after 1 second of no typing
+  useEffect(() => {
+    if (!isPercentFocused) return
+    const timer = setTimeout(() => {
+      const parsed = parseFloat(percentInputStr)
+      if (!Number.isNaN(parsed)) {
+        handleUsdPercentChange(parsed)
+      }
+    }, 1000)
+    return () => clearTimeout(timer)
+  }, [percentInputStr, isPercentFocused])
 
   const { clearingHouseState, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
@@ -80,8 +96,10 @@ const AmountInput = ({
     if (!clearingHouseState) return
     if (usdAmount === '') return
     if (maxAllowedUsd === 0) return
-    setUsdPercent((parseFloat(usdAmount) / maxAllowedUsd) * 100)
-  }, [clearingHouseState, usdAmount, maxAllowedUsd])
+    const newPercent = (parseFloat(usdAmount) / maxAllowedUsd) * 100
+    setUsdPercent(newPercent)
+    setIsError(newPercent > 100) // Update error state when max changes
+  }, [clearingHouseState, usdAmount, maxAllowedUsd, setIsError])
 
   const handleAssetChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!clearingHouseState) return
@@ -92,25 +110,31 @@ const AmountInput = ({
       setAssetAmount(input)
       setUsdAmount('')
       setUsdPercent(0)
+      setIsError(false) // Empty is not an error, just incomplete
       return
     }
 
     // Allow numeric input with at most one decimal point
     if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      // Don't update state for invalid input, just reject it
       return
     }
 
     // Check if input has more decimal places than allowed
     const parts = input.split('.')
     if (parts.length > 1 && parts[1].length > szDecimals) {
+      // Don't update state for invalid input, just reject it
       return
     }
 
     setAssetAmount(input)
     const numValue = parseFloat(input)
     if (!isNaN(numValue)) {
-      setUsdAmount((numValue * parseFloat(limitPrice)).toString())
-      setUsdPercent(((numValue * parseFloat(limitPrice)) / maxAllowedUsd) * 100)
+      const newUsdAmount = numValue * parseFloat(limitPrice)
+      setUsdAmount(newUsdAmount.toString())
+      const newPercent = (newUsdAmount / maxAllowedUsd) * 100
+      setUsdPercent(newPercent)
+      setIsError(newPercent > 100) // Error if exceeds 100%
     }
   }
 
@@ -123,11 +147,13 @@ const AmountInput = ({
       setUsdAmount(input)
       setAssetAmount('')
       setUsdPercent(0)
+      setIsError(false) // Empty is not an error, just incomplete
       return
     }
 
     // Only allow numeric input with at most one decimal point
     if (!/^[0-9]*\.?[0-9]*$/.test(input)) {
+      // Don't update state for invalid input, just reject it
       return
     }
 
@@ -139,12 +165,15 @@ const AmountInput = ({
     } else {
       setAssetAmount('')
     }
-    setUsdPercent((parseFloat(input) / maxAllowedUsd) * 100)
+    const newPercent = (parseFloat(input) / maxAllowedUsd) * 100
+    setUsdPercent(newPercent)
+    setIsError(newPercent > 100) // Error if exceeds 100%
   }
 
   const handleUsdPercentChange = (newUsdPercent: number) => {
     if (!clearingHouseState) return
     setUsdPercent(newUsdPercent)
+    setIsError(newUsdPercent > 100) // Error if exceeds 100%
     const rawAmount = (newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice)
     const roundedAmount = rawAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
     setAssetAmount(roundedAmount)
@@ -166,7 +195,10 @@ const AmountInput = ({
         <Input
           type="text"
           placeholder="0"
-          value={isInputUsd ? usdAmount : assetAmount}
+          value={(() => {
+            const val = isInputUsd ? usdAmount : assetAmount
+            return val === 'NaN' || Number.isNaN(Number(val)) ? '' : val
+          })()}
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
           className={cn('flex-1 text-white shrink-0', isRTL ? 'text-start' : 'text-end')}
         />
@@ -210,18 +242,37 @@ const AmountInput = ({
           <div
             className={cn(
               'flex !w-16 shrink-0 items-center pr-2 justify-center text-white/70 rounded-md gap-2',
-              isRTL && 'flex-row-reverse pr-0 pl-2'
+              isRTL && 'flex-row-reverse pr-0 pl-2',
+              usdPercent > 100 && 'bg-red/20 rounded-md'
             )}
           >
             <Input
               className={cn(
                 'flex-1 p-0 !text-[10px] text-end text-white bg-transparent border-none',
-                isRTL && 'text-start'
+                isRTL && 'text-start',
+                usdPercent > 100 && 'text-red-500'
               )}
-              value={usdPercent.toFixed(2) ?? '0'}
-              onChange={(e) => handleUsdPercentChange(parseInt(e.target.value, 10))}
+              value={
+                isPercentFocused
+                  ? percentInputStr
+                  : Number.isNaN(usdPercent)
+                    ? ''
+                    : usdPercent.toFixed(2)
+              }
+              onChange={(e) => setPercentInputStr(e.target.value)}
+              onFocus={() => {
+                setIsPercentFocused(true)
+                setPercentInputStr(Number.isNaN(usdPercent) ? '' : usdPercent.toFixed(2))
+              }}
+              onBlur={() => {
+                setIsPercentFocused(false)
+                const parsed = parseFloat(percentInputStr)
+                if (!Number.isNaN(parsed)) {
+                  handleUsdPercentChange(parsed)
+                }
+              }}
             />
-            <IconPercentage className="size-3" />
+            <IconPercentage className={cn('size-3', usdPercent > 100 && 'text-red-500')} />
           </div>
         </div>
         <ToggleGroup

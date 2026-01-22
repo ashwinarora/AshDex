@@ -2,7 +2,7 @@ import { prisma } from '@/lib/prisma'
 import { getReferral } from '@/lib/referral'
 import { NEXON_REFERRAL_CODE } from '@/utils/constants'
 import { User, Prisma } from '@prisma/client'
-import { Address } from 'viem'
+import { Address, isAddressEqual } from 'viem'
 
 type InviteWithUsers = Prisma.InviteGetPayload<{
   include: { used_by: true }
@@ -64,10 +64,13 @@ class UserManager {
   async validateReferral(walletId: Address): Promise<boolean> {
     const referral = await getReferral(walletId)
 
-    if (
-      referral?.referrer == process.env.REFERRAL_CODE_OWNER &&
-      referral?.code == NEXON_REFERRAL_CODE
-    ) {
+    const expectedReferrer = process.env.REFERRAL_CODE_OWNER as Address
+    const receivedReferrer = referral?.referrer ?? `0x`
+
+    const expectedCode = NEXON_REFERRAL_CODE
+    const receivedCode = referral?.code ?? ''
+
+    if (isAddressEqual(receivedReferrer, expectedReferrer) && receivedCode == expectedCode) {
       this.updateUser(walletId, { is_nexon_referred: true })
       return true
     }
