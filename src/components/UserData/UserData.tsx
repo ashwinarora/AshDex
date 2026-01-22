@@ -18,9 +18,11 @@ import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconSquare } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
+import { usePathname } from 'next/navigation'
 
 const UserData = () => {
   const { t } = useTranslate()
+  const pathname = usePathname()
   const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -29,6 +31,7 @@ const UserData = () => {
     }))
   )
   const isSpot = useIsSpot()
+  const isPortfolio = pathname?.startsWith('/portfolio')
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { spotKeyToName } = useSpotMeta()
   const { isMobile } = useScreenSize()
@@ -92,11 +95,25 @@ const UserData = () => {
     return isRTL ? tabs.reverse() : tabs
   }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, t, isHideSmallBalances])
 
-  const [activeTab, setActiveTab] = useState<number>(isSpot ? 0 : 1) // default to positions for perps and balances for spot
+  // Default tab: Balances for spot/portfolio, Positions for futures/perps
+  // In RTL mode, tabs are reversed so indices need adjustment
+  const defaultTab = useMemo(() => {
+    const tabsLength = 6 // Total number of tabs
+    if (isSpot || isPortfolio) {
+      // Balances: index 0 in LTR, last index in RTL
+      return isRTL ? tabsLength - 1 : 0
+    } else {
+      // Positions: index 1 in LTR, second-to-last in RTL
+      return isRTL ? tabsLength - 2 : 1
+    }
+  }, [isSpot, isPortfolio, isRTL])
 
+  const [activeTab, setActiveTab] = useState<number>(defaultTab)
+
+  // Reset to default tab when pathname changes or RTL mode changes
   useEffect(() => {
-    setActiveTab((activeTab) => tabs.length - 1 - activeTab)
-  }, [isRTL])
+    setActiveTab(defaultTab)
+  }, [pathname, defaultTab])
 
   return (
     <div
