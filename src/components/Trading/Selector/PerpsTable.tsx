@@ -109,7 +109,6 @@ const AssetTable = ({
         }
       })
       .filter((asset) => {
-        console.log('🚀 ~ AssetTable ~ asset:', asset)
         return isWhitelistedPerpPair(asset.symbol.split('-')[0], asset.symbol.split('-')[1])
       })
       .filter((asset) => {
