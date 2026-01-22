@@ -61,9 +61,7 @@ export const CORE_TO_EVM_MAPPING: Record<
 
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
-export const BUILDER_ADDRESS = isTestnet
-  ? '0x1710022f671b4032d6c7262107ba231f41f84ce8' // Ashwin's address
-  : '0x6a181ef519f21f933884038952aabef02876dbcc' // Nexon's address
+export const BUILDER_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_RECEIVER_ADDRESS as string
 
 export const NEXON_REFERRAL_CODE: string = process.env.NEXT_PUBLIC_REFERRAL_CODE as string
 // ? 'STUPID' // Contributor's multisig referral code
