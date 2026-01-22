@@ -33,7 +33,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [leverage, setLeverage] = useState<number>(1)
   const [limitPrice, setLimitPrice] = useState('')
   const [priceInitialized, setPriceInitialized] = useState(false)
-
+  const [isError, setIsError] = useState<boolean>(false)
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
 
@@ -135,6 +135,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isReduceOnly={isReduceOnly}
           isBuy={isBuy}
           isRTL={isRTL}
+          setIsError={setIsError}
         />
         <Separator orientation="horizontal" />
         <div
@@ -171,6 +172,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             tpsl: 'sl',
             triggerPx: stopPrice
           }}
+          isError={isError}
         />
       </div>
     </div>

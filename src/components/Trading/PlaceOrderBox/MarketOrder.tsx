@@ -49,7 +49,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const [crossAccountValue, setCrossAccountValue] = useState(0)
-
+  const [isError, setIsError] = useState<boolean>(false)
   useEffect(() => {
     setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
   }, [clearingHouseState])
@@ -173,6 +173,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             limitPrice={allMids[selectedAsset]?.toString() || '0'}
             isBuy={isBuy}
             isRTL={isRTL}
+            setIsError={setIsError}
           />
         ) : (
           <AmountInput
@@ -186,6 +187,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
             isRTL={isRTL}
+            setIsError={setIsError}
           />
         )}
         <Separator orientation="horizontal" />
@@ -348,6 +350,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isReduceOnly={isSpot ? false : isReduceOnly}
           tpsl={tpsl}
           isMarket={true}
+          isError={isError}
         />
       </div>
     </div>

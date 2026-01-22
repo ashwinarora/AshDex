@@ -64,7 +64,6 @@ class HLService {
       headers: myHeaders,
       body: JSON.stringify(requestBody)
     })
-    console.log('🚀 ~ HLService ~ executeHyperliquidTransfer ~ response:', response)
 
     if (!response.ok) {
       throw new Error(`Hyperliquid API error: ${response.status} - ${response.statusText}`)

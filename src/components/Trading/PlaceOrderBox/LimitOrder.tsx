@@ -33,6 +33,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     clearRequestedAssetAmount
   } = useTradeUIStore()
   const [isBuy, setIsBuy] = useState<boolean>(true)
+  const [isError, setIsError] = useState<boolean>(false)
   const [limitPrice, setLimitPrice] = useState<string>('')
   const [assetAmount, setAssetAmount] = useState<string>('')
   const [usdAmount, setUsdAmount] = useState<string>('')
@@ -231,6 +232,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             setUsdAmount={setUsdAmount}
             limitPrice={limitPrice}
             isBuy={isBuy}
+            setIsError={setIsError}
             isRTL={isRTL}
           />
         ) : (
@@ -245,6 +247,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             isReduceOnly={isReduceOnly}
             isBuy={isBuy}
             isRTL={isRTL}
+            setIsError={setIsError}
           />
         )}
         <Separator orientation="horizontal" />
@@ -342,6 +345,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           isPostOnly={isPostOnly}
           isReduceOnly={isSpot ? false : isReduceOnly}
           tpsl={tpsl}
+          isError={isError}
         />
       </div>
     </div>

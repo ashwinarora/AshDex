@@ -8,13 +8,15 @@ import FooterCompact from '../FooterCompact'
 import ReferralStats from './ReferralStats'
 import WalletNotConnected from '../ConnectWalletModal/DisconnectedWalletState'
 import { useConnection } from 'wagmi'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 function Referrals() {
-  const { isMobile } = useScreenSize()
+  const { isMobile, isTablet } = useScreenSize()
   // const isRendered = useComponentRendered()
   const { address } = useConnection()
   // if (!isRendered) return null
-
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   if (!address) {
     return (
       <div className="w-full h-dvh text-white/70 overflow-hidden flex flex-col items-center">
@@ -24,14 +26,14 @@ function Referrals() {
     )
   }
 
-  if (isMobile)
+  if (isTablet || isMobile)
     return (
       <div className="w-full min-h-dvh text-white/70 overflow-hidden flex items-start justify-center">
         <div className="w-11/12 h-11/12 flex flex-col overflow-hidden">
           <div className="w-full shrink-0">
             <ReferralsHeader />
           </div>
-          <div className="w-full flex-1 flex flex-col items-start gap-1 overflow-hidden">
+          <div className={cn('w-full flex-1 flex flex-col items-start gap-1 overflow-hidden')}>
             <ReferralStats />
             <ReferralsTablesTab />
           </div>
@@ -46,7 +48,12 @@ function Referrals() {
         <div className="w-full shrink-0">
           <ReferralsHeader />
         </div>
-        <div className="w-full flex-1 flex items-start gap-1 overflow-hidden">
+        <div
+          className={cn(
+            'w-full flex-1 flex items-start gap-1 overflow-hidden',
+            isRTL && 'flex-row-reverse'
+          )}
+        >
           <ReferralStats />
           <ReferralsTablesTab />
         </div>
