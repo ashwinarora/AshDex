@@ -102,7 +102,7 @@ const ReferralsTable = () => {
   })
 
   return (
-    <>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className='w-full h-full min-w-xl'>
       {isLoading && (
         <div className="w-full h-72 lg:h-full items-center justify-center flex flex-col gap-2">
           <IconLoader2 className="text-white size-10 animate-spin" />
@@ -131,9 +131,9 @@ const ReferralsTable = () => {
                           'cursor-pointer w-full',
                           isRTL
                             ? header.id === 'clmVol'
-                              ? 'justify-start'
+                              ? 'justify-end'
                               : header.id === 'userWalletId'
-                                ? 'justify-end'
+                                ? 'justify-start'
                                 : 'justify-center'
                             : header.id === 'clmVol'
                               ? 'justify-end'
@@ -181,9 +181,9 @@ const ReferralsTable = () => {
                             // isRTL ? 'first:text-start text-end' : 'text-start last:text-end'
                             isRTL
                               ? cell.column.id === 'clmVol'
-                                ? 'text-start'
+                                ? 'text-end'
                                 : cell.column.id === 'userWalletId'
-                                  ? 'text-end'
+                                  ? 'text-start'
                                   : 'text-center'
                               : cell.column.id === 'clmVol'
                                 ? 'text-end'
@@ -208,7 +208,7 @@ const ReferralsTable = () => {
           )}
         </>
       )}
-    </>
+    </div>
   )
 }
 

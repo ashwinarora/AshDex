@@ -10,6 +10,7 @@ import { formatWithKMB } from '@/utils/format'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
 import CreateCode from './CreateCode'
 import Rewards from './Rewards'
+import { Button } from '../ui/button'
 
 const StatCard = ({
   label,
@@ -28,11 +29,11 @@ const StatCard = ({
       isRTL && 'items-end'
     )}
   >
-    <div className="text-white/70 text-xs font-medium flex items-center justify-between w-full">
+    <div className={cn("text-white/70 text-xs font-medium flex items-center justify-between w-full", isRTL && 'flex-row-reverse')}>
       <span>{label}</span>
       {action}
     </div>
-    <div className="text-white text-4xl font-semibold">{value}</div>
+    <div className={cn("text-white text-4xl font-semibold", isRTL && 'text-right')}>{value}</div>
   </div>
 )
 
@@ -53,7 +54,7 @@ const ReferralStats = () => {
 
   if (isLoading) {
     return (
-      <div className="flex flex-col flex-nowrap gap-1 w-full lg:w-96 lg:h-full h-72 bg-secondary rounded-md items-center justify-center">
+      <div className="flex flex-col flex-nowrap gap-1 w-full xl:w-96 lg:h-full h-72 bg-secondary rounded-md items-center justify-center">
         <IconLoader2 className="text-white size-10 animate-spin" />
       </div>
     )
@@ -61,7 +62,7 @@ const ReferralStats = () => {
 
   if (error) {
     return (
-      <div className="flex flex-col flex-nowrap gap-1 w-full lg:w-96 h-full bg-secondary rounded-md items-center justify-center">
+      <div className="flex flex-col flex-nowrap gap-1 w-full xl:w-96 h-full bg-secondary rounded-md items-center justify-center">
         <IconAlertCircle className="text-red size-10" />
         <span className="text-red text-sm">{t('Error loading stats')}</span>
       </div>
@@ -71,7 +72,7 @@ const ReferralStats = () => {
   const formatUSD = (value: number) => `$${formatWithKMB(Math.abs(value))}`
 
   return (
-    <div className="flex flex-col flex-nowrap gap-1 w-full lg:w-96 h-full">
+    <div className="flex flex-col flex-nowrap gap-1 w-full xl:w-96 h-full">
       {/* Your Invite Code Card */}
       <div
         className={cn(
@@ -79,7 +80,7 @@ const ReferralStats = () => {
           isRTL && 'items-end'
         )}
       >
-        <div className="text-white/70 text-xs font-medium flex items-center justify-between w-full">
+        <div className={cn("text-white/70 text-xs font-medium flex items-center justify-between w-full", isRTL && 'flex-row-reverse')}>
           <span>{t('Your Invite Code')}</span>
           {!inviteCode && (
             <Dialog
@@ -106,9 +107,11 @@ const ReferralStats = () => {
         {inviteCode ? (
           <div className="flex flex-col gap-3 w-full">
             {/* Invite Code Row */}
-            <div className="flex items-center justify-between gap-2">
+            <div className={cn("flex items-center justify-between gap-2", isRTL && 'flex-row-reverse')}>
               <span className="text-white text-3xl font-semibold tracking-wider">{inviteCode}</span>
-              <button
+              <Button
+                size={'sm'}
+                variant={'outline'}
                 onClick={() => {
                   navigator.clipboard.writeText(inviteCode)
                   toast.success(t('Code copied to clipboard'))
@@ -118,12 +121,12 @@ const ReferralStats = () => {
               >
                 <IconCopy className="size-4" />
                 <span className="hidden sm:inline">{t('Code')}</span>
-              </button>
+              </Button>
             </div>
 
             {/* Invite Link Row */}
-            <div className="flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-md px-3 py-2">
-              <span className="text-white/50 text-xs truncate flex-1 font-mono">{inviteLink}</span>
+            <div className={cn("flex items-center justify-between gap-2 bg-white/5 border border-white/10 rounded-md px-3 py-2", isRTL && 'flex-row-reverse')}>
+              <span className={cn("text-white/50 text-xs truncate flex-1 font-mono", isRTL && 'text-right')}>{inviteLink}</span>
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(inviteLink)
