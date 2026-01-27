@@ -294,7 +294,7 @@ const Header: FC = () => {
               }}
             >
               <span className="text-xs">{'🇸🇦'}</span>
-              <span className="text-xs">الإنجليزية</span>
+              <span className="text-xs">عربي</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
