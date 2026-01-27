@@ -111,7 +111,7 @@ const PortfolioStats = () => {
       [t('Max Drawdown')]: `${maxDrawdownPercentage.toFixed(2)}%`,
       [t('Total Equity')]: `$${formatWithKMB(totalEquity)}`,
       [t('Perps Account Equity')]: `$${formatWithKMB(perpEquity)}`,
-      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`,
+      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
 
