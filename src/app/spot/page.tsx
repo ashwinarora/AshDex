@@ -3,7 +3,7 @@
 import { Suspense } from 'react'
 import Trading from '@/components/Trading/Trading'
 import { useInviteCodeCapture } from '@/hooks/useInviteCodeCapture'
-import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
+import { useGetInvite } from '@/hooks/invite/useGetInvite'
 import { useInviteCode } from '@/store/ReferralStore'
 import {
   Dialog,
@@ -18,7 +18,7 @@ import { useTranslate } from '@tolgee/react'
 function SpotContent() {
   const { t } = useTranslate()
   const { showReferralPrompt, setShowReferralPrompt } = useInviteCodeCapture()
-  const { refetch: refetchReferrer } = useGetReferrer()
+  const { refetch: refetchReferrer } = useGetInvite()
   const { dismissReferralPrompt } = useInviteCode()
 
   const handleDismissPermanently = () => {
