@@ -240,7 +240,7 @@ const SettingsPage = () => {
                         setLanguage('ar-SA')
                       }}
                     >
-                      العربية
+                      عربي
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
