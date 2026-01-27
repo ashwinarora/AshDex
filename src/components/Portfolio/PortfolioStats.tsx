@@ -111,9 +111,7 @@ const PortfolioStats = () => {
       [t('Max Drawdown')]: `${maxDrawdownPercentage.toFixed(2)}%`,
       [t('Total Equity')]: `$${formatWithKMB(totalEquity)}`,
       [t('Perps Account Equity')]: `$${formatWithKMB(perpEquity)}`,
-      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`,
-      [t('Vault Equity')]: '$0.00',
-      [t('Staking Account')]: '0 HYPE'
+      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
 
@@ -152,7 +150,7 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}</p>
+                    <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps + Spot')}</p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -165,7 +163,7 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
                   >
-                    <p>{t('Perps+Spot+Vault')}</p>
+                    <p>{t('Perps + Spot')}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -256,7 +254,7 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps+Spot+Vault')}</p>
+                <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps + Spot')}</p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -270,7 +268,7 @@ const PortfolioStats = () => {
                 onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
               >
                 <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                  {t('Perps+Spot+Vault')}
+                  {t('Perps + Spot')}
                 </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
