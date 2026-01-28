@@ -23,6 +23,7 @@ import { useTranslate } from '@tolgee/react'
 import Fees from './components/Fees'
 import { useTradeUIStore } from '@/store/TradeUIStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { t } = useTranslate()
@@ -55,6 +56,8 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }))
   )
   const { spotKeyToName, data: spotMeta } = useSpotMeta()
+  const { isAgentApproved, currentFeeApproval } = useAgentApproval()
+  const isTradingEnabled = isAgentApproved && currentFeeApproval > 0
 
   const [crossAccountValue, setCrossAccountValue] = useState(0)
 
@@ -315,20 +318,24 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{t('Liquidation Price')}</p>
-                <p className="text-white">{liquidationPrice()}</p>
+                <p className="text-white">{isTradingEnabled ? liquidationPrice() : 'N/A'}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{t('Margin Required')}</p>
                 <p className="text-white">
-                  ${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}
+                  {isTradingEnabled
+                    ? `$${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}`
+                    : 'N/A'}
                 </p>
               </div>
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/70">{t('Order Value')}</p>
-            <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+            <p className="text-white">
+              {isTradingEnabled ? `$${Number(usdAmount).toFixed(2)}` : 'N/A'}
+            </p>
           </div>
           <Fees isSpot={isSpot} isRTL={isRTL} />
         </div>
