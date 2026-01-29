@@ -116,7 +116,7 @@ export const useInviteCodeCapture = () => {
     }
 
     // Step 2: Check if user already has a referrer (allow if referred by platform default code)
-    const isReferredByPlatformCode = referrer?.inviteCode === platformReferralCode
+    const isReferredByPlatformCode = referralsInfo?.referredBy === platformReferralCode
     if (referrer !== null && !isReferredByPlatformCode) {
       console.log('[InviteCodeCapture] User already has a referrer:', referrer)
       toast.info('You already have a referrer linked to your wallet')
