@@ -5,12 +5,15 @@ import { toast } from 'sonner'
 import { Button } from '../ui/button'
 import { useCreateInviteCode, useGetRewardsStats } from '@/hooks/invite'
 import { Input } from '../ui/input'
+import { cn } from '@/lib/utils'
+import useUserStore from '@/store/userStore'
 
 function CreateCode() {
   const [createdCode, setCreatedCode] = useState('')
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { refetch: refetchRewardsStats } = useGetRewardsStats()
   const { t } = useTranslate()
+  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
   const { mutateAsync: createInviteCodeMutation, isPending: isCreatingInviteCode } =
     useCreateInviteCode()
@@ -41,8 +44,7 @@ function CreateCode() {
   return (
     <div className="w-full h-full flex flex-col gap-2 items-center justify-between p-2">
       <div className="w-full flex !h-24 flex-col gap-2">
-        <h1 className="text-white font-medium text-lg">{t('Create a Referral Code')}</h1>
-        <p className="text-white/70 font-medium text-sm">
+        <p className={cn('text-white/70 font-medium text-sm', isRTL && 'text-end')}>
           {t('This referral code is permanent and unique to you. Choose wisely.')}
         </p>
       </div>
@@ -53,7 +55,7 @@ function CreateCode() {
       />
       {!isAgentApproved || currentFeeApproval === 0 ? (
         <Button onClick={openAgentModal} className="w-full">
-          Establish Connection
+          {t('Establish Connection')}
         </Button>
       ) : (
         <Button
@@ -61,7 +63,7 @@ function CreateCode() {
           disabled={isCreatingInviteCode || createdCode.length < 4 || createdCode.length > 8}
           onClick={createInviteCode}
         >
-          {isCreatingInviteCode ? t('Creating...') : t('Create')}
+          {isCreatingInviteCode ? t('Creating...') : t('Create Code')}
         </Button>
       )}
     </div>

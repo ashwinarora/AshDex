@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { useSetInviteCode, useInviteCode } from '@/store/ReferralStore'
-import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
+import { useGetInvite } from '@/hooks/invite/useGetInvite'
 import { useReferralsInfo } from '@/hooks/useReferralsInfo'
 import { useConnection } from 'wagmi'
 import { toast } from 'sonner'
@@ -31,7 +31,7 @@ export const useInviteCodeCapture = () => {
   const setInviteCode = useSetInviteCode()
   const { inviteCode: storedInviteCode, referralPromptDismissed } = useInviteCode()
   const { isConnected } = useConnection()
-  const { data: referrer, isFetched: isReferrerFetched } = useGetReferrer()
+  const { data: referrer, isFetched: isReferrerFetched } = useGetInvite()
   const { data: referralsInfo, isFetched: isReferralsInfoFetched } = useReferralsInfo()
   const { isAgentApproved, currentFeeApproval } = useAgentApproval()
 
@@ -116,9 +116,9 @@ export const useInviteCodeCapture = () => {
     }
 
     // Step 2: Check if user already has a referrer (allow if referred by platform default code)
-    const isReferredByPlatformCode = referralsInfo?.referredBy === platformReferralCode
-    if (referrer !== null && !isReferredByPlatformCode) {
-      console.log('[InviteCodeCapture] User already has a referrer:', referrer)
+    const isReferredByPlatformCode = referralsInfo?.referredBy?.code === platformReferralCode
+    if (referralsInfo?.referredBy !== null && !isReferredByPlatformCode) {
+      console.log('[InviteCodeCapture] User already has a referrer:', referralsInfo?.referredBy)
       toast.info('You already have a referrer linked to your wallet')
       hasProcessedCode.current = true
       return

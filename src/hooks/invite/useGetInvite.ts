@@ -4,7 +4,7 @@ import { useConnection } from 'wagmi'
 import { useAuth } from './useAuth'
 import { apiServerAxios } from '@/config/axios'
 
-type GetReferrerPayload = { action: 'getReferrer' }
+type GetInvitePayload = { action: 'getReferrer' }
 
 export interface ReferrerData {
   inviteCode: string
@@ -14,26 +14,26 @@ export interface ReferrerData {
   }
 }
 
-interface GetReferrerResponse {
+interface GetInviteResponse {
   success: boolean
   data: ReferrerData | null
 }
 
-export const useGetReferrer = () => {
+export const useGetInvite = () => {
   const { isConnected, address } = useConnection()
-  const authMutation = useAuth<GetReferrerPayload>()
+  const authMutation = useAuth<GetInvitePayload>()
 
   return useQuery({
-    queryKey: ['referrer', address],
+    queryKey: ['inviteCode', address],
     queryFn: async () => {
       if (!address) return null
 
-      const payload: GetReferrerPayload = { action: 'getReferrer' }
+      const payload: GetInvitePayload = { action: 'getReferrer' }
       const body = await authMutation({ payload })
-      const response = await apiServerAxios.post<GetReferrerResponse>('/api/users/referrer', body)
+      const response = await apiServerAxios.post<GetInviteResponse>('/api/users/referrer', body)
 
       if (!response.data.success) {
-        throw new Error('Failed to fetch referrer')
+        throw new Error('Failed to fetch invite code')
       }
 
       return response.data.data
