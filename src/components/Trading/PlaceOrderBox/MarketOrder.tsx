@@ -24,6 +24,7 @@ import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabl
 import { useShallow } from 'zustand/react/shallow'
 import { useTranslate } from '@tolgee/react'
 import Fees from './components/Fees'
+import { useAgentApproval } from '@/context/EstablishConnection'
 
 const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
@@ -48,6 +49,8 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   })
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
+  const { isAgentApproved, currentFeeApproval } = useAgentApproval()
+  const isTradingEnabled = isAgentApproved && currentFeeApproval > 0
   const [crossAccountValue, setCrossAccountValue] = useState(0)
   const [isError, setIsError] = useState<boolean>(false)
   useEffect(() => {
@@ -319,20 +322,24 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{t('Liquidation Price')}</p>
-                <p className="text-white">{liquidationPrice}</p>
+                <p className="text-white">{isTradingEnabled ? liquidationPrice : 'N/A'}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{t('Margin Required')}</p>
                 <p className="text-white">
-                  ${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}
+                  {isTradingEnabled
+                    ? `$${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}`
+                    : 'N/A'}
                 </p>
               </div>
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
             <p className="text-white/70">{t('Order Value')}</p>
-            <p className="text-white">${Number(usdAmount).toFixed(2)} </p>
+            <p className="text-white">
+              {isTradingEnabled ? `$${Number(usdAmount).toFixed(2)}` : 'N/A'}
+            </p>
           </div>
           <Fees isSpot={isSpot} isRTL={isRTL} />
         </div>
