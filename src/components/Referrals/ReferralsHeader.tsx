@@ -7,7 +7,7 @@ import { Button } from '../ui/button'
 import ClaimInviteCode from './ClaimInviteCode'
 import { useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '../ui/dialog'
-import { useGetReferrer } from '@/hooks/invite/useGetReferrer'
+import { useGetInvite } from '@/hooks/invite/useGetInvite'
 import { Badge } from '../ui/badge'
 
 const ReferralsHeader = () => {
@@ -15,7 +15,7 @@ const ReferralsHeader = () => {
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const { isMobile } = useScreenSize()
   const [openDialog, setOpenDialog] = useState<string | null>(null)
-  const { data: referrer, refetch: refetchReferrer } = useGetReferrer()
+  const { data: referrer, refetch: refetchReferrer } = useGetInvite()
 
   if (isMobile) {
     return (
