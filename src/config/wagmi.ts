@@ -13,7 +13,6 @@ import {
 import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
 import { type Chain } from 'viem'
 import { createConfig } from 'wagmi'
-// import { createConfig } from '@privy-io/wagmi'
 
 export const hyperliquidMainnet = {
   id: 999,

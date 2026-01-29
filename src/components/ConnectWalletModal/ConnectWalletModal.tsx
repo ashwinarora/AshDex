@@ -17,8 +17,6 @@ import { IconLoader, IconWallet } from '@tabler/icons-react'
 import { useTranslate } from '@tolgee/react'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
-import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
-import usePrivyWagmiStore from '@/store/PrivyWagmiStore'
 
 interface WalletConnectProvider {
   id: string
@@ -37,17 +35,9 @@ const ConnectWalletModal: React.FC = () => {
   const [selectedConnector, setSelectedConnector] = useState<WalletConnectProvider | null>(null)
   const [trustWallet] = initializeConnector<TrustWallet>((actions) => new TrustWallet({ actions }))
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
-  const { wallets } = useWallets()
-  const embeddedWalletAddress = wallets?.find(
-    (w: ConnectedWallet) => w?.walletClientType === 'privy'
-  )?.address
-  const walletId = address ?? embeddedWalletAddress
+  const walletId = address
   const { data: termsData, isLoading: isTermsLoading } = useTermsSignature(walletId)
   const createOrUpdateUser = useCreateOrUpdateUser()
-  const { authenticated } = usePrivy()
-  // const { linkEmail } = useLinkAccount()
-  // const [isPrivyLoginPending, setIsPrivyLoginPending] = useState(false)
-  const { setIsUsingPrivy } = usePrivyWagmiStore()
 
   const handleClose = () => {
     closeConnectWalletModal()
@@ -59,7 +49,6 @@ const ConnectWalletModal: React.FC = () => {
   }
 
   const connectWallet = async (wallet: WalletConnectProvider) => {
-    setIsUsingPrivy(false)
     setSelectedConnector(wallet)
     console.log('connecting wallet', wallet)
     try {
@@ -74,34 +63,13 @@ const ConnectWalletModal: React.FC = () => {
     }
   }
 
-  // const handleEmailLogin = async () => {
-  //   if (isPrivyLoginPending) return
-  //   setIsUsingPrivy(true)
-  //   setIsPrivyLoginPending(true)
-  //   try {
-  //     if (authenticated) {
-  //       // Privy doesn't allow calling login() while authenticated; use a link helper instead.
-  //       // This opens Privy's modal and prompts the user to link an email to the current user.
-  //       linkEmail()
-  //     } else {
-  //       // Opens Privy's built-in login dialog (email + OTP handled by Privy)
-  //       await login()
-  //     }
-  //   } catch (error) {
-  //     console.error('Error signing in with email:', error)
-  //   } finally {
-  //     setIsPrivyLoginPending(false)
-  //   }
-  // }
-
   useEffect(() => {
-    if ((isConnected || authenticated) && walletId) {
+    if (isConnected && walletId) {
       createOrUpdateUser.mutate({ wallet_id: walletId })
     }
-  }, [isConnected, authenticated, walletId])
+  }, [isConnected, walletId])
 
-  const shouldShowRules =
-    (isConnected || authenticated) && !!walletId && !isTermsLoading && !termsData?.signed
+  const shouldShowRules = isConnected && !!walletId && !isTermsLoading && !termsData?.signed
 
   useEffect(() => {
     if (shouldShowRules) {
@@ -143,25 +111,6 @@ const ConnectWalletModal: React.FC = () => {
           )
         ) : (
           <div className="flex flex-col gap-2">
-            {/* Uncomment to enable Privy */}
-            {/* <Button
-              className={cn(
-                'w-full flex h-fit items-center justify-start gap-4 transition-colors text-white bg-white/10 hover:bg-accent',
-                isRTL && 'flex-row-reverse'
-              )}
-              variant={'secondary'}
-              onClick={handleEmailLogin}
-              disabled={isPrivyLoginPending}
-            >
-              <div className="size-10 rounded-md bg-white/10 flex items-center justify-center">
-                {isPrivyLoginPending ? (
-                  <IconLoader className="size-6 animate-spin text-white" />
-                ) : (
-                  <IconMail className="size-6 text-white" />
-                )}
-              </div>
-              <span className="font-medium text-sm">{t('Sign in with Email')}</span>
-            </Button> */}
             {WALLETS.map((wallet) => (
               <Button
                 className={cn(
