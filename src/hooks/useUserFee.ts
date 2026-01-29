@@ -4,7 +4,7 @@ import { Hex } from 'viem'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import useIsSpot from './useIsSpot'
 
-const targetFee = {
+export const targetFee = {
   perpsTaker: '0.00045',
   perpsMaker: '0.00015',
   spotTaker: '0.00070',
