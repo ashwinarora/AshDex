@@ -10,10 +10,9 @@ import {
   optimism,
   polygon
 } from 'wagmi/chains'
-import { coinbaseWallet, injected, metaMask, safe, walletConnect } from 'wagmi/connectors'
+import { coinbaseWallet, injected, safe, walletConnect } from 'wagmi/connectors'
 import { type Chain } from 'viem'
 import { createConfig } from 'wagmi'
-// import { createConfig } from '@privy-io/wagmi'
 
 export const hyperliquidMainnet = {
   id: 999,
@@ -53,6 +52,10 @@ const rabbyWalletConnector = injected({
   target: 'rabby'
 })
 
+const metaMaskConnector = injected({
+  target: 'metaMask'
+})
+
 const coinbaseWalletConnector = coinbaseWallet({
   appName: 'Nexon'
 })
@@ -78,7 +81,7 @@ export const config: Parameters<typeof createConfig>[0] = {
     walletConnect({
       projectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_ID ?? ''
     }),
-    metaMask(),
+    metaMaskConnector,
     safe()
   ],
   transports: {

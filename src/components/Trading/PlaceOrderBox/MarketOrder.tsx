@@ -259,7 +259,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <div className="flex flex-col gap-3">
                 <p className="text-xs text-white/70">
                   {t(
-                    'Max slippage only affects market orders placed on Spots. Limit, Close & TP/SL orders will use max slippage of 10%.'
+                    'Max slippage only affects market orders placed on Spots & Perps. Close & TP/SL orders will use max slippage of 8%.'
                   )}
                 </p>
                 <div className={cn('flex items-center gap-3', isRTL && 'flex-row-reverse')}>

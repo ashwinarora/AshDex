@@ -7,7 +7,6 @@ import { toast } from 'sonner'
 // import { IconCheck } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 import { useTranslate } from '@tolgee/react'
-import { ConnectedWallet, useWallets } from '@privy-io/react-auth'
 import { cn } from '@/lib/utils'
 import useUserStore from '@/store/userStore'
 import { useQuery } from '@tanstack/react-query'
@@ -19,9 +18,7 @@ interface WalletRulesProps {
 const WalletRules: React.FC<WalletRulesProps> = ({ onClose }) => {
   const { address } = useConnection()
   const signMessage = useSignMessage()
-  const { wallets } = useWallets()
-  const embeddedWallet = wallets?.find((w: ConnectedWallet) => w?.walletClientType === 'privy')
-  const walletId = address ?? embeddedWallet?.address
+  const walletId = address
   const { refetch: refetchUserTerms } = useTermsSignature(walletId)
   const { t } = useTranslate()
   const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')

@@ -283,7 +283,7 @@ export const AGENT_NAME = 'nexon_agent'
 
 export const WALLETS = [
   {
-    id: 'metaMaskSDK',
+    id: 'metaMask',
     name: 'Metamask',
     icon: metamaskicon
   },
