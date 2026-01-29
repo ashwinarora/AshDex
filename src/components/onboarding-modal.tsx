@@ -87,17 +87,11 @@ export default function OnboardingModal() {
           className={`${isLastStep ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
         >
           {isLastStep ? (
-            <div className="flex justify-center items-center gap-2">
-              {t('Start Exploring')}
-            </div>
+            <div className="flex justify-center items-center gap-2">{t('Start Exploring')}</div>
           ) : (
             <div className="flex items-center justify-center gap-2">
               {t('Next')}
-              <Image
-                src={arrowrightlineicon}
-                alt="Next"
-                style={{ width: 15, height: 'auto' }}
-              />
+              <Image src={arrowrightlineicon} alt="Next" style={{ width: 15, height: 'auto' }} />
             </div>
           )}
         </button>
