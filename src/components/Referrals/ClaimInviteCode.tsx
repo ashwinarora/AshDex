@@ -86,7 +86,7 @@ function ClaimInviteCode({ refetchReferrer, onDismissPermanently }: ClaimInviteC
         <div className="w-full flex !h-24 flex-col gap-2">
           <p className={cn('text-white/70 text-sm', isRTL && 'text-end')}>
             {t(
-              'This will allow you to earn bonuses or other rewards offered by the program. Simply copy and paste the code into this field.'
+              'This will allow you to earn bonuses or other rewards offered by the program. Simply paste the code into this field.'
             )}
           </p>
         </div>

@@ -13,7 +13,6 @@ import { getLanguage } from '@/tolgee/language'
 import { getTolgee } from '@/tolgee/server'
 import { TolgeeNextProvider } from '@/tolgee/client'
 import WagmiProvider from './WagmiProvider'
-import PrivyProvider from './PrivyProvider'
 
 // const geistSans = Geist({
 //   variable: '--font-geist-sans',
@@ -59,22 +58,20 @@ export default async function RootLayout({
       <body className={`${inter.variable}  bg-primary no-scrollbar`}>
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <TolgeeNextProvider language={locale} staticData={staticData}>
-          <PrivyProvider>
-            <WagmiProvider>
-              <HyperLiquidInitializer />
-              <WalletModalProvider>
-                <EstablishConnectionProvider>
-                  <div className="overscroll-none">
-                    {/* <SnackBar /> */}
-                    <Header />
-                    <OnboardingModal />
-                    <DynamicUseToastOptions />
-                    {children}
-                  </div>
-                </EstablishConnectionProvider>
-              </WalletModalProvider>
-            </WagmiProvider>
-          </PrivyProvider>
+          <WagmiProvider>
+            <HyperLiquidInitializer />
+            <WalletModalProvider>
+              <EstablishConnectionProvider>
+                <div className="overscroll-none">
+                  {/* <SnackBar /> */}
+                  <Header />
+                  <OnboardingModal />
+                  <DynamicUseToastOptions />
+                  {children}
+                </div>
+              </EstablishConnectionProvider>
+            </WalletModalProvider>
+          </WagmiProvider>
         </TolgeeNextProvider>
       </body>
     </html>

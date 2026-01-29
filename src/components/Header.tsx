@@ -37,7 +37,6 @@ import clsx from 'clsx'
 import useUserStore from '@/store/userStore'
 import { useTranslate } from '@tolgee/react'
 import { setLanguage } from '@/tolgee/language'
-import { ConnectedWallet, usePrivy, useWallets } from '@privy-io/react-auth'
 import Link from 'next/link'
 import BridgeModal from './Bridge/BridgeModal'
 
@@ -65,12 +64,7 @@ const Header: FC = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
-  const { authenticated, logout: privyLogout } = usePrivy()
-  const { wallets } = useWallets()
-  const embeddedWalletAddress = wallets?.find(
-    (w: ConnectedWallet) => w?.walletClientType === 'privy'
-  )?.address
-  const walletId = address ?? embeddedWalletAddress
+  const walletId = address
   const { data: termsData } = useTermsSignature(walletId)
   useNexonReferral()
 
@@ -79,9 +73,9 @@ const Header: FC = () => {
     setMounted(true)
   }, [])
 
-  // If user is connected/authenticated and terms are not signed, force the Terms modal to open.
+  // If user is connected and terms are not signed, force the Terms modal to open.
   useEffect(() => {
-    if (!isConnected && !authenticated) return
+    if (!isConnected) return
     if (!walletId) return
     if (!termsData) return
     if (termsData.signed) return
@@ -89,10 +83,9 @@ const Header: FC = () => {
     // Prefer keeping the session and prompting the user to sign.
     disconnect.mutate()
     toast.error(t('Please sign the terms to continue'))
-    // If the user connected an external wallet (non-Privy) and refuses to sign, we still allow them to disconnect manually.
-  }, [isConnected, authenticated, walletId, termsData?.signed, isModalOpen])
+  }, [isConnected, walletId, termsData?.signed, isModalOpen])
 
-  const isWalletConnected = mounted && (isConnected || (authenticated && !!walletId))
+  const isWalletConnected = mounted && isConnected && !!walletId
 
   const desktopMenu: MenuItem[] = [
     { name: t('Futures'), path: '/', isComingSoon: false },
@@ -371,12 +364,7 @@ const Header: FC = () => {
 
                 <DropdownMenuItem
                   onClick={() => {
-                    if (isConnected) {
-                      disconnect.mutate()
-                    }
-                    if (authenticated) {
-                      void privyLogout()
-                    }
+                    disconnect.mutate()
                   }}
                   variant="destructive"
                 >

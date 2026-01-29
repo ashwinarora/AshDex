@@ -130,7 +130,6 @@ const PortfolioStats = () => {
             </div>
             <PortfolioFeeCard
               isRTL={isRTL}
-              userFeeData={userFeeData}
               selectedView={selectedView}
               setSelectedView={setSelectedView}
             />
@@ -235,7 +234,6 @@ const PortfolioStats = () => {
           isRTL={isRTL}
         />
         <PortfolioFeeCard
-          userFeeData={userFeeData}
           selectedView={selectedView}
           setSelectedView={setSelectedView}
           isRTL={isRTL}
