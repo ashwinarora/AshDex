@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
-import type { ReactNode } from 'react'
 import step1 from '@/assets/images/onboarding/step1.png'
 import step2 from '@/assets/images/onboarding/step2.png'
 import step3 from '@/assets/images/onboarding/step3.png'
@@ -11,67 +10,66 @@ import nexonlogo from '@/assets/images/logo.svg'
 import arrowrightlineicon from '@/assets/images/arrowrightline_icon.svg'
 import { toast } from 'sonner'
 import { useTranslate } from '@tolgee/react'
-
-const NextButton = () => (
-  <div className="flex items-center justify-center gap-2">
-    Next
-    <Image src={arrowrightlineicon} alt="Next" style={{ width: 15, height: 'auto' }} />
-  </div>
-)
-
-const onboardingSteps: {
-  title: string
-  subtitle: string
-  description: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  image: any
-  button: ReactNode
-}[] = [
-  {
-    title: 'Welcome to Nexon!',
-    subtitle: 'The Future of DeFi is Here.',
-    description:
-      'A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.',
-    image: step1,
-    button: <NextButton />
-  },
-  {
-    title: 'Trade with Deep Liquidity',
-    subtitle: 'Perpetual & Spot Trading, Fully On-Chain.',
-    description:
-      'Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.',
-    image: step2,
-    button: <NextButton />
-  },
-  {
-    title: 'Earn, Borrow & Stake Securely',
-    subtitle: 'Decentralized Lending, Borrowing & Staking.',
-    description:
-      'Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.',
-    image: step3,
-    button: <NextButton />
-  },
-  {
-    title: 'Predict & Get Rewarded',
-    subtitle: 'A Transparent, On-Chain Prediction Market.',
-    description:
-      'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.',
-    image: step4,
-    button: <div className="flex justify-center items-center gap-2">Start Exploring</div>
-  }
-]
+import useUserStore from '@/store/userStore'
+import { setLanguage } from '@/tolgee/language'
 
 export default function OnboardingModal() {
   const [step, setStep] = useState(0)
   const [isOnboarded, setIsOnboarded] = useState(false)
   const [isClient, setIsClient] = useState(false)
   const { t } = useTranslate()
+  const preferredLanguage = useUserStore((state) => state.preferredLanguage)
+  const isArabic = preferredLanguage === 'ar-SA'
+  const totalSteps = 4
+
+  const onboardingSteps = [
+    {
+      title: t('Welcome to Nexon!'),
+      subtitle: t('The Future of DeFi is Here.'),
+      description: t(
+        'A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.'
+      ),
+      image: step1
+    },
+    {
+      title: t('Trade with Deep Liquidity'),
+      subtitle: t('Perpetual & Spot Trading, Fully On-Chain.'),
+      description: t(
+        'Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.'
+      ),
+      image: step2
+    },
+    {
+      title: t('Earn, Borrow & Stake Securely'),
+      subtitle: t('Decentralized Lending, Borrowing & Staking.'),
+      description: t(
+        'Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.'
+      ),
+      image: step3
+    },
+    {
+      title: t('Predict & Get Rewarded'),
+      subtitle: t('A Transparent, On-Chain Prediction Market.'),
+      description: t(
+        'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.'
+      ),
+      image: step4
+    }
+  ]
+
+  const toggleLanguage = () => {
+    const newLang = isArabic ? 'en-US' : 'ar-SA'
+    useUserStore.setState({ preferredLanguage: newLang })
+    setLanguage(newLang)
+  }
+
   const skip = () => {
     setStep(onboardingSteps.length - 1)
   }
 
   const current = onboardingSteps[step]
   const renderButton = () => {
+    const isLastStep = step === totalSteps - 1
     return (
       <div className="mt-8 max-md:mx-3 max-md:mt-3 max-md:mb-1 flex items-center justify-between">
         <button
@@ -86,16 +84,29 @@ export default function OnboardingModal() {
               toast.success(t('Welcome to Nexon!'))
             }
           }}
-          className={`${step === 3 ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
+          className={`${isLastStep ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
         >
-          {onboardingSteps[step]?.button}
+          {isLastStep ? (
+            <div className="flex justify-center items-center gap-2">
+              {t('Start Exploring')}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center gap-2">
+              {t('Next')}
+              <Image
+                src={arrowrightlineicon}
+                alt="Next"
+                style={{ width: 15, height: 'auto' }}
+              />
+            </div>
+          )}
         </button>
-        {step < onboardingSteps.length - 1 && (
+        {!isLastStep && (
           <button
             onClick={skip}
             className={`text-lg order-2 max-md:order-1 font-medium text-[#7D67FF] hover:text-gray-200 cursor-pointer`}
           >
-            Skip
+            {t('Skip')}
           </button>
         )}
       </div>
@@ -108,7 +119,7 @@ export default function OnboardingModal() {
     if (typeof window !== 'undefined') {
       const onboarded = localStorage.getItem('onboarded')
       if (onboarded) {
-        setStep(onboardingSteps.length - 1)
+        setStep(totalSteps - 1)
         setIsOnboarded(true)
       }
     }
@@ -127,6 +138,14 @@ export default function OnboardingModal() {
         {/* Left Content */}
         <div className="flex-1 flex flex-col justify-between max-md:px-2 max-md:py-3 p-6">
           <div className="space-y-2">
+            <div className="flex items-start justify-between">
+              <button
+                onClick={toggleLanguage}
+                className="text-xs text-white/50 hover:text-white/80 transition cursor-pointer bg-transparent border-none p-0 mb-2"
+              >
+                {isArabic ? 'Translate to English' : 'ترجمة إلى العربية'}
+              </button>
+            </div>
             <div className="flex items-center justify-between">
               <span className="text-2xl gap-x-1 flex items-center text-white/70 font-semibold">
                 <Image
