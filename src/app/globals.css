@@ -1,9 +1,23 @@
 @import 'tailwindcss';
-@import '../styles/fonts.css';
 @import 'tw-animate-css';
 /* ---break---*/
 @custom-variant dark (&:is(.dark *));
+
 @layer utilities {
+  .font-tabular {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-feature-settings:
+      'tnum' 1,
+      'zero' 1,
+      'ss01' 1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card-elevated {
+    background:
+      linear-gradient(180deg, rgba(255, 107, 53, 0.02) 0%, rgba(255, 107, 53, 0) 40%),
+      var(--surface-1);
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -19,60 +33,123 @@ html {
   overflow-x: hidden;
 }
 
+/*
+ * AshDex — Ember palette
+ * Cool graphite surfaces + a single molten accent, refined emerald/rose for buy/sell.
+ * All prior token names are preserved and remapped, so existing utility usages
+ * (bg-primary, text-green, bg-red, etc.) render with the new palette immediately.
+ */
 :root {
   -ms-overflow-style: none;
   scrollbar-width: none;
-  --tw-color-aggrid-background: #1f2937;
 
-  --tw-color-aggrid-text: #e5e7eb;
-  --tw-color-aggrid-border: #374151;
-  --tw-color-aggrid-hover: #374151;
-  --tw-color-aggrid-pagination: #1f2937;
-  --tw-color-aggrid-paginationtext: #ffffff;
-  --toastify-toast-background: #0f0816;
-  --radius: 0.625rem;
-  --background: #0f0f1a;
-  --foreground: oklch(0.129 0.042 264.695);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.129 0.042 264.695);
-  --popover: #1e1a2d;
-  /* #1b0c28 */
-  --popover-foreground: #787878;
-  --primary: white;
-  --primary-foreground: oklch(0.984 0.003 247.858);
-  --secondary: #050115;
-  --secondary-foreground: #ffffff50;
-  --muted: #ffffff0a;
-  --muted-foreground: oklch(0.554 0.046 257.417);
-  --accent: #5f46f980;
-  --accent-foreground: #ffffff;
-  --destructive: #e2464a;
-  --border: #27163c;
-  --input: oklch(0.929 0.013 255.508);
-  --ring: #1b0c28;
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.984 0.003 247.858);
-  --sidebar-foreground: oklch(0.129 0.042 264.695);
-  --sidebar-primary: oklch(0.208 0.042 265.755);
-  --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-accent: oklch(0.968 0.007 247.896);
-  --sidebar-accent-foreground: oklch(0.208 0.042 265.755);
-  --sidebar-border: oklch(0.929 0.013 255.508);
-  --sidebar-ring: oklch(0.704 0.04 256.788);
+  /* Surfaces (cool graphite) */
+  --surface-0: #08090b;
+  --surface-1: #0f1216;
+  --surface-2: #171b21;
+  --surface-3: #232830;
+  --surface-4: #333a44;
+
+  /* Text (ash whites) */
+  --text-1: #f2f4f7;
+  --text-2: #c8cdd6;
+  --text-3: #8b929e;
+  --text-4: #5a616c;
+
+  /* Ember accent */
+  --accent-1: #ff6b35;
+  --accent-hover: #ff8654;
+  --accent-pressed: #e5551f;
+  --accent-glow: rgba(255, 107, 53, 0.14);
+
+  /* Buy/sell (modernized) */
+  --buy: #10b981;
+  --buy-weak: rgba(16, 185, 129, 0.15);
+  --buy-strong: #059669;
+  --sell: #f43f5e;
+  --sell-weak: rgba(244, 63, 94, 0.15);
+  --sell-strong: #e11d48;
+
+  /* ag-grid theme (dark graphite) */
+  --tw-color-aggrid-background: var(--surface-1);
+  --tw-color-aggrid-text: var(--text-1);
+  --tw-color-aggrid-border: var(--surface-3);
+  --tw-color-aggrid-hover: var(--surface-3);
+  --tw-color-aggrid-pagination: var(--surface-1);
+  --tw-color-aggrid-paginationtext: var(--text-1);
+
+  --toastify-toast-background: var(--surface-1);
+
+  /* Radii — tightened, tool-like */
+  --radius: 0.5rem;
+
+  /* Legacy shadcn tokens remapped to Ember */
+  --background: var(--surface-0);
+  --foreground: var(--text-1);
+  --card: var(--surface-1);
+  --card-foreground: var(--text-1);
+  --popover: var(--surface-2);
+  --popover-foreground: var(--text-2);
+  --primary: var(--accent-1);
+  --primary-foreground: var(--text-1);
+  --secondary: var(--surface-1);
+  --secondary-foreground: var(--text-2);
+  --muted: rgba(255, 255, 255, 0.04);
+  --muted-foreground: var(--text-3);
+  --accent: var(--accent-glow);
+  --accent-foreground: var(--text-1);
+  --destructive: var(--sell);
+  --border: var(--surface-3);
+  --input: var(--surface-3);
+  --ring: rgba(255, 107, 53, 0.4);
+
+  --chart-1: var(--accent-1);
+  --chart-2: var(--buy);
+  --chart-3: var(--sell);
+  --chart-4: var(--text-2);
+  --chart-5: var(--text-3);
+
+  --sidebar: var(--surface-1);
+  --sidebar-foreground: var(--text-1);
+  --sidebar-primary: var(--accent-1);
+  --sidebar-primary-foreground: var(--text-1);
+  --sidebar-accent: var(--surface-3);
+  --sidebar-accent-foreground: var(--text-1);
+  --sidebar-border: var(--surface-3);
+  --sidebar-ring: var(--ring);
 }
 
 @theme inline {
   --breakpoint-xs: 480px;
   --breakpoint-base: 970px;
-  --color-primary: #5f46f9;
-  --color-secondary: #050115; /* recommend 22162d*/
-  --color-brand: #10b981; /* Brand accent color */
-  --color-green: #2fa766; /* Brand green */
-  --color-red: #e2464a; /* Brand Red */
+
+  /* Semantic Ember palette (new — bg-surface-1, text-text-2, bg-buy, etc.) */
+  --color-surface-0: var(--surface-0);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-surface-4: var(--surface-4);
+  --color-text-1: var(--text-1);
+  --color-text-2: var(--text-2);
+  --color-text-3: var(--text-3);
+  --color-text-4: var(--text-4);
+  --color-accent-1: var(--accent-1);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-pressed: var(--accent-pressed);
+  --color-buy: var(--buy);
+  --color-buy-weak: var(--buy-weak);
+  --color-buy-strong: var(--buy-strong);
+  --color-sell: var(--sell);
+  --color-sell-weak: var(--sell-weak);
+  --color-sell-strong: var(--sell-strong);
+
+  /* Legacy color aliases — kept for one release so existing utility usages don't break */
+  --color-primary: var(--accent-1);
+  --color-secondary: var(--surface-1);
+  --color-brand: var(--accent-1);
+  --color-green: var(--buy);
+  --color-red: var(--sell);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-sidebar-ring: var(--sidebar-ring);
@@ -102,6 +179,8 @@ html {
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  --radius-xs: 2px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -110,21 +189,21 @@ html {
 
 .Toastify__toast {
   background: linear-gradient(
-    179.1deg,
-    rgba(255, 255, 255, 0.05) -10.66%,
-    rgba(153, 153, 153, 0.05) 67.22%
+    179deg,
+    rgba(255, 107, 53, 0.06) -10.66%,
+    rgba(255, 255, 255, 0.02) 67.22%
   );
-  @apply w-full border-2 shadow-md border-white/5 backdrop-blur-2xl;
+  @apply w-full border shadow-md border-white/5 backdrop-blur-2xl;
 
   @apply max-h-min;
 }
 
 .Toastify__close-button {
-  @apply text-white;
+  @apply text-text-1;
 }
 
 .Toastify__toast-body {
-  @apply text-white;
+  @apply text-text-1;
 }
 
 /* Chrome, Safari, Edge, Opera */
@@ -138,9 +217,18 @@ input::-webkit-inner-spin-button {
 input[type='number'] {
   -moz-appearance: textfield;
 }
+
 body {
-  font-family: 'Inter', Helvetica, Arial, sans-serif;
-  background: #0f0f1a;
+  font-family:
+    'Inter',
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
+  background: var(--surface-0);
+  color: var(--text-1);
   -ms-overflow-style: none;
   scrollbar-width: none;
 
@@ -156,13 +244,17 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: #1c1725;
+  background: var(--surface-1);
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #8a8ba1;
+  background: var(--surface-4);
   border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-4);
 }
 
 .db {
@@ -194,8 +286,45 @@ body {
 }
 
 .filter-green {
-  filter: brightness(0) saturate(100%) invert(62%) sepia(89%) saturate(343%) hue-rotate(76deg)
-    brightness(91%) contrast(90%);
+  filter: brightness(0) saturate(100%) invert(64%) sepia(72%) saturate(432%) hue-rotate(115deg)
+    brightness(92%) contrast(88%);
+}
+
+/* Price tick-flash — the trading UI polish detail */
+[data-tick='up'] {
+  animation: tick-up 320ms ease-out;
+}
+[data-tick='down'] {
+  animation: tick-down 320ms ease-out;
+}
+@keyframes tick-up {
+  0% {
+    background-color: var(--buy-weak);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+@keyframes tick-down {
+  0% {
+    background-color: var(--sell-weak);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Focus ring — ember at 40% opacity */
+:where(*):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+  border-radius: var(--radius-sm);
+}
+
+/* Selection — subtle ember tint */
+::selection {
+  background: var(--accent-glow);
+  color: var(--text-1);
 }
 
 /* ---break---*/

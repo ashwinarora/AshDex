@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="7" fill="#08090b"/>
+  <defs>
+    <linearGradient id="ashdex-icon-ember" x1="6" y1="28" x2="26" y2="4" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#e5551f"/>
+      <stop offset="1" stop-color="#ff8654"/>
+    </linearGradient>
+  </defs>
+  <path d="M16 6 L6 26 M16 6 L26 26 M11 20 L21 20" stroke="url(#ashdex-icon-ember)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

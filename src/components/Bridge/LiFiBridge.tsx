@@ -14,7 +14,7 @@ const LiFiWidget = dynamic(() => import('@lifi/widget').then((mod) => mod.LiFiWi
 })
 
 const widgetConfig: WidgetConfig = {
-  integrator: 'Nexon',
+  integrator: 'AshDex',
   variant: 'compact',
   appearance: 'dark',
   // Hyperliquid L1
@@ -28,22 +28,22 @@ const widgetConfig: WidgetConfig = {
     palette: {
       mode: 'dark',
       primary: {
-        main: '#5f46f9'
+        main: '#ff6b35'
       },
       secondary: {
-        main: '#5f46f9'
+        main: '#ff8654'
       },
       background: {
-        default: '#0f0f1a',
-        paper: '#1e1a2d'
+        default: '#08090b',
+        paper: '#171b21'
       },
       text: {
-        primary: '#ffffff',
-        secondary: 'rgba(255, 255, 255, 0.5)'
+        primary: '#f2f4f7',
+        secondary: 'rgba(242, 244, 247, 0.6)'
       },
       grey: {
-        300: '#27163c',
-        800: '#1e1a2d'
+        300: '#232830',
+        800: '#171b21'
       }
     },
     shape: {
@@ -138,5 +138,5 @@ export function LiFiBridge() {
     }
   }, [])
 
-  return <LiFiWidget integrator="Nexon" config={widgetConfig} />
+  return <LiFiWidget integrator="AshDex" config={widgetConfig} />
 }

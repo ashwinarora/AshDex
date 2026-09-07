@@ -57,7 +57,7 @@ const metaMaskConnector = injected({
 })
 
 const coinbaseWalletConnector = coinbaseWallet({
-  appName: 'Nexon'
+  appName: 'AshDex'
 })
 
 export const config: Parameters<typeof createConfig>[0] = {

@@ -14,7 +14,7 @@ bun tsc          # Type-check without emitting
 
 ## Architecture Overview
 
-Nexon is a pure client-side trading frontend for Hyperliquid (decentralized derivatives exchange), built with Next.js 15 App Router. There is no backend: the app talks to Hyperliquid directly over HTTP + WebSockets and signs transactions with a Wagmi/Viem-connected wallet.
+AshDex is a pure client-side trading frontend for Hyperliquid (decentralized derivatives exchange), built with Next.js 15 App Router. There is no backend: the app talks to Hyperliquid directly over HTTP + WebSockets and signs transactions with a Wagmi/Viem-connected wallet.
 
 ### Tech Stack
 

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Geist_Mono } from 'next/font/google'
 import Header from '@/components/Header'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -16,9 +16,24 @@ const inter = Inter({
   variable: '--font-inter'
 })
 
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono'
+})
+
 export const metadata: Metadata = {
-  title: 'Nexon',
-  description: 'Best place to Trade'
+  title: 'AshDex — Trade Perps On-Chain',
+  description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
+  openGraph: {
+    title: 'AshDex — Trade Perps On-Chain',
+    description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AshDex — Trade Perps On-Chain',
+    description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.'
+  }
 }
 
 const DynamicUseToastOptions = dynamic(() =>
@@ -32,7 +47,9 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={`${inter.variable}  bg-primary no-scrollbar`}>
+      <body
+        className={`${inter.variable} ${geistMono.variable} bg-surface-0 text-text-1 no-scrollbar`}
+      >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <WagmiProvider>
           <HyperLiquidInitializer />

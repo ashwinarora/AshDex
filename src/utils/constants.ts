@@ -271,7 +271,7 @@ export const ORDERHISTORY_VAULTS_COLUMNS = [
   { key: 'status', label: 'Status' }
 ]
 
-export const AGENT_NAME = 'nexon_agent'
+export const AGENT_NAME = 'ashdex_agent'
 
 export const WALLETS = [
   {
@@ -447,7 +447,7 @@ export const REFERRALSDATA = [
 ] as const
 
 export const REFERRALS_DESC = [
-  `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
+  `Unlock exclusive rewards by inviting others to join the AshDex community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing AshDex with your network. Start earning today and expand your reach!`
 ] as const
 
 export const REFERRALS_TABLES_TABS = ['Referrals', 'Reward history'] as const

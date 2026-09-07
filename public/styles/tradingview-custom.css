@@ -1,34 +1,35 @@
-/* TradingView custom styling */
-.chart-page, 
+/* AshDex — TradingView chart theming (Ember palette) */
+.chart-page,
 .chart-container,
 .chart-markup-table,
 #loading-indicator,
 .tv-spinner {
-  background-color: #0F0816 !important;
+  background-color: #0f1216 !important;
 }
 
 .apply-common-tooltip {
-  background-color: #1e1e1e !important;
-  color: #f2f2f2 !important;
+  background-color: #171b21 !important;
+  color: #f2f4f7 !important;
+  border: 1px solid #232830 !important;
 }
 
-/* Force dark colors on candlesticks */
+/* Candlesticks — emerald / rose */
 .tv-candlestick-up {
-  color: #0ECB81 !important;
-  border-color: #0ECB81 !important;
+  color: #10b981 !important;
+  border-color: #10b981 !important;
 }
 
 .tv-candlestick-down {
-  color: #F6465D !important;
-  border-color: #F6465D !important;
+  color: #f43f5e !important;
+  border-color: #f43f5e !important;
 }
 
-/* Ensure timestamp and scales have proper background */
+/* Timestamp and scale backgrounds */
 .chart-page .chart-container .group-wWM3zP_M- {
-  background-color: #0F0816 !important;
+  background-color: #0f1216 !important;
 }
 
-/* Remove grid lines */
+/* Grid lines — subtle graphite */
 .chart-page .chart-container .grid-line {
-  opacity: 0.2 !important;
-} 
+  opacity: 0.14 !important;
+}
