@@ -5,11 +5,9 @@ import { useConnection, useDisconnect } from 'wagmi'
 import Image from 'next/image'
 import { truncateAddress } from '@/utils/utils'
 import { useWalletModal } from '@/context/WalletModalContext'
-// import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { toast } from 'sonner'
 import BridgeButton from './Bridge/BridgeButton'
 import nexonlogo from '@/assets/images/logo.svg'
-import { useNexonReferral } from '@/hooks/useNexonReferral'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
 import {
   DropdownMenu,
@@ -25,18 +23,12 @@ import {
   IconCopy,
   IconLogout,
   IconMenu,
-  // IconSettings,
   IconStackPop,
   IconWallet,
   IconBuildingBridge
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { useTermsSignature } from '@/hooks/useTermsSignature'
-import clsx from 'clsx'
-import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
-import { setLanguage } from '@/tolgee/language'
 import Link from 'next/link'
 import BridgeModal from './Bridge/BridgeModal'
 
@@ -49,69 +41,35 @@ type MenuItem = {
 const Header: FC = () => {
   const router = useRouter()
   const pathname = usePathname()
-  const { t } = useTranslate()
   const disconnect = useDisconnect()
   const { address, isConnected } = useConnection()
   const [mounted, setMounted] = useState(false)
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isBridgeModalOpen, setIsBridgeModalOpen] = useState(false)
-  const { openConnectWalletModal, isModalOpen } = useWalletModal()
+  const { openConnectWalletModal } = useWalletModal()
   const { isMobile } = useScreenSize()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
 
-  // const [isOpen, setIsOpen] = useState(false)
-  // const [notificationCount] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
   const buttonRef = useRef<HTMLButtonElement | null>(null)
   const dropdownRef = useRef<HTMLDivElement | null>(null)
   const walletId = address
-  const { data: termsData } = useTermsSignature(walletId)
-  useNexonReferral()
 
-  // Prevent hydration mismatches by keeping the first client render identical to SSR.
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // If user is connected and terms are not signed, force the Terms modal to open.
-  useEffect(() => {
-    if (!isConnected) return
-    if (!walletId) return
-    if (!termsData) return
-    if (termsData.signed) return
-    if (isModalOpen) return
-    // Prefer keeping the session and prompting the user to sign.
-    disconnect.mutate()
-    toast.error(t('Please sign the terms to continue'))
-  }, [isConnected, walletId, termsData?.signed, isModalOpen])
-
   const isWalletConnected = mounted && isConnected && !!walletId
 
   const desktopMenu: MenuItem[] = [
-    { name: t('Futures'), path: '/', isComingSoon: false },
-    { name: t('Spot'), path: '/spot', isComingSoon: false },
-    { name: t('Portfolio'), path: '/portfolio', isComingSoon: false },
-    { name: t('Referrals'), path: '/referrals', isComingSoon: false },
-    { name: t('Stocks'), path: '/stocks', isComingSoon: true }
-    // { name: 'Lend/Borrow', path: '/lendBorrow', isComingSoon: true },
-    // { name: 'Stake', path: '/stake', isComingSoon: true },
-    // { name: 'Vaults', path: '/vaults', isComingSoon: true }
+    { name: 'Futures', path: '/', isComingSoon: false },
+    { name: 'Spot', path: '/spot', isComingSoon: false },
+    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
+    { name: 'Stocks', path: '/stocks', isComingSoon: true }
   ]
 
-  const mobileMenu: MenuItem[] = [
-    ...desktopMenu,
-    // { name: 'Leaderboards', path: '/leaderboards' },
-    // { name: 'Referrals', path: '/referrals' },
-    // { name: 'Points', path: '/points' },
-    // { name: 'Sub-accounts', path: '/sub-accounts' },
-    // { name: 'Stats', path: '/stats' },
-    // { name: 'Docs', path: '/docs' },
-    // { name: 'Vocabulary for novices', path: '/vocabulary' },
-    { name: t('Settings'), path: '/settings' }
-  ]
+  const mobileMenu: MenuItem[] = desktopMenu
 
   const getActiveMenu = (pathname: string, menu: { name: string; path: string }[]) => {
-    // Check if path is root or starts with an asset parameter
     if (
       pathname === '/' ||
       pathname === '' ||
@@ -120,13 +78,11 @@ const Header: FC = () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         !isNaN(pathname.split('/')[1]?.charAt(0) as any))
     )
-      return t('Futures')
+      return 'Futures'
 
-    // Get first segment of path to check against menu items
     const firstSegment = pathname?.split('/')[1]
 
-    // Special case for spot paths with asset parameter
-    if (firstSegment === 'spot') return t('Spot')
+    if (firstSegment === 'spot') return 'Spot'
 
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
@@ -134,7 +90,7 @@ const Header: FC = () => {
 
   const handleCopy = () => {
     if (walletId) navigator.clipboard.writeText(walletId)
-    toast.success(t('Copied to clipboard'))
+    toast.success('Copied to clipboard')
   }
 
   useEffect(() => {
@@ -158,18 +114,10 @@ const Header: FC = () => {
   }, [isDropdownOpen])
 
   return (
-    <div
-      className={clsx(
-        'top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-12',
-        isRTL && 'flex-row-reverse'
-      )}
-    >
+    <div className="top-0 z-40 sticky flex justify-between items-center bg-secondary backdrop-filter backdrop-blur-xl px-4 w-full h-12">
       <div
         onClick={() => router.push('/')}
-        className={clsx(
-          'flex items-center gap-2 rounded-md text-white text-2xl font-semibold cursor-pointer',
-          isRTL ? 'pl-4' : 'pr-4'
-        )}
+        className="flex items-center gap-2 pr-4 rounded-md text-white text-2xl font-semibold cursor-pointer"
       >
         <Image
           style={{ width: 20, height: 'auto' }}
@@ -202,7 +150,7 @@ const Header: FC = () => {
                     >
                       {name}
                       <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
-                        {t('Coming Soon')}
+                        Coming Soon
                       </span>
                     </DropdownMenuItem>
                   )
@@ -220,12 +168,7 @@ const Header: FC = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         ) : (
-          <NavigationMenu
-            className={clsx(
-              'h-full md:flex hidden w-full items-center justify-start',
-              isRTL && 'flex-row-reverse'
-            )}
-          >
+          <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
                 <div
@@ -234,7 +177,7 @@ const Header: FC = () => {
                 >
                   {name}
                   <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
-                    {t('Coming Soon')}
+                    Coming Soon
                   </span>
                 </div>
               ) : (
@@ -254,43 +197,10 @@ const Header: FC = () => {
                 </NavigationMenuItem>
               )
             )}
-            {/* </NavigationMenuList> */}
           </NavigationMenu>
         )}
       </div>
-      <div className={clsx('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              className="flex items-center gap-2 text-xs text-white"
-              variant={'outline'}
-              size={'sm'}
-            >
-              {!isMobile && <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>}
-              <span className="text-xs">{isRTL ? 'AR' : 'EN'}</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => {
-                useUserStore.setState({ preferredLanguage: 'en-US' })
-                setLanguage('en-US')
-              }}
-            >
-              <span className="text-xs">{'🇺🇸'}</span>
-              <span className="text-xs">English</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                useUserStore.setState({ preferredLanguage: 'ar-SA' })
-                setLanguage('ar-SA')
-              }}
-            >
-              <span className="text-xs">{'🇸🇦'}</span>
-              <span className="text-xs">عربي</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+      <div className="flex items-center gap-2">
         {!isMobile && <BridgeButton />}
         {!isMobile && (
           <Link
@@ -304,7 +214,7 @@ const Header: FC = () => {
               size={'sm'}
             >
               <IconBug className="size-4" />
-              {t('Report Bug')}
+              Report Bug
             </Button>
           </Link>
         )}
@@ -317,7 +227,6 @@ const Header: FC = () => {
                   size={'sm'}
                   className="flex text-white text-xs items-center gap-2"
                 >
-                  {/* <span className="max-xl:hidden flex mx-2 border-gray-600 border-l h-4"></span> */}
                   <span className="max-xl:hidden flex font-medium  truncate">
                     {truncateAddress(walletId!)}
                   </span>
@@ -327,37 +236,31 @@ const Header: FC = () => {
               <DropdownMenuContent className="w-48" align="end">
                 <DropdownMenuItem onClick={handleCopy}>
                   <IconCopy className="size-4 text-inherit" />
-                  {t('Copy Address')}
+                  Copy Address
                 </DropdownMenuItem>
 
                 <DropdownMenuItem onClick={openConnectWalletModal}>
                   <IconWallet className="size-4 text-inherit" />
-                  {t('Switch Wallet')}
+                  Switch Wallet
                 </DropdownMenuItem>
-
-                {/* <DropdownMenuItem onClick={() => router.push('/settings')}>
-                  <IconSettings className="size-4 text-inherit" />
-                  {t('Settings')}
-                </DropdownMenuItem> */}
 
                 <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
                   <IconStackPop className="size-4 text-inherit" />
-                  {t('Withdraw')}
+                  Withdraw
                 </DropdownMenuItem>
 
                 {isMobile && (
                   <>
                     <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
                       <IconBuildingBridge className="size-4 text-inherit" />
-                      {t('Bridge')}
+                      Bridge
                     </DropdownMenuItem>
-                    {/*  */}
                     <DropdownMenuItem
                       variant="destructive"
                       onClick={() => router.push('https://forms.gle/NxqC2dXcFmZDQoSe8')}
                     >
                       <IconBug className="size-4 text-inherit" />
-                      {t('Bug Report')}
+                      Bug Report
                     </DropdownMenuItem>
                   </>
                 )}
@@ -369,7 +272,7 @@ const Header: FC = () => {
                   variant="destructive"
                 >
                   <IconLogout className="size-4 text-inherit" />
-                  {t('Disconnect')}
+                  Disconnect
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -377,14 +280,12 @@ const Header: FC = () => {
         ) : (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="text-xs">{t('Connect Wallet')}</span>
+            <span className="text-xs">Connect Wallet</span>
           </Button>
         )}
       </div>
-      {/* {isWithdrawOpen && ( */}
       <WithdrawModal isOpen={isWithdrawOpen} onClose={() => setIsWithdrawOpen(!isWithdrawOpen)} />
       <BridgeModal isOpen={isBridgeModalOpen} onClose={() => setIsBridgeModalOpen(false)} />
-      {/* )} */}
     </div>
   )
 }

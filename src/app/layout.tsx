@@ -9,31 +9,12 @@ import OnboardingModal from '@/components/onboarding-modal'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
 import dynamic from 'next/dynamic'
-import { getLanguage } from '@/tolgee/language'
-import { getTolgee } from '@/tolgee/server'
-import { TolgeeNextProvider } from '@/tolgee/client'
 import WagmiProvider from './WagmiProvider'
-
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin']
-// })
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter'
 })
-
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin']
-// })
-
-// const dmMono = DM_Mono({
-//   variable: '--font-dm-mono',
-//   weight: ['400'],
-//   subsets: ['latin']
-// })
 
 export const metadata: Metadata = {
   title: 'Nexon',
@@ -44,35 +25,28 @@ const DynamicUseToastOptions = dynamic(() =>
   import('@/components/ui/toast-config').then((mod) => mod.Toast)
 )
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLanguage()
-  const tolgee = await getTolgee()
-  // serializable data that are passed to client components
-  const staticData = await tolgee.loadRequired()
   return (
-    <html suppressHydrationWarning lang={locale}>
+    <html suppressHydrationWarning lang="en">
       <body className={`${inter.variable}  bg-primary no-scrollbar`}>
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
-        <TolgeeNextProvider language={locale} staticData={staticData}>
-          <WagmiProvider>
-            <HyperLiquidInitializer />
-            <WalletModalProvider>
-              <EstablishConnectionProvider>
-                <div className="overscroll-none">
-                  {/* <SnackBar /> */}
-                  <Header />
-                  <OnboardingModal />
-                  <DynamicUseToastOptions />
-                  {children}
-                </div>
-              </EstablishConnectionProvider>
-            </WalletModalProvider>
-          </WagmiProvider>
-        </TolgeeNextProvider>
+        <WagmiProvider>
+          <HyperLiquidInitializer />
+          <WalletModalProvider>
+            <EstablishConnectionProvider>
+              <div className="overscroll-none">
+                <Header />
+                <OnboardingModal />
+                <DynamicUseToastOptions />
+                {children}
+              </div>
+            </EstablishConnectionProvider>
+          </WalletModalProvider>
+        </WagmiProvider>
       </body>
     </html>
   )

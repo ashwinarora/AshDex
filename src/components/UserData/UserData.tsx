@@ -11,9 +11,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 import { Separator } from '@/components/ui/separator'
 import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconSquare } from '@tabler/icons-react'
@@ -21,7 +19,6 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { usePathname } from 'next/navigation'
 
 const UserData = () => {
-  const { t } = useTranslate()
   const pathname = usePathname()
   const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
     useShallow((state) => ({
@@ -32,7 +29,7 @@ const UserData = () => {
   )
   const isSpot = useIsSpot()
   const isPortfolio = pathname?.startsWith('/portfolio')
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { spotKeyToName } = useSpotMeta()
   const { isMobile } = useScreenSize()
   const [isHideSmallBalances, setIsHideSmallBalances] = useState(false)
@@ -61,39 +58,37 @@ const UserData = () => {
 
     const tabs = [
       {
-        header: isRTL ? `(${balanceCount}) ${t('Balances')}` : `(${balanceCount}) ${t('Balances')}`,
+        header: isRTL ? `(${balanceCount}) ${'Balances'}` : `(${balanceCount}) ${'Balances'}`,
         count: balanceCount,
         element: <Balances isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
       },
       {
-        header: isRTL
-          ? `(${positionsCount}) ${t('Positions')}`
-          : `(${positionsCount}) ${t('Positions')}`,
+        header: isRTL ? `(${positionsCount}) ${'Positions'}` : `(${positionsCount}) ${'Positions'}`,
         count: positionsCount,
         element: <Positions isRTL={isRTL} />
       },
       {
         header: isRTL
-          ? `(${openOrdersLength}) ${t('Open Orders')}`
-          : `(${openOrdersLength}) ${t('Open Orders')}`,
+          ? `(${openOrdersLength}) ${'Open Orders'}`
+          : `(${openOrdersLength}) ${'Open Orders'}`,
         count: openOrdersLength,
         element: <OpenOrders isRTL={isRTL} />
       },
       {
-        header: t('Trade History'),
+        header: 'Trade History',
         element: <TradeHistory isRTL={isRTL} />
       },
       {
-        header: t('Orders History'),
+        header: 'Orders History',
         element: <OrderHistory isRTL={isRTL} />
       },
       {
-        header: t('Deposits and Withdrawals'),
+        header: 'Deposits and Withdrawals',
         element: <DepositsWithdrawals isRTL={isRTL} />
       }
     ]
     return isRTL ? tabs.reverse() : tabs
-  }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, t, isHideSmallBalances])
+  }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, isHideSmallBalances])
 
   // Default tab: Balances for spot/portfolio, Positions for futures/perps
   // In RTL mode, tabs are reversed so indices need adjustment
@@ -167,7 +162,7 @@ const UserData = () => {
             onPressedChange={(value) => setIsHideSmallBalances(value)}
           >
             <p className={cn('text-xs', isHideSmallBalances && 'text-accent-foreground')}>
-              {t('Hide Small Balances')}
+              {'Hide Small Balances'}
             </p>
             {isHideSmallBalances ? (
               <IconCheckbox className="size-4" />

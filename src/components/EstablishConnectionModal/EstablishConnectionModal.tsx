@@ -9,11 +9,9 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../
 import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
-import { useTranslate } from '@tolgee/react'
 import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
-  const { t } = useTranslate()
   const { address, chainId } = useConnection()
   const { sdkUserSignerClient, getFreshAgentWallet } = useHyperliquidStore(
     useShallow((state) => ({
@@ -50,7 +48,7 @@ const EstablishConnectionModal = () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
             if (!address) return
-            const toastId = toast.loading(t('Approving agent...'))
+            const toastId = toast.loading('Approving agent...')
             try {
               // Always generate a fresh agent wallet when approving
               const freshAgentWallet = getFreshAgentWallet(address)
@@ -60,7 +58,7 @@ const EstablishConnectionModal = () => {
               })
               await refetchAgentApproval()
               setIsApproving(true)
-              toast.success(t('Agent approved successfully'), {
+              toast.success('Agent approved successfully', {
                 id: toastId
               })
             } catch (error) {
@@ -68,28 +66,26 @@ const EstablishConnectionModal = () => {
               if (error instanceof ApiRequestError) {
                 if (error.message.includes('Must deposit before performing actions')) {
                   toast.info(
-                    t(
-                      'Your wallet seems to be new. Please deposit some funds to establish connection.'
-                    ),
+                    'Your wallet seems to be new. Please deposit some funds to establish connection.',
                     {
                       id: toastId
                     }
                   )
                   openDepositModal()
                 } else {
-                  toast.error(t('Something went wrong, check the console or contact support'), {
+                  toast.error('Something went wrong, check the console or contact support', {
                     id: toastId
                   })
                 }
               } else {
-                toast.error(t('Something went wrong, check the console or contact support'), {
+                toast.error('Something went wrong, check the console or contact support', {
                   id: toastId
                 })
               }
             }
           }}
         >
-          {t('Establish Connection')}
+          {'Establish Connection'}
         </Button>
       )
     }
@@ -100,31 +96,31 @@ const EstablishConnectionModal = () => {
           onClick={async () => {
             if (!chainId) return
             if (!sdkUserSignerClient) return
-            const toastId = toast.loading(t('Approving fee...'))
+            const toastId = toast.loading('Approving fee...')
             try {
               await sdkUserSignerClient.approveBuilderFee({
                 builder: BUILDER_ADDRESS,
                 maxFeeRate: BUILDER_FEE
               })
               await refetchCurrentFeeApproval()
-              toast.success(t('Fee approved successfully'), {
+              toast.success('Fee approved successfully', {
                 id: toastId
               })
             } catch (error) {
               console.error('Error approving fee:', error)
-              toast.error(t('Something went wrong, check the console or contact support'), {
+              toast.error('Something went wrong, check the console or contact support', {
                 id: toastId
               })
             }
           }}
         >
-          {t('Approve Fee')}
+          {'Approve Fee'}
         </Button>
       )
     }
     return (
       <Button variant={'outline'} onClick={closeModal}>
-        {t('Close')}
+        {'Close'}
       </Button>
     )
   }
@@ -134,12 +130,12 @@ const EstablishConnectionModal = () => {
       <Dialog open={isModalOpen} onOpenChange={closeModal}>
         <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
           <DialogHeader>
-            <DialogTitle>{t('Establish Connection')}</DialogTitle>
+            <DialogTitle>{'Establish Connection'}</DialogTitle>
           </DialogHeader>
           <DialogDescription>
-            {t(
+            {
               'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
-            )}
+            }
           </DialogDescription>
           {getButton()}
         </DialogContent>

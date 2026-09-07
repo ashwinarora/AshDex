@@ -1,7 +1,6 @@
 import { cn } from '@/lib/utils'
 import { IconChevronDown } from '@tabler/icons-react'
 import React, { useEffect, useState } from 'react'
-import { useTranslate } from '@tolgee/react'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -20,7 +19,6 @@ interface MarginModeProps {
 }
 
 const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModeProps) => {
-  const { t } = useTranslate()
   const { activeAssetData } = useHyperliquidStore(
     useShallow((state) => ({
       activeAssetData: state.activeAssetData
@@ -48,7 +46,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModePro
       <DropdownMenu>
         <DropdownMenuTrigger className="w-full h-8" asChild>
           <Button variant="outline">
-            {t(isCross ? 'Cross' : 'Isolated')}
+            {isCross ? 'Cross' : 'Isolated'}
             <IconChevronDown className="size-3" />
           </Button>
         </DropdownMenuTrigger>
@@ -59,7 +57,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModePro
               setIsEdited(true)
             }}
           >
-            {t('Cross')}
+            {'Cross'}
           </DropdownMenuItem>
           <DropdownMenuItem
             onClick={() => {
@@ -67,7 +65,7 @@ const MarginMode = ({ setIsCross, isCross, isRTL, selectedAsset }: MarginModePro
               setIsEdited(true)
             }}
           >
-            {t('Isolated')}
+            {'Isolated'}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

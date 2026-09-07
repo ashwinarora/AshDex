@@ -49,14 +49,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Separator } from '@/components/ui/separator'
-import { useTranslate } from '@tolgee/react'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 interface IPositionsProps {
   isRTL: boolean
 }
 
 const Positions = ({ isRTL }: IPositionsProps) => {
-  const { t } = useTranslate()
   const { isConnected } = useConnection()
   const router = useRouter()
   const { clearingHouseState, allMids, agentWallet } = useHyperliquidStore(
@@ -109,7 +107,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
       helper.accessor('coin', {
         id: 'coin',
         header: () => (
-          <span className={cn('flex justify-start items-center gap-1')}>{t('Position')}</span>
+          <span className={cn('flex justify-start items-center gap-1')}>{'Position'}</span>
         ),
         cell: (info) => {
           const coin = info.getValue()
@@ -142,20 +140,20 @@ const Positions = ({ isRTL }: IPositionsProps) => {
             </div>
           )
         },
-        meta: { label: t('Coin') }
+        meta: { label: 'Coin' }
       }),
       helper.accessor('positionValue', {
         id: 'positionValue',
         header: () => (
-          <span className={cn('flex justify-start items-center gap-1')}>{t('Value')}</span>
+          <span className={cn('flex justify-start items-center gap-1')}>{'Value'}</span>
         ),
-        meta: { label: t('Position Value') },
+        meta: { label: 'Position Value' },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.accessor('szi', {
         id: 'szi',
-        header: () => t('Size'),
-        meta: { label: t('Size') },
+        header: () => 'Size',
+        meta: { label: 'Size' },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -168,26 +166,26 @@ const Positions = ({ isRTL }: IPositionsProps) => {
       }),
       helper.accessor('entryPx', {
         id: 'entryPx',
-        header: () => t('Entry'),
-        meta: { label: t('Entry Price') },
+        header: () => 'Entry',
+        meta: { label: 'Entry Price' },
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />
       }),
       helper.display({
         id: 'markPx',
-        header: () => t('Mark'),
-        meta: { label: t('Mark Price') },
+        header: () => 'Mark',
+        meta: { label: 'Mark Price' },
         cell: (info) => <MarkPxDisplay asset={info.row.original.coin} />
       }),
       helper.accessor('cumFunding.allTime', {
         id: 'cumFunding.allTime',
-        header: () => t('Funding PnL'),
-        meta: { label: t('Funding PnL') }
+        header: () => 'Funding PnL',
+        meta: { label: 'Funding PnL' }
       }),
 
       helper.accessor('unrealizedPnl', {
         id: 'unrealizedPnl',
-        header: () => t('Unrealized PnL'),
-        meta: { label: t('Unrealized PnL') },
+        header: () => 'Unrealized PnL',
+        meta: { label: 'Unrealized PnL' },
         cell: (info) => (
           <ReactiveText
             value={info.getValue()}
@@ -201,8 +199,8 @@ const Positions = ({ isRTL }: IPositionsProps) => {
       }),
       helper.accessor('liquidationPx', {
         id: 'liquidationPx',
-        header: () => t('Liq. Price'),
-        meta: { label: t('Liq. Price') },
+        header: () => 'Liq. Price',
+        meta: { label: 'Liq. Price' },
         cell: (info) => {
           const value = info.getValue()
           if (!value) return '-'
@@ -211,8 +209,8 @@ const Positions = ({ isRTL }: IPositionsProps) => {
       }),
       helper.accessor('marginUsed', {
         id: 'marginUsed',
-        header: () => t('Margin'),
-        meta: { label: t('Margin') },
+        header: () => 'Margin',
+        meta: { label: 'Margin' },
         cell: (info) => {
           const isMobileView = isTablet || isMobile
           return (
@@ -255,21 +253,21 @@ const Positions = ({ isRTL }: IPositionsProps) => {
       }),
       helper.display({
         id: 'status',
-        header: () => t('Status'),
+        header: () => 'Status',
         cell: () => {
           return (
             <span className="bg-green/20 px-2 py-1 rounded-md font-medium text-green text-xs">
-              {t('Open')}
+              {'Open'}
             </span>
           )
         },
-        meta: { label: t('Status') }
+        meta: { label: 'Status' }
       }),
       helper.display({
         id: 'tp_sl',
         header: () => (
           <div className="flex items-center justify-end gap-2">
-            <span className="text-white/70 text-xs">{t('Action')}</span>
+            <span className="text-white/70 text-xs">{'Action'}</span>
             <Button
               onClick={() => {
                 if (!agentWallet || !isAgentApproved) return openAgentModal()
@@ -290,7 +288,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                   variant={'outline'}
                   className="!py-1 !px-2 text-xs w-full h-fit flex items-center justify-between gap-1"
                 >
-                  {t('More')} <IconChevronDown className="size-3" />
+                  {'More'} <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -301,7 +299,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                     setIsTPSLModalOpen(true)
                   }}
                 >
-                  <span>{t('Set TP/SL')}</span>
+                  <span>{'Set TP/SL'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -310,7 +308,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                     setIsLimitCloseModalOpen(true)
                   }}
                 >
-                  <span>{t('Close on Limit')}</span>
+                  <span>{'Close on Limit'}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => {
@@ -319,16 +317,16 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                     setIsMarketCloseModalOpen(true)
                   }}
                 >
-                  <span>{t('Close on Market')}</span>
+                  <span>{'Close on Market'}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           )
         },
-        meta: { label: t('TP/SL') }
+        meta: { label: 'TP/SL' }
       })
     ],
-    [helper, isAgentApproved, currentFeeApproval, openAgentModal, t, isTablet, isMobile]
+    [helper, isAgentApproved, currentFeeApproval, openAgentModal, isTablet, isMobile]
   )
 
   const tableData = useMemo(() => {
@@ -358,9 +356,9 @@ const Positions = ({ isRTL }: IPositionsProps) => {
     return (
       <div className="w-full h-full flex flex-col items-center justify-center py-12 gap-2">
         <IconChartBar className="size-10 text-white" />
-        <span className="text-white">{t('No Positions Found')}</span>
+        <span className="text-white">{'No Positions Found'}</span>
         <p className="text-white/70 text-center text-xs">
-          {t('Start trading to see your positions here')}
+          {'Start trading to see your positions here'}
         </p>
       </div>
     )
@@ -460,7 +458,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                           setIsTPSLModalOpen(true)
                         }}
                       >
-                        {t('TP/SL')}
+                        {'TP/SL'}
                       </Button>
                       <Button
                         variant="link"
@@ -472,7 +470,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                           setIsLimitCloseModalOpen(true)
                         }}
                       >
-                        {t('Close Limit')}
+                        {'Close Limit'}
                       </Button>
                       <Button
                         variant="link"
@@ -484,7 +482,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
                           setIsMarketCloseModalOpen(true)
                         }}
                       >
-                        {t('Close Market')}
+                        {'Close Market'}
                       </Button>
                     </div>
                   </div>

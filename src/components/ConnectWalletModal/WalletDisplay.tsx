@@ -9,7 +9,6 @@ import {
 } from '@tabler/icons-react'
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 
 interface WalletDisplayProps {
   name: string
@@ -28,7 +27,6 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
   status,
   onClose
 }) => {
-  const { t } = useTranslate()
   const isConnecting = status === 'pending'
   const isDisconnected = status === 'error'
 
@@ -38,13 +36,13 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
         <div className="w-full flex h-full flex-col gap-2 items-center justify-between">
           <div className="flex flex-col gap-2 items-center justify-center h-full">
             <IconRosetteDiscountCheck className="size-10 text-green" />
-            <h1 className="text-white font-medium text-lg">{t('Wallet connected!')}</h1>
+            <h1 className="text-white font-medium text-lg">Wallet connected!</h1>
             <h2 className="text-white/70 font-medium text-center text-sm">
-              {t('You are ready to deposit, trade, and manage your assets.')}
+              You are ready to deposit, trade, and manage your assets.
             </h2>
           </div>
           <Button className="w-full shrink-0" onClick={onClose}>
-            {t("Let's Go!")}
+            Let&apos;s Go!
           </Button>
         </div>
       ) : (
@@ -58,26 +56,26 @@ const WalletDisplay: React.FC<WalletDisplayProps> = ({
               <Image src={icon} alt={name} width={80} height={80} className={cn('size-20')} />
             )}
             <h1 className="text-white font-medium text-lg">
-              {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : t('Wallet')}
+              {name} {['Trust Wallet', 'Rabby Wallet'].includes(name) ? '' : 'Wallet'}
             </h1>
             <div className="text-white/70 font-medium text-sm flex items-center gap-2">
               {isConnecting && (
                 <>
                   <IconLoader className="size-5 animate-spin text-white" />
-                  <div className="text-white/70 text-sm">{t('Waiting for connection...')}</div>
+                  <div className="text-white/70 text-sm">Waiting for connection...</div>
                 </>
               )}
               {isDisconnected && (
                 <>
                   <IconAlertCircle className="size-5 text-red" />
-                  <div className="text-red text-sm">{t('Connection failed')}</div>
+                  <div className="text-red text-sm">Connection failed</div>
                 </>
               )}
             </div>
           </div>
           {isDisconnected && (
             <Button className="w-full shrink-0" onClick={onBack}>
-              {t('Try Again?')}
+              Try Again?
             </Button>
           )}
         </div>

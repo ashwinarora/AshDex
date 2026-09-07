@@ -30,8 +30,6 @@ import { CORE_TO_EVM_MAPPING, isTestnet } from '@/utils/constants'
 import { hyperliquidMainnet, hyperliquidTestnet } from '@/config/wagmi'
 import { erc20Abi, formatUnits, isAddress, parseUnits } from 'viem'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useTranslate } from '@tolgee/react'
-import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
 
 interface ITransferModal {
@@ -41,8 +39,7 @@ interface ITransferModal {
 
 const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   const { chainId, address } = useConnection()
-  const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
 
   const switchChainHook = useSwitchChain()
   const { writeContractAsync } = useWriteContract()
@@ -99,16 +96,16 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
   }
 
   const handleSwitchChain = async () => {
-    const toastId = toast.loading(t('Switching to Hyperliquid network...'))
+    const toastId = toast.loading('Switching to Hyperliquid network...')
     await switchChainHook
       .mutateAsync({ chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id })
       .then(() => {
-        toast.success(t('Switched to Hyperliquid network.'), {
+        toast.success('Switched to Hyperliquid network.', {
           id: toastId
         })
       })
       .catch(() => {
-        toast.error(t('Failed to switch to Hyperliquid network.'), {
+        toast.error('Failed to switch to Hyperliquid network.', {
           id: toastId
         })
       })
@@ -119,7 +116,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       if (!chainId) return
       if (!sdkUserSignerClient) return
       if (!isAddress(destination)) return
-      const toastId = toast.loading(t('Transferring...'))
+      const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
         const res = await sdkUserSignerClient.spotSend({
@@ -129,7 +126,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         })
         console.log('Transfer response:', res)
         onClose()
-        toast.success(t('Transfer successful'), {
+        toast.success('Transfer successful', {
           id: toastId
         })
         setIsLoading(false)
@@ -137,14 +134,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         console.error('Transfer failed:', error)
         onClose()
         setIsLoading(false)
-        toast.error(t('Something went wrong, check the console or contact support'), {
+        toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
       }
     } else {
       if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))
         return
-      const toastId = toast.loading(t('Transferring...'))
+      const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
         let res
@@ -165,14 +162,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         }
         console.log('Transfer response:', res)
         onClose()
-        toast.success(t('Transfer successful'), {
+        toast.success('Transfer successful', {
           id: toastId
         })
         setIsLoading(false)
       } catch (error) {
         console.error('Transfer failed:', error)
         onClose()
-        toast.error(t('Transfer failed.'), {
+        toast.error('Transfer failed.', {
           id: toastId
         })
         setIsLoading(false)
@@ -184,7 +181,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Transfer between Spot and EVM')}</DialogTitle>
+          <DialogTitle>{'Transfer between Spot and EVM'}</DialogTitle>
           <DialogDescription>
             {isRTL
               ? `تحويل ${coin} بين المحفظة الفعلية وشبكة أي في أم.`
@@ -194,8 +191,8 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Transfer in progress...')}
-              subTitle={t('You will need to sign this transaction in your wallet:')}
+              title={'Transfer in progress...'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -205,13 +202,13 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
               className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
             >
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toEvm ? t('Spot') : t('EVM')}
+                {toEvm ? 'Spot' : 'EVM'}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToEvm((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-accent text-accent-foreground rounded-md p-2 text-sm">
-                {toEvm ? t('EVM') : t('Spot')}
+                {toEvm ? 'EVM' : 'Spot'}
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -222,9 +219,9 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                     isRTL && 'flex-row-reverse'
                   )}
                 >
-                  <p>{t('Amount')}</p>
+                  <p>{'Amount'}</p>
                   <div className="flex items-center gap-1">
-                    {t('Available to transfer:')}
+                    {'Available to transfer:'}
                     {isLoadingBalanceEvm || isLoadingBalance ? (
                       <Skeleton className="w-20 h-4 rounded-md" />
                     ) : (
@@ -268,7 +265,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             {!toEvm ? (
               chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id ? (
                 <Button className="w-full" onClick={handleSwitchChain}>
-                  {t('Switch to Hyperliquid Network')}
+                  {'Switch to Hyperliquid Network'}
                 </Button>
               ) : (
                 <Button
@@ -276,7 +273,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                   disabled={!amount || parseFloat(amount.toString()) === 0}
                   onClick={onTransferClick}
                 >
-                  {t('Transfer to Spot')}
+                  {'Transfer to Spot'}
                 </Button>
               )
             ) : (
@@ -285,7 +282,7 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
                 disabled={!amount || parseFloat(amount.toString()) === 0}
                 onClick={onTransferClick}
               >
-                {t('Transfer to EVM')}
+                {'Transfer to EVM'}
               </Button>
             )}
           </>

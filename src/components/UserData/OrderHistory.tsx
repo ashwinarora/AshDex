@@ -29,12 +29,10 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { t } = useTranslate()
   const { address, isConnected } = useConnection()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
@@ -71,14 +69,14 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     () => [
       columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
         id: 'timestamp',
-        header: () => t('Time'),
+        header: () => 'Time',
         cell: (info) => info.getValue(),
         enableSorting: true,
-        meta: { label: t('Time') }
+        meta: { label: 'Time' }
       }),
       columnHelper.accessor((row) => row.order.coin, {
         id: 'coin',
-        header: () => t('Coin'),
+        header: () => 'Coin',
         cell: (info) => {
           const name = info.getValue()
           if (name.includes('@')) {
@@ -87,11 +85,11 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           return name
         },
         enableSorting: true,
-        meta: { label: t('Coin') }
+        meta: { label: 'Coin' }
       }),
       columnHelper.accessor((row) => row.order.side, {
         id: 'side',
-        header: () => t('Direction'),
+        header: () => 'Direction',
         cell: (info) => {
           const side = info.getValue()
           return (
@@ -103,18 +101,18 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Direction') }
+        meta: { label: 'Direction' }
       }),
       columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
-        header: () => t('Price'),
+        header: () => 'Price',
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
         enableSorting: true,
-        meta: { label: t('Price') }
+        meta: { label: 'Price' }
       }),
       columnHelper.accessor((row) => row.order.sz, {
         id: 'sz',
-        header: () => t('Size'),
+        header: () => 'Size',
         cell: (info) => (
           <>
             {info.row.original.order.origSz === info.getValue() ? (
@@ -125,11 +123,11 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           </>
         ),
         enableSorting: true,
-        meta: { label: t('Size') }
+        meta: { label: 'Size' }
       }),
       columnHelper.accessor((row) => row.order.origSz, {
         id: 'origSz',
-        header: () => t('Filled Size'),
+        header: () => 'Filled Size',
         cell: (info) => (
           <>
             {info.row.original.order.sz !== info.getValue() ? (
@@ -140,14 +138,14 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           </>
         ),
         enableSorting: true,
-        meta: { label: t('Size') }
+        meta: { label: 'Size' }
       }),
       columnHelper.accessor((row) => row.order.reduceOnly, {
         id: 'reduceOnly',
-        header: () => t('Reduce Only'),
-        cell: (info) => (info.row.original.order.reduceOnly ? t('Yes') : t('No')),
+        header: () => 'Reduce Only',
+        cell: (info) => (info.row.original.order.reduceOnly ? 'Yes' : 'No'),
         enableSorting: false,
-        meta: { label: t('Reduce Only') }
+        meta: { label: 'Reduce Only' }
       }),
       columnHelper.accessor('status', {
         id: 'status',
@@ -158,7 +156,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
               isRTL && 'flex-row-reverse'
             )}
           >
-            {t('Status')}
+            {'Status'}
           </div>
         ),
         cell: (info) => {
@@ -194,17 +192,17 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Status') }
+        meta: { label: 'Status' }
       }),
       columnHelper.accessor((row) => row.order.oid, {
         id: 'orderId',
-        header: () => t('Order ID'),
+        header: () => 'Order ID',
         cell: (info) => info.getValue().toString(),
         enableSorting: true,
-        meta: { label: t('Order ID') }
+        meta: { label: 'Order ID' }
       })
     ],
-    [columnHelper, t]
+    [columnHelper]
   )
 
   const table = useReactTable({
@@ -229,9 +227,9 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     return (
       <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
         <IconHistory className="size-10 text-white" />
-        <span className="text-white">{t('No Order History Found')}</span>
+        <span className="text-white">{'No Order History Found'}</span>
         <p className="text-white/70 text-center text-xs">
-          {t('Start trading to see your order history here')}
+          {'Start trading to see your order history here'}
         </p>
       </div>
     )

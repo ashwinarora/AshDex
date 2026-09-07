@@ -8,7 +8,6 @@ import { Button } from '../ui/button'
 import { IconChevronDown } from '@tabler/icons-react'
 import { Dispatch, SetStateAction } from 'react'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 import { targetFee } from '@/hooks/useUserFee'
 
 const PortfolioFeeCard = ({
@@ -24,8 +23,6 @@ const PortfolioFeeCard = ({
   >
   isRTL: boolean
 }) => {
-  const { t } = useTranslate()
-
   const takerFee = selectedView.fees === 'perps' ? targetFee.perpsTaker : targetFee.spotTaker
   const makerFee = selectedView.fees === 'perps' ? targetFee.perpsMaker : targetFee.spotMaker
 
@@ -34,20 +31,20 @@ const PortfolioFeeCard = ({
       className={cn('flex flex-col bg-secondary rounded-md flex-1 gap-4 p-4', isRTL && 'items-end')}
     >
       <div className={cn('flex items-center justify-between w-full', isRTL && 'flex-row-reverse')}>
-        <h2>{t('Fees (Taker/Maker)')}</h2>
+        <h2>{'Fees (Taker/Maker)'}</h2>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="link" size="sm" className="w-fit">
-              <p>{t(selectedView.fees === 'all' ? 'Spot' : 'Perps')}</p>
+              <p>{selectedView.fees === 'all' ? 'Spot' : 'Perps'}</p>
               <IconChevronDown className="size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align={isRTL ? 'end' : 'start'}>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'perps' })}>
-              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Perps')}</p>
+              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Perps'}</p>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setSelectedView({ ...selectedView, fees: 'all' })}>
-              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Spot')}</p>
+              <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Spot'}</p>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

@@ -20,7 +20,6 @@ import {
 } from '@tanstack/react-table'
 import { cn } from '@/lib/utils'
 import { formatWithKMB } from '@/utils/format'
-import { useTranslate } from '@tolgee/react'
 import * as hl from '@nktkas/hyperliquid'
 
 type PortfolioVolumeCardProps = {
@@ -30,7 +29,6 @@ type PortfolioVolumeCardProps = {
 }
 
 const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVolumeCardProps) => {
-  const { t } = useTranslate()
   const columnHelper = useMemo(
     () => createColumnHelper<hl.UserFeesResponse['dailyUserVlm'][number]>(),
     []
@@ -39,7 +37,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
   const columns = useMemo(
     () => [
       columnHelper.accessor('date', {
-        header: () => t('Date'),
+        header: () => 'Date',
         cell: ({ row }) => {
           return <div className="text-xs">{row.original.date}</div>
         },
@@ -47,7 +45,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: true
       }),
       columnHelper.accessor('exchange', {
-        header: () => t('Exchange Volume'),
+        header: () => 'Exchange Volume',
         cell: ({ row }) => (
           <div className="text-xs">{'$ ' + formatWithKMB(parseFloat(row.original.exchange))}</div>
         ),
@@ -55,7 +53,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userCross', {
-        header: () => t('Taker Volume'),
+        header: () => 'Taker Volume',
         cell: ({ row }) => (
           <div
             className={cn(
@@ -70,7 +68,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       }),
       columnHelper.accessor('userAdd', {
-        header: () => t('Maker Volume'),
+        header: () => 'Maker Volume',
         cell: ({ row }) => (
           <div
             className={cn(
@@ -85,7 +83,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         enableSorting: false
       })
     ],
-    [columnHelper, t]
+    [columnHelper]
   )
 
   const table = useReactTable({
@@ -105,7 +103,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
         isRTL && 'items-end'
       )}
     >
-      <h2>{t('30 Day Volume')}</h2>
+      <h2>{'30 Day Volume'}</h2>
       {userFeeLoading ? (
         <Skeleton className="w-36 h-12" />
       ) : (
@@ -122,7 +120,7 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
       <Dialog>
         <DialogTrigger disabled={userFeeData?.dailyUserVlm?.length === 0} asChild>
           <p className="text-xs underline underline-offset-4 cursor-pointer transition-colors hover:text-accent-foreground">
-            {t('View Volume')}
+            {'View Volume'}
           </p>
         </DialogTrigger>
         <DialogContent
@@ -130,13 +128,13 @@ const PortfolioVolumeCard = ({ userFeeData, userFeeLoading, isRTL }: PortfolioVo
           onOpenAutoFocus={(e) => e.preventDefault()}
         >
           <DialogHeader className={cn(isRTL ? 'items-end' : 'items-start')}>
-            <DialogTitle>{t('Your Volume History')}</DialogTitle>
+            <DialogTitle>{'Your Volume History'}</DialogTitle>
             <DialogDescription
               className={cn('text-xs text-white/70', isRTL ? 'text-end' : 'text-start')}
             >
-              {t(
+              {
                 '  Dates are based on UTC time zone and do not include the current day. Your 14D maker volume share is 0.00%. Perps and spot volume are counted together to determine your fee tier, and spot volume counts double toward your fee tier.'
-              )}
+              }
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center h-full w-full gap-2">

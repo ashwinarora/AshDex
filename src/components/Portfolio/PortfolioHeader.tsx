@@ -9,12 +9,8 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import SpotToPerpTransferModal from '../UserData/component/transfers/spot-to-perp'
 import SpotToEvmTransferModal from '../UserData/component/transfers/spot-to-evm'
 import { cn } from '@/lib/utils'
-import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
-
 const PortfolioHeader = () => {
-  const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { isMobile } = useScreenSize()
   const [isModalOpen, setIsModalOpen] = useState<{
     [key: string]: boolean
@@ -36,7 +32,7 @@ const PortfolioHeader = () => {
           )}
         >
           <h1 className={cn('text-2xl text-white', isRTL ? 'text-end' : 'text-start')}>
-            {t('Portfolio')}
+            {'Portfolio'}
           </h1>
           <div className={cn('flex flex-wrap gap-2 w-full', isRTL && 'flex-row-reverse')}>
             <Button
@@ -44,7 +40,7 @@ const PortfolioHeader = () => {
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
             >
-              {t('Send')}
+              {'Send'}
             </Button>
 
             <Button
@@ -52,32 +48,32 @@ const PortfolioHeader = () => {
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
             >
-              <p>{t('Perps')}</p>
+              <p>{'Perps'}</p>
               <IconTransfer className="size-3" />
-              <p>{t('Spot')}</p>
+              <p>{'Spot'}</p>
             </Button>
             <Button
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
             >
-              <p>{t('EVM')}</p>
+              <p>{'EVM'}</p>
               <IconTransfer className="size-3" />
-              <p>{t('Spot')}</p>
+              <p>{'Spot'}</p>
             </Button>
             <Button
               className={cn(isRTL && 'flex-row-reverse')}
               variant={'outline'}
               onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
             >
-              {t('Withdraw')}
+              {'Withdraw'}
             </Button>
             <Button
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
             >
               <IconCash className="size-4" />
-              {t('Deposit')}
+              {'Deposit'}
             </Button>
           </div>
         </div>
@@ -124,46 +120,46 @@ const PortfolioHeader = () => {
           isRTL && 'flex-row-reverse'
         )}
       >
-        <h1 className="text-3xl shrink-0 font-semibold text-white">{t('Portfolio')}</h1>
+        <h1 className="text-3xl shrink-0 font-semibold text-white">{'Portfolio'}</h1>
         <div className={cn('flex flex-1 w-full gap-2 justify-end', isRTL && 'flex-row-reverse')}>
           <Button
             className="w-fit"
             onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
           >
             <IconCash className="size-4" />
-            {t('Deposit')}
+            {'Deposit'}
           </Button>
           <Button
             className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
           >
-            {t('Withdraw')}
+            {'Withdraw'}
           </Button>
           <Button
             className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
           >
-            <p>{t('Perps')}</p>
+            <p>{'Perps'}</p>
             <IconTransfer className="size-3" />
-            <p>{t('Spot')}</p>
+            <p>{'Spot'}</p>
           </Button>
           <Button
             className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
           >
-            <p>{t('EVM')}</p>
+            <p>{'EVM'}</p>
             <IconTransfer className="size-3" />
-            <p>{t('Spot')}</p>
+            <p>{'Spot'}</p>
           </Button>
           <Button
             className="w-fit"
             variant={'outline'}
             onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
           >
-            {t('Send')}
+            {'Send'}
           </Button>
         </div>
       </div>

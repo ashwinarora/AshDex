@@ -28,7 +28,6 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { useRouter } from 'next/navigation'
 import { formatWithCommas } from '@/utils/format'
-import { useTranslate } from '@tolgee/react'
 import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible'
@@ -51,7 +50,6 @@ type BalanceData = {
 }
 
 const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
-  const { t } = useTranslate()
   const { isConnected } = useConnection()
   const { spotKeyToName } = useSpotMeta()
 
@@ -134,9 +132,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
     () => [
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => (
-          <span className={cn('flex justify-start items-center gap-1')}>{t('Coin')}</span>
-        ),
+        header: () => <span className={cn('flex justify-start items-center gap-1')}>{'Coin'}</span>,
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
           if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
@@ -155,12 +151,12 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Coin') }
+        meta: { label: 'Coin' }
       }),
       columnHelper.accessor((row) => ({ total: row.total, coin: row.coin }), {
         id: 'total',
         header: () => (
-          <span className="flex justify-start items-center gap-1">{t('Total Balance')}</span>
+          <span className="flex justify-start items-center gap-1">{'Total Balance'}</span>
         ),
         cell: (info) => {
           return (
@@ -179,12 +175,12 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Total Balance') }
+        meta: { label: 'Total Balance' }
       }),
       columnHelper.accessor((row) => ({ hold: row.hold, coin: row.coin }), {
         id: 'hold',
         header: () => (
-          <span className="flex justify-start items-center gap-1">{t('Available Balance')}</span>
+          <span className="flex justify-start items-center gap-1">{'Available Balance'}</span>
         ),
         cell: (info) => {
           return (
@@ -203,24 +199,22 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Hold') }
+        meta: { label: 'Hold' }
       }),
       columnHelper.accessor('usdcValue', {
         id: 'usdcValue',
-        header: () => (
-          <span className="flex justify-start items-center gap-1">{t('USDC Value')}</span>
-        ),
+        header: () => <span className="flex justify-start items-center gap-1">{'USDC Value'}</span>,
         cell: (info) => {
           const value = formatWithCommas(Number(info.getValue())) ?? '--'
           return <span className="text-white text-start text-xs">$ {value}</span>
         },
         enableSorting: true,
-        meta: { label: t('USDC Value') }
+        meta: { label: 'USDC Value' }
       }),
       columnHelper.accessor('avgBuyPrice', {
         id: 'avgBuyPrice',
         header: () => (
-          <span className="flex justify-start items-center gap-1">{t('Avg Buy Price')}</span>
+          <span className="flex justify-start items-center gap-1">{'Avg Buy Price'}</span>
         ),
         cell: (info) => {
           const raw = info.getValue()
@@ -232,11 +226,11 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('Avg Buy Price') }
+        meta: { label: 'Avg Buy Price' }
       }),
       columnHelper.accessor((row) => ({ pnl: row.pnl, pnlPercentage: row.pnlPercentage }), {
         id: 'pnl',
-        header: () => <span className="flex justify-start items-center gap-1">{t('PNL')}</span>,
+        header: () => <span className="flex justify-start items-center gap-1">{'PNL'}</span>,
         cell: (info) => {
           // const value =  formatWithCommas(Number(info.getValue().pnl)) ?? '--'
           const value = isNaN(Number(info.getValue().pnl))
@@ -264,13 +258,11 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           )
         },
         enableSorting: true,
-        meta: { label: t('PNL') }
+        meta: { label: 'PNL' }
       }),
       columnHelper.display({
         id: 'transfer',
-        header: () => (
-          <span className="flex justify-start items-center gap-1">{t('Transfer')}</span>
-        ),
+        header: () => <span className="flex justify-start items-center gap-1">{'Transfer'}</span>,
         cell: (info) => {
           if (info.row.original.coin !== 'USDC(Perps)' && info.row.original.coin !== 'USDC(Spot)')
             return <span className="text-white/70">--</span>
@@ -285,18 +277,16 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
                 setIsTransferModalOpen(true)
               }}
             >
-              {info.row.original.coin === 'USDC(Perps)'
-                ? t('Transfer to Spot')
-                : t('Transfer to Perp')}
+              {info.row.original.coin === 'USDC(Perps)' ? 'Transfer to Spot' : 'Transfer to Perp'}
             </Button>
           )
         },
         enableSorting: false,
-        meta: { label: t('Transfer') }
+        meta: { label: 'Transfer' }
       }),
       columnHelper.display({
         id: 'send',
-        header: () => <span className="flex justify-start items-center gap-1">{t('Send')}</span>,
+        header: () => <span className="flex justify-start items-center gap-1">{'Send'}</span>,
         cell: (info) => {
           const coin = info.row.original.coin
           return (
@@ -314,15 +304,15 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
                 setIsSendModalOpen(true)
               }}
             >
-              {t('Send')}
+              {'Send'}
             </Button>
           )
         },
         enableSorting: false,
-        meta: { label: t('Send') }
+        meta: { label: 'Send' }
       })
     ],
-    [columnHelper, isSendModalOpen, t]
+    [columnHelper, isSendModalOpen]
   )
 
   const table = useReactTable({

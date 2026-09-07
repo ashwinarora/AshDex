@@ -5,7 +5,6 @@ import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import { IconChevronDown, IconRefresh, IconWallet } from '@tabler/icons-react'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
-import { useTranslate } from '@tolgee/react'
 import {
   Dialog,
   DialogContent,
@@ -27,7 +26,6 @@ import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import useUserStore from '@/store/userStore'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface LimitCloseModalProps {
@@ -37,7 +35,6 @@ interface LimitCloseModalProps {
 }
 
 const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
-  const { t } = useTranslate()
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -57,7 +54,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
@@ -183,19 +180,19 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       if ('error' in status) {
         onClose()
         console.error('Close position error:', status.error)
-        toast.error(t('Something went wrong, check the console or contact support'), {
+        toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success(t('Position Closed Successfully'), {
+        toast.success('Position Closed Successfully', {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success(t('Order Placed Successfully'), {
+          toast.success('Order Placed Successfully', {
             id: toastId
           })
         }
@@ -203,7 +200,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -213,13 +210,13 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Limit Close')}</DialogTitle>
-          <DialogDescription>{t('Close your position at a specific price.')}</DialogDescription>
+          <DialogTitle>{'Limit Close'}</DialogTitle>
+          <DialogDescription>{'Close your position at a specific price.'}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <h1 className={cn('text-xs text-start text-white/70', isRTL && 'text-end')}>
-              {t('Price')}
+              {'Price'}
             </h1>
             <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
@@ -227,7 +224,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                 value={price}
                 className={cn('text-white flex-1 text-start h-9', isRTL && 'text-end')}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder={t('Enter price')}
+                placeholder={'Enter price'}
               />
               <Button
                 onClick={() => {
@@ -245,7 +242,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           </div>
           <div className="flex flex-col gap-1">
             <h1 className={cn('text-xs text-start text-white/70', isRTL && 'text-end')}>
-              {t('Size')}
+              {'Size'}
             </h1>
             <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
@@ -259,12 +256,12 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                   setSize(trimDecimals(e.target.value, szDecimals))
                   setLastChanged('size')
                 }}
-                placeholder={t('Enter Size')}
+                placeholder={'Enter Size'}
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="icon" className="h-9 w-20">
-                    <span>{sizeType === 'asset' ? closingAsset : t('USD')}</span>
+                    <span>{sizeType === 'asset' ? closingAsset : 'USD'}</span>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -273,7 +270,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
                     <span>{closingAsset}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setSizeType('usd')}>
-                    <span>{t('USD')}</span>
+                    <span>{'USD'}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -299,7 +296,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         </div>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
           <span className={cn('text-xs text-start text-white/70')}>
-            {t('Estimated closed PnL (without fees):')}
+            {'Estimated closed PnL (without fees):'}
           </span>
           <span
             className={cn(
@@ -326,7 +323,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
         {!address ? (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="font-semibold">{t('Connect Wallet')}</span>
+            <span className="font-semibold">{'Connect Wallet'}</span>
           </Button>
         ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
@@ -334,7 +331,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             className="w-full font-semibold cursor-pointer"
           >
             {' '}
-            {t('Enable Trading')}
+            {'Enable Trading'}
           </Button>
         ) : (
           <Button
@@ -342,7 +339,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             className="w-full"
             disabled={!isAgentApproved || currentFeeApproval === 0}
           >
-            {t('Confirm')}
+            {'Confirm'}
           </Button>
         )}
       </DialogContent>

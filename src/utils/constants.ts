@@ -23,8 +23,6 @@ export const HYPERLIQUID_API_MAINNET = 'https://api.hyperliquid.xyz'
 
 export const HYPERLIQUID_API_TESTNET = 'https://api.hyperliquid-testnet.xyz'
 
-export const COINMARKET_BASE_URL = 'https://pro-api.coinmarketcap.com/v1'
-
 export const USDC_ARBITRUM: Hex = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
 
 export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7'
@@ -62,12 +60,6 @@ export const CORE_TO_EVM_MAPPING: Record<
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
 export const BUILDER_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_RECEIVER_ADDRESS as string
-
-export const NEXON_REFERRAL_CODE: string = process.env.NEXT_PUBLIC_REFERRAL_CODE as string
-// ? 'STUPID' // Contributor's multisig referral code
-// : // ? 'ASHWIN4' // Ashwin's referral code
-//   // ? 'ASHWIN' // Ashwin's referral code
-//   'NEXON' // Nexon's referral code
 
 export const BUILDER_FEE = '0.1%'
 

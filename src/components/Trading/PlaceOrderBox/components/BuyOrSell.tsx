@@ -1,7 +1,6 @@
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import React from 'react'
-import { useTranslate } from '@tolgee/react'
 import MarginMode from './MarginMode'
 import useIsSpot from '@/hooks/useIsSpot'
 
@@ -22,7 +21,6 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
   setIsCross,
   selectedAsset
 }) => {
-  const { t } = useTranslate()
   const isSpot = useIsSpot()
   return (
     <div className="flex w-full items-center justify-between gap-2">
@@ -41,7 +39,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           )}
           value="buy"
         >
-          {isSpot ? t('Buy') : t('Long')}
+          {isSpot ? 'Buy' : 'Long'}
         </ToggleGroupItem>
         <ToggleGroupItem
           className={cn(
@@ -51,7 +49,7 @@ const BuyOrSell: React.FC<BuyOrSellProps> = ({
           )}
           value="sell"
         >
-          {isSpot ? t('Sell') : t('Short')}
+          {isSpot ? 'Sell' : 'Short'}
         </ToggleGroupItem>
       </ToggleGroup>
       {!isSpot && (

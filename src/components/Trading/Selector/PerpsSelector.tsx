@@ -27,7 +27,6 @@ import { Button } from '@/components/ui/button'
 import PerpsCountdown from './PerpsCountdown'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
-import { useTranslate } from '@tolgee/react'
 import { useRouter } from 'next/navigation'
 
 interface ISelectorProps {
@@ -36,19 +35,17 @@ interface ISelectorProps {
 }
 
 const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
-  const { t } = useTranslate()
-
   // const TABS = useMemo(
   //   () => [
-  //     { label: t('All'), icon: null },
-  //     { label: t('New'), icon: <IconRosette className="size-3" /> },
-  //     { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
-  //     { label: t('AI'), icon: <IconBrain className="size-3" /> },
-  //     { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-  //     { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-  //     { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  //     { label: 'All', icon: null },
+  //     { label: 'New', icon: <IconRosette className="size-3" /> },
+  //     { label: 'Favorites', icon: <IconStarFilled className="size-3" /> },
+  //     { label: 'AI', icon: <IconBrain className="size-3" /> },
+  //     { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+  //     { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+  //     { label: 'Meme', icon: <IconMeteor className="size-3" /> }
   //   ],
-  //   [t]
+  //   []
   // )
 
   const { perpAssetContext, perpsMeta } = useHyperliquidStore(
@@ -91,7 +88,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
     const changeString = calculate24hChange()
     const data: MarketDataItem[] = [
       {
-        label: t('Mark Price'),
+        label: 'Mark Price',
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
             className="text-inherit"
@@ -104,7 +101,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       },
       {
-        label: t('Oracle Price'),
+        label: 'Oracle Price',
         value:
           'oraclePx' in selectedAssetContext && selectedAssetContext.oraclePx ? (
             <ReactiveText
@@ -118,12 +115,12 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
           )
       },
       {
-        label: t('24h Change'),
+        label: '24h Change',
         value: changeString ?? <Skeleton />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
-        label: t('24h Volume'),
+        label: '24h Volume',
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
             className="text-inherit"
@@ -136,7 +133,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       },
       {
-        label: t('Open Interest'),
+        label: 'Open Interest',
         value:
           'openInterest' in selectedAssetContext &&
           selectedAssetContext.openInterest &&
@@ -158,7 +155,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
     // Only add funding if the asset has funding data
     if ('funding' in selectedAssetContext && selectedAssetContext.funding !== undefined) {
       data.splice(data.length - 1, 0, {
-        label: t('Funding/Countdown'),
+        label: 'Funding/Countdown',
         value: (
           <div className="flex items-center gap-1">
             <span
@@ -178,7 +175,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
     }
 
     return data
-  }, [selectedAssetContext, t])
+  }, [selectedAssetContext])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -239,7 +236,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               <Input
                 type="text"
                 dir={isRTL ? 'rtl' : 'ltr'}
-                placeholder={t('Search for an asset')}
+                placeholder={'Search for an asset'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}

@@ -4,7 +4,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
 import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
-import { useTranslate } from '@tolgee/react'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
@@ -27,7 +26,6 @@ import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import useUserStore from '@/store/userStore'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface MarketCloseModalProps {
@@ -37,7 +35,6 @@ interface MarketCloseModalProps {
 }
 
 const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, closingAsset }) => {
-  const { t } = useTranslate()
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -58,7 +55,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
   const { getAdjustedBuilderFee } = useUserFee()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset && perpsMeta) {
@@ -147,7 +144,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       finalSize = parseFloat(size).toFixed(szDecimals)
     }
 
-    const toastId = toast.loading(t('Closing position...'))
+    const toastId = toast.loading('Closing position...')
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee(true)
@@ -177,19 +174,19 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       if ('error' in status) {
         onClose()
         console.error('Close position error:', status.error)
-        toast.error(t('Something went wrong, check the console or contact support'), {
+        toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success(t('Position Closed Successfully'), {
+        toast.success('Position Closed Successfully', {
           id: toastId
         })
       } else if ('resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
-          toast.success(t('Order Placed Successfully'), {
+          toast.success('Order Placed Successfully', {
             id: toastId
           })
         }
@@ -197,7 +194,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     } catch (error) {
       onClose()
       console.error('Error closing position:', error)
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -207,15 +204,15 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Market Close')}</DialogTitle>
+          <DialogTitle>{'Market Close'}</DialogTitle>
           <DialogDescription>
-            {t('Close your position at the current market price.')}
+            {'Close your position at the current market price.'}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex flex-col gap-1">
             <h1 className={cn('text-xs text-start text-white/70', isRTL && 'text-end')}>
-              {t('Size')}
+              {'Size'}
             </h1>
             <div className={cn('flex w-full items-center gap-2', isRTL && 'flex-row-reverse')}>
               <Input
@@ -229,7 +226,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
                   setSize(trimDecimals(e.target.value, szDecimals))
                   setLastChanged('size')
                 }}
-                placeholder={t('Enter Size')}
+                placeholder={'Enter Size'}
               />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -268,7 +265,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
           </div>
         </div>
         <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
-          <span className="text-xs text-white/70">{t('Estimated closed PnL (without fees):')}</span>
+          <span className="text-xs text-white/70">{'Estimated closed PnL (without fees):'}</span>
           <span
             className={cn(
               'text-xs text-white/70',
@@ -294,7 +291,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
         {!address ? (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="font-semibold">{t('Connect Wallet')}</span>
+            <span className="font-semibold">{'Connect Wallet'}</span>
           </Button>
         ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
@@ -302,7 +299,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
             className="w-full font-semibold cursor-pointer"
           >
             {' '}
-            {t('Enable Trading')}
+            {'Enable Trading'}
           </Button>
         ) : (
           <Button
@@ -310,7 +307,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
             className="w-full"
             disabled={!isAgentApproved || currentFeeApproval === 0}
           >
-            {t('Confirm')}
+            {'Confirm'}
           </Button>
         )}
       </DialogContent>

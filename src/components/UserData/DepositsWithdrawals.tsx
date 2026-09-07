@@ -31,7 +31,6 @@ import { truncateAddress } from '@/utils/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { useTranslate } from '@tolgee/react'
 import { isTestnet } from '@/utils/constants'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 type FilteredLedgerUpdate = {
@@ -137,7 +136,6 @@ const getValueChange = (delta: FilteredLedgerUpdate['delta'], connectedAddress?:
 }
 
 const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { t } = useTranslate()
   const { isConnected, address } = useConnection()
   const [sorting, setSorting] = useState<SortingState>([{ id: 'timestamp', desc: true }])
   const [mounted, setMounted] = useState(false)
@@ -198,7 +196,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     () => [
       columnHelper.accessor('time', {
         id: 'timestamp',
-        header: () => t('Time'),
+        header: () => 'Time',
         cell: (info) => {
           const timeString = new Date(info.getValue()).toLocaleString('en-US')
           const isPending = info.row.original.isPending
@@ -237,46 +235,46 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         },
         enableSorting: true,
         sortingFn: (rowA, rowB) => rowA.original.time - rowB.original.time,
-        meta: { label: t('Time') }
+        meta: { label: 'Time' }
       }),
       columnHelper.display({
         id: 'status',
-        header: () => t('Status'),
+        header: () => 'Status',
         cell: (info) => {
           const isPending = info.row.original.isPending
           return isPending ? (
-            <span className="text-yellow-500">{t('Pending')}</span>
+            <span className="text-yellow-500">{'Pending'}</span>
           ) : (
-            <span className="text-green">{t('Completed')}</span>
+            <span className="text-green">{'Completed'}</span>
           )
         },
         enableSorting: false,
-        meta: { label: t('Status') }
+        meta: { label: 'Status' }
       }),
       columnHelper.accessor((row) => row.delta.type, {
         id: 'action',
-        header: () => t('Action'),
+        header: () => 'Action',
         cell: (info) => getActionLabel(info.getValue()),
         enableSorting: false,
-        meta: { label: t('Action') }
+        meta: { label: 'Action' }
       }),
       columnHelper.accessor((row) => getSource(row.delta), {
         id: 'source',
-        header: () => t('Source'),
+        header: () => 'Source',
         cell: (info) => info.getValue(),
         enableSorting: false,
-        meta: { label: t('Source') }
+        meta: { label: 'Source' }
       }),
       columnHelper.accessor((row) => getDestination(row.delta), {
         id: 'destination',
-        header: () => t('Destination'),
+        header: () => 'Destination',
         cell: (info) => info.getValue(),
         enableSorting: false,
-        meta: { label: t('Destination') }
+        meta: { label: 'Destination' }
       }),
       columnHelper.accessor((row) => getValueChange(row.delta, address), {
         id: 'valueChange',
-        header: () => t('Account Value Change'),
+        header: () => 'Account Value Change',
         cell: (info) => {
           const value = info.getValue()
           const isPositive = value >= 0
@@ -291,21 +289,21 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         sortingFn: (rowA, rowB) =>
           getValueChange(rowA.original.delta, address) -
           getValueChange(rowB.original.delta, address),
-        meta: { label: t('Account Value Change') }
+        meta: { label: 'Account Value Change' }
       }),
       columnHelper.accessor((row) => row.delta.fee, {
         id: 'fee',
-        header: () => t('Fee'),
+        header: () => 'Fee',
         cell: (info) => {
           const fee = info.getValue()
           if (!fee || fee === '0') return '--'
           return `${Number(fee).toFixed(2)} USDC`
         },
         enableSorting: false,
-        meta: { label: t('Fee') }
+        meta: { label: 'Fee' }
       })
     ],
-    [t, address]
+    [address]
   )
 
   const table = useReactTable({
@@ -328,8 +326,8 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     return (
       <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
         <IconDownloadOff className="size-10 text-white" />
-        <span className="text-white">{t('No Deposits or Withdrawals Found')}</span>
-        <p className="text-white/70 text-center text-xs">{t('Deposits Funds to get started')}</p>
+        <span className="text-white">{'No Deposits or Withdrawals Found'}</span>
+        <p className="text-white/70 text-center text-xs">{'Deposits Funds to get started'}</p>
       </div>
     )
   }
@@ -358,7 +356,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                       <span className="text-white font-semibold text-xs">{actionType}</span>
                       {isPending && (
                         <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-500">
-                          {t('Pending')}
+                          {'Pending'}
                         </span>
                       )}
                     </div>

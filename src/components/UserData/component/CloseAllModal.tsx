@@ -16,9 +16,7 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
 import { useUserFee } from '@/hooks/useUserFee'
 import { BUILDER_ADDRESS } from '@/utils/constants'
-import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import useUserStore from '@/store/userStore'
 import { cn } from '@/lib/utils'
 import { IconWallet } from '@tabler/icons-react'
 import { useConnection } from 'wagmi'
@@ -30,9 +28,8 @@ interface CloseAllModalProps {
 }
 
 const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
-  const { t } = useTranslate()
   const [selected, setSelected] = useState<'market' | 'limit'>('market')
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { clearingHouseState, agentWallet, allMids, sdkL1ActionClient, perpsMeta } =
     useHyperliquidStore(
       useShallow((state) => ({
@@ -50,7 +47,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)
       return
-    const toastId = toast.loading(t('Closing all positions...'))
+    const toastId = toast.loading('Closing all positions...')
     try {
       const orders: OrderData[] = clearingHouseState.assetPositions.map((posObj) => {
         const pos = posObj.position
@@ -102,19 +99,19 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       if ('error' in status) {
         onClose()
         console.error('Close all positions error:', status.error)
-        toast.error(t('Something went wrong, check the console or contact support'), {
+        toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
       } else if ('filled' in status) {
         onClose()
-        toast.success(t('All positions closed successfully'), {
+        toast.success('All positions closed successfully', {
           id: toastId
         })
       }
     } catch (error) {
-      console.error(t('Error closing all positions:'), error)
+      console.error('Error closing all positions:', error)
       onClose()
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -124,10 +121,10 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Close All Positions')}</DialogTitle>
+          <DialogTitle>{'Close All Positions'}</DialogTitle>
         </DialogHeader>
         <DialogDescription className={cn(isRTL && 'text-end')}>
-          {t('This will close all your positions and cancel their associated TP/SL orders.')}
+          {'This will close all your positions and cancel their associated TP/SL orders.'}
         </DialogDescription>
         <ToggleGroup
           className="w-full bg-white/10 rounded-md"
@@ -141,16 +138,16 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           }}
         >
           <ToggleGroupItem value="market" className="w-full rounded-l-md">
-            {t('Market Close')}
+            {'Market Close'}
           </ToggleGroupItem>
           <ToggleGroupItem value="limit" className="w-full rounded-r-md">
-            {t('Limit Close at Mid Price')}
+            {'Limit Close at Mid Price'}
           </ToggleGroupItem>
         </ToggleGroup>
         {!address ? (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="font-semibold">{t('Connect Wallet')}</span>
+            <span className="font-semibold">{'Connect Wallet'}</span>
           </Button>
         ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
@@ -158,19 +155,17 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
             className="w-full font-semibold cursor-pointer"
           >
             {' '}
-            {t('Enable Trading')}
+            {'Enable Trading'}
           </Button>
         ) : (
           <Button onClick={handleCloseAll} disabled={!isAgentApproved || currentFeeApproval === 0}>
-            {selected === 'market'
-              ? t('Confirm Market Close')
-              : t('Confirm Limit Close at Mid Price')}
+            {selected === 'market' ? 'Confirm Market Close' : 'Confirm Limit Close at Mid Price'}
           </Button>
         )}
         <DialogFooter>
           <span className="text-red text-xs text-center w-full">
-            {t('This will close all your positions and cancel their associated TP/SL orders.')}{' '}
-            <br /> {t('You cannot undo this action.')}
+            {'This will close all your positions and cancel their associated TP/SL orders.'} <br />{' '}
+            {'You cannot undo this action.'}
           </span>
         </DialogFooter>
       </DialogContent>

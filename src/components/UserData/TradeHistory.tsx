@@ -27,7 +27,6 @@ import { cn } from '@/lib/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import * as hl from '@nktkas/hyperliquid'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
@@ -46,7 +45,6 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { t } = useTranslate()
   const { address, isConnected } = useConnection()
   const { spotKeyToName } = useSpotMeta()
   const [sorting, setSorting] = useState<SortingState>([])
@@ -81,14 +79,14 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     () => [
       columnHelper.accessor('time', {
         id: 'timestamp',
-        header: () => t('Time'),
+        header: () => 'Time',
         cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
         enableSorting: false,
-        meta: { label: t('Time') }
+        meta: { label: 'Time' }
       }),
       columnHelper.accessor('coin', {
         id: 'coin',
-        header: () => t('Coin'),
+        header: () => 'Coin',
         cell: (info) => {
           const coinName = info.getValue()
           if (coinName.includes('@')) {
@@ -97,11 +95,11 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           return coinName
         },
         enableSorting: false,
-        meta: { label: t('Coin') }
+        meta: { label: 'Coin' }
       }),
       columnHelper.accessor('dir', {
         id: 'dir',
-        header: () => t('Direction'),
+        header: () => 'Direction',
         cell: (info) => (
           <p
             className={`${info.getValue().includes('Open') || info.getValue().includes('Buy') ? 'text-green' : 'text-red'}`}
@@ -110,63 +108,63 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
           </p>
         ),
         enableSorting: false,
-        meta: { label: t('Direction') }
+        meta: { label: 'Direction' }
       }),
       columnHelper.accessor('px', {
         id: 'px',
-        header: () => t('Price'),
+        header: () => 'Price',
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
         enableSorting: true,
         sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
-        meta: { label: t('Price') }
+        meta: { label: 'Price' }
       }),
       columnHelper.accessor('sz', {
         id: 'sz',
-        header: () => t('Size'),
+        header: () => 'Size',
         cell: (info) => info.getValue(),
         enableSorting: true,
         sortingFn: (rowA, rowB) => Number(rowA.original.sz) - Number(rowB.original.sz),
-        meta: { label: t('Size') }
+        meta: { label: 'Size' }
       }),
 
       columnHelper.accessor((row) => Number(row.px) * Math.abs(Number(row.sz)), {
         id: 'tradeValue',
-        header: () => t('Trade Value'),
+        header: () => 'Trade Value',
         cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
         enableSorting: true,
         sortingFn: (rowA, rowB) =>
           Number(rowA.original.px) * Math.abs(Number(rowA.original.sz)) -
           Number(rowB.original.px) * Math.abs(Number(rowB.original.sz)),
-        meta: { label: t('Trade Value') }
+        meta: { label: 'Trade Value' }
       }),
 
       columnHelper.accessor('fee', {
         id: 'fee',
-        header: () => t('Fee'),
+        header: () => 'Fee',
         cell: (info) => '$' + Number(info.getValue()).toFixed(2),
         enableSorting: true,
         sortingFn: (rowA, rowB) => Number(rowA.original.fee) - Number(rowB.original.fee),
-        meta: { label: t('Fee') }
+        meta: { label: 'Fee' }
       }),
 
       columnHelper.accessor('closedPnl', {
         id: 'closedPnl',
-        header: () => t('Closed PnL'),
+        header: () => 'Closed PnL',
         cell: (info) => info.getValue(),
         enableSorting: true,
         sortingFn: (rowA, rowB) =>
           Number(rowA.original.closedPnl) - Number(rowB.original.closedPnl),
-        meta: { label: t('Closed PnL') }
+        meta: { label: 'Closed PnL' }
       }),
       columnHelper.accessor('crossed', {
         id: 'crossed',
-        header: () => t('Crossed'),
-        cell: (info) => (info.getValue() ? t('Yes') : t('No')),
+        header: () => 'Crossed',
+        cell: (info) => (info.getValue() ? 'Yes' : 'No'),
         enableSorting: false,
-        meta: { label: t('Crossed') }
+        meta: { label: 'Crossed' }
       })
     ],
-    [t, columnHelper]
+    [columnHelper]
   )
 
   const table = useReactTable({
@@ -182,9 +180,9 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
     return (
       <div className="w-full h-full flex flex-col items-center py-12 justify-center gap-2">
         <IconHistory className="size-10 text-white" />
-        <span className="text-white">{t('No Trade History Found')}</span>
+        <span className="text-white">{'No Trade History Found'}</span>
         <p className="text-white/70 text-center text-xs">
-          {t('Start trading to see your trade history here')}
+          {'Start trading to see your trade history here'}
         </p>
       </div>
     )
