@@ -330,7 +330,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
+        <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between font-tabular">
           <div className="flex flex-col gap-1 w-full flex-1 h-full">
             {barData?.buys.map((buy, index) => (
               <div
@@ -550,7 +550,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             ))}
         </div>
       ) : (
-        <div className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between">
+        <div className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between font-tabular">
           {barData?.sells
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
@@ -610,6 +610,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               </div>
             ))}
           <div
+            key={`${selectedAsset}-${allMids[selectedAsset]}`}
+            data-tick={priceChange ?? undefined}
             className={clsx(
               'flex items-center justify-between px-2 w-full text-xs h-10 bg-accent py-3 z-10',
               isRTL && 'flex-row-reverse'
@@ -620,17 +622,17 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 'text-sm flex-1 font-semibold flex items-center gap-2',
                 isRTL ? 'flex-row-reverse' : '',
                 priceChange === 'up'
-                  ? 'text-green'
+                  ? 'text-buy'
                   : priceChange === 'down'
-                    ? 'text-red'
-                    : 'text-white'
+                    ? 'text-sell'
+                    : 'text-text-1'
               )}
             >
               ${allMids[selectedAsset]}
               {priceChange === 'up' ? (
-                <IconChevronDown className="size-4" />
-              ) : priceChange === 'down' ? (
                 <IconChevronUp className="size-4" />
+              ) : priceChange === 'down' ? (
+                <IconChevronDown className="size-4" />
               ) : (
                 ''
               )}

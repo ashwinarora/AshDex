@@ -7,7 +7,7 @@ import { truncateAddress } from '@/utils/utils'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { toast } from 'sonner'
 import BridgeButton from './Bridge/BridgeButton'
-import nexonlogo from '@/assets/images/logo.svg'
+import ashdexLogo from '@/assets/images/logo.svg'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
 import {
   DropdownMenu,
@@ -120,12 +120,15 @@ const Header: FC = () => {
         className="flex items-center gap-2 pr-4 rounded-md text-white text-2xl font-semibold cursor-pointer"
       >
         <Image
-          style={{ width: 20, height: 'auto' }}
-          src={nexonlogo}
-          alt="Nexon Logo"
+          style={{ width: 22, height: 'auto' }}
+          src={ashdexLogo}
+          alt="AshDex"
           className="w-6 h-6"
         />
-        Nexon
+        <span className="tracking-tight">
+          <span className="text-text-1">Ash</span>
+          <span className="text-text-3">Dex</span>
+        </span>
       </div>
       <div className="h-full flex-1 w-full md:w-fit flex px-2 items-center md:!justify-start justify-end">
         {isMobile ? (

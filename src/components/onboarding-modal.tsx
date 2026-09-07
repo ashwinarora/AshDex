@@ -6,7 +6,7 @@ import step1 from '@/assets/images/onboarding/step1.png'
 import step2 from '@/assets/images/onboarding/step2.png'
 import step3 from '@/assets/images/onboarding/step3.png'
 import step4 from '@/assets/images/onboarding/step4.png'
-import nexonlogo from '@/assets/images/logo.svg'
+import ashdexLogo from '@/assets/images/logo.svg'
 import arrowrightlineicon from '@/assets/images/arrowrightline_icon.svg'
 import { toast } from 'sonner'
 
@@ -18,8 +18,8 @@ export default function OnboardingModal() {
 
   const onboardingSteps = [
     {
-      title: 'Welcome to Nexon!',
-      subtitle: 'The Future of DeFi is Here.',
+      title: 'Welcome to AshDex.',
+      subtitle: 'Precision Derivatives, On-Chain.',
       description:
         'A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.',
       image: step1
@@ -42,7 +42,7 @@ export default function OnboardingModal() {
       title: 'Predict & Get Rewarded',
       subtitle: 'A Transparent, On-Chain Prediction Market.',
       description:
-        'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.',
+        'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn AshDex points for engaging with the ecosystem.',
       image: step4
     }
   ]
@@ -65,7 +65,7 @@ export default function OnboardingModal() {
                 localStorage.setItem('onboarded', 'true')
               }
               setIsOnboarded(true)
-              toast.success('Welcome to Nexon!')
+              toast.success('Welcome to AshDex.')
             }
           }}
           className={`${isLastStep ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
@@ -82,7 +82,7 @@ export default function OnboardingModal() {
         {!isLastStep && (
           <button
             onClick={skip}
-            className="text-lg order-2 max-md:order-1 font-medium text-[#7D67FF] hover:text-gray-200 cursor-pointer"
+            className="text-lg order-2 max-md:order-1 font-medium text-text-3 hover:text-text-1 cursor-pointer transition-colors"
           >
             Skip
           </button>
@@ -110,19 +110,16 @@ export default function OnboardingModal() {
     <div
       className={`fixed inset-0 bg-secondary/50 items-center justify-center z-50 ${isOnboarded ? 'hidden' : 'flex'}`}
     >
-      <div className="bg-[#0F0816] text-white max-md:max-w-sm max-w-3xl rounded-3xl shadow-2xl w-full flex flex-col md:flex-row max-md:py-3 max-md:px-2 p-4 relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2">
+      <div className="bg-surface-1 border border-border text-text-1 max-md:max-w-sm max-w-3xl rounded-2xl shadow-2xl w-full flex flex-col md:flex-row max-md:py-3 max-md:px-2 p-4 relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2">
         <div className="flex-1 flex flex-col justify-between max-md:px-2 max-md:py-3 p-6">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-2xl gap-x-1 flex items-center text-white/70 font-semibold">
-                <Image
-                  height={20}
-                  width={20}
-                  src={nexonlogo}
-                  alt="Nexon Logo"
-                  className="w-6 h-6"
-                />
-                Nexon
+                <Image height={20} width={20} src={ashdexLogo} alt="AshDex" className="w-6 h-6" />
+                <span className="tracking-tight">
+                  <span className="text-text-1">Ash</span>
+                  <span className="text-text-3">Dex</span>
+                </span>
               </span>
               <span className="text-sm bg-white/6 rounded-full py-1 px-2.5 text-white">
                 Step {step + 1} of {onboardingSteps.length}
@@ -135,7 +132,7 @@ export default function OnboardingModal() {
                     <div
                       key={index}
                       onClick={() => setStep(index)}
-                      className={`w-full h-[4px] flex cursor-pointer ${index <= step ? 'bg-gradient-to-b from-[#5F46F9] via-[#9D46F9] to-[#9D46F9] backdrop-blur-[40px]' : 'bg-primary/10'}`}
+                      className={`w-full h-[4px] rounded-full flex cursor-pointer ${index <= step ? 'bg-gradient-to-r from-accent-pressed to-accent-hover' : 'bg-surface-3'}`}
                     ></div>
                   )
                 })}

@@ -71,7 +71,7 @@ const FooterContent: FC = () => {
   if (!mounted) {
     return (
       <footer
-        className="p-5 md:p-8 pt-0 border border-[#251A3C] rounded-2xl nexon-card"
+        className="p-5 md:p-8 pt-0 border border-border rounded-2xl card-elevated"
         style={{
           backdropFilter: 'blur(40px)',
           WebkitBackdropFilter: 'blur(40px)'
