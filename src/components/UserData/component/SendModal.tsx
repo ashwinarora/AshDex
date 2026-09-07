@@ -133,7 +133,7 @@ const SendModal: React.FC<SendModalProps> = ({
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>{'Send Tokens'}</DialogTitle>
-          <DialogDescription>{'Send tokens to another account on Nexon'}</DialogDescription>
+          <DialogDescription>{'Send tokens to another account on AshDex'}</DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-4">
           <div className="flex gap-2 w-full items-end">
