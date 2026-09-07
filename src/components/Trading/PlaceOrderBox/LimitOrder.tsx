@@ -19,14 +19,12 @@ import OrderButton from './components/OrderButton'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { IconCheckbox, IconChevronDown, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
-import { useTranslate } from '@tolgee/react'
 import Fees from './components/Fees'
 import { useTradeUIStore } from '@/store/TradeUIStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useAgentApproval } from '@/context/EstablishConnection'
 
 const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const { t } = useTranslate()
   const {
     requestedLimitPrice,
     requestedAssetAmount,
@@ -214,7 +212,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             )}
           >
             <p className="font-medium text-white/70 text-xs whitespace-nowrap">
-              {t('Limit price (USD)')}
+              {'Limit price (USD)'}
             </p>
           </div>
           <SetPrice
@@ -273,7 +271,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               ) : (
                 <IconSquare className="size-3" />
               )}
-              <p className="text-xs font-semibold">{t('Reduce Only')}</p>
+              <p className="text-xs font-semibold">{'Reduce Only'}</p>
               <IconInfoCircle className="size-3" />
             </Toggle>
           )}
@@ -287,7 +285,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                {t('TP/SL')}
+                {'TP/SL'}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -308,7 +306,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsPostOnly}
           >
             {isPostOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">{t('Post Only')}</p>
+            <p className="text-xs font-semibold">{'Post Only'}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
         </div>
@@ -317,12 +315,12 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           {!isSpot && (
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/70">{t('Liquidation Price')}</p>
+                <p className="text-white/70">{'Liquidation Price'}</p>
                 <p className="text-white">{isTradingEnabled ? liquidationPrice() : 'N/A'}</p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-                <p className="text-white/70">{t('Margin Required')}</p>
+                <p className="text-white/70">{'Margin Required'}</p>
                 <p className="text-white">
                   {isTradingEnabled
                     ? `$${((Number(assetAmount) * Number(limitPrice)) / leverage).toFixed(2)}`
@@ -332,7 +330,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </>
           )}
           <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-            <p className="text-white/70">{t('Order Value')}</p>
+            <p className="text-white/70">{'Order Value'}</p>
             <p className="text-white">
               {isTradingEnabled ? `$${Number(usdAmount).toFixed(2)}` : 'N/A'}
             </p>

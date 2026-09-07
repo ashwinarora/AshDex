@@ -23,8 +23,6 @@ export const HYPERLIQUID_API_MAINNET = 'https://api.hyperliquid.xyz'
 
 export const HYPERLIQUID_API_TESTNET = 'https://api.hyperliquid-testnet.xyz'
 
-export const COINMARKET_BASE_URL = 'https://pro-api.coinmarketcap.com/v1'
-
 export const USDC_ARBITRUM: Hex = '0xaf88d065e77c8cC2239327C5EDb3A432268e5831'
 
 export const HYPERLIQUID_DEPOSIT: Hex = '0x2Df1c51E09aECF9cacB7bc98cB1742757f163dF7'
@@ -62,12 +60,6 @@ export const CORE_TO_EVM_MAPPING: Record<
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
 export const BUILDER_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_RECEIVER_ADDRESS as string
-
-export const NEXON_REFERRAL_CODE: string = process.env.NEXT_PUBLIC_REFERRAL_CODE as string
-// ? 'STUPID' // Contributor's multisig referral code
-// : // ? 'ASHWIN4' // Ashwin's referral code
-//   // ? 'ASHWIN' // Ashwin's referral code
-//   'NEXON' // Nexon's referral code
 
 export const BUILDER_FEE = '0.1%'
 
@@ -279,7 +271,7 @@ export const ORDERHISTORY_VAULTS_COLUMNS = [
   { key: 'status', label: 'Status' }
 ]
 
-export const AGENT_NAME = 'nexon_agent'
+export const AGENT_NAME = 'ashdex_agent'
 
 export const WALLETS = [
   {
@@ -455,7 +447,7 @@ export const REFERRALSDATA = [
 ] as const
 
 export const REFERRALS_DESC = [
-  `Unlock exclusive rewards by inviting others to join the Nexon community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing Nexon with your network. Start earning today and expand your reach!`
+  `Unlock exclusive rewards by inviting others to join the AshDex community. For every successful referral, you'll earn a percentage of their fees, while your referrals get a special discount! It's a win-win situation that allows you to benefit from sharing AshDex with your network. Start earning today and expand your reach!`
 ] as const
 
 export const REFERRALS_TABLES_TABS = ['Referrals', 'Reward history'] as const

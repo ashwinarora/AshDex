@@ -11,14 +11,12 @@ import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconInfoCircle, IconSquare } from '@tabler/icons-react'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 
 const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const { t } = useTranslate()
   const { allMids } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids
@@ -111,7 +109,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <label htmlFor="stopPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
-          {t('Stop Price')}
+          {'Stop Price'}
         </label>
         <Input
           type="text"
@@ -151,7 +149,7 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
+            <p className="text-xs font-semibold">{'Reduce Only'}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
         </div>

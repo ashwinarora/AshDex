@@ -26,7 +26,6 @@ import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import clsx from 'clsx'
-import { useTranslate } from '@tolgee/react'
 import { useTradeUIStore } from '@/store/TradeUIStore'
 
 interface IOrderBookProps {
@@ -44,7 +43,6 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   )
   const [l2Book, setL2Book] = useState<hl.L2BookResponse>()
   const { isMobile, isTablet } = useScreenSize()
-  const { t } = useTranslate()
   const [isLoading, setIsLoading] = useState(true)
   const [priceChange, setPriceChange] = useState<'up' | 'down' | null>(null)
   const prevPriceRef = useRef<number | null>(null)
@@ -332,7 +330,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-        <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between">
+        <div className="flex h-full w-full flex-1 flex-row gap-1 items-center justify-between font-tabular">
           <div className="flex flex-col gap-1 w-full flex-1 h-full">
             {barData?.buys.map((buy, index) => (
               <div
@@ -418,7 +416,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       <div
         className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
       >
-        <h1 className="text-white text-sm font-semibold">{t('Order Book')}</h1>
+        <h1 className="text-white text-sm font-semibold">{'Order Book'}</h1>
         <ToggleGroup
           size={'sm'}
           type="single"
@@ -521,14 +519,13 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       <div
         className={clsx('flex items-center justify-between px-2', isRTL ? 'flex-row-reverse' : '')}
       >
-        <p className="font-medium text-xs text-start">{t('Price')}</p>
+        <p className="font-medium text-xs text-start">{'Price'}</p>
         <p className="font-medium text-xs text-center flex-1">
-          {t('Amount')} (
-          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {'Amount'} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+          )
         </p>
         <p className="font-medium text-xs text-end">
-          {t('Total')} (
-          {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {'Total'} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/10 -mb-1" />
@@ -553,7 +550,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             ))}
         </div>
       ) : (
-        <div className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between">
+        <div className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between font-tabular">
           {barData?.sells
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
@@ -613,6 +610,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               </div>
             ))}
           <div
+            key={`${selectedAsset}-${allMids[selectedAsset]}`}
+            data-tick={priceChange ?? undefined}
             className={clsx(
               'flex items-center justify-between px-2 w-full text-xs h-10 bg-accent py-3 z-10',
               isRTL && 'flex-row-reverse'
@@ -623,17 +622,17 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 'text-sm flex-1 font-semibold flex items-center gap-2',
                 isRTL ? 'flex-row-reverse' : '',
                 priceChange === 'up'
-                  ? 'text-green'
+                  ? 'text-buy'
                   : priceChange === 'down'
-                    ? 'text-red'
-                    : 'text-white'
+                    ? 'text-sell'
+                    : 'text-text-1'
               )}
             >
               ${allMids[selectedAsset]}
               {priceChange === 'up' ? (
-                <IconChevronDown className="size-4" />
-              ) : priceChange === 'down' ? (
                 <IconChevronUp className="size-4" />
+              ) : priceChange === 'down' ? (
+                <IconChevronDown className="size-4" />
               ) : (
                 ''
               )}

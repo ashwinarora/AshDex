@@ -20,9 +20,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { IconMinus, IconPlus, IconWallet } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
-import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import useUserStore from '@/store/userStore'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface LeverageModalProps {
@@ -32,8 +30,7 @@ interface LeverageModalProps {
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
-  const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       perpsMeta: state.perpsMeta,
@@ -55,7 +52,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
 
   const handleLeverageChange = async () => {
     if (!asset) return
-    const toastId = toast.loading(t('Updating leverage...'))
+    const toastId = toast.loading('Updating leverage...')
     try {
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
@@ -67,13 +64,13 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       })
       console.log(res)
       onClose()
-      toast.success(t('Leverage updated successfully'), {
+      toast.success('Leverage updated successfully', {
         id: toastId
       })
     } catch (error) {
       onClose()
       console.error('Error updating leverage:', error)
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -83,11 +80,10 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Adjust Leverage')}</DialogTitle>
+          <DialogTitle>{'Adjust Leverage'}</DialogTitle>
           <DialogDescription className={cn(isRTL && 'text-end')}>
-            {t('Control the leverage used for')} {asset?.coin}{' '}
-            {t('positions. The maximum leverage is')} {maxLeverage}x.{' '}
-            {t('Max position size decreases the higher your leverage.')}
+            {'Control the leverage used for'} {asset?.coin} {'positions. The maximum leverage is'}{' '}
+            {maxLeverage}x. {'Max position size decreases the higher your leverage.'}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
@@ -95,7 +91,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             <p
               className={cn('text-xs font-medium transition-colors duration-150', 'text-white/70')}
             >
-              {t('Leverage')}
+              {'Leverage'}
             </p>
             <div className="flex items-center gap-2">
               <Button
@@ -159,7 +155,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
         {!address ? (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="font-semibold">{t('Connect Wallet')}</span>
+            <span className="font-semibold">{'Connect Wallet'}</span>
           </Button>
         ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
@@ -167,7 +163,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             className="w-full font-semibold cursor-pointer"
           >
             {' '}
-            {t('Enable Trading')}
+            {'Enable Trading'}
           </Button>
         ) : (
           <Button
@@ -175,12 +171,12 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
             className="w-full"
             disabled={!isAgentApproved || currentFeeApproval === 0}
           >
-            {t('Confirm')}
+            {'Confirm'}
           </Button>
         )}
         <DialogFooter className="text-xs text-white/70">
           <span className="text-center w-full">
-            {t('Note that setting a higher leverage increases the risk of liquidation.')}
+            {'Note that setting a higher leverage increases the risk of liquidation.'}
           </span>
         </DialogFooter>
       </DialogContent>

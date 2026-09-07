@@ -8,24 +8,9 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { cn } from '@/lib/utils'
 import { HoverCard, HoverCardContent, HoverCardTrigger } from './ui/hover-card'
 import { useShallow } from 'zustand/react/shallow'
-// import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
-// import { setLanguage } from '@/tolgee/language'
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger
-// } from './ui/dropdown-menu'
-// import { Button } from './ui/button'
 
 const FooterContent: FC = () => {
-  // const { toggleConnectWalletModal } = useWalletModal()
-  // const { isConnected } = useAccount()
   const [mounted, setMounted] = useState(false)
-  // const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
-  const { t } = useTranslate()
-
   const { isWebSocketConnected, getTimeSinceLastUpdate } = useHyperliquidStore(
     useShallow((state) => ({
       isWebSocketConnected: state.isWebSocketConnected,
@@ -86,7 +71,7 @@ const FooterContent: FC = () => {
   if (!mounted) {
     return (
       <footer
-        className="p-5 md:p-8 pt-0 border border-[#251A3C] rounded-2xl nexon-card"
+        className="p-5 md:p-8 pt-0 border border-border rounded-2xl card-elevated"
         style={{
           backdropFilter: 'blur(40px)',
           WebkitBackdropFilter: 'blur(40px)'
@@ -121,12 +106,12 @@ const FooterContent: FC = () => {
               {isWebSocketConnected ? (
                 <>
                   <IconCellSignal5 className="size-4" />
-                  {t('Online')}
+                  {'Online'}
                 </>
               ) : (
                 <>
                   <IconCellSignalOff className="size-4" />
-                  {t('Offline')}
+                  {'Offline'}
                 </>
               )}
             </div>
@@ -142,7 +127,7 @@ const FooterContent: FC = () => {
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.allMids)}`}
                 ></span>
                 <span>
-                  {t('Order Book')}: {timeSinceUpdate.allMids}
+                  {'Order Book'}: {timeSinceUpdate.allMids}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -150,7 +135,7 @@ const FooterContent: FC = () => {
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.candles)}`}
                 ></span>
                 <span>
-                  {t('Chart Data')}: {timeSinceUpdate.candles}
+                  {'Chart Data'}: {timeSinceUpdate.candles}
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -158,7 +143,7 @@ const FooterContent: FC = () => {
                   className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
                 ></span>
                 <span>
-                  {t('User Data')}: {timeSinceUpdate.webData2}
+                  {'User Data'}: {timeSinceUpdate.webData2}
                 </span>
               </div>
             </div>
@@ -166,46 +151,13 @@ const FooterContent: FC = () => {
         </HoverCard>
 
         <div className="flex gap-4 duration-200 items-center justify-center text-xs">
-          {/* <div className="flex items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  className="flex h-fit !p-0 bg-transparent hover:bg-transparent items-center gap-2"
-                >
-                  <span className="text-xs">{isRTL ? '🇸🇦' : '🇺🇸'}</span>
-                  <span className="text-xs">{isRTL ? 'AR' : 'EN'}</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() => {
-                    useUserStore.setState({ preferredLanguage: 'en-US' })
-                    setLanguage('en-US')
-                  }}
-                >
-                  <span className="text-xs">{'🇺🇸'}</span>
-                  <span className="text-xs">English</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => {
-                    useUserStore.setState({ preferredLanguage: 'ar-SA' })
-                    setLanguage('ar-SA')
-                  }}
-                >
-                  <span className="text-xs">{'🇸🇦'}</span>
-                  <span className="text-xs">الإنجليزية</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div> */}
           <a
             href="/docs"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:text-white text-white/70 transition-colors"
           >
-            {t('Docs')}
+            {'Docs'}
           </a>
           <a
             href="/support"
@@ -213,7 +165,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/70 transition-colors"
           >
-            {t('Support')}
+            {'Support'}
           </a>
           <a
             href="/terms"
@@ -221,7 +173,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/70 transition-colors"
           >
-            {t('Terms')}
+            {'Terms'}
           </a>
           <a
             href="/privacy"
@@ -229,7 +181,7 @@ const FooterContent: FC = () => {
             rel="noopener noreferrer"
             className="hover:text-white text-white/70 transition-colors"
           >
-            {t('Privacy Policy')}
+            {'Privacy Policy'}
           </a>
         </div>
       </div>

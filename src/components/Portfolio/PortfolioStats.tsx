@@ -20,13 +20,10 @@ import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
 import { useUserFee } from '@/hooks/useUserFee'
-import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
 import { Hex } from 'viem'
 
 const PortfolioStats = () => {
-  const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { isMobile, isTablet } = useScreenSize()
   const [selectedView, setSelectedView] = useState<{
     [key: string]: 'perps' | 'all' | 'day' | 'week' | 'month' | 'alltime'
@@ -102,16 +99,16 @@ const PortfolioStats = () => {
     const spotEquity = (parseFloat(totalEquity) - parseFloat(perpEquity)).toFixed(2)
 
     return {
-      [t('PNL')]:
+      ['PNL']:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.pnl.at(-1)?.[1] || '0'))}` ||
         '0.00',
-      [t('Volume')]:
+      ['Volume']:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm || '0'))}` ||
         '$0.00',
-      [t('Max Drawdown')]: `${maxDrawdownPercentage.toFixed(2)}%`,
-      [t('Total Equity')]: `$${formatWithKMB(totalEquity)}`,
-      [t('Perps Account Equity')]: `$${formatWithKMB(perpEquity)}`,
-      [t('Spot Account Equity')]: `$${formatWithKMB(spotEquity)}`
+      ['Max Drawdown']: `${maxDrawdownPercentage.toFixed(2)}%`,
+      ['Total Equity']: `$${formatWithKMB(totalEquity)}`,
+      ['Perps Account Equity']: `$${formatWithKMB(perpEquity)}`,
+      ['Spot Account Equity']: `$${formatWithKMB(spotEquity)}`
     }
   }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
 
@@ -149,7 +146,7 @@ const PortfolioStats = () => {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant={'outline'} size={'sm'} className="w-fit">
-                    <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps + Spot')}</p>
+                    <p>{selectedView.overview === 'perps' ? 'Perps' : 'Perps + Spot'}</p>
                     <IconChevronDown className="size-4" />
                   </Button>
                 </DropdownMenuTrigger>
@@ -157,12 +154,12 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
                   >
-                    <p>{t('Perps')}</p>
+                    <p>{'Perps'}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
                   >
-                    <p>{t('Perps + Spot')}</p>
+                    <p>{'Perps + Spot'}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -171,12 +168,12 @@ const PortfolioStats = () => {
                   <Button variant={'outline'} size={'sm'} className="w-fit">
                     <p>
                       {selectedView.overviewTimeFrame === 'day'
-                        ? t('Day')
+                        ? 'Day'
                         : selectedView.overviewTimeFrame === 'week'
-                          ? t('Week')
+                          ? 'Week'
                           : selectedView.overviewTimeFrame === 'month'
-                            ? t('Month')
-                            : t('All Time')}
+                            ? 'Month'
+                            : 'All Time'}
                     </p>
                     <IconChevronDown className="size-4" />
                   </Button>
@@ -185,24 +182,24 @@ const PortfolioStats = () => {
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
                   >
-                    <p>{t('Day')}</p>
+                    <p>{'Day'}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
                   >
-                    <p>{t('Week')}</p>
+                    <p>{'Week'}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
                   >
-                    <p>{t('Month')}</p>
+                    <p>{'Month'}</p>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() =>
                       setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })
                     }
                   >
-                    <p>{t('All Time')}</p>
+                    <p>{'All Time'}</p>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -252,7 +249,7 @@ const PortfolioStats = () => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={'outline'} size={'sm'} className="w-fit">
-                <p>{selectedView.overview === 'perps' ? t('Perps') : t('Perps + Spot')}</p>
+                <p>{selectedView.overview === 'perps' ? 'Perps' : 'Perps + Spot'}</p>
                 <IconChevronDown className="size-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -260,14 +257,12 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'perps' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Perps')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Perps'}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overview: 'all' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                  {t('Perps + Spot')}
-                </p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Perps + Spot'}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -276,12 +271,12 @@ const PortfolioStats = () => {
               <Button variant={'outline'} size={'sm'} className="w-fit">
                 <p>
                   {selectedView.overviewTimeFrame === 'day'
-                    ? t('Day')
+                    ? 'Day'
                     : selectedView.overviewTimeFrame === 'week'
-                      ? t('Week')
+                      ? 'Week'
                       : selectedView.overviewTimeFrame === 'month'
-                        ? t('Month')
-                        : t('All Time')}
+                        ? 'Month'
+                        : 'All Time'}
                 </p>
                 <IconChevronDown className="size-4" />
               </Button>
@@ -290,22 +285,22 @@ const PortfolioStats = () => {
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'day' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Day'}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'week' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Week')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Week'}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'month' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Month')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Month'}</p>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => setSelectedView({ ...selectedView, overviewTimeFrame: 'alltime' })}
               >
-                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')}</p>
+                <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'All Time'}</p>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -322,7 +317,7 @@ const PortfolioStats = () => {
                       isRTL && 'flex-row-reverse'
                     )}
                   >
-                    <p className="text-sm text-white/70 w-fit">{t(key)}</p>
+                    <p className="text-sm text-white/70 w-fit">{key}</p>
                     <p
                       className={cn(
                         'text-sm w-fit',

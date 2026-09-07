@@ -16,8 +16,6 @@ import { Drawer, DrawerContent } from '../ui/drawer'
 import { IconTransform, IconUserBitcoin } from '@tabler/icons-react'
 import { Separator } from '../ui/separator'
 import clsx from 'clsx'
-import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
@@ -30,13 +28,12 @@ interface TradingProps {
 }
 
 const Trading = ({ defaultAsset }: TradingProps = {}) => {
-  const { t } = useTranslate()
   const isSpot = useIsSpot()
   const { address } = useConnection()
   const { spotKeyToName } = useSpotMeta()
   const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const { isTablet, isMobile } = useScreenSize()
 
   const parentContainerRef = useRef<HTMLDivElement>(null)
@@ -89,7 +86,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
         ) : (
           <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
         )}
-        <FavoriteStrip isRTL={isRTL} />
+        <FavoriteStrip />
         <ToggleGroup
           type="single"
           className="w-full h-12 bg-secondary p-1 gap-1"
@@ -105,10 +102,10 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           }}
         >
           <ToggleGroupItem className="rounded-l-md bg-white/10 h-full" value="chart">
-            <p>{t('Chart')}</p>
+            <p>{'Chart'}</p>
           </ToggleGroupItem>
           <ToggleGroupItem className="rounded-r-md h-full bg-white/10" value="orderbook">
-            <p>{t('Orderbook')}</p>
+            <p>{'Orderbook'}</p>
           </ToggleGroupItem>
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
@@ -141,11 +138,11 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>{t('Trade')}</p>
+              <p>{'Trade'}</p>
             </ToggleGroupItem>
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="overview">
               <IconUserBitcoin className="size-4" />
-              <p>{t('Overview')}</p>
+              <p>{'Overview'}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer
@@ -173,7 +170,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
     return (
       <div className="hidden md:flex xl:hidden flex-col gap-1 p-1 mb-8 h-dvh w-full">
         <div className="h-fit shrink-0">
-          <FavoriteStrip isRTL={isRTL} />
+          <FavoriteStrip />
         </div>
         {isSpot ? (
           <SpotSelector selectedAsset={selectedAsset} isRTL={isRTL} />
@@ -206,7 +203,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           >
             <ToggleGroupItem className="flex-1 h-full flex items-center gap-2" value="trade">
               <IconTransform className="size-4" />
-              <p>{t('Trade')}</p>
+              <p>{'Trade'}</p>
             </ToggleGroupItem>
           </ToggleGroup>
           <Drawer
@@ -255,7 +252,6 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           parentContainerRef.current?.clientWidth &&
           placeOrderRef.current?.clientWidth ? (
             <FavoriteStrip
-              isRTL={isRTL}
               width={
                 parentContainerRef.current.clientWidth -
                 orderBookRef.current.clientWidth -

@@ -34,7 +34,6 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { useTranslate } from '@tolgee/react'
 import { isWhitelistedPerpPair } from '@/utils/whitelist'
 
 interface AssetTableProps {
@@ -75,7 +74,6 @@ const AssetTable = ({
   setIsOpen,
   isRTL
 }: AssetTableProps) => {
-  const { t } = useTranslate()
   const [sorting, setSorting] = useState<SortingState>([])
   const { perpsMeta, perpAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
@@ -129,7 +127,7 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => <div className="flex items-center gap-1">{t('Market')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Market'}</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -179,7 +177,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Volume'}</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -192,7 +190,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => <div className="flex items-center gap-1">{t('Price / 24h')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Price / 24h'}</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const formattedPrice = formatPrice(price)
@@ -239,7 +237,7 @@ const AssetTable = ({
       return [
         columnHelper.accessor('symbol', {
           id: 'symbol',
-          header: () => <div className="flex items-center gap-1">{t('Market')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Market'}</div>,
           cell: (info) => {
             const { symbol, maxLeverage } = info.row.original
             const isFavorite = favorites.has(symbol)
@@ -280,7 +278,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('price', {
           id: 'price',
-          header: () => <div className="flex items-center gap-1">{t('Price')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Price'}</div>,
           cell: (info) => {
             const price = info.getValue()
             const formattedPrice = formatPrice(price)
@@ -294,7 +292,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('prevDayPrice', {
           id: 'prevDayPrice',
-          header: () => <div className="flex items-center gap-1">{t('24h Change')}</div>,
+          header: () => <div className="flex items-center gap-1">{'24h Change'}</div>,
           cell: (info) => {
             const { price, prevDayPrice } = info.row.original
             const difference = price - prevDayPrice
@@ -347,7 +345,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('volume', {
           id: 'volume',
-          header: () => <div className="flex items-center gap-1">{t('Volume')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Volume'}</div>,
           cell: (info) => {
             const volume = info.getValue()
             return (
@@ -360,7 +358,7 @@ const AssetTable = ({
         }),
         columnHelper.accessor('openInterest', {
           id: 'openInterest',
-          header: () => <div className="flex items-center gap-1">{t('Open Interest')}</div>,
+          header: () => <div className="flex items-center gap-1">{'Open Interest'}</div>,
           cell: (info) => {
             const openInterest = info.getValue()
             return (

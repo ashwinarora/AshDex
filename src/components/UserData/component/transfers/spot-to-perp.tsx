@@ -14,10 +14,8 @@ import Loading from '@/components/loading-screen'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { DropdownMenu } from '@/components/ui/dropdown-menu'
-import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { cn } from '@/lib/utils'
-import useUserStore from '@/store/userStore'
 import { useWalletModal } from '@/context/WalletModalContext'
 
 interface ITransferModal {
@@ -28,7 +26,6 @@ interface ITransferModal {
 
 const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
   const { chainId, address } = useConnection()
-  const { t } = useTranslate()
   const [amount, setAmount] = useState<string>('')
   const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
@@ -41,7 +38,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   const getBalance = () => {
     if (toPerp) {
       const balance = spotState?.balances?.find((balance) => balance.coin === 'USDC')?.total
@@ -58,20 +55,20 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
   const onTransferClick = async () => {
     if (!chainId) return
     if (!sdkUserSignerClient) return
-    const toastId = toast.loading(t('Transferring...'))
+    const toastId = toast.loading('Transferring...')
     try {
       setIsLoading(true)
       const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
       console.log('Transfer response:', res)
       onClose()
-      toast.success(t('Transfer successful'), {
+      toast.success('Transfer successful', {
         id: toastId
       })
       setIsLoading(false)
     } catch (error) {
       console.error('Transfer failed:', error)
       onClose()
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
       setIsLoading(false)
@@ -82,14 +79,14 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Transfer between Perp and Spot')}</DialogTitle>
-          {/* <DialogDescription>{t('Transfer USDC between Perp and Spot.')}</DialogDescription> */}
+          <DialogTitle>{'Transfer between Perp and Spot'}</DialogTitle>
+          {/* <DialogDescription>{'Transfer USDC between Perp and Spot.'}</DialogDescription> */}
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Transfer in progress...')}
-              subTitle={t('You will need to sign this transaction in your wallet:')}
+              title={'Transfer in progress...'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -99,13 +96,13 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
               className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
             >
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? t('Spot') : t('Perp')}
+                {toPerp ? 'Spot' : 'Perp'}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
               <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
-                {toPerp ? t('Perp') : t('Spot')}
+                {toPerp ? 'Perp' : 'Spot'}
               </div>
             </div>
             <div className="flex flex-col gap-4">
@@ -116,9 +113,9 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                     isRTL && 'flex-row-reverse'
                   )}
                 >
-                  <p>{t('Amount')}</p>
+                  <p>{'Amount'}</p>
                   <div className="flex items-center gap-1">
-                    {t('Available to transfer:')}
+                    {'Available to transfer:'}
                     <Button
                       variant="link"
                       onClick={() => setAmount(getBalance())}
@@ -158,7 +155,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                 className="flex items-center gap-2"
               >
                 <IconWallet className="size-4" />
-                <span className="font-semibold">{t('Connect Wallet')}</span>
+                <span className="font-semibold">{'Connect Wallet'}</span>
               </Button>
             ) : !isAgentApproved || currentFeeApproval === 0 ? (
               <Button
@@ -166,7 +163,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                 className="w-full font-semibold cursor-pointer"
               >
                 {' '}
-                {t('Enable Trading')}
+                {'Enable Trading'}
               </Button>
             ) : (
               <Button
@@ -174,7 +171,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                 disabled={!amount || parseFloat(amount.toString()) === 0}
                 onClick={onTransferClick}
               >
-                {t('Transfer')}
+                {'Transfer'}
               </Button>
             )}
           </>

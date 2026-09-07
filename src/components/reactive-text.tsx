@@ -20,7 +20,7 @@ function ReactiveText({
   suffix?: string
   className?: string
 }) {
-  const [color, setColor] = useState<'text-green' | 'text-red' | 'text-white'>('text-white')
+  const [color, setColor] = useState<'text-buy' | 'text-sell' | 'text-text-1'>('text-text-1')
   const [prevValue, setPrevValue] = useState<number>(Number(value))
 
   const getSafeNumber = (val: number | string): number => {
@@ -33,39 +33,37 @@ function ReactiveText({
 
     if (!pulse) {
       if (isStatic) {
-        // When pulse is false and isStatic is true, color based on value sign
         if (currentValue > 0) {
-          setColor('text-green')
+          setColor('text-buy')
         } else if (currentValue < 0) {
-          setColor('text-red')
+          setColor('text-sell')
         } else {
-          setColor('text-white')
+          setColor('text-text-1')
         }
       } else {
-        setColor('text-white')
+        setColor('text-text-1')
       }
       return
     }
 
     if (currentValue > prevValue) {
-      setColor('text-green')
+      setColor('text-buy')
     } else if (currentValue < prevValue) {
-      setColor('text-red')
+      setColor('text-sell')
     }
 
     setPrevValue(currentValue)
 
-    // Only reset color to white if not static
     if (!isStatic) {
       const colorTimer = setTimeout(() => {
-        setColor('text-white')
+        setColor('text-text-1')
       }, 400)
       return () => clearTimeout(colorTimer)
     }
   }, [value, pulse, prevValue, isStatic])
 
   return (
-    <p className={cn('text-xs transition-all duration-300', color, className)}>
+    <p className={cn('text-xs font-tabular transition-all duration-300', color, className)}>
       {type === 'currency' ? currency : ''}
       {new Intl.NumberFormat('en-US', {
         minimumFractionDigits: precision,

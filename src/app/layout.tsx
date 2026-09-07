@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Geist_Mono } from 'next/font/google'
 import Header from '@/components/Header'
 import { WalletModalProvider } from '@/context/WalletModalContext'
 import { GoogleAnalytics } from '@next/third-parties/google'
@@ -9,70 +9,61 @@ import OnboardingModal from '@/components/onboarding-modal'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
 import dynamic from 'next/dynamic'
-import { getLanguage } from '@/tolgee/language'
-import { getTolgee } from '@/tolgee/server'
-import { TolgeeNextProvider } from '@/tolgee/client'
 import WagmiProvider from './WagmiProvider'
-
-// const geistSans = Geist({
-//   variable: '--font-geist-sans',
-//   subsets: ['latin']
-// })
 
 const inter = Inter({
   subsets: ['latin'],
   variable: '--font-inter'
 })
 
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin']
-// })
-
-// const dmMono = DM_Mono({
-//   variable: '--font-dm-mono',
-//   weight: ['400'],
-//   subsets: ['latin']
-// })
+const geistMono = Geist_Mono({
+  subsets: ['latin'],
+  variable: '--font-mono'
+})
 
 export const metadata: Metadata = {
-  title: 'Nexon',
-  description: 'Best place to Trade'
+  title: 'AshDex — Trade Perps On-Chain',
+  description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
+  openGraph: {
+    title: 'AshDex — Trade Perps On-Chain',
+    description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
+    type: 'website'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AshDex — Trade Perps On-Chain',
+    description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.'
+  }
 }
 
 const DynamicUseToastOptions = dynamic(() =>
   import('@/components/ui/toast-config').then((mod) => mod.Toast)
 )
 
-export default async function RootLayout({
+export default function RootLayout({
   children
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const locale = await getLanguage()
-  const tolgee = await getTolgee()
-  // serializable data that are passed to client components
-  const staticData = await tolgee.loadRequired()
   return (
-    <html suppressHydrationWarning lang={locale}>
-      <body className={`${inter.variable}  bg-primary no-scrollbar`}>
+    <html suppressHydrationWarning lang="en">
+      <body
+        className={`${inter.variable} ${geistMono.variable} bg-surface-0 text-text-1 no-scrollbar`}
+      >
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
-        <TolgeeNextProvider language={locale} staticData={staticData}>
-          <WagmiProvider>
-            <HyperLiquidInitializer />
-            <WalletModalProvider>
-              <EstablishConnectionProvider>
-                <div className="overscroll-none">
-                  {/* <SnackBar /> */}
-                  <Header />
-                  <OnboardingModal />
-                  <DynamicUseToastOptions />
-                  {children}
-                </div>
-              </EstablishConnectionProvider>
-            </WalletModalProvider>
-          </WagmiProvider>
-        </TolgeeNextProvider>
+        <WagmiProvider>
+          <HyperLiquidInitializer />
+          <WalletModalProvider>
+            <EstablishConnectionProvider>
+              <div className="overscroll-none">
+                <Header />
+                <OnboardingModal />
+                <DynamicUseToastOptions />
+                {children}
+              </div>
+            </EstablishConnectionProvider>
+          </WalletModalProvider>
+        </WagmiProvider>
       </body>
     </html>
   )

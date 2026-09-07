@@ -1,9 +1,6 @@
 import { cn } from '@/lib/utils'
 import { useUserFee } from '@/hooks/useUserFee'
-import { useTranslate } from '@tolgee/react'
-
 const Fees = ({ isSpot, isRTL }: { isSpot: boolean; isRTL: boolean }) => {
-  const { t } = useTranslate()
   const { data: userFeeData } = useUserFee()
 
   const referralDiscount = userFeeData
@@ -24,7 +21,7 @@ const Fees = ({ isSpot, isRTL }: { isSpot: boolean; isRTL: boolean }) => {
 
   return (
     <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
-      <p className="text-white/70">{t('Fees')}</p>
+      <p className="text-white/70">{'Fees'}</p>
       <p className="text-white">{feeText}</p>
     </div>
   )

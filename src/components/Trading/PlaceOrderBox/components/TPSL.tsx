@@ -1,8 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import useUserStore from '@/store/userStore'
-import { useTranslate } from '@tolgee/react'
 import { useState, useEffect, useRef } from 'react'
 
 interface TPSLProps {
@@ -20,8 +18,7 @@ export type TPSLType = {
 }
 
 const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
-  const { t } = useTranslate()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
 
   // Local string state for inputs - allows uninterrupted typing
   const [tpValueStr, setTpValueStr] = useState('')
@@ -40,12 +37,12 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   const errorMessage =
     tpValueError || tpPctError
       ? isBuy
-        ? t('TP must be above entry price')
-        : t('TP must be below entry price')
+        ? 'TP must be above entry price'
+        : 'TP must be below entry price'
       : slValueError || slPctError
         ? isBuy
-          ? t('SL must be below entry price')
-          : t('SL must be above entry price')
+          ? 'SL must be below entry price'
+          : 'SL must be above entry price'
         : ''
 
   // Track which field is currently focused to avoid overwriting during typing
@@ -268,7 +265,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
   return (
     <div className="w-full flex flex-col gap-4">
       <label htmlFor="tpsl" className={cn('text-xs font-semibold', isRTL && 'text-end')}>
-        {t('Set Take Profit and Stop Loss Values')}
+        {'Set Take Profit and Stop Loss Values'}
       </label>
 
       <div className="flex flex-col gap-2 w-full">
@@ -286,7 +283,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL ? 'text-end' : 'text-start'
               )}
             >
-              {t('TP Value')}
+              {'TP Value'}
             </span>
             <span
               className={cn(
@@ -294,7 +291,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL ? 'text-start' : 'text-end'
               )}
             >
-              {t('TP %')}
+              {'TP %'}
             </span>
           </div>
           <div className={cn('flex items-center gap-2 w-full', isRTL && 'flex-row-reverse')}>
@@ -341,7 +338,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL && 'text-end'
               )}
             >
-              {t('SL Value')}
+              {'SL Value'}
             </span>
             <span
               className={cn(
@@ -349,7 +346,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL && 'text-start'
               )}
             >
-              {t('SL %')}
+              {'SL %'}
             </span>
           </div>
           <div className={cn('flex items-center gap-2 w-full', isRTL && 'flex-row-reverse')}>
@@ -390,7 +387,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         className={cn('w-full', hasError && 'border-red text-red cursor-not-allowed')}
         disabled={hasError}
       >
-        {hasError ? errorMessage : tpsl.isTpsl ? t('Clear TP/SL') : t('Set TP/SL')}
+        {hasError ? errorMessage : tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
       </Button>
     </div>
   )

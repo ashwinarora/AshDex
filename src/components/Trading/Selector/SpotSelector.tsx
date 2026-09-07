@@ -28,7 +28,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 // import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
-import { useTranslate } from '@tolgee/react'
 import { useRouter } from 'next/navigation'
 
 interface ISelectorProps {
@@ -37,7 +36,6 @@ interface ISelectorProps {
 }
 
 const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
-  const { t } = useTranslate()
   const { spotAssetContext } = useHyperliquidStore(
     useShallow((state) => ({
       spotAssetContext: state.spotAssetContext
@@ -56,15 +54,15 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
   const router = useRouter()
   // const tabs = useMemo(
   //   () => [
-  //     { label: t('All'), icon: null },
-  //     { label: t('New'), icon: <IconRosette className="size-3" /> },
-  //     { label: t('Favorites'), icon: <IconStarFilled className="size-3" /> },
-  //     { label: t('AI'), icon: <IconBrain className="size-3" /> },
-  //     { label: t('Defi'), icon: <IconAdjustmentsDollar className="size-3" /> },
-  //     { label: t('Gaming'), icon: <IconDeviceGamepad2 className="size-3" /> },
-  //     { label: t('Meme'), icon: <IconMeteor className="size-3" /> }
+  //     { label: 'All', icon: null },
+  //     { label: 'New', icon: <IconRosette className="size-3" /> },
+  //     { label: 'Favorites', icon: <IconStarFilled className="size-3" /> },
+  //     { label: 'AI', icon: <IconBrain className="size-3" /> },
+  //     { label: 'Defi', icon: <IconAdjustmentsDollar className="size-3" /> },
+  //     { label: 'Gaming', icon: <IconDeviceGamepad2 className="size-3" /> },
+  //     { label: 'Meme', icon: <IconMeteor className="size-3" /> }
   //   ],
-  //   [t]
+  //   []
   // )
 
   const selectedAssetContext = useMemo(() => {
@@ -96,7 +94,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
 
     return [
       {
-        label: t('Price'),
+        label: 'Price',
         value: selectedAssetContext?.markPx ? (
           <ReactiveText
             className="text-xs"
@@ -109,12 +107,12 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       },
       {
-        label: t('24h Change'),
+        label: '24h Change',
         value: changeString ?? <Skeleton />,
         color: changeString?.includes('+') ? 'text-green' : 'text-red'
       },
       {
-        label: t('24h Volume'),
+        label: '24h Volume',
         value: selectedAssetContext?.dayNtlVlm ? (
           <ReactiveText
             className="text-xs"
@@ -127,7 +125,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       },
       {
-        label: t('Market Cap'),
+        label: 'Market Cap',
         value: selectedAssetContext?.midPx ? (
           <ReactiveText
             className="text-xs"
@@ -142,7 +140,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       },
       {
-        label: t('Contract'),
+        label: 'Contract',
         value: tokenContract ? (
           <div className="group flex gap-1 cursor-pointer">
             <a
@@ -159,7 +157,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         )
       }
     ]
-  }, [selectedAssetContext, tokenContract, t])
+  }, [selectedAssetContext, tokenContract])
 
   // Memoize the favorite toggle handler
   const handleToggleFavorite = useCallback(
@@ -223,7 +221,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
               <Input
                 type="text"
                 dir={isRTL ? 'rtl' : 'ltr'}
-                placeholder={t('Search for an asset')}
+                placeholder={'Search for an asset'}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className={cn('p-2 focus:outline-none w-full text-start text-white text-sm')}

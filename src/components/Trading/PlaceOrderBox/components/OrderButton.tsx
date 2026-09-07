@@ -14,7 +14,6 @@ import { useShallow } from 'zustand/react/shallow'
 import { placePerpOrder } from './placePerpOrder'
 import { placeSpotOrder } from './placeSpotOrder'
 import { useUserFee } from '@/hooks/useUserFee'
-import { useTranslate } from '@tolgee/react'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
@@ -54,7 +53,6 @@ const OrderButton = ({
   isMarket,
   isError
 }: OrderButtonProps) => {
-  const { t } = useTranslate()
   const { isConnected: isWalletConnected } = useConnection()
   const {
     agentWallet,
@@ -112,7 +110,7 @@ const OrderButton = ({
   if (!isWalletConnected) {
     return (
       <Button onClick={openConnectWalletModal} className="w-full font-semibold cursor-pointer">
-        <IconWallet className="w-4 h-4" /> {t('Connect Wallet')}
+        <IconWallet className="w-4 h-4" /> {'Connect Wallet'}
       </Button>
     )
   }
@@ -123,7 +121,7 @@ const OrderButton = ({
         className="w-full font-semibold cursor-pointer"
       >
         {' '}
-        {t('Enable Trading')}
+        {'Enable Trading'}
       </Button>
     )
   }
@@ -219,7 +217,7 @@ const OrderButton = ({
       disabled={isInvalid || isError}
       variant={isInvalid || isError ? 'destructive' : 'default'}
     >
-      {isSpot ? (isBuy ? t('Buy') : t('Sell')) : isBuy ? t('Long') : t('Short')}
+      {isSpot ? (isBuy ? 'Buy' : 'Sell') : isBuy ? 'Long' : 'Short'}
     </Button>
   )
 }

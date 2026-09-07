@@ -5,7 +5,6 @@ import * as DialogPrimitive from '@radix-ui/react-dialog'
 
 import { cn } from '@/lib/utils'
 import { IconX } from '@tabler/icons-react'
-import useUserStore from '@/store/userStore'
 
 function Dialog({
   open,
@@ -86,7 +85,7 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean
 }) {
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   return (
     <DialogPortal data-slot="dialog-portal">
       <DialogOverlay />
@@ -117,7 +116,7 @@ function DialogContent({
 }
 
 function DialogHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
+  const isRTL = false
   return (
     <div
       data-slot="dialog-header"

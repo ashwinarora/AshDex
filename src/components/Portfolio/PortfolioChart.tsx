@@ -16,7 +16,6 @@ import { UseQueryResult } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { formatWithKMB } from '@/utils/format'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 import * as hl from '@nktkas/hyperliquid'
 
 const chartConfig = {
@@ -32,7 +31,6 @@ const PortfolioChart = ({
   portfolioQuery: UseQueryResult<hl.PortfolioResponse | undefined, Error>
   isRTL: boolean
 }) => {
-  const { t } = useTranslate()
   const [selectedChart, setSelectedChart] = useState<{
     pnlType: 'unrealized' | 'realized' | 'total'
     type: 'area' | 'calendar'
@@ -122,14 +120,14 @@ const PortfolioChart = ({
             value="area"
           >
             <IconTimeline className="size-4" />
-            {t('Performance')}
+            {'Performance'}
           </ToggleGroupItem>
           <ToggleGroupItem
             className={cn('w-32 bg-white/10', isRTL ? 'rounded-l-md' : 'rounded-r-md')}
             value="calendar"
           >
             <IconCalendarWeek className="size-4" />
-            {t('Calendar')}
+            {'Calendar'}
           </ToggleGroupItem>
         </ToggleGroup>
         {selectedChart.type === 'area' ? (
@@ -145,9 +143,9 @@ const PortfolioChart = ({
                   {selectedChart.account === 'perp'
                     ? selectedChart.range
                         .split('perp')
-                        .map((item) => t(item.charAt(0).toUpperCase() + item.slice(1)))
+                        .map((item) => item.charAt(0).toUpperCase() + item.slice(1))
                         .join(' ')
-                    : t(selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1))}
+                    : selectedChart.range.charAt(0).toUpperCase() + selectedChart.range.slice(1)}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -160,7 +158,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Day')}</p>
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Day'}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -170,7 +168,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Week')}</p>
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Week'}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -180,7 +178,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('Month')}</p>
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Month'}</p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() =>
@@ -190,14 +188,14 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{t('All Time')}</p>
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'All Time'}</p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/10 rounded-md">
-                  {selectedChart.account === 'accountValue' ? t('Total Equity') : t('Perps Equity')}
+                  {selectedChart.account === 'accountValue' ? 'Total Equity' : 'Perps Equity'}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -211,7 +209,7 @@ const PortfolioChart = ({
                   }
                 >
                   <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                    {t('Total Equity')}
+                    {'Total Equity'}
                   </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -223,7 +221,7 @@ const PortfolioChart = ({
                   }
                 >
                   <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                    {t('Perps Equity')}
+                    {'Perps Equity'}
                   </p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -235,12 +233,10 @@ const PortfolioChart = ({
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-white/10 rounded-md">
                   {selectedChart.pnlType === 'total'
-                    ? t('Total PnL')
-                    : t(
-                        selectedChart.pnlType.charAt(0).toUpperCase() +
-                          selectedChart.pnlType.slice(1) +
-                          ' PnL'
-                      )}
+                    ? 'Total PnL'
+                    : selectedChart.pnlType.charAt(0).toUpperCase() +
+                      selectedChart.pnlType.slice(1) +
+                      ' PnL'}
                   <IconChevronDown className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -254,7 +250,7 @@ const PortfolioChart = ({
                   }
                 >
                   <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                    {t('Unrealized PnL')}
+                    {'Unrealized PnL'}
                   </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -266,7 +262,7 @@ const PortfolioChart = ({
                   }
                 >
                   <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                    {t('Realized PnL')}
+                    {'Realized PnL'}
                   </p>
                 </DropdownMenuItem>
                 <DropdownMenuItem
@@ -277,9 +273,7 @@ const PortfolioChart = ({
                     }))
                   }
                 >
-                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>
-                    {t('Total PnL')}
-                  </p>
+                  <p className={cn('w-full', isRTL ? 'text-end' : 'text-start')}>{'Total PnL'}</p>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

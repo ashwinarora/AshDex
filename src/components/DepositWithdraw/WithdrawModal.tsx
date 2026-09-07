@@ -10,9 +10,6 @@ import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuTrigger } from '../ui/dropdown-menu'
 import { toast } from 'sonner'
 import { useShallow } from 'zustand/react/shallow'
-import { useTranslate } from '@tolgee/react'
-import useUserStore from '@/store/userStore'
-import { cn } from '@/lib/utils'
 import Loading from '../loading-screen'
 
 interface WithdrawModalProps {
@@ -21,7 +18,6 @@ interface WithdrawModalProps {
 }
 
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
-  const { t } = useTranslate()
   const { address, chainId } = useConnection()
   const [amount, setAmount] = useState<string>('')
   const { clearingHouseState, sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
@@ -34,18 +30,17 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const [isLoading, setIsLoading] = useState(false)
   const switchChain = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const handleSwitchChain = async () => {
-    const toastId = toast.loading(t('Switching to Arbitrum network...'))
+    const toastId = toast.loading('Switching to Arbitrum network...')
     await switchChain
       .mutateAsync({ chainId: supportedChain })
       .then(() => {
-        toast.success(t('Switched to Arbitrum network.'), {
+        toast.success('Switched to Arbitrum network.', {
           id: toastId
         })
       })
       .catch(() => {
-        toast.error(t('Failed to switch to Arbitrum network.'), {
+        toast.error('Failed to switch to Arbitrum network.', {
           id: toastId
         })
       })
@@ -55,7 +50,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     if (!chainId) return
     if (!sdkUserSignerClient) return
     if (!address) return
-    const toastId = toast.loading(t('Signing in progress...'))
+    const toastId = toast.loading('Signing in progress...')
     setIsLoading(true)
     try {
       const res = await sdkUserSignerClient.withdraw3({
@@ -73,14 +68,14 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
         address: address
       })
       onClose()
-      toast.success(t('Withdrawal confirmed.'), {
+      toast.success('Withdrawal confirmed.', {
         id: toastId
       })
     } catch (error) {
       setIsLoading(false)
       onClose()
       console.error('Error withdrawing:', error)
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     } finally {
@@ -92,19 +87,19 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Withdraw to Wallet')}</DialogTitle>
+          <DialogTitle>{'Withdraw to Wallet'}</DialogTitle>
           <DialogDescription>
-            {t(
+            {
               'USDC will be sent over the Arbitrum network to your address. A $1 USDC fee will be deducted from the withdrawal amount. Processing usually takes under 5 minutes.'
-            )}
+            }
           </DialogDescription>
         </DialogHeader>
         <Separator />
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Withdrawal in progress...')}
-              subTitle={t('You will need to sign this transaction in your wallet:')}
+              title={'Withdrawal in progress...'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -112,15 +107,10 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div
-                  className={cn(
-                    'flex items-center justify-between text-xs text-white/70',
-                    isRTL && 'flex-row-reverse'
-                  )}
-                >
-                  <p>{t('Amount')}</p>
+                <div className="flex items-center justify-between text-xs text-white/70">
+                  <p>{'Amount'}</p>
                   <div className="flex items-center gap-1">
-                    {t('Available to withdraw:')}
+                    {'Available to withdraw:'}
                     <Button
                       variant="link"
                       onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
@@ -130,11 +120,11 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     </Button>
                   </div>
                 </div>
-                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+                <div className="flex items-center gap-2">
                   <Input
                     type="text"
                     id="amount"
-                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
+                    className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
                   />
@@ -158,7 +148,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   await handleSwitchChain()
                 }}
               >
-                {t('Switch to Arbitrum')}
+                {'Switch to Arbitrum'}
               </Button>
             ) : (
               <Button
@@ -168,7 +158,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   await onWithdrawClick()
                 }}
               >
-                {t('Withdraw')}
+                {'Withdraw'}
               </Button>
             )}
           </>

@@ -36,7 +36,6 @@ import { PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
-import { useTranslate } from '@tolgee/react'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -123,7 +122,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         sdkL1ActionClient: state.sdkL1ActionClient
       }))
     )
-  const { t } = useTranslate()
   const [totalUsd, setTotalUsd] = useState<number>()
   const [totalAssetSize, setTotalAssetSize] = useState<number>()
   const [startPrice, setStartPrice] = useState<number>()
@@ -212,7 +210,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     })
     if (maxAllowedLeverage && leverage > maxAllowedLeverage) {
       toast.error(
-        `${t('Selected leverage')} (${leverage}x) ${t('exceeds max allowed')} (${maxAllowedLeverage}x) ${t('for total notional')} $${totalNotional.toLocaleString()}`
+        `${'Selected leverage'} (${leverage}x) ${'exceeds max allowed'} (${maxAllowedLeverage}x) ${'for total notional'} $${totalNotional.toLocaleString()}`
       )
       return
     }
@@ -227,7 +225,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       return
     }
 
-    const toastId = toast.loading(`${t('Placing')} ${totalOrders} ${t('orders')}...`)
+    const toastId = toast.loading(`${'Placing'} ${totalOrders} ${'orders'}...`)
     try {
       if (!sdkL1ActionClient) return
       const adjustedBuilderFee = getAdjustedBuilderFee()
@@ -251,7 +249,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       const status = placeOrderRes.response.data.statuses[0]
       if ('error' in status) {
         console.error('Order placement error:', status.error)
-        toast.error(t('Something went wrong, check the console or contact support'), {
+        toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
       } else if ('filled' in status) {
@@ -259,19 +257,19 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
         toast.success(
-          `${filled.totalSz} ${assetName} ${action} ${t('at an average price of')} ${filled.avgPx}`,
+          `${filled.totalSz} ${assetName} ${action} ${'at an average price of'} ${filled.avgPx}`,
           {
             id: toastId
           }
         )
       } else if ('resting' in status) {
-        toast.success(t('Order Placed Successfully'), {
+        toast.success('Order Placed Successfully', {
           id: toastId
         })
       }
     } catch (error) {
       console.error('Error placing order:', error)
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -333,7 +331,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         />
         <Separator orientation="horizontal" />
         <label htmlFor="startPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
-          {t('Start Price')}
+          {'Start Price'}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -369,7 +367,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           </DropdownMenu> */}
         </div>
         <label htmlFor="endPrice" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
-          {t('End Price')}
+          {'End Price'}
         </label>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
           <Input
@@ -389,16 +387,16 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             disabled={true}
           >
             <IconRefresh className="size-3" />
-            {t('Last')}
+            {'Last'}
           </Button> */}
         </div>
         <Separator orientation="horizontal" />
         <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
           <label htmlFor="percent" className={cn('text-xs text-white/70', isRTL && 'text-end')}>
-            {t('Total Size')}
+            {'Total Size'}
           </label>
           <p className="text-xs text-white/20">
-            {t('Max')}: {maxAllowedUsd} USDC
+            {'Max'}: {maxAllowedUsd} USDC
           </p>
         </div>
         <div className={cn('flex w-full gap-3 items-center', isRTL && 'flex-row-reverse')}>
@@ -498,7 +496,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             onPressedChange={setIsReduceOnly}
           >
             {isReduceOnly ? <IconCheckbox className="size-3" /> : <IconSquare className="size-3" />}
-            <p className="text-xs font-semibold">{t('Reduce Only')}</p>
+            <p className="text-xs font-semibold">{'Reduce Only'}</p>
             <IconInfoCircle className="size-3" />
           </Toggle>
           <Popover>
@@ -511,7 +509,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                {t('Order Count')}
+                {'Order Count'}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -521,7 +519,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                   htmlFor="orderCount"
                   className={cn('text-xs text-white/70', isRTL && 'text-end')}
                 >
-                  {t('Order Count')}
+                  {'Order Count'}
                 </label>
                 <div className={cn('flex items-center gap-3 rounded-lg')}>
                   <Button onClick={handleDecrease} size={'sm'} variant={'outline'}>
@@ -555,7 +553,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 )}
                 size={'sm'}
               >
-                {t('Skew')}
+                {'Skew'}
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
@@ -565,7 +563,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                   htmlFor="sizeSkew"
                   className={cn('text-xs text-white/70', isRTL && 'text-end')}
                 >
-                  {t('Size Skew')}
+                  {'Size Skew'}
                 </label>
                 <Input
                   type="text"
@@ -589,7 +587,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               className="flex items-center gap-2"
             >
               <IconWallet className="size-4" />
-              <span className="font-semibold">{t('Connect Wallet')}</span>
+              <span className="font-semibold">{'Connect Wallet'}</span>
             </Button>
           ) : !isAgentApproved || currentFeeApproval === 0 ? (
             <Button
@@ -597,7 +595,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               // className="flex items-center gap-1 ml-auto font-medium text-xs align-middle cursor-pointer"
               onClick={async () => openAgentModal()}
             >
-              {t('Enable Trading')}
+              {'Enable Trading'}
             </Button>
           ) : (
             <Button
@@ -611,7 +609,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
             >
-              {t('Scale Buy')} ({totalOrders} {t('Orders')})
+              {'Scale Buy'} ({totalOrders} {'Orders'})
             </Button>
           )}
         </div>

@@ -15,19 +15,16 @@ import {
   IconStar
 } from '@tabler/icons-react'
 import { Button } from '../ui/button'
-import clsx from 'clsx'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { isWhitelistedPerpPair, isWhitelistedSpotPair } from '@/utils/whitelist'
 
-const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => {
+const FavoriteStrip = ({ width }: { width?: number }) => {
   const isSpot = useIsSpot()
   const router = useRouter()
   const { spotKeyToName, spotKeyToBaseName } = useSpotMeta()
   const { favorites, displayMode, setDisplayMode } = useFavorites(isSpot)
   const favoriteStripRef = useRef<HTMLDivElement>(null)
-  const { t } = useTranslate()
   const scrollRight = () => {
     if (favoriteStripRef.current) {
       favoriteStripRef.current.scrollBy({
@@ -53,7 +50,7 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
         className="flex items-center gap-2 justify-center bg-secondary p-1 rounded-md !h-10 overflow-hidden"
       >
         <IconStar className="size-3 text-white/20" />
-        <p className="text-white/20 text-sm">{t('No assets added to favorites.')}</p>
+        <p className="text-white/20 text-sm">No assets added to favorites.</p>
       </div>
     )
   }
@@ -62,8 +59,7 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
     <div
       style={{ width: width }}
       className={cn(
-        'flex bg-secondary p-1 rounded-md !h-10 relative overflow-hidden',
-        isRTL ? 'flex-row-reverse pl-32' : 'pr-32',
+        'flex bg-secondary p-1 rounded-md !h-10 relative overflow-hidden pr-32',
         width ? 'w-fit' : 'w-full'
       )}
     >
@@ -73,13 +69,13 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
       >
         <ToggleGroup
           type="single"
-          className={clsx('flex items-center gap-2 h-full', isRTL ? 'flex-row-reverse' : '')}
+          className="flex items-center gap-2 h-full"
           onValueChange={(asset) => {
             if (!asset.length) return
             router.push(`${isSpot ? '/spot/' : '/'}${isSpot ? spotKeyToName.get(asset) : asset}`)
           }}
         >
-          {(isRTL ? Array.from(favorites).reverse() : Array.from(favorites))
+          {Array.from(favorites)
             .filter((favorite) => {
               if (!isSpot) {
                 return isWhitelistedPerpPair(favorite.split('-')[0], favorite.split('-')[1])
@@ -92,20 +88,14 @@ const FavoriteStrip = ({ isRTL, width }: { isRTL: boolean; width?: number }) => 
             .map((favorite, index) => (
               <Fragment key={favorite}>
                 <FavoriteItem assetKey={favorite} />
-                {index !==
-                  (isRTL ? Array.from(favorites).reverse() : Array.from(favorites)).length - 1 && (
+                {index !== Array.from(favorites).length - 1 && (
                   <Separator orientation="vertical" className="!h-full last:hidden" />
                 )}
               </Fragment>
             ))}
         </ToggleGroup>
       </div>
-      <div
-        className={clsx(
-          'flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1',
-          isRTL ? 'left-0' : 'right-0'
-        )}
-      >
+      <div className="flex items-center justify-center absolute right-0 top-0 !p-1 w-fit h-full gap-1">
         <Button onClick={scrollLeft} variant="outline" size="icon" className="h-full aspect-square">
           <IconChevronLeft className="size-4 text-white" />
         </Button>

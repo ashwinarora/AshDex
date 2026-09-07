@@ -12,9 +12,6 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import Loading from '../loading-screen'
 import { toast } from 'sonner'
-import { useTranslate } from '@tolgee/react'
-import { cn } from '@/lib/utils'
-import useUserStore from '@/store/userStore'
 import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface DepositModalProps {
@@ -23,7 +20,6 @@ interface DepositModalProps {
 }
 
 const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
-  const { t } = useTranslate()
   const { address, chainId } = useConnection()
   const switchChain = useSwitchChain()
   const { closeDepositModal, isDepositModalOpen } = useAgentApproval()
@@ -40,20 +36,19 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     }
   })
   const { writeContractAsync } = useWriteContract()
-  const isRTL = useUserStore((state) => state.preferredLanguage === 'ar-SA')
   const supportedChain = isTestnet ? 421614 : 42161
 
   const handleSwitchChain = async () => {
-    const toastId = toast.loading(t('Switching to Arbitrum network...'))
+    const toastId = toast.loading('Switching to Arbitrum network...')
     await switchChain
       .mutateAsync({ chainId: supportedChain })
       .then(() => {
-        toast.success(t('Switched to Arbitrum network.'), {
+        toast.success('Switched to Arbitrum network.', {
           id: toastId
         })
       })
       .catch(() => {
-        toast.error(t('Failed to switch to Arbitrum network.'), {
+        toast.error('Failed to switch to Arbitrum network.', {
           id: toastId
         })
       })
@@ -64,7 +59,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       await switchChain.mutateAsync({ chainId: 42161 })
     }
     if (!usdc) return
-    const toastId = toast.loading(t('Deposit in progress...'))
+    const toastId = toast.loading('Deposit in progress...')
     try {
       setIsLoading(true)
       await writeContractAsync({
@@ -76,14 +71,14 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
       setIsLoading(false)
       onClose?.()
       closeDepositModal()
-      toast.success(t('Deposit confirmed. Balance will update on the next block.'), {
+      toast.success('Deposit confirmed. Balance will update on the next block.', {
         id: toastId
       })
     } catch (error) {
       console.error('Deposit error:', error)
       onClose?.()
       closeDepositModal()
-      toast.error(t('Deposit failed. Please try again.'), {
+      toast.error('Deposit failed. Please try again.', {
         id: toastId
       })
     }
@@ -93,14 +88,14 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
     <Dialog open={isOpen || isDepositModalOpen} onOpenChange={onClose || closeDepositModal}>
       <DialogContent onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Deposit to Nexon')}</DialogTitle>
-          <DialogDescription>{t('Deposit USDC from Arbitrum to Nexon')}</DialogDescription>
+          <DialogTitle>{'Deposit to AshDex'}</DialogTitle>
+          <DialogDescription>{'Deposit USDC from Arbitrum to AshDex'}</DialogDescription>
         </DialogHeader>
         {isLoading ? (
           <div className="flex items-center justify-center w-full h-full">
             <Loading
-              title={t('Deposit in progress...')}
-              subTitle={t('You will need to sign this transaction in your wallet:')}
+              title={'Deposit in progress...'}
+              subTitle={'You will need to sign this transaction in your wallet:'}
               className="py-[1rem] px-[1rem]"
             />
           </div>
@@ -108,28 +103,23 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
           <>
             <div className="flex flex-col gap-4">
               <div className="flex flex-col gap-2">
-                <div
-                  className={cn(
-                    'flex items-center justify-between text-xs text-white/70',
-                    isRTL && 'flex-row-reverse'
-                  )}
-                >
-                  <p>{t('Amount')}</p>
+                <div className="flex items-center justify-between text-xs text-white/70">
+                  <p>{'Amount'}</p>
                   <div className="flex items-center gap-1">
                     <Button
                       onClick={() => setAmount(balance ?? 0n)}
                       variant="link"
                       className="text-xs h-fit p-0"
                     >
-                      {t('Use Max')}: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
+                      {'Use Max'}: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
                     </Button>
                   </div>
                 </div>
-                <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>
+                <div className="flex items-center gap-2">
                   <Input
                     type="text"
                     id="amount"
-                    className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
+                    className="text-start flex-1 h-10"
                     value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
                     onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
                   />
@@ -147,7 +137,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
             <Separator />
             {chainId !== supportedChain ? (
               <Button className="w-full" onClick={handleSwitchChain}>
-                {t('Switch to Arbitrum')}
+                {'Switch to Arbitrum'}
               </Button>
             ) : (
               <Button
@@ -155,7 +145,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                 disabled={!amount || parseFloat(amount.toString()) === 0}
                 onClick={onDepositClick}
               >
-                {t('Deposit')}
+                {'Deposit'}
               </Button>
             )}
           </>

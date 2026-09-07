@@ -15,8 +15,6 @@ import { IconChevronDown, IconPercentage } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
-import { useTranslate } from '@tolgee/react'
-
 interface AmountInputSpotProps {
   selectedAsset: string
   assetAmount: string
@@ -42,7 +40,6 @@ const AmountInputSpot = ({
   isRTL,
   setIsError
 }: AmountInputSpotProps) => {
-  const { t } = useTranslate()
   const { spotState } = useHyperliquidStore(
     useShallow((state) => ({
       spotState: state.spotState
@@ -187,9 +184,9 @@ const AmountInputSpot = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{t('Amount')}</p>
+        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{'Amount'}</p>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
-          {t('Available to Trade')} = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : selectedAssetName}
+          {'Available to Trade'} = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : selectedAssetName}
         </label>
       </div>
       <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>

@@ -6,62 +6,46 @@ import step1 from '@/assets/images/onboarding/step1.png'
 import step2 from '@/assets/images/onboarding/step2.png'
 import step3 from '@/assets/images/onboarding/step3.png'
 import step4 from '@/assets/images/onboarding/step4.png'
-import nexonlogo from '@/assets/images/logo.svg'
+import ashdexLogo from '@/assets/images/logo.svg'
 import arrowrightlineicon from '@/assets/images/arrowrightline_icon.svg'
 import { toast } from 'sonner'
-import { useTranslate } from '@tolgee/react'
-import useUserStore from '@/store/userStore'
-import { setLanguage } from '@/tolgee/language'
 
 export default function OnboardingModal() {
   const [step, setStep] = useState(0)
   const [isOnboarded, setIsOnboarded] = useState(false)
   const [isClient, setIsClient] = useState(false)
-  const { t } = useTranslate()
-  const preferredLanguage = useUserStore((state) => state.preferredLanguage)
-  const isArabic = preferredLanguage === 'ar-SA'
   const totalSteps = 4
 
   const onboardingSteps = [
     {
-      title: t('Welcome to Nexon!'),
-      subtitle: t('The Future of DeFi is Here.'),
-      description: t(
-        'A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.'
-      ),
+      title: 'Welcome to AshDex.',
+      subtitle: 'Precision Derivatives, On-Chain.',
+      description:
+        'A fully decentralized, non-custodial, and on-chain platform for trading, lending, staking & predictions. You stay in control—always.',
       image: step1
     },
     {
-      title: t('Trade with Deep Liquidity'),
-      subtitle: t('Perpetual & Spot Trading, Fully On-Chain.'),
-      description: t(
-        'Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.'
-      ),
+      title: 'Trade with Deep Liquidity',
+      subtitle: 'Perpetual & Spot Trading, Fully On-Chain.',
+      description:
+        'Tap into deep liquidity while keeping full custody of your assets. No middlemen, no compromises—just pure decentralized trading.',
       image: step2
     },
     {
-      title: t('Earn, Borrow & Stake Securely'),
-      subtitle: t('Decentralized Lending, Borrowing & Staking.'),
-      description: t(
-        'Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.'
-      ),
+      title: 'Earn, Borrow & Stake Securely',
+      subtitle: 'Decentralized Lending, Borrowing & Staking.',
+      description:
+        'Earn yield, unlock liquidity, or stake assets to support the network—all on-chain, secure, and fully permissionless. Your assets, your rules.',
       image: step3
     },
     {
-      title: t('Predict & Get Rewarded'),
-      subtitle: t('A Transparent, On-Chain Prediction Market.'),
-      description: t(
-        'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn Nexon points for engaging with the ecosystem.'
-      ),
+      title: 'Predict & Get Rewarded',
+      subtitle: 'A Transparent, On-Chain Prediction Market.',
+      description:
+        'Make predictions on crypto, stocks & commodities—all verifiable on-chain. Earn AshDex points for engaging with the ecosystem.',
       image: step4
     }
   ]
-
-  const toggleLanguage = () => {
-    const newLang = isArabic ? 'en-US' : 'ar-SA'
-    useUserStore.setState({ preferredLanguage: newLang })
-    setLanguage(newLang)
-  }
 
   const skip = () => {
     setStep(onboardingSteps.length - 1)
@@ -81,16 +65,16 @@ export default function OnboardingModal() {
                 localStorage.setItem('onboarded', 'true')
               }
               setIsOnboarded(true)
-              toast.success(t('Welcome to Nexon!'))
+              toast.success('Welcome to AshDex.')
             }
           }}
           className={`${isLastStep ? 'w-full' : 'w-1/2'} bg-primary order-1 max-md:order-2 transition text-white px-6 py-2 rounded-xl text-md font-semibold cursor-pointer`}
         >
           {isLastStep ? (
-            <div className="flex justify-center items-center gap-2">{t('Start Exploring')}</div>
+            <div className="flex justify-center items-center gap-2">Start Exploring</div>
           ) : (
             <div className="flex items-center justify-center gap-2">
-              {t('Next')}
+              Next
               <Image src={arrowrightlineicon} alt="Next" style={{ width: 15, height: 'auto' }} />
             </div>
           )}
@@ -98,9 +82,9 @@ export default function OnboardingModal() {
         {!isLastStep && (
           <button
             onClick={skip}
-            className={`text-lg order-2 max-md:order-1 font-medium text-[#7D67FF] hover:text-gray-200 cursor-pointer`}
+            className="text-lg order-2 max-md:order-1 font-medium text-text-3 hover:text-text-1 cursor-pointer transition-colors"
           >
-            {t('Skip')}
+            Skip
           </button>
         )}
       </div>
@@ -109,7 +93,6 @@ export default function OnboardingModal() {
 
   useEffect(() => {
     setIsClient(true)
-    // Check if we're in the browser environment
     if (typeof window !== 'undefined') {
       const onboarded = localStorage.getItem('onboarded')
       if (onboarded) {
@@ -119,7 +102,6 @@ export default function OnboardingModal() {
     }
   }, [])
 
-  // Don't render anything until we're on the client side
   if (!isClient) {
     return null
   }
@@ -128,28 +110,16 @@ export default function OnboardingModal() {
     <div
       className={`fixed inset-0 bg-secondary/50 items-center justify-center z-50 ${isOnboarded ? 'hidden' : 'flex'}`}
     >
-      <div className="bg-[#0F0816] text-white max-md:max-w-sm max-w-3xl rounded-3xl shadow-2xl w-full flex flex-col md:flex-row max-md:py-3 max-md:px-2 p-4 relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2">
-        {/* Left Content */}
+      <div className="bg-surface-1 border border-border text-text-1 max-md:max-w-sm max-w-3xl rounded-2xl shadow-2xl w-full flex flex-col md:flex-row max-md:py-3 max-md:px-2 p-4 relative lg:static max-lg:fixed max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2">
         <div className="flex-1 flex flex-col justify-between max-md:px-2 max-md:py-3 p-6">
           <div className="space-y-2">
-            <div className="flex items-start justify-between">
-              <button
-                onClick={toggleLanguage}
-                className="text-xs text-white/50 hover:text-white/80 transition cursor-pointer bg-transparent border-none p-0 mb-2"
-              >
-                {isArabic ? 'Translate to English' : 'ترجمة إلى العربية'}
-              </button>
-            </div>
             <div className="flex items-center justify-between">
               <span className="text-2xl gap-x-1 flex items-center text-white/70 font-semibold">
-                <Image
-                  height={20}
-                  width={20}
-                  src={nexonlogo}
-                  alt="Nexon Logo"
-                  className="w-6 h-6"
-                />
-                Nexon
+                <Image height={20} width={20} src={ashdexLogo} alt="AshDex" className="w-6 h-6" />
+                <span className="tracking-tight">
+                  <span className="text-text-1">Ash</span>
+                  <span className="text-text-3">Dex</span>
+                </span>
               </span>
               <span className="text-sm bg-white/6 rounded-full py-1 px-2.5 text-white">
                 Step {step + 1} of {onboardingSteps.length}
@@ -162,7 +132,7 @@ export default function OnboardingModal() {
                     <div
                       key={index}
                       onClick={() => setStep(index)}
-                      className={`w-full h-[4px] flex cursor-pointer ${index <= step ? 'bg-gradient-to-b from-[#5F46F9] via-[#9D46F9] to-[#9D46F9] backdrop-blur-[40px]' : 'bg-primary/10'}`}
+                      className={`w-full h-[4px] rounded-full flex cursor-pointer ${index <= step ? 'bg-gradient-to-r from-accent-pressed to-accent-hover' : 'bg-surface-3'}`}
                     ></div>
                   )
                 })}
@@ -176,7 +146,6 @@ export default function OnboardingModal() {
           </div>
           <div className="max-md:hidden">{renderButton()}</div>
         </div>
-        {/* Right Image */}
         <div className="flex-1 max-md:px-0 p-4 flex items-center justify-center">
           <div className="transform transition-transform duration-300 hover:rotate-3 hover:scale-105 hover:shadow-2xl">
             <Image

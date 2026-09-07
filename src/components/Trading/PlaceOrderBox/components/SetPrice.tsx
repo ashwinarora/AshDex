@@ -12,8 +12,6 @@ import { IconRefresh } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { useTranslate } from '@tolgee/react'
-
 interface ISetLastPriceProps {
   selectedAsset: string
   limitPrice: string
@@ -33,7 +31,6 @@ const SetPrice = ({
   disabled = false,
   isRTL
 }: ISetLastPriceProps) => {
-  const { t } = useTranslate()
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
   const { allMids, perpsMeta } = useHyperliquidStore(
@@ -192,7 +189,7 @@ const SetPrice = ({
         onClick={() => setLimitPrice(getFormattedPrice())}
       >
         <IconRefresh className="size-3" />
-        {t('Last')}
+        {'Last'}
       </Button>
       {/* */}
     </div>

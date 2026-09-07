@@ -21,7 +21,6 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
-import { useTranslate } from '@tolgee/react'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
@@ -32,7 +31,6 @@ interface IsolatedMarginModalProps {
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { t } = useTranslate()
   const { clearingHouseState, perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -49,7 +47,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   const handleMarginChange = async () => {
     if (!asset) return
     const isBuy = Number(asset.szi) > 0
-    const toastId = toast.loading(t('Updating margin...'))
+    const toastId = toast.loading('Updating margin...')
     const realAmount = Number(amount) * 10 ** 6
     try {
       if (!sdkL1ActionClient) return
@@ -62,13 +60,13 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       })
       console.log(res)
       onClose()
-      toast.success(t('Margin updated successfully'), {
+      toast.success('Margin updated successfully', {
         id: toastId
       })
     } catch (error) {
       console.error(error)
       onClose()
-      toast.error(t('Something went wrong, check the console or contact support'), {
+      toast.error('Something went wrong, check the console or contact support', {
         id: toastId
       })
     }
@@ -78,18 +76,18 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="flex flex-col gap-4" onOpenAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>{t('Adjust Margin')}</DialogTitle>
+          <DialogTitle>{'Adjust Margin'}</DialogTitle>
           <DialogDescription>
-            {t(
+            {
               'Decrease the chance of liquidation by adding more margin or remove excess margin to use for other positions.'
-            )}
+            }
           </DialogDescription>
         </DialogHeader>
         <Separator />
         <div className="flex flex-col gap-4">
           <div className="flex justify-between items-center text-xs">
             <span className="text-white/70">
-              {t('Current margin for')} {asset?.coin}-USD
+              {'Current margin for'} {asset?.coin}-USD
             </span>
             <span className="font-medium text-white">
               {Number(asset?.marginUsed ?? 0).toLocaleString(undefined, {
@@ -100,7 +98,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             </span>
           </div>
           <div className="flex justify-between items-center text-xs">
-            <span className="text-white/70">{t('Margin available to add')}</span>
+            <span className="text-white/70">{'Margin available to add'}</span>
             <span className="font-medium text-white">
               {marginAvailable.toLocaleString(undefined, {
                 minimumFractionDigits: 2,
@@ -113,13 +111,13 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         <Separator />
         <div className="flex flex-col text-xs text-white/70 w-full gap-2">
           <div className="flex items-center justify-between">
-            <span>{t('Amount')}</span>
+            <span>{'Amount'}</span>
             <Button
               variant={'link'}
               className="p-0 h-fit"
               onClick={() => setAmount(marginAvailable.toString())}
             >
-              {t('Max')}
+              {'Max'}
             </Button>
           </div>
           <div className="flex items-center gap-2">
@@ -128,7 +126,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
               value={amount}
               className="h-10 text-start text-white"
               onChange={(e) => setAmount(e.target.value)}
-              placeholder={t('Amount')}
+              placeholder={'Amount'}
             />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -138,10 +136,8 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-20">
-                <DropdownMenuItem onClick={() => setAction('Add')}>{t('Add')}</DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setAction('Remove')}>
-                  {t('Remove')}
-                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAction('Add')}>{'Add'}</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAction('Remove')}>{'Remove'}</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -149,7 +145,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         {!address ? (
           <Button onClick={openConnectWalletModal} size={'sm'} className="flex items-center gap-2">
             <IconWallet className="size-4" />
-            <span className="font-semibold">{t('Connect Wallet')}</span>
+            <span className="font-semibold">{'Connect Wallet'}</span>
           </Button>
         ) : !isAgentApproved || currentFeeApproval === 0 ? (
           <Button
@@ -157,7 +153,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             className="w-full font-semibold cursor-pointer"
           >
             {' '}
-            {t('Enable Trading')}
+            {'Enable Trading'}
           </Button>
         ) : (
           <Button
@@ -165,7 +161,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
             className="w-full"
             disabled={!isAgentApproved || currentFeeApproval === 0}
           >
-            {t('Confirm')}
+            {'Confirm'}
           </Button>
         )}
       </DialogContent>
