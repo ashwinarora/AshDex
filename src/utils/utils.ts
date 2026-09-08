@@ -1,7 +1,7 @@
 import { bytesToHex, Hex, hexToBytes } from 'viem'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT, TOOLTIP_CONTENTS } from './constants'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
-import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
+import type { SpotAssetCtxsEvent } from '@nktkas/hyperliquid/api/subscription'
+import type { MetaResponse, SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 
 export const toHumanNumber = (
   value?: bigint | null,
@@ -58,7 +58,7 @@ export function splitSignature(signature: Hex) {
 }
 
 export const getPerpsUniverseIndex = (
-  universe: WebData2Event['meta']['universe'],
+  universe: MetaResponse['universe'],
   asset: string
 ): number => {
   return universe.findIndex((item) => item.name === asset)
@@ -71,7 +71,7 @@ export const getSpotAssetContext = ({
 }: {
   asset: string
   spotMeta: SpotMetaResponse
-  spotAssetContext: WebData2Event['spotAssetCtxs']
+  spotAssetContext: SpotAssetCtxsEvent
 }) => {
   const meta = spotMeta.universe.find((item) => item.name === asset)
   const context = spotAssetContext.find((item) => item.coin === asset)

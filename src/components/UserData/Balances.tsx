@@ -78,12 +78,14 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
   const combinedData = useMemo(() => {
     if (!isConnected) return []
 
+    const perpAcctVal = Number(clearingHouseState?.marginSummary?.accountValue ?? 0)
+    const perpWithdrawable = Number(clearingHouseState?.withdrawable ?? 0)
     const perpData = {
       coin: 'USDC(Perps)',
       token: 'USDC',
-      total: clearingHouseState?.marginSummary?.accountValue || '-',
-      hold: clearingHouseState?.withdrawable || '-',
-      usdcValue: Number(clearingHouseState?.marginSummary?.accountValue),
+      total: perpAcctVal,
+      hold: perpWithdrawable,
+      usdcValue: perpAcctVal,
       avgBuyPrice: '--',
       pnl: '--',
       pnlPercentage: '--',
@@ -95,25 +97,25 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         ?.filter((state): state is typeof state & { token: number } => 'token' in state)
         .map((state) => {
           const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
-          const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
-          const usdcValue = Number(state.total) * Number(markPx)
-          const pnl = usdcValue - Number(state.entryNtl)
-          const pnlPercentage = (pnl / Number(state.entryNtl)) * 100
+          const markPxRaw = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
+          const markPx = Number(markPxRaw)
+          const total = Number(state.total)
+          const entryNtl = Number(state.entryNtl)
+          const usdcValue = Number.isFinite(markPx) ? total * markPx : 0
+          const pnl = usdcValue - entryNtl
+          // Guard divide-by-zero: HL returns entryNtl = "0.0" for zero-cost
+          // dust balances, which would otherwise yield Infinity/NaN.
+          const pnlPercentage = entryNtl > 0 ? (pnl / entryNtl) * 100 : 0
 
           return {
             ...state,
             coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
-            entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
-            avgBuyPrice:
-              state.coin === 'USDC'
-                ? '--'
-                : Number(state.total) > 0
-                  ? Number(state.entryNtl) / Number(state.total)
-                  : '--',
+            entryNtl: state.coin === 'USDC' ? '--' : entryNtl,
+            avgBuyPrice: state.coin === 'USDC' ? '--' : total > 0 ? entryNtl / total : '--',
             pnl: state.coin === 'USDC' ? '--' : pnl,
             pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
-            usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
-            hold: Number(state.total) - Number(state.hold)
+            usdcValue: state.coin === 'USDC' ? total : usdcValue,
+            hold: total - Number(state.hold)
           }
         })
         .filter((state) => state.usdcValue > (isHideSmallBalances ? 1 : 0)) || []

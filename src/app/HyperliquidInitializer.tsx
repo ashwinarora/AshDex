@@ -14,14 +14,16 @@ const HyperLiquidInitializer = () => {
     sdkSubscriptionClient,
     sdkInfoClient,
     fetchPerpsMeta,
+    fetchSpotClearinghouseState,
+    fetchClearinghouseState,
     subscribeToAllMids,
     unsubscribeFromAllMids,
     subscribeAssetCtxs,
     unsubscribeAssetCtxs,
     subscribeSpotAssetCtxs,
     unsubscribeSpotAssetCtxs,
-    subscribeWebData2,
-    unsubscribeWebData2,
+    subscribeUserState,
+    unsubscribeUserState,
     subscribeLedgerUpdates,
     unsubscribeLedgerUpdates,
     checkWebSocketStatus,
@@ -35,15 +37,19 @@ const HyperLiquidInitializer = () => {
   }, [address, initSdk, walletClient])
 
   useEffect(() => {
-    if (!address) return
-    updateUserActiveAddress(address)
-    loadPendingWithdrawals(address)
-  }, [address, updateUserActiveAddress, loadPendingWithdrawals])
-
-  useEffect(() => {
     if (!sdkInfoClient) return
     fetchPerpsMeta().catch(console.error)
   }, [sdkInfoClient, fetchPerpsMeta])
+
+  // HTTP fallbacks — seed spot + perp state instantly on wallet connect so the
+  // UI has real numbers during the brief window before the WS subs deliver
+  // their first snapshot. The store setters no-op if the WS has already
+  // populated fresher data, so this is safe to run alongside the WS subs.
+  useEffect(() => {
+    if (!sdkInfoClient || !address) return
+    fetchSpotClearinghouseState(address).catch(console.error)
+    fetchClearinghouseState(address).catch(console.error)
+  }, [sdkInfoClient, address, fetchSpotClearinghouseState, fetchClearinghouseState])
 
   useEffect(() => {
     if (!sdkSubscriptionClient) return
@@ -72,23 +78,30 @@ const HyperLiquidInitializer = () => {
     }
   }, [sdkSubscriptionClient, subscribeSpotAssetCtxs, unsubscribeSpotAssetCtxs])
 
-  // webData2 delivers user-scoped state (positions / open orders / spot balances) —
-  // don't bother subscribing without a connected wallet, since it stays silent for zeroAddress.
+  // All address-keyed setup lives in one effect: set the active address, load
+  // pending withdrawals, and open the three user-scoped WS subs (spotState,
+  // clearinghouseState, openOrders). Doing this together guarantees that
+  // consumers of `userActiveAddress` see the right value before subs fire.
   useEffect(() => {
     if (!sdkSubscriptionClient || !address) return
-    subscribeWebData2(address)
-    return () => {
-      unsubscribeWebData2().catch(console.error)
-    }
-  }, [sdkSubscriptionClient, address, subscribeWebData2, unsubscribeWebData2])
-
-  useEffect(() => {
-    if (!sdkSubscriptionClient || !address) return
+    updateUserActiveAddress(address)
+    loadPendingWithdrawals(address)
+    subscribeUserState(address)
     subscribeLedgerUpdates(address)
     return () => {
+      unsubscribeUserState().catch(console.error)
       unsubscribeLedgerUpdates().catch(console.error)
     }
-  }, [sdkSubscriptionClient, address, subscribeLedgerUpdates, unsubscribeLedgerUpdates])
+  }, [
+    sdkSubscriptionClient,
+    address,
+    updateUserActiveAddress,
+    loadPendingWithdrawals,
+    subscribeUserState,
+    unsubscribeUserState,
+    subscribeLedgerUpdates,
+    unsubscribeLedgerUpdates
+  ])
 
   useEffect(() => {
     if (!sdkSubscriptionClient) return

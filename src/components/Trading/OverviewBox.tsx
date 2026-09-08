@@ -47,23 +47,29 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
     setCrossAccountValue(Number(clearingHouseState?.marginSummary?.accountValue) || 0)
     setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
 
-    const spotTokens = spotState?.balances
-    const spotUSDCBalance = spotTokens?.find((token) => token.coin === 'USDC')?.total || 0
+    const spotTokens = spotState?.balances ?? []
+    const spotUSDCBalance = Number(spotTokens.find((token) => token.coin === 'USDC')?.total ?? 0)
 
-    const spotTokenPrices =
-      spotTokens
-        ?.slice(1)
-        .filter((token): token is typeof token & { token: number } => 'token' in token)
-        .map((token) => {
-          const spotUniverse = spotMeta?.universe.find(
-            (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
-          )
-          const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0
-          return Number(token.total) * Number(price)
-        }) || []
+    // Filter by coin rather than `.slice(1)` — the old code assumed USDC was
+    // always at index 0 in the balances array. Also guard the universe lookup
+    // so a missing spot universe entry prices to 0 instead of accidentally
+    // reading `spotAssetContext[0]`.
+    const spotTokenPrices = spotTokens
+      .filter(
+        (token): token is typeof token & { token: number } =>
+          'token' in token && token.coin !== 'USDC'
+      )
+      .map((token) => {
+        const spotUniverse = spotMeta?.universe.find(
+          (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
+        )
+        const idx = spotUniverse?.index ?? -1
+        const price = Number(spotAssetContext[idx]?.markPx ?? 0)
+        return Number(token.total) * (Number.isFinite(price) ? price : 0)
+      })
 
     const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0)
-    setSpotAccountValue(totalSpotValue + Number(spotUSDCBalance))
+    setSpotAccountValue(totalSpotValue + spotUSDCBalance)
   }, [clearingHouseState, spotState, spotMeta, spotAssetContext])
 
   return (

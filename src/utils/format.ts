@@ -45,6 +45,10 @@ export const formatWithCommas = (input: string | number, toFixed: number = 2): s
     value = input
   }
 
+  // Non-finite inputs (NaN, Infinity from divide-by-zero, Number('-'), etc.)
+  // shouldn't leak the string "NaN" into the UI.
+  if (!Number.isFinite(value)) return '--'
+
   // Format with commas and remove trailing .00
   const formatted = value.toFixed(toFixed)
   const withoutTrailingZeros = formatted.replace(/\.?0+$/, '')

@@ -1,5 +1,5 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
@@ -29,7 +29,7 @@ export const placeSpotOrder = async ({
   tpsl?: TPSLType
   adjustedBuilderFee: number
   spotKeyToName: Map<string, string>
-  pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
+  pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
 }) => {
   if (!(spotMeta as SpotMetaResponse | undefined)?.tokens?.length) return
   if (!sdkL1ActionClient) return
@@ -132,7 +132,7 @@ export const placeSpotOrder = async ({
     if (!mainStatus) return
 
     // Optimistic push: add any resting orders (main and TP/SL triggers) to the Open Orders table.
-    const openOrders: WebData2Event['openOrders'] = []
+    const openOrders: FrontendOpenOrdersResponse = []
     for (let i = 0; i < statuses.length; i++) {
       const st = statuses[i]
       const meta = orderPayload[i]

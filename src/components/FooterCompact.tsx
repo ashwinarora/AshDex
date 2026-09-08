@@ -19,7 +19,7 @@ const FooterContent: FC = () => {
   )
   const [timeSinceUpdate, setTimeSinceUpdate] = useState({
     allMids: '',
-    webData2: '',
+    userState: '',
     candles: ''
   })
 
@@ -54,7 +54,7 @@ const FooterContent: FC = () => {
     const updateTime = () => {
       setTimeSinceUpdate({
         allMids: getTimeSinceLastUpdate('allMids'),
-        webData2: getTimeSinceLastUpdate('webData2'),
+        userState: getTimeSinceLastUpdate('userState'),
         candles: getTimeSinceLastUpdate('candles')
       })
     }
@@ -85,7 +85,7 @@ const FooterContent: FC = () => {
   const collectiveFreshness = [
     getFreshnessColor(timeSinceUpdate.allMids),
     getFreshnessColor(timeSinceUpdate.candles),
-    getFreshnessColor(timeSinceUpdate.webData2)
+    getFreshnessColor(timeSinceUpdate.userState)
   ]
 
   return (
@@ -140,10 +140,10 @@ const FooterContent: FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.userState)}`}
                 ></span>
                 <span>
-                  {'User Data'}: {timeSinceUpdate.webData2}
+                  {'User Data'}: {timeSinceUpdate.userState}
                 </span>
               </div>
             </div>

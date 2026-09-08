@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Dialog,
   DialogContent,
@@ -26,7 +26,7 @@ import { useWalletModal } from '@/context/WalletModalContext'
 interface LeverageModalProps {
   isOpen: boolean
   onClose: () => void
-  asset?: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
+  asset?: ClearinghouseStateResponse['assetPositions'][number]['position']
 }
 
 const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {

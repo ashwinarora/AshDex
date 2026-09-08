@@ -24,7 +24,7 @@ import {
   IconNotebook
 } from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { SPOT_DELTA } from '@/utils/constants'
 import {
@@ -41,7 +41,7 @@ import { Separator } from '@/components/ui/separator'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
-type FrontendOrderWithAssetKey = WebData2Event['openOrders'][number] & { assetKey: string }
+type FrontendOrderWithAssetKey = FrontendOpenOrdersResponse[number] & { assetKey: string }
 
 const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   const { isConnected } = useConnection()

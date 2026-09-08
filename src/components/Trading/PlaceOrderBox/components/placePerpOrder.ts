@@ -1,5 +1,9 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type {
+  ClearinghouseStateResponse,
+  FrontendOpenOrdersResponse,
+  MetaResponse
+} from '@nktkas/hyperliquid/api/info'
 import { TPSLType } from './TPSL'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
@@ -28,7 +32,7 @@ export const placePerpOrder = async ({
   selectedAsset: string
   isCross: boolean
   leverage: number
-  perpsMeta: WebData2Event['meta'] | null
+  perpsMeta: MetaResponse | null
   isPostOnly: boolean
   isBuy: boolean
   assetAmount: string
@@ -37,8 +41,8 @@ export const placePerpOrder = async ({
   adjustedBuilderFee: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
-  pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
-  pushNewPosition: (postion: WebData2Event['clearinghouseState']['assetPositions'][number]) => void
+  pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
+  pushNewPosition: (postion: ClearinghouseStateResponse['assetPositions'][number]) => void
 }) => {
   if (!perpsMeta) return
   const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -141,7 +145,7 @@ export const placePerpOrder = async ({
     console.log(placeOrderRes)
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
-    const openOrders: WebData2Event['openOrders'] = []
+    const openOrders: FrontendOpenOrdersResponse = []
     if (typeof status === 'object' && 'filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'

@@ -3,7 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
@@ -50,7 +50,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
+    ClearinghouseStateResponse['assetPositions'][number]['position'] | null
   >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
