@@ -142,7 +142,7 @@ export const placePerpOrder = async ({
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: WebData2Event['openOrders'] = []
-    if ('filled' in status) {
+    if (typeof status === 'object' && 'filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'
       const assetName = selectedAsset.split('-')[0]
@@ -174,7 +174,7 @@ export const placePerpOrder = async ({
           id: toastId
         }
       )
-    } else if ('resting' in status) {
+    } else if (typeof status === 'object' && 'resting' in status) {
       openOrders.push({
         oid: status.resting.oid,
         children: [],
@@ -197,8 +197,11 @@ export const placePerpOrder = async ({
         id: toastId
       })
     }
-    if ('resting' in status || 'filled' in status) {
-      const orderId = 'resting' in status ? status.resting.oid : status.filled.oid
+    if (typeof status === 'object' && ('resting' in status || 'filled' in status)) {
+      const orderId =
+        'resting' in status
+          ? status.resting.oid
+          : (status as { filled: { oid: number } }).filled.oid
       if (tpsl?.isTpsl) {
         const limitPxmultiplier = isBuy ? 0.92 : 1.08 // 8% buffer. Hyperliquid also uses 8% buffer for market orders.
         if (tpsl.takeProfit > 0) {

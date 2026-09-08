@@ -156,12 +156,12 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       console.log(placeOrderRes)
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
-      if ('error' in status) {
+      if (typeof status === 'object' && 'error' in status) {
         console.error('Order placement error:', status.error)
         toast.error('Something went wrong, check the console or contact support', {
           id: toastId
         })
-      } else if ('filled' in status) {
+      } else if (typeof status === 'object' && 'filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
         const assetName = selectedAsset.split('-')[0]
@@ -171,7 +171,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             id: toastId
           }
         )
-      } else if ('resting' in status) {
+      } else if (typeof status === 'object' && 'resting' in status) {
         toast.success('Order Placed Successfully', {
           id: toastId
         })

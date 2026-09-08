@@ -92,7 +92,8 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
 
     const spotData =
       spotState?.balances
-        ?.map((state) => {
+        ?.filter((state): state is typeof state & { token: number } => 'token' in state)
+        .map((state) => {
           const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
           const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
           const usdcValue = Number(state.total) * Number(markPx)

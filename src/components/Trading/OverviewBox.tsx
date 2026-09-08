@@ -51,13 +51,16 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
     const spotUSDCBalance = spotTokens?.find((token) => token.coin === 'USDC')?.total || 0
 
     const spotTokenPrices =
-      spotTokens?.slice(1).map((token) => {
-        const spotUniverse = spotMeta?.universe.find(
-          (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
-        )
-        const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0
-        return Number(token.total) * Number(price)
-      }) || []
+      spotTokens
+        ?.slice(1)
+        .filter((token): token is typeof token & { token: number } => 'token' in token)
+        .map((token) => {
+          const spotUniverse = spotMeta?.universe.find(
+            (a: { tokens: number[]; index: number }) => a.tokens[0] === token.token
+          )
+          const price = spotAssetContext[spotUniverse?.index || 0]?.markPx || 0
+          return Number(token.total) * Number(price)
+        }) || []
 
     const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0)
     setSpotAccountValue(totalSpotValue + Number(spotUSDCBalance))

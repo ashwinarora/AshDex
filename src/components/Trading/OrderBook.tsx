@@ -61,7 +61,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   const [spread, setSpread] = useState<number>(0.0)
   const [showPriceInUSD, setShowPriceInUSD] = useState<boolean>(false)
   const { spotKeyToName } = useSpotMeta()
-  const subRef = useRef<hl.Subscription | null>(null)
+  const subRef = useRef<hl.ISubscription | null>(null)
   const { setActiveOrderTab, setRequestedLimitPrice, setRequestedAssetAmount } = useTradeUIStore()
 
   const handleOrderRowClick = (price: string, size: string) => {
@@ -103,10 +103,8 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
         const newSub = await sdkSubscriptionClient.l2Book(
           {
             coin: selectedAsset,
-            nSigFigs: nSigFigs
-              ? (Math.min(nSigFigs, 5) as hl.WsL2BookParameters['nSigFigs'])
-              : null,
-            mantissa: mantissa as hl.WsL2BookParameters['mantissa']
+            nSigFigs: nSigFigs ? (Math.min(nSigFigs, 5) as hl.L2BookParameters['nSigFigs']) : null,
+            mantissa: mantissa as hl.L2BookParameters['mantissa']
           },
           handler
         )
@@ -163,7 +161,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
     }
   }, [selectedAsset, allMids, selectedPrecision.value])
 
-  const processOrders = (orders: hl.WsL2BookEvent['levels'][number]) => {
+  const processOrders = (orders: hl.L2BookWsEvent['levels'][number]) => {
     if (!orders) {
       return []
     }

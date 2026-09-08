@@ -27,14 +27,14 @@ interface HyperliquidState {
   sdkSubscriptionClient: hl.SubscriptionClient | null
   agentWallet: PrivateKeyAccount | null
   allMids: hl.AllMidsResponse
-  clearingHouseState: hl.WsWebData2Event['clearinghouseState'] | null
-  perpsMeta: hl.WsWebData2Event['meta'] | null
-  perpAssetContext: hl.WsWebData2Event['assetCtxs']
-  spotAssetContext: hl.WsWebData2Event['spotAssetCtxs']
-  spotState: NonNullable<hl.WsWebData2Event['spotState']>
-  openOrders: hl.WsWebData2Event['openOrders']
-  activeAssetData: hl.WsActiveAssetDataEvent | null
-  ledgerUpdates: hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates']
+  clearingHouseState: hl.WebData2WsEvent['clearinghouseState'] | null
+  perpsMeta: hl.WebData2WsEvent['meta'] | null
+  perpAssetContext: hl.WebData2WsEvent['assetCtxs']
+  spotAssetContext: hl.WebData2WsEvent['spotAssetCtxs']
+  spotState: NonNullable<hl.WebData2WsEvent['spotState']>
+  openOrders: hl.WebData2WsEvent['openOrders']
+  activeAssetData: hl.ActiveAssetDataWsEvent | null
+  ledgerUpdates: hl.UserNonFundingLedgerUpdatesWsEvent['nonFundingLedgerUpdates']
   pendingWithdrawals: PendingWithdrawal[]
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
@@ -44,32 +44,39 @@ interface HyperliquidState {
     candles: Record<string, number>
   }
   subsManager: {
-    allMids?: hl.Subscription
-    webData2?: hl.Subscription
-    candles?: hl.Subscription
-    activeAssetData: hl.Subscription[]
-    ledgerUpdates?: hl.Subscription
+    allMids?: hl.ISubscription
+    webData2?: hl.ISubscription
+    candles?: hl.ISubscription
+    activeAssetData: hl.ISubscription[]
+    ledgerUpdates?: hl.ISubscription
+    assetCtxs?: hl.ISubscription
+    spotAssetCtxs?: hl.ISubscription
   }
 }
 
 interface HyperliquidActions {
   initSdk: (address: Address, walletClient?: WalletClient) => Promise<void>
+  fetchPerpsMeta: () => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
+  subscribeAssetCtxs: () => Promise<void>
+  unsubscribeAssetCtxs: () => Promise<void>
+  subscribeSpotAssetCtxs: () => Promise<void>
+  unsubscribeSpotAssetCtxs: () => Promise<void>
   subscribeWebData2: (address: Hex) => void
   unsubscribeWebData2: () => Promise<void>
-  pushNewOpenOrders: (orders: hl.WsWebData2Event['openOrders']) => void
+  pushNewOpenOrders: (orders: hl.WebData2WsEvent['openOrders']) => void
   pushNewPosition: (
-    position: hl.WsWebData2Event['clearinghouseState']['assetPositions'][number]
+    position: hl.WebData2WsEvent['clearinghouseState']['assetPositions'][number]
   ) => void
   subscribeToCandle: (
     asset: string,
-    interval: hl.WsCandleParameters['interval'],
-    callback: (data: hl.WsCandleEvent) => void
+    interval: hl.CandleWsParameters['interval'],
+    callback: (data: hl.CandleWsEvent) => void
   ) => void
   unsubscribeFromCandle: (
     asset: string,
-    interval: hl.WsCandleParameters['interval']
+    interval: hl.CandleWsParameters['interval']
   ) => Promise<void>
   subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
   unsubscribeFromActiveAssetData: () => Promise<void>
@@ -129,23 +136,21 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       // Always ensure non-user-specific clients exist.
       set((state) => ({
-        sdkInfoClient:
-          state.sdkInfoClient ??
+        sdkInfoClient: (state.sdkInfoClient ??
           new hl.InfoClient({
             transport: state.sdkTransport
-          }),
-        sdkSubscriptionClient:
-          state.sdkSubscriptionClient ??
+          })) as hl.InfoClient,
+        sdkSubscriptionClient: (state.sdkSubscriptionClient ??
           new hl.SubscriptionClient({
             transport: state.sdkSocketTransport
-          }),
+          })) as hl.SubscriptionClient,
         // Only set signer client when we actually have a walletClient.
         sdkUserSignerClient: walletClient
-          ? new hl.ExchangeClient({
+          ? (new hl.ExchangeClient({
               transport: state.sdkTransport,
               // @ts-expect-error wagmi WalletClient is compatible at runtime
               wallet: walletClient
-            })
+            }) as hl.ExchangeClient)
           : state.sdkUserSignerClient
       }))
 
@@ -173,6 +178,62 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           wallet: agentWallet
         })
         // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
+      }))
+    },
+    fetchPerpsMeta: async () => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient) return
+      try {
+        const meta = await sdkInfoClient.meta()
+        set({ perpsMeta: meta as hl.WebData2WsEvent['meta'] })
+      } catch (err) {
+        console.error('[fetchPerpsMeta] failed', err)
+      }
+    },
+    subscribeAssetCtxs: async () => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const sub = await sdkSubscriptionClient.assetCtxs((data) => {
+        set({
+          perpAssetContext: data.ctxs as hl.WebData2WsEvent['assetCtxs'],
+          lastWebSocketUpdate: Date.now(),
+          isWebSocketConnected: true
+        })
+      })
+      set((state) => ({
+        subsManager: { ...state.subsManager, assetCtxs: sub }
+      }))
+    },
+    unsubscribeAssetCtxs: async () => {
+      const { subsManager } = get()
+      if (!subsManager.assetCtxs) return
+      await subsManager.assetCtxs.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, assetCtxs: undefined }
+      }))
+    },
+    subscribeSpotAssetCtxs: async () => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const sub = await sdkSubscriptionClient.spotAssetCtxs((data) => {
+        set({
+          spotAssetContext: data.filter(
+            (ctx) => Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
+          ) as hl.WebData2WsEvent['spotAssetCtxs'],
+          lastWebSocketUpdate: Date.now(),
+          isWebSocketConnected: true
+        })
+      })
+      set((state) => ({
+        subsManager: { ...state.subsManager, spotAssetCtxs: sub }
+      }))
+    },
+    unsubscribeSpotAssetCtxs: async () => {
+      const { subsManager } = get()
+      if (!subsManager.spotAssetCtxs) return
+      await subsManager.spotAssetCtxs.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, spotAssetCtxs: undefined }
       }))
     },
     subscribeToAllMids: async () => {
@@ -213,17 +274,14 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           user: address
         },
         (data) => {
-          // console.log('webData2', data)
           const activeAddress = get().userActiveAddress
           if (data.user.toLowerCase() === activeAddress.toLowerCase()) {
+            // Only user-scoped fields — asset ctxs and meta come from dedicated
+            // subscriptions (assetCtxs / spotAssetCtxs) and an HTTP `meta()` fetch
+            // so the UI works for logged-out users too.
             set({
               clearingHouseState: data.clearinghouseState,
               openOrders: data.openOrders,
-              perpsMeta: data.meta,
-              perpAssetContext: data.assetCtxs,
-              spotAssetContext: data.spotAssetCtxs.filter((ctx) => {
-                return Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
-              }),
               spotState: data.spotState,
               lastWebSocketUpdate: Date.now(),
               isWebSocketConnected: true,
@@ -516,9 +574,15 @@ export const useInitHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
       sdkSubscriptionClient: state.sdkSubscriptionClient,
+      sdkInfoClient: state.sdkInfoClient,
       initSdk: state.initSdk,
+      fetchPerpsMeta: state.fetchPerpsMeta,
       subscribeToAllMids: state.subscribeToAllMids,
       unsubscribeFromAllMids: state.unsubscribeFromAllMids,
+      subscribeAssetCtxs: state.subscribeAssetCtxs,
+      unsubscribeAssetCtxs: state.unsubscribeAssetCtxs,
+      subscribeSpotAssetCtxs: state.subscribeSpotAssetCtxs,
+      unsubscribeSpotAssetCtxs: state.unsubscribeSpotAssetCtxs,
       subscribeWebData2: state.subscribeWebData2,
       unsubscribeWebData2: state.unsubscribeWebData2,
       subscribeToCandle: state.subscribeToCandle,

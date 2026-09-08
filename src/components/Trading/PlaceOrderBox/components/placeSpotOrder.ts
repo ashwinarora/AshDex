@@ -137,7 +137,7 @@ export const placeSpotOrder = async ({
       const st = statuses[i]
       const meta = orderPayload[i]
       if (!st || !meta) continue
-      if (!('resting' in st)) continue
+      if (typeof st !== 'object' || !('resting' in st)) continue
 
       const isTrigger = meta.kind !== 'main'
       const triggerPx =
@@ -175,7 +175,7 @@ export const placeSpotOrder = async ({
       pushNewOpenOrders(openOrders)
     }
 
-    if ('filled' in mainStatus) {
+    if (typeof mainStatus === 'object' && 'filled' in mainStatus) {
       const filled = mainStatus.filled
       const action = isBuy ? 'bought' : 'sold'
       const assetName = selectedAsset.split('-')[0]
@@ -185,7 +185,7 @@ export const placeSpotOrder = async ({
           id: toastId
         }
       )
-    } else if ('resting' in mainStatus) {
+    } else if (typeof mainStatus === 'object' && 'resting' in mainStatus) {
       toast.success(
         hasTpslOrders ? 'Order + TP/SL Placed Successfully' : 'Order Placed Successfully',
         {
