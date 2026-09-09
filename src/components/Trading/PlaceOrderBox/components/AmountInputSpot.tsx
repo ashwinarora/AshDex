@@ -184,7 +184,12 @@ const AmountInputSpot = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{'Amount'}</p>
+        <label
+          htmlFor="spot-order-size"
+          className="font-medium text-white/70 text-xs whitespace-nowrap"
+        >
+          {'Amount'}
+        </label>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {'Available to Trade'} = {maxAllowed.toFixed(2)} {isBuy ? 'USDC' : selectedAssetName}
         </label>
@@ -198,6 +203,8 @@ const AmountInputSpot = ({
             return val === 'NaN' || Number.isNaN(Number(val)) ? '' : val
           })()}
           onChange={isInputUsd ? updateFromUsdAmount : updateFromAssetAmount}
+          id="spot-order-size"
+          aria-label={isInputUsd ? 'Order size in USD' : `Order size in ${selectedAsset}`}
           className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
@@ -244,6 +251,9 @@ const AmountInputSpot = ({
               usdPercent > 100 && 'border border-red-500 rounded-md'
             )}
           >
+            <label htmlFor="spot-order-size-percent" className="sr-only">
+              {'Order size percent of max'}
+            </label>
             <Input
               className={cn(
                 'flex-1 p-0 !text-xs text-end text-white bg-transparent border-none',
@@ -257,6 +267,8 @@ const AmountInputSpot = ({
                     ? ''
                     : usdPercent.toFixed(2)
               }
+              id="spot-order-size-percent"
+              aria-label="Order size percent of max"
               onChange={(e) => setPercentInputStr(e.target.value)}
               onFocus={() => {
                 setIsPercentFocused(true)

@@ -62,11 +62,19 @@ const UserData = () => {
         count: balanceCount,
         element: <Balances isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
       },
-      {
-        header: isRTL ? `(${positionsCount}) ${'Positions'}` : `(${positionsCount}) ${'Positions'}`,
-        count: positionsCount,
-        element: <Positions isRTL={isRTL} />
-      },
+      // BUG-026: Positions tab is a perps-only concept. Spot has no positions,
+      // only balances — hide the tab entirely on spot.
+      ...(isSpot
+        ? []
+        : [
+            {
+              header: isRTL
+                ? `(${positionsCount}) ${'Positions'}`
+                : `(${positionsCount}) ${'Positions'}`,
+              count: positionsCount,
+              element: <Positions isRTL={isRTL} />
+            }
+          ]),
       {
         header: isRTL
           ? `(${openOrdersLength}) ${'Open Orders'}`
@@ -90,10 +98,11 @@ const UserData = () => {
     return isRTL ? tabs.reverse() : tabs
   }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, isHideSmallBalances])
 
-  // Default tab: Balances for spot/portfolio, Positions for futures/perps
-  // In RTL mode, tabs are reversed so indices need adjustment
+  // Default tab: Balances for spot/portfolio, Positions for futures/perps.
+  // In RTL the tabs array is reversed, so indices are mirrored.
+  // Note: spot has 5 tabs (no Positions), perps has 6.
   const defaultTab = useMemo(() => {
-    const tabsLength = 6 // Total number of tabs
+    const tabsLength = isSpot ? 5 : 6
     if (isSpot || isPortfolio) {
       // Balances: index 0 in LTR, last index in RTL
       return isRTL ? tabsLength - 1 : 0

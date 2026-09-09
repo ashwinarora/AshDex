@@ -15,6 +15,7 @@ import dynamic from 'next/dynamic'
 // import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
 import { IconChevronDown, IconChevronUp, IconHistory, IconSelector } from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
+import { formatTimestamp } from '@/utils/format'
 import {
   Table,
   TableBody,
@@ -80,7 +81,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.accessor('time', {
         id: 'timestamp',
         header: () => 'Time',
-        cell: (info) => new Date(info.getValue()).toLocaleString('en-US'),
+        cell: (info) => formatTimestamp(info.getValue()),
         enableSorting: false,
         meta: { label: 'Time' }
       }),

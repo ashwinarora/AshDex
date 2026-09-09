@@ -58,8 +58,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     const toastId = toast.loading('Transferring...')
     try {
       setIsLoading(true)
-      const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
-      console.log('Transfer response:', res)
+      await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
       onClose()
       toast.success('Transfer successful', {
         id: toastId
@@ -95,13 +94,19 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             <div
               className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
             >
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
+              <div
+                data-testid="transfer-direction-from"
+                className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm"
+              >
                 {toPerp ? 'Spot' : 'Perp'}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
+              <div
+                data-testid="transfer-direction-to"
+                className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm"
+              >
                 {toPerp ? 'Perp' : 'Spot'}
               </div>
             </div>

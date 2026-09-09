@@ -180,7 +180,12 @@ const AmountInput = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{'Position Size'}</p>
+        <label
+          htmlFor="preorder-size"
+          className="font-medium text-white/70 text-xs whitespace-nowrap"
+        >
+          {'Position Size'}
+        </label>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {'Max'} ={' '}
           {isInputUsd
@@ -197,6 +202,8 @@ const AmountInput = ({
             return val === 'NaN' || Number.isNaN(Number(val)) ? '' : val
           })()}
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
+          id="preorder-size"
+          aria-label={isInputUsd ? 'Order size in USD' : `Order size in ${selectedAsset}`}
           className={cn('flex-1 text-white shrink-0', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
@@ -243,6 +250,9 @@ const AmountInput = ({
               usdPercent > 100 && 'bg-red/20 rounded-md'
             )}
           >
+            <label htmlFor="preorder-size-percent" className="sr-only">
+              {'Order size percent of max'}
+            </label>
             <Input
               className={cn(
                 'flex-1 p-0 !text-[10px] text-end text-white bg-transparent border-none',
@@ -256,6 +266,8 @@ const AmountInput = ({
                     ? ''
                     : usdPercent.toFixed(2)
               }
+              id="preorder-size-percent"
+              aria-label="Order size percent of max"
               onChange={(e) => setPercentInputStr(e.target.value)}
               onFocus={() => {
                 setIsPercentFocused(true)

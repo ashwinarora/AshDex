@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
+import { trimDecimals } from '@/utils/format'
 import { toast } from 'sonner'
 import { IconChevronDown, IconRefresh, IconWallet } from '@tabler/icons-react'
 import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
@@ -70,17 +71,13 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           }
           return prev
         })
-        setSize(Math.abs(Number(pos.position.szi)).toString())
+        // BUG-053: trim raw szi on mount too (same gap as MarketCloseModal).
+        const assetIndex = perpsMeta ? getPerpsUniverseIndex(perpsMeta.universe, closingAsset) : -1
+        const szDecimals = assetIndex >= 0 ? (perpsMeta?.universe[assetIndex]?.szDecimals ?? 0) : 0
+        setSize(trimDecimals(Math.abs(Number(pos.position.szi)).toString(), szDecimals))
       }
     }
-  }, [clearingHouseState, closingAsset])
-
-  function trimDecimals(value: string, decimals: number) {
-    if (!value) return value
-    const [int, dec] = value.split('.')
-    if (!decimals || !dec) return value
-    return `${int}.${dec.slice(0, decimals)}`
-  }
+  }, [clearingHouseState, closingAsset, allMids, perpsMeta])
 
   // Update size when percent changes
   useEffect(() => {
@@ -175,7 +172,6 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           }
         ]
       })
-      console.log(order)
       const status = order.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {
         onClose()

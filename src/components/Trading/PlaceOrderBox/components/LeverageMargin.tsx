@@ -91,14 +91,15 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between', isRTL && 'flex-row-reverse')}>
-        <p
+        <label
+          htmlFor="preorder-leverage"
           className={cn(
             'text-xs font-medium transition-colors duration-150',
             error.isValid ? 'text-white/70' : 'text-red'
           )}
         >
           {'Leverage'}
-        </p>
+        </label>
         <div className="flex items-center gap-2">
           {/* <Button onClick={() => setLeverage((prev) => Math.max(prev - 1, 1))} variant='outline' size='icon'>
             <MinusIcon className='size-4' />
@@ -117,7 +118,21 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
                 isRTL && 'text-start'
               )}
               value={leverageInput}
+              id="preorder-leverage"
+              aria-label="Leverage"
               onChange={(e) => handleLeverageChange(e.target.value)}
+              onBlur={() => {
+                // Clamp on blur so an out-of-range value (e.g. 999) doesn't
+                // sit in the input diverging from the actual leverage state.
+                const parsed = parseInt(leverageInput, 10)
+                const clamped = Math.max(
+                  1,
+                  Math.min(maxLeverage, Number.isFinite(parsed) ? parsed : leverage)
+                )
+                setLeverageInput(clamped.toString())
+                setLeverage(clamped)
+              }}
+              data-testid="preorder-leverage-input"
             />
             <IconX className="size-3" />
           </div>

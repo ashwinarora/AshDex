@@ -88,8 +88,7 @@ const SendModal: React.FC<SendModalProps> = ({
         toast.success('Send successful', {
           id: toastId
         })
-      } catch (error) {
-        console.log(error)
+      } catch {
         onClose()
         toast.error('Something went wrong, check the console or contact support', {
           id: toastId
@@ -107,8 +106,7 @@ const SendModal: React.FC<SendModalProps> = ({
         toast.success('Send successful', {
           id: toastId
         })
-      } catch (error) {
-        console.log(error)
+      } catch {
         onClose()
         toast.error('Something went wrong, check the console or contact support', {
           id: toastId

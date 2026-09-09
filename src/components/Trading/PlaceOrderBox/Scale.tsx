@@ -77,40 +77,6 @@ function calculateScaleOrdersByUsd(
   return orders
 }
 
-function calculateScaleOrdersByAssetSize(
-  totalAssetSize: number,
-  startPrice: number,
-  endPrice: number,
-  totalOrders: number,
-  skew: number
-): Order[] {
-  const orders: Order[] = []
-  if (totalOrders === 1) {
-    orders.push({ price: startPrice, size: totalAssetSize })
-    return orders
-  }
-  const prices: number[] = []
-  for (let i = 0; i < totalOrders; i++) {
-    const price = startPrice + (i * (endPrice - startPrice)) / (totalOrders - 1)
-    prices.push(price)
-  }
-  const adjustedSkew = skew * (endPrice / startPrice)
-  const weights: number[] = []
-  for (let i = 0; i < totalOrders; i++) {
-    const weight = 1 + (i * (adjustedSkew - 1)) / (totalOrders - 1)
-    weights.push(weight)
-  }
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-  for (let i = 0; i < totalOrders; i++) {
-    const allocationSize = totalAssetSize * (weights[i] / totalWeight)
-    orders.push({
-      price: prices[i],
-      size: allocationSize
-    })
-  }
-  return orders
-}
-
 const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
@@ -167,21 +133,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       totalOrders!,
       sizeSkew!
     )
-    const usdOrders = calculateScaleOrdersByUsd(
-      totalUsd!,
-      startPrice!,
-      endPrice!,
-      totalOrders!,
-      sizeSkew!
-    )
-    const assetOrders = calculateScaleOrdersByAssetSize(
-      totalAssetSize!,
-      startPrice!,
-      endPrice!,
-      totalOrders!,
-      sizeSkew!
-    )
-    console.log({ usdOrders, assetOrders })
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, selectedAsset)
     const assetUniverse = perpsMeta.universe[assetIndex]
     const szDecimals = assetUniverse.szDecimals
@@ -244,7 +195,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           t: order.orderType
         }))
       })
-      console.log(placeOrderRes)
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {

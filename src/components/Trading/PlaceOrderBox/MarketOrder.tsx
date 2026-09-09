@@ -253,9 +253,9 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                 <IconChevronDown className="size-3" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent align="end">
+            <PopoverContent align="end" aria-describedby="slippage-popover-description">
               <div className="flex flex-col gap-3">
-                <p className="text-xs text-white/70">
+                <p id="slippage-popover-description" className="text-xs text-white/70">
                   {
                     'Max slippage only affects market orders placed on Spots & Perps. Close & TP/SL orders will use max slippage of 8%.'
                   }
@@ -279,6 +279,16 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     value={slippage}
                     className="w-20 shrink-0"
                     onChange={(e) => setSlippage(Number(e.target.value))}
+                    onBlur={(e) => {
+                      // Clamp on blur so out-of-range values (e.g. 200)
+                      // can't survive past the input's own max=100.
+                      const parsed = Number(e.target.value)
+                      const clamped = Math.max(
+                        0.1,
+                        Math.min(100, Number.isFinite(parsed) && parsed > 0 ? parsed : slippage)
+                      )
+                      setSlippage(clamped)
+                    }}
                   />
                   <span className="text-white/70">%</span>
                 </div>

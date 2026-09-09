@@ -110,8 +110,8 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
           <div
-            data-isVisible={mobileState.firstToggle === 'chart'}
-            className="[&[data-isVisible='false']]:hidden [&[data-isVisible='true']]:flex w-full h-full flex-col gap-1"
+            data-is-visible={mobileState.firstToggle === 'chart'}
+            className="[&[data-is-visible='false']]:hidden [&[data-is-visible='true']]:flex w-full h-full flex-col gap-1"
           >
             <Chart selectedAsset={selectedAsset} selectedInterval="30" />
           </div>

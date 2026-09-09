@@ -16,6 +16,7 @@ import dynamic from 'next/dynamic'
 // import ResponsiveDataCard from '@/components/Trading/ResponsiveDataCard'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
+import { formatTimestamp } from '@/utils/format'
 import { IconChevronUp, IconChevronDown, IconSelector, IconHistory } from '@tabler/icons-react'
 import ReactiveText from '@/components/reactive-text'
 import type { HistoricalOrdersResponse } from '@nktkas/hyperliquid/api/info'
@@ -67,7 +68,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor((row) => new Date(row.order.timestamp).toLocaleString('en-US'), {
+      columnHelper.accessor((row) => formatTimestamp(row.order.timestamp), {
         id: 'timestamp',
         header: () => 'Time',
         cell: (info) => info.getValue(),

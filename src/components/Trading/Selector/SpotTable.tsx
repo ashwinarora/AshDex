@@ -31,7 +31,6 @@ import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useVirtualizer } from '@tanstack/react-virtual'
 import { useShallow } from 'zustand/react/shallow'
-import { isWhitelistedSpotPair } from '@/utils/whitelist'
 
 interface AssetTableProps {
   searchTerm: string
@@ -85,12 +84,13 @@ const AssetTable = ({
 
     return (
       spotAssetContext
-        // whitelist filter: keep only allowed base/quote pairs
+        // Drop entries where we can't resolve base/quote names (data-integrity
+        // guard against partial spotMeta hydration). No hardcoded whitelist:
+        // any pair Hyperliquid returns is fair game.
         .filter((asset) => {
           const base = spotKeyToName.get(asset.coin)
           const quote = spotKeyToBaseName.get(asset.coin)
-          if (!base || !quote) return false
-          return isWhitelistedSpotPair(base, quote)
+          return Boolean(base && quote)
         })
         .filter((asset) =>
           spotKeyToName.get(asset.coin)?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -471,6 +471,17 @@ const AssetTable = ({
             </TableRow>
           )
         })}
+        {tableData.length === 0 && searchTerm.length > 0 && (
+          <TableRow>
+            <TableCell
+              colSpan={columns?.length ?? 1}
+              className="text-center py-8 text-white/60 text-sm"
+              data-testid="market-list-empty-state"
+            >
+              No markets match &quot;{searchTerm}&quot;
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   )

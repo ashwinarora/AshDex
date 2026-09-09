@@ -286,7 +286,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     const toastId = toast.loading('Placing TP/SL order...')
     try {
       const adjustedBuilderFee = getAdjustedBuilderFee()
-      const res = await sdkL1ActionClient.order({
+      await sdkL1ActionClient.order({
         grouping: 'positionTpsl',
         builder: {
           b: BUILDER_ADDRESS,
@@ -301,7 +301,6 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           t: order.orderType
         }))
       })
-      console.log(res)
       onClose()
       toast.success('TP/SL order placed successfully', {
         id: toastId

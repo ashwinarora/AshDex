@@ -53,11 +53,10 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     const toastId = toast.loading('Signing in progress...')
     setIsLoading(true)
     try {
-      const res = await sdkUserSignerClient.withdraw3({
+      await sdkUserSignerClient.withdraw3({
         amount: amount,
         destination: address
       })
-      console.log('Withdraw response:', res)
       // Add to pending withdrawals for display in Deposits and Withdrawals tab
       const withdrawAmount = Number(amount)
       addPendingWithdrawal({

@@ -19,6 +19,7 @@ import { useConnection } from 'wagmi'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
+import { computeMaxDrawdownPercent } from '@/utils/portfolioStats'
 import { useUserFee } from '@/hooks/useUserFee'
 import { Hex } from 'viem'
 
@@ -58,31 +59,17 @@ const PortfolioStats = () => {
       accountValue: item[1].accountValueHistory
     }))
 
-    // subtract min account value from max account value and divide by max account value
-    const maxDrawdownArray = filteredData?.find(
+    // BUG-033: compute peak-to-trough drawdown from the account-value time
+    // series (skipping non-positive values so a pre-first-deposit 0 doesn't
+    // anchor a bogus -100%). Returns null when the series is too short or
+    // never had a positive value — in that case render '—' below.
+    const accountValueSeries = filteredData?.find(
       (item) =>
         item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview
     )?.accountValue
-    const maxValue =
-      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
-        ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) > Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
-        : 0
-
-    const minValue =
-      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
-        ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) < Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
-        : 0
-
-    const maxDrawdown = minValue - maxValue
-    const maxDrawdownPercentage = (maxDrawdown / maxValue) * 100
+    const maxDrawdownPercentage = computeMaxDrawdownPercent(
+      (accountValueSeries ?? []).map(([t, v]) => [Number(t), v] as const)
+    )
 
     const totalEquity =
       parseFloat(
@@ -105,7 +92,8 @@ const PortfolioStats = () => {
       ['Volume']:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm || '0'))}` ||
         '$0.00',
-      ['Max Drawdown']: `${maxDrawdownPercentage.toFixed(2)}%`,
+      ['Max Drawdown']:
+        maxDrawdownPercentage === null ? '—' : `${maxDrawdownPercentage.toFixed(2)}%`,
       ['Total Equity']: `$${formatWithKMB(totalEquity)}`,
       ['Perps Account Equity']: `$${formatWithKMB(perpEquity)}`,
       ['Spot Account Equity']: `$${formatWithKMB(spotEquity)}`

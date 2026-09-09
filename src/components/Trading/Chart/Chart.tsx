@@ -388,7 +388,6 @@ const TradingViewChart = ({
       })
 
       widgetRef.current.onChartReady(async () => {
-        console.log('TradingView chart ready')
         setChartReady(true)
         // addStyledHorizontalLine(100000, 'Support LevelBoo', {
         //   color: '#2fa766',

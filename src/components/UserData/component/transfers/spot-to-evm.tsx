@@ -119,12 +119,11 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
-        const res = await sdkUserSignerClient.spotSend({
+        await sdkUserSignerClient.spotSend({
           destination: destination,
           amount: amount,
           token: token
         })
-        console.log('Transfer response:', res)
         onClose()
         toast.success('Transfer successful', {
           id: toastId
@@ -144,15 +143,14 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
       const toastId = toast.loading('Transferring...')
       try {
         setIsLoading(true)
-        let res
         if (coin === 'HYPE') {
-          res = await sendTransactionAsync({
+          await sendTransactionAsync({
             to: destination as `0x${string}`,
             value: parseUnits(amount, 18),
             chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
           })
         } else {
-          res = await writeContractAsync({
+          await writeContractAsync({
             abi: erc20Abi,
             address: onChainAddress as `0x${string}`,
             functionName: 'transfer',
@@ -160,7 +158,6 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
             chainId: isTestnet ? hyperliquidTestnet.id : hyperliquidMainnet.id
           })
         }
-        console.log('Transfer response:', res)
         onClose()
         toast.success('Transfer successful', {
           id: toastId

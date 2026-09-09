@@ -222,6 +222,10 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
         <SpotToPerpTransferModal
           isOpen={isTransferModalOpen}
           onClose={() => setIsTransferModalOpen(false)}
+          // BUG-037: on a trading page the primary intent is to move funds
+          // INTO perps so users can trade. Default the direction accordingly
+          // instead of the previous perps → spot default.
+          defaultToPerp={true}
         />
       )}
       {isSendModalOpen && (

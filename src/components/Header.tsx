@@ -174,15 +174,21 @@ const Header: FC = () => {
           <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
-                <div
+                // Render as an anchor with aria-disabled=true so screen readers
+                // announce it as a disabled nav target, not as plain text.
+                // No href = not activatable; onClick prevented for good measure.
+                <a
                   key={name}
-                  className="h-full flex flex-row gap-2 text-white items-center justify-center w-fit px-6 text-sm"
+                  role="link"
+                  aria-disabled="true"
+                  onClick={(e) => e.preventDefault()}
+                  className="h-full flex flex-row gap-2 text-white items-center justify-center w-fit px-6 text-sm cursor-not-allowed opacity-70"
                 >
                   {name}
                   <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
                     Coming Soon
                   </span>
-                </div>
+                </a>
               ) : (
                 <NavigationMenuItem
                   className="h-full flex items-center justify-center w-24"

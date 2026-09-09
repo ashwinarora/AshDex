@@ -125,7 +125,6 @@ export const placeSpotOrder = async ({
       },
       orders: orderPayload.map(({ a, b, p, s, r, t }) => ({ a, b, p, s, r, t }))
     })
-    console.log(res)
 
     const statuses = res.response.data.statuses ?? []
     const mainStatus = statuses[0]

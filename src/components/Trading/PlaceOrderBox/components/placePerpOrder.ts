@@ -121,12 +121,11 @@ export const placePerpOrder = async ({
   const toastId = toast.loading('Loading...')
   try {
     if (!sdkL1ActionClient) return
-    const res = await sdkL1ActionClient.updateLeverage({
+    await sdkL1ActionClient.updateLeverage({
       asset: assetIndex,
       isCross: isCross,
       leverage: leverage
     })
-    console.log(res)
     const placeOrderRes = await sdkL1ActionClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
@@ -142,7 +141,6 @@ export const placePerpOrder = async ({
         t: order.orderType
       }))
     })
-    console.log(placeOrderRes)
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: FrontendOpenOrdersResponse = []
@@ -250,7 +248,6 @@ export const placePerpOrder = async ({
         }
       }
     }
-    console.log('pushing open orders', openOrders)
     pushNewOpenOrders(openOrders)
   } catch (error) {
     console.error('Error placing Perp order:', error as string)

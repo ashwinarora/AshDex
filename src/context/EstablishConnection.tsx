@@ -69,7 +69,6 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
         user: address,
         builder: BUILDER_ADDRESS
       })
-      console.log('currentFeeApproval', response)
       return response
     },
     enabled: isConnected && !!sdkInfoClient && !!agentWallet && isAgentApproved,

@@ -117,7 +117,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       totalOrders,
       sizeSkew
     )
-    console.log(orders)
     const assetIndex =
       spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
     const tokenData = spotMeta.tokens.find((token) => token.name === selectedAssetName)
@@ -153,7 +152,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           t: order.orderType
         }))
       })
-      console.log(placeOrderRes)
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {

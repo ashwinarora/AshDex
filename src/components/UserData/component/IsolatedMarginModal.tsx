@@ -53,12 +53,11 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
       const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
-      const res = await sdkL1ActionClient.updateIsolatedMargin({
+      await sdkL1ActionClient.updateIsolatedMargin({
         asset: assetIndex,
         isBuy: isBuy,
         ntli: action === 'Add' ? realAmount : -realAmount
       })
-      console.log(res)
       onClose()
       toast.success('Margin updated successfully', {
         id: toastId

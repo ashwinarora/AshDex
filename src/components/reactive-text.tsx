@@ -9,7 +9,8 @@ function ReactiveText({
   pulse = false,
   isStatic = false,
   suffix = '',
-  className = ''
+  className = '',
+  'data-testid': dataTestId
 }: {
   value: number | string
   precision?: number
@@ -19,6 +20,7 @@ function ReactiveText({
   isStatic?: boolean
   suffix?: string
   className?: string
+  'data-testid'?: string
 }) {
   const [color, setColor] = useState<'text-buy' | 'text-sell' | 'text-text-1'>('text-text-1')
   const [prevValue, setPrevValue] = useState<number>(Number(value))
@@ -63,7 +65,10 @@ function ReactiveText({
   }, [value, pulse, prevValue, isStatic])
 
   return (
-    <p className={cn('text-xs font-tabular transition-all duration-300', color, className)}>
+    <p
+      className={cn('text-xs font-tabular transition-all duration-300', color, className)}
+      data-testid={dataTestId}
+    >
       {type === 'currency' ? currency : ''}
       {new Intl.NumberFormat('en-US', {
         minimumFractionDigits: precision,

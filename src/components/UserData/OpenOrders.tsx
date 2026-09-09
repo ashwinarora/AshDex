@@ -16,6 +16,7 @@ import { toast } from 'sonner'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
+import { formatTimestamp } from '@/utils/format'
 import {
   IconX,
   IconSelector,
@@ -226,7 +227,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
         header: () => 'Time',
-        cell: (info) => <>{new Date(info.getValue()).toLocaleString('en-US')}</>,
+        cell: (info) => <>{formatTimestamp(info.getValue())}</>,
         enableSorting: true,
         meta: { label: 'Time' }
       }),
