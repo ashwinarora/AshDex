@@ -18,7 +18,6 @@ import {
 import { Button } from './ui/button'
 import { cn } from '@/lib/utils'
 import {
-  IconBug,
   IconChevronDown,
   IconCopy,
   IconLogout,
@@ -29,7 +28,6 @@ import {
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import Link from 'next/link'
 import BridgeModal from './Bridge/BridgeModal'
 
 type MenuItem = {
@@ -63,8 +61,7 @@ const Header: FC = () => {
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
     { name: 'Spot', path: '/spot', isComingSoon: false },
-    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
-    { name: 'Stocks', path: '/stocks', isComingSoon: true }
+    { name: 'Portfolio', path: '/portfolio', isComingSoon: false }
   ]
 
   const mobileMenu: MenuItem[] = desktopMenu
@@ -211,22 +208,6 @@ const Header: FC = () => {
       </div>
       <div className="flex items-center gap-2">
         {!isMobile && <BridgeButton />}
-        {!isMobile && (
-          <Link
-            href="https://forms.gle/NxqC2dXcFmZDQoSe8"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button
-              className="flex items-center gap-2 text-xs text-red"
-              variant={'outline'}
-              size={'sm'}
-            >
-              <IconBug className="size-4" />
-              Report Bug
-            </Button>
-          </Link>
-        )}
         {isWalletConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -259,19 +240,10 @@ const Header: FC = () => {
                 </DropdownMenuItem>
 
                 {isMobile && (
-                  <>
-                    <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
-                      <IconBuildingBridge className="size-4 text-inherit" />
-                      Bridge
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => router.push('https://forms.gle/NxqC2dXcFmZDQoSe8')}
-                    >
-                      <IconBug className="size-4 text-inherit" />
-                      Bug Report
-                    </DropdownMenuItem>
-                  </>
+                  <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
+                    <IconBuildingBridge className="size-4 text-inherit" />
+                    Bridge
+                  </DropdownMenuItem>
                 )}
 
                 <DropdownMenuItem

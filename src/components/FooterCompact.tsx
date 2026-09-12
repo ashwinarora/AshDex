@@ -150,39 +150,8 @@ const FooterContent: FC = () => {
           </HoverCardContent>
         </HoverCard>
 
-        <div className="flex gap-4 duration-200 items-center justify-center text-xs">
-          <a
-            href="/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Docs'}
-          </a>
-          <a
-            href="/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Support'}
-          </a>
-          <a
-            href="/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Terms'}
-          </a>
-          <a
-            href="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Privacy Policy'}
-          </a>
+        <div className="flex items-center justify-center text-xs text-white/70">
+          Built with <span className="text-red mx-1">♥</span> by Ashwin Arora
         </div>
       </div>
     </footer>
