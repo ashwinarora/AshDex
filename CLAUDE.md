@@ -98,3 +98,16 @@ This project has a test suite. **Always run `bun run verify` before declaring an
 4. Update the Progress table in `QA_ISSUES.md` and tag the bug heading `✅ FIXED` if it's the last remaining piece.
 
 If the bug can't be reproduced under stubs (e.g., only fires when a third-party SDK initializes fully), don't fake a passing test — mark the bug `⏸ NEEDS-DISCUSSION` in `QA_ISSUES.md` with the specific reproducibility gap, and defer.
+
+### Manual wallet testing (Chrome DevTools MCP)
+
+For flows automated tests can't exercise (real wallet signing, real Rabby popups), MCP is configured to launch its own Brave with Rabby installed. The profile persists at `~/.cache/chrome-devtools-mcp/chrome-profile`, and Rabby holds a testnet-only wallet.
+
+Any `mcp__chrome-devtools__*` tool call launches the browser. Then:
+
+- Navigate to `http://localhost:3000/BTC`; click Connect Wallet → Rabby.
+- The Rabby popup appears in `list_pages` as an "Extension Page".
+- **Never call `select_page` on the Rabby popup** — that steals focus and Brave auto-closes it, killing the request with `UserRejectedRequestError`. Target it by pageId in `take_snapshot` / `click` directly.
+- Inside the Rabby popup: pick "Rabby Wallet" (not Brave's built-in), click "Ignore all" to dismiss the localhost "unknown site" warning, then Connect.
+
+MCP is registered in `~/.claude.json` with `--categoryExtensions` (required to see extension popups) and `--executablePath` pointing at Brave.
