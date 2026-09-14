@@ -4,10 +4,11 @@ import DepositModal from '@/components/DepositWithdraw/DepositModal'
 import SendModal from '@/components/UserData/component/SendModal'
 import { Button } from '../ui/button'
 import WithdrawModal from '../DepositWithdraw/WithdrawModal'
-import { IconCash, IconTransfer } from '@tabler/icons-react'
+import { IconCash, IconSettings, IconTransfer } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import SpotToPerpTransferModal from '../UserData/component/transfers/spot-to-perp'
 import SpotToEvmTransferModal from '../UserData/component/transfers/spot-to-evm'
+import AccountTypeModal from './AccountTypeModal'
 import { cn } from '@/lib/utils'
 import { useIsUnified } from '@/store/HyperliquidStore'
 const PortfolioHeader = () => {
@@ -21,7 +22,8 @@ const PortfolioHeader = () => {
     spotToPerp: false,
     spotToEvm: false,
     withdraw: false,
-    send: false
+    send: false,
+    accountType: false
   })
 
   if (isMobile) {
@@ -37,6 +39,15 @@ const PortfolioHeader = () => {
             {'Portfolio'}
           </h1>
           <div className={cn('flex flex-wrap gap-2 w-full', isRTL && 'flex-row-reverse')}>
+            <Button
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
+              data-testid="account-type-button"
+            >
+              <IconSettings className="size-3" />
+              <p>{'Account Type'}</p>
+            </Button>
             <Button
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
@@ -112,6 +123,12 @@ const PortfolioHeader = () => {
             onClose={() => setIsModalOpen({ ...isModalOpen, withdraw: false })}
           />
         )}
+        {isModalOpen.accountType && (
+          <AccountTypeModal
+            isOpen={isModalOpen.accountType}
+            onClose={() => setIsModalOpen({ ...isModalOpen, accountType: false })}
+          />
+        )}
       </>
     )
   }
@@ -167,6 +184,15 @@ const PortfolioHeader = () => {
           >
             {'Send'}
           </Button>
+          <Button
+            className="w-fit"
+            variant={'outline'}
+            onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
+            data-testid="account-type-button"
+          >
+            <IconSettings className="size-4" />
+            {'Account Type'}
+          </Button>
         </div>
       </div>
       {isModalOpen.deposit && (
@@ -198,6 +224,12 @@ const PortfolioHeader = () => {
         <WithdrawModal
           isOpen={isModalOpen.withdraw}
           onClose={() => setIsModalOpen({ ...isModalOpen, withdraw: false })}
+        />
+      )}
+      {isModalOpen.accountType && (
+        <AccountTypeModal
+          isOpen={isModalOpen.accountType}
+          onClose={() => setIsModalOpen({ ...isModalOpen, accountType: false })}
         />
       )}
     </>
