@@ -4,6 +4,7 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,6 +69,9 @@ const AmountInput = ({
       perpsMeta: state.perpsMeta
     }))
   )
+  // Under unified/portfolio-margin the perp `withdrawable` is 0 because the
+  // collateral lives in spot. Route through the hook so both modes work.
+  const { withdrawable } = usePerpTradingAccount()
 
   const szDecimals = useMemo(() => {
     const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -77,7 +81,7 @@ const AmountInput = ({
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
+    if (!isReduceOnly) return withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
@@ -87,7 +91,7 @@ const AmountInput = ({
     const priceQuotient = parseFloat(limitPrice) / Number(existingPosition.position.entryPx)
     const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage, withdrawable])
 
   useEffect(() => {
     if (!clearingHouseState) return

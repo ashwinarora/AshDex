@@ -9,9 +9,11 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import SpotToPerpTransferModal from '../UserData/component/transfers/spot-to-perp'
 import SpotToEvmTransferModal from '../UserData/component/transfers/spot-to-evm'
 import { cn } from '@/lib/utils'
+import { useIsUnified } from '@/store/HyperliquidStore'
 const PortfolioHeader = () => {
   const isRTL = false
   const { isMobile } = useScreenSize()
+  const isUnified = useIsUnified()
   const [isModalOpen, setIsModalOpen] = useState<{
     [key: string]: boolean
   }>({
@@ -43,15 +45,17 @@ const PortfolioHeader = () => {
               {'Send'}
             </Button>
 
-            <Button
-              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
-              variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
-            >
-              <p>{'Perps'}</p>
-              <IconTransfer className="size-3" />
-              <p>{'Spot'}</p>
-            </Button>
+            {!isUnified && (
+              <Button
+                className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                variant={'outline'}
+                onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+              >
+                <p>{'Perps'}</p>
+                <IconTransfer className="size-3" />
+                <p>{'Spot'}</p>
+              </Button>
+            )}
             <Button
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
@@ -136,15 +140,17 @@ const PortfolioHeader = () => {
           >
             {'Withdraw'}
           </Button>
-          <Button
-            className="w-fit"
-            variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
-          >
-            <p>{'Perps'}</p>
-            <IconTransfer className="size-3" />
-            <p>{'Spot'}</p>
-          </Button>
+          {!isUnified && (
+            <Button
+              className="w-fit"
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+            >
+              <p>{'Perps'}</p>
+              <IconTransfer className="size-3" />
+              <p>{'Spot'}</p>
+            </Button>
+          )}
           <Button
             className="w-fit"
             variant={'outline'}

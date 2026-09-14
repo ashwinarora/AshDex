@@ -8,6 +8,7 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
@@ -104,10 +105,13 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()
+  // Unified/portfolio-margin users have zero perp `withdrawable` — the
+  // collateral is in spot. Same reason AmountInput needs the hook.
+  const { withdrawable } = usePerpTradingAccount()
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
+    if (!isReduceOnly) return withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
@@ -117,7 +121,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     const priceQuotient = Number(allMids[selectedAsset]) / Number(existingPosition.position.entryPx)
     const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage, withdrawable])
 
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()

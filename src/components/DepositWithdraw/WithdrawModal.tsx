@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import { toastSdkError } from '@/lib/toastSdkError'
 import { validateAmount } from '@/lib/validate'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { isTestnet, HYPERLIQUID_WITHDRAW_FEE_USDC } from '@/utils/constants'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
 import { Button } from '../ui/button'
@@ -23,13 +24,13 @@ interface WithdrawModalProps {
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useConnection()
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState, sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
+  const { sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
     useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState,
       sdkUserSignerClient: state.sdkUserSignerClient,
       addPendingWithdrawal: state.addPendingWithdrawal
     }))
   )
+  const withdrawable = usePerpTradingAccount().withdrawable
   const [isLoading, setIsLoading] = useState(false)
   const switchChain = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
@@ -112,10 +113,10 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     {'Available to withdraw:'}
                     <Button
                       variant="link"
-                      onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
+                      onClick={() => setAmount(withdrawable.toString() ?? '0')}
                       className="text-xs h-fit p-0"
                     >
-                      {clearingHouseState?.withdrawable} {'USDC'}
+                      {withdrawable} {'USDC'}
                     </Button>
                   </div>
                 </div>
@@ -144,7 +145,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   worse than showing nothing.
                 */}
                 {(() => {
-                  const max = Number(clearingHouseState?.withdrawable ?? 0)
+                  const max = Number(withdrawable ?? 0)
                   const validity = validateAmount(amount, {
                     min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
                     max
@@ -185,7 +186,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                 disabled={
                   !validateAmount(amount, {
                     min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
-                    max: Number(clearingHouseState?.withdrawable ?? 0)
+                    max: Number(withdrawable ?? 0)
                   }).ok
                 }
                 onClick={async () => {

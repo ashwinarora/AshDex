@@ -7,7 +7,7 @@ import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 import DepositsWithdrawals from './DepositsWithdrawals'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -28,6 +28,7 @@ const UserData = () => {
     }))
   )
   const isSpot = useIsSpot()
+  const isUnified = useIsUnified()
   const isPortfolio = pathname?.startsWith('/portfolio')
   const isRTL = false
   const { spotKeyToName } = useSpotMeta()
@@ -41,10 +42,13 @@ const UserData = () => {
   const balanceCount = useMemo(() => {
     const baseCount =
       spotState?.balances?.filter((balance) => Number(balance.total) > 0)?.length || 0
+    // Under unified/portfolio-margin Balances.tsx doesn't render a synthetic
+    // USDC(Perps) row, so don't inflate the count for it.
+    if (isUnified) return baseCount
     const perpsAccountValue = Number(clearingHouseState?.marginSummary?.accountValue || 0)
     const hasPerpsUsdc = perpsAccountValue > 0
     return baseCount + (hasPerpsUsdc ? 1 : 0)
-  }, [spotState?.balances, clearingHouseState?.marginSummary?.accountValue])
+  }, [spotState?.balances, clearingHouseState?.marginSummary?.accountValue, isUnified])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {

@@ -1,9 +1,10 @@
 import React, { useMemo, useState } from 'react'
 import { toast } from 'sonner'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useConnection } from 'wagmi'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import {
   Dialog,
   DialogContent,
@@ -40,7 +41,11 @@ const SendModal: React.FC<SendModalProps> = ({
   onClose
 }) => {
   const [destination, setDestination] = useState('')
-  const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
+  const isUnified = useIsUnified()
+  // Under unified/portfolio-margin there is no separate perp balance to send
+  // from — the source is unified with spot. Mirror Hyperliquid's own UX and
+  // force the send path to `spotSend` on USDC.
+  const [isPerp, setIsPerp] = useState(isUnified ? false : spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
   const { chainId, address } = useConnection()
@@ -51,6 +56,7 @@ const SendModal: React.FC<SendModalProps> = ({
       sdkUserSignerClient: state.sdkUserSignerClient
     }))
   )
+  const { withdrawable: unifiedWithdrawable } = usePerpTradingAccount()
   const { data: spotMeta } = useSpotMeta()
   const isRTL = false
   const spotData = useMemo(() => {
@@ -65,12 +71,14 @@ const SendModal: React.FC<SendModalProps> = ({
   const maxAmount = useMemo(() => {
     if (isPerp) {
       return clearingHouseState?.withdrawable || 0
-    } else {
-      const token = spotState?.balances.find((b) => b.coin === selectedToken)
-      if (!token) return 0
-      return Number(token.total) - Number(token.hold)
     }
-  }, [isPerp, clearingHouseState, spotState, spotMeta, selectedToken])
+    // Unified USDC sends draw from the same pool that collateralises perps.
+    // Cap at withdrawable so users can't try to send margin-locked USDC.
+    if (isUnified && selectedToken === 'USDC') return unifiedWithdrawable
+    const token = spotState?.balances.find((b) => b.coin === selectedToken)
+    if (!token) return 0
+    return Number(token.total) - Number(token.hold)
+  }, [isPerp, clearingHouseState, spotState, selectedToken, isUnified, unifiedWithdrawable])
 
   const destinationValidity = useMemo(() => validateAddress(destination), [destination])
   const isSelfSend = useMemo(() => {
@@ -172,22 +180,31 @@ const SendModal: React.FC<SendModalProps> = ({
                 </p>
               )}
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="w-32">
-                  {isPerp ? 'Perps Account' : 'Spot Account'}
-                  <IconChevronDown className="size-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-40" align="end">
-                <DropdownMenuItem onClick={() => setIsPerp(true)}>
-                  {'Perps Account'}
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setIsPerp(false)}>
-                  {'Spot Account'}
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            {isUnified ? (
+              // Under unified/portfolio-margin there is one balance per token
+              // — no Perps/Spot split to pick. Show a static label so users
+              // know where the send draws from.
+              <Button variant="outline" className="w-32 pointer-events-none" aria-disabled="true">
+                {'Trading Account'}
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-32">
+                    {isPerp ? 'Perps Account' : 'Spot Account'}
+                    <IconChevronDown className="size-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="w-40" align="end">
+                  <DropdownMenuItem onClick={() => setIsPerp(true)}>
+                    {'Perps Account'}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setIsPerp(false)}>
+                    {'Spot Account'}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
           <div
             className={cn('flex items-center justify-between -mb-2', isRTL && 'flex-row-reverse')}

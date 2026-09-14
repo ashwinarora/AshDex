@@ -9,6 +9,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import SetPrice from './components/SetPrice'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { calculateLiquidationPrice } from '@/utils/utils'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
@@ -58,11 +59,9 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { isAgentApproved, currentFeeApproval } = useAgentApproval()
   const isTradingEnabled = isAgentApproved && currentFeeApproval > 0
 
-  const [crossAccountValue, setCrossAccountValue] = useState(0)
-
-  useEffect(() => {
-    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
-  }, [clearingHouseState])
+  const perpAccount = usePerpTradingAccount()
+  const crossAccountValue = perpAccount.accountValue
+  const withdrawable = perpAccount.withdrawable
 
   // R2-B9: warn when a limit price would cross the spread and fill as
   // taker. We don't have the L2 book in this component, so we use the
@@ -134,7 +133,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
         let maxAllowedUsd = 0
         if (!isReduceOnly) {
-          maxAllowedUsd = Number(clearingHouseState.withdrawable || 0) * leverage
+          maxAllowedUsd = withdrawable * leverage
         } else {
           const existingPosition = clearingHouseState.assetPositions.find((pos) => {
             return pos.position.coin === selectedAsset
@@ -211,6 +210,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     isReduceOnly,
     leverage,
     clearingHouseState,
+    withdrawable,
     perpsMeta,
     spotState,
     selectedAsset

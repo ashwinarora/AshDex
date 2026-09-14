@@ -1,5 +1,5 @@
 'use client'
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useMemo, useState, useCallback } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -9,6 +9,7 @@ import useIsSpot from '@/hooks/useIsSpot'
 import AmountInputSpot from './components/AmountInputSpot'
 import TPSL, { TPSLType } from './components/TPSL'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { MAX_DECIMALS_PERP, MAX_DECIMALS_SPOT } from '@/utils/constants'
 import { getPerpsUniverseIndex, calculateLiquidationPrice } from '@/utils/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -26,10 +27,9 @@ import Fees from './components/Fees'
 import { useAgentApproval } from '@/context/EstablishConnection'
 
 const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
-  const { allMids, clearingHouseState, perpsMeta } = useHyperliquidStore(
+  const { allMids, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids,
-      clearingHouseState: state.clearingHouseState,
       perpsMeta: state.perpsMeta
     }))
   )
@@ -49,11 +49,8 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { data: spotMeta } = useSpotMeta()
   const { isAgentApproved, currentFeeApproval } = useAgentApproval()
   const isTradingEnabled = isAgentApproved && currentFeeApproval > 0
-  const [crossAccountValue, setCrossAccountValue] = useState(0)
+  const crossAccountValue = usePerpTradingAccount().accountValue
   const [isError, setIsError] = useState<boolean>(false)
-  useEffect(() => {
-    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
-  }, [clearingHouseState])
 
   const szDecimals = useMemo(() => {
     if (isSpot) {

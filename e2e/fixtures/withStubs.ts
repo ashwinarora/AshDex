@@ -39,6 +39,7 @@ const REST_TYPE_TO_FIXTURE: Record<string, string> = {
   spotMetaAndAssetCtxs: 'rest.spotMetaAndAssetCtxs.json',
   clearinghouseState: 'rest.clearinghouseState.json',
   spotClearinghouseState: 'rest.spotClearinghouseState.json',
+  userAbstraction: 'rest.userAbstraction.json',
   l2Book: 'rest.l2Book.BTC.json'
 }
 
@@ -303,6 +304,34 @@ export async function installAgentApproval(page: Page): Promise<void> {
         status: 200,
         contentType: 'application/json',
         body: '10' // basis points; anything > 0 passes the app's `currentFeeApproval > 0` guard
+      })
+      return
+    }
+    await route.fallback()
+  })
+}
+
+/**
+ * Preload a `unifiedAccount` response for `userAbstraction` so the app renders
+ * as if the connected wallet is in unified account abstraction mode. Layer
+ * this on top of `installStubs` (already applied to `page` by the fixture)
+ * before navigating.
+ *
+ *     import { test, installUnifiedMode } from './fixtures/withStubs'
+ *     test('unified layout', async ({ page }) => {
+ *       await installUnifiedMode(page)
+ *       await page.goto('/')
+ *       ...
+ *     })
+ */
+export async function installUnifiedMode(page: Page): Promise<void> {
+  await page.route(/api\.hyperliquid(-testnet)?\.xyz\/info/, async (route) => {
+    const body = route.request().postDataJSON() as { type?: string } | null
+    if (body?.type === 'userAbstraction') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify('unifiedAccount')
       })
       return
     }

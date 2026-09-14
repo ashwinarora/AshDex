@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useConnection } from 'wagmi'
 import DepositModal from '../DepositWithdraw/DepositModal'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import ReactiveText from '../reactive-text'
 import SpotToPerpTransferModal from '../UserData/component/transfers/spot-to-perp'
 import SendModal from '../UserData/component/SendModal'
@@ -11,6 +11,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
+import { computeUnifiedUsdcAccount } from '@/utils/hyperliquid/unifiedAccount'
 function OverviewBox({ isRTL }: { isRTL: boolean }) {
   const { isConnected } = useConnection()
   const [isDepositOpen, setIsDepositOpen] = useState(false)
@@ -23,6 +24,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
       spotAssetContext: state.spotAssetContext
     }))
   )
+  const isUnified = useIsUnified()
   const [totalUnrealizedPnl, setTotalUnrealizedPnl] = useState(0)
 
   const [maintenanceMargin, setMaintenanceMargin] = useState(0)
@@ -39,18 +41,33 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
         0
       ) || 0
     setTotalUnrealizedPnl(totalUnrealizedPnl)
-    setMaintenanceMargin(Number(clearingHouseState?.crossMaintenanceMarginUsed) || 0)
     setTotalCrossPositionsValue(
       clearingHouseState?.assetPositions?.reduce(
         (acc, curr) => acc + Number(curr.position.positionValue),
         0
       ) || 0
     )
-    setCrossAccountValue(Number(clearingHouseState?.marginSummary?.accountValue) || 0)
-    setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
+
+    // Unified account: spot USDC is the perp collateral, so the trading equity
+    // for the validator USDC DEX is derived from spot state minus committed
+    // margin rather than per-DEX marginSummary.accountValue.
+    const unified = isUnified ? computeUnifiedUsdcAccount(spotState, clearingHouseState) : null
+    if (unified) {
+      setMaintenanceMargin(unified.maintenanceMarginUsed)
+      setCrossAccountValue(unified.accountValue)
+      setCrossMarginRatio(unified.crossMarginRatio * 100)
+    } else {
+      setMaintenanceMargin(Number(clearingHouseState?.crossMaintenanceMarginUsed) || 0)
+      setCrossAccountValue(Number(clearingHouseState?.marginSummary?.accountValue) || 0)
+      setCrossMarginRatio((maintenanceMargin / crossAccountValue) * 100)
+    }
 
     const spotTokens = spotState?.balances ?? []
-    const spotUSDCBalance = Number(spotTokens.find((token) => token.coin === 'USDC')?.total ?? 0)
+    // Under unified mode USDC spot is unified with perp equity, so exclude it
+    // from the spot subtotal to avoid double-counting.
+    const spotUSDCBalance = isUnified
+      ? 0
+      : Number(spotTokens.find((token) => token.coin === 'USDC')?.total ?? 0)
 
     // Filter by coin rather than `.slice(1)` — the old code assumed USDC was
     // always at index 0 in the balances array. Also guard the universe lookup
@@ -72,7 +89,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
 
     const totalSpotValue = spotTokenPrices.reduce((acc, curr) => acc + curr, 0)
     setSpotAccountValue(totalSpotValue + spotUSDCBalance)
-  }, [clearingHouseState, spotState, spotMeta, spotAssetContext])
+  }, [clearingHouseState, spotState, spotMeta, spotAssetContext, isUnified])
 
   return (
     <div className="w-full h-full flex-1 flex flex-col gap-2 p-2 bg-secondary rounded-md">
@@ -101,16 +118,18 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
         >
           {'Send'}
         </Button>
-        <Button
-          onClick={() => setIsTransferModalOpen(true)}
-          variant="outline"
-          className="flex flex-1 items-center justify-center gap-2"
-          disabled={!isConnected}
-          data-testid="overview-transfer"
-        >
-          <IconTransfer className="size-3" />
-          <p>{'Transfer'}</p>
-        </Button>
+        {!isUnified && (
+          <Button
+            onClick={() => setIsTransferModalOpen(true)}
+            variant="outline"
+            className="flex flex-1 items-center justify-center gap-2"
+            disabled={!isConnected}
+            data-testid="overview-transfer"
+          >
+            <IconTransfer className="size-3" />
+            <p>{'Transfer'}</p>
+          </Button>
+        )}
       </div>
       <Button onClick={() => setIsDepositOpen(true)} disabled={!isConnected}>
         {'Deposit'}

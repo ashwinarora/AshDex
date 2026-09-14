@@ -29,6 +29,7 @@ import {
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import BridgeModal from './Bridge/BridgeModal'
+import { useAccountAbstraction } from '@/store/HyperliquidStore'
 
 type MenuItem = {
   name: string
@@ -57,6 +58,13 @@ const Header: FC = () => {
   }, [])
 
   const isWalletConnected = mounted && isConnected && !!walletId
+  const accountAbstraction = useAccountAbstraction()
+  const modeLabel =
+    accountAbstraction === 'unifiedAccount'
+      ? 'Unified'
+      : accountAbstraction === 'portfolioMargin'
+        ? 'Portfolio margin'
+        : null
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
@@ -216,7 +224,21 @@ const Header: FC = () => {
                   variant={'outline'}
                   size={'sm'}
                   className="flex text-white text-xs items-center gap-2"
+                  data-testid="header-wallet-button"
                 >
+                  {modeLabel && (
+                    <span
+                      className="rounded-sm bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-medium"
+                      data-testid="header-account-mode"
+                      title={
+                        accountAbstraction === 'unifiedAccount'
+                          ? 'Unified account: one balance backs spot and cross perps.'
+                          : 'Portfolio margin: pooled collateral across eligible assets.'
+                      }
+                    >
+                      {modeLabel}
+                    </span>
+                  )}
                   <span className="max-xl:hidden flex font-medium  truncate">
                     {truncateAddress(walletId!)}
                   </span>

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useConnection } from 'wagmi'
 import { toastSdkError } from '@/lib/toastSdkError'
 import { validateAmount } from '@/lib/validate'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer, IconWallet } from '@tabler/icons-react'
@@ -27,6 +27,7 @@ interface ITransferModal {
 }
 
 const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
+  const isUnified = useIsUnified()
   const { chainId, address } = useConnection()
   const [amount, setAmount] = useState<string>('')
   const { openConnectWalletModal } = useWalletModal()
@@ -40,6 +41,12 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
+
+  // Under unified/portfolio-margin the spot and perp balances are the same
+  // pool — there's nothing to transfer. Bail out after all hook calls so
+  // callers that still render this modal produce nothing, without violating
+  // React's rules of hooks.
+  if (isUnified) return null
   const isRTL = false
   const getBalance = () => {
     if (toPerp) {
