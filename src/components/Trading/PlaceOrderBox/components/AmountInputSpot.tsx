@@ -211,9 +211,7 @@ const AmountInputSpot = ({
             size in HYPE" rather than "Order size in @1035".
           */
           aria-label={
-            isInputUsd
-              ? 'Order size in USD'
-              : `Order size in ${selectedAssetName || 'asset'}`
+            isInputUsd ? 'Order size in USD' : `Order size in ${selectedAssetName || 'asset'}`
           }
           className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />

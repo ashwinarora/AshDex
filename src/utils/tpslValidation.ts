@@ -29,10 +29,8 @@ export function validateTpslDirection(input: TpslDirectionInput): TpslDirectionV
   const tpNum = tpRaw === undefined || tpRaw === '' ? NaN : Number(tpRaw)
   const slNum = slRaw === undefined || slRaw === '' ? NaN : Number(slRaw)
 
-  const tpValid =
-    !Number.isFinite(tpNum) || (isLong ? tpNum > entryPrice : tpNum < entryPrice)
-  const slValid =
-    !Number.isFinite(slNum) || (isLong ? slNum < entryPrice : slNum > entryPrice)
+  const tpValid = !Number.isFinite(tpNum) || (isLong ? tpNum > entryPrice : tpNum < entryPrice)
+  const slValid = !Number.isFinite(slNum) || (isLong ? slNum < entryPrice : slNum > entryPrice)
   const bothEmpty = !Number.isFinite(tpNum) && !Number.isFinite(slNum)
 
   return { tpValid, slValid, bothEmpty }

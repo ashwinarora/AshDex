@@ -97,7 +97,12 @@ const defaultExchangeReply = (body: ExchangeBody) => {
       response: { type: 'cancel', data: { statuses: ['success'] } }
     }
   }
-  if (type === 'usdClassTransfer' || type === 'usdSend' || type === 'spotSend' || type === 'withdraw3') {
+  if (
+    type === 'usdClassTransfer' ||
+    type === 'usdSend' ||
+    type === 'spotSend' ||
+    type === 'withdraw3'
+  ) {
     return { status: 'ok', response: { type: 'default' } }
   }
   if (type === 'approveAgent' || type === 'approveBuilderFee') {
@@ -136,7 +141,10 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
   await page.route(EXCHANGE_URL_PATTERN, async (route) => {
     const body = (route.request().postDataJSON() ?? {}) as ExchangeBody
     const override = await Promise.resolve(exchangeStub?.(body) ?? null)
-    const reply = override ?? { status: 200 as number | undefined, body: defaultExchangeReply(body) }
+    const reply = override ?? {
+      status: 200 as number | undefined,
+      body: defaultExchangeReply(body)
+    }
     await route.fulfill({
       status: reply.status ?? 200,
       contentType: 'application/json',
@@ -185,8 +193,7 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
     const account = '0x0000000000000000000000000000000000000000'
     // 65 bytes: r (32) || s (32) || v (1). Any deterministic value works since
     // the /exchange stub doesn't verify. Recovery byte 27 = valid ECDSA v.
-    const stubSignature =
-      '0x' + '11'.repeat(32) + '22'.repeat(32) + '1b'
+    const stubSignature = '0x' + '11'.repeat(32) + '22'.repeat(32) + '1b'
     const listeners = new Map<string, Array<(...args: unknown[]) => void>>()
     const provider = {
       isMetaMask: false,
@@ -195,7 +202,11 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
         if (method === 'eth_accounts' || method === 'eth_requestAccounts') return [account]
         if (method === 'wallet_switchEthereumChain') return null
         if (method === 'wallet_addEthereumChain') return null
-        if (method === 'eth_signTypedData_v4' || method === 'eth_sign' || method === 'personal_sign') {
+        if (
+          method === 'eth_signTypedData_v4' ||
+          method === 'eth_sign' ||
+          method === 'personal_sign'
+        ) {
           return stubSignature
         }
         throw new Error(`[stub-ethereum] unsupported method: ${method}`)
@@ -238,8 +249,7 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
  * NEVER put a real key here — this is for a stubbed HL server that verifies
  * nothing.
  */
-const STUB_AGENT_PRIVATE_KEY =
-  '0x1111111111111111111111111111111111111111111111111111111111111111'
+const STUB_AGENT_PRIVATE_KEY = '0x1111111111111111111111111111111111111111111111111111111111111111'
 // Derived from the private key above via viem privateKeyToAccount, hardcoded
 // so this fixture doesn't need to import viem.
 const STUB_AGENT_PUBLIC_ADDRESS = '0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A'

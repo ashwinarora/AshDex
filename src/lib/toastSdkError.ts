@@ -24,11 +24,7 @@ import { toast } from 'sonner'
  *
  * The raw error is always `console.error`'d for debugging.
  */
-export function toastSdkError(
-  e: unknown,
-  fallback: string,
-  opts?: { id?: string | number }
-): void {
+export function toastSdkError(e: unknown, fallback: string, opts?: { id?: string | number }): void {
   console.error(fallback, e)
 
   if (isUserRejection(e)) {
@@ -46,7 +42,11 @@ function isUserRejection(e: unknown): boolean {
   const err = e as { code?: unknown; name?: unknown; message?: unknown; cause?: unknown }
   if (err.code === 4001) return true
   if (typeof err.name === 'string' && err.name === 'UserRejectedRequestError') return true
-  if (typeof err.message === 'string' && /user rejected|user denied|user cancelled/i.test(err.message)) return true
+  if (
+    typeof err.message === 'string' &&
+    /user rejected|user denied|user cancelled/i.test(err.message)
+  )
+    return true
   // viem wraps EIP-1193 errors and puts the original under `.cause`.
   if (err.cause && err.cause !== e) return isUserRejection(err.cause)
   return false
@@ -66,7 +66,11 @@ function extractMessage(e: unknown): string | undefined {
     return e.message || undefined
   }
   if (e instanceof Error) return e.message || undefined
-  if (typeof e === 'object' && 'message' in e && typeof (e as { message: unknown }).message === 'string') {
+  if (
+    typeof e === 'object' &&
+    'message' in e &&
+    typeof (e as { message: unknown }).message === 'string'
+  ) {
     return (e as { message: string }).message || undefined
   }
   return undefined

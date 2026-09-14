@@ -156,10 +156,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                   const isNetPositive = Number.isFinite(net) && net > 0
                   return (
                     <p
-                      className={cn(
-                        'text-xs',
-                        isNetPositive ? 'text-white/70' : 'text-red'
-                      )}
+                      className={cn('text-xs', isNetPositive ? 'text-white/70' : 'text-red')}
                       data-testid="withdraw-net-preview"
                     >
                       {isNetPositive

@@ -8,16 +8,16 @@ Screenshots: `qa-screenshots/probe-2026-09-13/`.
 
 Every wallet-signing flow I exercised worked end-to-end. No transaction failed. Two functional bugs and a handful of UX gaps found — details below.
 
-| # | Flow                                | Signatures            | Result             |
-| - | ----------------------------------- | --------------------- | ------------------ |
-| 1 | Approve Agent (`ApproveAgent`)      | 1× typed-data         | ✅ Success toast   |
-| 2 | Approve Builder Fee (`ApproveBuilderFee`) | 1× typed-data   | ✅ Success toast   |
-| 3 | Spot→Perps transfer (`UsdClassTransfer`)  | 1× typed-data   | ✅ Balances moved  |
-| 4 | Place limit order (agent-signed)    | 0                     | ✅ Order landed, no popup |
-| 5 | Cancel order (agent-signed)         | 0                     | ✅ Order removed, no popup |
-| 6 | Deposit dialog (chain switch)       | 1× wallet_switchChain | ⚠ See B1          |
-| 7 | Send dialog surface                 | not exercised (funds preserved) | ✅ Dialog loads correctly |
-| 8 | Disconnect + reconnect              | 1× connect            | ⚠ See B2          |
+| #   | Flow                                      | Signatures                      | Result                     |
+| --- | ----------------------------------------- | ------------------------------- | -------------------------- |
+| 1   | Approve Agent (`ApproveAgent`)            | 1× typed-data                   | ✅ Success toast           |
+| 2   | Approve Builder Fee (`ApproveBuilderFee`) | 1× typed-data                   | ✅ Success toast           |
+| 3   | Spot→Perps transfer (`UsdClassTransfer`)  | 1× typed-data                   | ✅ Balances moved          |
+| 4   | Place limit order (agent-signed)          | 0                               | ✅ Order landed, no popup  |
+| 5   | Cancel order (agent-signed)               | 0                               | ✅ Order removed, no popup |
+| 6   | Deposit dialog (chain switch)             | 1× wallet_switchChain           | ⚠ See B1                  |
+| 7   | Send dialog surface                       | not exercised (funds preserved) | ✅ Dialog loads correctly  |
+| 8   | Disconnect + reconnect                    | 1× connect                      | ⚠ See B2                  |
 
 Final state at end of probe: Spot $158, Perps $50, 0 open orders, 0 open positions, agent still valid.
 
@@ -25,7 +25,7 @@ Final state at end of probe: Spot $158, Perps $50, 0 open orders, 0 open positio
 
 ### 1. Enable Trading
 
-- `Enable Trading` button opens a dialog titled **"Establish Connection"** with copy: *"This signature is gas-free. It opens a decentralized channel for instant and gasless deposits."* (Copy is slightly misleading — this covers **agent approval + builder-fee approval**, not deposits.)
+- `Enable Trading` button opens a dialog titled **"Establish Connection"** with copy: _"This signature is gas-free. It opens a decentralized channel for instant and gasless deposits."_ (Copy is slightly misleading — this covers **agent approval + builder-fee approval**, not deposits.)
 - Click 1 → Rabby popup shows `HyperliquidTransaction:ApproveAgent`, agent address `0x3a457f6a…5c2c8`, agent name `ashdex_agent`, `hyperliquidChain: "Testnet"`. Sign → toast: **"Agent approved successfully"**.
 - Dialog auto-advances to a second click labeled `Approve Fee`. Click → Rabby shows `HyperliquidTransaction:ApproveBuilderFee`, `maxFeeRate: "0.1%"`, builder `0x3250cf7f…f659cf`. Sign → toast: **"Fee approved successfully"**. Dialog auto-closes.
 - The order-side CTA switches from `Enable Trading` to `Long` (still disabled because Perps balance is $0 and size is empty).
@@ -70,7 +70,7 @@ Final state at end of probe: Spot $158, Perps $50, 0 open orders, 0 open positio
 
 ### 6. Disconnect + reconnect
 
-- Header address dropdown offers: Copy Address, Switch Wallet, Withdraw, Disconnect. Click Disconnect → header becomes `Connect Wallet`, order form shows `Connect Wallet` primary CTA, main pane shows *"Your Wallet is Disconnected"* empty state.
+- Header address dropdown offers: Copy Address, Switch Wallet, Withdraw, Disconnect. Click Disconnect → header becomes `Connect Wallet`, order form shows `Connect Wallet` primary CTA, main pane shows _"Your Wallet is Disconnected"_ empty state.
 - Click `Connect Wallet` → modal lists wallets → Rabby → Rabby's "Select a Wallet" popup ("Rabby Wallet" vs "Brave Wallet") → Rabby connect approval → toast-less success dialog "Wallet connected!" / "Let's Go!".
 - Header re-populates with `0x7B67…496E`. **Enable Trading is not re-prompted** — the previously-approved agent + fee are persisted (localStorage) and the flow resumes as fully enabled.
 - Screenshot: `07-wallet-modal.png`.
@@ -99,7 +99,7 @@ Expected: on disconnect, the sidebar collapses to a placeholder or zeroes out an
 ## UX gaps (non-bugs)
 
 - **UX-1 — No toast on place/cancel order**: Approve Agent, Approve Fee, and Transfer each fire a success toast. Place-order and cancel-order do not — the only feedback is the Open Orders count changing. Consider a toast (or the same one Hyperliquid's own UI uses: "Order placed"/"Order cancelled") for consistency.
-- **UX-2 — "Establish Connection" dialog copy**: The subheading mentions "instant and gasless deposits", but the two signatures actually enable *trading* (agent) and *builder fees* — not deposits. Rewording as "Enable trading" would match what's happening.
+- **UX-2 — "Establish Connection" dialog copy**: The subheading mentions "instant and gasless deposits", but the two signatures actually enable _trading_ (agent) and _builder fees_ — not deposits. Rewording as "Enable trading" would match what's happening.
 - **UX-3 — "Perps Spot" button label reads as one word**: The sidebar toggle for the transfer dialog is labeled `Perps Spot`. Reads like "Perps Spot" (one thing) rather than a Perps ↔ Spot swap. `Perps ↔ Spot` or `Transfer` would be clearer.
 - **UX-4 — Wallet modal labels are duplicated**: Buttons in the Connect Wallet modal read `Metamask Metamask`, `Rabby Wallet Rabby Wallet`, etc. (Icon `alt` + visible text both included as accessible name.)
 

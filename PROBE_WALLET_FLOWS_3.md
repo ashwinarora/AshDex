@@ -28,18 +28,18 @@ Verified the wallet address by reading `window.ethereum.selectedAddress` from th
 
 Fetched HL testnet REST directly:
 
-| Field | HL API | UI |
-| --- | --- | --- |
-| Perps `accountValue` | `49.98943` | `$49.99` ✅ |
-| Perps `withdrawable` | `48.44071` | `$48.44` (Balances → Available Balance) ✅ |
-| Perps `totalMarginUsed` | `0.77436` | `$0.77` on the position row ✅ |
-| Spot USDC total | `158.0` | `$158.00` ✅ |
-| Position `szi` | `0.0002 BTC` | `0.0002 BTC` ✅ |
-| Position `entryPx` | `77454.0` | `$77,454.00` ✅ |
-| Position `unrealizedPnl` | `-0.002` | `-$0.00` (rounded) ⚠️ (see UX below) |
-| Fee tier `userCrossRate` | `0.00045` | `0.045%` ✅ |
-| Fee tier `userAddRate` | `0.00015` | `0.015%` ✅ |
-| SOL `markPx` | `101.13` | favorites bar showed `SOL 0.01%` (24h) ✅ |
+| Field                    | HL API       | UI                                         |
+| ------------------------ | ------------ | ------------------------------------------ |
+| Perps `accountValue`     | `49.98943`   | `$49.99` ✅                                |
+| Perps `withdrawable`     | `48.44071`   | `$48.44` (Balances → Available Balance) ✅ |
+| Perps `totalMarginUsed`  | `0.77436`    | `$0.77` on the position row ✅             |
+| Spot USDC total          | `158.0`      | `$158.00` ✅                               |
+| Position `szi`           | `0.0002 BTC` | `0.0002 BTC` ✅                            |
+| Position `entryPx`       | `77454.0`    | `$77,454.00` ✅                            |
+| Position `unrealizedPnl` | `-0.002`     | `-$0.00` (rounded) ⚠️ (see UX below)       |
+| Fee tier `userCrossRate` | `0.00045`    | `0.045%` ✅                                |
+| Fee tier `userAddRate`   | `0.00015`    | `0.015%` ✅                                |
+| SOL `markPx`             | `101.13`     | favorites bar showed `SOL 0.01%` (24h) ✅  |
 
 **Verdict**: every displayed number I could sample matches the source of truth. No calculation drift. UI reads `withdrawable` from HL rather than deriving `accountValue - marginUsed` — that's correct because HL applies a maintenance-margin buffer.
 
@@ -48,7 +48,7 @@ Fetched HL testnet REST directly:
 Placed a **live 0.0002 BTC market long at 20x cross** (`$15.49` notional, `$0.77` margin). Toast: `"0.0002 BTC long at average price of 77454.0"`. HL confirmed the fill immediately.
 
 - Position row: value, size, entry, mark, funding, unrealized PnL, liq price, margin — all live-updating over the WS `webData2` stream. Perps balance dropped $50 → $49.99 for taker fee.
-- Opened the position's **Set TP/SL** dialog (this one *does* have a Close button — the pre-order TP/SL dialog does not, confirms UX-6 from Round 2). See B14 below for a validation bug.
+- Opened the position's **Set TP/SL** dialog (this one _does_ have a Close button — the pre-order TP/SL dialog does not, confirms UX-6 from Round 2). See B14 below for a validation bug.
 - Reduce Only + Long direction with an existing long position: **button stays enabled** — see B15.
 - Closed via **More → Close on Market**. Modal showed `"Estimated closed PnL (without fees): $-0.02"`, Confirm. Toast: `"Position Closed Successfully"`. Final balance `$49.97` — the $0.02 total slippage + fees, matches the estimate.
 - Note: `place-order` still emits **no toast** on success (Round 2 UX-1), but `close-position` does. Inconsistent.
@@ -59,15 +59,15 @@ Placed a **live 0.0002 BTC market long at 20x cross** (`$15.49` notional, `$0.77
 
 Confirms the Explore agent's `parseFloat("abc") === 0` smell. Live browser test on the transfer-to-Perp dialog:
 
-| Input | Accepted? | Transfer button |
-| --- | --- | --- |
-| `abc` | ✅ | **enabled** ❌ |
-| `NaN` | ✅ | **enabled** ❌ |
-| `Infinity` | ✅ | **enabled** ❌ |
-| `1e5` | ✅ | **enabled** ❌ (`1e5` = 100k, way over max) |
-| `.` | ✅ | **enabled** ❌ |
-| `0.` | ✅ | disabled ✅ |
-| `.0` | ✅ | disabled ✅ |
+| Input      | Accepted? | Transfer button                             |
+| ---------- | --------- | ------------------------------------------- |
+| `abc`      | ✅        | **enabled** ❌                              |
+| `NaN`      | ✅        | **enabled** ❌                              |
+| `Infinity` | ✅        | **enabled** ❌                              |
+| `1e5`      | ✅        | **enabled** ❌ (`1e5` = 100k, way over max) |
+| `.`        | ✅        | **enabled** ❌                              |
+| `0.`       | ✅        | disabled ✅                                 |
+| `.0`       | ✅        | disabled ✅                                 |
 
 Fix: change `parseFloat(amount) === 0` to `!Number.isFinite(parseFloat(amount)) || parseFloat(amount) <= 0 || parseFloat(amount) > max`.
 
@@ -79,6 +79,7 @@ For a live 0.0002 BTC **long** at entry $77,454, opened Set-TP/SL and set:
 - **SL Price = 200000** (should be < entry for a long)
 
 Dialog computed and displayed:
+
 - `Expected profit: -15.49` (i.e., a $15.49 **loss**)
 - `Expected loss: -24.51` (i.e., a $24.51 **profit**)
 
@@ -96,14 +97,14 @@ Expected: with a long position, reduce-only should only allow **Short** directio
 
 Direct value writes into the slippage number input:
 
-| Input | Accepted? |
-| --- | --- |
-| `99` | ✅ |
-| `100` | ✅ |
+| Input | Accepted?                      |
+| ----- | ------------------------------ |
+| `99`  | ✅                             |
+| `100` | ✅                             |
 | `200` | ✅ (bug: slippage cap is 100%) |
-| `-5` | ✅ (bug) |
-| `0` | ✅ |
-| `abc` | rejected, reset to `0` |
+| `-5`  | ✅ (bug)                       |
+| `0`   | ✅                             |
+| `abc` | rejected, reset to `0`         |
 
 The Explore agent flagged `Math.min(100, …)` runs only on blur, not on change. In the interim, submitting a market order carries the raw string as slippage.
 
@@ -127,7 +128,7 @@ The Explore agent flagged `Math.min(100, …)` runs only on blur, not on change.
 - **B4 (Leverage unclamped)** — re-verified live: `999`, `41`, `-5`, `abc` all accepted in the leverage textbox.
 - **B8 (Generic error toast)** — architecture confirms `catch (e) { toast.error("Something went wrong…") }` at 6 sites. Fix is a single toast helper that surfaces `e?.response?.data` or the SDK's error message.
 - **B12 (No submit-lock on Long)** — architecture confirms `OrderButton` gates only on `isInvalid || isError`, no `isPending`.
-- **UX-6 (TP/SL modal lacks Close)** — the *pre-order* TP/SL dialog still has no Cancel button; the *from-position* Set TP/SL dialog does. Fix is trivial (add the Close button to the pre-order variant).
+- **UX-6 (TP/SL modal lacks Close)** — the _pre-order_ TP/SL dialog still has no Cancel button; the _from-position_ Set TP/SL dialog does. Fix is trivial (add the Close button to the pre-order variant).
 
 ## Suggested priorities
 

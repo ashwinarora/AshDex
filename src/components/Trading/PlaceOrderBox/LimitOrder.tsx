@@ -146,8 +146,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             // means selling (isBuy=false); for a short (szi < 0) that
             // means buying. Any other combo leaves maxAllowedUsd = 0 so the
             // OrderButton's own guard disables submit.
-            const isReducingSide =
-              (szi > 0 && !isBuy) || (szi < 0 && isBuy)
+            const isReducingSide = (szi > 0 && !isBuy) || (szi < 0 && isBuy)
             if (isReducingSide) {
               const priceQuotient = price / Number(existingPosition.position.entryPx || 1)
               maxAllowedUsd = Number(existingPosition.position.positionValue || 0) * priceQuotient
@@ -314,10 +313,7 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             </Toggle>
           )}
           {reduceOnlyMismatch && (
-            <p
-              className="text-yellow-500 text-xs w-full"
-              data-testid="reduce-only-mismatch"
-            >
+            <p className="text-yellow-500 text-xs w-full" data-testid="reduce-only-mismatch">
               {reduceOnlyMismatch}
             </p>
           )}

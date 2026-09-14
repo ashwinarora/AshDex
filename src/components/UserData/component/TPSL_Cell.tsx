@@ -143,13 +143,16 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const isLong = position > 0
   // R3-B14: direction guard delegated to a pure fn so it's unit-testable.
   // See src/utils/tpslValidation.ts for cases.
-  const { tpValid: tpDirectionValid, slValid: slDirectionValid, bothEmpty } =
-    validateTpslDirection({
-      isLong,
-      entryPrice,
-      tpTriggerPrice,
-      slTriggerPrice
-    })
+  const {
+    tpValid: tpDirectionValid,
+    slValid: slDirectionValid,
+    bothEmpty
+  } = validateTpslDirection({
+    isLong,
+    entryPrice,
+    tpTriggerPrice,
+    slTriggerPrice
+  })
   const canConfirm = !bothEmpty && tpDirectionValid && slDirectionValid
 
   const handleTpPriceChange = (value: string) => {
@@ -585,11 +588,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
               : 'Stop-loss must be above the entry price for a short position.'}
           </p>
         )}
-        <Button
-          onClick={handleClick}
-          disabled={!canConfirm}
-          data-testid="position-tpsl-confirm"
-        >
+        <Button onClick={handleClick} disabled={!canConfirm} data-testid="position-tpsl-confirm">
           {'Confirm'}
         </Button>
         <DialogFooter className="text-xs text-white/70 text-center">
