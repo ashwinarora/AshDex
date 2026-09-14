@@ -264,7 +264,11 @@ const AmountInput = ({
                   ? percentInputStr
                   : Number.isNaN(usdPercent)
                     ? ''
-                    : usdPercent.toFixed(2)
+                    : // Cap the displayed value at 100 so an order size that
+                      // exceeds max doesn't render as e.g. "70000.00" (Round-2
+                      // B3). Underlying state stays uncapped so the red
+                      // "over-max" warning and the disabled submit still fire.
+                      Math.min(100, usdPercent).toFixed(2)
               }
               id="preorder-size-percent"
               aria-label="Order size percent of max"

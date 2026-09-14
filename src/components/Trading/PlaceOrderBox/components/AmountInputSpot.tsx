@@ -204,7 +204,17 @@ const AmountInputSpot = ({
           })()}
           onChange={isInputUsd ? updateFromUsdAmount : updateFromAssetAmount}
           id="spot-order-size"
-          aria-label={isInputUsd ? 'Order size in USD' : `Order size in ${selectedAsset}`}
+          /*
+            R3-B17: `selectedAsset` is Hyperliquid's internal token key
+            (e.g. "@1035" for HYPE) until the human-readable name resolves.
+            Prefer `selectedAssetName` so screen readers announce "Order
+            size in HYPE" rather than "Order size in @1035".
+          */
+          aria-label={
+            isInputUsd
+              ? 'Order size in USD'
+              : `Order size in ${selectedAssetName || 'asset'}`
+          }
           className={cn('w-full text-white flex-1', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>

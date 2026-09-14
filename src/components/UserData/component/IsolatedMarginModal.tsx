@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
@@ -63,11 +64,8 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
         id: toastId
       })
     } catch (error) {
-      console.error(error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error updating isolated margin', { id: toastId })
     }
   }
 

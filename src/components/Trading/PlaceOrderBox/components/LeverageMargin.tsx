@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Slider } from '@/components/ui/slider'
 import { cn, numberInputValidator } from '@/lib/utils'
+import { clamp } from '@/lib/validate'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Input } from '@/components/ui/input'
 import { IconX } from '@tabler/icons-react'
@@ -61,7 +62,23 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
   }, [leverage])
 
   const handleLeverageChange = (value: string) => {
-    setLeverageInput(value)
+    // Round-2 B4 fix: reject non-digit / out-of-range values on-change so
+    // `999`, `-5`, `abc`, `3.5` never sit in the visible input.
+    //
+    // Take only the leading run of digits — `3.5` becomes `3` (leverage is
+    // integer), `1e5` becomes `1`, `-5` becomes '' (leading minus is not a
+    // digit), then clamp to [1, maxLeverage]. Empty allowed so the user can
+    // clear the field before retyping.
+    const match = value.match(/^(\d+)/)
+    const digitsOnly = match ? match[1] : ''
+    if (digitsOnly === '') {
+      setLeverageInput('')
+      setIsEdited(true)
+      return
+    }
+    const parsed = parseInt(digitsOnly, 10)
+    const clamped = clamp(parsed, 1, maxLeverage)
+    setLeverageInput(clamped.toString())
     setIsEdited(true)
   }
 

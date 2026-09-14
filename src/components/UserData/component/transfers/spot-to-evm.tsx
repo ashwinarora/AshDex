@@ -10,6 +10,7 @@ import {
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { IconChevronDown, IconTransfer } from '@tabler/icons-react'
 import {
   DropdownMenuContent,
@@ -130,12 +131,9 @@ const SpotToEvmTransferModal = ({ isOpen, onClose }: ITransferModal) => {
         })
         setIsLoading(false)
       } catch (error) {
-        console.error('Transfer failed:', error)
         onClose()
         setIsLoading(false)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(error, 'Transfer failed', { id: toastId })
       }
     } else {
       if (!chainId || (chainId !== hyperliquidMainnet.id && chainId !== hyperliquidTestnet.id))

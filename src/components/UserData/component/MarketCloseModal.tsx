@@ -4,6 +4,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { trimDecimals } from '@/utils/format'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
@@ -172,10 +173,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       const status = order.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {
         onClose()
-        console.error('Close position error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(status.error, 'Close position error', { id: toastId })
       } else if (typeof status === 'object' && 'filled' in status) {
         onClose()
         toast.success('Position Closed Successfully', {
@@ -192,10 +190,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       }
     } catch (error) {
       onClose()
-      console.error('Error closing position:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error closing position', { id: toastId })
     }
   }
 

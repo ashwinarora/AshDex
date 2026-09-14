@@ -105,11 +105,20 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   }, [allMids, selectedAsset, slippage, isBuy, szDecimals, isSpot])
 
   const liquidationPrice = useMemo(() => {
+    // BUG-001: previously used getFormattedPrice() as entryPrice. That price
+    // is mark × (1 ± slippage) — inflated for a long, deflated for a short —
+    // and it's what the order submits at, not what the position opens at.
+    // Feeding the inflated price into the liq-price formula for a long
+    // produced liq > mark (impossible), which is the exact QA symptom.
+    //
+    // The expected fill for a market order is ~mark; use it as the entry
+    // approximation for the pre-order preview.
+    const markPriceRaw = Number(allMids[selectedAsset])
     if (
-      !getFormattedPrice() ||
+      !markPriceRaw ||
       !assetAmount ||
-      Number(getFormattedPrice()) === 0 ||
-      Number(assetAmount) === 0
+      Number(assetAmount) === 0 ||
+      !Number.isFinite(markPriceRaw)
     ) {
       return 0
     }
@@ -118,7 +127,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     const maxLeverage = perpsMeta?.universe[assetIndex]?.maxLeverage || 1
 
     return calculateLiquidationPrice({
-      entryPrice: Number(getFormattedPrice()),
+      entryPrice: markPriceRaw,
       positionSize: Number(assetAmount),
       leverage,
       isBuy,
@@ -128,7 +137,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       crossAccountValue
     })
   }, [
-    getFormattedPrice,
+    allMids,
     assetAmount,
     leverage,
     isBuy,
@@ -278,10 +287,21 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     dir={isRTL ? 'rtl' : 'ltr'}
                     value={slippage}
                     className="w-20 shrink-0"
-                    onChange={(e) => setSlippage(Number(e.target.value))}
+                    data-testid="preorder-slippage-input"
+                    onChange={(e) => {
+                      // Clamp on-change as well as on-blur (Round-2 B16).
+                      // Otherwise the user can paste `200` and, if they click
+                      // Buy before Tab-ing out, the raw 200 is what the
+                      // order carries.
+                      const parsed = Number(e.target.value)
+                      if (!Number.isFinite(parsed)) return
+                      const clamped = Math.max(0.1, Math.min(100, parsed))
+                      setSlippage(clamped)
+                    }}
                     onBlur={(e) => {
-                      // Clamp on blur so out-of-range values (e.g. 200)
-                      // can't survive past the input's own max=100.
+                      // Belt-and-suspenders: if the on-change guard was
+                      // bypassed (e.g. a raw programmatic change), the
+                      // on-blur clamp still runs.
                       const parsed = Number(e.target.value)
                       const clamped = Math.max(
                         0.1,
@@ -330,7 +350,15 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <>
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{'Liquidation Price'}</p>
-                <p className="text-white">{isTradingEnabled ? liquidationPrice : 'N/A'}</p>
+                <p className="text-white">
+                  {/*
+                    Show N/A when the underlying calc has nothing to work with
+                    (empty size or price). Rendering the numeric literal `0`
+                    reads like a real liquidation at $0 (BUG-014). Matches the
+                    empty-form behaviour of the Limit-order variant.
+                  */}
+                  {isTradingEnabled && Number(liquidationPrice) > 0 ? liquidationPrice : 'N/A'}
+                </p>
               </div>
 
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>

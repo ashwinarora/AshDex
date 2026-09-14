@@ -9,6 +9,7 @@ import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../
 import { Button } from '../ui/button'
 import { useShallow } from 'zustand/react/shallow'
 import { ApiRequestError } from '@nktkas/hyperliquid'
+import { toastSdkError } from '@/lib/toastSdkError'
 import DepositModal from '../DepositWithdraw/DepositModal'
 
 const EstablishConnectionModal = () => {
@@ -62,25 +63,22 @@ const EstablishConnectionModal = () => {
                 id: toastId
               })
             } catch (error) {
-              console.error('Error approving agent:', error)
-              if (error instanceof ApiRequestError) {
-                if (error.message.includes('Must deposit before performing actions')) {
-                  toast.info(
-                    'Your wallet seems to be new. Please deposit some funds to establish connection.',
-                    {
-                      id: toastId
-                    }
-                  )
-                  openDepositModal()
-                } else {
-                  toast.error('Something went wrong, check the console or contact support', {
-                    id: toastId
-                  })
-                }
+              // Preserve the "new wallet — please deposit" branch because it
+              // triggers a specific side-effect (openDepositModal). All other
+              // errors go through the shared helper, which extracts the real
+              // Hyperliquid message and downgrades user-cancels to an info
+              // toast.
+              if (
+                error instanceof ApiRequestError &&
+                error.message.includes('Must deposit before performing actions')
+              ) {
+                toast.info(
+                  'Your wallet seems to be new. Please deposit some funds to establish connection.',
+                  { id: toastId }
+                )
+                openDepositModal()
               } else {
-                toast.error('Something went wrong, check the console or contact support', {
-                  id: toastId
-                })
+                toastSdkError(error, 'Error approving agent', { id: toastId })
               }
             }
           }}
@@ -107,10 +105,7 @@ const EstablishConnectionModal = () => {
                 id: toastId
               })
             } catch (error) {
-              console.error('Error approving fee:', error)
-              toast.error('Something went wrong, check the console or contact support', {
-                id: toastId
-              })
+              toastSdkError(error, 'Error approving fee', { id: toastId })
             }
           }}
         >
@@ -134,7 +129,11 @@ const EstablishConnectionModal = () => {
           </DialogHeader>
           <DialogDescription>
             {
-              'This signature is gas-free. It opens a decentralized channel for instant and gasless deposits.'
+              // R1-UX2: the old copy talked about "deposits", but these two
+              // signatures approve the agent wallet and the builder fee —
+              // trading enablement, not deposits. New copy matches what the
+              // Rabby popup actually shows.
+              'Enable one-click trading. Sign twice to approve your agent wallet and set the builder fee. No gas required.'
             }
           </DialogDescription>
           {getButton()}

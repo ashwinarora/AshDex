@@ -1,6 +1,9 @@
 import React, { useState } from 'react'
 import { useConnection, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateAmount } from '@/lib/validate'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { isTestnet, HYPERLIQUID_WITHDRAW_FEE_USDC } from '@/utils/constants'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
@@ -73,10 +76,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     } catch (error) {
       setIsLoading(false)
       onClose()
-      console.error('Error withdrawing:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Withdrawal failed', { id: toastId })
     } finally {
       setIsLoading(false)
     }
@@ -126,6 +126,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    data-testid="withdraw-amount"
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
@@ -136,6 +137,37 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     </DropdownMenuTrigger>
                   </DropdownMenu>
                 </div>
+                {/*
+                  Preview the net-received amount so the user sees the effect
+                  of the $1 fee before they sign. Hidden until they've typed
+                  something valid — showing "$-1.00" for an empty field is
+                  worse than showing nothing.
+                */}
+                {(() => {
+                  const max = Number(clearingHouseState?.withdrawable ?? 0)
+                  const validity = validateAmount(amount, {
+                    min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
+                    max
+                  })
+                  if (!amount) return null
+                  const net = validity.ok
+                    ? validity.value - HYPERLIQUID_WITHDRAW_FEE_USDC
+                    : Number(amount) - HYPERLIQUID_WITHDRAW_FEE_USDC
+                  const isNetPositive = Number.isFinite(net) && net > 0
+                  return (
+                    <p
+                      className={cn(
+                        'text-xs',
+                        isNetPositive ? 'text-white/70' : 'text-red'
+                      )}
+                      data-testid="withdraw-net-preview"
+                    >
+                      {isNetPositive
+                        ? `You'll receive: $${net.toFixed(2)} USDC (after $${HYPERLIQUID_WITHDRAW_FEE_USDC} fee)`
+                        : `Amount must be greater than the $${HYPERLIQUID_WITHDRAW_FEE_USDC} fee.`}
+                    </p>
+                  )
+                })()}
               </div>
             </div>
             <Separator />
@@ -146,16 +178,23 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                 onClick={async () => {
                   await handleSwitchChain()
                 }}
+                data-testid="withdraw-switch-chain"
               >
                 {'Switch to Arbitrum'}
               </Button>
             ) : (
               <Button
                 className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
+                disabled={
+                  !validateAmount(amount, {
+                    min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
+                    max: Number(clearingHouseState?.withdrawable ?? 0)
+                  }).ok
+                }
                 onClick={async () => {
                   await onWithdrawClick()
                 }}
+                data-testid="withdraw-submit"
               >
                 {'Withdraw'}
               </Button>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useConnection } from 'wagmi'
 import DepositModal from '../DepositWithdraw/DepositModal'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import ReactiveText from '../reactive-text'
@@ -11,6 +12,7 @@ import { Separator } from '../ui/separator'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
 function OverviewBox({ isRTL }: { isRTL: boolean }) {
+  const { isConnected } = useConnection()
   const [isDepositOpen, setIsDepositOpen] = useState(false)
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false)
   const [isSendModalOpen, setIsSendModalOpen] = useState(false)
@@ -80,20 +82,39 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
           isRTL ? 'flex-row-reverse' : 'flex-row'
         )}
       >
-        <Button onClick={() => setIsSendModalOpen(true)} variant="outline" className="flex-1">
+        {/*
+          R1-B2: gate the action buttons on wallet-connected state. After a
+          Rabby disconnect the sidebar previously stayed clickable and
+          rendered stale balances until the user refreshed. Now the buttons
+          are disabled and the equity numbers below fall back to 0.00 (see
+          the isConnected guard in the render values).
+
+          R1-UX3: rename the "Perps [icon] Spot" tri-cell into a plain
+          "Transfer" button so screen readers announce a single word and the
+          intent is obvious. The dialog title still names both sides.
+        */}
+        <Button
+          onClick={() => setIsSendModalOpen(true)}
+          variant="outline"
+          className="flex-1"
+          disabled={!isConnected}
+        >
           {'Send'}
         </Button>
         <Button
           onClick={() => setIsTransferModalOpen(true)}
           variant="outline"
           className="flex flex-1 items-center justify-center gap-2"
+          disabled={!isConnected}
+          data-testid="overview-transfer"
         >
-          <p>{'Perps'}</p>
           <IconTransfer className="size-3" />
-          <p>{'Spot'}</p>
+          <p>{'Transfer'}</p>
         </Button>
       </div>
-      <Button onClick={() => setIsDepositOpen(true)}>{'Deposit'}</Button>
+      <Button onClick={() => setIsDepositOpen(true)} disabled={!isConnected}>
+        {'Deposit'}
+      </Button>
       <Separator className="w-full" />
       <div className="flex flex-col gap-2 flex-1 h-full">
         <div
@@ -116,7 +137,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             type="currency"
             className="text-xs"
             pulse={true}
-            value={spotAccountValue || 0}
+            value={isConnected ? spotAccountValue || 0 : 0}
           />
         </div>
         <div
@@ -131,7 +152,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             type="currency"
             className="text-xs"
             pulse={true}
-            value={crossAccountValue || 0}
+            value={isConnected ? crossAccountValue || 0 : 0}
           />
         </div>
         <Separator className="w-full" />
@@ -154,7 +175,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             precision={2}
             type="currency"
             className="text-xs"
-            value={crossAccountValue - totalUnrealizedPnl}
+            value={isConnected ? crossAccountValue - totalUnrealizedPnl : 0}
           />
         </div>
         <div
@@ -169,7 +190,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             type="currency"
             isStatic={true}
             className="text-xs"
-            value={totalUnrealizedPnl}
+            value={isConnected ? totalUnrealizedPnl : 0}
           />
         </div>
         <div
@@ -182,7 +203,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
           <ReactiveText
             precision={2}
             type="percentage"
-            value={crossMarginRatio}
+            value={isConnected ? crossMarginRatio : 0}
             className="text-xs"
           />
         </div>
@@ -196,7 +217,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
           <ReactiveText
             precision={2}
             type="currency"
-            value={maintenanceMargin}
+            value={isConnected ? maintenanceMargin : 0}
             className="text-xs"
           />
         </div>
@@ -211,7 +232,7 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
             precision={2}
             type="leverage"
             className="text-xs"
-            value={totalCrossPositionsValue / crossAccountValue}
+            value={isConnected ? totalCrossPositionsValue / crossAccountValue : 0}
           />
         </div>
       </div>

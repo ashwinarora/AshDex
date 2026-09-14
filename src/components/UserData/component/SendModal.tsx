@@ -21,8 +21,10 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconSend } from '@tabler/icons-react'
-import { isAddress, isHex } from 'viem'
+import { isHex } from 'viem'
 import { cn } from '@/lib/utils'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateAddress, validateAmount } from '@/lib/validate'
 
 interface SendModalProps {
   spotDefaultName?: string
@@ -41,7 +43,7 @@ const SendModal: React.FC<SendModalProps> = ({
   const [isPerp, setIsPerp] = useState(spotDefaultName ? false : true)
   const [selectedToken, setSelectedToken] = useState(spotDefaultName || 'USDC')
   const [amount, setAmount] = useState('')
-  const { chainId } = useConnection()
+  const { chainId, address } = useConnection()
   const { clearingHouseState, spotState, sdkUserSignerClient } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
@@ -70,10 +72,20 @@ const SendModal: React.FC<SendModalProps> = ({
     }
   }, [isPerp, clearingHouseState, spotState, spotMeta, selectedToken])
 
+  const destinationValidity = useMemo(() => validateAddress(destination), [destination])
+  const isSelfSend = useMemo(() => {
+    if (!destinationValidity.ok || !address) return false
+    return destinationValidity.checksummed?.toLowerCase() === address.toLowerCase()
+  }, [destinationValidity, address])
+  const amountValidity = useMemo(
+    () => validateAmount(amount, { max: Number(maxAmount) }),
+    [amount, maxAmount]
+  )
+
   const handleSend = async () => {
     if (!chainId) return
     if (!sdkUserSignerClient) return
-    if (!isAddress(destination)) {
+    if (!destinationValidity.ok) {
       toast.error('Destination must be a valid hex address')
       return
     }
@@ -88,11 +100,9 @@ const SendModal: React.FC<SendModalProps> = ({
         toast.success('Send successful', {
           id: toastId
         })
-      } catch {
+      } catch (error) {
         onClose()
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(error, 'Send failed', { id: toastId })
       }
     } else {
       if (!spotData) return
@@ -106,11 +116,9 @@ const SendModal: React.FC<SendModalProps> = ({
         toast.success('Send successful', {
           id: toastId
         })
-      } catch {
+      } catch (error) {
         onClose()
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(error, 'Send failed', { id: toastId })
       }
     }
   }
@@ -145,7 +153,24 @@ const SendModal: React.FC<SendModalProps> = ({
                   isRTL && 'text-end'
                 )}
                 placeholder={'Address (0x...)'}
+                data-testid="send-address"
               />
+              {/*
+                Two inline warnings:
+                  1. malformed address (only after they've typed something)
+                  2. self-send — a common way to lose funds if the user
+                     confused their own address with a friend's.
+              */}
+              {destination && !destinationValidity.ok && (
+                <p className="text-red text-xs" data-testid="send-address-error">
+                  {'Not a valid EVM address.'}
+                </p>
+              )}
+              {isSelfSend && (
+                <p className="text-yellow-500 text-xs" data-testid="send-self-warning">
+                  {'This address is your own connected wallet.'}
+                </p>
+              )}
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -192,6 +217,7 @@ const SendModal: React.FC<SendModalProps> = ({
                 type="number"
                 min="0"
                 max={maxAmount}
+                data-testid="send-amount"
               />
             </div>
             <DropdownMenu>
@@ -219,10 +245,9 @@ const SendModal: React.FC<SendModalProps> = ({
           </div>
           <Button
             className={cn('mt-2', isRTL && 'flex-row-reverse')}
-            disabled={
-              !destination || !amount || Number(amount) <= 0 || Number(amount) > Number(maxAmount)
-            }
+            disabled={!destinationValidity.ok || !amountValidity.ok}
             onClick={handleSend}
+            data-testid="send-submit"
           >
             {'Send'}
           </Button>

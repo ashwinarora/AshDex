@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { useConnection } from 'wagmi'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateAmount } from '@/lib/validate'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
@@ -65,11 +67,8 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
       })
       setIsLoading(false)
     } catch (error) {
-      console.error('Transfer failed:', error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Transfer failed', { id: toastId })
       setIsLoading(false)
     }
   }
@@ -137,6 +136,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                     className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    data-testid="transfer-amount"
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
@@ -173,8 +173,9 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             ) : (
               <Button
                 className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
+                disabled={!validateAmount(amount, { max: Number(getBalance()) }).ok}
                 onClick={onTransferClick}
+                data-testid="transfer-submit"
               >
                 {'Transfer'}
               </Button>

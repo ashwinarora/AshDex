@@ -98,27 +98,27 @@ Living status table — kept in sync as each fix lands. Legend: ✅ fixed · ⏳
 
 | ID      | Status            | Notes                                                                                                                                                                         |
 | ------- | ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| BUG-001 | ⏳ partial        | 3 unit regression guards landed (Stage 3). E2e deferred to post-wallet-connect infra step.                                                                                    |
+| BUG-001 | ✅ fixed          | F4 — Root cause was MarketOrder.tsx passing slippage-adjusted price as `entryPrice` into `calculateLiquidationPrice`. Now feeds the raw mark. Existing unit suite still passes; e2e deferred to signing-fixture work.                                                                                    |
 | BUG-002 | ✅ fixed          | Group C — `derivePerpsMarketList` filters `!isDelisted`.                                                                                                                      |
 | BUG-003 | ✅ fixed          | Group C — whitelist deleted; full universe now shown.                                                                                                                         |
 | BUG-004 | ⏸ paused         | J — needs TradingView-loaded fixture to reproduce                                                                                                                             |
 | BUG-005 | ⏸ paused         | J — needs TradingView-loaded fixture to reproduce                                                                                                                             |
 | BUG-006 | ⏸ paused         | J — needs discussion                                                                                                                                                          |
-| BUG-007 | ⬜ open           | Group B — needs signing infra                                                                                                                                                 |
-| BUG-008 | ⬜ open           | Group B — needs signing infra                                                                                                                                                 |
-| BUG-009 | ⬜ open           | Group B (feature request)                                                                                                                                                     |
-| BUG-010 | ⬜ open           | Group B (feature request)                                                                                                                                                     |
+| BUG-007 | ✅ fixed          | F2 — Root cause: `!assetIndex \|\| assetIndex < 0` fired for `assetIndex === 0` (SOL). Extracted to `resolveAssetIndex` (tested). Cancel path now uses shared `toastSdkError`.                                                                                                                                                 |
+| BUG-008 | ✅ fixed          | F2 — placePerpOrder + placeSpotOrder now surface HL's `{ error }` main status via `toastSdkError` instead of silently succeeding.                                                                                                                                                 |
+| BUG-009 | ✅ fixed          | F4 — Cancel-all now visible in the Open Orders table header with the label "Cancel all"; disabled when < 2 open orders.                                                                                                                                                     |
+| BUG-010 | ⏸ declined       | J — Feature request declined by user (2026-09-14). Do not re-open unless user explicitly asks for a market-order confirmation dialog.                                                                                                                                                     |
 | BUG-011 | ✅ fixed          | Group A — `onBlur` clamp in LeverageMargin.                                                                                                                                   |
 | BUG-012 | ✅ fixed          | Group A — `onBlur` clamp in MarketOrder slippage input.                                                                                                                       |
 | BUG-013 | ⏸ paused         | J — needs discussion                                                                                                                                                          |
-| BUG-014 | ⏳ deferred       | Group A remainder — after wallet-connect infra                                                                                                                                |
+| BUG-014 | ✅ fixed          | F1 — Liquidation Price now renders `N/A` when either size or price is empty (Number(liquidationPrice) > 0 guard).                                                                                                                                |
 | BUG-015 | ✅ fixed          | Closed alongside BUG-029 — `Fees` is shared between perps and spot.                                                                                                           |
-| BUG-016 | ⬜ open           | Group B                                                                                                                                                                       |
+| BUG-016 | ✅ fixed          | F4 — Perp resting-order toast now reads `Long 0.0002 BTC @ 70000 · #12345` with side, size, asset, price, and order id.                                                                                                                                                                       |
 | BUG-017 | ⏸ paused         | J — needs discussion                                                                                                                                                          |
 | BUG-018 | ⏸ paused         | J — feature request (expected fill preview)                                                                                                                                   |
-| BUG-019 | ⬜ open           | Group E — needs signing infra                                                                                                                                                 |
-| BUG-020 | ⬜ open           | Group E — needs signing infra                                                                                                                                                 |
-| BUG-021 | ⬜ open           | Group E — needs signing infra                                                                                                                                                 |
+| BUG-019 | ✅ fixed          | F3 — Pre-order TP/SL error moved from CTA label to helper text under the inputs; button label stays "Set TP/SL" and just disables on invalid.                                                                                                                                                 |
+| BUG-020 | ✅ fixed          | F3 — TP/SL Value inputs relabeled `TP Price ($)` / `SL Price ($)` so users know the unit. $↔% sync was already in place via useEffect on blur.                                                                                                                                                 |
+| BUG-021 | ✅ fixed          | F3 — `assetCtx` no longer null when index=0 (same shape as BUG-007); Mark Price falls back to `—` when live tick hasn't arrived instead of rendering `NaN`. Also blocks inverted TP/SL Confirm (R3-B14) via `validateTpslDirection`.                                                                                                                                                 |
 | BUG-022 | ✅ fixed          | Group C — empty state added to PerpsTable. Follow-up: SpotTable in Group F.                                                                                                   |
 | BUG-023 | ✅ fixed          | Stage 3 — `getFormattedPrice` delegates to `formatPrice`.                                                                                                                     |
 | BUG-024 | ⏸ paused         | J — already implemented; verify visually                                                                                                                                      |
@@ -146,7 +146,7 @@ Living status table — kept in sync as each fix lands. Legend: ✅ fixed · ⏳
 | BUG-046 | ✅ fixed          | Group G — 22 debug `console.log` calls removed across 16 files (source-hygiene sweep).                                                                                        |
 | BUG-047 | ⏸ paused         | J — 403 correlated with BUG-042; 400 unclassified. Both need Reown init.                                                                                                      |
 | BUG-048 | ⏸ paused         | J — needs wagmi auto-connect fixture to reproduce                                                                                                                             |
-| BUG-049 | ⏳ partial        | Group H1 — Slippage popover now has `aria-describedby`. Remaining dialogs (TP/SL, Market Close, Transfer) still to do.                                                        |
+| BUG-049 | ✅ fixed          | F6 — DialogDescription added to the position-level TP/SL dialog and the Bridge modal (the two remaining dialogs missing one). Earlier dialogs already had them.                                                        |
 | BUG-050 | ⏸ paused         | J — needs specific interaction script to reproduce                                                                                                                            |
 | BUG-051 | ✅ fixed          | Group H1 — all 3 perps+spot form fields (leverage, size, percent) have `id` + `aria-label` + `<label for>` association. sr-only label used where visible label would clutter. |
 | BUG-052 | ⏸ paused         | J — needs discussion                                                                                                                                                          |
@@ -155,7 +155,16 @@ Living status table — kept in sync as each fix lands. Legend: ✅ fixed · ⏳
 | BUG-055 | ⏸ paused         | J — feature request; external form, can't test                                                                                                                                |
 | BUG-056 | ⏸ paused         | J — layout redesign, design call                                                                                                                                              |
 
-**Rollup totals:** 21 fixed · 2 partial · 1 deferred · 22 paused · 2 dup/rollup · 8 open (of 56 IDs, 54 live).
+**Rollup totals:** 29 fixed · 0 partial · 0 deferred · 22 paused · 2 dup/rollup · 1 declined (BUG-010) · 0 open (of 56 IDs, 54 live).
+
+## Post-probe cross-reference (2026-09-14)
+
+Three adversarial probe rounds landed alongside the fix work:
+- [`PROBE_WALLET_FLOWS.md`](./PROBE_WALLET_FLOWS.md) — Round 1 (happy path).
+- [`PROBE_WALLET_FLOWS_2.md`](./PROBE_WALLET_FLOWS_2.md) — Round 2 (adversarial input).
+- [`PROBE_WALLET_FLOWS_3.md`](./PROBE_WALLET_FLOWS_3.md) — Round 3 (deep dive with real position).
+
+Round-1 through Round-3 findings are cross-cutting; the fixes for them landed under the same F1–F6 groups above. See the plan file `/Users/ashwin/.claude/plans/dapper-sparking-salamander.md` for the group-by-group execution log.
 
 ## How to use this document with Claude
 
@@ -368,9 +377,9 @@ The Open Orders tab has only a per-row `Cancel`. On mainnet users often have doz
 
 ---
 
-### BUG-010 — No confirm/summary dialog before placing a market order — **MINOR** (design call)
+### BUG-010 — No confirm/summary dialog before placing a market order — **MINOR** — ⏸ DECLINED
 
-Clicking `Long` (Market, non-reduce) fires the order immediately. Some competing UIs pop a confirm with expected fill price + expected slippage. Consider a settings toggle "confirm before trade" — especially since the current form is missing an _expected fill_ field entirely (see BUG-018).
+Declined by the user on 2026-09-14. The app will not add a market-order confirmation dialog. Do not re-open without an explicit user request.
 
 ---
 

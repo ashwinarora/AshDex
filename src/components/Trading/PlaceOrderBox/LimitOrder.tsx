@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import BuyOrSell from './components/BuyOrSell'
 import AmountInput from './components/AmountInput'
 import LeverageMargin from './components/LeverageMargin'
@@ -46,11 +46,12 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     takeProfit: 0,
     stopLoss: 0
   })
-  const { clearingHouseState, perpsMeta, spotState } = useHyperliquidStore(
+  const { clearingHouseState, perpsMeta, spotState, allMids } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
       perpsMeta: state.perpsMeta,
-      spotState: state.spotState
+      spotState: state.spotState,
+      allMids: state.allMids
     }))
   )
   const { spotKeyToName, data: spotMeta } = useSpotMeta()
@@ -62,6 +63,36 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   useEffect(() => {
     setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
   }, [clearingHouseState])
+
+  // R2-B9: warn when a limit price would cross the spread and fill as
+  // taker. We don't have the L2 book in this component, so we use the
+  // mid as a proxy: buy strictly above mid or sell strictly below mid
+  // very likely crosses. Exact-mid is treated as maker-friendly to avoid
+  // false positive warnings (in practice mid is midway between bid and
+  // ask, so an order at mid rests without crossing).
+  const wouldCrossSpread = useMemo(() => {
+    if (isSpot) return false
+    const price = Number(limitPrice)
+    const mid = Number(allMids[selectedAsset])
+    if (!Number.isFinite(price) || price <= 0) return false
+    if (!Number.isFinite(mid) || mid <= 0) return false
+    return isBuy ? price > mid : price < mid
+  }, [limitPrice, allMids, selectedAsset, isBuy, isSpot])
+
+  // R3-B15: describe the mismatch when reduce-only is on but the picked
+  // direction adds to the existing position. Rendered as a helper line
+  // under the Reduce Only toggle.
+  const reduceOnlyMismatch = useMemo(() => {
+    if (!isReduceOnly || isSpot || !clearingHouseState) return null
+    const existing = clearingHouseState.assetPositions?.find(
+      (pos) => pos.position.coin === selectedAsset
+    )?.position
+    if (!existing) return 'You have no open position on this asset — reduce-only will do nothing.'
+    const szi = Number(existing.szi)
+    if (szi > 0 && isBuy) return 'Reduce-only can only reduce your long — pick Short.'
+    if (szi < 0 && !isBuy) return 'Reduce-only can only reduce your short — pick Long.'
+    return null
+  }, [isReduceOnly, isSpot, clearingHouseState, selectedAsset, isBuy])
 
   const liquidationPrice = () => {
     if (!limitPrice || !assetAmount || Number(limitPrice) === 0 || Number(assetAmount) === 0) {
@@ -110,7 +141,14 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           })
           if (existingPosition) {
             const szi = Number(existingPosition.position.szi)
-            if (!((szi > 0 && !isBuy) || (szi < 0 && isBuy))) {
+            // R3-B15: Reduce-Only means the order can only *reduce* the
+            // existing position, not add to it. For a long (szi > 0) that
+            // means selling (isBuy=false); for a short (szi < 0) that
+            // means buying. Any other combo leaves maxAllowedUsd = 0 so the
+            // OrderButton's own guard disables submit.
+            const isReducingSide =
+              (szi > 0 && !isBuy) || (szi < 0 && isBuy)
+            if (isReducingSide) {
               const priceQuotient = price / Number(existingPosition.position.entryPx || 1)
               maxAllowedUsd = Number(existingPosition.position.positionValue || 0) * priceQuotient
             }
@@ -275,6 +313,14 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <IconInfoCircle className="size-3" />
             </Toggle>
           )}
+          {reduceOnlyMismatch && (
+            <p
+              className="text-yellow-500 text-xs w-full"
+              data-testid="reduce-only-mismatch"
+            >
+              {reduceOnlyMismatch}
+            </p>
+          )}
           <Popover>
             <PopoverTrigger asChild>
               <Button
@@ -340,6 +386,17 @@ const LimitOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       </div>
       <div className="flex flex-col gap-2 h-fit w-full p-2">
         <Separator orientation="horizontal" />
+        {/*
+          R2-B9: warn (do not block) when the limit price would fill as a
+          taker. Users have valid reasons to submit crossable limits (e.g.,
+          post-only rejection wanted, or a quick fill-or-kill in the limit
+          UI), so this is informational.
+        */}
+        {wouldCrossSpread && (
+          <p className="text-yellow-500 text-xs" data-testid="marketable-limit-warning">
+            {'This limit will fill immediately as a taker (crosses the current spread).'}
+          </p>
+        )}
         <OrderButton
           isBuy={isBuy}
           selectedAsset={selectedAsset}

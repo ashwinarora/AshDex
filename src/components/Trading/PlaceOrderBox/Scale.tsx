@@ -10,6 +10,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -198,10 +199,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {
-        console.error('Order placement error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(status.error, 'Order placement error', { id: toastId })
       } else if (typeof status === 'object' && 'filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
@@ -218,10 +216,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         })
       }
     } catch (error) {
-      console.error('Error placing order:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error placing order', { id: toastId })
     }
   }
 
