@@ -4,10 +4,12 @@ import { useConnection, useWalletClient } from 'wagmi'
 import { useInitHyperliquid } from '@/store/HyperliquidStore'
 import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
+import { useAutoReferral } from '@/hooks/useAutoReferral'
 
 const HyperLiquidInitializer = () => {
   const { address } = useConnection()
   const { data: walletClient } = useWalletClient()
+  useAutoReferral()
   // const address = '0xa4ADD8273d7f47318675bDfBcce3E9648CdB4509'
   const {
     initSdk,
