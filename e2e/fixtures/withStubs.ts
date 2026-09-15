@@ -102,6 +102,7 @@ const defaultExchangeReply = (body: ExchangeBody) => {
     type === 'usdClassTransfer' ||
     type === 'usdSend' ||
     type === 'spotSend' ||
+    type === 'sendAsset' ||
     type === 'withdraw3'
   ) {
     return { status: 'ok', response: { type: 'default' } }

@@ -115,12 +115,30 @@ const SendModal: React.FC<SendModalProps> = ({
     } else {
       if (!spotData) return
       if (!isHex(spotData.tokenId)) return
+      const token = `${spotData.tokenName}:${spotData.tokenId}`
       try {
-        await sdkUserSignerClient.spotSend({
-          destination: destination,
-          amount: amount,
-          token: `${spotData.tokenName}:${spotData.tokenId}`
-        })
+        // Unified / portfolio-margin accounts reject the legacy `spotSend`
+        // action ("Action disabled when unified account is active"). Use the
+        // generalized `sendAsset` action instead, matching what
+        // app.hyperliquid.xyz does under the same mode. `sendAsset` is
+        // backwards-compatible with manual-mode spot sends, so we can use it
+        // in both cases.
+        if (isUnified) {
+          await sdkUserSignerClient.sendAsset({
+            destination,
+            sourceDex: 'spot',
+            destinationDex: 'spot',
+            token,
+            amount,
+            fromSubAccount: ''
+          })
+        } else {
+          await sdkUserSignerClient.spotSend({
+            destination,
+            amount,
+            token
+          })
+        }
         toast.success('Send successful', {
           id: toastId
         })
