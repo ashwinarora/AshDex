@@ -92,14 +92,4 @@ test.describe('Accessibility — Group H1', () => {
       ).toEqual([])
     })
   }
-
-  test('BUG-054: Stocks nav item is exposed as a role, not plain static text', async ({ page }) => {
-    await page.goto('/')
-    // Currently the Coming-Soon nav slot is a bare <div> ("StaticText" in a11y
-    // tree). Fix: render as a link or button with aria-disabled=true so screen
-    // readers announce it as a disabled nav target.
-    const stocks = page.getByRole('link', { name: /Stocks/ })
-    await expect(stocks).toBeVisible()
-    await expect(stocks).toHaveAttribute('aria-disabled', 'true')
-  })
 })

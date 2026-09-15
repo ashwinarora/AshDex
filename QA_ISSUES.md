@@ -151,7 +151,7 @@ Living status table — kept in sync as each fix lands. Legend: ✅ fixed · ⏳
 | BUG-051 | ✅ fixed          | Group H1 — all 3 perps+spot form fields (leverage, size, percent) have `id` + `aria-label` + `<label for>` association. sr-only label used where visible label would clutter.                                                        |
 | BUG-052 | ⏸ paused         | J — needs discussion                                                                                                                                                                                                                 |
 | BUG-053 | ✅ fixed          | Group D — `trimDecimals` extracted to `format.ts`; missing initial-mount trim fixed in Market + Limit close modals.                                                                                                                  |
-| BUG-054 | ✅ fixed          | Group H1 — Coming-Soon nav item now `<a role="link" aria-disabled="true">`.                                                                                                                                                          |
+| BUG-054 | ✅ fixed          | Group H1 — Coming-Soon nav slot removed from the header entirely; no more `StaticText` a11y wart.                                                                                                                                     |
 | BUG-055 | ⏸ paused         | J — feature request; external form, can't test                                                                                                                                                                                       |
 | BUG-056 | ⏸ paused         | J — layout redesign, design call                                                                                                                                                                                                     |
 
@@ -759,7 +759,7 @@ Screenshot: `qa-screenshots/16-market-close-dialog.png`.
 
 ### BUG-054 — "Stocks · Coming Soon" header slot is a `StaticText`, not a link — **POLISH** — ✅ FIXED
 
-Non-actionable but positioned like a nav link. Add a `disabled` visual state or a tooltip so users don't try clicking.
+Fixed by removal — the Coming-Soon nav slot was dropped from the header in the header/footer trim, so there's nothing left to mislabel.
 
 ---
 
