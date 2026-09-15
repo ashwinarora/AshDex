@@ -1,40 +1,35 @@
 'use client'
 
 import Trading from '@/components/Trading/Trading'
-import { useParams } from 'next/navigation'
-import { isWhitelistedSpotRouteAsset } from '@/utils/whitelist'
-import Link from 'next/link'
-import { Button } from '@/components/ui/button'
-import { IconMoodSadDizzy } from '@tabler/icons-react'
+import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useParams, useRouter } from 'next/navigation'
+import { useEffect } from 'react'
+
+/**
+ * Spot trading route.
+ *
+ * R2-B10 (spot mirror): same broken-shell issue as the perps route for
+ * unknown assets. Wait for spotMeta to hydrate, then redirect to `/spot`
+ * (which resolves to the default asset) if the URL asset isn't present.
+ */
 export default function SpotAssetTradingPage() {
   const params = useParams<{ asset: string }>()
+  const router = useRouter()
   const asset = params?.asset?.toUpperCase() ?? ''
-  if (!isWhitelistedSpotRouteAsset(asset)) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[80vh] gap-8 px-4 text-center">
-        <IconMoodSadDizzy className="size-24 text-white" />
-        <div className="flex flex-col items-center justify-center gap-4">
-          <h1 className="text-4xl font-bold text-white">{'404 - Asset Not Found'}</h1>
-          <p className="text-lg text-white/70 max-w-md text-center">
-            {'Looks like'}{' '}
-            <span className="text-primary font-semibold">{asset || 'this asset'}</span>{' '}
-            {'went on vacation and forgot to tell us where.'}
-          </p>
-          <p className="text-sm text-white/50 text-center">
-            {"It's not you, it's the asset. We just don't have it... yet."}
-          </p>
-        </div>
-        <div className="flex gap-3">
-          <Link href="/spot">
-            <Button variant="default">{'Check Out Spot'}</Button>
-          </Link>
-          <Link href="/">
-            <Button variant="outline">{'Check Out Perps'}</Button>
-          </Link>
-        </div>
-      </div>
-    )
-  }
+  const { data: spotMeta, spotKeyToName } = useSpotMeta()
+
+  useEffect(() => {
+    if (!spotMeta) return
+    // Spot universe entries look like { name: '@1035', tokens: [...] } and
+    // the human name comes from `spotKeyToName`. Accept either form.
+    const nameSet = new Set<string>()
+    for (const u of spotMeta.universe) {
+      nameSet.add(u.name.toUpperCase())
+      const humanName = spotKeyToName.get(u.name)
+      if (humanName) nameSet.add(humanName.toUpperCase())
+    }
+    if (!nameSet.has(asset)) router.replace('/spot')
+  }, [asset, spotMeta, spotKeyToName, router])
 
   return <Trading defaultAsset={asset} />
 }

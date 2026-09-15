@@ -61,6 +61,8 @@ export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainne
 
 export const BUILDER_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_RECEIVER_ADDRESS as string
 
+export const ASHDEX_REFERRAL_CODE = (process.env.NEXT_PUBLIC_ASHDEX_REFERRAL_CODE ?? '').trim()
+
 export const BUILDER_FEE = '0.1%'
 
 export const HYPERLIQUID_WITHDRAW_FEE_USDC = 1 // Hyperliquid charges flat $1 USDC per withdrawal

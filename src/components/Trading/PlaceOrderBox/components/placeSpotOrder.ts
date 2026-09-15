@@ -2,6 +2,7 @@ import { ExchangeClient } from '@nktkas/hyperliquid'
 import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import type { TPSLType } from './TPSL'
 import { formatPrice } from '@/utils/utils'
@@ -125,7 +126,6 @@ export const placeSpotOrder = async ({
       },
       orders: orderPayload.map(({ a, b, p, s, r, t }) => ({ a, b, p, s, r, t }))
     })
-    console.log(res)
 
     const statuses = res.response.data.statuses ?? []
     const mainStatus = statuses[0]
@@ -175,6 +175,12 @@ export const placeSpotOrder = async ({
       pushNewOpenOrders(openOrders)
     }
 
+    // BUG-008 (spot): surface an HL `{ error: '...' }` main status instead of
+    // silently succeeding. Same reasoning as the perps counterpart.
+    if (typeof mainStatus === 'object' && 'error' in mainStatus) {
+      toastSdkError((mainStatus as { error: string }).error, 'Order failed', { id: toastId })
+      return
+    }
     if (typeof mainStatus === 'object' && 'filled' in mainStatus) {
       const filled = mainStatus.filled
       const action = isBuy ? 'bought' : 'sold'
@@ -194,9 +200,6 @@ export const placeSpotOrder = async ({
       )
     }
   } catch (error) {
-    console.error('Error placing Spot order:', error as string)
-    toast.error('Something went wrong, check the console or contact support', {
-      id: toastId
-    })
+    toastSdkError(error, 'Error placing Spot order', { id: toastId })
   }
 }

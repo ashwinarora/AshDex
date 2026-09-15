@@ -223,6 +223,7 @@ const Selector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             <Button
               variant="outline"
               className="!h-fit !p-2 w-36 flex items-center justify-between gap-2"
+              data-testid="asset-selector-trigger"
             >
               <h1 className="text-white text-sm font-semibold">{selectedAsset}-USD</h1>
               <IconChevronDown className="size-4 text-white" />

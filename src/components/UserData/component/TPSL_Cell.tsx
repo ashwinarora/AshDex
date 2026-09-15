@@ -7,6 +7,7 @@ import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle
@@ -18,6 +19,8 @@ import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateTpslDirection } from '@/utils/tpslValidation'
 import { getFormattedPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import {
@@ -121,12 +124,36 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
   const assetCtx = useMemo(() => {
     if (!tpslAsset) return null
     const assetIndex = perpsMeta?.universe.findIndex((item) => item.name === tpslAsset.coin)
-    return assetIndex ? perpAssetContext[assetIndex] : null
+    // Same BUG-007 shape: `assetIndex ? ...` treats 0 as "not found" and
+    // returns null. Every asset at perps index 0 (SOL on testnet, historically)
+    // would fall into the null branch, cascading to `Number(undefined) = NaN`
+    // in the Mark Price render (BUG-021). Explicit undefined/negative gate.
+    if (assetIndex === undefined || assetIndex < 0) return null
+    return perpAssetContext[assetIndex] ?? null
   }, [perpAssetContext, tpslAsset?.coin, perpsMeta])
 
   const entryPrice = Number(tpslAsset?.entryPx ?? 0)
-  const markPrice = Number(assetCtx?.markPx)
+  // BUG-021: `Number(undefined) = NaN`. Fall back to entry so the dialog
+  // is usable even before the live mark tick arrives. The mark cell renders
+  // "—" when neither value is finite (see JSX below).
+  const rawMark = Number(assetCtx?.markPx)
+  const markPrice = Number.isFinite(rawMark) ? rawMark : entryPrice
+  const hasLiveMark = Number.isFinite(rawMark)
   const position = Number(tpslAsset?.szi ?? 0)
+  const isLong = position > 0
+  // R3-B14: direction guard delegated to a pure fn so it's unit-testable.
+  // See src/utils/tpslValidation.ts for cases.
+  const {
+    tpValid: tpDirectionValid,
+    slValid: slDirectionValid,
+    bothEmpty
+  } = validateTpslDirection({
+    isLong,
+    entryPrice,
+    tpTriggerPrice,
+    slTriggerPrice
+  })
+  const canConfirm = !bothEmpty && tpDirectionValid && slDirectionValid
 
   const handleTpPriceChange = (value: string) => {
     setTpTriggerPrice(value)
@@ -286,7 +313,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     const toastId = toast.loading('Placing TP/SL order...')
     try {
       const adjustedBuilderFee = getAdjustedBuilderFee()
-      const res = await sdkL1ActionClient.order({
+      await sdkL1ActionClient.order({
         grouping: 'positionTpsl',
         builder: {
           b: BUILDER_ADDRESS,
@@ -301,17 +328,13 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           t: order.orderType
         }))
       })
-      console.log(res)
       onClose()
       toast.success('TP/SL order placed successfully', {
         id: toastId
       })
     } catch (error) {
-      console.error(error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'TP/SL order failed', { id: toastId })
     }
   }
 
@@ -325,6 +348,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           <DialogTitle>
             {'TP/SL for'} {tpslAsset?.coin}
           </DialogTitle>
+          <DialogDescription>
+            {'Set take-profit and stop-loss triggers for your open position.'}
+          </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2">
           <div
@@ -363,7 +389,9 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
             )}
           >
             <span className="text-xs text-white/70">{'Mark Price'}</span>
-            <span className="text-xs text-white">{markPrice.toLocaleString()}</span>
+            <span className="text-xs text-white">
+              {hasLiveMark ? markPrice.toLocaleString() : '—'}
+            </span>
           </div>
         </div>
         <Separator orientation="horizontal" />
@@ -540,7 +568,29 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
           </div>
         </div>
         <Separator orientation="horizontal" />
-        <Button onClick={handleClick}>{'Confirm'}</Button>
+        {/*
+          R3-B14: inverted TP/SL for a long (TP < entry) would previously
+          submit successfully and immediately close the position at a loss
+          because the trigger fires the instant the order lands. Block
+          Confirm with inline red text pointing at the offending field.
+        */}
+        {!tpDirectionValid && (
+          <p className="text-red text-xs" data-testid="position-tpsl-tp-error">
+            {isLong
+              ? 'Take-profit must be above the entry price for a long position.'
+              : 'Take-profit must be below the entry price for a short position.'}
+          </p>
+        )}
+        {!slDirectionValid && (
+          <p className="text-red text-xs" data-testid="position-tpsl-sl-error">
+            {isLong
+              ? 'Stop-loss must be below the entry price for a long position.'
+              : 'Stop-loss must be above the entry price for a short position.'}
+          </p>
+        )}
+        <Button onClick={handleClick} disabled={!canConfirm} data-testid="position-tpsl-confirm">
+          {'Confirm'}
+        </Button>
         <DialogFooter className="text-xs text-white/70 text-center">
           {
             'Note: By default take-profit and stop-loss orders apply to the entire position. Take-profit and stop-loss automatically cancel after closing the position. A market order is triggered when the stop loss or take profit price is reached. If the order size is configured above, the TP/SL order will be for that size no matter how the position changes in the future.'

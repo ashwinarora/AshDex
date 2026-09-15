@@ -72,19 +72,28 @@ const ConnectWalletModal: React.FC = () => {
               variant={'secondary'}
               key={wallet.id}
               onClick={() => connectWallet(wallet)}
+              /*
+                R1-UX4: the accessible name previously combined the image alt
+                ("MetaMask") + the visible span ("MetaMask") into "MetaMask
+                MetaMask". Give the button an explicit aria-label and mark
+                the icon as decorative (alt="") so screen readers announce
+                the name once.
+              */
+              aria-label={wallet.name}
             >
               {wallet.icon ? (
                 wallet.icon === 'IconWallet' ? (
                   <div className="size-10 rounded-md bg-white/10 flex items-center justify-center">
-                    <IconWallet className="size-6 text-white" />
+                    <IconWallet className="size-6 text-white" aria-hidden />
                   </div>
                 ) : (
                   <Image
                     src={wallet.icon}
-                    alt={wallet.name}
+                    alt=""
                     width={36}
                     height={36}
                     className="rounded-md size-10"
+                    aria-hidden
                   />
                 )
               ) : null}

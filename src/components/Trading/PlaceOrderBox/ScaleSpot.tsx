@@ -8,6 +8,7 @@ import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { IconRefresh, IconChevronDown, IconMinus, IconPlus } from '@tabler/icons-react'
@@ -117,7 +118,6 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       totalOrders,
       sizeSkew
     )
-    console.log(orders)
     const assetIndex =
       spotAssetContext.findIndex((assets) => assets.coin.includes(selectedAsset)) + SPOT_DELTA
     const tokenData = spotMeta.tokens.find((token) => token.name === selectedAssetName)
@@ -153,14 +153,10 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           t: order.orderType
         }))
       })
-      console.log(placeOrderRes)
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {
-        console.error('Order placement error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(status.error, 'Order placement error', { id: toastId })
       } else if (typeof status === 'object' && 'filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
@@ -177,10 +173,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         })
       }
     } catch (error) {
-      console.error('Error placing order:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error placing order', { id: toastId })
     }
   }
 

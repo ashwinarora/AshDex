@@ -123,25 +123,12 @@ interface FormatPriceOptions {
 }
 
 export function getFormattedPrice({ price, isSpot, szDecimals }: FormatPriceOptions): string {
-  const maxDecimals = isSpot ? MAX_DECIMALS_SPOT : MAX_DECIMALS_PERP
-  const allowedDecimals = maxDecimals - szDecimals
-
-  const raw = price.toString()
-  const [intPart, decPart = ''] = raw.split('.')
-  const intSig = intPart.replace(/^0+/, '').length
-
-  if (intSig >= 5 || !decPart) {
-    return intPart
-  }
-
-  const totalSig = intSig + decPart.length
-  if (totalSig > 5) {
-    const keep = 5 - intSig
-    return keep > 0 ? `${intPart}.${decPart.slice(0, keep)}` : intPart
-  }
-
-  const fracKeep = Math.min(allowedDecimals, decPart.length)
-  return fracKeep > 0 ? `${intPart}.${decPart.slice(0, fracKeep)}` : intPart
+  // Delegate to formatPrice so the two helpers can never disagree on the final
+  // numeric value. This is load-bearing: getFormattedPrice's output is written
+  // to the `price` field of orders sent to Hyperliquid's /exchange endpoint
+  // (see TPSL_Cell.tsx), so a rounding mismatch here becomes a mispositioned
+  // order on the wire, not just a display glitch.
+  return formatPrice(price, szDecimals, isSpot).toString()
 }
 
 export function toFixedDown(num: number, decimals = 0) {

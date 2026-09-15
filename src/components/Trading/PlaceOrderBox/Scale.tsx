@@ -8,8 +8,10 @@ import { BUILDER_ADDRESS } from '@/utils/constants'
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import LeverageMargin from './components/LeverageMargin'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { Separator } from '@/components/ui/separator'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -77,40 +79,6 @@ function calculateScaleOrdersByUsd(
   return orders
 }
 
-function calculateScaleOrdersByAssetSize(
-  totalAssetSize: number,
-  startPrice: number,
-  endPrice: number,
-  totalOrders: number,
-  skew: number
-): Order[] {
-  const orders: Order[] = []
-  if (totalOrders === 1) {
-    orders.push({ price: startPrice, size: totalAssetSize })
-    return orders
-  }
-  const prices: number[] = []
-  for (let i = 0; i < totalOrders; i++) {
-    const price = startPrice + (i * (endPrice - startPrice)) / (totalOrders - 1)
-    prices.push(price)
-  }
-  const adjustedSkew = skew * (endPrice / startPrice)
-  const weights: number[] = []
-  for (let i = 0; i < totalOrders; i++) {
-    const weight = 1 + (i * (adjustedSkew - 1)) / (totalOrders - 1)
-    weights.push(weight)
-  }
-  const totalWeight = weights.reduce((sum, weight) => sum + weight, 0)
-  for (let i = 0; i < totalOrders; i++) {
-    const allocationSize = totalAssetSize * (weights[i] / totalWeight)
-    orders.push({
-      price: prices[i],
-      size: allocationSize
-    })
-  }
-  return orders
-}
-
 const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { agentWallet, clearingHouseState, allMids, perpsMeta, sdkL1ActionClient } =
     useHyperliquidStore(
@@ -137,10 +105,13 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()
+  // Unified/portfolio-margin users have zero perp `withdrawable` — the
+  // collateral is in spot. Same reason AmountInput needs the hook.
+  const { withdrawable } = usePerpTradingAccount()
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
+    if (!isReduceOnly) return withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
@@ -150,7 +121,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     const priceQuotient = Number(allMids[selectedAsset]) / Number(existingPosition.position.entryPx)
     const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage])
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage, withdrawable])
 
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
@@ -167,21 +138,6 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       totalOrders!,
       sizeSkew!
     )
-    const usdOrders = calculateScaleOrdersByUsd(
-      totalUsd!,
-      startPrice!,
-      endPrice!,
-      totalOrders!,
-      sizeSkew!
-    )
-    const assetOrders = calculateScaleOrdersByAssetSize(
-      totalAssetSize!,
-      startPrice!,
-      endPrice!,
-      totalOrders!,
-      sizeSkew!
-    )
-    console.log({ usdOrders, assetOrders })
     const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, selectedAsset)
     const assetUniverse = perpsMeta.universe[assetIndex]
     const szDecimals = assetUniverse.szDecimals
@@ -244,14 +200,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           t: order.orderType
         }))
       })
-      console.log(placeOrderRes)
       // TODO: Handle the status of all Orders
       const status = placeOrderRes.response.data.statuses[0]
       if (typeof status === 'object' && 'error' in status) {
-        console.error('Order placement error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(status.error, 'Order placement error', { id: toastId })
       } else if (typeof status === 'object' && 'filled' in status) {
         const filled = status.filled
         const action = isBuy ? 'long' : 'short'
@@ -268,10 +220,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         })
       }
     } catch (error) {
-      console.error('Error placing order:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error placing order', { id: toastId })
     }
   }
 

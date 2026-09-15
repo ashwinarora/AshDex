@@ -4,6 +4,7 @@ import { getPerpsUniverseIndex } from '@/utils/utils'
 import { useEffect, useMemo, useState } from 'react'
 
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,6 +69,9 @@ const AmountInput = ({
       perpsMeta: state.perpsMeta
     }))
   )
+  // Under unified/portfolio-margin the perp `withdrawable` is 0 because the
+  // collateral lives in spot. Route through the hook so both modes work.
+  const { withdrawable } = usePerpTradingAccount()
 
   const szDecimals = useMemo(() => {
     const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -77,7 +81,7 @@ const AmountInput = ({
 
   const maxAllowedUsd = useMemo(() => {
     if (!clearingHouseState) return 0
-    if (!isReduceOnly) return Number(clearingHouseState.withdrawable) * leverage
+    if (!isReduceOnly) return withdrawable * leverage
     const existingPosition = clearingHouseState.assetPositions.find((pos) => {
       return pos.position.coin === selectedAsset
     })
@@ -87,7 +91,7 @@ const AmountInput = ({
     const priceQuotient = parseFloat(limitPrice) / Number(existingPosition.position.entryPx)
     const maxAllowedUsd = Number(existingPosition.position.positionValue) * priceQuotient
     return maxAllowedUsd
-  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage])
+  }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, limitPrice, leverage, withdrawable])
 
   useEffect(() => {
     if (!clearingHouseState) return
@@ -180,7 +184,12 @@ const AmountInput = ({
   return (
     <div className="flex flex-col gap-2">
       <div className={cn('flex items-center justify-between gap-2', isRTL && 'flex-row-reverse')}>
-        <p className="font-medium text-white/70 text-xs whitespace-nowrap">{'Position Size'}</p>
+        <label
+          htmlFor="preorder-size"
+          className="font-medium text-white/70 text-xs whitespace-nowrap"
+        >
+          {'Position Size'}
+        </label>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {'Max'} ={' '}
           {isInputUsd
@@ -197,6 +206,8 @@ const AmountInput = ({
             return val === 'NaN' || Number.isNaN(Number(val)) ? '' : val
           })()}
           onChange={isInputUsd ? handleUSDChange : handleAssetChange}
+          id="preorder-size"
+          aria-label={isInputUsd ? 'Order size in USD' : `Order size in ${selectedAsset}`}
           className={cn('flex-1 text-white shrink-0', isRTL ? 'text-start' : 'text-end')}
         />
         <DropdownMenu>
@@ -243,6 +254,9 @@ const AmountInput = ({
               usdPercent > 100 && 'bg-red/20 rounded-md'
             )}
           >
+            <label htmlFor="preorder-size-percent" className="sr-only">
+              {'Order size percent of max'}
+            </label>
             <Input
               className={cn(
                 'flex-1 p-0 !text-[10px] text-end text-white bg-transparent border-none',
@@ -254,8 +268,14 @@ const AmountInput = ({
                   ? percentInputStr
                   : Number.isNaN(usdPercent)
                     ? ''
-                    : usdPercent.toFixed(2)
+                    : // Cap the displayed value at 100 so an order size that
+                      // exceeds max doesn't render as e.g. "70000.00" (Round-2
+                      // B3). Underlying state stays uncapped so the red
+                      // "over-max" warning and the disabled submit still fire.
+                      Math.min(100, usdPercent).toFixed(2)
               }
+              id="preorder-size-percent"
+              aria-label="Order size percent of max"
               onChange={(e) => setPercentInputStr(e.target.value)}
               onFocus={() => {
                 setIsPercentFocused(true)

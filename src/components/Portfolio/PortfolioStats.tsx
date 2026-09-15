@@ -14,11 +14,12 @@ import PortfolioChart from './PortfolioChart'
 import { cn } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useConnection } from 'wagmi'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
+import { computeMaxDrawdownPercent } from '@/utils/portfolioStats'
 import { useUserFee } from '@/hooks/useUserFee'
 import { Hex } from 'viem'
 
@@ -36,6 +37,7 @@ const PortfolioStats = () => {
   const { address } = useConnection()
 
   const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
+  const isUnified = useIsUnified()
 
   const portfolioQuery = useQuery({
     queryKey: ['portfolio', address],
@@ -58,31 +60,17 @@ const PortfolioStats = () => {
       accountValue: item[1].accountValueHistory
     }))
 
-    // subtract min account value from max account value and divide by max account value
-    const maxDrawdownArray = filteredData?.find(
+    // BUG-033: compute peak-to-trough drawdown from the account-value time
+    // series (skipping non-positive values so a pre-first-deposit 0 doesn't
+    // anchor a bogus -100%). Returns null when the series is too short or
+    // never had a positive value — in that case render '—' below.
+    const accountValueSeries = filteredData?.find(
       (item) =>
         item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview
     )?.accountValue
-    const maxValue =
-      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
-        ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) > Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
-        : 0
-
-    const minValue =
-      maxDrawdownArray?.length && maxDrawdownArray?.length > 0
-        ? parseFloat(
-            maxDrawdownArray?.reduce((acc, curr) => {
-              return Number(acc[1]) < Number(curr[1]) ? acc : curr
-            })[1] || '0   '
-          )
-        : 0
-
-    const maxDrawdown = minValue - maxValue
-    const maxDrawdownPercentage = (maxDrawdown / maxValue) * 100
+    const maxDrawdownPercentage = computeMaxDrawdownPercent(
+      (accountValueSeries ?? []).map(([t, v]) => [Number(t), v] as const)
+    )
 
     const totalEquity =
       parseFloat(
@@ -105,12 +93,16 @@ const PortfolioStats = () => {
       ['Volume']:
         `$${formatWithKMB(parseFloat(filteredData?.find((item) => item.timeframe === selectedView.overviewTimeFrame && item.type === selectedView.overview)?.vlm || '0'))}` ||
         '$0.00',
-      ['Max Drawdown']: `${maxDrawdownPercentage.toFixed(2)}%`,
+      ['Max Drawdown']:
+        maxDrawdownPercentage === null ? '—' : `${maxDrawdownPercentage.toFixed(2)}%`,
       ['Total Equity']: `$${formatWithKMB(totalEquity)}`,
-      ['Perps Account Equity']: `$${formatWithKMB(perpEquity)}`,
-      ['Spot Account Equity']: `$${formatWithKMB(spotEquity)}`
+      // Under unified/portfolio-margin the spot/perp split is meaningless —
+      // one balance backs both. The Total Equity number above still comes from
+      // the "all" series which is unified-safe.
+      ['Perps Account Equity']: isUnified ? '—' : `$${formatWithKMB(perpEquity)}`,
+      ['Spot Account Equity']: isUnified ? '—' : `$${formatWithKMB(spotEquity)}`
     }
-  }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview])
+  }, [portfolioQuery.data, selectedView.overviewTimeFrame, selectedView.overview, isUnified])
 
   if (isMobile || isTablet) {
     return (

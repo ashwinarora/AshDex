@@ -1,116 +1,62 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import * as hl from '@nktkas/hyperliquid'
+import { useChartHoverStore } from '@/store/ChartHoverStore'
 import { useShallow } from 'zustand/react/shallow'
+import * as hl from '@nktkas/hyperliquid'
 import {
-  BarData,
-  customThemes,
-  Datafeed,
-  DatafeedCallback,
-  ErrorCallback,
-  HistoryCallback,
-  INTERVALS,
-  IntervalType,
-  PeriodParams,
-  RealtimeCallback,
-  SymbolInfo,
-  TradingViewWidget,
-  TradingViewWidgetInstance
-} from './ChartTypes'
+  createChart,
+  CandlestickSeries,
+  HistogramSeries,
+  LineStyle,
+  type IChartApi,
+  type ISeriesApi,
+  type IPriceLine,
+  type LogicalRange,
+  type UTCTimestamp
+} from 'lightweight-charts'
+import type { IntervalType } from './ChartTypes'
+import { intervalToSeconds, toHyperliquidInterval, toLwcBar, type LwcCandle } from './toLwcBar'
 
-const getIntervalMinutes = (res: IntervalType): number => {
-  const map: Record<IntervalType, number> = {
-    '1': 1,
-    '3': 3,
-    '5': 5,
-    '15': 15,
-    '30': 30,
-    '60': 60,
-    '120': 120,
-    '240': 240,
-    '480': 480,
-    '720': 720,
-    '1D': 1440,
-    '3D': 4320,
-    '1W': 10080,
-    '1M': 43200
-  }
-  return map[res]
-}
+// Aligned with the Ember palette in src/app/globals.css.
+const BG_COLOR = '#0f1216' // --surface-1
+const UP_COLOR = '#10b981' // --buy
+const DOWN_COLOR = '#f43f5e' // --sell
+const GRID_COLOR = 'rgba(255, 255, 255, 0.05)'
+const TEXT_COLOR = '#8b929e' // --text-3
+const BORDER_COLOR = '#232830' // --surface-3
 
-// Convert TradingView resolution to Hyperliquid interval
-// const convertedResolutionToInterval = (resolution: IntervalType) => {
-//   if (resolution.endsWith('D')) {
-//     return '1d'
-//   } else if (resolution.endsWith('W')) {
-//     return '1w'
-//   } else if (resolution.endsWith('M')) {
-//     return '1M'
-//   } else if (Number(resolution) >= 60) {
-//     return `${Number(resolution) / 60}h`
-//   } else {
-//     return `${Number(resolution)}`
-//   }
-// }
+const HISTORY_PAGE_BARS = 500
 
-const convertToHyperliquidInterval = (
-  resolution: IntervalType
-): hl.CandleWsParameters['interval'] => {
-  const intervalMap: Record<IntervalType, hl.CandleWsParameters['interval']> = {
-    '1': '1m',
-    '3': '3m',
-    '5': '5m',
-    '15': '15m',
-    '30': '30m',
-    '60': '1h',
-    '120': '2h',
-    '240': '4h',
-    '480': '8h',
-    '720': '12h',
-    '1D': '1d',
-    '3D': '3d',
-    '1W': '1w',
-    '1M': '1M'
-  }
-
-  return intervalMap[resolution]
-}
-
-// Get current timezone offset
-const getEtcGMTTimezone = () => {
-  const offsetMinutes = new Date().getTimezoneOffset()
-  const totalMinutes = -offsetMinutes
-
-  const sign = totalMinutes >= 0 ? '-' : '+'
-  const absMinutes = Math.abs(totalMinutes)
-  const hours = String(Math.floor(absMinutes / 60)).padStart(2, '0')
-  const minutes = String(absMinutes % 60).padStart(2, '0')
-
-  return `Etc/GMT${sign}${hours}:${minutes}`
-}
-
-declare global {
-  interface Window {
-    TradingView: {
-      widget: TradingViewWidget
-    }
-  }
-}
-
-const TradingViewChart = ({
-  selectedAsset,
-  selectedInterval = '30'
-}: {
+interface Props {
   selectedAsset: string
   selectedInterval: IntervalType
-}) => {
-  const chartRef = useRef<HTMLDivElement>(null)
-  const widgetRef = useRef<TradingViewWidgetInstance | null>(null)
-  const tvSubscribersRef = useRef<Record<string, () => void>>({})
-  const barsCache = useRef<Record<string, Record<IntervalType, Map<number, BarData>>>>({})
+}
+
+const Chart = ({ selectedAsset, selectedInterval }: Props) => {
+  const chartContainerRef = useRef<HTMLDivElement>(null)
+  const chartRef = useRef<IChartApi | null>(null)
+  const candleSeriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null)
+  const volumeSeriesRef = useRef<ISeriesApi<'Histogram'> | null>(null)
+
+  const earliestBarTimeRef = useRef<number | null>(null)
+  const loadingOlderRef = useRef(false)
+  const wsCleanupRef = useRef<(() => void) | null>(null)
+  const lastBarTimeRef = useRef<number | null>(null)
   const selectedAssetRef = useRef(selectedAsset)
+  const selectedIntervalRef = useRef(selectedInterval)
+  selectedAssetRef.current = selectedAsset
+  selectedIntervalRef.current = selectedInterval
+
+  const orderLinesRef = useRef<Map<string, IPriceLine>>(new Map())
+  const positionLinesRef = useRef<Map<string, IPriceLine>>(new Map())
+  const liquidationLinesRef = useRef<Map<string, IPriceLine>>(new Map())
+
+  const isHoveringRef = useRef(false)
+  const setFocusedBar = useChartHoverStore((s) => s.setFocusedBar)
+
   const [chartReady, setChartReady] = useState(false)
+
   const {
     sdkInfoClient,
     subscribeToCandle,
@@ -126,650 +72,443 @@ const TradingViewChart = ({
       openOrders: state.openOrders
     }))
   )
-  const [datafeed, setDatafeed] = useState<Datafeed | null>(null)
-  const orderToShape = useRef<Map<string, string>>(new Map())
-  const positionToShape = useRef<Map<string, string>>(new Map())
-  const liquidationToShape = useRef<Map<string, string>>(new Map())
 
-  // Update asset ref and initialize cache when asset changes
+  // Create chart once on mount, destroy on unmount.
   useEffect(() => {
-    selectedAssetRef.current = selectedAsset
+    if (!chartContainerRef.current) return
 
-    // Initialize cache for new asset if it doesn't exist
-    if (!barsCache.current[selectedAsset]) {
-      barsCache.current[selectedAsset] = {
-        '1': new Map(),
-        '3': new Map(),
-        '5': new Map(),
-        '15': new Map(),
-        '30': new Map(),
-        '60': new Map(),
-        '120': new Map(),
-        '240': new Map(),
-        '480': new Map(),
-        '720': new Map(),
-        '1D': new Map(),
-        '3D': new Map(),
-        '1W': new Map(),
-        '1M': new Map()
+    const chart = createChart(chartContainerRef.current, {
+      autoSize: true,
+      layout: {
+        background: { color: BG_COLOR },
+        textColor: TEXT_COLOR
+      },
+      grid: {
+        vertLines: { color: GRID_COLOR },
+        horzLines: { color: GRID_COLOR }
+      },
+      timeScale: {
+        timeVisible: true,
+        secondsVisible: false,
+        borderColor: BORDER_COLOR,
+        rightOffset: 6
+      },
+      rightPriceScale: {
+        borderColor: BORDER_COLOR,
+        scaleMargins: { top: 0.1, bottom: 0.25 }
+      },
+      crosshair: {
+        vertLine: { color: BORDER_COLOR, width: 1, style: LineStyle.Dashed },
+        horzLine: { color: BORDER_COLOR, width: 1, style: LineStyle.Dashed }
       }
+    })
+
+    const candleSeries = chart.addSeries(CandlestickSeries, {
+      upColor: UP_COLOR,
+      downColor: DOWN_COLOR,
+      borderVisible: false,
+      wickUpColor: UP_COLOR,
+      wickDownColor: DOWN_COLOR
+    })
+
+    const volumeSeries = chart.addSeries(HistogramSeries, {
+      priceScaleId: 'volume',
+      priceFormat: { type: 'volume' }
+    })
+    volumeSeries.priceScale().applyOptions({
+      scaleMargins: { top: 0.85, bottom: 0 }
+    })
+
+    chartRef.current = chart
+    candleSeriesRef.current = candleSeries
+    volumeSeriesRef.current = volumeSeries
+
+    // Historical pagination — load older bars when user scrolls to the left edge.
+    const timeScale = chart.timeScale()
+    const onLogicalRange = (range: LogicalRange | null) => {
+      if (!range || loadingOlderRef.current) return
+      // Only paginate when the visible range extends past the earliest loaded bar.
+      if (range.from < 0) void loadOlder()
     }
-  }, [selectedAsset])
+    timeScale.subscribeVisibleLogicalRangeChange(onLogicalRange)
 
-  // Create datafeed once - don't recreate when SDK changes
-  useEffect(() => {
-    const datafeed: Datafeed = {
-      onReady: (cb: DatafeedCallback) =>
-        setTimeout(() => cb({ supported_resolutions: INTERVALS }), 0),
-
-      resolveSymbol: (_, onResolve) => {
-        setTimeout(
-          () =>
-            onResolve({
-              symbol: selectedAssetRef.current,
-              exchange: 'Hyperliquid',
-              type: 'crypto',
-              session: '24x7',
-              timezone: 'Etc/GMT+4',
-              supported_resolutions: INTERVALS,
-              pricescale: 100,
-              minmov: 1,
-              has_intraday: true,
-              has_daily: true,
-              has_weekly_and_monthly: true
-            }),
-          0
-        )
-      },
-
-      getBars: async (
-        symbolInfo: SymbolInfo,
-        resolution: IntervalType,
-        periodParams: PeriodParams,
-        onHistoryCallback: HistoryCallback,
-        onErrorCallback: ErrorCallback
-      ) => {
-        try {
-          const currentAsset = selectedAssetRef.current
-          // Get sdkInfoClient from store dynamically instead of depending on it
-          const store = useHyperliquidStore.getState()
-          const sdkInfoClient = store.sdkInfoClient
-
-          if (!sdkInfoClient || !currentAsset) {
-            onErrorCallback('SDK or asset not available')
-            return
-          }
-          const intervalSeconds = getIntervalMinutes(resolution) * 60
-          const now = Math.floor(Date.now() / 1000)
-          const to = periodParams.to || now
-          const countBack = periodParams?.countBack || 300
-          const from = to - countBack * intervalSeconds
-          const interval = convertToHyperliquidInterval(resolution)
-
-          const rawCandles = await sdkInfoClient.candleSnapshot({
-            coin: currentAsset,
-            interval: interval as hl.CandleWsParameters['interval'],
-            startTime: from * 1000, // Keep in seconds for Hyperliquid API
-            endTime: to * 1000 // Keep in seconds for Hyperliquid API
-          })
-
-          // Process candles properly - TradingView expects timestamps in SECONDS
-          const bars = rawCandles.map((bar: hl.CandleWsEvent) => ({
-            time: Number(Math.floor(Number(bar.t))),
-            open: parseFloat(bar.o.toString()),
-            high: parseFloat(bar.h.toString()),
-            low: parseFloat(bar.l.toString()),
-            close: parseFloat(bar.c.toString()),
-            volume: parseFloat(bar.v.toString())
-          }))
-
-          // Initialize cache for asset if not exists
-          if (!barsCache.current[currentAsset]) {
-            barsCache.current[currentAsset] = {
-              '1': new Map(),
-              '3': new Map(),
-              '5': new Map(),
-              '15': new Map(),
-              '30': new Map(),
-              '60': new Map(),
-              '120': new Map(),
-              '240': new Map(),
-              '480': new Map(),
-              '720': new Map(),
-              '1D': new Map(),
-              '3D': new Map(),
-              '1W': new Map(),
-              '1M': new Map()
-            }
-          }
-
-          // Update cache with timestamp as key (in seconds)
-          const cache = barsCache.current[currentAsset][resolution]
-          bars.forEach((bar: BarData) => cache.set(bar.time, bar))
-
-          // For first data request, return all available bars
-          // For subsequent requests, limit to countBack
-          const outputBars = periodParams?.firstDataRequest ? bars : bars.slice(-countBack)
-
-          onHistoryCallback(outputBars, {
-            noData: outputBars.length === 0
-          })
-        } catch (err) {
-          console.error('Error fetching bars:', err)
-          onErrorCallback('Data error: ' + String(err))
-        }
-      },
-
-      subscribeBars: (
-        symbolInfo: SymbolInfo,
-        resolution: IntervalType,
-        onRealtimeCallback: RealtimeCallback,
-        subscriberUID: string
-      ) => {
-        try {
-          const currentAsset = selectedAssetRef.current
-          // Get fresh store functions and state
-          const store = useHyperliquidStore.getState()
-          const sdkInfoClient = store.sdkInfoClient
-          const subscribeToCandle = store.subscribeToCandle
-          const unsubscribeFromCandle = store.unsubscribeFromCandle
-
-          if (!sdkInfoClient || !currentAsset) return
-
-          const interval = convertToHyperliquidInterval(
-            resolution
-          ) as hl.CandleWsParameters['interval']
-          let lastBar: BarData | undefined
-
-          const candleHandler = (payload: hl.CandleWsEvent[] | hl.CandleWsEvent) => {
-            const candles = Array.isArray(payload) ? payload : [payload]
-
-            candles.forEach((c) => {
-              const bar: BarData = {
-                time: Number(c.t),
-                open: +c.o,
-                high: +c.h,
-                low: +c.l,
-                close: +c.c,
-                volume: +c.v
-              }
-
-              if (lastBar && bar.time === lastBar.time) {
-                lastBar = {
-                  ...bar,
-                  open: lastBar.open,
-                  high: Math.max(lastBar.high, bar.high),
-                  low: Math.min(lastBar.low, bar.low),
-                  volume: bar.volume
-                }
-                onRealtimeCallback(lastBar)
-              } else {
-                lastBar = bar
-                onRealtimeCallback(bar)
-              }
-
-              // Update cache
-              if (barsCache.current[currentAsset]?.[resolution]) {
-                barsCache.current[currentAsset][resolution].set(bar.time, bar)
-              }
-            })
-          }
-
-          subscribeToCandle(currentAsset, interval, candleHandler)
-
-          // Store cleanup callback
-          tvSubscribersRef.current[subscriberUID] = () => {
-            unsubscribeFromCandle(currentAsset, interval).catch(console.error)
-          }
-        } catch (e) {
-          console.error('Subscription error:', e)
-        }
-      },
-
-      unsubscribeBars: (subscriberUID: string) => {
-        const cleanup = tvSubscribersRef.current[subscriberUID]
-        if (cleanup) {
-          cleanup()
-          delete tvSubscribersRef.current[subscriberUID]
-        }
-      }
-    }
-
-    setDatafeed(datafeed)
-    return () => {
-      // Cleanup any active subscriptions
-      Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
-      tvSubscribersRef.current = {}
-    }
-  }, [subscribeToCandle, unsubscribeFromCandle]) // Include subscription functions as dependencies
-
-  // Initialize TradingView widget
-  useEffect(() => {
-    if (!chartRef.current || !datafeed || widgetRef.current) return
-
-    const scriptId = 'tv-widget-script'
-    const existingScript = document.getElementById(scriptId)
-
-    const initWidget = () => {
-      if (!window.TradingView || typeof window.TradingView.widget !== 'function') {
-        setTimeout(initWidget, 100)
+    // Crosshair — push the hovered bar to the hover store so the OHLC readout
+    // can show it. When the crosshair leaves, fall back to the last bar.
+    const onCrosshairMove: Parameters<typeof chart.subscribeCrosshairMove>[0] = (param) => {
+      const series = candleSeriesRef.current
+      if (!series) return
+      if (!param.time) {
+        isHoveringRef.current = false
+        const data = series.data() as unknown as LwcCandle[]
+        if (data.length > 0) setFocusedBar(data[data.length - 1])
         return
       }
-
-      widgetRef.current = new window.TradingView.widget({
-        symbol: selectedAssetRef.current,
-        debug: false,
-        interval: '60',
-        timeframe: '12M',
-        container: chartRef.current,
-        datafeed,
-        library_path: '/lib/',
-        locale: 'en',
-        theme: 'dark',
-        autosize: true,
-        // @ts-expect-error - enabled_features is not in the type
-        enabled_features: [
-          'hide_left_toolbar_by_default',
-          'hide_unresolved_symbols_in_legend',
-          'hide_image_invalid_symbol'
-        ],
-        disabled_features: [
-          'use_localstorage_for_settings',
-          'header_symbol_search',
-          'compare_symbols'
-        ],
-        overrides: {
-          'paneProperties.background': '#0F0816',
-          'mainSeriesProperties.candleStyle.upColor': '#2fa766',
-          'mainSeriesProperties.candleStyle.downColor': '#F6465D',
-          timezone: getEtcGMTTimezone()
-        },
-        custom_themes: customThemes
-      })
-
-      widgetRef.current.onChartReady(async () => {
-        console.log('TradingView chart ready')
-        setChartReady(true)
-        // addStyledHorizontalLine(100000, 'Support LevelBoo', {
-        //   color: '#2fa766',
-        //   textColor: '#2fa766',
-        //   fontSize: 14,
-        //   backgroundColor: 'rgba(47, 167, 102, 0.1)'
-        // })
-      })
+      isHoveringRef.current = true
+      const bar = param.seriesData.get(series) as LwcCandle | undefined
+      if (bar) setFocusedBar(bar)
     }
+    chart.subscribeCrosshairMove(onCrosshairMove)
 
-    if (!existingScript) {
-      const script = document.createElement('script')
-      script.id = scriptId
-      script.src = '/lib/charting_library.standalone.js'
-      script.async = true
-      script.onload = initWidget
-      document.head.appendChild(script)
-    } else {
-      initWidget()
-    }
+    setChartReady(true)
 
     return () => {
-      if (widgetRef.current) {
-        widgetRef.current.remove()
-        widgetRef.current = null
-        setChartReady(false)
-      }
+      timeScale.unsubscribeVisibleLogicalRangeChange(onLogicalRange)
+      chart.unsubscribeCrosshairMove(onCrosshairMove)
+      chart.remove()
+      chartRef.current = null
+      candleSeriesRef.current = null
+      volumeSeriesRef.current = null
+      setChartReady(false)
+      setFocusedBar(null)
     }
-  }, [datafeed])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
-  const showOrderLineShape = async (isBuy: boolean, price: string, qty: string, label?: string) => {
-    if (!widgetRef.current) return
-    const chart = widgetRef.current?.activeChart()
-    if (!chart) return
-
-    // Decide colors based on label (TP green, SL red, default green)
-    const isSl = label === 'SL'
-    const color = isSl ? '#F6465D' : '#2fa766'
-    const bg = isSl ? 'rgba(246,70,93,0.85)' : 'rgba(47,167,102,0.85)'
-
-    // Draw a horizontal line + label
-    const shape = await chart.createShape(
-      { price: Number(price) },
-      {
-        shape: 'horizontal_line',
-        text: `${label ?? (isBuy ? 'Buy' : 'Sell')}  ${qty} @ ${price}`,
-        overrides: {
-          showLabel: true,
-          horzLabelsAlign: 'right',
-          labelBackgroundColor: bg,
-          textColor: '#ffffff',
-          fontColor: '#ffffff',
-          fontSize: 12,
-          bold: true,
-          borderColor: color,
-          borderWidth: 1,
-          linecolor: color,
-          linewidth: 2,
-          linestyle: 1
-        },
-        disableSelection: true,
-        disableSave: true,
-        lock: true
-      }
-    )
-    return shape
-  }
-
-  const showPositionLine = async (isLong: boolean, price: string, qty: string) => {
-    if (!widgetRef.current) return
-    const chart = widgetRef.current?.activeChart()
-    if (!chart) return
-
-    const color = isLong ? '#2fa766' : '#F6465D'
-    const bg = isLong ? 'rgba(47,167,102,0.85)' : 'rgba(246,70,93,0.85)'
-
-    const shapeId = await chart.createShape(
-      { price: Number(price) },
-      {
-        shape: 'horizontal_line',
-        text: `${isLong ? 'Long' : 'Short'}  ${qty} @ ${price}`,
-        overrides: {
-          showLabel: true,
-          horzLabelsAlign: 'right',
-          labelBackgroundColor: bg,
-          textColor: '#ffffff',
-          fontColor: '#ffffff',
-          fontSize: 12,
-          bold: true,
-          borderColor: color,
-          borderWidth: 1,
-          linecolor: color,
-          linewidth: 2,
-          linestyle: 0
-        },
-        disableSelection: true,
-        disableSave: true,
-        lock: true
-      }
-    )
-
-    return shapeId
-  }
-
-  const showLiquidationLine = async (price: string, qty: string) => {
-    if (!widgetRef.current) return
-    const chart = widgetRef.current?.activeChart()
-    if (!chart) return
-
-    const color = '#ff9800'
-    const bg = 'rgba(255,152,0,0.85)'
-    const numericDisplayPrice = Number(price)
-    const priceText = Number.isFinite(numericDisplayPrice)
-      ? numericDisplayPrice.toFixed(2)
-      : String(price)
-
-    const shapeId = await chart.createShape(
-      { price: Number(price) },
-      {
-        shape: 'horizontal_line',
-        text: `Liq  ${qty} @ ${priceText}`,
-        overrides: {
-          showLabel: true,
-          horzLabelsAlign: 'right',
-          labelBackgroundColor: bg,
-          textColor: '#ffffff',
-          fontColor: '#ffffff',
-          fontSize: 12,
-          bold: true,
-          borderColor: color,
-          borderWidth: 1,
-          linecolor: color,
-          linewidth: 2,
-          linestyle: 1
-        },
-        disableSelection: true,
-        disableSave: true,
-        lock: true
-      }
-    )
-
-    return shapeId
-  }
-
-  // Update chart when asset or interval changes
+  // Load history + subscribe to WS on symbol/interval change.
   useEffect(() => {
-    if (widgetRef.current && chartReady) {
+    if (!chartReady || !selectedAsset || selectedAsset.trim() === '' || !sdkInfoClient) return
+    const candleSeries = candleSeriesRef.current
+    const volumeSeries = volumeSeriesRef.current
+    if (!candleSeries || !volumeSeries) return
+
+    let cancelled = false
+    const hlInterval = toHyperliquidInterval(selectedInterval)
+    const intervalSec = intervalToSeconds(selectedInterval)
+
+    // Clear price lines from prior symbol/interval; the effects that own them will rebuild.
+    orderLinesRef.current.forEach((line) => {
       try {
-        const chart = widgetRef.current.activeChart()
-        if (!chart) return
-        chart.setSymbol(selectedAsset, selectedInterval)
-        chart.removeAllShapes()
-        orderToShape.current.clear()
-        positionToShape.current.clear()
-        liquidationToShape.current.clear()
-      } catch (e) {
-        console.error('Chart update error:', e)
+        candleSeries.removePriceLine(line)
+      } catch {}
+    })
+    positionLinesRef.current.forEach((line) => {
+      try {
+        candleSeries.removePriceLine(line)
+      } catch {}
+    })
+    liquidationLinesRef.current.forEach((line) => {
+      try {
+        candleSeries.removePriceLine(line)
+      } catch {}
+    })
+    orderLinesRef.current.clear()
+    positionLinesRef.current.clear()
+    liquidationLinesRef.current.clear()
+
+    const load = async () => {
+      const now = Date.now()
+      const startTime = now - HISTORY_PAGE_BARS * intervalSec * 1000
+      try {
+        const raw = await sdkInfoClient.candleSnapshot({
+          coin: selectedAsset,
+          interval: hlInterval,
+          startTime,
+          endTime: now
+        })
+        if (cancelled) return
+
+        const mapped = raw.map(toLwcBar)
+        const candles = mapped.map((m) => m.candle)
+        const volumes = mapped.map((m) => m.volume)
+
+        candleSeries.setData(candles)
+        volumeSeries.setData(volumes)
+
+        earliestBarTimeRef.current = candles.length > 0 ? (candles[0].time as number) : null
+        lastBarTimeRef.current =
+          candles.length > 0 ? (candles[candles.length - 1].time as number) : null
+
+        // Expose for debugging + e2e assertions.
+        if (chartContainerRef.current && candles.length > 0) {
+          chartContainerRef.current.setAttribute(
+            'data-last-bar',
+            JSON.stringify(candles[candles.length - 1])
+          )
+          chartContainerRef.current.setAttribute('data-bar-count', String(candles.length))
+        }
+
+        // Seed the OHLC readout with the last bar (unless the user is hovering).
+        if (candles.length > 0 && !isHoveringRef.current) {
+          setFocusedBar(candles[candles.length - 1])
+        }
+
+        // Fit content on initial load.
+        chartRef.current?.timeScale().fitContent()
+      } catch (err) {
+        console.error('Chart: history load failed', err)
       }
     }
-  }, [selectedAsset, selectedInterval, chartReady])
 
-  // Handle asset changes by updating subscriptions
-  useEffect(() => {
-    // Clean up existing subscriptions when asset changes
-    Object.values(tvSubscribersRef.current).forEach((cleanup) => cleanup())
-    tvSubscribersRef.current = {}
+    const candleHandler = (payload: hl.CandleWsEvent) => {
+      if (cancelled) return
+      const { candle, volume } = toLwcBar(payload)
+      try {
+        candleSeries.update(candle)
+        volumeSeries.update(volume)
+        lastBarTimeRef.current = candle.time as number
+        if (chartContainerRef.current) {
+          chartContainerRef.current.setAttribute('data-last-bar', JSON.stringify(candle))
+        }
+        // Update the OHLC readout only when the user isn't hovering — otherwise
+        // their hovered bar would get overwritten by every WS tick.
+        if (!isHoveringRef.current) {
+          setFocusedBar(candle)
+        }
+      } catch (err) {
+        console.error('Chart: realtime update failed', err)
+      }
+    }
 
-    // The TradingView widget will automatically call subscribeBars again
-    // with the new asset when setSymbol is called above
-  }, [selectedAsset])
+    void load().then(() => {
+      if (cancelled) return
+      subscribeToCandle(selectedAsset, hlInterval, candleHandler)
+      wsCleanupRef.current = () => {
+        void unsubscribeFromCandle(selectedAsset, hlInterval).catch((e) =>
+          console.error('Chart: unsubscribe failed', e)
+        )
+      }
+    })
 
-  // Clear wallet-specific shapes when wallet disconnects
-  useEffect(() => {
-    if (!widgetRef.current || !chartReady) return
+    return () => {
+      cancelled = true
+      wsCleanupRef.current?.()
+      wsCleanupRef.current = null
+    }
+  }, [
+    chartReady,
+    selectedAsset,
+    selectedInterval,
+    sdkInfoClient,
+    subscribeToCandle,
+    unsubscribeFromCandle
+  ])
 
+  // Historical pagination: prepend older bars when scrolled to the left edge.
+  const loadOlder = async () => {
+    const candleSeries = candleSeriesRef.current
+    const volumeSeries = volumeSeriesRef.current
     const store = useHyperliquidStore.getState()
-    if (!store.sdkInfoClient) {
-      // Wallet disconnected, clear all wallet-specific shapes
-      try {
-        const chart = widgetRef.current.activeChart()
-        if (!chart) return
-        chart.removeAllShapes()
-        orderToShape.current.clear()
-        positionToShape.current.clear()
-        liquidationToShape.current.clear()
-      } catch (e) {
-        console.error('Error clearing shapes:', e)
+    const client = store.sdkInfoClient
+    const earliest = earliestBarTimeRef.current
+    const asset = selectedAssetRef.current
+    const interval = selectedIntervalRef.current
+    if (!candleSeries || !volumeSeries || !client || !earliest || !asset) return
+
+    loadingOlderRef.current = true
+    try {
+      const hlInterval = toHyperliquidInterval(interval)
+      const intervalSec = intervalToSeconds(interval)
+      const endTime = earliest * 1000 - 1
+      const startTime = endTime - HISTORY_PAGE_BARS * intervalSec * 1000
+      const raw = await client.candleSnapshot({
+        coin: asset,
+        interval: hlInterval,
+        startTime,
+        endTime
+      })
+      if (raw.length === 0) return
+
+      const mapped = raw.map(toLwcBar)
+      const newCandles = mapped.map((m) => m.candle).filter((c) => (c.time as number) < earliest)
+      const newVolumes = mapped.map((m) => m.volume).filter((v) => (v.time as number) < earliest)
+      if (newCandles.length === 0) return
+
+      // setData with the merged range. Price lines survive setData.
+      const currentCandles = candleSeries.data() as unknown as {
+        time: UTCTimestamp
+      }[] as LwcCandle[]
+      const currentVolumes = volumeSeries.data() as unknown as {
+        time: UTCTimestamp
+        value: number
+        color?: string
+      }[]
+
+      candleSeries.setData([...newCandles, ...currentCandles])
+      volumeSeries.setData([
+        ...newVolumes,
+        ...currentVolumes.map((v) => ({ ...v, color: v.color ?? UP_COLOR }))
+      ])
+
+      earliestBarTimeRef.current = newCandles[0].time as number
+      if (chartContainerRef.current) {
+        chartContainerRef.current.setAttribute(
+          'data-bar-count',
+          String(newCandles.length + currentCandles.length)
+        )
       }
+    } catch (err) {
+      console.error('Chart: loadOlder failed', err)
+    } finally {
+      loadingOlderRef.current = false
     }
-  }, [sdkInfoClient, chartReady])
+  }
 
+  // Order price lines.
   useEffect(() => {
-    if (!widgetRef.current || !chartReady) return
-
-    // Only show order lines if we have a wallet connection
+    if (!chartReady) return
+    const series = candleSeriesRef.current
+    if (!series) return
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
 
-    const chart = widgetRef.current.activeChart()
-    if (!chart) return
-
-    // Helper to generate a unique key for an order shape
-    // For trigger orders (TP/SL), use triggerPx as key to avoid duplicates from optimistic updates
-    const getOrderShapeKey = (order: (typeof openOrders)[number]): string => {
+    const getOrderKey = (order: (typeof openOrders)[number]): string => {
+      const type = (order.orderType || '').toString().toLowerCase()
       const isTrigger =
-        order.isTrigger === true ||
-        (order.orderType || '').toString().toLowerCase().includes('take profit') ||
-        (order.orderType || '').toString().toLowerCase().includes('stop')
-
+        order.isTrigger === true || type.includes('take profit') || type.includes('stop')
       if (isTrigger && order.triggerPx) {
-        // For trigger orders, use triggerPx as a stable key (optimistic + real orders have same triggerPx)
         return `trigger-${order.coin}-${order.triggerPx}-${order.side}`
       }
-      // For regular orders, use oid
       return `order-${order.oid}`
     }
 
-    // Prefer showing TP/SL trigger orders if present; otherwise show normal orders (first and last)
-    const filteredOrders = openOrders.filter((order) => order.coin === selectedAsset)
-    const triggerOrders = filteredOrders.filter((order) => {
+    const filtered = openOrders.filter((o) => o.coin === selectedAsset)
+    const triggerOrders = filtered.filter((order) => {
       const type = (order.orderType || '').toString().toLowerCase()
       return order.isTrigger === true || type.includes('take profit') || type.includes('stop')
     })
 
-    // Deduplicate trigger orders by triggerPx (optimistic + real orders may both exist)
-    const seenTriggerPrices = new Set<string>()
-    const uniqueTriggerOrders = triggerOrders.filter((order) => {
-      const key = `${order.triggerPx}-${order.side}`
-      if (seenTriggerPrices.has(key)) return false
-      seenTriggerPrices.add(key)
+    const seen = new Set<string>()
+    const uniqueTriggers = triggerOrders.filter((o) => {
+      const key = `${o.triggerPx}-${o.side}`
+      if (seen.has(key)) return false
+      seen.add(key)
       return true
     })
 
-    const ordersToShow: typeof filteredOrders = []
-    const source = uniqueTriggerOrders.length > 0 ? uniqueTriggerOrders : filteredOrders
-    if (source.length === 1) {
-      ordersToShow.push(source[0])
-    } else if (source.length > 1) {
-      ordersToShow.push(source[0], source[source.length - 1])
-    }
+    const source = uniqueTriggers.length > 0 ? uniqueTriggers : filtered
+    const toShow: typeof filtered = []
+    if (source.length === 1) toShow.push(source[0])
+    else if (source.length > 1) toShow.push(source[0], source[source.length - 1])
 
-    // Build set of keys that should have shapes
-    const keysToShow = new Set(ordersToShow.map(getOrderShapeKey))
+    const keysToShow = new Set(toShow.map(getOrderKey))
 
-    // Cleanup FIRST: remove shapes that shouldn't exist anymore
-    // This runs synchronously before any async shape creation
-    for (const [shapeKey, shapeId] of orderToShape.current.entries()) {
-      if (!keysToShow.has(shapeKey)) {
+    for (const [key, line] of orderLinesRef.current.entries()) {
+      if (!keysToShow.has(key)) {
         try {
-          chart.removeEntity(shapeId)
-        } catch (e) {
-          console.error('Error removing shape:', e)
-        }
-        orderToShape.current.delete(shapeKey)
+          series.removePriceLine(line)
+        } catch {}
+        orderLinesRef.current.delete(key)
       }
     }
 
-    // Draw shapes for orders that don't have one yet (async, but cleanup already ran)
-    const drawShapes = async () => {
-      for (const order of ordersToShow) {
-        const shapeKey = getOrderShapeKey(order)
-        if (orderToShape.current.has(shapeKey)) continue
+    for (const order of toShow) {
+      const key = getOrderKey(order)
+      if (orderLinesRef.current.has(key)) continue
 
-        const hasTrigger =
-          order.isTrigger === true ||
-          (order.orderType || '').toString().toLowerCase().includes('take profit') ||
-          (order.orderType || '').toString().toLowerCase().includes('stop')
+      const type = (order.orderType || '').toString().toLowerCase()
+      const isTrigger =
+        order.isTrigger === true || type.includes('take profit') || type.includes('stop')
+      const price = isTrigger && order.triggerPx ? order.triggerPx : order.limitPx
 
-        const displayPrice = hasTrigger && order.triggerPx ? order.triggerPx : order.limitPx
+      let label: string
+      if (isTrigger) {
+        const condition = (order.triggerCondition || '').toString().toLowerCase()
+        if (type.includes('take profit') || condition.includes('above')) label = 'TP'
+        else if (type.includes('stop') || condition.includes('below')) label = 'SL'
+        else label = 'Trigger'
+      } else {
+        label = order.side === 'B' ? 'Buy' : 'Sell'
+      }
+      const isSell = label === 'SL' || (!isTrigger && order.side !== 'B')
+      const color = isSell ? DOWN_COLOR : UP_COLOR
 
-        let label: string | undefined
-        if (hasTrigger) {
-          const type = (order.orderType || '').toString().toLowerCase()
-          const condition = (order.triggerCondition || '').toString().toLowerCase()
-          if (type.includes('take profit') || condition.includes('above')) {
-            label = 'TP'
-          } else if (type.includes('stop') || condition.includes('below')) {
-            label = 'SL'
-          } else {
-            label = 'Trigger'
-          }
-        }
-
-        try {
-          const shapeId = await showOrderLineShape(
-            order.side === 'B',
-            displayPrice,
-            order.sz,
-            label
-          )
-          if (shapeId) {
-            orderToShape.current.set(shapeKey, shapeId)
-          }
-        } catch (e) {
-          console.error('Error creating shape:', e)
-        }
+      try {
+        const line = series.createPriceLine({
+          price: Number(price),
+          color,
+          lineWidth: 1,
+          lineStyle: isTrigger ? LineStyle.Dashed : LineStyle.Solid,
+          axisLabelVisible: true,
+          title: `${label} ${order.sz}`
+        })
+        orderLinesRef.current.set(key, line)
+      } catch (err) {
+        console.error('Chart: order price line failed', err)
       }
     }
-
-    drawShapes()
   }, [openOrders, selectedAsset, chartReady])
 
+  // Position + liquidation price lines.
   useEffect(() => {
-    if (!widgetRef.current || !chartReady) return
-
-    // Only show position lines if we have a wallet connection
+    if (!chartReady) return
+    const series = candleSeriesRef.current
+    if (!series) return
     const store = useHyperliquidStore.getState()
     if (!store.sdkInfoClient) return
 
-    const chart = widgetRef.current.activeChart()
-    if (!chart) return
+    const positions = clearingHouseState?.assetPositions ?? []
+    const currentCoins = new Set(positions.map((p) => p.position.coin))
 
-    clearingHouseState?.assetPositions.forEach(async (p) => {
-      if (p.position.coin !== selectedAsset) return
-      const shapeExists = positionToShape.current.get(p.position.coin)
-      if (shapeExists) return
-      const shapeId = await showPositionLine(
-        Number(p.position.szi) > 0,
-        p.position.entryPx,
-        p.position.szi
-      )
-      if (!shapeId) return
-      positionToShape.current.set(p.position.coin, shapeId)
-    })
-    if (clearingHouseState?.assetPositions.length !== positionToShape.current.size) {
-      const positionIds = new Set(
-        clearingHouseState?.assetPositions.map((p) => p.position.coin) || []
-      )
-      for (const [positionId, shapeId] of positionToShape.current.entries()) {
-        if (!positionIds.has(positionId)) {
-          chart.removeEntity(shapeId)
-          positionToShape.current.delete(positionId)
-        }
+    for (const [coin, line] of positionLinesRef.current.entries()) {
+      if (!currentCoins.has(coin) || coin !== selectedAsset) {
+        try {
+          series.removePriceLine(line)
+        } catch {}
+        positionLinesRef.current.delete(coin)
       }
     }
 
-    // Draw or update liquidation lines for current positions
-    clearingHouseState?.assetPositions.forEach(async (p) => {
-      if (p.position.coin !== selectedAsset) return
-      const liqPx = String(p.position.liquidationPx)
-      const existingId = liquidationToShape.current.get(p.position.coin)
+    for (const [coin, line] of liquidationLinesRef.current.entries()) {
+      if (!currentCoins.has(coin) || coin !== selectedAsset) {
+        try {
+          series.removePriceLine(line)
+        } catch {}
+        liquidationLinesRef.current.delete(coin)
+      }
+    }
 
-      const numericLiqPx = Number(liqPx)
-      const isValid = Number.isFinite(numericLiqPx) && numericLiqPx > 0
+    for (const p of positions) {
+      if (p.position.coin !== selectedAsset) continue
+      const isLong = Number(p.position.szi) > 0
+      const color = isLong ? UP_COLOR : DOWN_COLOR
 
-      if (!isValid) {
-        if (existingId) {
-          chart.removeEntity(existingId)
-          liquidationToShape.current.delete(p.position.coin)
+      if (!positionLinesRef.current.has(p.position.coin)) {
+        try {
+          const line = series.createPriceLine({
+            price: Number(p.position.entryPx),
+            color,
+            lineWidth: 2,
+            lineStyle: LineStyle.Solid,
+            axisLabelVisible: true,
+            title: `${isLong ? 'Long' : 'Short'} ${p.position.szi}`
+          })
+          positionLinesRef.current.set(p.position.coin, line)
+        } catch (err) {
+          console.error('Chart: position price line failed', err)
         }
-        return
       }
 
-      // If already exists, remove to refresh at new price
-      if (existingId) {
-        chart.removeEntity(existingId)
-        liquidationToShape.current.delete(p.position.coin)
-      }
-
-      const liqShapeId = await showLiquidationLine(liqPx, p.position.szi)
-      if (!liqShapeId) return
-      liquidationToShape.current.set(p.position.coin, liqShapeId)
-    })
-
-    // Cleanup liquidation lines for coins no longer in positions
-    const currentCoins = new Set(
-      clearingHouseState?.assetPositions.map((p) => p.position.coin) || []
-    )
-    for (const [coin, shapeId] of liquidationToShape.current.entries()) {
-      if (!currentCoins.has(coin)) {
-        chart.removeEntity(shapeId)
-        liquidationToShape.current.delete(coin)
+      const liqPx = Number(p.position.liquidationPx)
+      if (Number.isFinite(liqPx) && liqPx > 0) {
+        const existing = liquidationLinesRef.current.get(p.position.coin)
+        if (existing) {
+          try {
+            series.removePriceLine(existing)
+          } catch {}
+          liquidationLinesRef.current.delete(p.position.coin)
+        }
+        try {
+          const line = series.createPriceLine({
+            price: liqPx,
+            color: '#ff9800',
+            lineWidth: 1,
+            lineStyle: LineStyle.Dashed,
+            axisLabelVisible: true,
+            title: `Liq ${p.position.szi}`
+          })
+          liquidationLinesRef.current.set(p.position.coin, line)
+        } catch (err) {
+          console.error('Chart: liquidation price line failed', err)
+        }
       }
     }
   }, [clearingHouseState, chartReady, selectedAsset])
 
   return (
     <div className="rounded-md p-2 bg-secondary w-full h-full md:h-[576px] xl:h-full">
-      <div ref={chartRef} className="w-full h-full" />
+      <div ref={chartContainerRef} className="w-full h-full" data-testid="lwc-chart" />
     </div>
   )
 }
 
-export default TradingViewChart
+export default Chart

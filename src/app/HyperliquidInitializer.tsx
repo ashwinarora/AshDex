@@ -4,10 +4,12 @@ import { useConnection, useWalletClient } from 'wagmi'
 import { useInitHyperliquid } from '@/store/HyperliquidStore'
 import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
+import { useAutoReferral } from '@/hooks/useAutoReferral'
 
 const HyperLiquidInitializer = () => {
   const { address } = useConnection()
   const { data: walletClient } = useWalletClient()
+  useAutoReferral()
   // const address = '0xa4ADD8273d7f47318675bDfBcce3E9648CdB4509'
   const {
     initSdk,
@@ -16,6 +18,7 @@ const HyperLiquidInitializer = () => {
     fetchPerpsMeta,
     fetchSpotClearinghouseState,
     fetchClearinghouseState,
+    fetchUserAbstraction,
     subscribeToAllMids,
     unsubscribeFromAllMids,
     subscribeAssetCtxs,
@@ -50,6 +53,22 @@ const HyperLiquidInitializer = () => {
     fetchSpotClearinghouseState(address).catch(console.error)
     fetchClearinghouseState(address).catch(console.error)
   }, [sdkInfoClient, address, fetchSpotClearinghouseState, fetchClearinghouseState])
+
+  // Account abstraction mode determines whether spot balance or per-DEX perp
+  // state is the source of truth for trading equity. Fetch on connect, and
+  // re-fetch when the tab regains visibility so users who flip modes on
+  // hyperliquid.xyz see AshDex update without a manual reload.
+  useEffect(() => {
+    if (!sdkInfoClient || !address) return
+    fetchUserAbstraction(address).catch(console.error)
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        fetchUserAbstraction(address).catch(console.error)
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [sdkInfoClient, address, fetchUserAbstraction])
 
   useEffect(() => {
     if (!sdkSubscriptionClient) return

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
@@ -57,22 +58,18 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
       const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
-      const res = await sdkL1ActionClient.updateLeverage({
+      await sdkL1ActionClient.updateLeverage({
         asset: assetIndex,
         isCross: asset.leverage.type === 'cross',
         leverage: leverage
       })
-      console.log(res)
       onClose()
       toast.success('Leverage updated successfully', {
         id: toastId
       })
     } catch (error) {
       onClose()
-      console.error('Error updating leverage:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error updating leverage', { id: toastId })
     }
   }
 

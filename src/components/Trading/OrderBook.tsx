@@ -410,7 +410,10 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
   }
 
   return (
-    <div className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/70">
+    <div
+      className="flex flex-col bg-secondary rounded-md pt-2 gap-2 w-full h-full text-white/70"
+      data-testid="order-book"
+    >
       <div
         className={clsx('flex justify-between items-center px-2', isRTL ? 'flex-row-reverse' : '')}
       >
@@ -422,24 +425,21 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
           value={selectedLayoutType.toString()}
           onValueChange={(value) => value !== '' && setSelectedLayouttype(Number(value))}
         >
-          {[1, 2, 3].map((item) => (
+          {[
+            { id: 1, label: 'Full order book', icon: Filter1 },
+            { id: 2, label: 'Buys only', icon: Filter2 },
+            { id: 3, label: 'Sells only', icon: Filter3 }
+          ].map(({ id, label, icon }) => (
             <ToggleGroupItem
-              value={item.toString()}
-              key={item}
+              value={id.toString()}
+              key={id}
+              aria-label={label}
               className={cn(
                 'px-4 py-1 first:rounded-l-md last:rounded-r-md cursor-pointer text-xs font-semibold transition-colors duration-150 focus:outline-none',
-                selectedLayoutType === item
-                  ? 'bg-primary text-white'
-                  : 'bg-transparent text-white/70'
+                selectedLayoutType === id ? 'bg-primary text-white' : 'bg-transparent text-white/70'
               )}
             >
-              <Image
-                src={item === 1 ? Filter1 : item === 2 ? Filter2 : Filter3}
-                height={12}
-                width={12}
-                className="size-4"
-                alt=""
-              />
+              <Image src={icon} height={12} width={12} className="size-4" alt="" />
             </ToggleGroupItem>
           ))}
         </ToggleGroup>
@@ -456,6 +456,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               variant="outline"
               size={'sm'}
               className="text-xs w-20 flex items-center justify-start"
+              aria-label="Group size"
             >
               <p className="text-xs flex-1 w-full">{selectedPrecision.label}</p>
               <IconChevronDown className="size-3" />
@@ -548,7 +549,10 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
             ))}
         </div>
       ) : (
-        <div className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between font-tabular">
+        <div
+          className="w-full h-full rounded-b-md overflow-hidden flex flex-col gap-1 items-center justify-between font-tabular"
+          data-testid="order-book-rows"
+        >
           {barData?.sells
             .sort((a, b) => Number(b.px) - Number(a.px))
             .map((sell, index) => (
@@ -579,9 +583,19 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                       type="number"
                       className="font-medium text-xs"
                       value={Number(sell.px) * Number(sell.sz)}
+                      data-testid="orderbook-amount"
                     />
                   ) : (
-                    <p className="font-medium text-xs">{sell.sz}</p>
+                    // BUG-030: format via ReactiveText with the same precision
+                    // as the adjacent Total column so Amount and Total never
+                    // diverge on decimal count.
+                    <ReactiveText
+                      precision={4}
+                      type="number"
+                      className="font-medium text-xs"
+                      value={Number(sell.sz)}
+                      data-testid="orderbook-amount"
+                    />
                   )}
                   {showPriceInUSD ? (
                     <ReactiveText

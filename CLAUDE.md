@@ -68,3 +68,46 @@ The app supports both mainnet and testnet, configured via `NEXT_PUBLIC_HYPERLIQU
 ### Path Aliases
 
 Use `@/*` to import from `src/*` (configured in tsconfig.json).
+
+## Testing
+
+This project has a test suite. **Always run `bun run verify` before declaring any task complete.** It runs (in order, fail-fast):
+
+1. `bun run tsc` — TypeScript type check (no emit).
+2. `bun run test` — Vitest unit tests against pure logic in `src/**/*.test.ts`.
+3. `bun run test:e2e` — Playwright specs in `e2e/` against a stubbed Hyperliquid + injected `window.ethereum` provider.
+
+### Rules
+
+- **Never weaken or modify an existing assertion to make a failing test pass.** If a test fails, the code is wrong (or the test caught a genuine change in behavior worth discussing). Change source, not the assertion.
+- **Never add fixed timeouts** (`page.waitForTimeout(...)`, `setTimeout` inside tests, ad-hoc sleep loops). Use Playwright's auto-retrying expectations (`expect(locator).toBeVisible()`, `.toHaveText()`, etc.) anchored on a stable post-init signal. If you need to wait for absence, anchor on a positive signal that implies the absence check is meaningful by then.
+- **Never skip or comment out a test without saying so explicitly** in the user-facing response. If a test needs to be quarantined, use `test.skip('reason')` with a clear reason and flag it to the user.
+- **Never commit; the user commits.** Do not run `git commit`, `git push`, or any git write operation. Report the diff instead.
+
+### Test structure
+
+- **Unit** (`src/**/*.test.ts`) — pure logic. Runs against Node.
+- **E2e** (`e2e/*.spec.ts`) — Playwright + Chromium against `bun run dev` on port 3000, with a stubbed fixture in `e2e/fixtures/withStubs.ts` that intercepts REST (`/info`) and WebSocket (`/ws`) traffic and injects a minimal `window.ethereum` shim. Fixture files live in `e2e/fixtures/`; re-capture from live testnet with `bun run e2e/fixtures/capture.ts`.
+- **QA audit** — see `QA_ISSUES.md` for the bug backlog and Progress table.
+
+### Working with tests, in order
+
+1. Reproduce the bug with a **failing test** first. Confirm it fails for the right reason (correct assertion, correct error).
+2. Fix the source. Confirm the test now passes.
+3. Run `bun run verify` to check nothing else regressed.
+4. Update the Progress table in `QA_ISSUES.md` and tag the bug heading `✅ FIXED` if it's the last remaining piece.
+
+If the bug can't be reproduced under stubs (e.g., only fires when a third-party SDK initializes fully), don't fake a passing test — mark the bug `⏸ NEEDS-DISCUSSION` in `QA_ISSUES.md` with the specific reproducibility gap, and defer.
+
+### Manual wallet testing (Chrome DevTools MCP)
+
+For flows automated tests can't exercise (real wallet signing, real Rabby popups), MCP is configured to launch its own Brave with Rabby installed. The profile persists at `~/.cache/chrome-devtools-mcp/chrome-profile`, and Rabby holds a testnet-only wallet.
+
+Any `mcp__chrome-devtools__*` tool call launches the browser. Then:
+
+- Navigate to `http://localhost:3000/BTC`; click Connect Wallet → Rabby.
+- The Rabby popup appears in `list_pages` as an "Extension Page".
+- **Never call `select_page` on the Rabby popup** — that steals focus and Brave auto-closes it, killing the request with `UserRejectedRequestError`. Target it by pageId in `take_snapshot` / `click` directly.
+- Inside the Rabby popup: pick "Rabby Wallet" (not Brave's built-in), click "Ignore all" to dismiss the localhost "unknown site" warning, then Connect.
+
+MCP is registered in `~/.claude.json` with `--categoryExtensions` (required to see extension popups) and `--executablePath` pointing at Brave.

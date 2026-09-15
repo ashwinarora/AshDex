@@ -9,6 +9,7 @@ import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { StopOrder } from './OrderButton'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
 export const placePerpOrder = async ({
@@ -121,12 +122,11 @@ export const placePerpOrder = async ({
   const toastId = toast.loading('Loading...')
   try {
     if (!sdkL1ActionClient) return
-    const res = await sdkL1ActionClient.updateLeverage({
+    await sdkL1ActionClient.updateLeverage({
       asset: assetIndex,
       isCross: isCross,
       leverage: leverage
     })
-    console.log(res)
     const placeOrderRes = await sdkL1ActionClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
@@ -142,10 +142,16 @@ export const placePerpOrder = async ({
         t: order.orderType
       }))
     })
-    console.log(placeOrderRes)
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
     const openOrders: FrontendOpenOrdersResponse = []
+    // BUG-008: an HL `{ error: '...' }` status (min-notional, tick-size,
+    // insufficient margin, post-only-would-fill, etc.) previously fell
+    // through both success branches silently. Surface it as a real toast.
+    if (typeof status === 'object' && 'error' in status) {
+      toastSdkError((status as { error: string }).error, 'Order failed', { id: toastId })
+      return
+    }
     if (typeof status === 'object' && 'filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'
@@ -197,9 +203,14 @@ export const placePerpOrder = async ({
         orderType: 'Limit',
         timestamp: Date.now()
       })
-      toast.success('Order Placed Successfully', {
-        id: toastId
-      })
+      // BUG-016: include side, size, asset, price, and the order id so the
+      // user can find the order in the Open Orders tab afterwards.
+      const action = isBuy ? 'Long' : 'Short'
+      const assetName = selectedAsset.split('-')[0]
+      toast.success(
+        `${action} ${formattedSize} ${assetName} @ ${limitPrice} · #${status.resting.oid}`,
+        { id: toastId }
+      )
     }
     if (typeof status === 'object' && ('resting' in status || 'filled' in status)) {
       const orderId =
@@ -250,12 +261,8 @@ export const placePerpOrder = async ({
         }
       }
     }
-    console.log('pushing open orders', openOrders)
     pushNewOpenOrders(openOrders)
   } catch (error) {
-    console.error('Error placing Perp order:', error as string)
-    toast.error('Something went wrong, check the console or contact support', {
-      id: toastId
-    })
+    toastSdkError(error, 'Error placing Perp order', { id: toastId })
   }
 }

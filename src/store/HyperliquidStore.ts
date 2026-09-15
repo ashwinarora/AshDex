@@ -17,6 +17,8 @@ import {
   type PendingWithdrawal
 } from '@/utils/pendingWithdrawals'
 
+export type AccountAbstractionMode = 'disabled' | 'unifiedAccount' | 'portfolioMargin'
+
 interface HyperliquidState {
   userActiveAddress: Hex
   sdkTransport: hl.HttpTransport
@@ -36,6 +38,9 @@ interface HyperliquidState {
   activeAssetData: hl.ActiveAssetDataWsEvent | null
   ledgerUpdates: hl.UserNonFundingLedgerUpdatesWsEvent['nonFundingLedgerUpdates']
   pendingWithdrawals: PendingWithdrawal[]
+  // `null` until the first successful fetch. `"default"` from the API maps to
+  // `"disabled"` — both mean standard/manual account abstraction.
+  accountAbstraction: AccountAbstractionMode | null
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -62,6 +67,7 @@ interface HyperliquidActions {
   fetchPerpsMeta: () => Promise<void>
   fetchSpotClearinghouseState: (address: Hex) => Promise<void>
   fetchClearinghouseState: (address: Hex) => Promise<void>
+  fetchUserAbstraction: (address: Hex) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
   subscribeAssetCtxs: () => Promise<void>
@@ -117,6 +123,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     activeAssetData: null,
     ledgerUpdates: [],
     pendingWithdrawals: [],
+    accountAbstraction: null,
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -214,6 +221,19 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         set((state) => (state.clearingHouseState === null ? { clearingHouseState: chs } : state))
       } catch (err) {
         console.error('[fetchClearinghouseState] failed', err)
+      }
+    },
+    fetchUserAbstraction: async (address: Hex) => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient || address === zeroAddress) return
+      try {
+        const raw = await sdkInfoClient.userAbstraction({ user: address })
+        // API returns "default" for standard-mode accounts that never set the
+        // field; normalize to "disabled" so the rest of the app has one flag.
+        const mode: AccountAbstractionMode = raw === 'default' ? 'disabled' : raw
+        set({ accountAbstraction: mode })
+      } catch (err) {
+        console.error('[fetchUserAbstraction] failed', err)
       }
     },
     subscribeAssetCtxs: async () => {
@@ -341,7 +361,6 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       }))
     },
     pushNewPosition: (position) => {
-      console.log('pushing position', position)
       set((state) => {
         if (!state.clearingHouseState) {
           return state // Don't update if clearingHouseState is null
@@ -601,6 +620,18 @@ const formatTimeSinceUpdate = (timeSinceLastUpdate: number): string => {
 
 export const useHyperliquidStore = create(store)
 
+// True for users whose spot balance is the source of truth for trading equity
+// (unified account or portfolio margin). Returns false while the mode hasn't
+// been fetched yet, which keeps the standard-mode code path as the safe default.
+export const useIsUnified = () =>
+  useHyperliquidStore(
+    (state) =>
+      state.accountAbstraction === 'unifiedAccount' ||
+      state.accountAbstraction === 'portfolioMargin'
+  )
+
+export const useAccountAbstraction = () => useHyperliquidStore((state) => state.accountAbstraction)
+
 export const useInitHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
@@ -610,6 +641,7 @@ export const useInitHyperliquid = () => {
       fetchPerpsMeta: state.fetchPerpsMeta,
       fetchSpotClearinghouseState: state.fetchSpotClearinghouseState,
       fetchClearinghouseState: state.fetchClearinghouseState,
+      fetchUserAbstraction: state.fetchUserAbstraction,
       subscribeToAllMids: state.subscribeToAllMids,
       unsubscribeFromAllMids: state.unsubscribeFromAllMids,
       subscribeAssetCtxs: state.subscribeAssetCtxs,

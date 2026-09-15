@@ -13,9 +13,12 @@ import {
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import dynamic from 'next/dynamic'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { resolveAssetIndex } from '@/utils/resolveAssetIndex'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
+import { formatTimestamp } from '@/utils/format'
 import {
   IconX,
   IconSelector,
@@ -26,7 +29,6 @@ import {
 import ReactiveText from '@/components/reactive-text'
 import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { SPOT_DELTA } from '@/utils/constants'
 import {
   Table,
   TableBody,
@@ -76,12 +78,16 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         const toastId = toast.loading('Cancelling order...')
         try {
           if (!sdkL1ActionClient) return
-          const assetIndex = isSpot
-            ? Number(
-                spotMeta?.universe.find((asset) => asset.name === row.original.assetKey)?.index
-              ) + SPOT_DELTA
-            : perpsMeta?.universe.findIndex((asset) => asset.name === row.original.assetKey)
-          if (!assetIndex || assetIndex < 0) throw new Error('Asset index not found')
+          // BUG-007 was rooted in a `!assetIndex || assetIndex < 0` guard
+          // that fires for `assetIndex === 0` (SOL sits at perps index 0 on
+          // testnet, so every SOL cancel threw "Asset index not found").
+          // The shared resolver returns `null` on miss, so `0` passes through.
+          const assetIndex = resolveAssetIndex(row.original.assetKey, {
+            isSpot,
+            perpsUniverse: perpsMeta?.universe,
+            spotUniverse: spotMeta?.universe
+          })
+          if (assetIndex === null) throw new Error('Asset index not found')
           await sdkL1ActionClient.cancel({
             cancels: [
               {
@@ -94,10 +100,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             id: toastId
           })
         } catch (error: unknown) {
-          console.error('Error cancelling order:', error)
-          toast.error('Something went wrong, check the console or contact support', {
-            id: toastId
-          })
+          toastSdkError(error, 'Error cancelling order', { id: toastId })
         }
       }
       cancelOrder()
@@ -165,14 +168,12 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
         await sdkL1ActionClient.cancel({
           cancels: allOrders
             .map((order) => {
-              const assetIndex = isSpot
-                ? Number(spotMeta?.universe.find((asset) => asset.name === order.coin)?.index) +
-                  SPOT_DELTA
-                : perpsMeta?.universe.findIndex((asset) => asset.name === order.coin)
-
-              if (assetIndex === undefined || assetIndex < 0) {
-                return
-              }
+              const assetIndex = resolveAssetIndex(order.coin, {
+                isSpot,
+                perpsUniverse: perpsMeta?.universe,
+                spotUniverse: spotMeta?.universe
+              })
+              if (assetIndex === null) return
               return {
                 a: assetIndex,
                 o: order.oid
@@ -184,10 +185,7 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
           id: toastId
         })
       } catch (error: unknown) {
-        console.error('Error cancelling all orders:', error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
+        toastSdkError(error, 'Error cancelling all orders', { id: toastId })
       }
     }
     cancelAll()
@@ -204,6 +202,11 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
   ])
 
   const renderCancelAllButton = useCallback(() => {
+    // BUG-009: the previous UI was just an unlabelled X icon in the "Action"
+    // column header — undiscoverable. Add the text "Cancel all" beside the
+    // icon, and disable when there are fewer than 2 open orders (a single
+    // order should be cancelled via its own row button, not a bulk action).
+    const disabled = openOrders.length < 2
     return (
       <div className={cn('flex items-center justify-end gap-2', isRTL && 'flex-row-reverse')}>
         <span className="text-white/70 text-xs">{'Action'}</span>
@@ -212,21 +215,24 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
             if (!agentWallet || !isAgentApproved) return openAgentModal()
             handleCancelAll()
           }}
+          disabled={disabled}
           variant={'outline'}
-          className="!py-1 !px-1 text-xs w-fit h-fit flex items-center justify-between gap-1"
+          className="!py-1 !px-2 text-xs w-fit h-fit flex items-center justify-between gap-1"
+          data-testid="cancel-all-orders"
         >
           <IconX className="size-3" />
+          <span>{'Cancel all'}</span>
         </Button>
       </div>
     )
-  }, [handleCancelAll, agentWallet, isAgentApproved, openAgentModal])
+  }, [handleCancelAll, agentWallet, isAgentApproved, openAgentModal, openOrders.length])
 
   const columns = useMemo(
     () => [
       columnHelper.accessor('timestamp', {
         id: 'timestamp',
         header: () => 'Time',
-        cell: (info) => <>{new Date(info.getValue()).toLocaleString('en-US')}</>,
+        cell: (info) => <>{formatTimestamp(info.getValue())}</>,
         enableSorting: true,
         meta: { label: 'Time' }
       }),
