@@ -21,9 +21,9 @@ const readyReferral = {
 
 describe('shouldSetReferrer', () => {
   it('returns false when the code is empty', () => {
-    expect(
-      shouldSetReferrer({ code: '', isAgentApproved: true, referral: readyReferral })
-    ).toBe(false)
+    expect(shouldSetReferrer({ code: '', isAgentApproved: true, referral: readyReferral })).toBe(
+      false
+    )
   })
 
   it('returns false when the agent is not approved', () => {
@@ -33,9 +33,9 @@ describe('shouldSetReferrer', () => {
   })
 
   it('returns false while referral data is still loading', () => {
-    expect(
-      shouldSetReferrer({ code: 'ASHWIN', isAgentApproved: true, referral: undefined })
-    ).toBe(false)
+    expect(shouldSetReferrer({ code: 'ASHWIN', isAgentApproved: true, referral: undefined })).toBe(
+      false
+    )
   })
 
   it('returns false when the user is already referred', () => {

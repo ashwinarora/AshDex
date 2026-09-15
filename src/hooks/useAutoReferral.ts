@@ -34,9 +34,7 @@ export const useAutoReferral = () => {
     queryFn: async () => {
       if (!sdkInfoClient || !address || !agentWallet) return false
       const extraAgents = await sdkInfoClient.extraAgents({ user: address })
-      return extraAgents.some(
-        (a) => a.address.toLowerCase() === agentWallet.address.toLowerCase()
-      )
+      return extraAgents.some((a) => a.address.toLowerCase() === agentWallet.address.toLowerCase())
     },
     enabled: hasCode && userReady && !!sdkInfoClient && !!agentWallet
   })
