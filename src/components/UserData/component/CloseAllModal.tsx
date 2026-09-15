@@ -3,6 +3,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import {
   Dialog,
@@ -96,24 +97,18 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
         }))
       })
       const status = orderRes.response.data.statuses[0]
-      if ('error' in status) {
+      if (typeof status === 'object' && 'error' in status) {
         onClose()
-        console.error('Close all positions error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
-      } else if ('filled' in status) {
+        toastSdkError(status.error, 'Close all positions error', { id: toastId })
+      } else if (typeof status === 'object' && 'filled' in status) {
         onClose()
         toast.success('All positions closed successfully', {
           id: toastId
         })
       }
     } catch (error) {
-      console.error('Error closing all positions:', error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error closing all positions', { id: toastId })
     }
   }
 

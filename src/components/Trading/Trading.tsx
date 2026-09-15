@@ -1,6 +1,8 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
 import Chart from './Chart/Chart'
+import ChartHeader from './Chart/ChartHeader'
+import { useChartUIStore } from '@/store/ChartUIStore'
 import OrderBook from './OrderBook'
 import PlaceOrder from './PlaceOrderBox'
 import UserData from '../UserData/UserData'
@@ -40,6 +42,7 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
   const orderBookRef = useRef<HTMLDivElement>(null)
   const placeOrderRef = useRef<HTMLDivElement>(null)
   const [drawerOpen, setDrawerOpen] = useState(false)
+  const selectedInterval = useChartUIStore((s) => s.selectedInterval)
 
   const [mobileState, setMobileState] = useState<{
     firstToggle: 'chart' | 'orderbook' | 'placeorder'
@@ -110,10 +113,11 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
         </ToggleGroup>
         <div className="flex items-start justify-center w-full h-96">
           <div
-            data-isVisible={mobileState.firstToggle === 'chart'}
-            className="[&[data-isVisible='false']]:hidden [&[data-isVisible='true']]:flex w-full h-full flex-col gap-1"
+            data-is-visible={mobileState.firstToggle === 'chart'}
+            className="[&[data-is-visible='false']]:hidden [&[data-is-visible='true']]:flex w-full h-full flex-col gap-1"
           >
-            <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+            <ChartHeader />
+            <Chart selectedAsset={selectedAsset} selectedInterval={selectedInterval} />
           </div>
           {mobileState.firstToggle === 'orderbook' && (
             <OrderBook selectedAsset={selectedAsset} isRTL={isRTL} />
@@ -179,7 +183,8 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
         )}
         <div className="flex items-start justify-center w-full h-96">
           <div className="flex w-full h-full flex-col gap-1">
-            <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+            <ChartHeader />
+            <Chart selectedAsset={selectedAsset} selectedInterval={selectedInterval} />
           </div>
         </div>
         <div className="flex items-start justify-center w-full h-full flex-1 gap-1">
@@ -267,7 +272,8 @@ const Trading = ({ defaultAsset }: TradingProps = {}) => {
           ) : (
             <PerpsSelector selectedAsset={selectedAsset} isRTL={isRTL} />
           )}
-          <Chart selectedAsset={selectedAsset} selectedInterval="30" />
+          <ChartHeader />
+          <Chart selectedAsset={selectedAsset} selectedInterval={selectedInterval} />
         </div>
         <div
           className={clsx('w-72 shrink-0 2xl:w-96 h-full', isRTL ? '-order-2' : 'order-2')}

@@ -17,6 +17,8 @@ import {
   type PendingWithdrawal
 } from '@/utils/pendingWithdrawals'
 
+export type AccountAbstractionMode = 'disabled' | 'unifiedAccount' | 'portfolioMargin'
+
 interface HyperliquidState {
   userActiveAddress: Hex
   sdkTransport: hl.HttpTransport
@@ -27,54 +29,68 @@ interface HyperliquidState {
   sdkSubscriptionClient: hl.SubscriptionClient | null
   agentWallet: PrivateKeyAccount | null
   allMids: hl.AllMidsResponse
-  clearingHouseState: hl.WsWebData2Event['clearinghouseState'] | null
-  perpsMeta: hl.WsWebData2Event['meta'] | null
-  perpAssetContext: hl.WsWebData2Event['assetCtxs']
-  spotAssetContext: hl.WsWebData2Event['spotAssetCtxs']
-  spotState: NonNullable<hl.WsWebData2Event['spotState']>
-  openOrders: hl.WsWebData2Event['openOrders']
-  activeAssetData: hl.WsActiveAssetDataEvent | null
-  ledgerUpdates: hl.WsUserNonFundingLedgerUpdatesEvent['nonFundingLedgerUpdates']
+  clearingHouseState: hl.ClearinghouseStateResponse | null
+  perpsMeta: hl.MetaResponse | null
+  perpAssetContext: hl.AssetCtxsWsEvent['ctxs']
+  spotAssetContext: hl.SpotAssetCtxsWsEvent
+  spotState: hl.SpotClearinghouseStateResponse
+  openOrders: hl.FrontendOpenOrdersResponse
+  activeAssetData: hl.ActiveAssetDataWsEvent | null
+  ledgerUpdates: hl.UserNonFundingLedgerUpdatesWsEvent['nonFundingLedgerUpdates']
   pendingWithdrawals: PendingWithdrawal[]
+  // `null` until the first successful fetch. `"default"` from the API maps to
+  // `"disabled"` — both mean standard/manual account abstraction.
+  accountAbstraction: AccountAbstractionMode | null
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
     allMids: number
-    webData2: number
+    userState: number
     candles: Record<string, number>
   }
   subsManager: {
-    allMids?: hl.Subscription
-    webData2?: hl.Subscription
-    candles?: hl.Subscription
-    activeAssetData: hl.Subscription[]
-    ledgerUpdates?: hl.Subscription
+    allMids?: hl.ISubscription
+    // Three user-scoped subs opened together on wallet connect
+    // (spotState + clearinghouseState + openOrders — replaces the removed
+    // `webData2` subscription).
+    userState?: hl.ISubscription[]
+    candles?: hl.ISubscription
+    activeAssetData: hl.ISubscription[]
+    ledgerUpdates?: hl.ISubscription
+    assetCtxs?: hl.ISubscription
+    spotAssetCtxs?: hl.ISubscription
   }
 }
 
 interface HyperliquidActions {
   initSdk: (address: Address, walletClient?: WalletClient) => Promise<void>
+  fetchPerpsMeta: () => Promise<void>
+  fetchSpotClearinghouseState: (address: Hex) => Promise<void>
+  fetchClearinghouseState: (address: Hex) => Promise<void>
+  fetchUserAbstraction: (address: Hex) => Promise<void>
   subscribeToAllMids: () => void
   unsubscribeFromAllMids: () => Promise<void>
-  subscribeWebData2: (address: Hex) => void
-  unsubscribeWebData2: () => Promise<void>
-  pushNewOpenOrders: (orders: hl.WsWebData2Event['openOrders']) => void
-  pushNewPosition: (
-    position: hl.WsWebData2Event['clearinghouseState']['assetPositions'][number]
-  ) => void
+  subscribeAssetCtxs: () => Promise<void>
+  unsubscribeAssetCtxs: () => Promise<void>
+  subscribeSpotAssetCtxs: () => Promise<void>
+  unsubscribeSpotAssetCtxs: () => Promise<void>
+  subscribeUserState: (address: Hex) => void
+  unsubscribeUserState: () => Promise<void>
+  pushNewOpenOrders: (orders: hl.FrontendOpenOrdersResponse) => void
+  pushNewPosition: (position: hl.ClearinghouseStateResponse['assetPositions'][number]) => void
   subscribeToCandle: (
     asset: string,
-    interval: hl.WsCandleParameters['interval'],
-    callback: (data: hl.WsCandleEvent) => void
+    interval: hl.CandleWsParameters['interval'],
+    callback: (data: hl.CandleWsEvent) => void
   ) => void
   unsubscribeFromCandle: (
     asset: string,
-    interval: hl.WsCandleParameters['interval']
+    interval: hl.CandleWsParameters['interval']
   ) => Promise<void>
   subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
   unsubscribeFromActiveAssetData: () => Promise<void>
   checkWebSocketStatus: () => void
-  getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => string
+  getTimeSinceLastUpdate: (channel?: 'allMids' | 'userState' | 'candles') => string
   updateUserActiveAddress: (address: Hex) => void
   subscribeLedgerUpdates: (address: Hex) => void
   unsubscribeLedgerUpdates: () => Promise<void>
@@ -107,11 +123,12 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     activeAssetData: null,
     ledgerUpdates: [],
     pendingWithdrawals: [],
+    accountAbstraction: null,
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
       allMids: Date.now(),
-      webData2: Date.now(),
+      userState: Date.now(),
       candles: {}
     },
     subsManager: {
@@ -129,23 +146,21 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       // Always ensure non-user-specific clients exist.
       set((state) => ({
-        sdkInfoClient:
-          state.sdkInfoClient ??
+        sdkInfoClient: (state.sdkInfoClient ??
           new hl.InfoClient({
             transport: state.sdkTransport
-          }),
-        sdkSubscriptionClient:
-          state.sdkSubscriptionClient ??
+          })) as hl.InfoClient,
+        sdkSubscriptionClient: (state.sdkSubscriptionClient ??
           new hl.SubscriptionClient({
             transport: state.sdkSocketTransport
-          }),
+          })) as hl.SubscriptionClient,
         // Only set signer client when we actually have a walletClient.
         sdkUserSignerClient: walletClient
-          ? new hl.ExchangeClient({
+          ? (new hl.ExchangeClient({
               transport: state.sdkTransport,
               // @ts-expect-error wagmi WalletClient is compatible at runtime
               wallet: walletClient
-            })
+            }) as hl.ExchangeClient)
           : state.sdkUserSignerClient
       }))
 
@@ -173,6 +188,98 @@ const store = combine<HyperliquidState, HyperliquidActions>(
           wallet: agentWallet
         })
         // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
+      }))
+    },
+    fetchPerpsMeta: async () => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient) return
+      try {
+        const meta = await sdkInfoClient.meta()
+        set({ perpsMeta: meta })
+      } catch (err) {
+        console.error('[fetchPerpsMeta] failed', err)
+      }
+    },
+    // Cold-load fallbacks so the UI has real values before the WS subs arrive.
+    // Only seed the store if the WS hasn't already populated it (empty spot
+    // balances / null clearingHouseState); never clobber fresher WS data.
+    fetchSpotClearinghouseState: async (address: Hex) => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient || address === zeroAddress) return
+      try {
+        const spot = await sdkInfoClient.spotClearinghouseState({ user: address })
+        set((state) => (state.spotState.balances.length === 0 ? { spotState: spot } : state))
+      } catch (err) {
+        console.error('[fetchSpotClearinghouseState] failed', err)
+      }
+    },
+    fetchClearinghouseState: async (address: Hex) => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient || address === zeroAddress) return
+      try {
+        const chs = await sdkInfoClient.clearinghouseState({ user: address })
+        set((state) => (state.clearingHouseState === null ? { clearingHouseState: chs } : state))
+      } catch (err) {
+        console.error('[fetchClearinghouseState] failed', err)
+      }
+    },
+    fetchUserAbstraction: async (address: Hex) => {
+      const { sdkInfoClient } = get()
+      if (!sdkInfoClient || address === zeroAddress) return
+      try {
+        const raw = await sdkInfoClient.userAbstraction({ user: address })
+        // API returns "default" for standard-mode accounts that never set the
+        // field; normalize to "disabled" so the rest of the app has one flag.
+        const mode: AccountAbstractionMode = raw === 'default' ? 'disabled' : raw
+        set({ accountAbstraction: mode })
+      } catch (err) {
+        console.error('[fetchUserAbstraction] failed', err)
+      }
+    },
+    subscribeAssetCtxs: async () => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const sub = await sdkSubscriptionClient.assetCtxs((data) => {
+        set({
+          perpAssetContext: data.ctxs,
+          lastWebSocketUpdate: Date.now(),
+          isWebSocketConnected: true
+        })
+      })
+      set((state) => ({
+        subsManager: { ...state.subsManager, assetCtxs: sub }
+      }))
+    },
+    unsubscribeAssetCtxs: async () => {
+      const { subsManager } = get()
+      if (!subsManager.assetCtxs) return
+      await subsManager.assetCtxs.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, assetCtxs: undefined }
+      }))
+    },
+    subscribeSpotAssetCtxs: async () => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      const sub = await sdkSubscriptionClient.spotAssetCtxs((data) => {
+        set({
+          spotAssetContext: data.filter(
+            (ctx) => Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
+          ),
+          lastWebSocketUpdate: Date.now(),
+          isWebSocketConnected: true
+        })
+      })
+      set((state) => ({
+        subsManager: { ...state.subsManager, spotAssetCtxs: sub }
+      }))
+    },
+    unsubscribeSpotAssetCtxs: async () => {
+      const { subsManager } = get()
+      if (!subsManager.spotAssetCtxs) return
+      await subsManager.spotAssetCtxs.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, spotAssetCtxs: undefined }
       }))
     },
     subscribeToAllMids: async () => {
@@ -205,46 +312,48 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       }))
     },
-    subscribeWebData2: async (address: Hex) => {
+    subscribeUserState: async (address: Hex) => {
       const { sdkSubscriptionClient } = get()
       if (!sdkSubscriptionClient) return
-      const webData2Sub = await sdkSubscriptionClient.webData2(
-        {
-          user: address
-        },
-        (data) => {
-          // console.log('webData2', data)
-          const activeAddress = get().userActiveAddress
-          if (data.user.toLowerCase() === activeAddress.toLowerCase()) {
+      // Hyperliquid removed the `webData2` WS subscription; the SDK marks it
+      // deprecated. Open the three documented replacements in parallel — each
+      // maps 1:1 to the store field the old callback used to write.
+      try {
+        const [spotSub, clearingSub, ordersSub] = await Promise.all([
+          sdkSubscriptionClient.spotState({ user: address }, (data) => {
             set({
-              clearingHouseState: data.clearinghouseState,
-              openOrders: data.openOrders,
-              perpsMeta: data.meta,
-              perpAssetContext: data.assetCtxs,
-              spotAssetContext: data.spotAssetCtxs.filter((ctx) => {
-                return Number(ctx.dayNtlVlm) > 0 || Number(ctx.prevDayPx) > 0
-              }),
               spotState: data.spotState,
               lastWebSocketUpdate: Date.now(),
               isWebSocketConnected: true,
-              lastUpdates: {
-                ...get().lastUpdates,
-                webData2: Date.now()
-              }
+              lastUpdates: { ...get().lastUpdates, userState: Date.now() }
             })
-          } else {
-            // Useful to confirm unsub when address mismatch
-            console.log('WEBDATA2 ADDRESS MISMATCH')
-            webData2Sub.unsubscribe()
+          }),
+          sdkSubscriptionClient.clearinghouseState({ user: address }, (data) => {
+            set({
+              clearingHouseState: data.clearinghouseState,
+              lastWebSocketUpdate: Date.now(),
+              isWebSocketConnected: true,
+              lastUpdates: { ...get().lastUpdates, userState: Date.now() }
+            })
+          }),
+          sdkSubscriptionClient.openOrders({ user: address }, (data) => {
+            set({
+              openOrders: data.orders,
+              lastWebSocketUpdate: Date.now(),
+              isWebSocketConnected: true,
+              lastUpdates: { ...get().lastUpdates, userState: Date.now() }
+            })
+          })
+        ])
+        set((state) => ({
+          subsManager: {
+            ...state.subsManager,
+            userState: [spotSub, clearingSub, ordersSub]
           }
-        }
-      )
-      set((state) => ({
-        subsManager: {
-          ...state.subsManager,
-          webData2: webData2Sub
-        }
-      }))
+        }))
+      } catch (err) {
+        console.error('[subscribeUserState] failed', err)
+      }
     },
     pushNewOpenOrders: (orders) => {
       set((state) => ({
@@ -252,7 +361,6 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       }))
     },
     pushNewPosition: (position) => {
-      console.log('pushing position', position)
       set((state) => {
         if (!state.clearingHouseState) {
           return state // Don't update if clearingHouseState is null
@@ -265,14 +373,14 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         }
       })
     },
-    unsubscribeWebData2: async () => {
+    unsubscribeUserState: async () => {
       const { subsManager } = get()
-      if (!subsManager.webData2) return
-      await subsManager.webData2.unsubscribe()
+      if (!subsManager.userState) return
+      await Promise.all(subsManager.userState.map((sub) => sub.unsubscribe()))
       set((state) => ({
         subsManager: {
           ...state.subsManager,
-          webData2: undefined
+          userState: undefined
         }
       }))
     },
@@ -374,14 +482,14 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const { lastUpdates } = get()
       const timeSinceLastUpdate = Math.min(
         currentTime - lastUpdates.allMids,
-        currentTime - lastUpdates.webData2,
+        currentTime - lastUpdates.userState,
         ...Object.values(lastUpdates.candles).map((time) => currentTime - time)
       )
 
       // If no updates received in 10 seconds, consider connection lost
       set({ isWebSocketConnected: timeSinceLastUpdate < 10000 })
     },
-    getTimeSinceLastUpdate: (channel?: 'allMids' | 'webData2' | 'candles') => {
+    getTimeSinceLastUpdate: (channel?: 'allMids' | 'userState' | 'candles') => {
       const currentTime = Date.now()
       const { lastUpdates } = get()
 
@@ -398,7 +506,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         ? currentTime - lastUpdates[channel]
         : Math.min(
             currentTime - lastUpdates.allMids,
-            currentTime - lastUpdates.webData2,
+            currentTime - lastUpdates.userState,
             ...Object.values(lastUpdates.candles).map((time) => currentTime - time)
           )
 
@@ -512,15 +620,36 @@ const formatTimeSinceUpdate = (timeSinceLastUpdate: number): string => {
 
 export const useHyperliquidStore = create(store)
 
+// True for users whose spot balance is the source of truth for trading equity
+// (unified account or portfolio margin). Returns false while the mode hasn't
+// been fetched yet, which keeps the standard-mode code path as the safe default.
+export const useIsUnified = () =>
+  useHyperliquidStore(
+    (state) =>
+      state.accountAbstraction === 'unifiedAccount' ||
+      state.accountAbstraction === 'portfolioMargin'
+  )
+
+export const useAccountAbstraction = () => useHyperliquidStore((state) => state.accountAbstraction)
+
 export const useInitHyperliquid = () => {
   return useHyperliquidStore(
     useShallow((state) => ({
       sdkSubscriptionClient: state.sdkSubscriptionClient,
+      sdkInfoClient: state.sdkInfoClient,
       initSdk: state.initSdk,
+      fetchPerpsMeta: state.fetchPerpsMeta,
+      fetchSpotClearinghouseState: state.fetchSpotClearinghouseState,
+      fetchClearinghouseState: state.fetchClearinghouseState,
+      fetchUserAbstraction: state.fetchUserAbstraction,
       subscribeToAllMids: state.subscribeToAllMids,
       unsubscribeFromAllMids: state.unsubscribeFromAllMids,
-      subscribeWebData2: state.subscribeWebData2,
-      unsubscribeWebData2: state.unsubscribeWebData2,
+      subscribeAssetCtxs: state.subscribeAssetCtxs,
+      unsubscribeAssetCtxs: state.unsubscribeAssetCtxs,
+      subscribeSpotAssetCtxs: state.subscribeSpotAssetCtxs,
+      unsubscribeSpotAssetCtxs: state.unsubscribeSpotAssetCtxs,
+      subscribeUserState: state.subscribeUserState,
+      unsubscribeUserState: state.unsubscribeUserState,
       subscribeToCandle: state.subscribeToCandle,
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,

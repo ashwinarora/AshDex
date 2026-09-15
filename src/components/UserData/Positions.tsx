@@ -30,7 +30,7 @@ import {
 import IsolatedMarginModal from './component/IsolatedMarginModal'
 import CloseAllModal from './component/CloseAllModal'
 import ReactiveText from '@/components/reactive-text'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Table,
   TableBody,
@@ -71,14 +71,14 @@ const Positions = ({ isRTL }: IPositionsProps) => {
   const [closingAsset, setClosingAsset] = useState<string | null>(null)
   const [isTPSLModalOpen, setIsTPSLModalOpen] = useState(false)
   const [tpslAsset, setTpslAsset] =
-    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
+    useState<ClearinghouseStateResponse['assetPositions'][number]['position']>()
   const [isLeverageModalOpen, setIsLeverageModalOpen] = useState(false)
   const [leverageAsset, setLeverageAsset] =
-    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
+    useState<ClearinghouseStateResponse['assetPositions'][number]['position']>()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [isIsolatedMarginModalOpen, setIsIsolatedMarginModalOpen] = useState(false)
   const [isolatedMarginAsset, setIsolatedMarginAsset] =
-    useState<WebData2Event['clearinghouseState']['assetPositions'][number]['position']>()
+    useState<ClearinghouseStateResponse['assetPositions'][number]['position']>()
   const [isCloseAllModalOpen, setIsCloseAllModalOpen] = useState(false)
 
   const { isTablet, isMobile } = useScreenSize()
@@ -89,7 +89,7 @@ const Positions = ({ isRTL }: IPositionsProps) => {
   const helper = useMemo(
     () =>
       createColumnHelper<
-        WebData2Event['clearinghouseState']['assetPositions'][number]['position'] & {
+        ClearinghouseStateResponse['assetPositions'][number]['position'] & {
           meta?: { label: string }
         }
       >(),

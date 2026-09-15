@@ -19,7 +19,7 @@ const FooterContent: FC = () => {
   )
   const [timeSinceUpdate, setTimeSinceUpdate] = useState({
     allMids: '',
-    webData2: '',
+    userState: '',
     candles: ''
   })
 
@@ -54,7 +54,7 @@ const FooterContent: FC = () => {
     const updateTime = () => {
       setTimeSinceUpdate({
         allMids: getTimeSinceLastUpdate('allMids'),
-        webData2: getTimeSinceLastUpdate('webData2'),
+        userState: getTimeSinceLastUpdate('userState'),
         candles: getTimeSinceLastUpdate('candles')
       })
     }
@@ -85,7 +85,7 @@ const FooterContent: FC = () => {
   const collectiveFreshness = [
     getFreshnessColor(timeSinceUpdate.allMids),
     getFreshnessColor(timeSinceUpdate.candles),
-    getFreshnessColor(timeSinceUpdate.webData2)
+    getFreshnessColor(timeSinceUpdate.userState)
   ]
 
   return (
@@ -140,49 +140,18 @@ const FooterContent: FC = () => {
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.webData2)}`}
+                  className={`w-2 h-2 rounded-full transition-colors duration-200 ${getFreshnessColor(timeSinceUpdate.userState)}`}
                 ></span>
                 <span>
-                  {'User Data'}: {timeSinceUpdate.webData2}
+                  {'User Data'}: {timeSinceUpdate.userState}
                 </span>
               </div>
             </div>
           </HoverCardContent>
         </HoverCard>
 
-        <div className="flex gap-4 duration-200 items-center justify-center text-xs">
-          <a
-            href="/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Docs'}
-          </a>
-          <a
-            href="/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Support'}
-          </a>
-          <a
-            href="/terms"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Terms'}
-          </a>
-          <a
-            href="/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-white text-white/70 transition-colors"
-          >
-            {'Privacy Policy'}
-          </a>
+        <div className="flex items-center justify-center text-xs text-white/70">
+          Built with <span className="text-red mx-1">♥</span> by Ashwin Arora
         </div>
       </div>
     </footer>

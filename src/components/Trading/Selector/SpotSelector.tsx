@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useMemo, useRef, useState, useCallback } from 'react'
 import { getSpotAssetContext } from '@/utils/utils'
+import { isTestnet } from '@/utils/constants'
 import { useFavorites } from '@/store/FavoritesStore'
 import { Skeleton } from '../../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -144,9 +145,10 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
         value: tokenContract ? (
           <div className="group flex gap-1 cursor-pointer">
             <a
-              href={`https://app.hyperliquid.xyz/explorer/token/${tokenContract}`}
+              href={`https://app.hyperliquid${isTestnet ? '-testnet' : ''}.xyz/explorer/token/${tokenContract}`}
               target="_blank"
               className="text-white text-xs"
+              data-testid="contract-link"
             >
               {tokenContract.slice(0, 6)}...{tokenContract.slice(-4)}
             </a>{' '}
@@ -203,6 +205,7 @@ const SpotSelector = ({ selectedAsset, isRTL }: ISelectorProps) => {
             <Button
               variant="outline"
               className="h-full md:!h-fit !p-2 w-full flex-1 md:w-40 flex items-center justify-between gap-2"
+              data-testid="asset-selector-trigger"
             >
               <h1 className="text-white text-sm font-semibold">
                 {spotKeyToName.get(selectedAsset)?.replace(/^U/, '')}/

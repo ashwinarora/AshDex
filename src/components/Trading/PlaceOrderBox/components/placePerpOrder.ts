@@ -1,10 +1,15 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type {
+  ClearinghouseStateResponse,
+  FrontendOpenOrdersResponse,
+  MetaResponse
+} from '@nktkas/hyperliquid/api/info'
 import { TPSLType } from './TPSL'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { StopOrder } from './OrderButton'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 
 export const placePerpOrder = async ({
@@ -28,7 +33,7 @@ export const placePerpOrder = async ({
   selectedAsset: string
   isCross: boolean
   leverage: number
-  perpsMeta: WebData2Event['meta'] | null
+  perpsMeta: MetaResponse | null
   isPostOnly: boolean
   isBuy: boolean
   assetAmount: string
@@ -37,8 +42,8 @@ export const placePerpOrder = async ({
   adjustedBuilderFee: number
   tpsl?: TPSLType
   stopOrder?: StopOrder
-  pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
-  pushNewPosition: (postion: WebData2Event['clearinghouseState']['assetPositions'][number]) => void
+  pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
+  pushNewPosition: (postion: ClearinghouseStateResponse['assetPositions'][number]) => void
 }) => {
   if (!perpsMeta) return
   const assetIndex = getPerpsUniverseIndex(perpsMeta?.universe || [], selectedAsset)
@@ -117,12 +122,11 @@ export const placePerpOrder = async ({
   const toastId = toast.loading('Loading...')
   try {
     if (!sdkL1ActionClient) return
-    const res = await sdkL1ActionClient.updateLeverage({
+    await sdkL1ActionClient.updateLeverage({
       asset: assetIndex,
       isCross: isCross,
       leverage: leverage
     })
-    console.log(res)
     const placeOrderRes = await sdkL1ActionClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
       builder: {
@@ -138,11 +142,17 @@ export const placePerpOrder = async ({
         t: order.orderType
       }))
     })
-    console.log(placeOrderRes)
     // TODO: Handle the status of all Orders
     const status = placeOrderRes.response.data.statuses[0]
-    const openOrders: WebData2Event['openOrders'] = []
-    if ('filled' in status) {
+    const openOrders: FrontendOpenOrdersResponse = []
+    // BUG-008: an HL `{ error: '...' }` status (min-notional, tick-size,
+    // insufficient margin, post-only-would-fill, etc.) previously fell
+    // through both success branches silently. Surface it as a real toast.
+    if (typeof status === 'object' && 'error' in status) {
+      toastSdkError((status as { error: string }).error, 'Order failed', { id: toastId })
+      return
+    }
+    if (typeof status === 'object' && 'filled' in status) {
       const filled = status.filled
       const action = isBuy ? 'long' : 'short'
       const assetName = selectedAsset.split('-')[0]
@@ -174,7 +184,7 @@ export const placePerpOrder = async ({
           id: toastId
         }
       )
-    } else if ('resting' in status) {
+    } else if (typeof status === 'object' && 'resting' in status) {
       openOrders.push({
         oid: status.resting.oid,
         children: [],
@@ -193,12 +203,20 @@ export const placePerpOrder = async ({
         orderType: 'Limit',
         timestamp: Date.now()
       })
-      toast.success('Order Placed Successfully', {
-        id: toastId
-      })
+      // BUG-016: include side, size, asset, price, and the order id so the
+      // user can find the order in the Open Orders tab afterwards.
+      const action = isBuy ? 'Long' : 'Short'
+      const assetName = selectedAsset.split('-')[0]
+      toast.success(
+        `${action} ${formattedSize} ${assetName} @ ${limitPrice} · #${status.resting.oid}`,
+        { id: toastId }
+      )
     }
-    if ('resting' in status || 'filled' in status) {
-      const orderId = 'resting' in status ? status.resting.oid : status.filled.oid
+    if (typeof status === 'object' && ('resting' in status || 'filled' in status)) {
+      const orderId =
+        'resting' in status
+          ? status.resting.oid
+          : (status as { filled: { oid: number } }).filled.oid
       if (tpsl?.isTpsl) {
         const limitPxmultiplier = isBuy ? 0.92 : 1.08 // 8% buffer. Hyperliquid also uses 8% buffer for market orders.
         if (tpsl.takeProfit > 0) {
@@ -243,12 +261,8 @@ export const placePerpOrder = async ({
         }
       }
     }
-    console.log('pushing open orders', openOrders)
     pushNewOpenOrders(openOrders)
   } catch (error) {
-    console.error('Error placing Perp order:', error as string)
-    toast.error('Something went wrong, check the console or contact support', {
-      id: toastId
-    })
+    toastSdkError(error, 'Error placing Perp order', { id: toastId })
   }
 }

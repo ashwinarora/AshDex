@@ -18,7 +18,6 @@ import {
 import { Button } from './ui/button'
 import { cn } from '@/lib/utils'
 import {
-  IconBug,
   IconChevronDown,
   IconCopy,
   IconLogout,
@@ -29,8 +28,8 @@ import {
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
-import Link from 'next/link'
 import BridgeModal from './Bridge/BridgeModal'
+import { useAccountAbstraction } from '@/store/HyperliquidStore'
 
 type MenuItem = {
   name: string
@@ -59,12 +58,18 @@ const Header: FC = () => {
   }, [])
 
   const isWalletConnected = mounted && isConnected && !!walletId
+  const accountAbstraction = useAccountAbstraction()
+  const modeLabel =
+    accountAbstraction === 'unifiedAccount'
+      ? 'Unified'
+      : accountAbstraction === 'portfolioMargin'
+        ? 'Portfolio margin'
+        : null
 
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
     { name: 'Spot', path: '/spot', isComingSoon: false },
-    { name: 'Portfolio', path: '/portfolio', isComingSoon: false },
-    { name: 'Stocks', path: '/stocks', isComingSoon: true }
+    { name: 'Portfolio', path: '/portfolio', isComingSoon: false }
   ]
 
   const mobileMenu: MenuItem[] = desktopMenu
@@ -174,15 +179,21 @@ const Header: FC = () => {
           <NavigationMenu className="h-full md:flex hidden w-full items-center justify-start">
             {desktopMenu?.map(({ name, path, isComingSoon }) =>
               isComingSoon ? (
-                <div
+                // Render as an anchor with aria-disabled=true so screen readers
+                // announce it as a disabled nav target, not as plain text.
+                // No href = not activatable; onClick prevented for good measure.
+                <a
                   key={name}
-                  className="h-full flex flex-row gap-2 text-white items-center justify-center w-fit px-6 text-sm"
+                  role="link"
+                  aria-disabled="true"
+                  onClick={(e) => e.preventDefault()}
+                  className="h-full flex flex-row gap-2 text-white items-center justify-center w-fit px-6 text-sm cursor-not-allowed opacity-70"
                 >
                   {name}
                   <span className="!text-[10px] p-0.5 px-1.5 bg-primary/50 rounded-md text-white">
                     Coming Soon
                   </span>
-                </div>
+                </a>
               ) : (
                 <NavigationMenuItem
                   className="h-full flex items-center justify-center w-24"
@@ -205,22 +216,6 @@ const Header: FC = () => {
       </div>
       <div className="flex items-center gap-2">
         {!isMobile && <BridgeButton />}
-        {!isMobile && (
-          <Link
-            href="https://forms.gle/NxqC2dXcFmZDQoSe8"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Button
-              className="flex items-center gap-2 text-xs text-red"
-              variant={'outline'}
-              size={'sm'}
-            >
-              <IconBug className="size-4" />
-              Report Bug
-            </Button>
-          </Link>
-        )}
         {isWalletConnected ? (
           <div className="flex items-center gap-2">
             <DropdownMenu>
@@ -229,7 +224,21 @@ const Header: FC = () => {
                   variant={'outline'}
                   size={'sm'}
                   className="flex text-white text-xs items-center gap-2"
+                  data-testid="header-wallet-button"
                 >
+                  {modeLabel && (
+                    <span
+                      className="rounded-sm bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-medium"
+                      data-testid="header-account-mode"
+                      title={
+                        accountAbstraction === 'unifiedAccount'
+                          ? 'Unified account: one balance backs spot and cross perps.'
+                          : 'Portfolio margin: pooled collateral across eligible assets.'
+                      }
+                    >
+                      {modeLabel}
+                    </span>
+                  )}
                   <span className="max-xl:hidden flex font-medium  truncate">
                     {truncateAddress(walletId!)}
                   </span>
@@ -253,19 +262,10 @@ const Header: FC = () => {
                 </DropdownMenuItem>
 
                 {isMobile && (
-                  <>
-                    <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
-                      <IconBuildingBridge className="size-4 text-inherit" />
-                      Bridge
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      variant="destructive"
-                      onClick={() => router.push('https://forms.gle/NxqC2dXcFmZDQoSe8')}
-                    >
-                      <IconBug className="size-4 text-inherit" />
-                      Bug Report
-                    </DropdownMenuItem>
-                  </>
+                  <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>
+                    <IconBuildingBridge className="size-4 text-inherit" />
+                    Bridge
+                  </DropdownMenuItem>
                 )}
 
                 <DropdownMenuItem

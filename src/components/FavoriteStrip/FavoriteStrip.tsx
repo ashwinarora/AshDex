@@ -17,7 +17,6 @@ import {
 import { Button } from '../ui/button'
 import { cn } from '@/lib/utils'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
-import { isWhitelistedPerpPair, isWhitelistedSpotPair } from '@/utils/whitelist'
 
 const FavoriteStrip = ({ width }: { width?: number }) => {
   const isSpot = useIsSpot()
@@ -77,13 +76,13 @@ const FavoriteStrip = ({ width }: { width?: number }) => {
         >
           {Array.from(favorites)
             .filter((favorite) => {
-              if (!isSpot) {
-                return isWhitelistedPerpPair(favorite.split('-')[0], favorite.split('-')[1])
-              }
+              // Spot favorites need resolvable base+name from spotMeta.
+              // Perp favorites need no gating: whatever the user has
+              // starred is fair game (Hyperliquid decides delisting).
+              if (!isSpot) return true
               const base = spotKeyToBaseName.get(favorite)
               const name = spotKeyToName.get(favorite)
-              if (!base || !name) return false
-              return isWhitelistedSpotPair(name, base)
+              return Boolean(base && name)
             })
             .map((favorite, index) => (
               <Fragment key={favorite}>

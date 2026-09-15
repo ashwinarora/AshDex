@@ -12,9 +12,9 @@
  * - Return that tier's `maxLeverage`.
  */
 
-import { type WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import { type MetaResponse } from '@nktkas/hyperliquid/api/info'
 
-type HyperliquidMarginTables = WebData2Event['meta']['marginTables']
+type HyperliquidMarginTables = MetaResponse['marginTables']
 
 type HyperliquidMarginTableEntry = HyperliquidMarginTables[number]
 
@@ -118,8 +118,8 @@ export function getMaxAllowedLeverageForNotional({
   assetUniverse,
   notional
 }: {
-  perpsMeta: WebData2Event['meta']
-  assetUniverse: WebData2Event['meta']['universe'][number]
+  perpsMeta: MetaResponse
+  assetUniverse: MetaResponse['universe'][number]
   notional: number
 }): number | null {
   try {

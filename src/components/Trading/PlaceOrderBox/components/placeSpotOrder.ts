@@ -1,7 +1,8 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import type { TPSLType } from './TPSL'
 import { formatPrice } from '@/utils/utils'
@@ -29,7 +30,7 @@ export const placeSpotOrder = async ({
   tpsl?: TPSLType
   adjustedBuilderFee: number
   spotKeyToName: Map<string, string>
-  pushNewOpenOrders: (order: WebData2Event['openOrders']) => void
+  pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
 }) => {
   if (!(spotMeta as SpotMetaResponse | undefined)?.tokens?.length) return
   if (!sdkL1ActionClient) return
@@ -125,19 +126,18 @@ export const placeSpotOrder = async ({
       },
       orders: orderPayload.map(({ a, b, p, s, r, t }) => ({ a, b, p, s, r, t }))
     })
-    console.log(res)
 
     const statuses = res.response.data.statuses ?? []
     const mainStatus = statuses[0]
     if (!mainStatus) return
 
     // Optimistic push: add any resting orders (main and TP/SL triggers) to the Open Orders table.
-    const openOrders: WebData2Event['openOrders'] = []
+    const openOrders: FrontendOpenOrdersResponse = []
     for (let i = 0; i < statuses.length; i++) {
       const st = statuses[i]
       const meta = orderPayload[i]
       if (!st || !meta) continue
-      if (!('resting' in st)) continue
+      if (typeof st !== 'object' || !('resting' in st)) continue
 
       const isTrigger = meta.kind !== 'main'
       const triggerPx =
@@ -175,7 +175,13 @@ export const placeSpotOrder = async ({
       pushNewOpenOrders(openOrders)
     }
 
-    if ('filled' in mainStatus) {
+    // BUG-008 (spot): surface an HL `{ error: '...' }` main status instead of
+    // silently succeeding. Same reasoning as the perps counterpart.
+    if (typeof mainStatus === 'object' && 'error' in mainStatus) {
+      toastSdkError((mainStatus as { error: string }).error, 'Order failed', { id: toastId })
+      return
+    }
+    if (typeof mainStatus === 'object' && 'filled' in mainStatus) {
       const filled = mainStatus.filled
       const action = isBuy ? 'bought' : 'sold'
       const assetName = selectedAsset.split('-')[0]
@@ -185,7 +191,7 @@ export const placeSpotOrder = async ({
           id: toastId
         }
       )
-    } else if ('resting' in mainStatus) {
+    } else if (typeof mainStatus === 'object' && 'resting' in mainStatus) {
       toast.success(
         hasTpslOrders ? 'Order + TP/SL Placed Successfully' : 'Order Placed Successfully',
         {
@@ -194,9 +200,6 @@ export const placeSpotOrder = async ({
       )
     }
   } catch (error) {
-    console.error('Error placing Spot order:', error as string)
-    toast.error('Something went wrong, check the console or contact support', {
-      id: toastId
-    })
+    toastSdkError(error, 'Error placing Spot order', { id: toastId })
   }
 }

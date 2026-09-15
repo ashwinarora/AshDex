@@ -1,5 +1,5 @@
 import React from 'react'
-import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '../ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { LiFiBridge } from './LiFiBridge'
 
@@ -17,6 +17,9 @@ const BridgeModal = ({ isOpen, onClose }: Props) => {
       >
         <VisuallyHidden>
           <DialogTitle>Bridge</DialogTitle>
+          <DialogDescription>
+            Cross-chain bridge to Hyperliquid, powered by LI.FI.
+          </DialogDescription>
         </VisuallyHidden>
         <LiFiBridge />
       </DialogContent>

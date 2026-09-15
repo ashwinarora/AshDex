@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { useShallow } from 'zustand/react/shallow'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import {
   Dialog,
@@ -27,13 +29,12 @@ import { useWalletModal } from '@/context/WalletModalContext'
 interface IsolatedMarginModalProps {
   isOpen: boolean
   onClose: () => void
-  asset?: WebData2Event['clearinghouseState']['assetPositions'][number]['position']
+  asset?: ClearinghouseStateResponse['assetPositions'][number]['position']
 }
 
 const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClose, asset }) => {
-  const { clearingHouseState, perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
+  const { perpsMeta, sdkL1ActionClient } = useHyperliquidStore(
     useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState,
       perpsMeta: state.perpsMeta,
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
@@ -41,7 +42,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   const [amount, setAmount] = useState('')
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const marginAvailable = clearingHouseState?.withdrawable || 0
+  const marginAvailable = usePerpTradingAccount().withdrawable
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const handleMarginChange = async () => {
@@ -53,22 +54,18 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
       if (!sdkL1ActionClient) return
       if (!perpsMeta) return
       const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, asset.coin)
-      const res = await sdkL1ActionClient.updateIsolatedMargin({
+      await sdkL1ActionClient.updateIsolatedMargin({
         asset: assetIndex,
         isBuy: isBuy,
         ntli: action === 'Add' ? realAmount : -realAmount
       })
-      console.log(res)
       onClose()
       toast.success('Margin updated successfully', {
         id: toastId
       })
     } catch (error) {
-      console.error(error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error updating isolated margin', { id: toastId })
     }
   }
 

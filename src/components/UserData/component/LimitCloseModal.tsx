@@ -2,9 +2,11 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
+import { trimDecimals } from '@/utils/format'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { IconChevronDown, IconRefresh, IconWallet } from '@tabler/icons-react'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import {
   Dialog,
   DialogContent,
@@ -49,7 +51,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
   const [position, setPosition] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
+    ClearinghouseStateResponse['assetPositions'][number]['position'] | null
   >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
@@ -70,17 +72,13 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           }
           return prev
         })
-        setSize(Math.abs(Number(pos.position.szi)).toString())
+        // BUG-053: trim raw szi on mount too (same gap as MarketCloseModal).
+        const assetIndex = perpsMeta ? getPerpsUniverseIndex(perpsMeta.universe, closingAsset) : -1
+        const szDecimals = assetIndex >= 0 ? (perpsMeta?.universe[assetIndex]?.szDecimals ?? 0) : 0
+        setSize(trimDecimals(Math.abs(Number(pos.position.szi)).toString(), szDecimals))
       }
     }
-  }, [clearingHouseState, closingAsset])
-
-  function trimDecimals(value: string, decimals: number) {
-    if (!value) return value
-    const [int, dec] = value.split('.')
-    if (!decimals || !dec) return value
-    return `${int}.${dec.slice(0, decimals)}`
-  }
+  }, [clearingHouseState, closingAsset, allMids, perpsMeta])
 
   // Update size when percent changes
   useEffect(() => {
@@ -175,20 +173,16 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
           }
         ]
       })
-      console.log(order)
       const status = order.response.data.statuses[0]
-      if ('error' in status) {
+      if (typeof status === 'object' && 'error' in status) {
         onClose()
-        console.error('Close position error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
-      } else if ('filled' in status) {
+        toastSdkError(status.error, 'Close position error', { id: toastId })
+      } else if (typeof status === 'object' && 'filled' in status) {
         onClose()
         toast.success('Position Closed Successfully', {
           id: toastId
         })
-      } else if ('resting' in status) {
+      } else if (typeof status === 'object' && 'resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
@@ -199,10 +193,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
       }
     } catch (error) {
       onClose()
-      console.error('Error closing position:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error closing position', { id: toastId })
     }
   }
 

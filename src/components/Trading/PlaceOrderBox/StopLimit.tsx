@@ -11,6 +11,7 @@ import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconInfoCircle, IconRefresh, IconSquare } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { useShallow } from 'zustand/react/shallow'
 import useIsSpot from '@/hooks/useIsSpot'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
@@ -31,12 +32,11 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [isError, setIsError] = useState<boolean>(false)
   const isSpot = useIsSpot()
   const { data: spotMeta } = useSpotMeta()
-  const [crossAccountValue, setCrossAccountValue] = useState(0)
-  const { allMids, perpsMeta, clearingHouseState } = useHyperliquidStore(
+  const crossAccountValue = usePerpTradingAccount().accountValue
+  const { allMids, perpsMeta } = useHyperliquidStore(
     useShallow((state) => ({
       allMids: state.allMids,
-      perpsMeta: state.perpsMeta,
-      clearingHouseState: state.clearingHouseState
+      perpsMeta: state.perpsMeta
     }))
   )
 
@@ -50,10 +50,6 @@ const StopLimit = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
       return perpsMeta?.universe[assetIndex].szDecimals || 0
     }
   }, [perpsMeta, selectedAsset, isSpot, spotMeta])
-
-  useEffect(() => {
-    setCrossAccountValue(Number(clearingHouseState?.marginSummary.accountValue) || 0)
-  }, [clearingHouseState])
 
   const liquidationPrice = () => {
     if (!limitPrice || !assetAmount || Number(limitPrice) === 0 || Number(assetAmount) === 0) {

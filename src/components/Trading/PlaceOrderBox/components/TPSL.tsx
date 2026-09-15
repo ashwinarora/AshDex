@@ -283,7 +283,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL ? 'text-end' : 'text-start'
               )}
             >
-              {'TP Value'}
+              {'TP Price ($)'}
             </span>
             <span
               className={cn(
@@ -338,7 +338,7 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
                 isRTL && 'text-end'
               )}
             >
-              {'SL Value'}
+              {'SL Price ($)'}
             </span>
             <span
               className={cn(
@@ -380,14 +380,27 @@ const TPSL = ({ limitPrice, isBuy, tpsl, setTpsl, leverage }: TPSLProps) => {
         </div>
       </div>
 
+      {/*
+        BUG-019: previously the CTA button label doubled as the validation
+        error surface ("TP must be above entry price"). Users expect the
+        button to describe the action, and errors to live next to the
+        offending field. Move the message to a helper line above the button
+        and keep the button label static.
+      */}
+      {hasError && (
+        <p className="text-red text-xs" data-testid="preorder-tpsl-error">
+          {errorMessage}
+        </p>
+      )}
       <Button
         size="sm"
-        variant={tpsl.isTpsl ? 'destructive' : hasError ? 'outline' : 'default'}
+        variant={tpsl.isTpsl ? 'destructive' : 'default'}
         onClick={() => setIsTpsl(!tpsl.isTpsl)}
-        className={cn('w-full', hasError && 'border-red text-red cursor-not-allowed')}
+        className={cn('w-full', hasError && 'opacity-50 cursor-not-allowed')}
         disabled={hasError}
+        data-testid="preorder-tpsl-submit"
       >
-        {hasError ? errorMessage : tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
+        {tpsl.isTpsl ? 'Clear TP/SL' : 'Set TP/SL'}
       </Button>
     </div>
   )

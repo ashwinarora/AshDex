@@ -40,18 +40,45 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
 
   const handleSwitchChain = async () => {
     const toastId = toast.loading('Switching to Arbitrum network...')
-    await switchChain
-      .mutateAsync({ chainId: supportedChain })
-      .then(() => {
-        toast.success('Switched to Arbitrum network.', {
-          id: toastId
-        })
-      })
-      .catch(() => {
-        toast.error('Failed to switch to Arbitrum network.', {
-          id: toastId
-        })
-      })
+    try {
+      await switchChain.mutateAsync({ chainId: supportedChain })
+      toast.success('Switched to Arbitrum network.', { id: toastId })
+    } catch {
+      // R1-B1: `wallet_switchEthereumChain` alone fails when the target
+      // chain isn't already configured in the wallet (Rabby's default for
+      // Arbitrum Sepolia is to prompt for a full add-network dialog).
+      // Fall back to `wallet_addEthereumChain` per EIP-3085, which upserts
+      // and switches in one round-trip.
+      try {
+        const provider = (
+          globalThis as unknown as {
+            ethereum?: {
+              request: (args: { method: string; params?: unknown }) => Promise<unknown>
+            }
+          }
+        ).ethereum
+        if (!provider) throw new Error('No injected wallet')
+        const params = isTestnet
+          ? {
+              chainId: '0x66eee', // 421614
+              chainName: 'Arbitrum Sepolia',
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+              blockExplorerUrls: ['https://sepolia.arbiscan.io']
+            }
+          : {
+              chainId: '0xa4b1', // 42161
+              chainName: 'Arbitrum One',
+              nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+              blockExplorerUrls: ['https://arbiscan.io']
+            }
+        await provider.request({ method: 'wallet_addEthereumChain', params: [params] })
+        toast.success('Switched to Arbitrum network.', { id: toastId })
+      } catch {
+        toast.error('Failed to switch to Arbitrum network.', { id: toastId })
+      }
+    }
   }
 
   const onDepositClick = async () => {

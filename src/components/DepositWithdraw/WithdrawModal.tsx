@@ -1,7 +1,11 @@
 import React, { useState } from 'react'
 import { useConnection, useSwitchChain } from 'wagmi'
 import { IconChevronDown } from '@tabler/icons-react'
+import { cn } from '@/lib/utils'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateAmount } from '@/lib/validate'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { usePerpTradingAccount } from '@/hooks/usePerpTradingAccount'
 import { isTestnet, HYPERLIQUID_WITHDRAW_FEE_USDC } from '@/utils/constants'
 import { DialogDescription, DialogContent, DialogTitle, DialogHeader, Dialog } from '../ui/dialog'
 import { Button } from '../ui/button'
@@ -20,13 +24,13 @@ interface WithdrawModalProps {
 const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
   const { address, chainId } = useConnection()
   const [amount, setAmount] = useState<string>('')
-  const { clearingHouseState, sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
+  const { sdkUserSignerClient, addPendingWithdrawal } = useHyperliquidStore(
     useShallow((state) => ({
-      clearingHouseState: state.clearingHouseState,
       sdkUserSignerClient: state.sdkUserSignerClient,
       addPendingWithdrawal: state.addPendingWithdrawal
     }))
   )
+  const withdrawable = usePerpTradingAccount().withdrawable
   const [isLoading, setIsLoading] = useState(false)
   const switchChain = useSwitchChain()
   const supportedChain = isTestnet ? 421614 : 42161
@@ -53,11 +57,10 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     const toastId = toast.loading('Signing in progress...')
     setIsLoading(true)
     try {
-      const res = await sdkUserSignerClient.withdraw3({
+      await sdkUserSignerClient.withdraw3({
         amount: amount,
         destination: address
       })
-      console.log('Withdraw response:', res)
       // Add to pending withdrawals for display in Deposits and Withdrawals tab
       const withdrawAmount = Number(amount)
       addPendingWithdrawal({
@@ -74,10 +77,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
     } catch (error) {
       setIsLoading(false)
       onClose()
-      console.error('Error withdrawing:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Withdrawal failed', { id: toastId })
     } finally {
       setIsLoading(false)
     }
@@ -113,10 +113,10 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     {'Available to withdraw:'}
                     <Button
                       variant="link"
-                      onClick={() => setAmount(clearingHouseState?.withdrawable.toString() ?? '0')}
+                      onClick={() => setAmount(withdrawable.toString() ?? '0')}
                       className="text-xs h-fit p-0"
                     >
-                      {clearingHouseState?.withdrawable} {'USDC'}
+                      {withdrawable} {'USDC'}
                     </Button>
                   </div>
                 </div>
@@ -127,6 +127,7 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     className="text-start flex-1 h-10"
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    data-testid="withdraw-amount"
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
@@ -137,6 +138,34 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                     </DropdownMenuTrigger>
                   </DropdownMenu>
                 </div>
+                {/*
+                  Preview the net-received amount so the user sees the effect
+                  of the $1 fee before they sign. Hidden until they've typed
+                  something valid — showing "$-1.00" for an empty field is
+                  worse than showing nothing.
+                */}
+                {(() => {
+                  const max = Number(withdrawable ?? 0)
+                  const validity = validateAmount(amount, {
+                    min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
+                    max
+                  })
+                  if (!amount) return null
+                  const net = validity.ok
+                    ? validity.value - HYPERLIQUID_WITHDRAW_FEE_USDC
+                    : Number(amount) - HYPERLIQUID_WITHDRAW_FEE_USDC
+                  const isNetPositive = Number.isFinite(net) && net > 0
+                  return (
+                    <p
+                      className={cn('text-xs', isNetPositive ? 'text-white/70' : 'text-red')}
+                      data-testid="withdraw-net-preview"
+                    >
+                      {isNetPositive
+                        ? `You'll receive: $${net.toFixed(2)} USDC (after $${HYPERLIQUID_WITHDRAW_FEE_USDC} fee)`
+                        : `Amount must be greater than the $${HYPERLIQUID_WITHDRAW_FEE_USDC} fee.`}
+                    </p>
+                  )
+                })()}
               </div>
             </div>
             <Separator />
@@ -147,16 +176,23 @@ const WithdrawModal = ({ isOpen, onClose }: WithdrawModalProps) => {
                 onClick={async () => {
                   await handleSwitchChain()
                 }}
+                data-testid="withdraw-switch-chain"
               >
                 {'Switch to Arbitrum'}
               </Button>
             ) : (
               <Button
                 className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
+                disabled={
+                  !validateAmount(amount, {
+                    min: HYPERLIQUID_WITHDRAW_FEE_USDC + 0.01,
+                    max: Number(withdrawable ?? 0)
+                  }).ok
+                }
                 onClick={async () => {
                   await onWithdrawClick()
                 }}
+                data-testid="withdraw-submit"
               >
                 {'Withdraw'}
               </Button>

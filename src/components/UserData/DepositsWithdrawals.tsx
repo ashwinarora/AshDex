@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/table'
 import { cn } from '@/lib/utils'
 import { truncateAddress } from '@/utils/utils'
+import { formatTimestamp } from '@/utils/format'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useScreenSize } from '@/hooks/useScreenSize'
@@ -198,7 +199,7 @@ const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         id: 'timestamp',
         header: () => 'Time',
         cell: (info) => {
-          const timeString = new Date(info.getValue()).toLocaleString('en-US')
+          const timeString = formatTimestamp(info.getValue())
           const isPending = info.row.original.isPending
           const deltaType = info.row.original.delta.type
           const hash = info.row.original.hash

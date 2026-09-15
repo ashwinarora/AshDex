@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useConnection } from 'wagmi'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { toastSdkError } from '@/lib/toastSdkError'
+import { validateAmount } from '@/lib/validate'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import { IconChevronDown, IconTransfer, IconWallet } from '@tabler/icons-react'
@@ -25,6 +27,7 @@ interface ITransferModal {
 }
 
 const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferModal) => {
+  const isUnified = useIsUnified()
   const { chainId, address } = useConnection()
   const [amount, setAmount] = useState<string>('')
   const { openConnectWalletModal } = useWalletModal()
@@ -38,6 +41,12 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     }))
   )
   const [isLoading, setIsLoading] = useState(false)
+
+  // Under unified/portfolio-margin the spot and perp balances are the same
+  // pool — there's nothing to transfer. Bail out after all hook calls so
+  // callers that still render this modal produce nothing, without violating
+  // React's rules of hooks.
+  if (isUnified) return null
   const isRTL = false
   const getBalance = () => {
     if (toPerp) {
@@ -58,19 +67,15 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
     const toastId = toast.loading('Transferring...')
     try {
       setIsLoading(true)
-      const res = await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
-      console.log('Transfer response:', res)
+      await sdkUserSignerClient.usdClassTransfer({ amount, toPerp })
       onClose()
       toast.success('Transfer successful', {
         id: toastId
       })
       setIsLoading(false)
     } catch (error) {
-      console.error('Transfer failed:', error)
       onClose()
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Transfer failed', { id: toastId })
       setIsLoading(false)
     }
   }
@@ -95,13 +100,19 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             <div
               className={cn('flex items-center gap-2 justify-between', isRTL && 'flex-row-reverse')}
             >
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
+              <div
+                data-testid="transfer-direction-from"
+                className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm"
+              >
                 {toPerp ? 'Spot' : 'Perp'}
               </div>
               <Button variant="outline" size="icon" onClick={() => setToPerp((prev) => !prev)}>
                 <IconTransfer className="size-4" />
               </Button>
-              <div className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm">
+              <div
+                data-testid="transfer-direction-to"
+                className="flex-1 h-9 w-full flex items-center justify-center bg-white/10 text-accent-foreground rounded-md p-2 text-sm"
+              >
                 {toPerp ? 'Perp' : 'Spot'}
               </div>
             </div>
@@ -132,6 +143,7 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
                     className={cn('text-start flex-1 h-10', isRTL && 'text-end')}
                     value={amount}
                     onChange={(e) => setAmount(e.target.value)}
+                    data-testid="transfer-amount"
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
@@ -168,8 +180,9 @@ const SpotToPerpTransferModal = ({ isOpen, onClose, defaultToPerp }: ITransferMo
             ) : (
               <Button
                 className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
+                disabled={!validateAmount(amount, { max: Number(getBalance()) }).ok}
                 onClick={onTransferClick}
+                data-testid="transfer-submit"
               >
                 {'Transfer'}
               </Button>

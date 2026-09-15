@@ -2,7 +2,8 @@
 import { useConnection } from 'wagmi'
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import { useState, useMemo, useEffect } from 'react'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
+import { computeUnifiedUsdcAccount } from '@/utils/hyperliquid/unifiedAccount'
 import { useShallow } from 'zustand/react/shallow'
 import {
   createColumnHelper,
@@ -60,6 +61,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
       spotAssetContext: state.spotAssetContext
     }))
   )
+  const isUnified = useIsUnified()
 
   const [sorting, setSorting] = useState<SortingState>([])
   const [isMounted, setIsMounted] = useState(false)
@@ -78,51 +80,65 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
   const combinedData = useMemo(() => {
     if (!isConnected) return []
 
-    const perpData = {
-      coin: 'USDC(Perps)',
-      token: 'USDC',
-      total: clearingHouseState?.marginSummary?.accountValue || '-',
-      hold: clearingHouseState?.withdrawable || '-',
-      usdcValue: Number(clearingHouseState?.marginSummary?.accountValue),
-      avgBuyPrice: '--',
-      pnl: '--',
-      pnlPercentage: '--',
-      entryNtl: '--'
-    }
+    // Unified/portfolio-margin: spot USDC IS the perp collateral, so there is
+    // no separate "USDC(Perps)" bucket. Show a single USDC row whose Available
+    // Balance reflects unified `withdrawable` (spot total - committed margin).
+    const unified = isUnified ? computeUnifiedUsdcAccount(spotState, clearingHouseState) : null
+
+    const perpData = unified
+      ? null
+      : {
+          coin: 'USDC(Perps)',
+          token: 'USDC',
+          total: Number(clearingHouseState?.marginSummary?.accountValue ?? 0),
+          hold: Number(clearingHouseState?.withdrawable ?? 0),
+          usdcValue: Number(clearingHouseState?.marginSummary?.accountValue ?? 0),
+          avgBuyPrice: '--',
+          pnl: '--',
+          pnlPercentage: '--',
+          entryNtl: '--'
+        }
 
     const spotData =
       spotState?.balances
-        ?.map((state) => {
+        ?.filter((state): state is typeof state & { token: number } => 'token' in state)
+        .map((state) => {
           const SpotAssetKey = spotKeyToName.entries().find((value) => value[1] === state.coin)?.[0]
-          const markPx = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
-          const usdcValue = Number(state.total) * Number(markPx)
-          const pnl = usdcValue - Number(state.entryNtl)
-          const pnlPercentage = (pnl / Number(state.entryNtl)) * 100
+          const markPxRaw = spotAssetContext.find((asset) => asset.coin === SpotAssetKey)?.markPx
+          const markPx = Number(markPxRaw)
+          const total = Number(state.total)
+          const entryNtl = Number(state.entryNtl)
+          const usdcValue = Number.isFinite(markPx) ? total * markPx : 0
+          const pnl = usdcValue - entryNtl
+          // Guard divide-by-zero: HL returns entryNtl = "0.0" for zero-cost
+          // dust balances, which would otherwise yield Infinity/NaN.
+          const pnlPercentage = entryNtl > 0 ? (pnl / entryNtl) * 100 : 0
+
+          const isUsdc = state.coin === 'USDC'
+          // In unified mode, the USDC row IS the trading account, so use the
+          // unified helper's withdrawable for "Available Balance" instead of
+          // spot's on-hold accounting.
+          const hold = isUsdc && unified ? unified.withdrawable : total - Number(state.hold)
 
           return {
             ...state,
-            coin: state.coin === 'USDC' ? 'USDC(Spot)' : state.coin,
-            entryNtl: state.coin === 'USDC' ? '--' : Number(state.entryNtl),
-            avgBuyPrice:
-              state.coin === 'USDC'
-                ? '--'
-                : Number(state.total) > 0
-                  ? Number(state.entryNtl) / Number(state.total)
-                  : '--',
-            pnl: state.coin === 'USDC' ? '--' : pnl,
-            pnlPercentage: state.coin === 'USDC' ? '--' : pnlPercentage,
-            usdcValue: state.coin === 'USDC' ? Number(state.total) : usdcValue,
-            hold: Number(state.total) - Number(state.hold)
+            coin: isUsdc ? (unified ? 'USDC' : 'USDC(Spot)') : state.coin,
+            entryNtl: isUsdc ? '--' : entryNtl,
+            avgBuyPrice: isUsdc ? '--' : total > 0 ? entryNtl / total : '--',
+            pnl: isUsdc ? '--' : pnl,
+            pnlPercentage: isUsdc ? '--' : pnlPercentage,
+            usdcValue: isUsdc ? total : usdcValue,
+            hold
           }
         })
         .filter((state) => state.usdcValue > (isHideSmallBalances ? 1 : 0)) || []
 
-    return [perpData, ...spotData]
+    return perpData ? [perpData, ...spotData] : spotData
   }, [
     isConnected,
-    clearingHouseState?.marginSummary?.accountValue,
-    clearingHouseState?.withdrawable,
-    spotState?.balances,
+    isUnified,
+    clearingHouseState,
+    spotState,
     spotAssetContext,
     spotKeyToName,
     isHideSmallBalances
@@ -135,7 +151,9 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         header: () => <span className={cn('flex justify-start items-center gap-1')}>{'Coin'}</span>,
         cell: (info) => {
           const coin = info.getValue().replace('(', ' (')
-          if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)')
+          // Unified mode collapses the USDC(Perps) + USDC(Spot) rows into a
+          // single "USDC" row; treat it the same as the other USDC labels.
+          if (coin === 'USDC (Spot)' || coin === 'USDC (Perps)' || coin === 'USDC')
             return <span className="text-white text-xs">{coin}</span>
           return (
             <Button
@@ -264,6 +282,9 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         id: 'transfer',
         header: () => <span className="flex justify-start items-center gap-1">{'Transfer'}</span>,
         cell: (info) => {
+          // Under unified/portfolio-margin the spot↔perp transfer action does
+          // nothing meaningful, so hide the entry point entirely.
+          if (isUnified) return <span className="text-white/70">--</span>
           if (info.row.original.coin !== 'USDC(Perps)' && info.row.original.coin !== 'USDC(Spot)')
             return <span className="text-white/70">--</span>
 
@@ -312,7 +333,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         meta: { label: 'Send' }
       })
     ],
-    [columnHelper, isSendModalOpen]
+    [columnHelper, isSendModalOpen, isUnified, isRTL, router]
   )
 
   const table = useReactTable({

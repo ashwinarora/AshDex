@@ -2,8 +2,10 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { formatPrice, getPerpsUniverseIndex } from '@/utils/utils'
+import { trimDecimals } from '@/utils/format'
 import { toast } from 'sonner'
-import type { WebData2Event } from '@nktkas/hyperliquid/api/subscription'
+import { toastSdkError } from '@/lib/toastSdkError'
+import type { ClearinghouseStateResponse } from '@nktkas/hyperliquid/api/info'
 import { Button } from '@/components/ui/button'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
@@ -50,7 +52,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
   const { address } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
-    WebData2Event['clearinghouseState']['assetPositions'][number]['position'] | null
+    ClearinghouseStateResponse['assetPositions'][number]['position'] | null
   >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
@@ -62,17 +64,16 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       const pos = clearingHouseState.assetPositions.find((p) => p.position.coin === closingAsset)
       if (pos) {
         setPosition(pos.position)
-        setSize(Math.abs(Number(pos.position.szi)).toString())
+        // BUG-053: trim raw szi to szDecimals here too — otherwise a
+        // Float32-quantised value like "0.10000000149011612" leaks into the
+        // input on mount (before the percent-change effect gets a chance
+        // to rewrite it).
+        const assetIndex = getPerpsUniverseIndex(perpsMeta.universe, closingAsset)
+        const szDecimals = perpsMeta.universe[assetIndex]?.szDecimals ?? 0
+        setSize(trimDecimals(Math.abs(Number(pos.position.szi)).toString(), szDecimals))
       }
     }
-  }, [clearingHouseState, closingAsset])
-
-  function trimDecimals(value: string, decimals: number) {
-    if (!value) return value
-    const [int, dec] = value.split('.')
-    if (!decimals || !dec) return value
-    return `${int}.${dec.slice(0, decimals)}`
-  }
+  }, [clearingHouseState, closingAsset, perpsMeta])
 
   useEffect(() => {
     if (lastChanged === 'percent' && position) {
@@ -169,20 +170,16 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
           }
         ]
       })
-      console.log(order)
       const status = order.response.data.statuses[0]
-      if ('error' in status) {
+      if (typeof status === 'object' && 'error' in status) {
         onClose()
-        console.error('Close position error:', status.error)
-        toast.error('Something went wrong, check the console or contact support', {
-          id: toastId
-        })
-      } else if ('filled' in status) {
+        toastSdkError(status.error, 'Close position error', { id: toastId })
+      } else if (typeof status === 'object' && 'filled' in status) {
         onClose()
         toast.success('Position Closed Successfully', {
           id: toastId
         })
-      } else if ('resting' in status) {
+      } else if (typeof status === 'object' && 'resting' in status) {
         const resting = status.resting
         if (resting) {
           onClose()
@@ -193,10 +190,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
       }
     } catch (error) {
       onClose()
-      console.error('Error closing position:', error)
-      toast.error('Something went wrong, check the console or contact support', {
-        id: toastId
-      })
+      toastSdkError(error, 'Error closing position', { id: toastId })
     }
   }
 

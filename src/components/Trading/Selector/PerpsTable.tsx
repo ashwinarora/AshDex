@@ -34,7 +34,7 @@ import { useScreenSize } from '@/hooks/useScreenSize'
 import { useShallow } from 'zustand/react/shallow'
 import { useRef } from 'react'
 import { useVirtualizer } from '@tanstack/react-virtual'
-import { isWhitelistedPerpPair } from '@/utils/whitelist'
+import { derivePerpsMarketList, type PerpAssetData } from '@/utils/marketList'
 
 interface AssetTableProps {
   searchTerm: string
@@ -45,15 +45,6 @@ interface AssetTableProps {
   setIsOpen: (isOpen: boolean) => void
 
   isRTL: boolean
-}
-
-interface PerpAssetData {
-  symbol: string
-  price: number
-  prevDayPrice: number
-  volume: number
-  openInterest: number
-  maxLeverage: number
 }
 
 const formatPrice = (price: number | undefined | null) => {
@@ -85,39 +76,16 @@ const AssetTable = ({
   const { favorites, toggleFavorite } = useFavorites(false)
   const { isMobile } = useScreenSize()
 
-  // Build table data for Tanstack Table (show all perps, no filtering)
+  // Build table data via the pure derivePerpsMarketList — applies isDelisted
+  // filter, search filter, and favorites-tab filter. No hardcoded whitelist:
+  // the app shows whatever Hyperliquid returns.
   const tableData: PerpAssetData[] = useMemo(() => {
     if (!perpsMeta || !perpAssetContext) return []
-    const data = perpsMeta.universe
-      .map((asset, idx) => {
-        const ctx = perpAssetContext[idx]
-        const price = ctx?.midPx ? Number(ctx.midPx) : 0
-        const prevDayPrice = ctx?.prevDayPx ? Number(ctx.prevDayPx) : 0
-        const volume = ctx?.dayNtlVlm ? Number(ctx.dayNtlVlm) : 0
-        const openInterest =
-          ctx?.midPx && ctx?.openInterest ? Number(ctx.midPx) * Number(ctx.openInterest) : 0
-        const maxLeverage = asset.maxLeverage || 1
-        return {
-          symbol: asset.name,
-          price,
-          prevDayPrice,
-          volume,
-          openInterest,
-          maxLeverage
-        }
-      })
-      .filter((asset) => {
-        return isWhitelistedPerpPair(asset.symbol.split('-')[0], asset.symbol.split('-')[1])
-      })
-      .filter((asset) => {
-        if (selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌') {
-          return favorites.has(asset.symbol)
-        } else {
-          return true
-        }
-      })
-      .filter((asset) => asset.symbol.toLowerCase().includes(searchTerm.toLowerCase()))
-    return data
+    return derivePerpsMarketList(perpsMeta.universe, perpAssetContext, {
+      searchTerm,
+      favoritesOnly: selectedTab === 'Favorites‌‌‍‍‌‌‌‍‌‌‌‍‍‍‌‌‌‌‌‌‌‌‍‌‍‌‌',
+      favorites
+    })
   }, [perpsMeta, perpAssetContext, searchTerm, selectedTab, favorites])
 
   const columnHelper = createColumnHelper<PerpAssetData>()
@@ -482,6 +450,17 @@ const AssetTable = ({
             </TableRow>
           )
         })}
+        {tableData.length === 0 && searchTerm.length > 0 && (
+          <TableRow>
+            <TableCell
+              colSpan={columns?.length ?? 1}
+              className="text-center py-8 text-white/60 text-sm"
+              data-testid="market-list-empty-state"
+            >
+              No markets match &quot;{searchTerm}&quot;
+            </TableCell>
+          </TableRow>
+        )}
       </TableBody>
     </Table>
   )

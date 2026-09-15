@@ -7,7 +7,7 @@ import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
 import DepositsWithdrawals from './DepositsWithdrawals'
-import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
@@ -28,6 +28,7 @@ const UserData = () => {
     }))
   )
   const isSpot = useIsSpot()
+  const isUnified = useIsUnified()
   const isPortfolio = pathname?.startsWith('/portfolio')
   const isRTL = false
   const { spotKeyToName } = useSpotMeta()
@@ -41,10 +42,13 @@ const UserData = () => {
   const balanceCount = useMemo(() => {
     const baseCount =
       spotState?.balances?.filter((balance) => Number(balance.total) > 0)?.length || 0
+    // Under unified/portfolio-margin Balances.tsx doesn't render a synthetic
+    // USDC(Perps) row, so don't inflate the count for it.
+    if (isUnified) return baseCount
     const perpsAccountValue = Number(clearingHouseState?.marginSummary?.accountValue || 0)
     const hasPerpsUsdc = perpsAccountValue > 0
     return baseCount + (hasPerpsUsdc ? 1 : 0)
-  }, [spotState?.balances, clearingHouseState?.marginSummary?.accountValue])
+  }, [spotState?.balances, clearingHouseState?.marginSummary?.accountValue, isUnified])
 
   const tabs = useMemo(() => {
     const openOrdersLength = openOrders.filter((order) => {
@@ -62,11 +66,19 @@ const UserData = () => {
         count: balanceCount,
         element: <Balances isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
       },
-      {
-        header: isRTL ? `(${positionsCount}) ${'Positions'}` : `(${positionsCount}) ${'Positions'}`,
-        count: positionsCount,
-        element: <Positions isRTL={isRTL} />
-      },
+      // BUG-026: Positions tab is a perps-only concept. Spot has no positions,
+      // only balances — hide the tab entirely on spot.
+      ...(isSpot
+        ? []
+        : [
+            {
+              header: isRTL
+                ? `(${positionsCount}) ${'Positions'}`
+                : `(${positionsCount}) ${'Positions'}`,
+              count: positionsCount,
+              element: <Positions isRTL={isRTL} />
+            }
+          ]),
       {
         header: isRTL
           ? `(${openOrdersLength}) ${'Open Orders'}`
@@ -90,10 +102,11 @@ const UserData = () => {
     return isRTL ? tabs.reverse() : tabs
   }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, isHideSmallBalances])
 
-  // Default tab: Balances for spot/portfolio, Positions for futures/perps
-  // In RTL mode, tabs are reversed so indices need adjustment
+  // Default tab: Balances for spot/portfolio, Positions for futures/perps.
+  // In RTL the tabs array is reversed, so indices are mirrored.
+  // Note: spot has 5 tabs (no Positions), perps has 6.
   const defaultTab = useMemo(() => {
-    const tabsLength = 6 // Total number of tabs
+    const tabsLength = isSpot ? 5 : 6
     if (isSpot || isPortfolio) {
       // Balances: index 0 in LTR, last index in RTL
       return isRTL ? tabsLength - 1 : 0

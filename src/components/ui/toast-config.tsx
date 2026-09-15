@@ -92,7 +92,7 @@ interface ToasterProps {
 export const Toast = () => {
   const { isMobile } = useScreenSize()
   const toastOptionsDesktop: ToasterProps = {
-    position: 'bottom-left',
+    position: 'bottom-right',
     richColors: true,
     swipeDirections: ['top', 'right', 'left'],
     closeButton: false,
