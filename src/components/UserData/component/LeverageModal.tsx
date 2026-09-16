@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -48,6 +48,16 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
   }, [perpsMeta, asset])
 
   const [leverage, setLeverage] = useState<number>(asset?.leverage.value ?? 1)
+
+  // BUG-L3: `useState` only reads the initial value on mount. When the modal
+  // opens from a position row the `asset` prop can still be loading, so the
+  // slider stays at 1x even after the position hydrates. Re-sync when the
+  // asset (or its current leverage) changes so the dialog reflects reality.
+  useEffect(() => {
+    if (asset && typeof asset.leverage.value === 'number') {
+      setLeverage(asset.leverage.value)
+    }
+  }, [asset?.coin, asset?.leverage.value, isOpen])
 
   const marks = useMemo(() => [...getLeverageTicks(maxLeverage, 3)], [maxLeverage])
 

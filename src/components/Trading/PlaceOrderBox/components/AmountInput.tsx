@@ -192,9 +192,15 @@ const AmountInput = ({
         </label>
         <label className="block font-medium text-white/20 text-xs whitespace-nowrap">
           {'Max'} ={' '}
-          {isInputUsd
-            ? `${maxAllowedUsd.toFixed(2)} USD`
-            : `${(maxAllowedUsd / parseFloat(limitPrice)).toFixed(szDecimals)} ${selectedAsset}`}
+          {(() => {
+            if (isInputUsd) return `${maxAllowedUsd.toFixed(2)} USD`
+            // Guard against divide-by-zero when limitPrice is still initializing
+            // (empty / "0" / NaN). Without this, "Max = Infinity BTC" briefly
+            // flashes on Futures load before the first mid arrives.
+            const px = parseFloat(limitPrice)
+            if (!Number.isFinite(px) || px <= 0) return `— ${selectedAsset}`
+            return `${(maxAllowedUsd / px).toFixed(szDecimals)} ${selectedAsset}`
+          })()}
         </label>
       </div>
       <div className={cn('flex items-center gap-2', isRTL && 'flex-row-reverse')}>

@@ -1,7 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useConnection, useReadContract, useSwitchChain, useWriteContract } from 'wagmi'
 import { erc20Abi } from 'viem'
-import { HYPERLIQUID_DEPOSIT, isTestnet, USDC_ARBITRUM } from '@/utils/constants'
+import {
+  HYPERLIQUID_DEPOSIT,
+  HYPERLIQUID_MIN_DEPOSIT_USDC,
+  isTestnet,
+  USDC_ARBITRUM
+} from '@/utils/constants'
 import { useERC20Data } from '@/hooks/useERC20Data'
 import { toHumanNumber, toRealNumber } from '@/utils/utils'
 import { IconChevronDown } from '@tabler/icons-react'
@@ -12,6 +17,7 @@ import { Button } from '../ui/button'
 import { Separator } from '../ui/separator'
 import Loading from '../loading-screen'
 import { toast } from 'sonner'
+import { toastSdkError } from '@/lib/toastSdkError'
 import { useAgentApproval } from '@/context/EstablishConnection'
 
 interface DepositModalProps {
@@ -24,7 +30,11 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   const switchChain = useSwitchChain()
   const { closeDepositModal, isDepositModalOpen } = useAgentApproval()
   const [isLoading, setIsLoading] = useState(false)
-  const [amount, setAmount] = useState<bigint>(0n)
+  // We keep the raw text the user typed as the source of truth so that
+  // intermediate strings like "10." don't get round-tripped through
+  // toHumanNumber/toRealNumber and lose the decimal point. bigint is derived
+  // only when we need it (validation + submit).
+  const [amountText, setAmountText] = useState('')
   const { data: usdc } = useERC20Data(USDC_ARBITRUM)
   const { data: balance } = useReadContract({
     address: USDC_ARBITRUM,
@@ -37,6 +47,57 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   })
   const { writeContractAsync } = useWriteContract()
   const supportedChain = isTestnet ? 421614 : 42161
+
+  // Reset the text field whenever the modal is (re-)opened so a stale value
+  // from a prior attempt doesn't linger.
+  useEffect(() => {
+    if (isOpen || isDepositModalOpen) setAmountText('')
+  }, [isOpen, isDepositModalOpen])
+
+  const decimals = usdc?.decimals ?? 6
+
+  // Turn the raw text into a bigint of USDC base units. Returns null when the
+  // text is empty or unparseable so downstream checks can treat it as "no
+  // valid amount yet".
+  const amountBigInt = useMemo<bigint | null>(() => {
+    const t = amountText.trim()
+    if (!t) return null
+    // A trailing decimal point ("10.") is valid *while typing* — treat it as
+    // the integer part so the input can keep receiving keystrokes without
+    // rejecting the "." itself.
+    const normalized = t.endsWith('.') ? t.slice(0, -1) : t
+    if (!/^\d+(\.\d+)?$/.test(normalized)) return null
+    try {
+      return toRealNumber(normalized, decimals)
+    } catch {
+      return null
+    }
+  }, [amountText, decimals])
+
+  const minDepositBaseUnits = BigInt(HYPERLIQUID_MIN_DEPOSIT_USDC) * BigInt(10) ** BigInt(decimals)
+  const isBelowMin = amountBigInt !== null && amountBigInt < minDepositBaseUnits
+  const isOverBalance =
+    amountBigInt !== null && balance !== undefined && amountBigInt > (balance ?? 0n)
+  const isValidAmount = amountBigInt !== null && amountBigInt > 0n && !isBelowMin && !isOverBalance
+
+  const handleAmountChange = (raw: string) => {
+    // Allow only digits and a single decimal point. Anything else is silently
+    // dropped (empty string, extra dots, letters, thousands commas, etc.).
+    // Keeping this in text-space avoids the round-trip that used to swallow
+    // the "." character.
+    let cleaned = raw.replace(/[^\d.]/g, '')
+    const firstDot = cleaned.indexOf('.')
+    if (firstDot !== -1) {
+      cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '')
+    }
+    // Clamp fractional digits to USDC's on-chain precision so the user can't
+    // enter more precision than we can represent.
+    if (firstDot !== -1) {
+      const [i, f = ''] = cleaned.split('.')
+      cleaned = `${i}.${f.slice(0, decimals)}`
+    }
+    setAmountText(cleaned)
+  }
 
   const handleSwitchChain = async () => {
     const toastId = toast.loading('Switching to Arbitrum network...')
@@ -82,10 +143,10 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
   }
 
   const onDepositClick = async () => {
-    if (chainId !== 42161) {
-      await switchChain.mutateAsync({ chainId: 42161 })
+    if (chainId !== supportedChain) {
+      await switchChain.mutateAsync({ chainId: supportedChain })
     }
-    if (!usdc) return
+    if (!usdc || amountBigInt === null || !isValidAmount) return
     const toastId = toast.loading('Deposit in progress...')
     try {
       setIsLoading(true)
@@ -93,7 +154,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
         address: usdc.address,
         abi: erc20Abi,
         functionName: 'transfer',
-        args: [HYPERLIQUID_DEPOSIT, amount]
+        args: [HYPERLIQUID_DEPOSIT, amountBigInt]
       })
       setIsLoading(false)
       onClose?.()
@@ -102,12 +163,13 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
         id: toastId
       })
     } catch (error) {
-      console.error('Deposit error:', error)
+      // Route through the shared helper so wallet-side cancels ("user
+      // rejected", EIP-1193 code 4001, viem UserRejectedRequestError) become
+      // an info toast instead of a false-alarm "Deposit failed".
+      setIsLoading(false)
       onClose?.()
       closeDepositModal()
-      toast.error('Deposit failed. Please try again.', {
-        id: toastId
-      })
+      toastSdkError(error, 'Deposit failed. Please try again.', { id: toastId })
     }
   }
 
@@ -134,21 +196,23 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                   <p>{'Amount'}</p>
                   <div className="flex items-center gap-1">
                     <Button
-                      onClick={() => setAmount(balance ?? 0n)}
+                      onClick={() => setAmountText(toHumanNumber(balance ?? 0n, decimals) ?? '')}
                       variant="link"
                       className="text-xs h-fit p-0"
                     >
-                      {'Use Max'}: ({toHumanNumber(balance ?? 0n, usdc?.decimals, 2)} {'USDC'})
+                      {'Use Max'}: ({toHumanNumber(balance ?? 0n, decimals, 2)} {'USDC'})
                     </Button>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Input
                     type="text"
+                    inputMode="decimal"
+                    autoComplete="off"
                     id="amount"
                     className="text-start flex-1 h-10"
-                    value={toHumanNumber(amount, usdc?.decimals, 2) || ''}
-                    onChange={(e) => setAmount(toRealNumber(e.target.value, usdc?.decimals))}
+                    value={amountText}
+                    onChange={(e) => handleAmountChange(e.target.value)}
                   />
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild disabled>
@@ -159,6 +223,15 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                     </DropdownMenuTrigger>
                   </DropdownMenu>
                 </div>
+                {amountBigInt !== null && amountBigInt > 0n && (
+                  <p className="text-xs text-red-400">
+                    {isBelowMin
+                      ? `Minimum deposit is ${HYPERLIQUID_MIN_DEPOSIT_USDC} USDC. Hyperliquid drops sub-minimum deposits permanently.`
+                      : isOverBalance
+                        ? 'Amount exceeds your wallet balance.'
+                        : null}
+                  </p>
+                )}
               </div>
             </div>
             <Separator />
@@ -167,11 +240,7 @@ const DepositModal: React.FC<DepositModalProps> = ({ isOpen, onClose }) => {
                 {'Switch to Arbitrum'}
               </Button>
             ) : (
-              <Button
-                className="w-full"
-                disabled={!amount || parseFloat(amount.toString()) === 0}
-                onClick={onDepositClick}
-              >
+              <Button className="w-full" disabled={!isValidAmount} onClick={onDepositClick}>
                 {'Deposit'}
               </Button>
             )}

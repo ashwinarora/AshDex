@@ -361,9 +361,18 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               <div className={cn('flex justify-between', isRTL && 'flex-row-reverse')}>
                 <p className="text-white/70">{'Margin Required'}</p>
                 <p className="text-white">
-                  {isTradingEnabled
-                    ? `$${((Number(assetAmount) * Number(allMids[selectedAsset])) / leverage).toFixed(2)}`
-                    : 'N/A'}
+                  {(() => {
+                    if (!isTradingEnabled) return 'N/A'
+                    // Guard NaN / Infinity when mid or leverage is still
+                    // loading (BUG-L1: "Margin Required $NaN" flash on
+                    // Futures load).
+                    const sz = Number(assetAmount)
+                    const px = Number(allMids[selectedAsset])
+                    if (!Number.isFinite(sz) || !Number.isFinite(px) || leverage <= 0)
+                      return '—'
+                    const margin = (sz * px) / leverage
+                    return Number.isFinite(margin) ? `$${margin.toFixed(2)}` : '—'
+                  })()}
                 </p>
               </div>
             </>

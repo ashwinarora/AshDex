@@ -166,7 +166,13 @@ const StopMarket = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
           assetAmount={assetAmount}
           limitPrice={limitPrice || allMids[selectedAsset]?.toString() || ''}
           stopOrder={{
-            isMarket: false,
+            // isMarket:true tells placePerpOrder to compute the aggressive
+            // limit price from triggerPx (with an 8% slippage buffer) so the
+            // order actually crosses the book when the trigger fires. Sending
+            // false here caused Stop Market to use the current mark as the
+            // limit — which rests un-filled when the trigger later hits at a
+            // very different price.
+            isMarket: true,
             tpsl: 'sl',
             triggerPx: stopPrice
           }}

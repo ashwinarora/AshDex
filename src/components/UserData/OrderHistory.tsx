@@ -1,5 +1,24 @@
 'use client'
 
+// Map raw Hyperliquid order statuses onto short humanized labels. Anything
+// unknown falls back to a camelCase-split of the status. The raw status is
+// exposed via a `title` attr on the badge for hover-to-see-full.
+const KNOWN_STATUS_LABELS: Record<string, string> = {
+  badAloPxRejected: 'Rejected (crosses)',
+  minTradeNtlRejected: 'Rejected (< $10)',
+  reduceOnlyCanceled: 'Cancelled (reduce-only)',
+  perpNotAllowedByLevel: 'Rejected (leverage)',
+  insufficientMargin: 'Rejected (margin)',
+  waitingForFill: 'Waiting',
+  waitingForTrigger: 'Waiting (trigger)'
+}
+function humaniseOrderStatus(raw: string): string {
+  if (raw in KNOWN_STATUS_LABELS) return KNOWN_STATUS_LABELS[raw]
+  // Split camelCase into words and title-case the first character.
+  const spaced = raw.replace(/([a-z])([A-Z])/g, '$1 $2')
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1)
+}
+
 import React, { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useConnection } from 'wagmi'
@@ -185,8 +204,17 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
                   Open
                 </div>
               ) : (
-                <div className="bg-gray-500/10 px-2 py-0.5 w-fit  text-end rounded-lg text-gray-500 text-xs">
-                  {info.getValue().slice(0, 15)}...
+                // BUG-L5: previously we hard-truncated the raw status string
+                // to 15 chars with `...` and no hover, so users saw
+                // "reduceOnlyCance…" / "minTradeNtlReje…" / "badAloPxRejecte…"
+                // with no way to read the full reason. Humanise the well-known
+                // Hyperliquid statuses and expose the raw string via `title`
+                // as a fallback for anything unrecognised.
+                <div
+                  className="bg-gray-500/10 px-2 py-0.5 w-fit text-end rounded-lg text-gray-500 text-xs"
+                  title={info.getValue()}
+                >
+                  {humaniseOrderStatus(info.getValue())}
                 </div>
               )}
             </div>

@@ -1,7 +1,7 @@
 'use client'
 import { getLeverageTicks, getPerpsUniverseIndex } from '@/utils/utils'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { Slider } from '@/components/ui/slider'
@@ -34,14 +34,34 @@ const LeverageMargin = ({ selectedAsset, leverage, setLeverage, isRTL }: Leverag
   const [leverageInput, setLeverageInput] = useState<string>(leverage.toString())
   const [isEdited, setIsEdited] = useState<boolean>(false)
 
+  // BUG-L2: `isEdited` used to lock out any subsequent Hyperliquid update to
+  // this asset's leverage once the user touched the slider/input. Result:
+  // changing leverage via the position-row Adjust Leverage dialog updated
+  // Hyperliquid but the order form kept the old value, and the preview
+  // (margin required) computed against the stale number. Track the last
+  // Hyperliquid-reported leverage and treat any change to it as an
+  // external event that should override local edits.
+  const lastServerLevRef = useRef<number | null>(null)
   useEffect(() => {
     if (!activeAssetData) return
-    if (isEdited) return
-    setLeverage(activeAssetData.leverage.value)
-  }, [activeAssetData])
+    const serverLev = activeAssetData.leverage.value
+    const isFirstRead = lastServerLevRef.current === null
+    const serverChanged = !isFirstRead && lastServerLevRef.current !== serverLev
+    lastServerLevRef.current = serverLev
+    if (isFirstRead && !isEdited) {
+      setLeverage(serverLev)
+    } else if (serverChanged) {
+      // Position-level Adjust Leverage or Cross↔Isolated switch fired —
+      // resync the order form and clear the edit flag so future server
+      // updates can propagate.
+      setLeverage(serverLev)
+      setIsEdited(false)
+    }
+  }, [activeAssetData, isEdited])
 
   useEffect(() => {
     setIsEdited(false)
+    lastServerLevRef.current = null
   }, [selectedAsset])
 
   useEffect(() => {

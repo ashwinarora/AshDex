@@ -55,10 +55,20 @@ export const placePerpOrder = async ({
 
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder
+    // For a Stop *Market* order the limit price the user (never) enters is
+    // meaningless — Hyperliquid implements market-on-trigger as a stop-limit
+    // whose limit is an aggressive slippage-buffered price relative to the
+    // trigger. Mirroring the TP/SL close logic below (8 % worst-case), we
+    // set: buy → triggerPx × 1.08, sell → triggerPx × 0.92. For Stop Limit
+    // (isMarket=false) we keep the user's chosen limit price.
+    const marketLimitMultiplier = isBuy ? 1.08 : 0.92
+    const stopLimitPrice = isMarket
+      ? formatPrice(Number(triggerPx) * marketLimitMultiplier, szDecimals).toString()
+      : limitPrice
     orders.push({
       assetIndex: assetIndex,
       isBuy: isBuy,
-      price: limitPrice,
+      price: stopLimitPrice,
       size: formattedSize,
       reduceOnly: isReduceOnly,
       orderType: {

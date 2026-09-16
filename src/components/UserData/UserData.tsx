@@ -175,7 +175,7 @@ const UserData = () => {
             onPressedChange={(value) => setIsHideSmallBalances(value)}
           >
             <p className={cn('text-xs', isHideSmallBalances && 'text-accent-foreground')}>
-              {'Hide Small Balances'}
+              {isHideSmallBalances ? 'Show All Balances' : 'Hide Small Balances'}
             </p>
             {isHideSmallBalances ? (
               <IconCheckbox className="size-4" />
