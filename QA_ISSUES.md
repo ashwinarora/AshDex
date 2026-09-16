@@ -785,6 +785,7 @@ The two blocks overlap in meaning. A consolidated `Total Equity + breakdown` wou
 On the perp Scale panel (Advanced → Scale), selecting `Short` correctly flips the outgoing payload's `b` field to `false` (confirmed via `[DEBUG-SCALE-PERP]` log and by resting orders showing side "Sell"), but the CTA button label stays as `Scale Buy (N Orders)`. A user could easily read the label as authoritative and click expecting a Buy.
 
 **Repro:**
+
 1. Connect wallet on `/BTC`, click `Advanced → Scale`.
 2. Toggle `Short`. CTA still reads `Scale Buy (2 Orders)`.
 3. Fill Start/End/Total and click — the order posts as Sell (verified in Open Orders) despite the button label.
