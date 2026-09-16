@@ -368,8 +368,7 @@ const MarketOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
                     // Futures load).
                     const sz = Number(assetAmount)
                     const px = Number(allMids[selectedAsset])
-                    if (!Number.isFinite(sz) || !Number.isFinite(px) || leverage <= 0)
-                      return '—'
+                    if (!Number.isFinite(sz) || !Number.isFinite(px) || leverage <= 0) return '—'
                     const margin = (sz * px) / leverage
                     return Number.isFinite(margin) ? `$${margin.toFixed(2)}` : '—'
                   })()}
