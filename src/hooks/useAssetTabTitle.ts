@@ -80,7 +80,16 @@ export const useAssetTabTitle = ({ asset, isSpot }: Options) => {
     if (symbol && priceStr) {
       document.title = `$${priceStr} · ${symbol} — AshDex`
     }
-  }, [asset, isSpot, allMids, perpsMeta, spotAssetContext, spotMeta, spotKeyToName, spotKeyToBaseName])
+  }, [
+    asset,
+    isSpot,
+    allMids,
+    perpsMeta,
+    spotAssetContext,
+    spotMeta,
+    spotKeyToName,
+    spotKeyToBaseName
+  ])
 
   useEffect(() => {
     return () => {
