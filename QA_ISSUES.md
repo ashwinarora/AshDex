@@ -780,6 +780,23 @@ The two blocks overlap in meaning. A consolidated `Total Equity + breakdown` wou
 
 ---
 
+### BUG-057 — Scale CTA does not relabel to `Scale Sell` when Short is selected — **MAJOR** — ✅ FIXED
+
+On the perp Scale panel (Advanced → Scale), selecting `Short` correctly flips the outgoing payload's `b` field to `false` (confirmed via `[DEBUG-SCALE-PERP]` log and by resting orders showing side "Sell"), but the CTA button label stays as `Scale Buy (N Orders)`. A user could easily read the label as authoritative and click expecting a Buy.
+
+**Repro:**
+1. Connect wallet on `/BTC`, click `Advanced → Scale`.
+2. Toggle `Short`. CTA still reads `Scale Buy (2 Orders)`.
+3. Fill Start/End/Total and click — the order posts as Sell (verified in Open Orders) despite the button label.
+
+**Evidence:** `qa-screenshots/restore-advanced-orders/` — Case perp-2 in `TEST-LOG.md`. Console log message ID 73 shows `b: false` in the payload while the CTA label reads Buy.
+
+**Fix:** `Scale.tsx:561` and `ScaleSpot.tsx:459` — button label now branches on `isBuy` (`isBuy ? 'Scale Buy' : 'Scale Sell'`).
+
+**Severity:** MAJOR — the button label is the last-mile UX confirmation before a signed order. A user who spot-checks the label rather than the Long/Short radio can transact the wrong direction. Trading correctness class.
+
+---
+
 ## Notable non-issues (verified correct)
 
 - SOL Mark, Oracle, Funding, OI, 24h Volume in the header all match Hyperliquid API `metaAndAssetCtxs` for `SOL` within the WS update cadence. Live updates work.

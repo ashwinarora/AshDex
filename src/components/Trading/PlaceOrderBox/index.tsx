@@ -1,18 +1,18 @@
 'use client'
 import LimitOrder from './LimitOrder'
 import MarketOrder from './MarketOrder'
-// import Scale from './Scale'
+import Scale from './Scale'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
-// import useIsSpot from '@/hooks/useIsSpot'
-// import ScaleSpot from './ScaleSpot'
-// import {
-//   DropdownMenu,
-//   DropdownMenuContent,
-//   DropdownMenuItem,
-//   DropdownMenuTrigger
-// } from '@/components/ui/dropdown-menu'
-// import { IconChevronDown } from '@tabler/icons-react'
+import useIsSpot from '@/hooks/useIsSpot'
+import ScaleSpot from './ScaleSpot'
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@/components/ui/dropdown-menu'
+import { IconChevronDown } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { useTradeUIStore, type OrderTab } from '@/store/TradeUIStore'
@@ -26,19 +26,19 @@ export interface IPlaceOrderProps {
 
 const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const { activeOrderTab, setActiveOrderTab } = useTradeUIStore()
-  // const isSpot = useIsSpot()
+  const isSpot = useIsSpot()
   const renderTabContent = () => {
     switch (activeOrderTab) {
       case 'LIMIT':
         return <LimitOrder selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'MARKET':
         return <MarketOrder selectedAsset={selectedAsset} isRTL={isRTL} />
-      // case 'SCALE':
-      //   return isSpot ? (
-      //     <ScaleSpot selectedAsset={selectedAsset} isRTL={isRTL} />
-      //   ) : (
-      //     <Scale selectedAsset={selectedAsset} isRTL={isRTL} />
-      //   )
+      case 'SCALE':
+        return isSpot ? (
+          <ScaleSpot selectedAsset={selectedAsset} isRTL={isRTL} />
+        ) : (
+          <Scale selectedAsset={selectedAsset} isRTL={isRTL} />
+        )
       case 'STOP_LIMIT':
         return <StopLimit selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'STOP_MARKET':
@@ -48,14 +48,13 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     }
   }
 
-  // const availableOptions = isSpot
-  //   ? // [{ value: 'SCALE', label: 'Scale' }]
-  //     []
-  //   : [
-  //       // { value: 'SCALE', label: 'Scale' },
-  //       { value: 'STOP_LIMIT', label: 'Stop Limit' },
-  //       { value: 'STOP_MARKET', label: 'Stop Market' }
-  //     ]
+  const availableOptions = isSpot
+    ? [{ value: 'SCALE', label: 'Scale' }]
+    : [
+        { value: 'SCALE', label: 'Scale' },
+        { value: 'STOP_LIMIT', label: 'Stop Limit' },
+        { value: 'STOP_MARKET', label: 'Stop Market' }
+      ]
 
   return (
     <div className="flex flex-col bg-secondary rounded-md w-full h-[688px] md:h-full overflow-y-auto no-scrollbar items-center justify-start ">
@@ -68,8 +67,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         <ToggleGroup
           type="single"
           className={cn(
-            // isSpot ? 'w-full' : 'w-2/3',
-            'w-full',
+            'w-2/3',
             isRTL
               ? 'rounded-l-none rounded-r-md flex-row-reverse'
               : 'rounded-l-md rounded-r-none flex-row'
@@ -100,10 +98,11 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             {'Market'}
           </ToggleGroupItem>
         </ToggleGroup>
-        {/* {!isSpot && (
+        {availableOptions.length > 0 && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <div
+                data-testid="advanced-order-trigger"
                 className={cn(
                   'text-white transition-colors w-1/3 h-9 flex items-center gap-2 justify-center text-sm',
                   availableOptions.find((option) => option.value === activeOrderTab)
@@ -120,6 +119,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
             <DropdownMenuContent align={isRTL ? 'start' : 'end'}>
               {availableOptions.map((option) => (
                 <DropdownMenuItem
+                  data-testid={`advanced-order-item-${option.value}`}
                   className="text-white/70 w-28 flex items-center justify-end hover:text-popover-foreground"
                   key={option.value}
                   onClick={() => setActiveOrderTab(option.value as OrderTab)}
@@ -129,7 +129,7 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-        )} */}
+        )}
       </div>
       <div className="flex-1 w-full">{renderTabContent()}</div>
     </div>

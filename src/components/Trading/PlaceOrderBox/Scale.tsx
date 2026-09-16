@@ -558,7 +558,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalUsd! > maxAllowedUsd || !totalUsd || !totalAssetSize}
             >
-              {'Scale Buy'} ({totalOrders} {'Orders'})
+              {isBuy ? 'Scale Buy' : 'Scale Sell'} ({totalOrders} {'Orders'})
             </Button>
           )}
         </div>

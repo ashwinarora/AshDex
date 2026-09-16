@@ -456,7 +456,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
               type="submit"
               disabled={totalSize! > Number(maxAllowed)}
             >
-              {'Scale Buy'} ({totalOrders} {'Orders'})
+              {isBuy ? 'Scale Buy' : 'Scale Sell'} ({totalOrders} {'Orders'})
             </Button>
           )}
         </div>
