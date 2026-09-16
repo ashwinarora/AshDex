@@ -10,6 +10,7 @@ import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
 import dynamic from 'next/dynamic'
 import WagmiProvider from './WagmiProvider'
+import { DEFAULT_PAGE_TITLE } from '@/config/appMeta'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -22,16 +23,16 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AshDex — Trade Perps On-Chain',
+  title: DEFAULT_PAGE_TITLE,
   description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
   openGraph: {
-    title: 'AshDex — Trade Perps On-Chain',
+    title: DEFAULT_PAGE_TITLE,
     description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.',
     type: 'website'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'AshDex — Trade Perps On-Chain',
+    title: DEFAULT_PAGE_TITLE,
     description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.'
   }
 }

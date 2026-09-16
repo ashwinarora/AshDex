@@ -4,6 +4,7 @@ import Trading from '@/components/Trading/Trading'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useAssetTabTitle } from '@/hooks/useAssetTabTitle'
 
 /**
  * Spot trading route.
@@ -20,6 +21,11 @@ export default function SpotAssetTradingPage() {
 
   useEffect(() => {
     if (!spotMeta) return
+    // `spotKeyToName` is a derived React Query that populates one tick after
+    // `spotMeta`. If we run the check before it's ready, human-name URLs like
+    // `/spot/PURR` fail the lookup (only universe names like "PURR/USDC" are
+    // in the set) and get redirected to `/spot`.
+    if (spotKeyToName.size === 0) return
     // Spot universe entries look like { name: '@1035', tokens: [...] } and
     // the human name comes from `spotKeyToName`. Accept either form.
     const nameSet = new Set<string>()
@@ -30,6 +36,8 @@ export default function SpotAssetTradingPage() {
     }
     if (!nameSet.has(asset)) router.replace('/spot')
   }, [asset, spotMeta, spotKeyToName, router])
+
+  useAssetTabTitle({ asset, isSpot: true })
 
   return <Trading defaultAsset={asset} />
 }

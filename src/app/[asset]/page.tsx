@@ -4,6 +4,7 @@ import Trading from '@/components/Trading/Trading'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useParams, useRouter } from 'next/navigation'
 import { useEffect } from 'react'
+import { useAssetTabTitle } from '@/hooks/useAssetTabTitle'
 
 /**
  * Perps trading route.
@@ -25,6 +26,8 @@ export default function AssetTradingPage() {
     const exists = perpsMeta.universe.some((a) => a.name === asset)
     if (!exists) router.replace('/BTC')
   }, [asset, perpsMeta, router])
+
+  useAssetTabTitle({ asset, isSpot: false })
 
   return <Trading defaultAsset={asset} />
 }
