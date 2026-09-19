@@ -30,6 +30,7 @@ import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
+import { normalizeDecimalString } from '@/utils/decimalString'
 interface LimitCloseModalProps {
   isOpen: boolean
   onClose: () => void
@@ -163,7 +164,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
             a: assetIndex,
             b: isBuy,
             p: formatPrice(Number(price), szDecimals).toString(),
-            s: finalSize.replace(/\.?0+$/, ''),
+            s: normalizeDecimalString(finalSize),
             r: true,
             t: {
               limit: {

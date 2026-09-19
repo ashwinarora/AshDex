@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-export type OrderTab = 'LIMIT' | 'MARKET' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET'
+export type OrderTab = 'LIMIT' | 'MARKET' | 'SCALE' | 'STOP_LIMIT' | 'STOP_MARKET' | 'TWAP'
 
 interface TradeUIState {
   activeOrderTab: OrderTab

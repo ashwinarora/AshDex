@@ -17,6 +17,7 @@ import { useUserFee } from '@/hooks/useUserFee'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { toast } from 'sonner'
+import { normalizeDecimalString } from '@/utils/decimalString'
 
 export type StopOrder = {
   isMarket: boolean
@@ -83,8 +84,8 @@ const OrderButton = ({
   // Validation logic moved from parent components
   const isInvalid = useMemo(() => {
     if (isSpot) {
-      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
-      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+      const formattedLimitPrice = normalizeDecimalString(limitPrice)
+      const formattedAssetAmount = normalizeDecimalString(assetAmount)
 
       return (
         formattedLimitPrice === '0' ||
@@ -93,8 +94,8 @@ const OrderButton = ({
         formattedAssetAmount === ''
       )
     } else {
-      const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
-      const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+      const formattedLimitPrice = normalizeDecimalString(limitPrice)
+      const formattedAssetAmount = normalizeDecimalString(assetAmount)
 
       // Check if TPSL is enabled and both values are empty/zero
       const isTpslInvalid =
@@ -160,8 +161,8 @@ const OrderButton = ({
         const assetUniverse = perpsMeta.universe[assetIndex]
 
         if (assetUniverse) {
-          const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
-          const formattedAssetAmount = assetAmount.replace(/\.?0+$/, '')
+          const formattedLimitPrice = normalizeDecimalString(limitPrice)
+          const formattedAssetAmount = normalizeDecimalString(assetAmount)
           const px = Number(formattedLimitPrice)
           const sz = Number(formattedAssetAmount)
 

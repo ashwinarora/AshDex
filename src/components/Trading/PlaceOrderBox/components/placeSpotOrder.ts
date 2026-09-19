@@ -6,6 +6,7 @@ import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
 import type { TPSLType } from './TPSL'
 import { formatPrice } from '@/utils/utils'
+import { normalizeDecimalString } from '@/utils/decimalString'
 
 export const placeSpotOrder = async ({
   sdkL1ActionClient,
@@ -43,8 +44,8 @@ export const placeSpotOrder = async ({
   const toastId = toast.loading('Loading...')
 
   const tif = isPostOnly ? 'Alo' : 'Gtc'
-  const formattedLimitPrice = limitPrice.replace(/\.?0+$/, '')
-  const formattedSize = assetAmount.replace(/\.?0+$/, '')
+  const formattedLimitPrice = normalizeDecimalString(limitPrice)
+  const formattedSize = normalizeDecimalString(assetAmount)
   const normalizedLimitPrice = Number.isFinite(Number(formattedLimitPrice))
     ? formatPrice(Number(formattedLimitPrice), szDecimals, true).toString()
     : formattedLimitPrice

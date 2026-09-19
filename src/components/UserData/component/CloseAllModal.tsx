@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils'
 import { IconWallet } from '@tabler/icons-react'
 import { useConnection } from 'wagmi'
 import { useWalletModal } from '@/context/WalletModalContext'
+import { normalizeDecimalString } from '@/utils/decimalString'
 
 interface CloseAllModalProps {
   isOpen: boolean
@@ -68,7 +69,7 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
           isBuy: isBuy,
           reduceOnly: true,
           price: formatPrice(price, szDecimals).toString(),
-          size: absSize.replace(/\.?0+$/, ''),
+          size: normalizeDecimalString(absSize),
           orderType: {
             limit: {
               tif: 'Gtc'

@@ -12,6 +12,7 @@ import { IconRefresh } from '@tabler/icons-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { normalizeDecimalString } from '@/utils/decimalString'
 interface ISetLastPriceProps {
   selectedAsset: string
   limitPrice: string
@@ -129,7 +130,7 @@ const SetPrice = ({
       setLimitPrice(numValue.toString())
     } else {
       // For decimal values, format with proper decimal places
-      setLimitPrice(numValue.toFixed(allowedDecimals).replace(/\.?0+$/, ''))
+      setLimitPrice(normalizeDecimalString(numValue.toFixed(allowedDecimals)))
     }
   }
 

@@ -6,6 +6,7 @@ import Positions from './Positions'
 import OpenOrders from './OpenOrders'
 import OrderHistory from './OrderHistory'
 import TradeHistory from './TradeHistory'
+import TwapOrders from './TwapOrders'
 import DepositsWithdrawals from './DepositsWithdrawals'
 import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
@@ -20,11 +21,12 @@ import { usePathname } from 'next/navigation'
 
 const UserData = () => {
   const pathname = usePathname()
-  const { clearingHouseState, openOrders, spotState } = useHyperliquidStore(
+  const { clearingHouseState, openOrders, spotState, twapStates } = useHyperliquidStore(
     useShallow((state) => ({
       clearingHouseState: state.clearingHouseState,
       openOrders: state.openOrders,
-      spotState: state.spotState
+      spotState: state.spotState,
+      twapStates: state.twapStates
     }))
   )
   const isSpot = useIsSpot()
@@ -87,6 +89,11 @@ const UserData = () => {
         element: <OpenOrders isRTL={isRTL} />
       },
       {
+        header: twapStates.length > 0 ? `(${twapStates.length}) TWAP` : 'TWAP',
+        count: twapStates.length,
+        element: <TwapOrders isRTL={isRTL} />
+      },
+      {
         header: 'Trade History',
         element: <TradeHistory isRTL={isRTL} />
       },
@@ -100,13 +107,22 @@ const UserData = () => {
       }
     ]
     return isRTL ? tabs.reverse() : tabs
-  }, [isSpot, positionsCount, openOrders.length, balanceCount, isRTL, isHideSmallBalances])
+  }, [
+    isSpot,
+    positionsCount,
+    openOrders.length,
+    balanceCount,
+    isRTL,
+    isHideSmallBalances,
+    twapStates.length
+  ])
 
   // Default tab: Balances for spot/portfolio, Positions for futures/perps.
   // In RTL the tabs array is reversed, so indices are mirrored.
-  // Note: spot has 5 tabs (no Positions), perps has 6.
+  // Note: spot has 6 tabs (no Positions), perps has 7 — TWAP tab was added
+  // between Open Orders and Trade History to mirror Hyperliquid.
   const defaultTab = useMemo(() => {
-    const tabsLength = isSpot ? 5 : 6
+    const tabsLength = isSpot ? 6 : 7
     if (isSpot || isPortfolio) {
       // Balances: index 0 in LTR, last index in RTL
       return isRTL ? tabsLength - 1 : 0
