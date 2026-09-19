@@ -38,6 +38,9 @@ interface HyperliquidState {
   activeAssetData: hl.ActiveAssetDataWsEvent | null
   ledgerUpdates: hl.UserNonFundingLedgerUpdatesWsEvent['nonFundingLedgerUpdates']
   pendingWithdrawals: PendingWithdrawal[]
+  // Active TWAP orders, keyed by twapId. Populated from the WS `twapStates`
+  // channel, which pushes the full current-state list every update.
+  twapStates: hl.TwapStatesWsEvent['states']
   // `null` until the first successful fetch. `"default"` from the API maps to
   // `"disabled"` — both mean standard/manual account abstraction.
   accountAbstraction: AccountAbstractionMode | null
@@ -59,6 +62,7 @@ interface HyperliquidState {
     ledgerUpdates?: hl.ISubscription
     assetCtxs?: hl.ISubscription
     spotAssetCtxs?: hl.ISubscription
+    twapStates?: hl.ISubscription
   }
 }
 
@@ -97,6 +101,8 @@ interface HyperliquidActions {
   addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
   loadPendingWithdrawals: (address: string) => void
   getFreshAgentWallet: (address: Address) => PrivateKeyAccount
+  subscribeTwapStates: (address: Hex) => Promise<void>
+  unsubscribeTwapStates: () => Promise<void>
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -123,6 +129,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     activeAssetData: null,
     ledgerUpdates: [],
     pendingWithdrawals: [],
+    twapStates: [],
     accountAbstraction: null,
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
@@ -586,6 +593,35 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const pending = getPendingWithdrawals(address)
       set({ pendingWithdrawals: pending })
     },
+    subscribeTwapStates: async (address: Hex) => {
+      const { sdkSubscriptionClient } = get()
+      if (!sdkSubscriptionClient) return
+      if (address === zeroAddress) return
+      try {
+        const sub = await sdkSubscriptionClient.twapStates({ user: address }, (data) => {
+          // Full snapshot on every push — no diffing needed.
+          set({
+            twapStates: data.states,
+            lastWebSocketUpdate: Date.now(),
+            isWebSocketConnected: true
+          })
+        })
+        set((state) => ({
+          subsManager: { ...state.subsManager, twapStates: sub }
+        }))
+      } catch (err) {
+        console.error('[subscribeTwapStates] failed', err)
+      }
+    },
+    unsubscribeTwapStates: async () => {
+      const { subsManager } = get()
+      if (!subsManager.twapStates) return
+      await subsManager.twapStates.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, twapStates: undefined },
+        twapStates: []
+      }))
+    },
     getFreshAgentWallet: (address: Address) => {
       // Generate a new private key
       const newPrivateKey = generatePrivateKey()
@@ -657,7 +693,9 @@ export const useInitHyperliquid = () => {
       updateUserActiveAddress: state.updateUserActiveAddress,
       subscribeLedgerUpdates: state.subscribeLedgerUpdates,
       unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
-      loadPendingWithdrawals: state.loadPendingWithdrawals
+      loadPendingWithdrawals: state.loadPendingWithdrawals,
+      subscribeTwapStates: state.subscribeTwapStates,
+      unsubscribeTwapStates: state.unsubscribeTwapStates
     }))
   )
 }

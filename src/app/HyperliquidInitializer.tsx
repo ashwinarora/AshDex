@@ -29,6 +29,8 @@ const HyperLiquidInitializer = () => {
     unsubscribeUserState,
     subscribeLedgerUpdates,
     unsubscribeLedgerUpdates,
+    subscribeTwapStates,
+    unsubscribeTwapStates,
     checkWebSocketStatus,
     updateUserActiveAddress,
     loadPendingWithdrawals
@@ -107,9 +109,11 @@ const HyperLiquidInitializer = () => {
     loadPendingWithdrawals(address)
     subscribeUserState(address)
     subscribeLedgerUpdates(address)
+    subscribeTwapStates(address).catch(console.error)
     return () => {
       unsubscribeUserState().catch(console.error)
       unsubscribeLedgerUpdates().catch(console.error)
+      unsubscribeTwapStates().catch(console.error)
     }
   }, [
     sdkSubscriptionClient,
@@ -119,7 +123,9 @@ const HyperLiquidInitializer = () => {
     subscribeUserState,
     unsubscribeUserState,
     subscribeLedgerUpdates,
-    unsubscribeLedgerUpdates
+    unsubscribeLedgerUpdates,
+    subscribeTwapStates,
+    unsubscribeTwapStates
   ])
 
   useEffect(() => {

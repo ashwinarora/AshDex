@@ -58,6 +58,10 @@ React Context - UI state (wallet modal, agent approval flow)
 - `src/store/HyperliquidStore.ts` - Central trading state (positions, orders, balances, WebSocket data)
 - `src/config/wagmi.ts` - Wallet configuration (chains, connectors)
 
+### Patched Dependencies
+
+- `@nktkas/hyperliquid@0.33.3` — patched via `bun patch` (see `patches/@nktkas%2Fhyperliquid@0.33.3.patch`) to raise the `twapOrder.m` valibot cap from `1440` (24 h) to `10080` (7 d), matching what Hyperliquid's server accepts. The SDK schema was more restrictive than the server, so TWAPs longer than 24 h were being rejected client-side with no user-facing hint. `bun install` re-applies the patch automatically via `patchedDependencies`. Upstream fix (removes the need for this patch) is a follow-up.
+
 ### Hyperliquid Network
 
 The app supports both mainnet and testnet, configured via `NEXT_PUBLIC_HYPERLIQUID_NETWORK` env var.

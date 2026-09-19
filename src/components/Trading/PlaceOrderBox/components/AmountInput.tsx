@@ -19,6 +19,7 @@ import { ToggleGroup } from '@/components/ui/toggle-group'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
+import { normalizeDecimalString } from '@/utils/decimalString'
 interface AmountInputProps {
   selectedAsset: string
   assetAmount: string
@@ -161,7 +162,7 @@ const AmountInput = ({
     setUsdAmount(input)
     if (parseFloat(limitPrice) > 0) {
       const newAmount = parseFloat(input) / parseFloat(limitPrice)
-      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      const formattedAmount = normalizeDecimalString(newAmount.toFixed(szDecimals))
       setAssetAmount(formattedAmount)
     } else {
       setAssetAmount('')
@@ -176,7 +177,7 @@ const AmountInput = ({
     setUsdPercent(newUsdPercent)
     setIsError(newUsdPercent > 100) // Error if exceeds 100%
     const rawAmount = (newUsdPercent * maxAllowedUsd) / 100 / parseFloat(limitPrice)
-    const roundedAmount = rawAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+    const roundedAmount = normalizeDecimalString(rawAmount.toFixed(szDecimals))
     setAssetAmount(roundedAmount)
     setUsdAmount(((newUsdPercent * maxAllowedUsd) / 100).toString())
   }

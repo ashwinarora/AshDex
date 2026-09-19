@@ -11,6 +11,7 @@ import { StopOrder } from './OrderButton'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
 import { BUILDER_ADDRESS } from '@/utils/constants'
+import { normalizeDecimalString } from '@/utils/decimalString'
 
 export const placePerpOrder = async ({
   sdkL1ActionClient,
@@ -51,7 +52,7 @@ export const placePerpOrder = async ({
   const szDecimals = assetUniverse.szDecimals
   const tif = isPostOnly ? 'Alo' : 'Gtc'
   const orders: OrderData[] = []
-  const formattedSize = assetAmount.replace(/\.?0+$/, '')
+  const formattedSize = normalizeDecimalString(assetAmount)
 
   if (stopOrder) {
     const { isMarket, triggerPx, tpsl } = stopOrder

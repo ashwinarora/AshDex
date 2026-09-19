@@ -4,6 +4,7 @@ import MarketOrder from './MarketOrder'
 import Scale from './Scale'
 import StopLimit from './StopLimit'
 import StopMarket from './StopMarket'
+import Twap from './components/Twap'
 import useIsSpot from '@/hooks/useIsSpot'
 import ScaleSpot from './ScaleSpot'
 import {
@@ -43,17 +44,23 @@ const PlaceOrder = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
         return <StopLimit selectedAsset={selectedAsset} isRTL={isRTL} />
       case 'STOP_MARKET':
         return <StopMarket selectedAsset={selectedAsset} isRTL={isRTL} />
+      case 'TWAP':
+        return <Twap selectedAsset={selectedAsset} isRTL={isRTL} />
       default:
         return null
     }
   }
 
   const availableOptions = isSpot
-    ? [{ value: 'SCALE', label: 'Scale' }]
+    ? [
+        { value: 'SCALE', label: 'Scale' },
+        { value: 'TWAP', label: 'TWAP' }
+      ]
     : [
         { value: 'SCALE', label: 'Scale' },
         { value: 'STOP_LIMIT', label: 'Stop Limit' },
-        { value: 'STOP_MARKET', label: 'Stop Market' }
+        { value: 'STOP_MARKET', label: 'Stop Market' },
+        { value: 'TWAP', label: 'TWAP' }
       ]
 
   return (

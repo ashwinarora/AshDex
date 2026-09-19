@@ -44,9 +44,36 @@ test.describe('Advanced order tabs', () => {
     await pickOption('advanced-order-item-STOP_MARKET')
     await expect(page.getByText('Stop Price')).toBeVisible()
     await expect(page.getByText('Limit Price')).toHaveCount(0)
+
+    // TWAP renders its own "Running Time" label, unique to that panel.
+    await pickOption('advanced-order-item-TWAP')
+    await expect(page.getByText(/Running Time/)).toBeVisible()
+    await expect(page.getByText('Size per Suborder')).toBeVisible()
   })
 
-  test('spot: Advanced dropdown offers only Scale', async ({ page }) => {
+  test('perp TWAP: "Connect Wallet" opens the wallet modal with a blank form (BUG-059)', async ({
+    page
+  }) => {
+    // The stub fixture shims window.ethereum but wagmi never auto-connects, so
+    // the panel renders its "Connect Wallet" state. Before the fix the click
+    // handler returned early on blank inputs before reaching the connect
+    // redirect, so this button did nothing — and a disconnected user cannot
+    // type a size to satisfy it (the amount input waits for clearinghouse
+    // state). The button must open the wallet modal unconditionally.
+    await page.goto('/')
+    await expect(page.getByRole('radio', { name: 'Limit' })).toBeVisible({ timeout: 15_000 })
+    const trigger = page.getByTestId('advanced-order-trigger')
+    await trigger.click()
+    await page.getByTestId('advanced-order-item-TWAP').click({ force: true })
+
+    const submit = page.getByTestId('twap-submit')
+    await expect(submit).toHaveText(/Connect Wallet/)
+    await expect(submit).toBeEnabled()
+    await submit.click()
+    await expect(page.getByRole('dialog', { name: 'Connect Wallet' })).toBeVisible()
+  })
+
+  test('spot: Advanced dropdown offers Scale and TWAP', async ({ page }) => {
     await page.goto('/spot')
 
     await expect(page.getByRole('radio', { name: 'Limit' })).toBeVisible({ timeout: 15_000 })
@@ -56,6 +83,8 @@ test.describe('Advanced order tabs', () => {
     await trigger.click()
     const scaleItem = page.getByTestId('advanced-order-item-SCALE')
     await expect(scaleItem).toBeVisible()
+    // TWAP is available on spot too, but Stop Limit / Stop Market are not (spot has no positions to trigger against).
+    await expect(page.getByTestId('advanced-order-item-TWAP')).toBeVisible()
     await expect(page.getByTestId('advanced-order-item-STOP_LIMIT')).toHaveCount(0)
     await expect(page.getByTestId('advanced-order-item-STOP_MARKET')).toHaveCount(0)
 

@@ -15,6 +15,7 @@ import { IconChevronDown, IconPercentage } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
 import { Slider } from '@/components/ui/slider'
 import { useShallow } from 'zustand/react/shallow'
+import { normalizeDecimalString } from '@/utils/decimalString'
 interface AmountInputSpotProps {
   selectedAsset: string
   assetAmount: string
@@ -109,7 +110,7 @@ const AmountInputSpot = ({
 
     if (!isNaN(numValue)) {
       const newTotal = numValue * parseFloat(limitPrice)
-      const formattedAmount = newTotal.toFixed(szDecimals).replace(/\.?0+$/, '')
+      const formattedAmount = normalizeDecimalString(newTotal.toFixed(szDecimals))
       setAssetAmount(input)
       setUsdAmount(formattedAmount.toString())
       const newPercent = ((isBuy ? newTotal : numValue) / maxAllowed) * 100
@@ -138,7 +139,7 @@ const AmountInputSpot = ({
     setUsdAmount(input)
     if (parseFloat(limitPrice) > 0) {
       const newAmount = parseFloat(input) / parseFloat(limitPrice)
-      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      const formattedAmount = normalizeDecimalString(newAmount.toFixed(szDecimals))
       setAssetAmount(formattedAmount)
       const newPercent = ((isBuy ? parseFloat(input) : newAmount) / maxAllowed) * 100
       setUsdPercent(newPercent)
@@ -158,14 +159,14 @@ const AmountInputSpot = ({
       setUsdAmount(newTotal.toString())
       if (parseFloat(limitPrice) > 0) {
         const newAmount = newTotal / parseFloat(limitPrice)
-        const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+        const formattedAmount = normalizeDecimalString(newAmount.toFixed(szDecimals))
         setAssetAmount(formattedAmount)
       } else {
         setAssetAmount('')
       }
     } else {
       const newAmount = (percent / 100) * maxAllowed
-      const formattedAmount = newAmount.toFixed(szDecimals).replace(/\.?0+$/, '')
+      const formattedAmount = normalizeDecimalString(newAmount.toFixed(szDecimals))
       setAssetAmount(formattedAmount)
       setUsdAmount((newAmount * parseFloat(limitPrice)).toString())
     }

@@ -69,6 +69,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -82,7 +83,9 @@
     "tailwindcss": "^4.0.13",
     "tw-animate-css": "^1.3.4",
     "typescript": "^5",
-    "@playwright/test": "^1.63.0",
     "vitest": "^5.0.0"
+  },
+  "patchedDependencies": {
+    "@nktkas/hyperliquid@0.33.3": "patches/@nktkas%2Fhyperliquid@0.33.3.patch"
   }
 }

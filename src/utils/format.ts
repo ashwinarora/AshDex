@@ -1,3 +1,4 @@
+import { normalizeDecimalString } from '@/utils/decimalString'
 export const formatSolanaAddress = (address: string) => {
   if (!address) return ''
   const addressStr = address.toString()
@@ -80,7 +81,7 @@ export const formatWithCommas = (input: string | number, toFixed: number = 2): s
 
   // Format with commas and remove trailing .00
   const formatted = value.toFixed(toFixed)
-  const withoutTrailingZeros = formatted.replace(/\.?0+$/, '')
+  const withoutTrailingZeros = normalizeDecimalString(formatted)
 
   return parseFloat(withoutTrailingZeros).toLocaleString('en-US')
 }
