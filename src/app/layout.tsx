@@ -8,6 +8,7 @@ import '@/styles/table.css'
 import OnboardingModal from '@/components/onboarding-modal'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
+import OutcomeSettlementToaster from '@/components/Outcomes/OutcomeSettlementToaster'
 import dynamic from 'next/dynamic'
 import WagmiProvider from './WagmiProvider'
 import { DEFAULT_PAGE_TITLE } from '@/config/appMeta'
@@ -54,6 +55,7 @@ export default function RootLayout({
         <GoogleAnalytics gaId="G-KR3QTG3TBY" />
         <WagmiProvider>
           <HyperLiquidInitializer />
+          <OutcomeSettlementToaster />
           <WalletModalProvider>
             <EstablishConnectionProvider>
               <div className="overscroll-none">

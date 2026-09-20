@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useConnection } from 'wagmi'
 import { Hex } from 'viem'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
-import useIsSpot from './useIsSpot'
+import useMarketKind from './useMarketKind'
 
 export const targetFee = {
   perpsTaker: '0.00045',
@@ -81,7 +81,9 @@ function divRound(numerator: bigint, denominator: bigint): bigint {
 export const useUserFee = () => {
   const { address } = useConnection()
   const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
-  const isSpot = useIsSpot()
+  // Outcome shares (HIP-4) are fee-tiered like spot, so both spot and outcome
+  // routes use the spot rates; only perps use the perp rates.
+  const isSpot = useMarketKind() !== 'perp'
 
   const data = useQuery({
     queryKey: ['userFeeData', address],

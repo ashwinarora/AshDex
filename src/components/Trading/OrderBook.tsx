@@ -30,11 +30,13 @@ import { useTradeUIStore } from '@/store/TradeUIStore'
 
 interface IOrderBookProps {
   selectedAsset: string
+  /** Display name for the base asset column headers (defaults to the spot/perp name). */
+  assetLabel?: string
   layout?: 'horizontal' | 'vertical'
   isRTL: boolean
 }
 
-const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
+const OrderBook = ({ selectedAsset, isRTL, assetLabel }: IOrderBookProps) => {
   const { sdkSubscriptionClient, allMids } = useHyperliquidStore(
     useShallow((state) => ({
       sdkSubscriptionClient: state.sdkSubscriptionClient,
@@ -303,7 +305,9 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 className="text-xs w-20 flex items-center justify-start"
               >
                 <p className="text-xs flex-1 w-full">
-                  {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+                  {showPriceInUSD
+                    ? 'USD'
+                    : (assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset)}
                 </p>
                 <IconChevronDown className="size-3" />
               </Button>
@@ -322,7 +326,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
                 }}
               >
                 <p className="text-xs w-full text-center">
-                  {spotKeyToName.get(selectedAsset) ?? selectedAsset}
+                  {assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset}
                 </p>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -489,7 +493,9 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               className="text-xs w-20 flex items-center justify-start"
             >
               <p className="text-xs flex-1 w-full">
-                {showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+                {showPriceInUSD
+                  ? 'USD'
+                  : (assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset)}
               </p>
               <IconChevronDown className="size-3" />
             </Button>
@@ -508,7 +514,7 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
               }}
             >
               <p className="text-xs w-full text-center">
-                {spotKeyToName.get(selectedAsset) ?? selectedAsset}
+                {assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset}
               </p>
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -520,11 +526,18 @@ const OrderBook = ({ selectedAsset, isRTL }: IOrderBookProps) => {
       >
         <p className="font-medium text-xs text-start">{'Price'}</p>
         <p className="font-medium text-xs text-center flex-1">
-          {'Amount'} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+          {'Amount'} (
+          {showPriceInUSD
+            ? 'USD'
+            : (assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset)}
           )
         </p>
         <p className="font-medium text-xs text-end">
-          {'Total'} ({showPriceInUSD ? 'USD' : (spotKeyToName.get(selectedAsset) ?? selectedAsset)})
+          {'Total'} (
+          {showPriceInUSD
+            ? 'USD'
+            : (assetLabel ?? spotKeyToName.get(selectedAsset) ?? selectedAsset)}
+          )
         </p>
       </div>
       <Separator orientation="horizontal" className="bg-white/10 -mb-1" />

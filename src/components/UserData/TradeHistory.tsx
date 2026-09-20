@@ -29,6 +29,7 @@ import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useOutcomeCoinLabel } from '@/hooks/useOutcomeMarket'
 import * as hl from '@nktkas/hyperliquid'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
@@ -48,6 +49,7 @@ const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
   const { address, isConnected } = useConnection()
   const { spotKeyToName } = useSpotMeta()
+  const outcomeLabel = useOutcomeCoinLabel()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
   const { sdkInfoClient } = useHyperliquidStore(
@@ -90,6 +92,9 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         header: () => 'Coin',
         cell: (info) => {
           const coinName = info.getValue()
+          if (coinName.startsWith('#')) {
+            return outcomeLabel(coinName, 'full')
+          }
           if (coinName.includes('@')) {
             return spotKeyToName.get(coinName)
           }
@@ -114,7 +119,14 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.accessor('px', {
         id: 'px',
         header: () => 'Price',
-        cell: (info) => <ReactiveText value={info.getValue()} type="currency" />,
+        cell: (info) => (
+          <ReactiveText
+            value={info.getValue()}
+            type="currency"
+            // Outcome shares are priced as probabilities (0.001–0.999, 5 decimals).
+            precision={info.row.original.coin.startsWith('#') ? 5 : 0}
+          />
+        ),
         enableSorting: true,
         sortingFn: (rowA, rowB) => Number(rowA.original.px) - Number(rowB.original.px),
         meta: { label: 'Price' }
@@ -165,7 +177,7 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         meta: { label: 'Crossed' }
       })
     ],
-    [columnHelper]
+    [columnHelper, outcomeLabel, spotKeyToName]
   )
 
   const table = useReactTable({
@@ -209,9 +221,11 @@ const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
-            const coinName = row.original.coin.includes('@')
-              ? spotKeyToName.get(row.original.coin)
-              : row.original.coin
+            const coinName = row.original.coin.startsWith('#')
+              ? outcomeLabel(row.original.coin)
+              : row.original.coin.includes('@')
+                ? spotKeyToName.get(row.original.coin)
+                : row.original.coin
             const dir = row.original.dir
             const isBuy = dir.includes('Open') || dir.includes('Buy')
             const closedPnl = Number(row.original.closedPnl)

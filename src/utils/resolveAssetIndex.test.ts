@@ -48,3 +48,17 @@ describe('resolveAssetIndex — spot', () => {
     expect(resolveAssetIndex('PURR/USDC', { isSpot: true })).toBe(null)
   })
 })
+
+describe('resolveAssetIndex — outcomes (HIP-4)', () => {
+  const perpsUniverse = [{ name: 'SOL' }]
+  it('maps #enc coins to 100_000_000 + enc without a universe, on any route', () => {
+    expect(resolveAssetIndex('#12100', { isSpot: false, perpsUniverse })).toBe(100_012_100)
+    expect(resolveAssetIndex('#12100', { isSpot: true })).toBe(100_012_100)
+    // Docs example: outcome 1, side 0 → encoding 10 → asset 100000010
+    expect(resolveAssetIndex('#10', { isSpot: false })).toBe(100_000_010)
+  })
+  it('does not treat balance (+) or settled (o) spellings as orderable coins', () => {
+    expect(resolveAssetIndex('+12100', { isSpot: false, perpsUniverse })).toBe(null)
+    expect(resolveAssetIndex('o1210', { isSpot: false, perpsUniverse })).toBe(null)
+  })
+})

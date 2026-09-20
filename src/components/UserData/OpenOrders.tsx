@@ -29,6 +29,10 @@ import {
 import ReactiveText from '@/components/reactive-text'
 import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import useMarketKind from '@/hooks/useMarketKind'
+import { getMarketKind } from '@/utils/marketKind'
+import { useOutcomeCoinLabel } from '@/hooks/useOutcomeMarket'
+import { usePathname } from 'next/navigation'
 import {
   Table,
   TableBody,
@@ -56,6 +60,9 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
     }))
   )
   const isSpot = useIsSpot()
+  const marketKind = useMarketKind()
+  const isPortfolio = !!usePathname()?.startsWith('/portfolio')
+  const outcomeLabel = useOutcomeCoinLabel()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const [sorting, setSorting] = useState<SortingState>([])
   const [mounted, setMounted] = useState(false)
@@ -156,14 +163,9 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
       const toastId = toast.loading('Cancelling all orders...')
       try {
         if (!sdkL1ActionClient) return
-        const allOrders = openOrders.filter((order) => {
-          if (isSpot) {
-            return !!spotKeyToName.get(order.coin)
-          } else {
-            // asset should not be in spot universe to be a perp order
-            return !spotKeyToName.get(order.coin)
-          }
-        })
+        const allOrders = openOrders.filter(
+          (order) => isPortfolio || getMarketKind(order.coin, spotKeyToName) === marketKind
+        )
 
         await sdkL1ActionClient.cancel({
           cancels: allOrders
@@ -263,7 +265,14 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
       columnHelper.accessor('limitPx', {
         id: 'px',
         header: () => 'Price',
-        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
+        cell: (info) => (
+          <ReactiveText
+            value={info.getValue()}
+            type="currency"
+            // Outcome shares are priced as probabilities (0.001–0.999, 5 decimals).
+            precision={info.row.original.assetKey.startsWith('#') ? 5 : 2}
+          />
+        ),
         meta: { label: 'Limit Price' }
       }),
       columnHelper.accessor('sz', {
@@ -324,23 +333,22 @@ const OpenOrders = ({ isRTL }: { isRTL: boolean }) => {
 
   const data = useMemo(() => {
     return openOrders
-      .filter((order) => {
-        if (isSpot) {
-          return !!spotKeyToName.get(order.coin)
-        } else {
-          // asset should not be in spot universe to be a perp order
-          return !spotKeyToName.get(order.coin)
-        }
-      })
+      .filter((order) => isPortfolio || getMarketKind(order.coin, spotKeyToName) === marketKind)
       .map((order) => {
-        const coin = isSpot ? spotKeyToName.get(order.coin) || '' : order.coin
+        const kind = getMarketKind(order.coin, spotKeyToName)
+        const coin =
+          kind === 'spot'
+            ? spotKeyToName.get(order.coin) || ''
+            : kind === 'outcome'
+              ? outcomeLabel(order.coin, 'full')
+              : order.coin
         return {
           ...order,
           coin,
           assetKey: order.coin
         }
       })
-  }, [openOrders, isSpot])
+  }, [openOrders, marketKind, isPortfolio, spotKeyToName, outcomeLabel])
 
   const table = useReactTable({
     data,

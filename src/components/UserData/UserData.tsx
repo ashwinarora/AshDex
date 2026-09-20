@@ -18,6 +18,11 @@ import { Toggle } from '@/components/ui/toggle'
 import { IconCheckbox, IconSquare } from '@tabler/icons-react'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { usePathname } from 'next/navigation'
+import useMarketKind from '@/hooks/useMarketKind'
+import { getMarketKind } from '@/utils/marketKind'
+import { useOutcomePositions } from '@/hooks/useOutcomeMarket'
+import OutcomePositions from './OutcomePositions'
+import OutcomeHistory from './OutcomeHistory'
 
 const UserData = () => {
   const pathname = usePathname()
@@ -30,8 +35,11 @@ const UserData = () => {
     }))
   )
   const isSpot = useIsSpot()
+  const marketKind = useMarketKind()
+  const isOutcome = marketKind === 'outcome'
   const isUnified = useIsUnified()
   const isPortfolio = pathname?.startsWith('/portfolio')
+  const { positions: outcomePositions } = useOutcomePositions()
   const isRTL = false
   const { spotKeyToName } = useSpotMeta()
   const { isMobile } = useScreenSize()
@@ -42,8 +50,11 @@ const UserData = () => {
   }, [clearingHouseState?.assetPositions])
 
   const balanceCount = useMemo(() => {
+    // Only token balances render in the Balances table; HIP-4 share rows
+    // (`+enc`, no `token` field) live in the Outcomes tab instead.
     const baseCount =
-      spotState?.balances?.filter((balance) => Number(balance.total) > 0)?.length || 0
+      spotState?.balances?.filter((balance) => 'token' in balance && Number(balance.total) > 0)
+        ?.length || 0
     // Under unified/portfolio-margin Balances.tsx doesn't render a synthetic
     // USDC(Perps) row, so don't inflate the count for it.
     if (isUnified) return baseCount
@@ -53,14 +64,11 @@ const UserData = () => {
   }, [spotState?.balances, clearingHouseState?.marginSummary?.accountValue, isUnified])
 
   const tabs = useMemo(() => {
-    const openOrdersLength = openOrders.filter((order) => {
-      if (isSpot) {
-        return !!spotKeyToName.get(order.coin)
-      } else {
-        // asset should not be in spot universe to be a perp order
-        return !spotKeyToName.get(order.coin)
-      }
-    }).length
+    // Portfolio shows every order; trading routes show only their own market family
+    // (`#enc` outcome coins, spot universe keys, everything else = perp).
+    const openOrdersLength = openOrders.filter(
+      (order) => isPortfolio || getMarketKind(order.coin, spotKeyToName) === marketKind
+    ).length
 
     const tabs = [
       {
@@ -69,8 +77,9 @@ const UserData = () => {
         element: <Balances isRTL={isRTL} isHideSmallBalances={isHideSmallBalances} />
       },
       // BUG-026: Positions tab is a perps-only concept. Spot has no positions,
-      // only balances — hide the tab entirely on spot.
-      ...(isSpot
+      // only balances — hide the tab entirely on spot. Outcome routes get an
+      // "Outcomes" positions tab instead (share holdings from spot balances).
+      ...(isSpot || isOutcome
         ? []
         : [
             {
@@ -81,6 +90,15 @@ const UserData = () => {
               element: <Positions isRTL={isRTL} />
             }
           ]),
+      ...(isOutcome || isPortfolio
+        ? [
+            {
+              header: `(${outcomePositions.length}) Outcomes`,
+              count: outcomePositions.length,
+              element: <OutcomePositions isRTL={isRTL} />
+            }
+          ]
+        : []),
       {
         header: isRTL
           ? `(${openOrdersLength}) ${'Open Orders'}`
@@ -88,11 +106,16 @@ const UserData = () => {
         count: openOrdersLength,
         element: <OpenOrders isRTL={isRTL} />
       },
-      {
-        header: twapStates.length > 0 ? `(${twapStates.length}) TWAP` : 'TWAP',
-        count: twapStates.length,
-        element: <TwapOrders isRTL={isRTL} />
-      },
+      // TWAP is not offered on outcome markets.
+      ...(isOutcome
+        ? []
+        : [
+            {
+              header: twapStates.length > 0 ? `(${twapStates.length}) TWAP` : 'TWAP',
+              count: twapStates.length,
+              element: <TwapOrders isRTL={isRTL} />
+            }
+          ]),
       {
         header: 'Trade History',
         element: <TradeHistory isRTL={isRTL} />
@@ -101,6 +124,14 @@ const UserData = () => {
         header: 'Orders History',
         element: <OrderHistory isRTL={isRTL} />
       },
+      ...(isOutcome || isPortfolio
+        ? [
+            {
+              header: 'Settled Outcomes',
+              element: <OutcomeHistory isRTL={isRTL} />
+            }
+          ]
+        : []),
       {
         header: 'Deposits and Withdrawals',
         element: <DepositsWithdrawals isRTL={isRTL} />
@@ -109,8 +140,13 @@ const UserData = () => {
     return isRTL ? tabs.reverse() : tabs
   }, [
     isSpot,
+    isOutcome,
+    isPortfolio,
+    marketKind,
+    spotKeyToName,
+    openOrders,
     positionsCount,
-    openOrders.length,
+    outcomePositions.length,
     balanceCount,
     isRTL,
     isHideSmallBalances,
@@ -122,15 +158,15 @@ const UserData = () => {
   // Note: spot has 6 tabs (no Positions), perps has 7 — TWAP tab was added
   // between Open Orders and Trade History to mirror Hyperliquid.
   const defaultTab = useMemo(() => {
-    const tabsLength = isSpot ? 6 : 7
+    const tabsLength = tabs.length
     if (isSpot || isPortfolio) {
       // Balances: index 0 in LTR, last index in RTL
       return isRTL ? tabsLength - 1 : 0
     } else {
-      // Positions: index 1 in LTR, second-to-last in RTL
+      // Positions / Outcomes: index 1 in LTR, second-to-last in RTL
       return isRTL ? tabsLength - 2 : 1
     }
-  }, [isSpot, isPortfolio, isRTL])
+  }, [isSpot, isPortfolio, isRTL, tabs.length])
 
   const [activeTab, setActiveTab] = useState<number>(defaultTab)
 

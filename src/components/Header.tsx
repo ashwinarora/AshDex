@@ -69,6 +69,7 @@ const Header: FC = () => {
   const desktopMenu: MenuItem[] = [
     { name: 'Futures', path: '/', isComingSoon: false },
     { name: 'Spot', path: '/spot', isComingSoon: false },
+    { name: 'Outcomes', path: '/outcomes', isComingSoon: false },
     { name: 'Portfolio', path: '/portfolio', isComingSoon: false }
   ]
 
@@ -88,6 +89,7 @@ const Header: FC = () => {
     const firstSegment = pathname?.split('/')[1]
 
     if (firstSegment === 'spot') return 'Spot'
+    if (firstSegment === 'outcomes') return 'Outcomes'
 
     return menu.find((item) => item?.path?.split('/')[1] === firstSegment)?.name
   }
