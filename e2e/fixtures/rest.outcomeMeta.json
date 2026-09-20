@@ -9087,11 +9087,7 @@
       "name": "May CPI year-over-year",
       "description": "The question resolves by assigning Yes to exactly one of Below 4.3%, Exactly 4.3%, or Above 4.3% based on the Bureau of Labor Statistics Consumer Price Index news release for May 2026, currently scheduled for June 10, 2026 at 8:30 AM ET. The relevant value is the non-seasonally adjusted all items Consumer Price Index for All Urban Consumers (CPI-U) percent change over the 12 months ending May 2026, as reported to one decimal place in the official monthly CPI news release. If BLS has not published the May 2026 all items CPI-U figure by July 15, 2026, or if BLS announces that it will not publish the May 2026 all items CPI-U figure, the question instead resolves to the most recently published month's non-seasonally adjusted all items CPI-U 12-month percent change available at that time. If the May 2026 release occurs on a date other than the scheduled date, the rescheduled release is still used for resolution, provided the figure is published by July 15, 2026. Resolution uses the initial published value, not subsequent revisions.",
       "fallbackOutcome": 10217,
-      "namedOutcomes": [
-        10218,
-        10219,
-        10220
-      ],
+      "namedOutcomes": [10218, 10219, 10220],
       "settledNamedOutcomes": []
     },
     {
@@ -9100,57 +9096,13 @@
       "description": "The question resolves by assigning Yes to the listed outcome whose national team is officially declared the 2026 HYPURR testnet World Cup champion. The result includes the full final, including extra time and penalties, if played. If HYPURR officially declares a champion without a completed final, that official champion determines resolution. If the final is postponed or delayed, the rescheduled final is used, provided HYPURR declares a champion by October 13, 2026 at 11:59 PM ET. HYPURR is the primary resolution source; a consensus of credible reporting may be used if HYPURR information is unavailable or unclear. If no listed outcome is officially declared champion by that deadline, no outcome resolves to Yes under this spec. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10231,
       "namedOutcomes": [
-        10233,
-        10236,
-        10238,
-        10241,
-        10247,
-        10248,
-        10249,
-        10258,
-        10259,
-        10262,
-        10265,
-        10272,
-        10274,
-        10277,
-        10280
+        10233, 10236, 10238, 10241, 10247, 10248, 10249, 10258, 10259, 10262, 10265, 10272, 10274,
+        10277, 10280
       ],
       "settledNamedOutcomes": [
-        10232,
-        10234,
-        10235,
-        10237,
-        10239,
-        10240,
-        10242,
-        10243,
-        10244,
-        10245,
-        10246,
-        10250,
-        10251,
-        10252,
-        10253,
-        10254,
-        10255,
-        10256,
-        10257,
-        10260,
-        10261,
-        10263,
-        10264,
-        10266,
-        10267,
-        10268,
-        10269,
-        10270,
-        10271,
-        10273,
-        10275,
-        10276,
-        10278,
-        10279
+        10232, 10234, 10235, 10237, 10239, 10240, 10242, 10243, 10244, 10245, 10246, 10250, 10251,
+        10252, 10253, 10254, 10255, 10256, 10257, 10260, 10261, 10263, 10264, 10266, 10267, 10268,
+        10269, 10270, 10271, 10273, 10275, 10276, 10278, 10279
       ]
     },
     {
@@ -9158,11 +9110,7 @@
       "name": "World Cup: Saudi Arabia vs Uruguay",
       "description": "This market has three possible outcomes: Saudi Arabia, Draw, or Uruguay. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Saudi Arabia and Uruguay scheduled for June 15, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Saudi Arabia resolves to Yes if Saudi Arabia wins the Game. Uruguay resolves to Yes if Uruguay wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Saudi Arabia, Draw, or Uruguay has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10394,
-      "namedOutcomes": [
-        10395,
-        10396,
-        10397
-      ],
+      "namedOutcomes": [10395, 10396, 10397],
       "settledNamedOutcomes": []
     },
     {
@@ -9170,11 +9118,7 @@
       "name": "World Cup: Iran vs New Zealand",
       "description": "This market has three possible outcomes: Iran, Draw, or New Zealand. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Iran and New Zealand scheduled for June 15, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Iran resolves to Yes if Iran wins the Game. New Zealand resolves to Yes if New Zealand wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Iran, Draw, or New Zealand has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10398,
-      "namedOutcomes": [
-        10399,
-        10400,
-        10401
-      ],
+      "namedOutcomes": [10399, 10400, 10401],
       "settledNamedOutcomes": []
     },
     {
@@ -9182,11 +9126,7 @@
       "name": "World Cup: Sweden vs Tunisia",
       "description": "This market has three possible outcomes: Sweden, Draw, or Tunisia. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Sweden and Tunisia scheduled for June 14, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Sweden resolves to Yes if Sweden wins the Game. Tunisia resolves to Yes if Tunisia wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Sweden, Draw, or Tunisia has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10434,
-      "namedOutcomes": [
-        10435,
-        10436,
-        10437
-      ],
+      "namedOutcomes": [10435, 10436, 10437],
       "settledNamedOutcomes": []
     },
     {
@@ -9194,11 +9134,7 @@
       "name": "World Cup: Belgium vs Egypt",
       "description": "This market has three possible outcomes: Belgium, Draw, or Egypt. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Belgium and Egypt scheduled for June 15, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Belgium resolves to Yes if Belgium wins the Game. Egypt resolves to Yes if Egypt wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Belgium, Draw, or Egypt has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10438,
-      "namedOutcomes": [
-        10439,
-        10440,
-        10441
-      ],
+      "namedOutcomes": [10439, 10440, 10441],
       "settledNamedOutcomes": []
     },
     {
@@ -9206,11 +9142,7 @@
       "name": "World Cup: Spain vs Cape Verde",
       "description": "This market has three possible outcomes: Spain, Draw, or Cape Verde. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Spain and Cape Verde scheduled for June 15, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Spain resolves to Yes if Spain wins the Game. Cape Verde resolves to Yes if Cape Verde wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Spain, Draw, or Cape Verde has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10442,
-      "namedOutcomes": [
-        10443,
-        10444,
-        10445
-      ],
+      "namedOutcomes": [10443, 10444, 10445],
       "settledNamedOutcomes": []
     },
     {
@@ -9218,11 +9150,7 @@
       "name": "World Cup: France vs Senegal",
       "description": "This market has three possible outcomes: France, Draw, or Senegal. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between France and Senegal scheduled for June 16, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. France resolves to Yes if France wins the Game. Senegal resolves to Yes if Senegal wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of France, Draw, or Senegal has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10473,
-      "namedOutcomes": [
-        10474,
-        10475,
-        10476
-      ],
+      "namedOutcomes": [10474, 10475, 10476],
       "settledNamedOutcomes": []
     },
     {
@@ -9230,11 +9158,7 @@
       "name": "World Cup: Iraq vs Norway",
       "description": "This market has three possible outcomes: Iraq, Draw, or Norway. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Iraq and Norway scheduled for June 16, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Iraq resolves to Yes if Iraq wins the Game. Norway resolves to Yes if Norway wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Iraq, Draw, or Norway has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10477,
-      "namedOutcomes": [
-        10478,
-        10479,
-        10480
-      ],
+      "namedOutcomes": [10478, 10479, 10480],
       "settledNamedOutcomes": []
     },
     {
@@ -9242,11 +9166,7 @@
       "name": "World Cup: Argentina vs Algeria",
       "description": "This market has three possible outcomes: Argentina, Draw, or Algeria. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Argentina and Algeria scheduled for June 16, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Argentina resolves to Yes if Argentina wins the Game. Algeria resolves to Yes if Algeria wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Argentina, Draw, or Algeria has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10481,
-      "namedOutcomes": [
-        10482,
-        10483,
-        10484
-      ],
+      "namedOutcomes": [10482, 10483, 10484],
       "settledNamedOutcomes": []
     },
     {
@@ -9254,11 +9174,7 @@
       "name": "World Cup: Austria vs Jordan",
       "description": "This market has three possible outcomes: Austria, Draw, or Jordan. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Austria and Jordan scheduled for June 17, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Austria resolves to Yes if Austria wins the Game. Jordan resolves to Yes if Jordan wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Austria, Draw, or Jordan has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10485,
-      "namedOutcomes": [
-        10486,
-        10487,
-        10488
-      ],
+      "namedOutcomes": [10486, 10487, 10488],
       "settledNamedOutcomes": []
     },
     {
@@ -9266,11 +9182,7 @@
       "name": "World Cup: Portugal vs Congo DR",
       "description": "This market has three possible outcomes: Portugal, Draw, or Congo DR. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Portugal and Congo DR scheduled for June 17, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Portugal resolves to Yes if Portugal wins the Game. Congo DR resolves to Yes if Congo DR wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Portugal, Draw, or Congo DR has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10489,
-      "namedOutcomes": [
-        10490,
-        10491,
-        10492
-      ],
+      "namedOutcomes": [10490, 10491, 10492],
       "settledNamedOutcomes": []
     },
     {
@@ -9278,11 +9190,7 @@
       "name": "World Cup: England vs Croatia",
       "description": "This market has three possible outcomes: England, Draw, or Croatia. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between England and Croatia scheduled for June 17, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. England resolves to Yes if England wins the Game. Croatia resolves to Yes if Croatia wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of England, Draw, or Croatia has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10493,
-      "namedOutcomes": [
-        10494,
-        10495,
-        10496
-      ],
+      "namedOutcomes": [10494, 10495, 10496],
       "settledNamedOutcomes": []
     },
     {
@@ -9290,11 +9198,7 @@
       "name": "World Cup: Ghana vs Panama",
       "description": "This market has three possible outcomes: Ghana, Draw, or Panama. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Ghana and Panama scheduled for June 17, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Ghana resolves to Yes if Ghana wins the Game. Panama resolves to Yes if Panama wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Ghana, Draw, or Panama has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10497,
-      "namedOutcomes": [
-        10498,
-        10499,
-        10500
-      ],
+      "namedOutcomes": [10498, 10499, 10500],
       "settledNamedOutcomes": []
     },
     {
@@ -9302,11 +9206,7 @@
       "name": "World Cup: Uzbekistan vs Colombia",
       "description": "This market has three possible outcomes: Uzbekistan, Draw, or Colombia. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Uzbekistan and Colombia scheduled for June 17, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Uzbekistan resolves to Yes if Uzbekistan wins the Game. Colombia resolves to Yes if Colombia wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Uzbekistan, Draw, or Colombia has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10501,
-      "namedOutcomes": [
-        10502,
-        10503,
-        10504
-      ],
+      "namedOutcomes": [10502, 10503, 10504],
       "settledNamedOutcomes": []
     },
     {
@@ -9314,11 +9214,7 @@
       "name": "World Cup: Czechia vs South Africa",
       "description": "This market has three possible outcomes: Czechia, Draw, or South Africa. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Czechia and South Africa scheduled for June 18, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Czechia resolves to Yes if Czechia wins the Game. South Africa resolves to Yes if South Africa wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Czechia, Draw, or South Africa has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10505,
-      "namedOutcomes": [
-        10506,
-        10507,
-        10508
-      ],
+      "namedOutcomes": [10506, 10507, 10508],
       "settledNamedOutcomes": []
     },
     {
@@ -9326,11 +9222,7 @@
       "name": "World Cup: Switzerland vs Bosnia and Herzegovina",
       "description": "This market has three possible outcomes: Switzerland, Draw, or Bosnia and Herzegovina. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Switzerland and Bosnia and Herzegovina scheduled for June 18, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Switzerland resolves to Yes if Switzerland wins the Game. Bosnia and Herzegovina resolves to Yes if Bosnia and Herzegovina wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Switzerland, Draw, or Bosnia and Herzegovina has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10509,
-      "namedOutcomes": [
-        10510,
-        10511,
-        10512
-      ],
+      "namedOutcomes": [10510, 10511, 10512],
       "settledNamedOutcomes": []
     },
     {
@@ -9338,11 +9230,7 @@
       "name": "World Cup: Canada vs Qatar",
       "description": "This market has three possible outcomes: Canada, Draw, or Qatar. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Canada and Qatar scheduled for June 18, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Canada resolves to Yes if Canada wins the Game. Qatar resolves to Yes if Qatar wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Canada, Draw, or Qatar has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10513,
-      "namedOutcomes": [
-        10514,
-        10515,
-        10516
-      ],
+      "namedOutcomes": [10514, 10515, 10516],
       "settledNamedOutcomes": []
     },
     {
@@ -9350,11 +9238,7 @@
       "name": "World Cup: Mexico vs Korea Republic",
       "description": "This market has three possible outcomes: Mexico, Draw, or Korea Republic. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Mexico and Korea Republic scheduled for June 18, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Mexico resolves to Yes if Mexico wins the Game. Korea Republic resolves to Yes if Korea Republic wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Mexico, Draw, or Korea Republic has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10517,
-      "namedOutcomes": [
-        10518,
-        10519,
-        10520
-      ],
+      "namedOutcomes": [10518, 10519, 10520],
       "settledNamedOutcomes": []
     },
     {
@@ -9362,11 +9246,7 @@
       "name": "World Cup: USA vs Australia",
       "description": "This market has three possible outcomes: USA, Draw, or Australia. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between USA and Australia scheduled for June 19, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. USA resolves to Yes if USA wins the Game. Australia resolves to Yes if Australia wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of USA, Draw, or Australia has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10521,
-      "namedOutcomes": [
-        10522,
-        10523,
-        10524
-      ],
+      "namedOutcomes": [10522, 10523, 10524],
       "settledNamedOutcomes": []
     },
     {
@@ -9374,11 +9254,7 @@
       "name": "World Cup: Scotland vs Morocco",
       "description": "This market has three possible outcomes: Scotland, Draw, or Morocco. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Scotland and Morocco scheduled for June 19, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Scotland resolves to Yes if Scotland wins the Game. Morocco resolves to Yes if Morocco wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Scotland, Draw, or Morocco has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10525,
-      "namedOutcomes": [
-        10526,
-        10527,
-        10528
-      ],
+      "namedOutcomes": [10526, 10527, 10528],
       "settledNamedOutcomes": []
     },
     {
@@ -9386,11 +9262,7 @@
       "name": "World Cup: Brazil vs Haiti",
       "description": "This market has three possible outcomes: Brazil, Draw, or Haiti. Exactly one outcome will resolve to Yes; the other two will resolve to No. The market refers to the FIFA World Cup game between Brazil and Haiti scheduled for June 19, 2026 (the \"Game\"), with results determined only after the first 90 minutes of regular play plus stoppage time. Brazil resolves to Yes if Brazil wins the Game. Haiti resolves to Yes if Haiti wins the Game. Draw resolves to Yes if the Game ends in a draw. If the Game is postponed, delayed, or suspended and later completed, the completed Game as ultimately played will be used, provided the Game is completed by July 19, 2026 at 23:59 UTC. If FIFA officially declares either listed team as the winner of the Game without a completed Game, including but not limited to following abandonment, walkover, forfeit, disqualification, or administrative decision, that team's outcome resolves to Yes accordingly. If none of Brazil, Draw, or Haiti has otherwise resolved to Yes, Draw resolves to Yes if: (a) the Game is canceled entirely with no make-up Game, or (b) the Game has not been completed by July 19, 2026 at 23:59 UTC. FIFA is the primary resolution source, although independent reputable news sources may be used as fallback sources if FIFA has not published the relevant result. Once resolved, subsequent appeals, corrections, reversals, or result reassignments by FIFA or any other body will not affect the market resolution. This market has not been endorsed by FIFA. References to \"FIFA,\" the \"FIFA World Cup,\" and any other associated marks are descriptive only and do not indicate an endorsement of this market or any affiliation with FIFA. metadata=category:sports|subCategory:football",
       "fallbackOutcome": 10529,
-      "namedOutcomes": [
-        10530,
-        10531,
-        10532
-      ],
+      "namedOutcomes": [10530, 10531, 10532],
       "settledNamedOutcomes": []
     },
     {
@@ -9398,11 +9270,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Hypurr Dodgeball League|contestType:match|officialSource:Hypurr Dodgeball League|participantA:Cats|participantB:Humans|resolutionDeadline:20260908-2359|scheduledStart:20260901-1800|season:2026|sport:dodgeball|stage:Final",
       "fallbackOutcome": 11275,
-      "namedOutcomes": [
-        11276,
-        11277,
-        11278
-      ],
+      "namedOutcomes": [11276, 11277, 11278],
       "settledNamedOutcomes": []
     },
     {
@@ -9411,22 +9279,14 @@
       "description": "competition:Friendly Match|contestType:International Friendlies|officialSource:GospelTruth|participantA:FC Zurich|participantB:Messi's Family|resolutionDeadline:20260809-1234|scheduledStart:20260809-1104|season:2026/27|sport:Football|stage:Week 1",
       "fallbackOutcome": 11298,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        11299,
-        11300,
-        11301
-      ]
+      "settledNamedOutcomes": [11299, 11300, 11301]
     },
     {
       "question": 934,
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20260918-1800|decisionLabel:September 2026|institution:Federal Reserve|officialSource:federalreserve.gov|policyMeasure:federal funds target range upper bound|scheduledDecision:20260917-1800",
       "fallbackOutcome": 11350,
-      "namedOutcomes": [
-        11351,
-        11352,
-        11353
-      ],
+      "namedOutcomes": [11351, 11352, 11353],
       "settledNamedOutcomes": []
     },
     {
@@ -9434,15 +9294,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:English Premier League|contestType:season|officialSource:premierleague.com|participantA:Arsenal|participantB:Manchester City|resolutionDeadline:20270531-2300|scheduledStart:20260808-1200|season:2026/27|sport:Association Football|stage:Season",
       "fallbackOutcome": 11399,
-      "namedOutcomes": [
-        11400,
-        11401,
-        11402,
-        11403,
-        11404,
-        11405,
-        11406
-      ],
+      "namedOutcomes": [11400, 11401, 11402, 11403, 11404, 11405, 11406],
       "settledNamedOutcomes": []
     },
     {
@@ -9450,17 +9302,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:tournament|officialSource:uefa.com|participantA:Paris Saint-Germain|participantB:Bayern Munich|resolutionDeadline:20270606-2300|scheduledStart:20260908-1900|season:2026/27|sport:Association Football|stage:Tournament",
       "fallbackOutcome": 11417,
-      "namedOutcomes": [
-        11418,
-        11419,
-        11420,
-        11421,
-        11422,
-        11423,
-        11424,
-        11425,
-        11426
-      ],
+      "namedOutcomes": [11418, 11419, 11420, 11421, 11422, 11423, 11424, 11425, 11426],
       "settledNamedOutcomes": []
     },
     {
@@ -9468,16 +9310,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:National Football League|contestType:season|officialSource:nfl.com|participantA:Los Angeles Rams|participantB:Buffalo Bills|resolutionDeadline:20270215-2300|scheduledStart:20260910-0020|season:2026|sport:American Football|stage:Super Bowl",
       "fallbackOutcome": 11428,
-      "namedOutcomes": [
-        11429,
-        11430,
-        11431,
-        11432,
-        11433,
-        11434,
-        11435,
-        11436
-      ],
+      "namedOutcomes": [11429, 11430, 11431, 11432, 11433, 11434, 11435, 11436],
       "settledNamedOutcomes": []
     },
     {
@@ -9485,16 +9318,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:National Basketball Association|contestType:season|officialSource:nba.com|participantA:Oklahoma City Thunder|participantB:San Antonio Spurs|resolutionDeadline:20270630-2300|scheduledStart:20261020-2300|season:2026/27|sport:Basketball|stage:NBA Finals",
       "fallbackOutcome": 11437,
-      "namedOutcomes": [
-        11438,
-        11439,
-        11440,
-        11441,
-        11442,
-        11443,
-        11444,
-        11445
-      ],
+      "namedOutcomes": [11438, 11439, 11440, 11441, 11442, 11443, 11444, 11445],
       "settledNamedOutcomes": []
     },
     {
@@ -9502,14 +9326,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Formula 1 World Championship|contestType:championship|officialSource:formula1.com|participantA:Kimi Antonelli|participantB:Lewis Hamilton|resolutionDeadline:20261213-2300|scheduledStart:20261025-2000|season:2026|sport:F1|stage:Drivers Championship",
       "fallbackOutcome": 11466,
-      "namedOutcomes": [
-        11467,
-        11468,
-        11469,
-        11470,
-        11471,
-        11472
-      ],
+      "namedOutcomes": [11467, 11468, 11469, 11470, 11471, 11472],
       "settledNamedOutcomes": []
     },
     {
@@ -9517,11 +9334,7 @@
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20260924-1200|decisionLabel:September 2026|institution:Bank of England|officialSource:bankofengland.co.uk|policyMeasure:Bank Rate|scheduledDecision:20260917-1100",
       "fallbackOutcome": 11476,
-      "namedOutcomes": [
-        11477,
-        11478,
-        11479
-      ],
+      "namedOutcomes": [11477, 11478, 11479],
       "settledNamedOutcomes": []
     },
     {
@@ -9529,11 +9342,7 @@
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20260923-1800|decisionLabel:September 2026|institution:Federal Reserve|officialSource:federalreserve.gov|policyMeasure:federal funds target range upper bound|scheduledDecision:20260916-1800",
       "fallbackOutcome": 11547,
-      "namedOutcomes": [
-        11548,
-        11549,
-        11550
-      ],
+      "namedOutcomes": [11548, 11549, 11550],
       "settledNamedOutcomes": []
     },
     {
@@ -9541,14 +9350,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Major League Baseball|contestType:series|officialSource:mlb.com|participantA:Los Angeles Dodgers|participantB:New York Yankees|resolutionDeadline:20261115-2300|scheduledStart:20260929-2300|season:2026|sport:Baseball|stage:World Series",
       "fallbackOutcome": 11570,
-      "namedOutcomes": [
-        11571,
-        11572,
-        11573,
-        11574,
-        11575,
-        11576
-      ],
+      "namedOutcomes": [11571, 11572, 11573, 11574, 11575, 11576],
       "settledNamedOutcomes": []
     },
     {
@@ -9556,11 +9358,7 @@
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20261016-1800|decisionLabel:September 2026|institution:Federal Reserve|officialSource:federalreserve.gov|policyMeasure:the federal funds target range upper bound|scheduledDecision:20260916-1800",
       "fallbackOutcome": 11848,
-      "namedOutcomes": [
-        11849,
-        11850,
-        11851
-      ],
+      "namedOutcomes": [11849, 11850, 11851],
       "settledNamedOutcomes": []
     },
     {
@@ -9568,11 +9366,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLB|contestType:Baseball|officialSource:ESPN|participantA:New York Yankees|participantB:Seattle Mariners|resolutionDeadline:20260818-1708|scheduledStart:20260818-1708|season:2026|sport:baseball|stage:New York",
       "fallbackOutcome": 12238,
-      "namedOutcomes": [
-        12239,
-        12240,
-        12241
-      ],
+      "namedOutcomes": [12239, 12240, 12241],
       "settledNamedOutcomes": []
     },
     {
@@ -9580,24 +9374,15 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:UEFA|participantA:Arsenal|participantB:Chelsea|resolutionDeadline:20260829-0428|scheduledStart:20260829-0328|season:2026/27|sport:football|stage:Matchday",
       "fallbackOutcome": 12567,
-      "namedOutcomes": [
-        12569,
-        12570
-      ],
-      "settledNamedOutcomes": [
-        12568
-      ]
+      "namedOutcomes": [12569, 12570],
+      "settledNamedOutcomes": [12568]
     },
     {
       "question": 980,
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20260829-0348|decisionLabel:FOMC|institution:FED|officialSource:Bureau of Labor Statistics|policyMeasure:Interest rates |scheduledDecision:20260821-0348",
       "fallbackOutcome": 12575,
-      "namedOutcomes": [
-        12576,
-        12577,
-        12578
-      ],
+      "namedOutcomes": [12576, 12577, 12578],
       "settledNamedOutcomes": []
     },
     {
@@ -9605,11 +9390,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:FIFA|participantA:Arsenal|participantB:Chelsea|resolutionDeadline:20260821-0509|scheduledStart:20260816-0408|season:2026/27|sport:football|stage:Regular season",
       "fallbackOutcome": 12585,
-      "namedOutcomes": [
-        12586,
-        12587,
-        12588
-      ],
+      "namedOutcomes": [12586, 12587, 12588],
       "settledNamedOutcomes": []
     },
     {
@@ -9617,18 +9398,8 @@
       "name": "template:sportsContestResult",
       "description": "competition:Block Staking (tm) World Championship|contestType:battle|officialSource:Block Staking (tm) Lawyers|participantA:Big Meng|participantB:Momo|resolutionDeadline:20261108-1800|scheduledStart:20261108-1000|season:2026|sport:Block Staking (tm) battle|stage:Final",
       "fallbackOutcome": 12610,
-      "namedOutcomes": [
-        12613,
-        12623,
-        13505
-      ],
-      "settledNamedOutcomes": [
-        12611,
-        12612,
-        12628,
-        12629,
-        13504
-      ]
+      "namedOutcomes": [12613, 12623, 13505],
+      "settledNamedOutcomes": [12611, 12612, 12628, 12629, 13504]
     },
     {
       "question": 992,
@@ -9636,10 +9407,7 @@
       "description": "competition:PoCCup1|contestType:match|officialSource:poc|participantA:AAA1|participantB:BBB1|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12934,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        12935,
-        12936
-      ]
+      "settledNamedOutcomes": [12935, 12936]
     },
     {
       "question": 993,
@@ -9647,10 +9415,7 @@
       "description": "competition:PoCCup2|contestType:match|officialSource:poc|participantA:AAA2|participantB:BBB2|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12941,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        12942,
-        12943
-      ]
+      "settledNamedOutcomes": [12942, 12943]
     },
     {
       "question": 994,
@@ -9658,10 +9423,7 @@
       "description": "competition:PoCCup3|contestType:match|officialSource:poc|participantA:AAA3|participantB:BBB3|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12946,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        12947,
-        12948
-      ]
+      "settledNamedOutcomes": [12947, 12948]
     },
     {
       "question": 997,
@@ -9669,37 +9431,23 @@
       "description": "competition:PoCCup5|contestType:match|officialSource:poc|participantA:AAA5|participantB:BBB5|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12963,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        12964,
-        12965
-      ]
+      "settledNamedOutcomes": [12964, 12965]
     },
     {
       "question": 998,
       "name": "template:sportsContestResult",
       "description": "competition:PoCCup6|contestType:match|officialSource:poc|participantA:AAA6|participantB:BBB6|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12966,
-      "namedOutcomes": [
-        12970,
-        12971
-      ],
-      "settledNamedOutcomes": [
-        12967,
-        12968,
-        12969
-      ]
+      "namedOutcomes": [12970, 12971],
+      "settledNamedOutcomes": [12967, 12968, 12969]
     },
     {
       "question": 999,
       "name": "template:sportsContestResult",
       "description": "competition:PoCCup7|contestType:match|officialSource:poc|participantA:AAA7|participantB:BBB7|resolutionDeadline:20260901-0600|scheduledStart:20260901-0600|season:2026|sport:poc|stage:final",
       "fallbackOutcome": 12978,
-      "namedOutcomes": [
-        12980
-      ],
-      "settledNamedOutcomes": [
-        12979
-      ]
+      "namedOutcomes": [12980],
+      "settledNamedOutcomes": [12979]
     },
     {
       "question": 1010,
@@ -9707,20 +9455,14 @@
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:LA|participantB:SJ|resolutionDeadline:20260827-0230|scheduledStart:20260820-0230|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 13284,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        13285
-      ]
+      "settledNamedOutcomes": [13285]
     },
     {
       "question": 1048,
       "name": "template:sportsContestResult",
       "description": "competition:outbid.lol bid war|contestType:pay-to-rank auction|officialSource:outbid.lol public leaderboard|participantA:outrank.so|participantB:orynth.dev|resolutionDeadline:20260824-1800|scheduledStart:20260824-1600|season:2026|sport:internet|stage:number one spot",
       "fallbackOutcome": 13749,
-      "namedOutcomes": [
-        13750,
-        13751,
-        13752
-      ],
+      "namedOutcomes": [13750, 13751, 13752],
       "settledNamedOutcomes": []
     },
     {
@@ -9728,11 +9470,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Bundesliga|contestType:match|officialSource:Bundesliga|participantA:Bayern Munich|participantB:VfB Stuttgart|resolutionDeadline:20260830-1830|scheduledStart:20260828-1830|season:2026/27|sport:football|stage:Matchday 1",
       "fallbackOutcome": 14079,
-      "namedOutcomes": [
-        14080,
-        14081,
-        14082
-      ],
+      "namedOutcomes": [14080, 14081, 14082],
       "settledNamedOutcomes": []
     },
     {
@@ -9740,49 +9478,31 @@
       "name": "template:sportsContestResult3",
       "description": "competition:0.75 Mile|contestType:Parkrun|officialSource:Leinegen|participantA:Mionel Lessi|participantB:Bsain Uolt|resolutionDeadline:20260910-1537|scheduledStart:20260924-1535|season:2026|sport:running|stage:Finals",
       "fallbackOutcome": 15356,
-      "namedOutcomes": [
-        15357,
-        15358
-      ],
-      "settledNamedOutcomes": [
-        15408
-      ]
+      "namedOutcomes": [15357, 15358],
+      "settledNamedOutcomes": [15408]
     },
     {
       "question": 1145,
       "name": "template:sportsContestResult3",
       "description": "competition:10 Mile|contestType:Parkrun|officialSource:Leinegen|participantA:Mionel Lessi|participantB:Bsain Uolt|resolutionDeadline:20260910-1537|scheduledStart:20260924-1535|season:2026|sport:running|stage:Finals",
       "fallbackOutcome": 15359,
-      "namedOutcomes": [
-        15360,
-        15419
-      ],
-      "settledNamedOutcomes": [
-        15361,
-        15418
-      ]
+      "namedOutcomes": [15360, 15419],
+      "settledNamedOutcomes": [15361, 15418]
     },
     {
       "question": 1178,
       "name": "template:sportsTournamentWinner4",
       "description": "competition:tugowar|officialSource:tuggy|resolutionDeadline:20260830-1210|season:final|sport:tugowar",
       "fallbackOutcome": 15628,
-      "namedOutcomes": [
-        15630
-      ],
-      "settledNamedOutcomes": [
-        15629
-      ]
+      "namedOutcomes": [15630],
+      "settledNamedOutcomes": [15629]
     },
     {
       "question": 1179,
       "name": "template:sportsTournamentWinner4",
       "description": "competition:tugowar|officialSource:brandon|resolutionDeadline:20260830-1210|season:final|sport:tugowar",
       "fallbackOutcome": 15631,
-      "namedOutcomes": [
-        15632,
-        15633
-      ],
+      "namedOutcomes": [15632, 15633],
       "settledNamedOutcomes": []
     },
     {
@@ -9790,11 +9510,7 @@
       "name": "template:policyRateDecision3",
       "description": "decisionDeadline:20261028-2359|decisionLabel:September 2026|institution:Federal Reserve's Open Market Committee|officialSource:realityArbSepolia: 0x05ce5359 213f8d53 31133de9 fc2cfd23 c056a1c4 5ee4256c 1541d4ef 250b36a6|policyMeasure:the upper bound target range for the federal funds rate|scheduledDecision:20260916-1800",
       "fallbackOutcome": 16156,
-      "namedOutcomes": [
-        16157,
-        16158,
-        16159
-      ],
+      "namedOutcomes": [16157, 16158, 16159],
       "settledNamedOutcomes": []
     },
     {
@@ -9802,22 +9518,15 @@
       "name": "template:sportsContestResult",
       "description": "competition:Brasileiro Serie A|contestType:match|officialSource:cbf.com.br|participantA:REM|participantB:CBA|resolutionDeadline:20260907-2300|scheduledStart:20260831-2300|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 16240,
-      "namedOutcomes": [
-        16241
-      ],
-      "settledNamedOutcomes": [
-        16242,
-        16243
-      ]
+      "namedOutcomes": [16241],
+      "settledNamedOutcomes": [16242, 16243]
     },
     {
       "question": 1270,
       "name": "template:sportsTournamentWinner4",
       "description": "competition:World Series|officialSource:mlb.com|resolutionDeadline:20261201-0000|season:2026|sport:Baseball",
       "fallbackOutcome": 17009,
-      "namedOutcomes": [
-        17010
-      ],
+      "namedOutcomes": [17010],
       "settledNamedOutcomes": []
     },
     {
@@ -9825,100 +9534,63 @@
       "name": "template:sportsContestResult",
       "description": "competition:Eliteserien|contestType:match|officialSource:eliteserien.no|participantA:Sandefjord Fotball|participantB:Viking FK|resolutionDeadline:20260911-1900|scheduledStart:20260904-1900|season:2026|sport:Soccer|stage:N/A",
       "fallbackOutcome": 17143,
-      "namedOutcomes": [
-        17145
-      ],
-      "settledNamedOutcomes": [
-        17144,
-        17146
-      ]
+      "namedOutcomes": [17145],
+      "settledNamedOutcomes": [17144, 17146]
     },
     {
       "question": 1279,
       "name": "template:sportsContestResult",
       "description": "competition:Chinese Super League|contestType:match|officialSource:cfl-china.cn|participantA:Wuhan Three Towns FC|participantB:Qingdao We|resolutionDeadline:20260912-1100|scheduledStart:20260905-1100|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17181,
-      "namedOutcomes": [
-        17183
-      ],
-      "settledNamedOutcomes": [
-        17182,
-        17184
-      ]
+      "namedOutcomes": [17183],
+      "settledNamedOutcomes": [17182, 17184]
     },
     {
       "question": 1281,
       "name": "template:sportsContestResult",
       "description": "competition:Premier League|contestType:match|officialSource:premierleague.com|participantA:Newcastle United FC|participantB:AFC Bournemouth|resolutionDeadline:20260912-1130|scheduledStart:20260905-1130|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17199,
-      "namedOutcomes": [
-        17201
-      ],
-      "settledNamedOutcomes": [
-        17200,
-        17202
-      ]
+      "namedOutcomes": [17201],
+      "settledNamedOutcomes": [17200, 17202]
     },
     {
       "question": 1283,
       "name": "template:sportsContestResult",
       "description": "competition:Chinese Super Leag|contestType:match|officialSource:cfl-china.cn|participantA:Shanghai Port FC|participantB:Beijing Guoan FC|resolutionDeadline:20260912-1135|scheduledStart:20260905-1135|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17207,
-      "namedOutcomes": [
-        17209
-      ],
-      "settledNamedOutcomes": [
-        17208,
-        17210
-      ]
+      "namedOutcomes": [17209],
+      "settledNamedOutcomes": [17208, 17210]
     },
     {
       "question": 1292,
       "name": "template:sportsContestResult",
       "description": "competition:Premier League|contestType:match|officialSource:premierleague.com|participantA:Brentford FC|participantB:Sunderland AFC|resolutionDeadline:20260912-1400|scheduledStart:20260905-1400|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17257,
-      "namedOutcomes": [
-        17259
-      ],
-      "settledNamedOutcomes": [
-        17258,
-        17260
-      ]
+      "namedOutcomes": [17259],
+      "settledNamedOutcomes": [17258, 17260]
     },
     {
       "question": 1293,
       "name": "template:sportsContestResult",
       "description": "competition:Premier League|contestType:match|officialSource:premierleague.com|participantA:Nottingham Fores|participantB:Tottenham Hotspur FC|resolutionDeadline:20260912-1400|scheduledStart:20260905-1400|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17261,
-      "namedOutcomes": [
-        17263
-      ],
-      "settledNamedOutcomes": [
-        17262,
-        17264
-      ]
+      "namedOutcomes": [17263],
+      "settledNamedOutcomes": [17262, 17264]
     },
     {
       "question": 1299,
       "name": "template:sportsContestResult",
       "description": "competition:Liga Portugal|contestType:match|officialSource:ligaportugal.pt|participantA:Club Foot Estrela|participantB:FC Famalicão|resolutionDeadline:20260912-1430|scheduledStart:20260905-1430|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17294,
-      "namedOutcomes": [
-        17296
-      ],
-      "settledNamedOutcomes": [
-        17295,
-        17297
-      ]
+      "namedOutcomes": [17296],
+      "settledNamedOutcomes": [17295, 17297]
     },
     {
       "question": 1306,
       "name": "template:sportsTournamentWinner4",
       "description": "competition:Asian Men's Volleyball Championship|officialSource:asianvolleyball.net|resolutionDeadline:20260920-0000|season:2026|sport:Volleyball",
       "fallbackOutcome": 17574,
-      "namedOutcomes": [
-        17575
-      ],
+      "namedOutcomes": [17575],
       "settledNamedOutcomes": []
     },
     {
@@ -9926,9 +9598,7 @@
       "name": "template:sportsTournamentWinner4",
       "description": "competition:Asian Games Women's Football|officialSource:aichi-nagoya2026.org|resolutionDeadline:20261010-0000|season:2026|sport:Football",
       "fallbackOutcome": 17576,
-      "namedOutcomes": [
-        17577
-      ],
+      "namedOutcomes": [17577],
       "settledNamedOutcomes": []
     },
     {
@@ -9936,11 +9606,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Argentina Primera Di|contestType:match|officialSource:ligaprofesional.ar|participantA:CA Barracas Central|participantB:Argentinos Juniors|resolutionDeadline:20260914-2200|scheduledStart:20260907-2200|season:2026|sport:Soccer|stage:Round 2",
       "fallbackOutcome": 17806,
-      "namedOutcomes": [
-        17807,
-        17808,
-        17809
-      ],
+      "namedOutcomes": [17807, 17808, 17809],
       "settledNamedOutcomes": []
     },
     {
@@ -9948,11 +9614,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Brasileiro Serie A|contestType:match|officialSource:cbf.com.br|participantA:EC Vitória|participantB:Grêmio FB Porto Aleg|resolutionDeadline:20260914-2300|scheduledStart:20260907-2300|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17811,
-      "namedOutcomes": [
-        17812,
-        17813,
-        17814
-      ],
+      "namedOutcomes": [17812, 17813, 17814],
       "settledNamedOutcomes": []
     },
     {
@@ -9960,11 +9622,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Argentina Prime|contestType:match|officialSource:ligaprofesional.ar|participantA:CA Unión de Santa Fe|participantB:Instituto AC Córdoba|resolutionDeadline:20260915-0015|scheduledStart:20260908-0015|season:2026|sport:Soccer|stage:Round 2",
       "fallbackOutcome": 17815,
-      "namedOutcomes": [
-        17816,
-        17817,
-        17818
-      ],
+      "namedOutcomes": [17816, 17817, 17818],
       "settledNamedOutcomes": []
     },
     {
@@ -9972,11 +9630,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:Ulsan HD FC|participantB:FC Seoul|resolutionDeadline:20260915-1030|scheduledStart:20260908-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17835,
-      "namedOutcomes": [
-        17836,
-        17837,
-        17838
-      ],
+      "namedOutcomes": [17836, 17837, 17838],
       "settledNamedOutcomes": []
     },
     {
@@ -9984,11 +9638,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:Incheon United FC|participantB:Bucheon FC 1995|resolutionDeadline:20260915-1030|scheduledStart:20260908-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 17839,
-      "namedOutcomes": [
-        17840,
-        17841,
-        17842
-      ],
+      "namedOutcomes": [17840, 17841, 17842],
       "settledNamedOutcomes": []
     },
     {
@@ -9996,11 +9646,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Club Brugge KV|participantB:Aston Villa FC|resolutionDeadline:20260915-1645|scheduledStart:20260908-1645|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17881,
-      "namedOutcomes": [
-        17882,
-        17883,
-        17884
-      ],
+      "namedOutcomes": [17882, 17883, 17884],
       "settledNamedOutcomes": []
     },
     {
@@ -10008,11 +9654,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:AEK Athens FC|participantB:Linzer Athletik Spo|resolutionDeadline:20260915-1645|scheduledStart:20260908-1645|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17885,
-      "namedOutcomes": [
-        17886,
-        17887,
-        17888
-      ],
+      "namedOutcomes": [17886, 17887, 17888],
       "settledNamedOutcomes": []
     },
     {
@@ -10020,11 +9662,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:FC Porto|participantB:Manchester City FC|resolutionDeadline:20260915-1900|scheduledStart:20260908-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17902,
-      "namedOutcomes": [
-        17903,
-        17904,
-        17905
-      ],
+      "namedOutcomes": [17903, 17904, 17905],
       "settledNamedOutcomes": []
     },
     {
@@ -10032,11 +9670,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Real Madrid CF|participantB:FC Internazionale |resolutionDeadline:20260915-1900|scheduledStart:20260908-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17906,
-      "namedOutcomes": [
-        17907,
-        17908,
-        17909
-      ],
+      "namedOutcomes": [17907, 17908, 17909],
       "settledNamedOutcomes": []
     },
     {
@@ -10044,11 +9678,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:BV Borussia 09 Dort|participantB:Villarreal CF|resolutionDeadline:20260915-1900|scheduledStart:20260908-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17910,
-      "namedOutcomes": [
-        17911,
-        17912,
-        17913
-      ],
+      "namedOutcomes": [17911, 17912, 17913],
       "settledNamedOutcomes": []
     },
     {
@@ -10056,11 +9686,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Lille OSC|participantB:Real Betis Balompié|resolutionDeadline:20260915-1900|scheduledStart:20260908-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 17914,
-      "namedOutcomes": [
-        17915,
-        17916,
-        17917
-      ],
+      "namedOutcomes": [17915, 17916, 17917],
       "settledNamedOutcomes": []
     },
     {
@@ -10068,11 +9694,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Copa Libertadores|contestType:match|officialSource:conmebol.com|participantA:Fluminense FC|participantB:CA Platense|resolutionDeadline:20260915-2200|scheduledStart:20260908-2200|season:2026|sport:Soccer|stage:Quarterfinals",
       "fallbackOutcome": 17936,
-      "namedOutcomes": [
-        17937,
-        17938,
-        17939
-      ],
+      "namedOutcomes": [17937, 17938, 17939],
       "settledNamedOutcomes": []
     },
     {
@@ -10080,11 +9702,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:FC Pohang Steelers|participantB:Gimcheon Sangmu FC|resolutionDeadline:20260916-1030|scheduledStart:20260909-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18103,
-      "namedOutcomes": [
-        18104,
-        18105,
-        18106
-      ],
+      "namedOutcomes": [18104, 18105, 18106],
       "settledNamedOutcomes": []
     },
     {
@@ -10092,11 +9710,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:Gwangju FC|participantB:Jeju United FC|resolutionDeadline:20260916-1030|scheduledStart:20260909-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18107,
-      "namedOutcomes": [
-        18108,
-        18109,
-        18110
-      ],
+      "namedOutcomes": [18108, 18109, 18110],
       "settledNamedOutcomes": []
     },
     {
@@ -10104,11 +9718,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:Gangwon FC|participantB:Jeonbuk Hyundai Motors FC|resolutionDeadline:20260916-1030|scheduledStart:20260909-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18111,
-      "namedOutcomes": [
-        18112,
-        18113,
-        18114
-      ],
+      "namedOutcomes": [18112, 18113, 18114],
       "settledNamedOutcomes": []
     },
     {
@@ -10116,11 +9726,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:K League 1|contestType:match|officialSource:kleague.com|participantA:Daejeon Hana Citizen FC|participantB:FC Anyang|resolutionDeadline:20260916-1030|scheduledStart:20260909-1030|season:2027|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18115,
-      "namedOutcomes": [
-        18116,
-        18117,
-        18118
-      ],
+      "namedOutcomes": [18116, 18117, 18118],
       "settledNamedOutcomes": []
     },
     {
@@ -10128,11 +9734,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:FC Barcelona|participantB:Feyenoord Rotterdam|resolutionDeadline:20260916-1645|scheduledStart:20260909-1645|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18146,
-      "namedOutcomes": [
-        18147,
-        18148,
-        18149
-      ],
+      "namedOutcomes": [18147, 18148, 18149],
       "settledNamedOutcomes": []
     },
     {
@@ -10140,11 +9742,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:VfB Stuttgart 1893|participantB:Viking FK|resolutionDeadline:20260916-1645|scheduledStart:20260909-1645|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18150,
-      "namedOutcomes": [
-        18151,
-        18152,
-        18153
-      ],
+      "namedOutcomes": [18151, 18152, 18153],
       "settledNamedOutcomes": []
     },
     {
@@ -10152,11 +9750,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Sportin|participantB:Galatasaray Spor Kulübü|resolutionDeadline:20260916-1900|scheduledStart:20260909-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18169,
-      "namedOutcomes": [
-        18170,
-        18171,
-        18172
-      ],
+      "namedOutcomes": [18170, 18171, 18172],
       "settledNamedOutcomes": []
     },
     {
@@ -10164,11 +9758,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:SSC Napoli|participantB:Arsenal FC|resolutionDeadline:20260916-1900|scheduledStart:20260909-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18173,
-      "namedOutcomes": [
-        18174,
-        18175,
-        18176
-      ],
+      "namedOutcomes": [18174, 18175, 18176],
       "settledNamedOutcomes": []
     },
     {
@@ -10176,11 +9766,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Liverpool FC|participantB:Club Atlético de Ma|resolutionDeadline:20260916-1900|scheduledStart:20260909-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18177,
-      "namedOutcomes": [
-        18178,
-        18179,
-        18180
-      ],
+      "namedOutcomes": [18178, 18179, 18180],
       "settledNamedOutcomes": []
     },
     {
@@ -10188,11 +9774,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Paris Saint|participantB:ŠK Slovan Bratislava|resolutionDeadline:20260916-1900|scheduledStart:20260909-1900|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18181,
-      "namedOutcomes": [
-        18182,
-        18183,
-        18184
-      ],
+      "namedOutcomes": [18182, 18183, 18184],
       "settledNamedOutcomes": []
     },
     {
@@ -10200,11 +9782,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Liga Portugal|contestType:match|officialSource:ligaportugal.pt|participantA:Moreirense FC|participantB:SL Benfica|resolutionDeadline:20260916-1945|scheduledStart:20260909-1945|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18202,
-      "namedOutcomes": [
-        18203,
-        18204,
-        18205
-      ],
+      "namedOutcomes": [18203, 18204, 18205],
       "settledNamedOutcomes": []
     },
     {
@@ -10212,11 +9790,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:Copa Libertadores|contestType:match|officialSource:conmebol.com|participantA:SE Palmeiras|participantB:Liga Deportiva Univers|resolutionDeadline:20260916-2200|scheduledStart:20260909-2200|season:2026|sport:Soccer|stage:Quarterfinals",
       "fallbackOutcome": 18225,
-      "namedOutcomes": [
-        18226,
-        18227,
-        18228
-      ],
+      "namedOutcomes": [18226, 18227, 18228],
       "settledNamedOutcomes": []
     },
     {
@@ -10224,11 +9798,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:DC United|participantB:Columbus Crew|resolutionDeadline:20260916-2330|scheduledStart:20260909-2330|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18265,
-      "namedOutcomes": [
-        18266,
-        18267,
-        18268
-      ],
+      "namedOutcomes": [18266, 18267, 18268],
       "settledNamedOutcomes": []
     },
     {
@@ -10236,11 +9806,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Toronto FC|participantB:Nashville SC|resolutionDeadline:20260916-2330|scheduledStart:20260909-2330|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18269,
-      "namedOutcomes": [
-        18270,
-        18271,
-        18272
-      ],
+      "namedOutcomes": [18270, 18271, 18272],
       "settledNamedOutcomes": []
     },
     {
@@ -10248,11 +9814,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Atlanta United FC|participantB:Orlando City SC|resolutionDeadline:20260916-2330|scheduledStart:20260909-2330|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18273,
-      "namedOutcomes": [
-        18274,
-        18275,
-        18276
-      ],
+      "namedOutcomes": [18274, 18275, 18276],
       "settledNamedOutcomes": []
     },
     {
@@ -10260,11 +9822,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Club de Foot Montréal|participantB:Charlotte FC|resolutionDeadline:20260916-2330|scheduledStart:20260909-2330|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18277,
-      "namedOutcomes": [
-        18278,
-        18279,
-        18280
-      ],
+      "namedOutcomes": [18278, 18279, 18280],
       "settledNamedOutcomes": []
     },
     {
@@ -10272,11 +9830,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Philadelphia Union|participantB:FC Cincinnati|resolutionDeadline:20260916-2345|scheduledStart:20260909-2345|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18281,
-      "namedOutcomes": [
-        18282,
-        18283,
-        18284
-      ],
+      "namedOutcomes": [18282, 18283, 18284],
       "settledNamedOutcomes": []
     },
     {
@@ -10284,11 +9838,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:New York City Football Cl|participantB:New England Revolution|resolutionDeadline:20260917-0000|scheduledStart:20260910-0000|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18285,
-      "namedOutcomes": [
-        18286,
-        18287,
-        18288
-      ],
+      "namedOutcomes": [18286, 18287, 18288],
       "settledNamedOutcomes": []
     },
     {
@@ -10296,11 +9846,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Chicago Fire FC|participantB:Club Internacional de Fútbol Mi|resolutionDeadline:20260917-0030|scheduledStart:20260910-0030|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18304,
-      "namedOutcomes": [
-        18305,
-        18306,
-        18307
-      ],
+      "namedOutcomes": [18305, 18306, 18307],
       "settledNamedOutcomes": []
     },
     {
@@ -10308,11 +9854,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Austin FC|participantB:Colorado Rapids|resolutionDeadline:20260917-0030|scheduledStart:20260910-0030|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18385,
-      "namedOutcomes": [
-        18386,
-        18387,
-        18388
-      ],
+      "namedOutcomes": [18386, 18387, 18388],
       "settledNamedOutcomes": []
     },
     {
@@ -10320,11 +9862,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:MLS|contestType:match|officialSource:mlssoccer.com|participantA:Los Angeles FC|participantB:New York Red Bulls|resolutionDeadline:20260917-0230|scheduledStart:20260910-0230|season:2026|sport:Soccer|stage:Regular Season",
       "fallbackOutcome": 18401,
-      "namedOutcomes": [
-        18402,
-        18403,
-        18404
-      ],
+      "namedOutcomes": [18402, 18403, 18404],
       "settledNamedOutcomes": []
     },
     {
@@ -10332,11 +9870,7 @@
       "name": "template:sportsContestResult",
       "description": "competition:UEFA Champions League|contestType:match|officialSource:uefa.com|participantA:Fenerbahçe Spor Kulübü|participantB:AS Roma|resolutionDeadline:20260917-1645|scheduledStart:20260910-1645|season:2026|sport:Soccer|stage:Group Stage",
       "fallbackOutcome": 18425,
-      "namedOutcomes": [
-        18426,
-        18427,
-        18428
-      ],
+      "namedOutcomes": [18426, 18427, 18428],
       "settledNamedOutcomes": []
     },
     {
@@ -10344,16 +9878,7 @@
       "name": "template:sportsTournamentWinner",
       "description": "competition:Riksdag Election|officialSource:Valmyndigheten|resolutionDeadline:20260920-2359|season:2026|sport:politics",
       "fallbackOutcome": 18587,
-      "namedOutcomes": [
-        18588,
-        18589,
-        18590,
-        18591,
-        18592,
-        18593,
-        18594,
-        18595
-      ],
+      "namedOutcomes": [18588, 18589, 18590, 18591, 18592, 18593, 18594, 18595],
       "settledNamedOutcomes": []
     },
     {
@@ -10361,14 +9886,7 @@
       "name": "template:sportsTournamentWinner",
       "description": "competition:Region Stockholm Election|officialSource:Valmyndigheten|resolutionDeadline:20260920-2359|season:2026|sport:politics",
       "fallbackOutcome": 18596,
-      "namedOutcomes": [
-        18597,
-        18598,
-        18599,
-        18600,
-        18601,
-        18602
-      ],
+      "namedOutcomes": [18597, 18598, 18599, 18600, 18601, 18602],
       "settledNamedOutcomes": []
     },
     {
@@ -10376,11 +9894,7 @@
       "name": "template:policyRateDecision",
       "description": "decisionDeadline:20260923-0000|decisionLabel:week of 2026-09-20|institution:TRUF.NETWORK|officialSource:TRUF.NETWORK|policyMeasure:the US CPI year-on-year rate, rounded to one decimal place|scheduledDecision:20260920-0000",
       "fallbackOutcome": 18925,
-      "namedOutcomes": [
-        18926,
-        18927,
-        18928
-      ],
+      "namedOutcomes": [18926, 18927, 18928],
       "settledNamedOutcomes": []
     },
     {
@@ -10388,13 +9902,7 @@
       "name": "template:policyRateLadder",
       "description": "decisionDeadline:20261028-1700|decisionLabel:October 2026|institution:Federal Open Market Committee|officialSource:Federal Reserve |policyMeasure:the upper bound target range for the federal funds rate|scheduledDecision:20261028-1200",
       "fallbackOutcome": 19375,
-      "namedOutcomes": [
-        19376,
-        19377,
-        19378,
-        19379,
-        19380
-      ],
+      "namedOutcomes": [19376, 19377, 19378, 19379, 19380],
       "settledNamedOutcomes": []
     },
     {
@@ -10402,10 +9910,7 @@
       "name": "template:sportsTournamentWinner4",
       "description": "competition:China - League U20|officialSource:OPTICODDS|resolutionDeadline:20260916-0808|season:2026|sport:soccer",
       "fallbackOutcome": 19385,
-      "namedOutcomes": [
-        19386,
-        19387
-      ],
+      "namedOutcomes": [19386, 19387],
       "settledNamedOutcomes": []
     },
     {
@@ -10414,22 +9919,14 @@
       "description": "competition:UEFA Europa League|contestType:match|officialSource:uefa.com|participantA:Omonoia|participantB:Celta Vigo|resolutionDeadline:20260923-2300|scheduledStart:20260916-1645|season:2026/27|sport:Association Football|stage:League phase Matchday 1",
       "fallbackOutcome": 19671,
       "namedOutcomes": [],
-      "settledNamedOutcomes": [
-        19672,
-        19673,
-        19674
-      ]
+      "settledNamedOutcomes": [19672, 19673, 19674]
     },
     {
       "question": 1374,
       "name": "template:sportsContestResult5",
       "description": "competition:English Premier League|contestType:match|officialSource:premierleague.com|participantA:Tottenham Hotspur|participantB:Aston Villa|resolutionDeadline:20260926-2300|scheduledStart:20260919-1130|season:2026/27|sport:soccer|stage:Matchweek 5",
       "fallbackOutcome": 20037,
-      "namedOutcomes": [
-        20038,
-        20039,
-        20040
-      ],
+      "namedOutcomes": [20038, 20039, 20040],
       "settledNamedOutcomes": []
     },
     {
@@ -10437,11 +9934,7 @@
       "name": "template:sportsContestResult5",
       "description": "competition:English Premier League|contestType:match|officialSource:premierleague.com|participantA:Brighton & Hove Albion|participantB:Arsenal|resolutionDeadline:20260926-2300|scheduledStart:20260919-1400|season:2026/27|sport:soccer|stage:Matchweek 5",
       "fallbackOutcome": 20041,
-      "namedOutcomes": [
-        20042,
-        20043,
-        20044
-      ],
+      "namedOutcomes": [20042, 20043, 20044],
       "settledNamedOutcomes": []
     },
     {
@@ -10449,11 +9942,7 @@
       "name": "template:awardWinner",
       "description": "award:Booker Prize|awardingBody:Booker Prize Foundation|field:literature|period:2026|resolutionDeadline:20261116-0000",
       "fallbackOutcome": 20083,
-      "namedOutcomes": [
-        20084,
-        20085,
-        20086
-      ],
+      "namedOutcomes": [20084, 20085, 20086],
       "settledNamedOutcomes": []
     },
     {
@@ -10461,11 +9950,7 @@
       "name": "Recurring",
       "description": "class:priceBucket|underlying:BTC|expiry:20260920-0600|priceThresholds:79526,82772|period:1d",
       "fallbackOutcome": 20202,
-      "namedOutcomes": [
-        20203,
-        20204,
-        20205
-      ],
+      "namedOutcomes": [20203, 20204, 20205],
       "settledNamedOutcomes": []
     }
   ],
@@ -10481,34 +9966,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"
-          ]
+          ["0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"]],
+        ["settleOutcome", ["0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"]],
+        ["settleQuestion", ["0x7173f7b7b8136e1180601cd9d8772571b6eabb3d"]]
       ]
     },
     {
@@ -10530,18 +9993,8 @@
       "deployer": "0x0eb313e1ee2eafdb0fb0eb11c120a218b9114d64",
       "venue": "flip",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x171070fe2e9f5bb1738ecf6979c24057ebe1576d"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x171070fe2e9f5bb1738ecf6979c24057ebe1576d"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0x171070fe2e9f5bb1738ecf6979c24057ebe1576d"]],
+        ["settleOutcome", ["0x171070fe2e9f5bb1738ecf6979c24057ebe1576d"]]
       ]
     },
     {
@@ -10590,12 +10043,7 @@
             "0xa7be8aa539582b4aa648ae414c841648ed7ea5f6"
           ]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0xccc80fc048ec74e06aac1450cf55126fa47bbff4"
-          ]
-        ],
+        ["registerQuestionFromTemplate", ["0xccc80fc048ec74e06aac1450cf55126fa47bbff4"]],
         [
           "registerStandaloneOutcomeFromTemplate",
           [
@@ -10642,34 +10090,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
+          ["0x1b589229228193a61a60f70120ad6931907a2ffa"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["settleOutcome", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["settleQuestion", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]]
       ]
     },
     {
@@ -10701,18 +10127,8 @@
       "deployer": "0x2cb1c16a7b75dc9c9396936bc870be10205a31a1",
       "venue": "omen",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xfd1c44fd4d282b966f569303029afcb1177ca65b"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xfd1c44fd4d282b966f569303029afcb1177ca65b"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0xfd1c44fd4d282b966f569303029afcb1177ca65b"]],
+        ["settleOutcome", ["0xfd1c44fd4d282b966f569303029afcb1177ca65b"]]
       ]
     },
     {
@@ -10736,34 +10152,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"
-          ]
+          ["0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"]],
+        ["settleOutcome", ["0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"]],
+        ["settleQuestion", ["0xf1923927d7d2847191fb7ef8b1a16028aa5ae754"]]
       ]
     },
     {
@@ -10847,34 +10241,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0x562f64bf4b51383944564caf063e55cdd7018253"
-          ]
+          ["0x562f64bf4b51383944564caf063e55cdd7018253"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0x562f64bf4b51383944564caf063e55cdd7018253"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x562f64bf4b51383944564caf063e55cdd7018253"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x562f64bf4b51383944564caf063e55cdd7018253"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0x562f64bf4b51383944564caf063e55cdd7018253"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0x562f64bf4b51383944564caf063e55cdd7018253"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0x562f64bf4b51383944564caf063e55cdd7018253"]],
+        ["settleOutcome", ["0x562f64bf4b51383944564caf063e55cdd7018253"]],
+        ["settleQuestion", ["0x562f64bf4b51383944564caf063e55cdd7018253"]]
       ]
     },
     {
@@ -10888,34 +10260,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0xd57f4639d9c70c122e70172fbff402f4af6c241d"
-          ]
+          ["0xd57f4639d9c70c122e70172fbff402f4af6c241d"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0xd57f4639d9c70c122e70172fbff402f4af6c241d"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xd57f4639d9c70c122e70172fbff402f4af6c241d"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xd57f4639d9c70c122e70172fbff402f4af6c241d"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0xd57f4639d9c70c122e70172fbff402f4af6c241d"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0xd57f4639d9c70c122e70172fbff402f4af6c241d"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0xd57f4639d9c70c122e70172fbff402f4af6c241d"]],
+        ["settleOutcome", ["0xd57f4639d9c70c122e70172fbff402f4af6c241d"]],
+        ["settleQuestion", ["0xd57f4639d9c70c122e70172fbff402f4af6c241d"]]
       ]
     },
     {
@@ -10929,52 +10279,20 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0xa2fae0537ce3ca0239775e0566b51762b574f94c"
-          ]
+          ["0xa2fae0537ce3ca0239775e0566b51762b574f94c"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0xa2fae0537ce3ca0239775e0566b51762b574f94c"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xa2fae0537ce3ca0239775e0566b51762b574f94c"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xa2fae0537ce3ca0239775e0566b51762b574f94c"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0xa2fae0537ce3ca0239775e0566b51762b574f94c"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0xa2fae0537ce3ca0239775e0566b51762b574f94c"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0xa2fae0537ce3ca0239775e0566b51762b574f94c"]],
+        ["settleOutcome", ["0xa2fae0537ce3ca0239775e0566b51762b574f94c"]],
+        ["settleQuestion", ["0xa2fae0537ce3ca0239775e0566b51762b574f94c"]]
       ]
     },
     {
       "deployer": "0x8cf860ef5e768ca78f549362e6bf11e0e90c3770",
       "venue": "ofx",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x96a915349369566d515ecd73118807302f8dc4c9"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x96a915349369566d515ecd73118807302f8dc4c9"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0x96a915349369566d515ecd73118807302f8dc4c9"]],
+        ["settleOutcome", ["0x96a915349369566d515ecd73118807302f8dc4c9"]]
       ]
     },
     {
@@ -11001,18 +10319,8 @@
       "deployer": "0x9a7b865e7a34078b7537cb48db89c65095908ad3",
       "venue": "an",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xb4faa779a557d144f2573e173927783c3418cf1c"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xb4faa779a557d144f2573e173927783c3418cf1c"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0xb4faa779a557d144f2573e173927783c3418cf1c"]],
+        ["settleOutcome", ["0xb4faa779a557d144f2573e173927783c3418cf1c"]]
       ]
     },
     {
@@ -11026,16 +10334,9 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0x42bd052c4537955cda15a024092c7303cd1ec64c"
-          ]
+          ["0x42bd052c4537955cda15a024092c7303cd1ec64c"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0x42bd052c4537955cda15a024092c7303cd1ec64c"
-          ]
-        ],
+        ["registerQuestionFromTemplate", ["0x42bd052c4537955cda15a024092c7303cd1ec64c"]],
         [
           "registerStandaloneOutcomeFromTemplate",
           [
@@ -11050,12 +10351,7 @@
             "0xf1a80c6d6552925fafcd35fce77200117bea0c4d"
           ]
         ],
-        [
-          "settleQuestion",
-          [
-            "0x42bd052c4537955cda15a024092c7303cd1ec64c"
-          ]
-        ]
+        ["settleQuestion", ["0x42bd052c4537955cda15a024092c7303cd1ec64c"]]
       ]
     },
     {
@@ -11107,18 +10403,8 @@
       "deployer": "0xbb8a7a27e391a5170cda84d5a26457e2cdce9e41",
       "venue": "at",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x2bd816e68b18d1dd6327266f273f0658f20467dc"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x2bd816e68b18d1dd6327266f273f0658f20467dc"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0x2bd816e68b18d1dd6327266f273f0658f20467dc"]],
+        ["settleOutcome", ["0x2bd816e68b18d1dd6327266f273f0658f20467dc"]]
       ]
     },
     {
@@ -11147,34 +10433,12 @@
       "subDeployers": [
         [
           "registerAndAssociateNamedOutcomeFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
+          ["0x1b589229228193a61a60f70120ad6931907a2ffa"]
         ],
-        [
-          "registerQuestionFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ],
-        [
-          "settleQuestion",
-          [
-            "0x1b589229228193a61a60f70120ad6931907a2ffa"
-          ]
-        ]
+        ["registerQuestionFromTemplate", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["registerStandaloneOutcomeFromTemplate", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["settleOutcome", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]],
+        ["settleQuestion", ["0x1b589229228193a61a60f70120ad6931907a2ffa"]]
       ]
     },
     {
@@ -11191,18 +10455,8 @@
       "deployer": "0xcf07eed79355596d176abc4186fac4ef64c35ddd",
       "venue": "def",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0x31a9f4f9e4a926b57d93beffedf9f0cf6951d484"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xc01e853b95eed53d31c880ad4d0902ee4b1daba6"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0x31a9f4f9e4a926b57d93beffedf9f0cf6951d484"]],
+        ["settleOutcome", ["0xc01e853b95eed53d31c880ad4d0902ee4b1daba6"]]
       ]
     },
     {
@@ -11270,18 +10524,8 @@
       "deployer": "0xdec6b4c5595591de2378d1050770c60872292ddd",
       "venue": "zq",
       "subDeployers": [
-        [
-          "registerStandaloneOutcomeFromTemplate",
-          [
-            "0xed091309b2caed913dc1d2ea219aee7581546acc"
-          ]
-        ],
-        [
-          "settleOutcome",
-          [
-            "0xed091309b2caed913dc1d2ea219aee7581546acc"
-          ]
-        ]
+        ["registerStandaloneOutcomeFromTemplate", ["0xed091309b2caed913dc1d2ea219aee7581546acc"]],
+        ["settleOutcome", ["0xed091309b2caed913dc1d2ea219aee7581546acc"]]
       ]
     },
     {
