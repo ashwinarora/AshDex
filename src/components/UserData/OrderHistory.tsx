@@ -50,6 +50,7 @@ import {
 import { cn } from '@/lib/utils'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
+import { useOutcomeCoinLabel } from '@/hooks/useOutcomeMarket'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
@@ -80,6 +81,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
 
   const [sorting, setSorting] = useState<SortingState>([])
   const { spotKeyToName } = useSpotMeta()
+  const outcomeLabel = useOutcomeCoinLabel()
 
   const columnHelper = createColumnHelper<
     HistoricalOrdersResponse[number] & { meta?: { label: string } }
@@ -99,6 +101,9 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         header: () => 'Coin',
         cell: (info) => {
           const name = info.getValue()
+          if (name.startsWith('#')) {
+            return outcomeLabel(name, 'full')
+          }
           if (name.includes('@')) {
             return spotKeyToName.get(name)
           }
@@ -126,7 +131,13 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
       columnHelper.accessor((row) => row.order.limitPx, {
         id: 'limitPx',
         header: () => 'Price',
-        cell: (info) => <ReactiveText value={info.getValue()} type="currency" precision={2} />,
+        cell: (info) => (
+          <ReactiveText
+            value={info.getValue()}
+            type="currency"
+            precision={info.row.original.order.coin.startsWith('#') ? 5 : 2}
+          />
+        ),
         enableSorting: true,
         meta: { label: 'Price' }
       }),
@@ -231,7 +242,7 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
         meta: { label: 'Order ID' }
       })
     ],
-    [columnHelper]
+    [columnHelper, isRTL, outcomeLabel, spotKeyToName]
   )
 
   const table = useReactTable({
@@ -275,9 +286,11 @@ const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
             const cell = row.getVisibleCells().map((cell) => {
               return flexRender(cell.column.columnDef.cell, cell.getContext())
             })
-            const coinName = row.original.order.coin.includes('@')
-              ? spotKeyToName.get(row.original.order.coin)
-              : row.original.order.coin
+            const coinName = row.original.order.coin.startsWith('#')
+              ? outcomeLabel(row.original.order.coin)
+              : row.original.order.coin.includes('@')
+                ? spotKeyToName.get(row.original.order.coin)
+                : row.original.order.coin
             const side = row.original.order.side
             const isBuy = side.toLowerCase() === 'buy' || side.toUpperCase() === 'B'
             const status = row.original.status

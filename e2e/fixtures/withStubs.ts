@@ -40,7 +40,26 @@ const REST_TYPE_TO_FIXTURE: Record<string, string> = {
   clearinghouseState: 'rest.clearinghouseState.json',
   spotClearinghouseState: 'rest.spotClearinghouseState.json',
   userAbstraction: 'rest.userAbstraction.json',
-  l2Book: 'rest.l2Book.BTC.json'
+  l2Book: 'rest.l2Book.BTC.json',
+  // HIP-4 outcome markets (captured by capture-outcomes.ts)
+  outcomeMeta: 'rest.outcomeMeta.json',
+  outcomeTemplates: 'rest.outcomeTemplates.json',
+  settledOutcome: 'rest.settledOutcome.json'
+}
+
+// Coin-keyed overrides: an outcome side (`#enc`) gets the outcome book/candles
+// instead of the BTC ones. Anything else keeps the default table above.
+const restFixtureFor = (
+  type: string | undefined,
+  body: { coin?: string; req?: { coin?: string } } | null
+): string | undefined => {
+  if (!type) return undefined
+  const coin = body?.coin ?? body?.req?.coin
+  if (type === 'l2Book' && coin?.startsWith('#')) return 'rest.l2Book.outcome.json'
+  if (type === 'candleSnapshot') {
+    return coin?.startsWith('#') ? 'rest.candleSnapshot.outcome.json' : undefined
+  }
+  return REST_TYPE_TO_FIXTURE[type]
 }
 
 type WsSnapshots = {
@@ -110,6 +129,10 @@ const defaultExchangeReply = (body: ExchangeBody) => {
   if (type === 'approveAgent' || type === 'approveBuilderFee') {
     return { status: 'ok', response: { type: 'default' } }
   }
+  // HIP-4 share conversions (split / merge / negate) reply with a bare default.
+  if (type === 'userOutcome') {
+    return { status: 'ok', response: { type: 'default' } }
+  }
   // Fall through: reply generic ok. Spec-specific behaviour should override.
   return { status: 'ok', response: { type: 'default' } }
 }
@@ -117,9 +140,13 @@ const defaultExchangeReply = (body: ExchangeBody) => {
 async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<void> {
   // ---- REST /info -----------------------------------------------------------
   await page.route(REST_URL_PATTERN, async (route) => {
-    const body = route.request().postDataJSON() as { type?: string } | null
+    const body = route.request().postDataJSON() as {
+      type?: string
+      coin?: string
+      req?: { coin?: string }
+    } | null
     const type = body?.type
-    const file = type ? REST_TYPE_TO_FIXTURE[type] : undefined
+    const file = restFixtureFor(type, body)
     if (!file) {
       console.warn(`[stubs] no REST fixture for /info type=${type ?? '<null>'}`)
       await route.fulfill({
@@ -173,6 +200,15 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
         ws.send(JSON.stringify(wsSnapshots.allMids))
       } else if (sub?.type === 'l2Book' && sub.coin === 'BTC') {
         ws.send(JSON.stringify(wsSnapshots['l2Book.BTC']))
+      } else if (sub?.type === 'l2Book' && sub.coin?.startsWith('#')) {
+        // Outcome side book: replay the REST capture as a WS frame (same shape).
+        ws.send(JSON.stringify({ channel: 'l2Book', data: loadJson('rest.l2Book.outcome.json') }))
+      } else if (
+        sub?.type === 'outcomeMetaUpdates' ||
+        sub?.type === 'candle' ||
+        sub?.type === 'activeAssetCtx'
+      ) {
+        // Change feeds with no snapshot semantics — silence is a valid replay.
       } else if (sub?.type === 'assetCtxs') {
         // Reuse the REST [meta, ctxs] tuple — WS pushes the same ctxs shape.
         const [, ctxs] = loadJson<[unknown, unknown]>('rest.metaAndAssetCtxs.json')
@@ -192,7 +228,9 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
   // above doesn't verify signatures. Fixed address matches capture.ts's
   // FIXTURE_USER (the zero address), so clearinghouseState fixtures line up.
   await page.addInitScript(() => {
-    const account = '0x0000000000000000000000000000000000000000'
+    // Non-zero so the app treats it as a real user: HyperliquidStore skips
+    // agent-wallet creation and cold-load state fetches for the zero address.
+    const account = '0x1111111111111111111111111111111111111111'
     // 65 bytes: r (32) || s (32) || v (1). Any deterministic value works since
     // the /exchange stub doesn't verify. Recovery byte 27 = valid ECDSA v.
     const stubSignature = '0x' + '11'.repeat(32) + '22'.repeat(32) + '1b'
@@ -255,7 +293,7 @@ const STUB_AGENT_PRIVATE_KEY = '0x1111111111111111111111111111111111111111111111
 // Derived from the private key above via viem privateKeyToAccount, hardcoded
 // so this fixture doesn't need to import viem.
 const STUB_AGENT_PUBLIC_ADDRESS = '0x19E7E376E7C213B7E7e7e46cc70A5dD086DAff2A'
-const STUB_USER_ADDRESS = '0x0000000000000000000000000000000000000000'
+const STUB_USER_ADDRESS = '0x1111111111111111111111111111111111111111'
 
 /**
  * Preload agent-approval state and info-endpoint stubs so the app renders
@@ -338,6 +376,74 @@ export async function installUnifiedMode(page: Page): Promise<void> {
     }
     await route.fallback()
   })
+}
+
+/**
+ * Replace the (empty) zero-address spot state with a real captured account that
+ * holds HIP-4 outcome shares, so the Outcomes positions tab has rows to render.
+ *
+ *     import { test, installOutcomeBalances } from './fixtures/withStubs'
+ *     test('positions', async ({ page }) => {
+ *       await installOutcomeBalances(page)
+ *       await page.goto('/outcomes/<id>/yes')
+ *     })
+ */
+export async function installOutcomeBalances(page: Page): Promise<void> {
+  await page.route(/api\.hyperliquid(-testnet)?\.xyz\/info/, async (route) => {
+    const body = route.request().postDataJSON() as { type?: string } | null
+    if (body?.type === 'spotClearinghouseState') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: readFileSync(join(FIXTURES_DIR, 'rest.spotClearinghouseState.outcomes.json'), 'utf-8')
+      })
+      return
+    }
+    await route.fallback()
+  })
+}
+
+/**
+ * Make the shimmed provider look like MetaMask so wagmi's `injected({ target:
+ * 'metaMask' })` connector auto-connects on mount (the shim answers
+ * `eth_accounts` with the zero address). Call BEFORE `page.goto`, then
+ * `expectWalletConnected(page)` after navigation. Opt-in so the baseline specs
+ * keep exercising the disconnected UI.
+ */
+export async function installConnectedWallet(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    const eth = (window as unknown as { ethereum?: { isMetaMask?: boolean } }).ethereum
+    if (eth) eth.isMetaMask = true
+  })
+}
+
+/** Resolve once no "Connect Wallet" call-to-action remains on the page. */
+export async function expectWalletConnected(page: Page): Promise<void> {
+  await expect(page.getByRole('button', { name: 'Connect Wallet' })).toHaveCount(0, {
+    timeout: 15_000
+  })
+}
+
+/**
+ * Pre-acknowledge the HIP-4 deployer disclaimer for the given venues so specs
+ * that trade on a venue-deployed market are not blocked by the modal overlay.
+ * Writes the same zustand-persist payload `OutcomesUIStore` reads back.
+ */
+export async function installVenueAcknowledged(page: Page, venues: string[]): Promise<void> {
+  await page.addInitScript((list: string[]) => {
+    window.localStorage.setItem(
+      'outcomes-ui',
+      JSON.stringify({
+        state: {
+          acknowledgedVenues: { dataType: 'Set', value: list },
+          favorites: { dataType: 'Set', value: [] },
+          category: 'All',
+          venue: 'All'
+        },
+        version: 0
+      })
+    )
+  }, venues)
 }
 
 /**

@@ -1,4 +1,5 @@
 import { SPOT_DELTA } from '@/utils/constants'
+import { isOutcomeCoin, parseOutcomeEncoding, toOutcomeAssetId } from '@/utils/outcomes/encoding'
 
 /**
  * Resolve a coin name to the Hyperliquid asset index used by the exchange
@@ -11,6 +12,10 @@ import { SPOT_DELTA } from '@/utils/constants'
  * filed). Every SOL cancel therefore threw "Asset index not found" (BUG-007).
  * We now return `null` on miss so callers can differentiate "not found" from
  * "valid index 0".
+ *
+ * HIP-4 outcome shares (`#<enc>`) are self-describing — the encoding *is* the
+ * asset id minus a fixed offset — so they resolve without any universe lookup,
+ * regardless of the `isSpot` flag the caller happens to pass.
  */
 export function resolveAssetIndex(
   coin: string,
@@ -24,6 +29,10 @@ export function resolveAssetIndex(
     spotUniverse?: readonly { name: string; index: number }[]
   }
 ): number | null {
+  if (isOutcomeCoin(coin)) {
+    const enc = parseOutcomeEncoding(coin)
+    return enc === null ? null : toOutcomeAssetId(enc)
+  }
   if (isSpot) {
     const found = spotUniverse?.find((a) => a.name === coin)
     if (!found) return null

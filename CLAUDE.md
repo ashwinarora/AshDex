@@ -26,9 +26,10 @@ AshDex is a pure client-side trading frontend for Hyperliquid (decentralized der
 
 ### Key Directories
 
-- `src/app/` - Next.js App Router pages (no `/api` — the app is client-only)
+- `src/app/` - Next.js App Router pages (no `/api` — the app is client-only). Routes: `/[asset]` perps, `/spot/[asset]`, `/outcomes` (HIP-4 grid) and `/outcomes/[outcomeId]/[yes|no]` (outcome trade page), `/portfolio`
 - `src/store/` - Zustand stores (HyperliquidStore, userStore, FavoritesStore, TradeUIStore)
-- `src/components/` - React components organized by feature (Trading/, UserData/, Portfolio/, Bridge/, etc.)
+- `src/components/` - React components organized by feature (Trading/, UserData/, Portfolio/, Bridge/, Outcomes/, etc.)
+- `src/utils/outcomes/` - Pure HIP-4 helpers: coin/asset-id encoding, template-title rendering, grid cards, positions from balances, order shaping (all unit-tested)
 - `src/hooks/` - Custom React hooks for client-side logic
 - `src/context/` - React contexts (EstablishConnectionContext, WalletModalContext)
 
@@ -41,14 +42,14 @@ Zustand Stores (global client state)
 ├── FavoritesStore   - Favorite trading pairs (persisted)
 └── TradeUIStore     - Order placement UI state
 
-React Query - Client-side query cache (e.g. ERC-20 metadata, spot meta)
+React Query - Client-side query cache (e.g. ERC-20 metadata, spot meta, outcome meta + templates via `useOutcomeMeta`)
 React Context - UI state (wallet modal, agent approval flow)
 ```
 
 ### Data Flow
 
 1. User connects wallet via Wagmi → triggers HyperliquidInitializer
-2. SDK initializes HTTP + WebSocket clients → subscribes to channels (allMids, webData2, candles, ledgerUpdates)
+2. SDK initializes HTTP + WebSocket clients → subscribes to channels (allMids, assetCtxs, spotAssetCtxs, spotState/clearinghouseState/openOrders, candles, ledgerUpdates, outcomeMetaUpdates)
 3. WebSocket updates push to Zustand store → components subscribe via selectors
 4. Transactions: Sign with wallet → execute via Hyperliquid SDK
 
@@ -61,6 +62,18 @@ React Context - UI state (wallet modal, agent approval flow)
 ### Patched Dependencies
 
 - `@nktkas/hyperliquid@0.33.3` — patched via `bun patch` (see `patches/@nktkas%2Fhyperliquid@0.33.3.patch`) to raise the `twapOrder.m` valibot cap from `1440` (24 h) to `10080` (7 d), matching what Hyperliquid's server accepts. The SDK schema was more restrictive than the server, so TWAPs longer than 24 h were being rejected client-side with no user-facing hint. `bun install` re-applies the patch automatically via `patchedDependencies`. Upstream fix (removes the need for this patch) is a follow-up.
+
+### Market families
+
+Three market families share one store and one set of user-data tables; `src/utils/marketKind.ts` classifies a coin string, `useMarketKind()` classifies the route:
+
+| Family           | Route                | Coin in feeds                                                                                        | Exchange asset id   | Meta source                                           |
+| ---------------- | -------------------- | ---------------------------------------------------------------------------------------------------- | ------------------- | ----------------------------------------------------- |
+| Perps            | `/BTC`               | `BTC`                                                                                                | universe index      | `perpsMeta` (store)                                   |
+| Spot             | `/spot/PURR`         | `@107`, `PURR/USDC`                                                                                  | `10000 + index`     | `useSpotMeta`                                         |
+| Outcomes (HIP-4) | `/outcomes/1210/yes` | `#<10*outcome+side>` (market data, orders, fills) / `+<enc>` (balances) / `o<id>` (settled remnants) | `100_000_000 + enc` | `useOutcomeMeta` (`outcomeMeta` + `outcomeTemplates`) |
+
+Outcome specifics: no leverage/TP-SL/reduce-only, `grouping: 'na'` only, prices are probabilities in `[0.001, 0.999]` with up to 5 decimals, sizes are whole shares, min notional $10 (constants in `src/utils/constants.ts`). Venue-deployed markets arrive as `name: "template:<id>"` + `description: "k:v|k:v"` and are rendered through `outcomeTemplates` (`src/utils/outcomes/template.ts`); Hyperliquid-native ones use `class:priceBinary` / `class:priceBucket` descriptions. Share conversions (split / merge / merge-question / negate) go through `sdkL1ActionClient.userOutcome`. A one-time per-venue disclaimer is persisted in `OutcomesUIStore`; Hyperliquid's `legalCheck` geo restriction is deliberately not enforced.
 
 ### Hyperliquid Network
 
@@ -91,7 +104,7 @@ This project has a test suite. **Always run `bun run verify` before declaring an
 ### Test structure
 
 - **Unit** (`src/**/*.test.ts`) — pure logic. Runs against Node.
-- **E2e** (`e2e/*.spec.ts`) — Playwright + Chromium against `bun run dev` on port 3000, with a stubbed fixture in `e2e/fixtures/withStubs.ts` that intercepts REST (`/info`) and WebSocket (`/ws`) traffic and injects a minimal `window.ethereum` shim. Fixture files live in `e2e/fixtures/`; re-capture from live testnet with `bun run e2e/fixtures/capture.ts`.
+- **E2e** (`e2e/*.spec.ts`) — Playwright + Chromium against `bun run dev` on port 3000, with a stubbed fixture in `e2e/fixtures/withStubs.ts` that intercepts REST (`/info`) and WebSocket (`/ws`) traffic and injects a minimal `window.ethereum` shim. Fixture files live in `e2e/fixtures/`; re-capture from live testnet with `bun run e2e/fixtures/capture.ts` (perps/spot) and `bun run e2e/fixtures/capture-outcomes.ts` (HIP-4 catalog, book, settled outcome, a real share-holding account). Wallet-connected flows: `installConnectedWallet(page)` before `goto` makes the shim auto-connect (fixed address `0x1111…1111`), `installAgentApproval(page)` fakes agent approval, `installOutcomeBalances(page)` swaps in the share-holding account, `installVenueAcknowledged(page, [...])` pre-accepts the deployer disclaimer.
 - **QA audit** — see `QA_ISSUES.md` for the bug backlog and Progress table.
 
 ### Working with tests, in order

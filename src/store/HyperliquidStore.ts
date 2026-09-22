@@ -44,6 +44,11 @@ interface HyperliquidState {
   // `null` until the first successful fetch. `"default"` from the API maps to
   // `"disabled"` — both mean standard/manual account abstraction.
   accountAbstraction: AccountAbstractionMode | null
+  // Bumped by the `outcomeMetaUpdates` WS channel whenever a HIP-4 outcome or
+  // question is created/settled; `useOutcomeMeta` refetches the catalog on change.
+  outcomeMetaVersion: number
+  // Outcome ids settled since page load (newest first), for "market settled" toasts.
+  recentOutcomeSettlements: number[]
   isWebSocketConnected: boolean
   lastWebSocketUpdate: number
   lastUpdates: {
@@ -63,6 +68,7 @@ interface HyperliquidState {
     assetCtxs?: hl.ISubscription
     spotAssetCtxs?: hl.ISubscription
     twapStates?: hl.ISubscription
+    outcomeMetaUpdates?: hl.ISubscription
   }
 }
 
@@ -103,6 +109,8 @@ interface HyperliquidActions {
   getFreshAgentWallet: (address: Address) => PrivateKeyAccount
   subscribeTwapStates: (address: Hex) => Promise<void>
   unsubscribeTwapStates: () => Promise<void>
+  subscribeOutcomeMetaUpdates: () => Promise<void>
+  unsubscribeOutcomeMetaUpdates: () => Promise<void>
 }
 
 const store = combine<HyperliquidState, HyperliquidActions>(
@@ -131,6 +139,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     pendingWithdrawals: [],
     twapStates: [],
     accountAbstraction: null,
+    outcomeMetaVersion: 0,
+    recentOutcomeSettlements: [],
     isWebSocketConnected: false,
     lastWebSocketUpdate: Date.now(),
     lastUpdates: {
@@ -622,6 +632,39 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         twapStates: []
       }))
     },
+    subscribeOutcomeMetaUpdates: async () => {
+      const { sdkSubscriptionClient, subsManager } = get()
+      if (!sdkSubscriptionClient || subsManager.outcomeMetaUpdates) return
+      try {
+        const sub = await sdkSubscriptionClient.outcomeMetaUpdates((data) => {
+          const settled = data.updates.flatMap((u) =>
+            'outcomeSettled' in u ? [u.outcomeSettled.outcome] : []
+          )
+          set((state) => ({
+            outcomeMetaVersion: state.outcomeMetaVersion + 1,
+            recentOutcomeSettlements:
+              settled.length > 0
+                ? [...settled, ...state.recentOutcomeSettlements].slice(0, 50)
+                : state.recentOutcomeSettlements,
+            lastWebSocketUpdate: Date.now(),
+            isWebSocketConnected: true
+          }))
+        })
+        set((state) => ({
+          subsManager: { ...state.subsManager, outcomeMetaUpdates: sub }
+        }))
+      } catch (err) {
+        console.error('[subscribeOutcomeMetaUpdates] failed', err)
+      }
+    },
+    unsubscribeOutcomeMetaUpdates: async () => {
+      const { subsManager } = get()
+      if (!subsManager.outcomeMetaUpdates) return
+      await subsManager.outcomeMetaUpdates.unsubscribe()
+      set((state) => ({
+        subsManager: { ...state.subsManager, outcomeMetaUpdates: undefined }
+      }))
+    },
     getFreshAgentWallet: (address: Address) => {
       // Generate a new private key
       const newPrivateKey = generatePrivateKey()
@@ -695,7 +738,9 @@ export const useInitHyperliquid = () => {
       unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
       loadPendingWithdrawals: state.loadPendingWithdrawals,
       subscribeTwapStates: state.subscribeTwapStates,
-      unsubscribeTwapStates: state.unsubscribeTwapStates
+      unsubscribeTwapStates: state.unsubscribeTwapStates,
+      subscribeOutcomeMetaUpdates: state.subscribeOutcomeMetaUpdates,
+      unsubscribeOutcomeMetaUpdates: state.unsubscribeOutcomeMetaUpdates
     }))
   )
 }

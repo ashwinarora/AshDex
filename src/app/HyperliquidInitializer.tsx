@@ -31,6 +31,8 @@ const HyperLiquidInitializer = () => {
     unsubscribeLedgerUpdates,
     subscribeTwapStates,
     unsubscribeTwapStates,
+    subscribeOutcomeMetaUpdates,
+    unsubscribeOutcomeMetaUpdates,
     checkWebSocketStatus,
     updateUserActiveAddress,
     loadPendingWithdrawals
@@ -98,6 +100,17 @@ const HyperLiquidInitializer = () => {
       unsubscribeSpotAssetCtxs().catch(console.error)
     }
   }, [sdkSubscriptionClient, subscribeSpotAssetCtxs, unsubscribeSpotAssetCtxs])
+
+  // HIP-4 outcome catalog change feed (create/settle) — no user required. The
+  // catalog itself is fetched over HTTP by `useOutcomeMeta`; this only bumps a
+  // version so it refetches promptly instead of waiting for its poll interval.
+  useEffect(() => {
+    if (!sdkSubscriptionClient) return
+    subscribeOutcomeMetaUpdates().catch(console.error)
+    return () => {
+      unsubscribeOutcomeMetaUpdates().catch(console.error)
+    }
+  }, [sdkSubscriptionClient, subscribeOutcomeMetaUpdates, unsubscribeOutcomeMetaUpdates])
 
   // All address-keyed setup lives in one effect: set the active address, load
   // pending withdrawals, and open the three user-scoped WS subs (spotState,

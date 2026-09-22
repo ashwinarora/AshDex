@@ -76,6 +76,18 @@ export const MAX_SIG_FIGS = 5
 
 export const SPOT_DELTA = 10000 // https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/asset-ids
 
+// HIP-4 outcome markets — https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/asset-ids
+// encoding = 10 * outcome + side; exchange asset id = OUTCOME_ASSET_OFFSET + encoding;
+// market-data coin = `#${encoding}`; balance coin = `+${encoding}`.
+export const OUTCOME_ASSET_OFFSET = 100_000_000
+// Outcome shares are priced as a probability in [0.001, 0.999] with up to 5 decimals.
+// Sizes are whole shares (verified against live testnet order acceptance).
+export const OUTCOME_PX_DECIMALS = 5
+export const OUTCOME_SZ_DECIMALS = 0
+export const OUTCOME_MIN_PX = 0.001
+export const OUTCOME_MAX_PX = 0.999
+export const OUTCOME_MIN_NOTIONAL_USD = 10
+
 export const CHART_INTERVALS = [
   '1m',
   '3m',
