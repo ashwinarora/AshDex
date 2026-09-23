@@ -3,7 +3,7 @@
   "configVersion": 0,
   "workspaces": {
     "": {
-      "name": "nexon",
+      "name": "ashdex",
       "dependencies": {
         "@lifi/widget": "^3.38.1",
         "@msgpack/msgpack": "^3.1.1",

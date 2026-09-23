@@ -18,9 +18,9 @@
   ],
   "validatorTableData": [
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "totalStaked": "1,498,283.92 HYPE",
       "apy": "3.11%"
     },
@@ -46,9 +46,9 @@
       "apy": "2.85%"
     },
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "totalStaked": "1,498,283.92 HYPE",
       "apy": "3.11%"
     },
@@ -90,9 +90,9 @@
   ],
   "myStakingTableData": [
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "yourStaked": "1,498,283.92 HYPE",
       "apy": "3.11%",
       "earnedAlltime": "798.24 HYPE",
@@ -134,9 +134,9 @@
       "fee": "5.00%"
     },
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "yourStaked": "1,498,283.92 HYPE",
       "apy": "3.11%",
       "earnedAlltime": "798.24 HYPE",
@@ -202,10 +202,10 @@
   ],
   "allValidatorsTableData": [
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "totalStaked": "1,498,283.92 HYPE",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "yourStaked": "1,498,283.92 HYPE",
       "apy": "3.11%",
       "earnedAlltime": "798.24 HYPE",
@@ -250,10 +250,10 @@
       "fee": "5.00%"
     },
     {
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "totalStaked": "1,498,283.92 HYPE",
       "status": "Active",
-      "description": "Nexon Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
+      "description": "AshDex Node has played a crucial role in supporting consensus, validating transactions, and contributing to governance initiatives.",
       "yourStaked": "1,498,283.92 HYPE",
       "apy": "3.11%",
       "earnedAlltime": "798.24 HYPE",
@@ -340,7 +340,7 @@
       "action": "Reward",
       "status": "Success",
       "amountChange": "+$500",
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "description": "0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     },
     {
@@ -356,7 +356,7 @@
       "action": "Spot to Staking Transfer",
       "status": "Success",
       "amountChange": "+$150",
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "description": "0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     },
     {
@@ -378,7 +378,7 @@
       "action": "Reward",
       "status": "Success",
       "amountChange": "+$300",
-      "validator": "Nexon Node",
+      "validator": "AshDex Node",
       "description": "0x000000000056f99d36b6f2e0c51fd41496bbacb8"
     }
   ]
