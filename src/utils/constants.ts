@@ -59,6 +59,10 @@ export const CORE_TO_EVM_MAPPING: Record<
 
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
+// Sibling deployments used by the header network switch. Unset = button hidden.
+export const MAINNET_APP_URL = (process.env.NEXT_PUBLIC_MAINNET_APP_URL ?? '').trim()
+export const TESTNET_APP_URL = (process.env.NEXT_PUBLIC_TESTNET_APP_URL ?? '').trim()
+
 export const BUILDER_ADDRESS = process.env.NEXT_PUBLIC_BUILDER_RECEIVER_ADDRESS as string
 
 export const ASHDEX_REFERRAL_CODE = (process.env.NEXT_PUBLIC_ASHDEX_REFERRAL_CODE ?? '').trim()

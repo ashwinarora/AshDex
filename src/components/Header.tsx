@@ -7,6 +7,7 @@ import { truncateAddress } from '@/utils/utils'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { toast } from 'sonner'
 import BridgeButton from './Bridge/BridgeButton'
+import NetworkSwitchButton from './NetworkSwitchButton'
 import ashdexLogo from '@/assets/images/logo.svg'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
 import {
@@ -217,6 +218,7 @@ const Header: FC = () => {
         )}
       </div>
       <div className="flex items-center gap-2">
+        <NetworkSwitchButton />
         {!isMobile && <BridgeButton />}
         {isWalletConnected ? (
           <div className="flex items-center gap-2">
