@@ -146,6 +146,17 @@ async function installStubs(page: Page, exchangeStub?: ExchangeStub): Promise<vo
       req?: { coin?: string }
     } | null
     const type = body?.type
+    // The testnet faucet has no capture: it's a live, once-per-address side
+    // effect. Default to the success shape (empty body); specs that want a
+    // refusal layer one on with `installDripResponse`.
+    if (type === 'claimDrip') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify('')
+      })
+      return
+    }
     const file = restFixtureFor(type, body)
     if (!file) {
       console.warn(`[stubs] no REST fixture for /info type=${type ?? '<null>'}`)
@@ -470,3 +481,24 @@ export const test = base.extend<StubsFixtures>({
   }
 })
 export { expect }
+
+/**
+ * Override what the testnet faucet (`/info` type `claimDrip`) replies with.
+ *
+ * Pass the raw body Hyperliquid would send: `''` for a successful drip, or
+ * the refusal string (e.g. `'Drip already claimed'`). Call before `goto`.
+ */
+export async function installDripResponse(page: Page, body: string): Promise<void> {
+  await page.route(/api\.hyperliquid(-testnet)?\.xyz\/info/, async (route) => {
+    const req = route.request().postDataJSON() as { type?: string } | null
+    if (req?.type !== 'claimDrip') {
+      await route.fallback()
+      return
+    }
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify(body)
+    })
+  })
+}
