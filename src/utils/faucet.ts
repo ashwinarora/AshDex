@@ -8,9 +8,6 @@ import { HYPERLIQUID_API_TESTNET } from './constants'
 /** What the faucet hands out, per Hyperliquid's /drip page. */
 export const FAUCET_AMOUNT_USDC = 1000
 
-/** Mining tool for topping up beyond the one-shot faucet. */
-export const HLTOOLS_URL = 'https://hltools.tech'
-
 export type DripFailureReason = 'alreadyClaimed' | 'noMainnetAccount' | 'unknown'
 
 export type DripResult = { ok: true } | { ok: false; reason: DripFailureReason; message: string }

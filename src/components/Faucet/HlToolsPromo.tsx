@@ -2,7 +2,7 @@
 
 import { IconArrowUpRight, IconPick } from '@tabler/icons-react'
 import { cn } from '@/lib/utils'
-import { HLTOOLS_URL } from '@/utils/faucet'
+import { HLTOOLS_URL } from '@/config/noContact'
 
 /**
  * House ad for hl-tools inside the faucet dialog.

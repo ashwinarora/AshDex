@@ -12,6 +12,7 @@ import OutcomeSettlementToaster from '@/components/Outcomes/OutcomeSettlementToa
 import dynamic from 'next/dynamic'
 import WagmiProvider from './WagmiProvider'
 import { DEFAULT_PAGE_TITLE } from '@/config/appMeta'
+import { NO_CONTACT } from '@/config/noContact'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -35,7 +36,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: DEFAULT_PAGE_TITLE,
     description: 'A precision derivatives terminal on Hyperliquid. Perps and spot, self-custodial.'
-  }
+  },
+  // The no-contact deployment is a copy of the real site, so it stays out of search results.
+  ...(NO_CONTACT && { robots: { index: false, follow: false } })
 }
 
 const DynamicUseToastOptions = dynamic(() =>
