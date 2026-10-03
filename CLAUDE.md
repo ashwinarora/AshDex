@@ -86,6 +86,17 @@ The app supports both mainnet and testnet, configured via `NEXT_PUBLIC_HYPERLIQU
 
 Use `@/*` to import from `src/*` (configured in tsconfig.json).
 
+## No-contact mode
+
+The same branch is deployed twice. `NO_CONTACT=true` at build time produces a copy of the site that gives a visitor no way to contact the owner and no link to any of his normal sites (`ashdex.app`, `testnet.ashdex.app`, `hltools.tech`, `ashwinarora.com`, …); unset, or any other value, is the normal site and must behave exactly as before. Full description in README "No-contact mode".
+
+- `src/config/noContact.ts` is the flag module: `NO_CONTACT` and the selected links to the owner's other sites (`HLTOOLS_URL`). `src/config/siteLinks.ts` holds both URL sets and `noContactBuildEnv`; only `next.config.ts` imports it, and injects one set as build-time constants.
+- Gate anything that leads to the owner (email, social or GitHub link, feedback form, chat widget, calendar link, "hire me" copy) with `{!NO_CONTACT && …}` in the JSX. Hiding with CSS or a runtime-only check is not enough: reviewers read the bundle.
+- Never hard-code a link to another of the owner's sites or to this site's other deployments. Add both URLs to `siteLinks.ts`, select in `noContactBuildEnv`, export from `noContact.ts`.
+- `NO_CONTACT` is the only variable. Do not add a second one; blank any copied production variable that points at a normal site in `noContactBuildEnv`.
+- Leave the footer credit "Built with ♥ by Ashwin Arora" as it is in both modes (a name with no link).
+- After touching links, metadata, the header, the footer or dependencies, run `bun run check:no-contact` (builds into `.next` twice, so stop `bun dev` first). There is no CI; this script is the check. New third-party hits get a narrow `ALLOWED` entry (exact vendor text, with the reason), never a whole file and never app code.
+
 ## Testing
 
 This project has a test suite. **Always run `bun run verify` before declaring any task complete.** It runs (in order, fail-fast):

@@ -60,6 +60,7 @@ export const CORE_TO_EVM_MAPPING: Record<
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
 
 // Sibling deployments used by the header network switch. Unset = button hidden.
+// Always empty in no-contact mode: next.config.ts blanks both (see src/config/siteLinks.ts).
 export const MAINNET_APP_URL = (process.env.NEXT_PUBLIC_MAINNET_APP_URL ?? '').trim()
 export const TESTNET_APP_URL = (process.env.NEXT_PUBLIC_TESTNET_APP_URL ?? '').trim()
 

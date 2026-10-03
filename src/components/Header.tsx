@@ -32,6 +32,7 @@ import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import BridgeModal from './Bridge/BridgeModal'
 import { useAccountAbstraction } from '@/store/HyperliquidStore'
+import { NO_CONTACT } from '@/config/noContact'
 
 type MenuItem = {
   name: string
@@ -219,7 +220,8 @@ const Header: FC = () => {
         )}
       </div>
       <div className="flex items-center gap-2">
-        <NetworkSwitchButton />
+        {/* The other network's deployment is a normal-mode site. */}
+        {!NO_CONTACT && <NetworkSwitchButton />}
         <FaucetButton />
         {!isMobile && <BridgeButton />}
         {isWalletConnected ? (
