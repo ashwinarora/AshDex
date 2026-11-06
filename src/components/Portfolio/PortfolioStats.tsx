@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils'
 import { useQuery } from '@tanstack/react-query'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore, useIsUnified } from '@/store/HyperliquidStore'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import PortfolioFeeCard from './PortfolioFeeCard'
 import PortfolioVolumeCard from './PortfolioVolumeCard'
 import { formatWithKMB } from '@/utils/format'
@@ -34,7 +34,7 @@ const PortfolioStats = () => {
     overviewTimeFrame: 'alltime'
   })
 
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
 
   const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
   const isUnified = useIsUnified()

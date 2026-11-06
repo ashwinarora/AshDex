@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useShallow } from 'zustand/react/shallow'
 import { zeroAddress, type Hex } from 'viem'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
@@ -14,7 +14,7 @@ import { shouldSetReferrer } from './useAutoReferral.helpers'
 // no existing referrer. The agent wallet (not the user's wallet) signs, so
 // there is no popup and no user-visible feedback on success or failure.
 export const useAutoReferral = () => {
-  const { address } = useConnection()
+  const { address, mode } = useTradingAccount()
   const { sdkInfoClient, sdkL1ActionClient, agentWallet } = useHyperliquidStore(
     useShallow((state) => ({
       sdkInfoClient: state.sdkInfoClient,
@@ -25,7 +25,8 @@ export const useAutoReferral = () => {
   const attempted = useRef<Set<Hex>>(new Set())
 
   const hasCode = !!ASHDEX_REFERRAL_CODE
-  const userReady = !!address && address !== zeroAddress
+  // Never set a referrer on a treasury's behalf: that is the co-signers' call.
+  const userReady = mode === 'wallet' && !!address && address !== zeroAddress
 
   // Shares the queryKey shape used by EstablishConnection so both hooks hit
   // the same React Query cache entry instead of double-fetching.

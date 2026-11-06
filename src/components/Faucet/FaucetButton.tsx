@@ -5,15 +5,18 @@ import { IconDroplet } from '@tabler/icons-react'
 import { isTestnet } from '@/utils/constants'
 import { Button } from '../ui/button'
 import FaucetModal from './FaucetModal'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 
 /**
  * Header entry point for the testnet faucet. Renders nothing on the mainnet
- * deployment — there is no mainnet drip to claim.
+ * deployment — there is no mainnet drip to claim — nor in treasury mode, where
+ * the drip would go to the wallet, not the account being traded.
  */
 const FaucetButton = () => {
   const [isOpen, setIsOpen] = useState(false)
+  const { mode } = useTradingAccount()
 
-  if (!isTestnet) return null
+  if (!isTestnet || mode === 'treasury') return null
 
   return (
     <>

@@ -19,6 +19,11 @@ export default defineConfig({
     // iteration). In CI, always spawn fresh.
     reuseExistingServer: !process.env.CI,
     // Turbopack cold-boot on this project takes a while.
-    timeout: 120_000
+    timeout: 120_000,
+    // Treasury specs assert the hl-tools links, which only render when this
+    // is set. A dev server you start yourself (reused locally) needs it too.
+    env: {
+      NEXT_PUBLIC_HLTOOLS_URL: process.env.NEXT_PUBLIC_HLTOOLS_URL ?? 'http://localhost:3000'
+    }
   }
 })

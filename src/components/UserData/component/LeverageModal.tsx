@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils'
 import { IconMinus, IconPlus, IconWallet } from '@tabler/icons-react'
 import { Separator } from '@/components/ui/separator'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface LeverageModalProps {
   isOpen: boolean
@@ -39,7 +39,7 @@ const LeverageModal = ({ isOpen, onClose, asset }: LeverageModalProps) => {
     }))
   )
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const maxLeverage = useMemo(() => {
     if (!perpsMeta?.universe.length || !asset) return 1

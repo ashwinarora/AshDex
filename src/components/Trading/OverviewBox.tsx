@@ -12,6 +12,7 @@ import { Separator } from '../ui/separator'
 import { useShallow } from 'zustand/react/shallow'
 import { cn } from '@/lib/utils'
 import { computeUnifiedUsdcAccount } from '@/utils/hyperliquid/unifiedAccount'
+import { WalletActionOrTreasuryLink } from '@/components/Treasury/TreasuryLinkOut'
 function OverviewBox({ isRTL }: { isRTL: boolean }) {
   const { isConnected } = useConnection()
   const [isDepositOpen, setIsDepositOpen] = useState(false)
@@ -110,30 +111,46 @@ function OverviewBox({ isRTL }: { isRTL: boolean }) {
           "Transfer" button so screen readers announce a single word and the
           intent is obvious. The dialog title still names both sides.
         */}
-        <Button
-          onClick={() => setIsSendModalOpen(true)}
-          variant="outline"
+        <WalletActionOrTreasuryLink
+          kind={'sendUsdc'}
+          label="Send"
           className="flex-1"
-          disabled={!isConnected}
+          variant="outline"
         >
-          {'Send'}
-        </Button>
-        {!isUnified && (
           <Button
-            onClick={() => setIsTransferModalOpen(true)}
+            onClick={() => setIsSendModalOpen(true)}
             variant="outline"
-            className="flex flex-1 items-center justify-center gap-2"
+            className="flex-1"
             disabled={!isConnected}
-            data-testid="overview-transfer"
           >
-            <IconTransfer className="size-3" />
-            <p>{'Transfer'}</p>
+            {'Send'}
           </Button>
+        </WalletActionOrTreasuryLink>
+        {!isUnified && (
+          <WalletActionOrTreasuryLink
+            kind={'usdClassTransfer'}
+            label="Transfer"
+            className="flex flex-1 items-center justify-center gap-2"
+            variant="outline"
+          >
+            <Button
+              onClick={() => setIsTransferModalOpen(true)}
+              variant="outline"
+              className="flex flex-1 items-center justify-center gap-2"
+              disabled={!isConnected}
+              data-testid="overview-transfer"
+            >
+              <IconTransfer className="size-3" />
+              <p>{'Transfer'}</p>
+            </Button>
+          </WalletActionOrTreasuryLink>
         )}
       </div>
-      <Button onClick={() => setIsDepositOpen(true)} disabled={!isConnected}>
-        {'Deposit'}
-      </Button>
+      <WalletActionOrTreasuryLink kind={'deposit'} label="Deposit" variant="default">
+        <Button onClick={() => setIsDepositOpen(true)} disabled={!isConnected}>
+          {'Deposit'}
+        </Button>
+      </WalletActionOrTreasuryLink>
       <Separator className="w-full" />
       <div className="flex flex-col gap-2 flex-1 h-full">
         <div

@@ -16,11 +16,10 @@ import {
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
 import { Button } from '@/components/ui/button'
 import { useUserFee } from '@/hooks/useUserFee'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useAgentApproval } from '@/context/EstablishConnection'
 import { cn } from '@/lib/utils'
 import { IconWallet } from '@tabler/icons-react'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { normalizeDecimalString } from '@/utils/decimalString'
 
@@ -42,9 +41,9 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
         perpsMeta: state.perpsMeta
       }))
     )
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const handleCloseAll = async () => {
     if (!agentWallet || !clearingHouseState?.assetPositions || !perpsMeta || !sdkL1ActionClient)
@@ -81,13 +80,10 @@ const CloseAllModal: React.FC<CloseAllModalProps> = ({ isOpen, onClose }) => {
       //   grouping: 'na',
       //   orders: orders
       // })
-      const adjustedBuilderFee = getAdjustedBuilderFee(true)
+      const builder = getOrderBuilder(true)
       const orderRes = await sdkL1ActionClient.order({
         grouping: 'na',
-        builder: {
-          b: BUILDER_ADDRESS,
-          f: adjustedBuilderFee
-        },
+        builder,
         orders: orders.map((order) => ({
           a: order.assetIndex,
           b: order.isBuy,

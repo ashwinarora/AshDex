@@ -17,7 +17,6 @@ import { Separator } from '@/components/ui/separator'
 import { Slider } from '@/components/ui/slider'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
 import { validateTpslDirection } from '@/utils/tpslValidation'
@@ -119,7 +118,7 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
       sdkL1ActionClient: state.sdkL1ActionClient
     }))
   )
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
 
   const assetCtx = useMemo(() => {
     if (!tpslAsset) return null
@@ -312,13 +311,10 @@ const TPSL_Cell: React.FC<TPSLCellProps> = ({
     }
     const toastId = toast.loading('Placing TP/SL order...')
     try {
-      const adjustedBuilderFee = getAdjustedBuilderFee()
+      const builder = getOrderBuilder()
       await sdkL1ActionClient.order({
         grouping: 'positionTpsl',
-        builder: {
-          b: BUILDER_ADDRESS,
-          f: adjustedBuilderFee
-        },
+        builder,
         orders: orders.map((order) => ({
           a: order.assetIndex,
           b: order.isBuy,

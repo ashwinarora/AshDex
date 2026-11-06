@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
+import { BUILDER_ADDRESS } from '@/utils/constants'
+import { orderBuilder, type OrderBuilder } from '@/utils/treasury/orderBuilder'
 import { Hex } from 'viem'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import useMarketKind from './useMarketKind'
@@ -79,7 +81,7 @@ function divRound(numerator: bigint, denominator: bigint): bigint {
 }
 
 export const useUserFee = () => {
-  const { address } = useConnection()
+  const { address, mode } = useTradingAccount()
   const sdkInfoClient = useHyperliquidStore((state) => state.sdkInfoClient)
   // Outcome shares (HIP-4) are fee-tiered like spot, so both spot and outcome
   // routes use the spot rates; only perps use the perp rates.
@@ -124,5 +126,13 @@ export const useUserFee = () => {
       }
     }
   }
-  return { ...data, getAdjustedBuilderFee }
+  // The order's `builder` field. Use this, not the raw fee, when placing orders.
+  const getOrderBuilder = (isMarket?: boolean, opts?: { omitZeroFee?: boolean }): OrderBuilder =>
+    orderBuilder({
+      mode,
+      builderAddress: BUILDER_ADDRESS,
+      fee: getAdjustedBuilderFee(isMarket),
+      omitZeroFee: opts?.omitZeroFee
+    })
+  return { ...data, getAdjustedBuilderFee, getOrderBuilder }
 }

@@ -1,5 +1,6 @@
 import {
   AGENT_PRIVATE_KEY,
+  HYPERLIQUID_NETWORK,
   isTestnet,
   WEBSOCKET_MAINNET_URL,
   WEBSOCKET_TESTNET_URL
@@ -16,11 +17,30 @@ import {
   getPendingWithdrawals,
   type PendingWithdrawal
 } from '@/utils/pendingWithdrawals'
+import type { TreasuryTarget } from '@/utils/tradingAccount'
+import {
+  createTreasuryAgent as createTreasuryAgentRecord,
+  importTreasuryAgent as importTreasuryAgentRecord,
+  loadTreasuryAgent,
+  removeTreasuryAgent as removeTreasuryAgentRecord,
+  selectAgentKey,
+  setTreasuryAgentValidUntil,
+  type TreasuryAgentRecord
+} from '@/utils/treasury/agentKey'
+import { savePersistedTreasury } from '@/utils/treasury/persist'
 
 export type AccountAbstractionMode = 'disabled' | 'unifiedAccount' | 'portfolioMargin'
 
 interface HyperliquidState {
-  userActiveAddress: Hex
+  // The account the app reads and trades for: the connected wallet, or the
+  // treasury in treasury mode. Components read it through `useTradingAccount()`.
+  tradingAddress: Hex
+  // Set while trading for a multisig treasury; `null` in plain wallet mode.
+  treasury: TreasuryTarget | null
+  // Last connected wallet seen by initSdk. It owns the wallet agent slot.
+  walletAddress: Hex
+  // This browser's stored agent for `treasury`, if any (`null` in wallet mode).
+  treasuryAgent: TreasuryAgentRecord | null
   sdkTransport: hl.HttpTransport
   sdkSocketTransport: hl.WebSocketTransport
   sdkUserSignerClient: hl.ExchangeClient | null
@@ -97,11 +117,21 @@ interface HyperliquidActions {
     asset: string,
     interval: hl.CandleWsParameters['interval']
   ) => Promise<void>
-  subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
+  subscribeToActiveAssetData: (userAddress: Hex, coinName: string) => void
   unsubscribeFromActiveAssetData: () => Promise<void>
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'userState' | 'candles') => string
-  updateUserActiveAddress: (address: Hex) => void
+  setTradingAddress: (address: Hex) => void
+  setTreasury: (treasury: TreasuryTarget | null) => void
+  // Treasury agent key slot for the current treasury. Each one re-selects the
+  // signing agent. They throw when no treasury is set or the input is invalid.
+  createTreasuryAgent: (name?: string) => TreasuryAgentRecord
+  importTreasuryAgent: (privateKey: string, name?: string) => TreasuryAgentRecord
+  removeTreasuryAgent: () => void
+  // Remember the expiry seen in extraAgents, so a later disappearance reads as "removed".
+  cacheTreasuryAgentValidUntil: (validUntil: number) => void
+  // Rebuild agentWallet + sdkL1ActionClient for the current wallet/treasury.
+  applyAgent: () => void
   subscribeLedgerUpdates: (address: Hex) => void
   unsubscribeLedgerUpdates: () => Promise<void>
   addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
@@ -113,9 +143,15 @@ interface HyperliquidActions {
   unsubscribeOutcomeMetaUpdates: () => Promise<void>
 }
 
+// `combine` types `get()` as state only; this lets one action call another.
+const actionsOf = (get: () => HyperliquidState) => get() as HyperliquidState & HyperliquidActions
+
 const store = combine<HyperliquidState, HyperliquidActions>(
   {
-    userActiveAddress: zeroAddress,
+    tradingAddress: zeroAddress,
+    treasury: null,
+    walletAddress: zeroAddress,
+    treasuryAgent: null,
     sdkTransport: new hl.HttpTransport({
       isTestnet: isTestnet
     }),
@@ -184,28 +220,79 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       // If we don't have a real user address yet, stop here (do NOT touch agentWallet).
       if (!address || address === zeroAddress) return
 
-      const privateKey = (() => {
-        const storageKey = AGENT_PRIVATE_KEY + '_' + address
-        const storedPrivateKey = localStorage.getItem(storageKey)
-        if (storedPrivateKey) {
-          return storedPrivateKey as Hex
-        } else {
-          const newPrivateKey = generatePrivateKey()
-          localStorage.setItem(storageKey, newPrivateKey)
-          return newPrivateKey
-        }
-      })()
-
+      set({ walletAddress: address })
+      // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
+      actionsOf(get).applyAgent()
+    },
+    applyAgent: () => {
+      const { walletAddress, treasury } = get()
+      set({
+        treasuryAgent: treasury
+          ? loadTreasuryAgent(localStorage, treasury.network, treasury.address)
+          : null
+      })
+      const privateKey = selectAgentKey({
+        storage: localStorage,
+        walletAddress,
+        treasury,
+        network: HYPERLIQUID_NETWORK,
+        walletSlotKey: AGENT_PRIVATE_KEY + '_' + walletAddress
+      })
+      if (privateKey === undefined) return
+      if (privateKey === null) {
+        set({ agentWallet: null, sdkL1ActionClient: null })
+        return
+      }
       const agentWallet = privateKeyToAccount(privateKey)
-
       set((state) => ({
-        agentWallet: agentWallet,
+        agentWallet,
         sdkL1ActionClient: new hl.ExchangeClient({
           transport: state.sdkTransport,
           wallet: agentWallet
         })
-        // `sdkInfoClient`/`sdkSubscriptionClient`/`sdkUserSignerClient` are handled above.
       }))
+    },
+    createTreasuryAgent: (name?: string) => {
+      const { treasury } = get()
+      if (!treasury) throw new Error('No treasury selected')
+      const record = createTreasuryAgentRecord({
+        storage: localStorage,
+        network: treasury.network,
+        treasury: treasury.address,
+        name
+      })
+      actionsOf(get).applyAgent()
+      return record
+    },
+    importTreasuryAgent: (privateKey: string, name?: string) => {
+      const { treasury } = get()
+      if (!treasury) throw new Error('No treasury selected')
+      const record = importTreasuryAgentRecord({
+        storage: localStorage,
+        network: treasury.network,
+        treasury: treasury.address,
+        privateKey,
+        name
+      })
+      actionsOf(get).applyAgent()
+      return record
+    },
+    cacheTreasuryAgentValidUntil: (validUntil: number) => {
+      const { treasury, treasuryAgent } = get()
+      if (!treasury || !treasuryAgent || treasuryAgent.validUntil === validUntil) return
+      const record = setTreasuryAgentValidUntil(
+        localStorage,
+        treasury.network,
+        treasury.address,
+        validUntil
+      )
+      set({ treasuryAgent: record })
+    },
+    removeTreasuryAgent: () => {
+      const { treasury } = get()
+      if (!treasury) throw new Error('No treasury selected')
+      removeTreasuryAgentRecord(localStorage, treasury.network, treasury.address)
+      actionsOf(get).applyAgent()
     },
     fetchPerpsMeta: async () => {
       const { sdkInfoClient } = get()
@@ -529,8 +616,32 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       return formatTimeSinceUpdate(timeSinceLastUpdate)
     },
-    updateUserActiveAddress: (address: Hex) => {
-      set({ userActiveAddress: address })
+    setTradingAddress: (address: Hex) => {
+      set({ tradingAddress: address })
+    },
+    setTreasury: (treasury: TreasuryTarget | null) => {
+      const current = get().treasury
+      const same =
+        current?.network === treasury?.network &&
+        current?.address.toLowerCase() === treasury?.address.toLowerCase()
+      if (same) return
+      // Remember treasury mode across reloads (public identifiers only).
+      savePersistedTreasury(localStorage, treasury)
+      // Switching accounts: drop the previous account's user data so nothing
+      // from it shows under the new one. The initializer re-subscribes and the
+      // HTTP fallbacks re-seed, since they only fill empty state.
+      set({
+        treasury,
+        clearingHouseState: null,
+        spotState: { balances: [] },
+        openOrders: [],
+        activeAssetData: null,
+        ledgerUpdates: [],
+        twapStates: [],
+        accountAbstraction: null
+      })
+      // Sign with the treasury's agent (or the wallet's again on exit).
+      actionsOf(get).applyAgent()
     },
     subscribeLedgerUpdates: async (address: Hex) => {
       const { sdkSubscriptionClient } = get()
@@ -539,7 +650,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const ledgerUpdatesSub = await sdkSubscriptionClient.userNonFundingLedgerUpdates(
         { user: address },
         (data) => {
-          const activeAddress = get().userActiveAddress
+          const activeAddress = get().tradingAddress
           if (data.user.toLowerCase() !== activeAddress.toLowerCase()) {
             ledgerUpdatesSub.unsubscribe()
             return
@@ -673,14 +784,10 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       localStorage.setItem(storageKey, newPrivateKey)
       // Create the new agent wallet
       const newAgentWallet = privateKeyToAccount(newPrivateKey)
-      // Update the store
-      set((state) => ({
-        agentWallet: newAgentWallet,
-        sdkL1ActionClient: new hl.ExchangeClient({
-          transport: state.sdkTransport,
-          wallet: newAgentWallet
-        })
-      }))
+      // Re-select the signing agent: the fresh wallet key in wallet mode; the
+      // treasury's key stays in charge while trading for a treasury.
+      set({ walletAddress: address })
+      actionsOf(get).applyAgent()
       return newAgentWallet
     }
   })
@@ -733,7 +840,7 @@ export const useInitHyperliquid = () => {
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
-      updateUserActiveAddress: state.updateUserActiveAddress,
+      setTradingAddress: state.setTradingAddress,
       subscribeLedgerUpdates: state.subscribeLedgerUpdates,
       unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
       loadPendingWithdrawals: state.loadPendingWithdrawals,

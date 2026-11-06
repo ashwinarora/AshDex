@@ -1,9 +1,10 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
+import type { OrderBuilder } from '@/utils/treasury/orderBuilder'
 import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import type { SpotMetaResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
-import { BUILDER_ADDRESS, SPOT_DELTA } from '@/utils/constants'
+import { SPOT_DELTA } from '@/utils/constants'
 import type { TPSLType } from './TPSL'
 import { formatPrice } from '@/utils/utils'
 import { normalizeDecimalString } from '@/utils/decimalString'
@@ -17,7 +18,7 @@ export const placeSpotOrder = async ({
   assetAmount,
   isPostOnly,
   tpsl,
-  adjustedBuilderFee,
+  builder,
   spotKeyToName,
   pushNewOpenOrders
 }: {
@@ -29,7 +30,8 @@ export const placeSpotOrder = async ({
   assetAmount: string
   isPostOnly: boolean
   tpsl?: TPSLType
-  adjustedBuilderFee: number
+  /** From `useUserFee().getOrderBuilder`; `undefined` sends no builder. */
+  builder: OrderBuilder
   spotKeyToName: Map<string, string>
   pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
 }) => {
@@ -121,10 +123,7 @@ export const placeSpotOrder = async ({
   try {
     const res = await sdkL1ActionClient.order({
       grouping: hasTpslOrders ? 'normalTpsl' : 'na',
-      builder: {
-        b: BUILDER_ADDRESS,
-        f: adjustedBuilderFee
-      },
+      builder,
       orders: orderPayload.map(({ a, b, p, s, r, t }) => ({ a, b, p, s, r, t }))
     })
 

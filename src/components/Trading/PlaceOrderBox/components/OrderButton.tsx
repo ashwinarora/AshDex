@@ -76,7 +76,7 @@ const OrderButton = ({
   const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const isSpot = useIsSpot()
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
   // R2-B12: submit-lock so a rapid double-click can't fire two /exchange
   // POSTs. Cleared in the finally of handlePlaceOrder.
   const [isPending, setIsPending] = useState(false)
@@ -136,7 +136,7 @@ const OrderButton = ({
     if (isPending) return
     setIsPending(true)
     try {
-      const adjustedBuilderFee = getAdjustedBuilderFee(isMarket)
+      const builder = getOrderBuilder(isMarket)
       if (isSpot) {
         if (!spotMeta) return
         await placeSpotOrder({
@@ -148,7 +148,7 @@ const OrderButton = ({
           assetAmount,
           isPostOnly,
           tpsl,
-          adjustedBuilderFee,
+          builder,
           spotKeyToName,
           pushNewOpenOrders
         })
@@ -209,7 +209,7 @@ const OrderButton = ({
           limitPrice,
           isReduceOnly,
           tpsl,
-          adjustedBuilderFee,
+          builder,
           pushNewOpenOrders,
           pushNewPosition
         })

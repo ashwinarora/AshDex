@@ -21,7 +21,7 @@ import clsx from 'clsx'
 import { Skeleton } from '../ui/skeleton'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { isTestnet } from '@/utils/constants'
 
@@ -31,7 +31,7 @@ interface TradingProps {
 
 const Trading = ({ defaultAsset }: TradingProps = {}) => {
   const isSpot = useIsSpot()
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { spotKeyToName } = useSpotMeta()
   const [selectedAsset, setSelectedAsset] = useState<string>('') // @1035 and @107 is HYPE
 

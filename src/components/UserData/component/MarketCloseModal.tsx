@@ -25,10 +25,9 @@ import {
 import { Slider } from '@/components/ui/slider'
 import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { normalizeDecimalString } from '@/utils/decimalString'
 interface MarketCloseModalProps {
@@ -50,14 +49,14 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
     ClearinghouseStateResponse['assetPositions'][number]['position'] | null
   >(null)
   const [percent, setPercent] = useState<number>(100)
   const [lastChanged, setLastChanged] = useState<'percent' | 'size' | null>(null)
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
   const isRTL = false
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   useEffect(() => {
@@ -149,13 +148,10 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     const toastId = toast.loading('Closing position...')
     try {
       if (!sdkL1ActionClient) return
-      const adjustedBuilderFee = getAdjustedBuilderFee(true)
+      const builder = getOrderBuilder(true)
       const order = await sdkL1ActionClient.order({
         grouping: 'na',
-        builder: {
-          b: BUILDER_ADDRESS,
-          f: adjustedBuilderFee
-        },
+        builder,
         orders: [
           {
             a: assetIndex,

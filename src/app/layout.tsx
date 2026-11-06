@@ -8,6 +8,7 @@ import '@/styles/table.css'
 import OnboardingModal from '@/components/onboarding-modal'
 import { EstablishConnectionProvider } from '@/context/EstablishConnection'
 import HyperLiquidInitializer from './HyperliquidInitializer'
+import TreasuryBanner from '@/components/Treasury/TreasuryBanner'
 import OutcomeSettlementToaster from '@/components/Outcomes/OutcomeSettlementToaster'
 import dynamic from 'next/dynamic'
 import WagmiProvider from './WagmiProvider'
@@ -60,6 +61,7 @@ export default function RootLayout({
             <EstablishConnectionProvider>
               <div className="overscroll-none">
                 <Header />
+                <TreasuryBanner />
                 <OnboardingModal />
                 <DynamicUseToastOptions />
                 {children}
