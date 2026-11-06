@@ -43,7 +43,16 @@ export const buildApproveAgentProposeUrl = ({
 }
 
 /** User-signed actions a treasury proposes in hl-tools instead of AshDex signing them. */
-export type TreasuryProposeKind = 'withdraw3' | 'sendUsdc' | 'usdClassTransfer' | 'accountMode'
+export type TreasuryProposeKind =
+  | 'withdraw3'
+  | 'sendUsdc'
+  | 'sendToken'
+  | 'usdClassTransfer'
+  | 'accountMode'
+
+/** hl-tools' send kind for a balance row: USDC sends are their own kind. */
+export const treasurySendKind = (coin: string): 'sendUsdc' | 'sendToken' =>
+  /^USDC(\((Perps|Spot)\))?$/.test(coin) ? 'sendUsdc' : 'sendToken'
 
 /** `<hltools>/multisig/propose?network=…&treasury=…&kind=…`, or `null` without a usable base. */
 export const buildTreasuryProposeUrl = ({

@@ -33,6 +33,7 @@ import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible'
 import { WalletActionOrTreasuryLink } from '@/components/Treasury/TreasuryLinkOut'
+import { treasurySendKind } from '@/utils/treasury/proposeLink'
 
 type BalanceProps = {
   isRTL: boolean
@@ -321,7 +322,7 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
           const coin = info.row.original.coin
           return (
             <WalletActionOrTreasuryLink
-              kind={'sendUsdc'}
+              kind={treasurySendKind(coin)}
               label="Send"
               className="text-xs !p-0"
               variant={'link'}

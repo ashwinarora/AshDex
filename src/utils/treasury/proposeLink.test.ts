@@ -3,7 +3,8 @@ import {
   buildApproveAgentProposeUrl,
   buildTreasuryPageUrl,
   buildTreasuryProposeUrl,
-  normalizeAgentDays
+  normalizeAgentDays,
+  treasurySendKind
 } from './proposeLink'
 
 const base = {
@@ -85,5 +86,15 @@ describe('buildTreasuryPageUrl', () => {
         treasury: base.treasury
       })
     ).toBe('https://hltools.tech/multisig/t/mainnet/0x2222222222222222222222222222222222222222')
+  })
+})
+
+describe('treasurySendKind', () => {
+  it('uses sendUsdc for USDC rows and sendToken otherwise', () => {
+    expect(treasurySendKind('USDC')).toBe('sendUsdc')
+    expect(treasurySendKind('USDC(Perps)')).toBe('sendUsdc')
+    expect(treasurySendKind('USDC(Spot)')).toBe('sendUsdc')
+    expect(treasurySendKind('HYPE')).toBe('sendToken')
+    expect(treasurySendKind('USDT0')).toBe('sendToken')
   })
 })
