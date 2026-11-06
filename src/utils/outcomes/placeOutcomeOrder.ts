@@ -1,8 +1,8 @@
 import type { ExchangeClient } from '@nktkas/hyperliquid'
+import type { OrderBuilder } from '@/utils/treasury/orderBuilder'
 import type { FrontendOpenOrdersResponse } from '@nktkas/hyperliquid/api/info'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 import { buildOutcomeOrder, type OutcomeTif, type OutcomeWireOrder } from './order'
 
 export type OutcomeOrderLeg = { price: string; size: string; tif: OutcomeTif }
@@ -19,7 +19,7 @@ export const placeOutcomeOrder = async ({
   sideLabel,
   isBuy,
   legs,
-  adjustedBuilderFee,
+  builder,
   pushNewOpenOrders
 }: {
   sdkL1ActionClient: ExchangeClient | null
@@ -30,7 +30,8 @@ export const placeOutcomeOrder = async ({
   sideLabel: string
   isBuy: boolean
   legs: OutcomeOrderLeg[]
-  adjustedBuilderFee: number
+  /** From `useUserFee().getOrderBuilder`; `undefined` sends no builder. */
+  builder: OrderBuilder
   pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
 }): Promise<boolean> => {
   if (!sdkL1ActionClient || legs.length === 0) return false
@@ -41,7 +42,7 @@ export const placeOutcomeOrder = async ({
   try {
     const res = await sdkL1ActionClient.order({
       grouping: 'na',
-      builder: adjustedBuilderFee > 0 ? { b: BUILDER_ADDRESS, f: adjustedBuilderFee } : undefined,
+      builder,
       orders
     })
     const statuses = res.response.data.statuses ?? []

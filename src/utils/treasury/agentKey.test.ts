@@ -129,6 +129,24 @@ describe('create / load / remove', () => {
     expect(loadTreasuryAgent(storage, 'testnet', TREASURY)?.name).toBe('desk 1')
   })
 
+  it('reuses the stored name when replacing a key', () => {
+    createTreasuryAgent({
+      storage,
+      network: 'testnet',
+      treasury: TREASURY,
+      generateKey: () => KEY_A
+    })
+    const replaced = createTreasuryAgent({
+      storage,
+      network: 'testnet',
+      treasury: TREASURY,
+      generateKey: () => KEY_B
+    })
+    expect(replaced.address).toBe(privateKeyToAccount(KEY_B).address)
+    expect(replaced.name).toBe(defaultAgentName(ADDR_A))
+    expect(replaced.validUntil).toBeNull()
+  })
+
   it('rejects an invalid treasury address', () => {
     expect(() =>
       createTreasuryAgent({ storage, network: 'testnet', treasury: '0x1234' as Hex })

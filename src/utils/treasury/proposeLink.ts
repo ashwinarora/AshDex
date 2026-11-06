@@ -32,6 +32,57 @@ export const buildApproveAgentProposeUrl = ({
   agentName: string
   agentDays?: number
 }): string | null => {
+  return hltoolsLink(hltoolsUrl, '/multisig/propose', [
+    ['network', network],
+    ['treasury', treasury],
+    ['kind', 'approveAgent'],
+    ['agentAddress', agentAddress],
+    ['agentName', agentName],
+    ['agentDays', String(normalizeAgentDays(agentDays))]
+  ])
+}
+
+/** User-signed actions a treasury proposes in hl-tools instead of AshDex signing them. */
+export type TreasuryProposeKind = 'withdraw3' | 'sendUsdc' | 'usdClassTransfer' | 'accountMode'
+
+/** `<hltools>/multisig/propose?network=…&treasury=…&kind=…`, or `null` without a usable base. */
+export const buildTreasuryProposeUrl = ({
+  hltoolsUrl,
+  network,
+  treasury,
+  kind
+}: {
+  hltoolsUrl: string
+  network: HyperliquidNetwork
+  treasury: Hex
+  kind: TreasuryProposeKind
+}): string | null =>
+  hltoolsLink(hltoolsUrl, '/multisig/propose', [
+    ['network', network],
+    ['treasury', treasury],
+    ['kind', kind]
+  ])
+
+/** The treasury's page in hl-tools (`<hltools>/multisig/t/<network>/<treasury>`), used for deposits. */
+export const buildTreasuryPageUrl = ({
+  hltoolsUrl,
+  network,
+  treasury
+}: {
+  hltoolsUrl: string
+  network: HyperliquidNetwork
+  treasury: Hex
+}): string | null => hltoolsLink(hltoolsUrl, `/multisig/t/${network}/${treasury}`, [])
+
+/**
+ * `path` under `hltoolsUrl` (keeping any base path), with `params` encoded by
+ * encodeURIComponent (not URLSearchParams) so a space is `%20`, not `+`.
+ */
+const hltoolsLink = (
+  hltoolsUrl: string,
+  path: string,
+  params: [string, string][]
+): string | null => {
   const base = hltoolsUrl.trim()
   if (!base) return null
   let url: URL
@@ -40,16 +91,7 @@ export const buildApproveAgentProposeUrl = ({
   } catch {
     return null
   }
-  url.pathname = `${url.pathname.replace(/\/+$/, '')}/multisig/propose`
-  // encodeURIComponent (not URLSearchParams) so a space is `%20`, not `+`.
-  const params: [string, string][] = [
-    ['network', network],
-    ['treasury', treasury],
-    ['kind', 'approveAgent'],
-    ['agentAddress', agentAddress],
-    ['agentName', agentName],
-    ['agentDays', String(normalizeAgentDays(agentDays))]
-  ]
+  url.pathname = `${url.pathname.replace(/\/+$/, '')}${path}`
   url.search = params.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
   return url.toString()
 }

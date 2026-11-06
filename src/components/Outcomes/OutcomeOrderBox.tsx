@@ -58,7 +58,7 @@ const OutcomeOrderBox = ({ outcome, side, resolved }: Props) => {
   const { isConnected } = useConnection()
   const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-  const { getAdjustedBuilderFee, data: feeData } = useUserFee()
+  const { getOrderBuilder, data: feeData } = useUserFee()
   const {
     requestedLimitPrice,
     requestedAssetAmount,
@@ -197,7 +197,7 @@ const OutcomeOrderBox = ({ outcome, side, resolved }: Props) => {
     setPending(true)
     try {
       const isMarket = tab === 'MARKET'
-      const adjustedBuilderFee = getAdjustedBuilderFee(isMarket)
+      const builder = getOrderBuilder(isMarket, { omitZeroFee: true })
       let legs: { price: string; size: string; tif: 'Gtc' | 'Ioc' }[] = []
       if (tab === 'SCALE') {
         if (!scaleValid) return
@@ -213,7 +213,7 @@ const OutcomeOrderBox = ({ outcome, side, resolved }: Props) => {
         sideLabel: sideSpec.name,
         isBuy,
         legs,
-        adjustedBuilderFee,
+        builder,
         pushNewOpenOrders
       })
       if (ok) setSize('')

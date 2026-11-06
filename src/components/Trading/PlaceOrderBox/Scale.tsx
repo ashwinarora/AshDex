@@ -3,7 +3,6 @@ import BuyOrSell from './components/BuyOrSell'
 import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { getPerpsUniverseIndex } from '@/utils/utils'
 import { cn } from '@/lib/utils'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 
 import { IPlaceOrderProps } from '.'
 import { useAgentApproval } from '@/context/EstablishConnection'
@@ -104,7 +103,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [isInputUsd, setIsInputUsd] = useState<boolean>(true)
 
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
   // Unified/portfolio-margin users have zero perp `withdrawable` — the
   // collateral is in spot. Same reason AmountInput needs the hook.
   const { withdrawable } = usePerpTradingAccount()
@@ -184,13 +183,10 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     const toastId = toast.loading(`${'Placing'} ${totalOrders} ${'orders'}...`)
     try {
       if (!sdkL1ActionClient) return
-      const adjustedBuilderFee = getAdjustedBuilderFee()
+      const builder = getOrderBuilder()
       const placeOrderRes = await sdkL1ActionClient.order({
         grouping: 'na',
-        builder: {
-          b: BUILDER_ADDRESS,
-          f: adjustedBuilderFee
-        },
+        builder,
         orders: ordersData.map((order) => ({
           a: order.assetIndex,
           b: order.isBuy,

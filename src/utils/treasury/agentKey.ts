@@ -109,7 +109,12 @@ export const loadTreasuryAgent = (
   return parsed
 }
 
-/** Generate a fresh agent key for the treasury, replacing any stored one. */
+/**
+ * Generate a fresh agent key for the treasury, replacing any stored one. A
+ * replacement keeps the stored record's name unless `name` is given, so
+ * approving it makes Hyperliquid swap the old agent out (same name) instead
+ * of adding another one.
+ */
 export const createTreasuryAgent = ({
   storage,
   network,
@@ -126,7 +131,8 @@ export const createTreasuryAgent = ({
   generateKey?: () => Hex
 }): TreasuryAgentRecord => {
   if (!isAddress(treasury, { strict: false })) throw new Error('Invalid treasury address')
-  const record = buildRecord(generateKey(), name, now)
+  const previousName = loadTreasuryAgent(storage, network, treasury)?.name
+  const record = buildRecord(generateKey(), name ?? previousName, now)
   save(storage, network, treasury, record)
   return record
 }

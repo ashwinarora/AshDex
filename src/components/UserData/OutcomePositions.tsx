@@ -39,7 +39,7 @@ const OutcomePositions = ({ isRTL }: { isRTL: boolean }) => {
   const [mounted, setMounted] = useState(false)
   const { positions, remnants, isReady } = useOutcomePositions()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
-  const { getAdjustedBuilderFee } = useUserFee()
+  const { getOrderBuilder } = useUserFee()
   const { sdkL1ActionClient, pushNewOpenOrders } = useHyperliquidStore(
     useShallow((s) => ({
       sdkL1ActionClient: s.sdkL1ActionClient,
@@ -80,7 +80,7 @@ const OutcomePositions = ({ isRTL }: { isRTL: boolean }) => {
             tif: 'Ioc'
           }
         ],
-        adjustedBuilderFee: getAdjustedBuilderFee(true),
+        builder: getOrderBuilder(true, { omitZeroFee: true }),
         pushNewOpenOrders
       })
     } finally {

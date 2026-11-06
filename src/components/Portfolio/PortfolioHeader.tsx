@@ -11,6 +11,7 @@ import SpotToEvmTransferModal from '../UserData/component/transfers/spot-to-evm'
 import AccountTypeModal from './AccountTypeModal'
 import { cn } from '@/lib/utils'
 import { useIsUnified } from '@/store/HyperliquidStore'
+import { WalletActionOrTreasuryLink } from '@/components/Treasury/TreasuryLinkOut'
 const PortfolioHeader = () => {
   const isRTL = false
   const { isMobile } = useScreenSize()
@@ -39,57 +40,99 @@ const PortfolioHeader = () => {
             {'Portfolio'}
           </h1>
           <div className={cn('flex flex-wrap gap-2 w-full', isRTL && 'flex-row-reverse')}>
-            <Button
+            <WalletActionOrTreasuryLink
+              kind={'accountMode'}
+              label="Account Type"
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
               variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
-              data-testid="account-type-button"
             >
-              <IconSettings className="size-3" />
-              <p>{'Account Type'}</p>
-            </Button>
-            <Button
-              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
-              variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
-            >
-              {'Send'}
-            </Button>
-
-            {!isUnified && (
               <Button
                 className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
                 variant={'outline'}
-                onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+                onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
+                data-testid="account-type-button"
               >
-                <p>{'Perps'}</p>
+                <IconSettings className="size-3" />
+                <p>{'Account Type'}</p>
+              </Button>
+            </WalletActionOrTreasuryLink>
+            <WalletActionOrTreasuryLink
+              kind={'sendUsdc'}
+              label="Send"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+              variant={'outline'}
+            >
+              <Button
+                className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                variant={'outline'}
+                onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
+              >
+                {'Send'}
+              </Button>
+            </WalletActionOrTreasuryLink>
+
+            {!isUnified && (
+              <WalletActionOrTreasuryLink
+                kind={'usdClassTransfer'}
+                label="Transfer"
+                className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                variant={'outline'}
+              >
+                <Button
+                  className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                  variant={'outline'}
+                  onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+                >
+                  <p>{'Perps'}</p>
+                  <IconTransfer className="size-3" />
+                  <p>{'Spot'}</p>
+                </Button>
+              </WalletActionOrTreasuryLink>
+            )}
+            <WalletActionOrTreasuryLink
+              kind={null}
+              label="EVM"
+              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+              variant={'outline'}
+            >
+              <Button
+                className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                variant={'outline'}
+                onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
+              >
+                <p>{'EVM'}</p>
                 <IconTransfer className="size-3" />
                 <p>{'Spot'}</p>
               </Button>
-            )}
-            <Button
-              className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
-              variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
-            >
-              <p>{'EVM'}</p>
-              <IconTransfer className="size-3" />
-              <p>{'Spot'}</p>
-            </Button>
-            <Button
+            </WalletActionOrTreasuryLink>
+            <WalletActionOrTreasuryLink
+              kind={'withdraw3'}
+              label="Withdraw"
               className={cn(isRTL && 'flex-row-reverse')}
               variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
             >
-              {'Withdraw'}
-            </Button>
-            <Button
+              <Button
+                className={cn(isRTL && 'flex-row-reverse')}
+                variant={'outline'}
+                onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
+              >
+                {'Withdraw'}
+              </Button>
+            </WalletActionOrTreasuryLink>
+            <WalletActionOrTreasuryLink
+              kind={'deposit'}
+              label="Deposit"
               className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
-              onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
+              variant="default"
             >
-              <IconCash className="size-4" />
-              {'Deposit'}
-            </Button>
+              <Button
+                className={cn('flex-1 w-full', isRTL && 'flex-row-reverse')}
+                onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
+              >
+                <IconCash className="size-4" />
+                {'Deposit'}
+              </Button>
+            </WalletActionOrTreasuryLink>
           </div>
         </div>
         {isModalOpen.deposit && (
@@ -143,56 +186,93 @@ const PortfolioHeader = () => {
       >
         <h1 className="text-3xl shrink-0 font-semibold text-white">{'Portfolio'}</h1>
         <div className={cn('flex flex-1 w-full gap-2 justify-end', isRTL && 'flex-row-reverse')}>
-          <Button
+          <WalletActionOrTreasuryLink
+            kind={'deposit'}
+            label="Deposit"
             className="w-fit"
-            onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
+            variant="default"
           >
-            <IconCash className="size-4" />
-            {'Deposit'}
-          </Button>
-          <Button
+            <Button
+              className="w-fit"
+              onClick={() => setIsModalOpen({ ...isModalOpen, deposit: true })}
+            >
+              <IconCash className="size-4" />
+              {'Deposit'}
+            </Button>
+          </WalletActionOrTreasuryLink>
+          <WalletActionOrTreasuryLink
+            kind={'withdraw3'}
+            label="Withdraw"
             className="w-fit"
             variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
           >
-            {'Withdraw'}
-          </Button>
-          {!isUnified && (
             <Button
               className="w-fit"
               variant={'outline'}
-              onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+              onClick={() => setIsModalOpen({ ...isModalOpen, withdraw: true })}
             >
-              <p>{'Perps'}</p>
+              {'Withdraw'}
+            </Button>
+          </WalletActionOrTreasuryLink>
+          {!isUnified && (
+            <WalletActionOrTreasuryLink
+              kind={'usdClassTransfer'}
+              label="Transfer"
+              className="w-fit"
+              variant={'outline'}
+            >
+              <Button
+                className="w-fit"
+                variant={'outline'}
+                onClick={() => setIsModalOpen({ ...isModalOpen, spotToPerp: true })}
+              >
+                <p>{'Perps'}</p>
+                <IconTransfer className="size-3" />
+                <p>{'Spot'}</p>
+              </Button>
+            </WalletActionOrTreasuryLink>
+          )}
+          <WalletActionOrTreasuryLink kind={null} label="EVM" className="w-fit" variant={'outline'}>
+            <Button
+              className="w-fit"
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
+            >
+              <p>{'EVM'}</p>
               <IconTransfer className="size-3" />
               <p>{'Spot'}</p>
             </Button>
-          )}
-          <Button
+          </WalletActionOrTreasuryLink>
+          <WalletActionOrTreasuryLink
+            kind={'sendUsdc'}
+            label="Send"
             className="w-fit"
             variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, spotToEvm: true })}
           >
-            <p>{'EVM'}</p>
-            <IconTransfer className="size-3" />
-            <p>{'Spot'}</p>
-          </Button>
-          <Button
+            <Button
+              className="w-fit"
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
+            >
+              {'Send'}
+            </Button>
+          </WalletActionOrTreasuryLink>
+          <WalletActionOrTreasuryLink
+            kind={'accountMode'}
+            label="Account Type"
             className="w-fit"
             variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, send: true })}
           >
-            {'Send'}
-          </Button>
-          <Button
-            className="w-fit"
-            variant={'outline'}
-            onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
-            data-testid="account-type-button"
-          >
-            <IconSettings className="size-4" />
-            {'Account Type'}
-          </Button>
+            <Button
+              className="w-fit"
+              variant={'outline'}
+              onClick={() => setIsModalOpen({ ...isModalOpen, accountType: true })}
+              data-testid="account-type-button"
+            >
+              <IconSettings className="size-4" />
+              {'Account Type'}
+            </Button>
+          </WalletActionOrTreasuryLink>
         </div>
       </div>
       {isModalOpen.deposit && (

@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest'
-import { buildApproveAgentProposeUrl, normalizeAgentDays } from './proposeLink'
+import {
+  buildApproveAgentProposeUrl,
+  buildTreasuryPageUrl,
+  buildTreasuryProposeUrl,
+  normalizeAgentDays
+} from './proposeLink'
 
 const base = {
   network: 'testnet' as const,
@@ -41,5 +46,44 @@ describe('buildApproveAgentProposeUrl', () => {
   it('returns null without a usable base URL', () => {
     expect(buildApproveAgentProposeUrl({ ...base, hltoolsUrl: '' })).toBeNull()
     expect(buildApproveAgentProposeUrl({ ...base, hltoolsUrl: 'not a url' })).toBeNull()
+  })
+})
+
+describe('buildTreasuryProposeUrl', () => {
+  it('links a user-signed action to the propose form', () => {
+    expect(
+      buildTreasuryProposeUrl({
+        hltoolsUrl: 'http://localhost:3000',
+        network: 'testnet',
+        treasury: base.treasury,
+        kind: 'withdraw3'
+      })
+    ).toBe(
+      'http://localhost:3000/multisig/propose?network=testnet' +
+        '&treasury=0x2222222222222222222222222222222222222222&kind=withdraw3'
+    )
+  })
+
+  it('returns null without a usable base URL', () => {
+    expect(
+      buildTreasuryProposeUrl({
+        hltoolsUrl: '',
+        network: 'testnet',
+        treasury: base.treasury,
+        kind: 'sendUsdc'
+      })
+    ).toBeNull()
+  })
+})
+
+describe('buildTreasuryPageUrl', () => {
+  it("links to the treasury's hl-tools page", () => {
+    expect(
+      buildTreasuryPageUrl({
+        hltoolsUrl: 'https://hltools.tech/',
+        network: 'mainnet',
+        treasury: base.treasury
+      })
+    ).toBe('https://hltools.tech/multisig/t/mainnet/0x2222222222222222222222222222222222222222')
   })
 })

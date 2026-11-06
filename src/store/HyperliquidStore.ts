@@ -21,8 +21,10 @@ import type { TreasuryTarget } from '@/utils/tradingAccount'
 import {
   createTreasuryAgent as createTreasuryAgentRecord,
   importTreasuryAgent as importTreasuryAgentRecord,
+  loadTreasuryAgent,
   removeTreasuryAgent as removeTreasuryAgentRecord,
   selectAgentKey,
+  setTreasuryAgentValidUntil,
   type TreasuryAgentRecord
 } from '@/utils/treasury/agentKey'
 
@@ -36,6 +38,8 @@ interface HyperliquidState {
   treasury: TreasuryTarget | null
   // Last connected wallet seen by initSdk. It owns the wallet agent slot.
   walletAddress: Hex
+  // This browser's stored agent for `treasury`, if any (`null` in wallet mode).
+  treasuryAgent: TreasuryAgentRecord | null
   sdkTransport: hl.HttpTransport
   sdkSocketTransport: hl.WebSocketTransport
   sdkUserSignerClient: hl.ExchangeClient | null
@@ -123,6 +127,8 @@ interface HyperliquidActions {
   createTreasuryAgent: (name?: string) => TreasuryAgentRecord
   importTreasuryAgent: (privateKey: string, name?: string) => TreasuryAgentRecord
   removeTreasuryAgent: () => void
+  // Remember the expiry seen in extraAgents, so a later disappearance reads as "removed".
+  cacheTreasuryAgentValidUntil: (validUntil: number) => void
   // Rebuild agentWallet + sdkL1ActionClient for the current wallet/treasury.
   applyAgent: () => void
   subscribeLedgerUpdates: (address: Hex) => void
@@ -144,6 +150,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     tradingAddress: zeroAddress,
     treasury: null,
     walletAddress: zeroAddress,
+    treasuryAgent: null,
     sdkTransport: new hl.HttpTransport({
       isTestnet: isTestnet
     }),
@@ -218,6 +225,11 @@ const store = combine<HyperliquidState, HyperliquidActions>(
     },
     applyAgent: () => {
       const { walletAddress, treasury } = get()
+      set({
+        treasuryAgent: treasury
+          ? loadTreasuryAgent(localStorage, treasury.network, treasury.address)
+          : null
+      })
       const privateKey = selectAgentKey({
         storage: localStorage,
         walletAddress,
@@ -263,6 +275,17 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       })
       actionsOf(get).applyAgent()
       return record
+    },
+    cacheTreasuryAgentValidUntil: (validUntil: number) => {
+      const { treasury, treasuryAgent } = get()
+      if (!treasury || !treasuryAgent || treasuryAgent.validUntil === validUntil) return
+      const record = setTreasuryAgentValidUntil(
+        localStorage,
+        treasury.network,
+        treasury.address,
+        validUntil
+      )
+      set({ treasuryAgent: record })
     },
     removeTreasuryAgent: () => {
       const { treasury } = get()

@@ -32,6 +32,7 @@ import { formatWithCommas } from '@/utils/format'
 import SpotToPerpTransferModal from './component/transfers/spot-to-perp'
 import { useSpotMeta } from '@/hooks/useSpotMeta'
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '../ui/collapsible'
+import { WalletActionOrTreasuryLink } from '@/components/Treasury/TreasuryLinkOut'
 
 type BalanceProps = {
   isRTL: boolean
@@ -289,17 +290,25 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
             return <span className="text-white/70">--</span>
 
           return (
-            <Button
+            <WalletActionOrTreasuryLink
+              kind={'usdClassTransfer'}
+              label="Transfer"
+              className="text-xs !p-0"
               variant={'link'}
               size={'sm'}
-              className="text-xs !p-0"
-              onClick={() => {
-                setDefaultToPerp(info.row.original.coin !== 'USDC(Perps)')
-                setIsTransferModalOpen(true)
-              }}
             >
-              {info.row.original.coin === 'USDC(Perps)' ? 'Transfer to Spot' : 'Transfer to Perp'}
-            </Button>
+              <Button
+                variant={'link'}
+                size={'sm'}
+                className="text-xs !p-0"
+                onClick={() => {
+                  setDefaultToPerp(info.row.original.coin !== 'USDC(Perps)')
+                  setIsTransferModalOpen(true)
+                }}
+              >
+                {info.row.original.coin === 'USDC(Perps)' ? 'Transfer to Spot' : 'Transfer to Perp'}
+              </Button>
+            </WalletActionOrTreasuryLink>
           )
         },
         enableSorting: false,
@@ -311,22 +320,30 @@ const Balances = ({ isRTL, isHideSmallBalances }: BalanceProps) => {
         cell: (info) => {
           const coin = info.row.original.coin
           return (
-            <Button
+            <WalletActionOrTreasuryLink
+              kind={'sendUsdc'}
+              label="Send"
+              className="text-xs !p-0"
               variant={'link'}
               size={'sm'}
-              className="text-xs !p-0"
-              onClick={() => {
-                if (coin === 'USDC(Perps)') {
-                  setCoin(() => '')
-                  setIsSendModalOpen(true)
-                  return
-                }
-                setCoin(() => coin)
-                setIsSendModalOpen(true)
-              }}
             >
-              {'Send'}
-            </Button>
+              <Button
+                variant={'link'}
+                size={'sm'}
+                className="text-xs !p-0"
+                onClick={() => {
+                  if (coin === 'USDC(Perps)') {
+                    setCoin(() => '')
+                    setIsSendModalOpen(true)
+                    return
+                  }
+                  setCoin(() => coin)
+                  setIsSendModalOpen(true)
+                }}
+              >
+                {'Send'}
+              </Button>
+            </WalletActionOrTreasuryLink>
           )
         },
         enableSorting: false,

@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 import BridgeButton from './Bridge/BridgeButton'
 import NetworkSwitchButton from './NetworkSwitchButton'
 import FaucetButton from './Faucet/FaucetButton'
+import { useTreasuryLinkOut } from './Treasury/TreasuryLinkOut'
 import ashdexLogo from '@/assets/images/logo.svg'
 import { NavigationMenu, NavigationMenuItem, NavigationMenuLink } from './ui/navigation-menu'
 import {
@@ -48,6 +49,8 @@ const Header: FC = () => {
   const [isWithdrawOpen, setIsWithdrawOpen] = useState(false)
   const [isBridgeModalOpen, setIsBridgeModalOpen] = useState(false)
   const { openConnectWalletModal } = useWalletModal()
+  const { isTreasury, hrefFor } = useTreasuryLinkOut()
+  const treasuryWithdrawHref = hrefFor('withdraw3')
   const { isMobile } = useScreenSize()
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -262,10 +265,27 @@ const Header: FC = () => {
                   Switch Wallet
                 </DropdownMenuItem>
 
-                <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
-                  <IconStackPop className="size-4 text-inherit" />
-                  Withdraw
-                </DropdownMenuItem>
+                {!isTreasury ? (
+                  <DropdownMenuItem onClick={() => setIsWithdrawOpen(true)}>
+                    <IconStackPop className="size-4 text-inherit" />
+                    Withdraw
+                  </DropdownMenuItem>
+                ) : (
+                  treasuryWithdrawHref && (
+                    <DropdownMenuItem asChild>
+                      <a
+                        href={treasuryWithdrawHref}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Propose in hl-tools"
+                        data-testid="treasury-link-withdraw3"
+                      >
+                        <IconStackPop className="size-4 text-inherit" />
+                        Withdraw in hl-tools
+                      </a>
+                    </DropdownMenuItem>
+                  )
+                )}
 
                 {isMobile && (
                   <DropdownMenuItem onClick={() => setIsBridgeModalOpen(true)}>

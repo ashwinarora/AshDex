@@ -1,4 +1,5 @@
 import { ExchangeClient } from '@nktkas/hyperliquid'
+import type { OrderBuilder } from '@/utils/treasury/orderBuilder'
 import type {
   ClearinghouseStateResponse,
   FrontendOpenOrdersResponse,
@@ -10,7 +11,6 @@ import { OrderData } from '@/utils/hyperliquid/PlaceOrder'
 import { StopOrder } from './OrderButton'
 import { toast } from 'sonner'
 import { toastSdkError } from '@/lib/toastSdkError'
-import { BUILDER_ADDRESS } from '@/utils/constants'
 import { normalizeDecimalString } from '@/utils/decimalString'
 
 export const placePerpOrder = async ({
@@ -26,7 +26,7 @@ export const placePerpOrder = async ({
   limitPrice,
   isReduceOnly,
   tpsl,
-  adjustedBuilderFee,
+  builder,
   pushNewOpenOrders,
   pushNewPosition
 }: {
@@ -40,7 +40,8 @@ export const placePerpOrder = async ({
   assetAmount: string
   limitPrice: string
   isReduceOnly: boolean
-  adjustedBuilderFee: number
+  /** From `useUserFee().getOrderBuilder`; `undefined` sends no builder. */
+  builder: OrderBuilder
   tpsl?: TPSLType
   stopOrder?: StopOrder
   pushNewOpenOrders: (order: FrontendOpenOrdersResponse) => void
@@ -140,10 +141,7 @@ export const placePerpOrder = async ({
     })
     const placeOrderRes = await sdkL1ActionClient.order({
       grouping: tpsl?.isTpsl ? 'normalTpsl' : 'na',
-      builder: {
-        b: BUILDER_ADDRESS,
-        f: adjustedBuilderFee
-      },
+      builder,
       orders: orders.map((order) => ({
         a: order.assetIndex,
         b: order.isBuy,
