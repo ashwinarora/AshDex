@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   buildApproveAgentProposeUrl,
+  buildRemoveAgentProposeUrl,
   buildTreasuryPageUrl,
   buildTreasuryProposeUrl,
   normalizeAgentDays,
@@ -96,5 +97,21 @@ describe('treasurySendKind', () => {
     expect(treasurySendKind('USDC(Spot)')).toBe('sendUsdc')
     expect(treasurySendKind('HYPE')).toBe('sendToken')
     expect(treasurySendKind('USDT0')).toBe('sendToken')
+  })
+})
+
+describe('buildRemoveAgentProposeUrl', () => {
+  it('asks hl-tools to remove the agent by its stored name', () => {
+    expect(
+      buildRemoveAgentProposeUrl({
+        hltoolsUrl: 'http://localhost:3000',
+        network: 'testnet',
+        treasury: base.treasury,
+        agentName: 'ashdex 531e'
+      })
+    ).toBe(
+      'http://localhost:3000/multisig/propose?network=testnet' +
+        '&treasury=0x2222222222222222222222222222222222222222&kind=removeAgent&agent=ashdex%20531e'
+    )
   })
 })

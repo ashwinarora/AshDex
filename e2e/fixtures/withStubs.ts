@@ -502,3 +502,53 @@ export async function installDripResponse(page: Page, body: string): Promise<voi
     })
   })
 }
+
+/** The testnet 2-of-3 treasury the treasury specs trade for. */
+export const STUB_TREASURY = {
+  address: '0x146432842836ef7381187dfc5a279edaa668233e',
+  threshold: 2,
+  signers: [
+    '0x7b676e8794d69c2e92656daa0c6b4b4bd9c3496e',
+    '0x79ae9d67957fdde545b82d5a8e0e80932527ed16',
+    '0x6fe84d5d7e49931ec42e21a55163b4d73c369abd'
+  ]
+} as const
+
+export type StubExtraAgent = { address: string; name: string; validUntil: number | null }
+
+/**
+ * Make `STUB_TREASURY` a multisig and answer `extraAgents` for it with
+ * whatever `agents()` returns at request time, so a spec can "approve" a key
+ * mid-test by changing what it returns. Other users get no agents. Call
+ * before `page.goto`.
+ */
+export async function installTreasury(
+  page: Page,
+  agents: () => StubExtraAgent[] = () => []
+): Promise<void> {
+  await page.route(/api\.hyperliquid(-testnet)?\.xyz\/info/, async (route) => {
+    const body = route.request().postDataJSON() as { type?: string; user?: string } | null
+    const isTreasury = body?.user?.toLowerCase() === STUB_TREASURY.address
+    if (body?.type === 'userToMultiSigSigners') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          isTreasury
+            ? { authorizedUsers: STUB_TREASURY.signers, threshold: STUB_TREASURY.threshold }
+            : null
+        )
+      })
+      return
+    }
+    if (body?.type === 'extraAgents') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(isTreasury ? agents() : [])
+      })
+      return
+    }
+    await route.fallback()
+  })
+}

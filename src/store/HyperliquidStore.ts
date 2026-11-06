@@ -27,6 +27,7 @@ import {
   setTreasuryAgentValidUntil,
   type TreasuryAgentRecord
 } from '@/utils/treasury/agentKey'
+import { savePersistedTreasury } from '@/utils/treasury/persist'
 
 export type AccountAbstractionMode = 'disabled' | 'unifiedAccount' | 'portfolioMargin'
 
@@ -624,6 +625,8 @@ const store = combine<HyperliquidState, HyperliquidActions>(
         current?.network === treasury?.network &&
         current?.address.toLowerCase() === treasury?.address.toLowerCase()
       if (same) return
+      // Remember treasury mode across reloads (public identifiers only).
+      savePersistedTreasury(localStorage, treasury)
       // Switching accounts: drop the previous account's user data so nothing
       // from it shows under the new one. The initializer re-subscribes and the
       // HTTP fallbacks re-seed, since they only fill empty state.

@@ -31,6 +31,7 @@ import { treasuryAgentStatus } from '@/utils/treasury/agentStatus'
 import {
   AGENT_DAYS_OPTIONS,
   buildApproveAgentProposeUrl,
+  buildRemoveAgentProposeUrl,
   DEFAULT_AGENT_DAYS,
   type AgentDays
 } from '@/utils/treasury/proposeLink'
@@ -41,6 +42,7 @@ import {
   treasuryPageHref
 } from '@/utils/treasury/route'
 import ImportKeyForm from './ImportKeyForm'
+import ExportKey from './ExportKey'
 
 // While waiting for the co-signers, re-read extraAgents this often (and on focus).
 const AGENTS_REFETCH_MS = 30_000
@@ -320,80 +322,112 @@ const KeyPanel = ({
   )
 
   return (
-    <Card testId={`treasury-state-${mismatch ? 'mismatch' : status.status}`}>
-      {mismatch && (
-        <>
-          <p className="text-white">
-            {`This browser holds a different key for this treasury: the link names ${truncateAddress(linkAgent!)}, this browser holds ${truncateAddress(record!.address)}.`}
-          </p>
-          {keyButtons('Make a new key')}
-        </>
-      )}
+    <>
+      <Card testId={`treasury-state-${mismatch ? 'mismatch' : status.status}`}>
+        {mismatch && (
+          <>
+            <p className="text-white">
+              {`This browser holds a different key for this treasury: the link names ${truncateAddress(linkAgent!)}, this browser holds ${truncateAddress(record!.address)}.`}
+            </p>
+            {keyButtons('Make a new key')}
+          </>
+        )}
 
-      {!mismatch && status.status === 'noKey' && (
-        <>
-          <p className="text-white">
-            {linkAgent
-              ? `The link names API wallet ${truncateAddress(linkAgent)}, but this browser has no key for this treasury. Import it, or make a new one.`
-              : 'This browser has no trading key for this treasury yet.'}
-          </p>
-          {keyButtons('Make a trading key')}
-        </>
-      )}
+        {!mismatch && status.status === 'noKey' && (
+          <>
+            <p className="text-white">
+              {linkAgent
+                ? `The link names API wallet ${truncateAddress(linkAgent)}, but this browser has no key for this treasury. Import it, or make a new one.`
+                : 'This browser has no trading key for this treasury yet.'}
+            </p>
+            {keyButtons('Make a trading key')}
+          </>
+        )}
 
-      {!mismatch && status.status === 'pending' && (
-        <PendingApproval
-          network={network}
-          treasury={treasury}
-          record={record!}
-          days={days}
-          setDays={setDays}
-          keyLine={keyLine}
-        />
-      )}
+        {!mismatch && status.status === 'pending' && (
+          <PendingApproval
+            network={network}
+            treasury={treasury}
+            record={record!}
+            days={days}
+            setDays={setDays}
+            keyLine={keyLine}
+          />
+        )}
 
-      {!mismatch && status.status === 'ready' && (
-        <>
-          <p className="text-white">
-            {status.validUntil === null
-              ? 'Ready: this browser can trade for the treasury (no set expiry).'
-              : `Ready: this browser can trade for the treasury until ${formatDate(status.validUntil)}.`}
-          </p>
-          {keyLine}
-          {isConnected ? (
-            <Button className="w-fit" onClick={startTrading} data-testid="treasury-start">
-              {'Trade for this treasury'}
-            </Button>
-          ) : (
-            <Button className="w-fit" onClick={openConnectWalletModal}>
-              {'Connect your wallet to start'}
-            </Button>
-          )}
-        </>
-      )}
+        {!mismatch && status.status === 'ready' && (
+          <>
+            <p className="text-white">
+              {status.validUntil === null
+                ? 'Ready: this browser can trade for the treasury (no set expiry).'
+                : `Ready: this browser can trade for the treasury until ${formatDate(status.validUntil)}.`}
+            </p>
+            {keyLine}
+            {isConnected ? (
+              <Button className="w-fit" onClick={startTrading} data-testid="treasury-start">
+                {'Trade for this treasury'}
+              </Button>
+            ) : (
+              <Button className="w-fit" onClick={openConnectWalletModal}>
+                {'Connect your wallet to start'}
+              </Button>
+            )}
+          </>
+        )}
 
-      {!mismatch && status.status === 'expired' && (
-        <>
-          <p className="text-white">
-            {`Expired (${formatDate(status.validUntil)}): make a new key and ask your co-signers to approve it.`}
-          </p>
-          {keyLine}
-          {keyButtons('Make a new key')}
-        </>
-      )}
+        {!mismatch && status.status === 'expired' && (
+          <>
+            <p className="text-white">
+              {`Your API wallet is past its expiry (${formatDate(status.validUntil)}). Hyperliquid may still accept it, so ask your co-signers to remove it in hl-tools, or approve a new key (it replaces this one, same name).`}
+            </p>
+            {keyLine}
+            {record && (
+              <RemoveAgentLink network={network} treasury={treasury} agentName={record.name} />
+            )}
+            {keyButtons('Make a new key')}
+          </>
+        )}
 
-      {!mismatch && status.status === 'removed' && (
-        <>
-          <p className="text-white">
-            {
-              'Removed: this key was removed from the treasury or replaced by another key. Make a new key and ask your co-signers to approve it.'
-            }
-          </p>
-          {keyLine}
-          {keyButtons('Make a new key')}
-        </>
-      )}
-    </Card>
+        {!mismatch && status.status === 'removed' && (
+          <>
+            <p className="text-white">
+              {
+                'Removed: this key was removed from the treasury or replaced by another key. Make a new key and ask your co-signers to approve it.'
+              }
+            </p>
+            {keyLine}
+            {keyButtons('Make a new key')}
+          </>
+        )}
+      </Card>
+      {record && <ExportKey key={record.address} record={record} />}
+    </>
+  )
+}
+
+const RemoveAgentLink = ({
+  network,
+  treasury,
+  agentName
+}: {
+  network: HyperliquidNetwork
+  treasury: Hex
+  agentName: string
+}) => {
+  const href = buildRemoveAgentProposeUrl({
+    hltoolsUrl: HLTOOLS_APP_URL,
+    network,
+    treasury,
+    agentName
+  })
+  if (!href) return null
+  return (
+    <Button asChild variant="outline" className="w-fit">
+      <a href={href} target="_blank" rel="noopener noreferrer" data-testid="treasury-remove">
+        {'Remove in hl-tools'}
+        <IconExternalLink className="size-3" />
+      </a>
+    </Button>
   )
 }
 

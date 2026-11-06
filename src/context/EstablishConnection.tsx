@@ -44,8 +44,11 @@ interface ConnectionContextType {
   openDepositModal: () => void
   closeDepositModal: () => void
   isDepositModalOpen: boolean
-  /** Treasury mode only (`null` in wallet mode): this browser's agent for the treasury. */
-  treasuryStatus: TreasuryAgentStatus | null
+  /**
+   * Treasury mode only (`null` in wallet mode): this browser's agent for the
+   * treasury, or `checking` until extraAgents has loaded.
+   */
+  treasuryStatus: TreasuryAgentStatus | { status: 'checking' } | null
   refetchTreasuryAgents: () => Promise<unknown>
 }
 
@@ -77,17 +80,17 @@ export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({
     refetchInterval: TREASURY_AGENTS_REFETCH_MS,
     refetchOnWindowFocus: true
   })
-  const treasuryStatus: TreasuryAgentStatus | null = isTreasury
-    ? treasuryAgents
-      ? treasuryAgentStatus({
-          keyAddress: treasuryAgent?.address,
-          cachedValidUntil: treasuryAgent?.validUntil,
-          extraAgents: treasuryAgents,
-          now: Date.now()
-        })
-      : treasuryAgent
-        ? { status: 'pending' }
-        : { status: 'noKey' }
+  const treasuryStatus: TreasuryAgentStatus | { status: 'checking' } | null = isTreasury
+    ? !treasuryAgent
+      ? { status: 'noKey' }
+      : treasuryAgents
+        ? treasuryAgentStatus({
+            keyAddress: treasuryAgent.address,
+            cachedValidUntil: treasuryAgent.validUntil,
+            extraAgents: treasuryAgents,
+            now: Date.now()
+          })
+        : { status: 'checking' }
     : null
   const readyValidUntil = treasuryStatus?.status === 'ready' ? treasuryStatus.validUntil : null
   useEffect(() => {

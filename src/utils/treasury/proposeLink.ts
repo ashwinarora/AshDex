@@ -42,6 +42,28 @@ export const buildApproveAgentProposeUrl = ({
   ])
 }
 
+/**
+ * `<hltools>/multisig/propose?network=…&treasury=…&kind=removeAgent&agent=<name>`.
+ * Hyperliquid removes an agent by name; pass the stored name (no suffix).
+ */
+export const buildRemoveAgentProposeUrl = ({
+  hltoolsUrl,
+  network,
+  treasury,
+  agentName
+}: {
+  hltoolsUrl: string
+  network: HyperliquidNetwork
+  treasury: Hex
+  agentName: string
+}): string | null =>
+  hltoolsLink(hltoolsUrl, '/multisig/propose', [
+    ['network', network],
+    ['treasury', treasury],
+    ['kind', 'removeAgent'],
+    ['agent', agentName]
+  ])
+
 /** User-signed actions a treasury proposes in hl-tools instead of AshDex signing them. */
 export type TreasuryProposeKind =
   | 'withdraw3'

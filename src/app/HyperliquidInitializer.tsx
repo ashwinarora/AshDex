@@ -6,6 +6,8 @@ import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
 import { useAutoReferral } from '@/hooks/useAutoReferral'
 import { useTradingAccount } from '@/hooks/useTradingAccount'
+import { useHyperliquidStore } from '@/store/HyperliquidStore'
+import { loadPersistedTreasury } from '@/utils/treasury/persist'
 
 const HyperLiquidInitializer = () => {
   // The wallet signs and owns the default agent key; `address` is the account
@@ -13,7 +15,15 @@ const HyperLiquidInitializer = () => {
   const { address: walletAddress } = useConnection()
   const { address } = useTradingAccount()
   const { data: walletClient } = useWalletClient()
+  const setTreasury = useHyperliquidStore((s) => s.setTreasury)
   useAutoReferral()
+
+  // Restore treasury mode after a reload. The key is re-validated against
+  // extraAgents by EstablishConnectionProvider before any trading is allowed.
+  useEffect(() => {
+    const persisted = loadPersistedTreasury(localStorage)
+    if (persisted) setTreasury(persisted)
+  }, [setTreasury])
   const {
     initSdk,
     sdkSubscriptionClient,

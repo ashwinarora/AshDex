@@ -16,6 +16,8 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger
 } from './ui/dropdown-menu'
 import { Button } from './ui/button'
@@ -27,12 +29,18 @@ import {
   IconMenu,
   IconStackPop,
   IconWallet,
-  IconBuildingBridge
+  IconBuildingBridge,
+  IconBuildingBank,
+  IconArrowBackUp,
+  IconSettings
 } from '@tabler/icons-react'
 import WithdrawModal from './DepositWithdraw/WithdrawModal'
 import { useScreenSize } from '@/hooks/useScreenSize'
 import BridgeModal from './Bridge/BridgeModal'
-import { useAccountAbstraction } from '@/store/HyperliquidStore'
+import { useAccountAbstraction, useHyperliquidStore } from '@/store/HyperliquidStore'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
+import { HYPERLIQUID_NETWORK } from '@/utils/constants'
+import { treasuryPageHref } from '@/utils/treasury/route'
 
 type MenuItem = {
   name: string
@@ -51,6 +59,8 @@ const Header: FC = () => {
   const { openConnectWalletModal } = useWalletModal()
   const { isTreasury, hrefFor } = useTreasuryLinkOut()
   const treasuryWithdrawHref = hrefFor('withdraw3')
+  const { treasury } = useTradingAccount()
+  const setTreasury = useHyperliquidStore((s) => s.setTreasury)
   const { isMobile } = useScreenSize()
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
@@ -100,8 +110,11 @@ const Header: FC = () => {
   }
   const activeMenu = getActiveMenu(pathname ?? '', mobileMenu)
 
+  // The account shown in the header button: the treasury while trading for one.
+  const shownAddress = treasury?.address ?? walletId
+
   const handleCopy = () => {
-    if (walletId) navigator.clipboard.writeText(walletId)
+    if (shownAddress) navigator.clipboard.writeText(shownAddress)
     toast.success('Copied to clipboard')
   }
 
@@ -235,6 +248,15 @@ const Header: FC = () => {
                   className="flex text-white text-xs items-center gap-2"
                   data-testid="header-wallet-button"
                 >
+                  {isTreasury && (
+                    <span
+                      className="rounded-sm bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-medium flex items-center gap-1"
+                      data-testid="header-treasury-chip"
+                    >
+                      <IconBuildingBank className="size-3" />
+                      {'Treasury'}
+                    </span>
+                  )}
                   {modeLabel && (
                     <span
                       className="rounded-sm bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-medium"
@@ -249,12 +271,46 @@ const Header: FC = () => {
                     </span>
                   )}
                   <span className="max-xl:hidden flex font-medium  truncate">
-                    {truncateAddress(walletId!)}
+                    {truncateAddress(shownAddress!)}
                   </span>
                   <IconChevronDown className="size-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48" align="end">
+              <DropdownMenuContent className="w-56" align="end">
+                {treasury && (
+                  <>
+                    <DropdownMenuLabel className="text-xs font-normal">
+                      {`Trading for treasury ${truncateAddress(treasury.address)}`}
+                      <br />
+                      {`Signing as ${truncateAddress(walletId!)}`}
+                    </DropdownMenuLabel>
+                    <DropdownMenuItem
+                      onClick={() => setTreasury(null)}
+                      data-testid="header-back-to-wallet"
+                    >
+                      <IconArrowBackUp className="size-4 text-inherit" />
+                      Back to my wallet
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() =>
+                        router.push(treasuryPageHref(treasury.network, treasury.address))
+                      }
+                    >
+                      <IconSettings className="size-4 text-inherit" />
+                      Treasury setup
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                {!treasury && (
+                  <DropdownMenuItem
+                    onClick={() => router.push(treasuryPageHref(HYPERLIQUID_NETWORK))}
+                    data-testid="header-trade-for-treasury"
+                  >
+                    <IconBuildingBank className="size-4 text-inherit" />
+                    Trade for a treasury
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem onClick={handleCopy}>
                   <IconCopy className="size-4 text-inherit" />
                   Copy Address
