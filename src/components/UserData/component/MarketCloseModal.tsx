@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { normalizeDecimalString } from '@/utils/decimalString'
 interface MarketCloseModalProps {
@@ -50,7 +50,7 @@ const MarketCloseModal: React.FC<MarketCloseModalProps> = ({ isOpen, onClose, cl
     )
   const [size, setSize] = useState<string>('')
   const [sizeType, setSizeType] = useState<'asset' | 'usd'>('asset')
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const [position, setPosition] = useState<
     ClearinghouseStateResponse['assetPositions'][number]['position'] | null

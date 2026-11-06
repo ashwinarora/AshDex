@@ -39,7 +39,7 @@ import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { getMaxAllowedLeverageForNotional } from '@/utils/hyperliquid/marginTables'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { IconWallet } from '@tabler/icons-react'
 interface Order {
@@ -123,7 +123,7 @@ const Scale = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
     return maxAllowedUsd
   }, [isReduceOnly, clearingHouseState, selectedAsset, isBuy, allMids, leverage, withdrawable])
 
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

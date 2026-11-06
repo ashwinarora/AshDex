@@ -1,5 +1,6 @@
 'use client'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { IconHistory } from '@tabler/icons-react'
 import WalletNotConnected from '@/components/ConnectWalletModal/DisconnectedWalletState'
 import {
@@ -31,7 +32,8 @@ const settledTo = (f: number, names: [string, string]) =>
 
 /** Settled outcome markets the user traded, with how they resolved. */
 const OutcomeHistory = ({ isRTL }: { isRTL: boolean }) => {
-  const { address, isConnected } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const { rows, isLoading, pendingIds } = useSettledOutcomes(address)
 
   if (!isConnected) return <WalletNotConnected />

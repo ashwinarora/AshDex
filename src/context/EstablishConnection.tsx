@@ -2,6 +2,7 @@
 import { QueryObserverResult, RefetchOptions, useQuery } from '@tanstack/react-query'
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useHyperliquidStore } from '@/store/HyperliquidStore'
 import { useShallow } from 'zustand/react/shallow'
 import dynamic from 'next/dynamic'
@@ -34,7 +35,8 @@ const ConnectionContext = createContext<ConnectionContextType | undefined>(undef
 export const EstablishConnectionProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isDepositModalOpen, setIsDepositModalOpen] = useState(false)
-  const { address, isConnected } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const { agentWallet, sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
       agentWallet: state.agentWallet,

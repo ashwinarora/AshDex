@@ -22,6 +22,7 @@ function humaniseOrderStatus(raw: string): string {
 import React, { useMemo, useState, useEffect } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import {
   createColumnHelper,
   useReactTable,
@@ -54,7 +55,8 @@ import { useOutcomeCoinLabel } from '@/hooks/useOutcomeMarket'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 
 const OrderHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { address, isConnected } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const { sdkInfoClient } = useHyperliquidStore(
     useShallow((state) => ({
       sdkInfoClient: state.sdkInfoClient

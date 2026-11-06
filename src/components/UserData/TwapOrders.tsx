@@ -1,6 +1,7 @@
 'use client'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useShallow } from 'zustand/react/shallow'
 import { toast } from 'sonner'
 import type { TwapHistoryResponse, UserTwapSliceFillsResponse } from '@nktkas/hyperliquid/api/info'
@@ -84,7 +85,8 @@ const isSpotCoin = (coin: string, spotMeta: SpotMetaLite | undefined): boolean =
   !!spotMeta && !!spotMeta.universe.find((u) => u.name === coin)
 
 const TwapOrders = ({ isRTL }: { isRTL: boolean }) => {
-  const { isConnected, address } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const [subTab, setSubTab] = useState<TwapSubTab>('active')
   const [history, setHistory] = useState<TwapHistoryResponse>([])
   const [fills, setFills] = useState<UserTwapSliceFillsResponse>([])

@@ -28,7 +28,7 @@ import { cn } from '@/lib/utils'
 import { BUILDER_ADDRESS } from '@/utils/constants'
 import { useUserFee } from '@/hooks/useUserFee'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { normalizeDecimalString } from '@/utils/decimalString'
 interface LimitCloseModalProps {
@@ -59,7 +59,7 @@ const LimitCloseModal: React.FC<LimitCloseModalProps> = ({ isOpen, onClose, clos
   const { getAdjustedBuilderFee } = useUserFee()
   const isRTL = false
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   useEffect(() => {
     if (clearingHouseState?.assetPositions && closingAsset) {

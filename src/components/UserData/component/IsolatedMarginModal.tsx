@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { IconChevronDown, IconWallet } from '@tabler/icons-react'
 import { useAgentApproval } from '@/context/EstablishConnection'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 interface IsolatedMarginModalProps {
   isOpen: boolean
@@ -43,7 +43,7 @@ const IsolatedMarginModal: React.FC<IsolatedMarginModalProps> = ({ isOpen, onClo
   const [action, setAction] = useState<'Add' | 'Remove'>('Add')
   const { isAgentApproved, openModal: openAgentModal, currentFeeApproval } = useAgentApproval()
   const marginAvailable = usePerpTradingAccount().withdrawable
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const handleMarginChange = async () => {
     if (!asset) return

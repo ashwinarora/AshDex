@@ -24,7 +24,7 @@ import { Popover } from '@/components/ui/popover'
 import { useShallow } from 'zustand/react/shallow'
 import { useUserFee } from '@/hooks/useUserFee'
 import { toFixedDown } from '@/utils/utils'
-import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import { useWalletModal } from '@/context/WalletModalContext'
 import { IconWallet } from '@tabler/icons-react'
 interface Order {
@@ -81,7 +81,7 @@ const ScaleSpot = ({ selectedAsset, isRTL }: IPlaceOrderProps) => {
   const [sizeSkew, setSizeSkew] = useState<number>(1)
   const [isBuy, setIsBuy] = useState<boolean>(true)
   const [usdPercent, setUsdPercent] = useState(0)
-  const { address } = useConnection()
+  const { address } = useTradingAccount()
   const { openConnectWalletModal } = useWalletModal()
   const { isAgentApproved, currentFeeApproval, openModal: openAgentModal } = useAgentApproval()
   const { getAdjustedBuilderFee } = useUserFee()

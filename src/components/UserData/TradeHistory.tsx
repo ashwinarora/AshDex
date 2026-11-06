@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import {
   useReactTable,
   getCoreRowModel,
@@ -47,7 +48,8 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 const columnHelper = createColumnHelper<hl.UserFillsResponse[number]>()
 
 const TradeHistoryTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { address, isConnected } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const { spotKeyToName } = useSpotMeta()
   const outcomeLabel = useOutcomeCoinLabel()
   const [sorting, setSorting] = useState<SortingState>([])

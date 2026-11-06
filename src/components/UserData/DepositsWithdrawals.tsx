@@ -1,6 +1,7 @@
 'use client'
 import React, { useState, useEffect, useMemo } from 'react'
 import { useConnection } from 'wagmi'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 import {
   useReactTable,
   getCoreRowModel,
@@ -137,7 +138,8 @@ const getValueChange = (delta: FilteredLedgerUpdate['delta'], connectedAddress?:
 }
 
 const DepositsWithdrawalsTable: React.FC<{ isRTL: boolean }> = ({ isRTL }) => {
-  const { isConnected, address } = useConnection()
+  const { isConnected } = useConnection()
+  const { address } = useTradingAccount()
   const [sorting, setSorting] = useState<SortingState>([{ id: 'timestamp', desc: true }])
   const [mounted, setMounted] = useState(false)
   const { ledgerUpdates, pendingWithdrawals } = useHyperliquidStore(

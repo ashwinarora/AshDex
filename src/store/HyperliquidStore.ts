@@ -16,11 +16,16 @@ import {
   getPendingWithdrawals,
   type PendingWithdrawal
 } from '@/utils/pendingWithdrawals'
+import type { TreasuryTarget } from '@/utils/tradingAccount'
 
 export type AccountAbstractionMode = 'disabled' | 'unifiedAccount' | 'portfolioMargin'
 
 interface HyperliquidState {
-  userActiveAddress: Hex
+  // The account the app reads and trades for: the connected wallet, or the
+  // treasury in treasury mode. Components read it through `useTradingAccount()`.
+  tradingAddress: Hex
+  // Set while trading for a multisig treasury; `null` in plain wallet mode.
+  treasury: TreasuryTarget | null
   sdkTransport: hl.HttpTransport
   sdkSocketTransport: hl.WebSocketTransport
   sdkUserSignerClient: hl.ExchangeClient | null
@@ -97,11 +102,12 @@ interface HyperliquidActions {
     asset: string,
     interval: hl.CandleWsParameters['interval']
   ) => Promise<void>
-  subscribeToActiveAssetData: (userActiveAddress: Hex, coinName: string) => void
+  subscribeToActiveAssetData: (userAddress: Hex, coinName: string) => void
   unsubscribeFromActiveAssetData: () => Promise<void>
   checkWebSocketStatus: () => void
   getTimeSinceLastUpdate: (channel?: 'allMids' | 'userState' | 'candles') => string
-  updateUserActiveAddress: (address: Hex) => void
+  setTradingAddress: (address: Hex) => void
+  setTreasury: (treasury: TreasuryTarget | null) => void
   subscribeLedgerUpdates: (address: Hex) => void
   unsubscribeLedgerUpdates: () => Promise<void>
   addPendingWithdrawal: (withdrawal: PendingWithdrawal) => void
@@ -115,7 +121,8 @@ interface HyperliquidActions {
 
 const store = combine<HyperliquidState, HyperliquidActions>(
   {
-    userActiveAddress: zeroAddress,
+    tradingAddress: zeroAddress,
+    treasury: null,
     sdkTransport: new hl.HttpTransport({
       isTestnet: isTestnet
     }),
@@ -529,8 +536,28 @@ const store = combine<HyperliquidState, HyperliquidActions>(
 
       return formatTimeSinceUpdate(timeSinceLastUpdate)
     },
-    updateUserActiveAddress: (address: Hex) => {
-      set({ userActiveAddress: address })
+    setTradingAddress: (address: Hex) => {
+      set({ tradingAddress: address })
+    },
+    setTreasury: (treasury: TreasuryTarget | null) => {
+      const current = get().treasury
+      const same =
+        current?.network === treasury?.network &&
+        current?.address.toLowerCase() === treasury?.address.toLowerCase()
+      if (same) return
+      // Switching accounts: drop the previous account's user data so nothing
+      // from it shows under the new one. The initializer re-subscribes and the
+      // HTTP fallbacks re-seed, since they only fill empty state.
+      set({
+        treasury,
+        clearingHouseState: null,
+        spotState: { balances: [] },
+        openOrders: [],
+        activeAssetData: null,
+        ledgerUpdates: [],
+        twapStates: [],
+        accountAbstraction: null
+      })
     },
     subscribeLedgerUpdates: async (address: Hex) => {
       const { sdkSubscriptionClient } = get()
@@ -539,7 +566,7 @@ const store = combine<HyperliquidState, HyperliquidActions>(
       const ledgerUpdatesSub = await sdkSubscriptionClient.userNonFundingLedgerUpdates(
         { user: address },
         (data) => {
-          const activeAddress = get().userActiveAddress
+          const activeAddress = get().tradingAddress
           if (data.user.toLowerCase() !== activeAddress.toLowerCase()) {
             ledgerUpdatesSub.unsubscribe()
             return
@@ -733,7 +760,7 @@ export const useInitHyperliquid = () => {
       unsubscribeFromCandle: state.unsubscribeFromCandle,
       checkWebSocketStatus: state.checkWebSocketStatus,
       getTimeSinceLastUpdate: state.getTimeSinceLastUpdate,
-      updateUserActiveAddress: state.updateUserActiveAddress,
+      setTradingAddress: state.setTradingAddress,
       subscribeLedgerUpdates: state.subscribeLedgerUpdates,
       unsubscribeLedgerUpdates: state.unsubscribeLedgerUpdates,
       loadPendingWithdrawals: state.loadPendingWithdrawals,

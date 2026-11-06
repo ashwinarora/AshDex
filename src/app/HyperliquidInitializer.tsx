@@ -5,12 +5,15 @@ import { useInitHyperliquid } from '@/store/HyperliquidStore'
 import { useEffect } from 'react'
 import { zeroAddress } from 'viem'
 import { useAutoReferral } from '@/hooks/useAutoReferral'
+import { useTradingAccount } from '@/hooks/useTradingAccount'
 
 const HyperLiquidInitializer = () => {
-  const { address } = useConnection()
+  // The wallet signs and owns the default agent key; `address` is the account
+  // every read and subscription below is keyed by (the treasury in treasury mode).
+  const { address: walletAddress } = useConnection()
+  const { address } = useTradingAccount()
   const { data: walletClient } = useWalletClient()
   useAutoReferral()
-  // const address = '0xa4ADD8273d7f47318675bDfBcce3E9648CdB4509'
   const {
     initSdk,
     sdkSubscriptionClient,
@@ -34,14 +37,14 @@ const HyperLiquidInitializer = () => {
     subscribeOutcomeMetaUpdates,
     unsubscribeOutcomeMetaUpdates,
     checkWebSocketStatus,
-    updateUserActiveAddress,
+    setTradingAddress,
     loadPendingWithdrawals
   } = useInitHyperliquid()
 
   useEffect(() => {
-    const addressToUse = address ?? zeroAddress
+    const addressToUse = walletAddress ?? zeroAddress
     initSdk(addressToUse, walletClient)
-  }, [address, initSdk, walletClient])
+  }, [walletAddress, initSdk, walletClient])
 
   useEffect(() => {
     if (!sdkInfoClient) return
@@ -115,10 +118,10 @@ const HyperLiquidInitializer = () => {
   // All address-keyed setup lives in one effect: set the active address, load
   // pending withdrawals, and open the three user-scoped WS subs (spotState,
   // clearinghouseState, openOrders). Doing this together guarantees that
-  // consumers of `userActiveAddress` see the right value before subs fire.
+  // consumers of `tradingAddress` see the right value before subs fire.
   useEffect(() => {
     if (!sdkSubscriptionClient || !address) return
-    updateUserActiveAddress(address)
+    setTradingAddress(address)
     loadPendingWithdrawals(address)
     subscribeUserState(address)
     subscribeLedgerUpdates(address)
@@ -131,7 +134,7 @@ const HyperLiquidInitializer = () => {
   }, [
     sdkSubscriptionClient,
     address,
-    updateUserActiveAddress,
+    setTradingAddress,
     loadPendingWithdrawals,
     subscribeUserState,
     unsubscribeUserState,
