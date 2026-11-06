@@ -252,9 +252,11 @@ const Header: FC = () => {
                     <span
                       className="rounded-sm bg-primary/20 text-primary text-[10px] px-1.5 py-0.5 font-medium flex items-center gap-1"
                       data-testid="header-treasury-chip"
+                      title="Trading for a treasury"
                     >
                       <IconBuildingBank className="size-3" />
-                      {'Treasury'}
+                      {/* Icon only on phones, where the header row has no room to spare. */}
+                      <span className="max-sm:hidden">{'Treasury'}</span>
                     </span>
                   )}
                   {modeLabel && (

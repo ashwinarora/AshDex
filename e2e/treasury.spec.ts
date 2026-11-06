@@ -44,6 +44,16 @@ test.describe('Treasury mode', () => {
     )
     expect(record.name).toBe(`ashdex ${record.address.slice(2, 6).toLowerCase()}`)
     await page.getByTestId('treasury-days').selectOption('30')
+    // Pending keys can be exported.
+    await expect(page.getByTestId('treasury-export')).toBeVisible()
+    // The 30 s re-check must not reset the chosen days.
+    const recheck = page.waitForResponse(
+      (r) => r.url().includes('/info') && r.request().postDataJSON()?.type === 'extraAgents'
+    )
+    await returnToTab(page)
+    await recheck
+    await expect(page.getByTestId('treasury-state-pending')).toBeVisible()
+    await expect(page.getByTestId('treasury-days')).toHaveValue('30')
     const ask = new URL((await page.getByTestId('treasury-ask').getAttribute('href'))!)
     expect(ask.pathname).toBe('/multisig/propose')
     expect(Object.fromEntries(ask.searchParams)).toEqual({
@@ -124,6 +134,8 @@ test.describe('Treasury mode', () => {
       kind: 'removeAgent',
       agent: name
     })
+    // A past-expiry key is not offered for export.
+    await expect(page.getByTestId('treasury-export')).toHaveCount(0)
     await page.getByTestId('treasury-make-key').click()
     await expect(page.getByTestId('treasury-state-pending')).toBeVisible()
     const ask = new URL((await page.getByTestId('treasury-ask').getAttribute('href'))!)

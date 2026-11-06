@@ -177,7 +177,7 @@ const TreasuryPanel = ({
   return (
     <>
       <Card testId="treasury-signers">
-        <p className="text-white font-mono text-sm">{treasury}</p>
+        <p className="text-white font-mono text-sm break-all">{treasury}</p>
         <p className="text-white" data-testid="treasury-threshold">
           {`${threshold} of ${authorizedUsers.length} signers`}
         </p>
@@ -400,7 +400,11 @@ const KeyPanel = ({
           </>
         )}
       </Card>
-      {record && <ExportKey key={record.address} record={record} />}
+      {/* Export only a key that can still trade: a removed or past-expiry key
+          should not be spread to other browsers. */}
+      {record && (status.status === 'pending' || status.status === 'ready') && (
+        <ExportKey key={record.address} record={record} />
+      )}
     </>
   )
 }
