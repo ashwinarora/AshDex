@@ -58,6 +58,11 @@ export const CORE_TO_EVM_MAPPING: Record<
 } as const
 
 export const isTestnet = process.env.NEXT_PUBLIC_HYPERLIQUID_NETWORK !== 'mainnet'
+export const HYPERLIQUID_NETWORK: 'mainnet' | 'testnet' = isTestnet ? 'testnet' : 'mainnet'
+
+// hl-tools app (multisig treasury management) for treasury-agent approvals.
+// Unset = treasury links are hidden.
+export const HLTOOLS_APP_URL = (process.env.NEXT_PUBLIC_HLTOOLS_URL ?? '').trim()
 
 // Sibling deployments used by the header network switch. Unset = button hidden.
 export const MAINNET_APP_URL = (process.env.NEXT_PUBLIC_MAINNET_APP_URL ?? '').trim()

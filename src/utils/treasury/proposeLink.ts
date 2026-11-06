@@ -1,0 +1,55 @@
+// Link from AshDex to hl-tools' multisig propose form, prefilled to approve a
+// treasury agent. Only public identifiers go in the URL; the key stays here.
+import type { Hex } from 'viem'
+import type { HyperliquidNetwork } from '@/utils/tradingAccount'
+
+/** Approval lengths hl-tools offers. Anything else falls back to the default. */
+export const AGENT_DAYS_OPTIONS = [1, 7, 30, 90, 180] as const
+export type AgentDays = (typeof AGENT_DAYS_OPTIONS)[number]
+export const DEFAULT_AGENT_DAYS: AgentDays = 7
+
+export const normalizeAgentDays = (days: number | undefined): AgentDays =>
+  AGENT_DAYS_OPTIONS.includes(days as AgentDays) ? (days as AgentDays) : DEFAULT_AGENT_DAYS
+
+/**
+ * `<hltools>/multisig/propose?network=…&treasury=…&kind=approveAgent&agentAddress=…&agentName=…&agentDays=…`.
+ * `agentName` has no ` valid_until` suffix: hl-tools adds it from the
+ * proposal's own nonce and `agentDays`. Returns `null` when `hltoolsUrl` is
+ * empty or unparseable, so callers can hide the link instead of dead-linking.
+ */
+export const buildApproveAgentProposeUrl = ({
+  hltoolsUrl,
+  network,
+  treasury,
+  agentAddress,
+  agentName,
+  agentDays
+}: {
+  hltoolsUrl: string
+  network: HyperliquidNetwork
+  treasury: Hex
+  agentAddress: Hex
+  agentName: string
+  agentDays?: number
+}): string | null => {
+  const base = hltoolsUrl.trim()
+  if (!base) return null
+  let url: URL
+  try {
+    url = new URL(base)
+  } catch {
+    return null
+  }
+  url.pathname = `${url.pathname.replace(/\/+$/, '')}/multisig/propose`
+  // encodeURIComponent (not URLSearchParams) so a space is `%20`, not `+`.
+  const params: [string, string][] = [
+    ['network', network],
+    ['treasury', treasury],
+    ['kind', 'approveAgent'],
+    ['agentAddress', agentAddress],
+    ['agentName', agentName],
+    ['agentDays', String(normalizeAgentDays(agentDays))]
+  ]
+  url.search = params.map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&')
+  return url.toString()
+}
